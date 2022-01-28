@@ -2,7 +2,6 @@ import 'package:add_cart_parabola/add_cart_parabola.dart';
 import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:dio/dio.dart';
@@ -49,7 +48,7 @@ class _MenuPageState extends State<MenuPage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       RenderBox renderBox = floatKey.currentContext.findRenderObject();
-      floatOffset = renderBox.localToGlobal(Offset.zero);print(floatOffset);
+      floatOffset = renderBox.localToGlobal(Offset.zero);
     });
   }
 
@@ -119,16 +118,12 @@ class _MenuPageState extends State<MenuPage> {
                 ///call back: 会回传一个动画执行状态
                 ///duration： 动画时间 可选，默认1秒
                 ///
-                 print(floatOffset);
                 return ParabolaAnimateWidget(rootKey, temp, floatOffset,
-                  Image.network(
-                    item.image,
-                    fit: BoxFit.contain,
-                    width: 35,
-                    height: 35,
+                  Icon(
+                    Icons.cancel,
+                    color: Colors.greenAccent,
                   ),
                   callback,
-                  duration: 2,
                 );
               });
 
@@ -494,25 +489,30 @@ class _MenuPageState extends State<MenuPage> {
                   height: 0,
                 ),
 //购物车
-          Container(
-            key: floatKey,
-            height: 200,
-            width: ScreenAdapter.width(350),
-            child: GetBuilder<HomePageController>(
-              builder: (_) {
-                if (controller.cartItems.length == 0) {
-                  return Center(
-                    child: Text("No item found"),
-                  );
-                }
-                return ListView(
-                  shrinkWrap: true,
-                  children: controller.cartItems
-                      .map((d) => generateCart(context, d))
-                      .toList(),
-                );
-              },
-            ),
+          Row(
+            children: [
+              Container(
+                key: floatKey,
+                height: 200,
+                width: ScreenAdapter.width(550),
+                child: GetBuilder<HomePageController>(
+                  builder: (_) {
+                    if (controller.cartItems.length == 0) {
+                      return Center(
+                        child: Text("No item found"),
+                      );
+                    }
+                    return ListView(
+                      shrinkWrap: true,
+                      children: controller.cartItems
+                          .map((d) => generateCart(context, d))
+                          .toList(),
+                    );
+                  },
+                ),
+              ),
+              Text("加入"),
+            ],
           ),
 
           //购物车价格总数
