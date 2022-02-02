@@ -158,12 +158,12 @@ class _MenuPageState extends State<MenuPage> {
                           children: <Widget>[
                             Expanded(
                               child: Container(
+                                width:30,
+                                height: 50,
                                 child: CachedNetworkImage(
                                   imageUrl: item.image,
                                   progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
+                                      (context, url, downloadProgress) => CircularProgressIndicator(value: downloadProgress.progress),
                                   errorWidget: (context, url, error) =>
                                       Icon(Icons.error),
                                 ),

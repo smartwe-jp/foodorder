@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
-      designSize: Size(750, 1334), //Size(1080, 1920),
+      designSize: Size(1080, 1920), //Size(1080, 1920),
       allowFontScaling: false,
       builder: () => MaterialApp(
         title: GString.mainTitle, //谷町君

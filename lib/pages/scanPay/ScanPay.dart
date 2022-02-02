@@ -62,22 +62,39 @@ class _ScanPayPageState extends State<ScanPayPage> {
       appBar: AppBar(
         title: Text("二维码"),
       ),
-      body: Container(
-        width: MediaQuery.of(context).size.width,  //充满屏幕宽度,
+      body: Center(
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,  //居中
-          children: [
-            SizedBox(height: 50,),
-            RaisedButton(
-              child: Text("二维码扫描"),
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            MaterialButton(
               onPressed: () {
-                getQrcodeState().then((value) => setState(() {
-                  this.textStr = value;
-                }));
+                //跳转页面
+                Navigator.pushNamed(context, '/TestingPage');
               },
+              textColor: Colors.white,
+              color: Colors.blue,
+              child: Text("Testing Web feature"),
             ),
-            SizedBox(height: 20,),
-            Text("扫描内容为${this.textStr}"),
+            MaterialButton(
+              onPressed: () {
+                //跳转页面=扫描二维码
+                Navigator.pushNamed(context, '/SelectScannerStylePage');
+
+              },
+              textColor: Colors.white,
+              color: Colors.blue,
+              child: Text("Scan 1D barcode/QR code"),
+            ),
+            MaterialButton(
+              onPressed: () {
+                //跳转页面=生成二维码
+                Navigator.pushNamed(context, '/CreatorPage');
+
+              },
+              textColor: Colors.white,
+              color: Colors.blue,
+              child: Text("Create QR code"),
+            ),
           ],
         ),
       ),
