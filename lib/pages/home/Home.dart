@@ -27,6 +27,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion(
+          value: SystemUiOverlayStyle.light,
           child: Container(
             //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
             width: ScreenAdapter.getScreenWidth(),
@@ -69,7 +70,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  SizedBox(width:ScreenAdapter.width(30)),
+                  SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, '/menuPage');
@@ -82,7 +83,7 @@ class _HomePageState extends State<HomePage> {
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
                             image: AssetImage('assets/images/home_button.png'),
-                            fit: BoxFit.fitWidth),
+                            fit: BoxFit.fill),
                       ),
                       child: Center(
                         //加上Center让文字居中
@@ -96,7 +97,7 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                   ),
-                  SizedBox(width:ScreenAdapter.width(30)),
+                  SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
                       Navigator.pushNamed(context, '/scanPay');
@@ -109,7 +110,7 @@ class _HomePageState extends State<HomePage> {
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
                             image: AssetImage('assets/images/home_button.png'),
-                            fit: BoxFit.fitWidth),
+                            fit: BoxFit.fill),
                       ),
                       child: Center(
                         //加上Center让文字居中
@@ -127,7 +128,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          value: SystemUiOverlayStyle.light),
+          ),
     );
   }
 }

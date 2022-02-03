@@ -29,7 +29,7 @@ void main() {
   });
 
   //显示底部栏(隐藏顶部状态栏)
-//    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
   //显示顶部栏(隐藏底部栏)
 //    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
   //隐藏底部栏和顶部状态栏
