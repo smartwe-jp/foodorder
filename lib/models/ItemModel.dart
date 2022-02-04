@@ -37,7 +37,34 @@ var data = [
     "https://cdn.pixabay.com/photo/2014/06/18/18/42/running-shoe-371625_960_720.jpg"
   },
   {
-    "name": "Ugly Shoe Trends 2018",
+    "name": "Ugly Shoe Trends rrrrrrrr",
+    "price": 25.0,
+    "fav": false,
+    "rating": 4.5,
+    "classid":2,
+    "image":
+    "https://pixel.nymag.com/imgs/fashion/daily/2018/04/18/uglee-shoes/70-fila-disruptor.w710.h473.2x.jpg"
+  },
+  {
+    "name": "Puma Descendant 222222222",
+    "price": 299.0,
+    "fav": false,
+    "rating": 4.5,
+    "classid":2,
+    "image":
+    "https://n4.sdlcdn.com/imgs/d/h/i/Asian-Gray-Running-Shoes-SDL691594953-1-2127d.jpg"
+  },
+  {
+    "name": "Running Shoe Brooks 333333",
+    "price": 3001.0,
+    "fav": false,
+    "rating": 3.5,
+    "classid":2,
+    "image":
+    "https://cdn.pixabay.com/photo/2014/06/18/18/42/running-shoe-371625_960_720.jpg"
+  },
+  {
+    "name": "Ugly Shoe Trends 2222",
     "price": 25.0,
     "fav": false,
     "rating": 4.5,
@@ -74,6 +101,51 @@ var data = [
   },
   {
     "name": "Shoefly black444",
+    "price": 200.0,
+    "fav": false,
+    "rating": 4.9,
+    "classid":4,
+    "image":
+    "https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70"
+  },
+  {
+    "name": "Shoefly black555",
+    "price": 200.0,
+    "fav": false,
+    "rating": 4.9,
+    "classid":4,
+    "image":
+    "https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70"
+  },
+  {
+    "name": "Shoefly 66666",
+    "price": 200.0,
+    "fav": false,
+    "rating": 4.9,
+    "classid":4,
+    "image":
+    "https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70"
+  },
+  {
+    "name": "Shoefly 777777",
+    "price": 200.0,
+    "fav": false,
+    "rating": 4.9,
+    "classid":4,
+    "image":
+    "https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70"
+  },
+  {
+    "name": "Shoefly 44444",
+    "price": 200.0,
+    "fav": false,
+    "rating": 4.9,
+    "classid":4,
+    "image":
+    "https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70"
+  },
+  {
+    "name": "Shoefly 99999",
     "price": 200.0,
     "fav": false,
     "rating": 4.9,

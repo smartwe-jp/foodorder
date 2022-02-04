@@ -61,7 +61,7 @@ class _HomePageState extends State<HomePage> {
                       child: Center(
                         //加上Center让文字居中
                         child: Text(
-                          '日本语',
+                          '日本語',
                           style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(36.0),
                               color: ColorsUtil.hexToColor("#F9F9F9"),

@@ -17,6 +17,15 @@ class GFontSize{
   static const double menuTwopriceRight = 24;
   static const double menuTwoTitleTag = 12;
 
+  static const double menuThreeListTitle = 50;
+  static const double menuThreeListTag = 30;
+
+  static const double menuThreeListFoodTitle = 40;
+  static const double menuThreeListFoodSubtitle = 24;
+  static const double menuThreepriceLift = 25;
+  static const double menuThreeprice = 48;
+  static const double menuThreepriceRight = 29;
+
   static const double menuFourListTitle = 15;
   static const double menuFourpriceLift = 14;
   static const double menuFourprice = 21;

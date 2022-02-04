@@ -1,5 +1,6 @@
 import 'package:add_cart_parabola/add_cart_parabola.dart';
 import 'package:flutter/material.dart';
+import 'dart:ui';
 import 'dart:convert';
 import 'dart:io';
 
@@ -42,11 +43,16 @@ class _MenuPageState extends State<MenuPage> {
   //购物车抛物线
   GlobalKey floatKey = GlobalKey();
   GlobalKey rootKey = GlobalKey();
-  Offset floatOffset;
+  Offset floatOffset ;
 
   @override
   void initState() {
     super.initState();
+
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      RenderBox renderBox = floatKey.currentContext.findRenderObject();
+      floatOffset = renderBox.localToGlobal(Offset.zero);
+    });
   }
 
   @override
@@ -278,6 +284,7 @@ class _MenuPageState extends State<MenuPage> {
   _showCategoryOne(items) {
     return Expanded(
         child: Container(
+          color: ColorsUtil.hexToColor(Gcolor.mainBackground),
       height: ScreenAdapter.height(1480),
       child: Column(
         children: [
@@ -697,7 +704,7 @@ class _MenuPageState extends State<MenuPage> {
       padding: EdgeInsets.only(top:ScreenAdapter.height(8)),
       child: GridView.builder(
         shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3, childAspectRatio: 1),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryTwoItemOne(items[index]);
@@ -712,12 +719,42 @@ class _MenuPageState extends State<MenuPage> {
 
     return Container(
       padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-      child: InkWell(
-          onTapDown: (details) {
-            temp = new Offset(
-                details.globalPosition.dx, details.globalPosition.dy);
+      child: GestureDetector(
+          onPanDown: (details){
+            temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
           },
           onTap: () {
+            Function callback ;
+            setState(() {
+              OverlayEntry entry = OverlayEntry(
+                  builder: (ctx){
+//                RenderBox renderBox = itemKey.currentContext.findRenderObject();
+//                Offset itemOffset = renderBox.localToGlobal(Offset.zero,
+//                    ancestor: rootKey.currentContext.findRenderObject());
+//                print("item offset  :${itemOffset.toString()}    float offset"
+//                    " ${floatOffset.toString()}");
+                    /// root key：根widget key， 主要用于定位
+                    /// temp:点击坐标，开始位置。floatOffset 结束坐标
+                    ///Icon：传入想弹出的widget
+                    ///call back: 会回传一个动画执行状态
+                    ///duration： 动画时间 可选，默认1秒
+                    ///
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset,
+                      Icon(Icons.cancel,color: Colors.greenAccent,),callback,);
+                  }
+              );
+
+              callback = (status){
+                if(status == AnimationStatus.completed){
+                  entry?.remove();
+                }
+              };
+
+              Overlay.of(rootKey.currentContext).insert(entry);
+            });
+
+
+            //加入刷新购物车
             print(item);
             var result = controller.addToCart(item);
             controller.getCardList();
@@ -865,6 +902,330 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  //第三个分类
+  _showCategoryThree(items) {
+    return Expanded(
+        child: Column(
+          children: [
+            Container(
+              width: ScreenAdapter.width(1080),
+              alignment: Alignment.bottomLeft,
+              color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(30), top: ScreenAdapter.height(40), bottom: ScreenAdapter.height(20)),
+              child: RichText(
+                text: TextSpan(
+                    text: '定食メニュ ',
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(
+                          GFontSize.menuThreeListTitle),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "（11：00-14：00）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(
+                              GFontSize.menuThreeListTag),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+            Expanded(
+                child: Container(
+                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(15), right: ScreenAdapter.width(15), bottom: ScreenAdapter.height(20)),
+                  //height: 450,
+                  child: GetBuilder<HomePageController>(
+                    init: controller,
+                    builder: (_) => showCategoryThreeItemList(controller.itemstwo),
+                  ),
+                )
+            ),
+          ],
+        )
+    );
+  }
+  showCategoryThreeItemList(items) {
+    return Container(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return showCategoryThreeItemOne(items[index]);
+        },
+        itemCount: items.length,
+      ),
+    );
+  }
+
+  showCategoryThreeItemOne(item) {
+    Offset temp;
+
+    return Container(
+      padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+      child: InkWell(
+          onTapDown: (details) {
+            temp = new Offset(
+                details.globalPosition.dx, details.globalPosition.dy);
+          },
+          onTap: () {
+            print(item);
+            var result = controller.addToCart(item);
+            controller.getCardList();
+          },
+          child: Material(
+            child: Container(
+              //height: ScreenAdapter.height(280),
+                color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Container(
+                        width: ScreenAdapter.width(485),
+                        height: ScreenAdapter.height(315),
+                        child:Image.asset(
+                          'assets/images/dingshi1.png',
+                          fit: BoxFit.fitWidth,
+                        )
+                      /*child: CachedNetworkImage(
+                        imageUrl: item.image,
+                        progressIndicatorBuilder:
+                            (context, url, downloadProgress) =>
+                            CircularProgressIndicator(
+                                value: downloadProgress.progress),
+                        errorWidget: (context, url, error) =>
+                            Icon(Icons.error),
+                      ),*/
+                    ),
+
+                    Container(
+                      //width: ScreenAdapter.width(1080),
+                      //height: ScreenAdapter.height(315),
+                      //padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(10)),
+                      child: Column(
+                        children: [
+                          //标题
+                          Container(
+                            width: ScreenAdapter.width(560),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Text(
+                                  'A 定食',
+                                  style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(
+                                          GFontSize.menuThreeListFoodTitle),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor)),
+                                ),
+                                SizedBox(
+                                  width: ScreenAdapter.width(150),
+                                ),
+                                Container(
+                                    width: ScreenAdapter.width(80),
+                                    height: ScreenAdapter.height(80),
+                                    child:Image.asset(
+                                      'assets/images/dingshitag11.png',
+                                      fit: BoxFit.fitWidth,
+                                    )
+                                ),
+                                SizedBox(
+                                  width: ScreenAdapter.width(50),
+                                ),
+                              ],
+                            ),
+                          ),
+                          //副标题
+                          Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              '（甘蘭牛肉麺 ＋ 特製牛肉 + ご飯）',
+                              style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(
+                                      GFontSize.menuThreeListFoodSubtitle),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.mainTitleColor)),
+                            ),
+                          ),
+                          //价格
+                          Container(
+                            alignment: Alignment.center,
+                            child: RichText(
+                              text: TextSpan(
+                                  text: '税込 ',
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(
+                                        GFontSize.menuThreepriceLift),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.mainTitleColor),
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: "1280",
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize.menuThreeprice),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.priceColor),
+                                      ),
+                                    ),
+                                    TextSpan(
+                                      text: " 円",
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize.menuThreepriceRight),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.priceColor),
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                          ),
+                          //多选择口味等
+                          Container(
+                            color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                            width: ScreenAdapter.width(560),
+                            height: ScreenAdapter.height(165),
+                            //padding: EdgeInsets.only( left: ScreenAdapter.width(25), right: ScreenAdapter.width(25)),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                          text: '    STEP 1',
+                                          style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(12.0),
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                              ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                          children: [
+                                            TextSpan(
+                                              text: " 麺の型が選び下さい",
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(11.0),
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor),
+                                              ),
+                                            ),
+                                          ]),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshiximian1.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshizhongtai2.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshisanjiao1.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshipingmian1.png')),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                          text: '    STEP 2',
+                                          style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(12.0),
+                                              fontWeight: FontWeight.w600,
+                                              color:
+                                              ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                          children: [
+                                            TextSpan(
+                                              text: " 唐辛子無料追加、パクチーは1つ無料で、追加のは100円",
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(11.0),
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor),
+                                              ),
+                                            ),
+                                            TextSpan(
+                                                text: '        STEP 3',
+                                                style: TextStyle(
+                                                  fontSize: ScreenAdapter.fontSize(12.0),
+                                                  fontWeight: FontWeight.w600,
+                                                  color: ColorsUtil.hexToColor(
+                                                      Gcolor.mainTitleColor),
+                                                )),
+                                            TextSpan(
+                                              text: " 麺の量をお選び下さい",
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(11.0),
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor),
+                                              ),
+                                            ),
+                                          ]),
+                                    ),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshixiangcai1.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshilajiao2.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshiputong2.png')),
+                                    Container(
+                                        width: ScreenAdapter.width(140),
+                                        height: ScreenAdapter.height(59),
+                                        child: Image.asset('assets/images/dingshidafen1.png')),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ],
+                      ),
+                    ),
+
+                  ],
+                )),
+          )),
+    );
+  }
+
   //第四个酒水分类
   _showCategoryFour(items) {
     return Expanded(
@@ -883,7 +1244,7 @@ class _MenuPageState extends State<MenuPage> {
       padding: EdgeInsets.only(top:ScreenAdapter.height(8),left: ScreenAdapter.width(45), right: ScreenAdapter.width(45)),
       child: GridView.builder(
         shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 4, childAspectRatio: 0.42),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryFourItemOne(items[index]);
@@ -1042,6 +1403,7 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );*/
     return Container(
+      key: floatKey,
       color: ColorsUtil.hexToColor(Gcolor.whiteColor),
       width: ScreenAdapter.width(1080),
       height: ScreenAdapter.height(320),
@@ -1266,6 +1628,7 @@ class _MenuPageState extends State<MenuPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion(
+        key: rootKey,
         value: SystemUiOverlayStyle.light,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1458,13 +1821,13 @@ class _MenuPageState extends State<MenuPage> {
                     height: 0,
                   ),
             (classTag == 3)
-                ? Container(
+                ? _showCategoryThree(controller.itemsthree)/*Container(
                     height: 450,
                     child: GetBuilder<HomePageController>(
                       init: controller,
                       builder: (_) => showItemList(controller.itemsthree),
                     ),
-                  )
+                  )*/
                 : Container(
                     height: 0,
                   ),
