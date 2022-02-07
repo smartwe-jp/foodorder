@@ -8,12 +8,14 @@ import 'package:foodorder/pages/scanPay/full_screen_scanner_page.dart';
 import 'package:foodorder/pages/scanPay/select_scanner_style_page.dart';
 import 'package:foodorder/pages/scanPay/task_next_page.dart';
 import 'package:foodorder/pages/scanPay/testing_page.dart';
+import 'package:foodorder/pages/settlement/Settlement.dart';
 import 'package:foodorder/pages/showImage/ShowImage.dart';
 
 //配置路由
 final routes = {
   '/home': (context) => HomePage(),
   '/menuPage': (context) => MenuPage(), //菜单
+  "/settlement": (context) => SettlementPage(), //结算页面
   '/scanPay': (context) => ScanPayPage(), //扫描二维码
   '/showImage': (context) => ShowImagePage(), //查看图片
 

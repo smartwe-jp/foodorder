@@ -31,4 +31,6 @@ class GFontSize{
   static const double menuFourprice = 21;
   static const double menuFourpriceRight = 16;
 
+
+  static const double menusettlementHeji = 70;
 }

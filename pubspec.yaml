@@ -38,7 +38,6 @@ dependencies:
   http: ^0.12.2
   barcode_scan: ^3.0.1
   cached_network_image: ^2.5.1
-  add_cart_parabola: ^0.0.3
   ai_barcode: ^2.1.0
   # Flutter Permission.
   permission_handler: ^5.1.0+2

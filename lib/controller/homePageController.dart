@@ -102,4 +102,10 @@ class HomePageController extends GetxController {
     cartItems.removeAt(index);
     update();
   }
+
+  removeAllFromCart() async {
+    itemServices.removeAllFromCart();
+
+    update();
+  }
 }

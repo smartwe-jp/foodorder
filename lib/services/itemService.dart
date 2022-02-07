@@ -83,4 +83,8 @@ print("dataTag---$dataTag");
   removeFromCart(int shopId) async {
     return await sqlService.removeFromCart(shopId);
   }
+
+  removeAllFromCart() async {
+    return await sqlService.removeAllFromCart();
+  }
 }
