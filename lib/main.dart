@@ -110,7 +110,8 @@ class _MyHomePageState extends State<MyHomePage> {
   getIsFirstOpen() async {
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
-      loaddata();
+      _goMain();
+      //loaddata();
 
     }
   }

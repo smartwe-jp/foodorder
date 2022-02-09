@@ -1373,36 +1373,7 @@ class _MenuPageState extends State<MenuPage> {
 
   //购物车
   _showShoppingCart() {
-    /*return Container(
-      color: Colors.blue,
-      width: ScreenAdapter.width(1080),
-      height: ScreenAdapter.height(320),
-      child: Row(
-        children: [
-          Container(
-            key: floatKey,
-            height: 200,
-            width: ScreenAdapter.width(550),
-            child: GetBuilder<HomePageController>(
-              builder: (_) {
-                if (controller.cartItems.length == 0) {
-                  return Center(
-                    child: Text("No item found"),
-                  );
-                }
-                return ListView(
-                  shrinkWrap: true,
-                  children: controller.cartItems
-                      .map((d) => generateCart(context, d))
-                      .toList(),
-                );
-              },
-            ),
-          ),
-          Text("加入"),
-        ],
-      ),
-    );*/
+
     return Container(
       color: ColorsUtil.hexToColor(Gcolor.whiteColor),
       width: ScreenAdapter.width(1080),
