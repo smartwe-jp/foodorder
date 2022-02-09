@@ -9,6 +9,7 @@ class HomePageController extends GetxController {
   List<ShopItemModel> itemsthree = [];
   List<ShopItemModel> itemsfour = [];
   List<ShopItemModel> cartItems = [];
+  List getcartItems = [];
   bool isLoading = true;
 
   @override
@@ -35,9 +36,9 @@ class HomePageController extends GetxController {
   //获取购物车数据
   getCardList() async{
     try {
-      List list = await itemServices.getCartList();
+       getcartItems = await itemServices.getCartList();
       cartItems.clear();
-      list.forEach((element) {
+      getcartItems.forEach((element) {
         cartItems.add(ShopItemModel.fromJson(element));
       });
       update();

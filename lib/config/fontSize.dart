@@ -33,4 +33,5 @@ class GFontSize{
 
 
   static const double menusettlementHeji = 70;
+  static const double menusettlementLingshoushu = 28;
 }
