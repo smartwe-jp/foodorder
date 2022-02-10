@@ -1,6 +1,11 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
 import 'package:foodorder/models/ItemModel.dart';
 import 'package:foodorder/services/sqlService.dart';
 import 'package:foodorder/services/Storage.dart';
+
+import 'HttpService.dart';
 
 class ItemServices {
   SQLService sqlService = SQLService();
@@ -11,7 +16,7 @@ class ItemServices {
 
   List<ShopItemModel> getShoppingItems() {
     int count = 1;
-    //可以通过http获取网络数据
+
     data.forEach((element) {
       element['id'] = count;
       shoppingList.add(ShopItemModel.fromJson(element));
@@ -71,6 +76,7 @@ print("dataTag---$dataTag");
   Future setItemAsFavourite(id, flag) async {
     return await sqlService.setItemAsFavourite(id, flag);
   }
+
 
   Future addToCart(ShopItemModel data) async {
     return await sqlService.addToCart(data);

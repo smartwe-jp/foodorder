@@ -188,3 +188,189 @@ class ShopItemModel {
     );
   }
 }
+
+class CategoryVoList {
+  String categoryCode;
+  String categoryName;
+  String showType;
+  List<MenuVoList> menuVoList;
+
+  CategoryVoList(
+      {this.categoryCode, this.categoryName, this.showType, this.menuVoList});
+
+  CategoryVoList.fromJson(Map<String, dynamic> json) {
+    categoryCode = json['categoryCode'];
+    categoryName = json['categoryName'];
+    showType = json['showType'];
+    if (json['menuVoList'] != null) {
+      menuVoList = new List<MenuVoList>();
+      json['menuVoList'].forEach((v) {
+        menuVoList.add(new MenuVoList.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['categoryCode'] = this.categoryCode;
+    data['categoryName'] = this.categoryName;
+    data['showType'] = this.showType;
+    if (this.menuVoList != null) {
+      data['menuVoList'] = this.menuVoList.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+
+}
+
+class MenuVoList {
+  String menuCode;
+  String mainTitle;
+  List<String> subtitle;
+  String price;
+  String currentPrice;
+  String homeImage;
+  String images;
+  String qtyBounds;
+  String timeBoundsStart;
+  String timeBoundsEnd;
+  List<OptionGroupVoList> optionGroupVoList;
+
+  MenuVoList(
+      {this.menuCode,
+        this.mainTitle,
+        this.subtitle,
+        this.price,
+        this.currentPrice,
+        this.homeImage,
+        this.images,
+        this.qtyBounds,
+        this.timeBoundsStart,
+        this.timeBoundsEnd,
+        this.optionGroupVoList});
+
+  MenuVoList.fromJson(Map<String, dynamic> json) {
+    menuCode = json['menuCode'];
+    mainTitle = json['mainTitle'];
+    subtitle = json['subtitle'].cast<String>();
+    price = json['price'];
+    currentPrice = json['currentPrice'];
+    homeImage = json['homeImage'];
+    images = json['images'];
+    qtyBounds = json['qtyBounds'];
+    timeBoundsStart = json['timeBoundsStart'];
+    timeBoundsEnd = json['timeBoundsEnd'];
+    if (json['optionGroupVoList'] != null) {
+      optionGroupVoList = new List<OptionGroupVoList>();
+      json['optionGroupVoList'].forEach((v) {
+        optionGroupVoList.add(new OptionGroupVoList.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['menuCode'] = this.menuCode;
+    data['mainTitle'] = this.mainTitle;
+    data['subtitle'] = this.subtitle;
+    data['price'] = this.price;
+    data['currentPrice'] = this.currentPrice;
+    data['homeImage'] = this.homeImage;
+    data['images'] = this.images;
+    data['qtyBounds'] = this.qtyBounds;
+    data['timeBoundsStart'] = this.timeBoundsStart;
+    data['timeBoundsEnd'] = this.timeBoundsEnd;
+    if (this.optionGroupVoList != null) {
+      data['optionGroupVoList'] =
+          this.optionGroupVoList.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class OptionGroupVoList {
+  String groupCode;
+  String groupName;
+  String multipleState;
+  List<OptionVoList> optionVoList;
+
+  OptionGroupVoList(
+      {this.groupCode, this.groupName, this.multipleState, this.optionVoList});
+
+  OptionGroupVoList.fromJson(Map<String, dynamic> json) {
+    groupCode = json['groupCode'];
+    groupName = json['groupName'];
+    multipleState = json['multipleState'];
+    if (json['optionVoList'] != null) {
+      optionVoList = new List<OptionVoList>();
+      json['optionVoList'].forEach((v) {
+        optionVoList.add(new OptionVoList.fromJson(v));
+      });
+    }
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['groupCode'] = this.groupCode;
+    data['groupName'] = this.groupName;
+    data['multipleState'] = this.multipleState;
+    if (this.optionVoList != null) {
+      data['optionVoList'] = this.optionVoList.map((v) => v.toJson()).toList();
+    }
+    return data;
+  }
+}
+
+class OptionVoList {
+  String optionCode;
+  String group;
+  String mainTitle;
+  String subTitle;
+  String price;
+  String currentPrice;
+  String homeImage;
+  String standard;
+  String bounds;
+  String buttonColorValue;
+
+  OptionVoList(
+      {this.optionCode,
+        this.group,
+        this.mainTitle,
+        this.subTitle,
+        this.price,
+        this.currentPrice,
+        this.homeImage,
+        this.standard,
+        this.bounds,
+        this.buttonColorValue});
+
+  OptionVoList.fromJson(Map<String, dynamic> json) {
+    optionCode = json['optionCode'];
+    group = json['group'];
+    mainTitle = json['mainTitle'];
+    subTitle = json['subTitle'];
+    price = json['price'];
+    currentPrice = json['currentPrice'];
+    homeImage = json['homeImage'];
+    standard = json['standard'];
+    bounds = json['bounds'];
+    buttonColorValue = json['buttonColorValue'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['optionCode'] = this.optionCode;
+    data['group'] = this.group;
+    data['mainTitle'] = this.mainTitle;
+    data['subTitle'] = this.subTitle;
+    data['price'] = this.price;
+    data['currentPrice'] = this.currentPrice;
+    data['homeImage'] = this.homeImage;
+    data['standard'] = this.standard;
+    data['bounds'] = this.bounds;
+    data['buttonColorValue'] = this.buttonColorValue;
+    return data;
+  }
+}
+

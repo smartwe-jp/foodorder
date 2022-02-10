@@ -14,6 +14,7 @@ import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
+import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/SqfliteHelper.dart';
 import 'package:foodorder/services/addCartParabola.dart';
@@ -21,6 +22,7 @@ import 'package:foodorder/services/itemService.dart';
 import 'package:foodorder/widget/iosAlter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
+import 'package:foodorder/services/Storage.dart';
 
 class MenuPage extends StatefulWidget {
   MenuPage({Key key}) : super(key: key);
@@ -32,11 +34,16 @@ class _MenuPageState extends State<MenuPage> {
   var imgUrl =
       'https://kanran.co.jp/fanxing/sites/6/2021/10/1635210298859_1026-1024x1024.jpg';
 
+  Storage storageService = Storage();
+
   ItemServices itemServices = ItemServices();
-  List<ShopItemModel> items = [];
-  List<ShopItemModel> itemstwo = [];
-  List<ShopItemModel> itemsthree = [];
-  List<ShopItemModel> itemsfour = [];
+  List items = [];
+  List itemstwo = [];
+  List itemsthree = [];
+  List itemsfour = [];
+  //第一页第一个商品以及剩余商品
+  Map itemsFirst = {};
+  List itemsTree = [];
   final HomePageController controller = Get.put(HomePageController());
   int classTag = 1;
 
@@ -55,12 +62,77 @@ class _MenuPageState extends State<MenuPage> {
       RenderBox renderBox = floatKey.currentContext.findRenderObject();
       floatOffset = renderBox.localToGlobal(Offset.zero);
     });
+
+    _getBookingBootMenu();
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  //获取菜单
+  _getBookingBootMenu(){
+    var formData = {
+      "machineCode":"S9UINWH2NU8DZIYHCD"
+    };
+    request('webBootIndex',
+        method: 'POST',
+        parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+
+      if (response['code'] == 200) {
+        print('获取菜单成功');
+        //1、保存店铺信息
+        var shopData = response['data'];
+        var ShopInfo = {
+          "shopCode": shopData["shopCode"],
+          "machineCode": shopData["machineCode"],
+          "languages": shopData["languages"],
+          "shopName": shopData["shopName"],
+          "language": shopData["language"],
+          "shopAddress": shopData["shopAddress"],
+          "shopTelephone": shopData["shopTelephone"],
+          "businessTime": shopData["businessTime"],
+        };
+        Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
+        //2、保存商品信息
+        List myList = response['data']['categoryVoList'];
+
+        setState(() {
+          for(var i=0; i<myList.length;i++){
+            var categoryVoList = myList[i];
+            if(categoryVoList['showType'] == "featured"){
+              items = categoryVoList['menuVoList'];
+              if(items.length >0){
+                itemsFirst = items[0];
+
+                if(items.length >1){
+                  for(var m=0; m<items.length;m++){
+                    if(m>0){
+                      itemsTree.add(items[m]);
+                    }
+                  }
+
+                }
+
+              }
+            }else if(categoryVoList['showType'] == "table"){
+              itemstwo = categoryVoList['menuVoList'];
+            }else if(categoryVoList['showType'] == "block"){
+              itemsthree = categoryVoList['menuVoList'];
+            }else if(categoryVoList['showType'] == "grid"){
+              itemsfour = categoryVoList['menuVoList'];
+            }
+        }
+        });
+
+      } else {
+        print('${response["msg"]}');
+      }
+    });
   }
 
   getAllPost() async {
@@ -74,7 +146,7 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   //循环列表
-  showItemList(items) {
+/*  showItemList(items) {
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: GridView.builder(
@@ -100,10 +172,9 @@ class _MenuPageState extends State<MenuPage> {
                 details.globalPosition.dx, details.globalPosition.dy);
           },
           onTap: () {
-            /*Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => ItemDetailPage(itemId: item.id)));*/
+            //Navigator.push(
+                //context,
+                //MaterialPageRoute( builder: (context) => ItemDetailPage(itemId: item.id)));
             print(item);
             var result = controller.addToCart(item);
             print("8888888888888----$result");
@@ -253,10 +324,7 @@ class _MenuPageState extends State<MenuPage> {
                             Get.find<HomePageController>()
                                 .removeFromCart(d.shopId ?? 0);
                             print("Item removed from cart successfully");
-                            /*ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                                    content: Text(
-                                        "Item removed from cart successfully"))
-                                );*/
+
                           },
                           child: Padding(
                             padding: EdgeInsets.only(right: 10.0),
@@ -280,468 +348,480 @@ class _MenuPageState extends State<MenuPage> {
         ),
       ),
     );
-  }
+  }*/
 
   //第一分类页面
-  _showCategoryOne(items) {
-    return Expanded(
-        child: Container(
-          color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-      height: ScreenAdapter.height(1480),
-      child: Column(
-        children: [
-          /*Container(
-            width: ScreenAdapter.width(1080),
-            height: ScreenAdapter.height(810),
-            child: CachedNetworkImage(
-              imageUrl: item.image,
-              progressIndicatorBuilder:
-                  (context, url, downloadProgress) =>
-                  CircularProgressIndicator(
-                      value: downloadProgress.progress),
-              errorWidget: (context, url, error) =>
-                  Icon(Icons.error),
-            ),
-          ),*/
-          //第一个商品
-          Container(
-              width: ScreenAdapter.width(1080),
-              height: ScreenAdapter.height(690),
-              child: Image.asset(
-                'assets/images/11.png',
-                fit: BoxFit.fill,
-              )),
-          Container(
-            color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-            width: ScreenAdapter.width(1080),
-            height: ScreenAdapter.height(308),
-            padding: EdgeInsets.only(
-                left: ScreenAdapter.width(25), right: ScreenAdapter.width(25)),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                          text: '    STEP 1',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(22.0),
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                          children: [
-                            TextSpan(
-                              text: " 麺の型が選び下さい",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(18.0),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            ),
-                          ]),
-                    ),
-                    RichText(
-                      text: TextSpan(
-                          text: '甘蘭牛肉麵',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(42.0),
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                          children: [
-                            TextSpan(
-                              text: "  税込 ",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(35.0),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            ),
-                            TextSpan(
-                              text: "890",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(55.0),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                              ),
-                            ),
-                            TextSpan(
-                              text: " 円   ",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(28.0),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                              ),
-                            ),
-                          ]),
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/ximian1.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/zhongtai2.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/sanjiao1.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/pingmian1.png')),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    RichText(
-                      text: TextSpan(
-                          text: '    STEP 2',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(22.0),
-                              fontWeight: FontWeight.w600,
-                              color:
-                                  ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                          children: [
-                            TextSpan(
-                              text: " 唐辛子無料追加、パクチーは1つ無料で、追加のは100円",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(18.0),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            ),
-                            TextSpan(
-                                text: '        STEP 3',
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(22.0),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(
-                                      Gcolor.mainTitleColor),
-                                )),
-                            TextSpan(
-                              text: " 麺の量をお選び下さい",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(18.0),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            ),
-                          ]),
-                    ),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/xiangcai1.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/lajiao1.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/putong1.png')),
-                    Container(
-                        width: ScreenAdapter.width(257),
-                        height: ScreenAdapter.height(108),
-                        child: Image.asset('assets/images/dafen2.png')),
-                  ],
-                ),
-              ],
-            ),
-          ),
-          //第二三个商品
-          Container(
+  _showCategoryOne() {
+    Offset temp;
+    if(items.length >0){
+      return Expanded(
+          child: Container(
             color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            width: ScreenAdapter.width(1080),
-            height: ScreenAdapter.height(482),
-            padding: EdgeInsets.only(
-                top: ScreenAdapter.height(10),
-                bottom: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            height: ScreenAdapter.height(1480),
+            child: ListView(
               children: [
-                Container(
-                  width: ScreenAdapter.width(533),
-                  //height: ScreenAdapter.height(480),
-                  color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Container(
-                          width: ScreenAdapter.width(533),
-                          //height: ScreenAdapter.height(361),
-                          child: Image.asset('assets/images/22.png',
-                              width: ScreenAdapter.width(533),
-                              height: ScreenAdapter.height(361),
-                              fit: BoxFit.fill)),
-                      Container(
-                        padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(25),
-                          right: ScreenAdapter.width(25),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '甘蘭拌麵',
-                              style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(
-                                      GFontSize.mainFoodTitle),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(
-                                      Gcolor.mainTitleColor)),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                  text: '  税込 ',
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(
-                                        GFontSize.mainPriceLift),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.mainTitleColor),
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: "890",
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(
-                                            GFontSize.mainPrice),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.priceColor),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: " 円",
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(
-                                            GFontSize.mainPriceRight),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.priceColor),
-                                      ),
-                                    ),
-                                  ]),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(25),
-                          right: ScreenAdapter.width(25),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Container(
-                                width: ScreenAdapter.width(120),
-                                height: ScreenAdapter.height(55),
-                                child:
-                                    Image.asset('assets/images/redPutong.png')),
-                            Container(
-                                width: ScreenAdapter.width(120),
-                                height: ScreenAdapter.height(55),
-                                child:
-                                    Image.asset('assets/images/redDafen.png')),
-                          ],
-                        ),
-                      ),
-                    ],
+                InkWell(
+                  onTapDown: (details) {
+                    temp = new Offset(
+                        details.globalPosition.dx, details.globalPosition.dy);
+                  },
+                  onTap: () {
+                    Function callback ;
+                    setState(() {
+                      OverlayEntry entry = OverlayEntry(
+                          builder: (ctx){
+
+                            return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(itemsFirst['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                          }
+                      );
+
+                      callback = (status){
+                        if(status == AnimationStatus.completed){
+                          entry?.remove();
+                        }
+                      };
+                      Overlay.of(rootKey.currentContext).insert(entry);
+                    });
+
+
+                    //加入刷新购物车
+                    print(itemsFirst);
+                    //var result = controller.addToCart(item);
+                    //controller.getCardList();
+                  },
+                  child: Container(
+                    width: ScreenAdapter.width(1080),
+                    height: ScreenAdapter.height(680),
+                    child: CachedNetworkImage(
+                      imageUrl: itemsFirst['homeImage'],
+                      fit: BoxFit.fill,
+                      width: ScreenAdapter.width(1080),
+                      height: ScreenAdapter.height(680),
+                      progressIndicatorBuilder:
+                          (context, url, downloadProgress) =>
+                          CircularProgressIndicator(value: downloadProgress.progress),
+                      errorWidget: (context, url, error) =>
+                          Icon(Icons.error),
+                    ),
                   ),
                 ),
-                SizedBox(width: ScreenAdapter.width(12)),
+
                 Container(
-                  width: ScreenAdapter.width(533),
-                  //height: ScreenAdapter.height(480),
                   color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                  width: ScreenAdapter.width(1080),
+                  height: ScreenAdapter.height(308),
+                  padding: EdgeInsets.only(
+                      left: ScreenAdapter.width(25), right: ScreenAdapter.width(25)),
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                          width: ScreenAdapter.width(533),
-                          //height: ScreenAdapter.height(361),
-                          child: Image.asset('assets/images/22.png',
-                              width: ScreenAdapter.width(533),
-                              height: ScreenAdapter.height(361),
-                              fit: BoxFit.fill)),
-                      Container(
-                        //width: ScreenAdapter.width(1080),
-                        //height: ScreenAdapter.height(315),
-                        padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(25),
-                            right: ScreenAdapter.width(25)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Text(
-                              '甘蘭炒麺',
-                              style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(
-                                      GFontSize.mainFoodTitle),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(
-                                      Gcolor.mainTitleColor)),
-                            ),
-                            RichText(
-                              text: TextSpan(
-                                  text: '  税込 ',
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(
-                                        GFontSize.mainPriceLift),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                                text: '    STEP 1',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22.0),
                                     fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.mainTitleColor),
-                                  ),
-                                  children: [
-                                    TextSpan(
-                                      text: "1280",
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(
-                                            GFontSize.mainPrice),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.priceColor),
-                                      ),
-                                    ),
-                                    TextSpan(
-                                      text: " 円   ",
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(
-                                            GFontSize.mainPriceRight),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.priceColor),
-                                      ),
-                                    ),
-                                  ]),
-                            )
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(25),
-                            //top: ScreenAdapter.height(20),
-                            right: ScreenAdapter.width(25)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Container(
-                              width: ScreenAdapter.width(80.0),
-                              height: ScreenAdapter.height(25.0),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                border: new Border.all(
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.foodTagColor),
-                                    width: 0.5),
-                                // 边色与边宽度
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((8.0)),
-                              ),
-                              child: Text("300g",
-                                  style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(16.0),
+                                    color:
+                                    ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                children: [
+                                  TextSpan(
+                                    text: " 麺の型が選び下さい",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18.0),
                                       color: ColorsUtil.hexToColor(
-                                          Gcolor.foodTagColor))),
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                          RichText(
+                            text: TextSpan(
+                                text: itemsFirst['mainTitle'],
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(42.0),
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                    ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                children: [
+                                  TextSpan(
+                                    text: "  税込 ",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(35.0),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: "${itemsFirst['currentPrice'].toString()}",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(55.0),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                    text: " 円   ",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(28.0),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                    ),
+                                  ),
+                                ]),
+                          )
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/ximian1.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/zhongtai2.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/sanjiao1.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/pingmian1.png')),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          RichText(
+                            text: TextSpan(
+                                text: '    STEP 2',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22.0),
+                                    fontWeight: FontWeight.w600,
+                                    color:
+                                    ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                children: [
+                                  TextSpan(
+                                    text: " 唐辛子無料追加、パクチーは1つ無料で、追加のは100円",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18.0),
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                  ),
+                                  TextSpan(
+                                      text: '        STEP 3',
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(22.0),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor),
+                                      )),
+                                  TextSpan(
+                                    text: " 麺の量をお選び下さい",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18.0),
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/xiangcai1.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/lajiao1.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/putong1.png')),
+                          Container(
+                              width: ScreenAdapter.width(257),
+                              height: ScreenAdapter.height(108),
+                              child: Image.asset('assets/images/dafen2.png')),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                //第二三个商品
+                showCategoryOneItemList(itemsTree),
+                /*Container(
+                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                  width: ScreenAdapter.width(1080),
+                  height: ScreenAdapter.height(482),
+                  padding: EdgeInsets.only(
+                      top: ScreenAdapter.height(10),
+                      bottom: ScreenAdapter.height(10)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: ScreenAdapter.width(533),
+                        //height: ScreenAdapter.height(480),
+                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                width: ScreenAdapter.width(533),
+                                //height: ScreenAdapter.height(361),
+                                child: Image.asset('assets/images/22.png',
+                                    width: ScreenAdapter.width(533),
+                                    height: ScreenAdapter.height(361),
+                                    fit: BoxFit.fill)),
+                            Container(
+                              padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(25),
+                                right: ScreenAdapter.width(25),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '甘蘭拌麵',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize.mainFoodTitle),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor)),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                        text: '  税込 ',
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize.mainPriceLift),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor),
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: "890",
+                                            style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(
+                                                  GFontSize.mainPrice),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.priceColor),
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: " 円",
+                                            style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(
+                                                  GFontSize.mainPriceRight),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.priceColor),
+                                            ),
+                                          ),
+                                        ]),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(25),
+                                right: ScreenAdapter.width(25),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                      width: ScreenAdapter.width(120),
+                                      height: ScreenAdapter.height(55),
+                                      child:
+                                      Image.asset('assets/images/redPutong.png')),
+                                  Container(
+                                      width: ScreenAdapter.width(120),
+                                      height: ScreenAdapter.height(55),
+                                      child:
+                                      Image.asset('assets/images/redDafen.png')),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(width: ScreenAdapter.width(12)),
+                      Container(
+                        width: ScreenAdapter.width(533),
+                        //height: ScreenAdapter.height(480),
+                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                                width: ScreenAdapter.width(533),
+                                //height: ScreenAdapter.height(361),
+                                child: Image.asset('assets/images/22.png',
+                                    width: ScreenAdapter.width(533),
+                                    height: ScreenAdapter.height(361),
+                                    fit: BoxFit.fill)),
+                            Container(
+                              //width: ScreenAdapter.width(1080),
+                              //height: ScreenAdapter.height(315),
+                              padding: EdgeInsets.only(
+                                  left: ScreenAdapter.width(25),
+                                  right: ScreenAdapter.width(25)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Text(
+                                    '甘蘭炒麺',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize.mainFoodTitle),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor)),
+                                  ),
+                                  RichText(
+                                    text: TextSpan(
+                                        text: '  税込 ',
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize.mainPriceLift),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor),
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: "1280",
+                                            style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(
+                                                  GFontSize.mainPrice),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.priceColor),
+                                            ),
+                                          ),
+                                          TextSpan(
+                                            text: " 円   ",
+                                            style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(
+                                                  GFontSize.mainPriceRight),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.priceColor),
+                                            ),
+                                          ),
+                                        ]),
+                                  )
+                                ],
+                              ),
+                            ),
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: ScreenAdapter.width(25),
+                                  //top: ScreenAdapter.height(20),
+                                  right: ScreenAdapter.width(25)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.end,
+                                children: [
+                                  Container(
+                                    width: ScreenAdapter.width(80.0),
+                                    height: ScreenAdapter.height(25.0),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      border: new Border.all(
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.foodTagColor),
+                                          width: 0.5),
+                                      // 边色与边宽度
+                                      //设置圆角
+                                      borderRadius: new BorderRadius.circular((8.0)),
+                                    ),
+                                    child: Text("300g",
+                                        style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(16.0),
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.foodTagColor))),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
                       ),
                     ],
                   ),
-                ),
+                ),*/
               ],
             ),
-          ),
-        ],
-      ),
-    ));
+          ));
+    }else{
+      return Container(height: 0,);
+    }
+
   }
 
-  //第二个分类
-  _showCategoryTwo(items) {
-    return Expanded(
-        child: Container(
-          color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-          //height: 450,
-          child: GetBuilder<HomePageController>(
-            init: controller,
-            builder: (_) => showCategoryTwoItemList(controller.itemstwo),
-          ),
-        )
-    );
-  }
-  showCategoryTwoItemList(items) {
+  showCategoryOneItemList(items) {
     return Padding(
       padding: EdgeInsets.only(top:ScreenAdapter.height(8)),
       child: GridView.builder(
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: ScreenAdapter.height(10),
-            crossAxisCount: 3, childAspectRatio: 1),
+            crossAxisCount: 2, childAspectRatio: 1),
         itemBuilder: (BuildContext context, int index) {
-          return showCategoryTwoItemOne(items[index]);
+          return showCategoryOneItemOne(items[index]);
         },
-        itemCount: items.length,
+        itemCount: itemsTree.length,
       ),
     );
   }
 
-  showCategoryTwoItemOne(item) {
+  showCategoryOneItemOne(item) {
     Offset temp;
 
     return Container(
-      padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-      child: GestureDetector(
-          onPanDown: (details){
-            temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
+      width: ScreenAdapter.width(533),
+      //height: ScreenAdapter.height(480),
+      color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+      child: InkWell(
+          onTapDown: (details) {
+            temp = new Offset(
+                details.globalPosition.dx, details.globalPosition.dy);
           },
           onTap: () {
             Function callback ;
             setState(() {
               OverlayEntry entry = OverlayEntry(
                   builder: (ctx){
-//                RenderBox renderBox = itemKey.currentContext.findRenderObject();
-//                Offset itemOffset = renderBox.localToGlobal(Offset.zero,
-//                    ancestor: rootKey.currentContext.findRenderObject());
-//                print("item offset  :${itemOffset.toString()}    float offset"
-//                    " ${floatOffset.toString()}");
-                    /// root key：根widget key， 主要用于定位
-                    /// temp:点击坐标，开始位置。floatOffset 结束坐标
-                    ///Icon：传入想弹出的widget
-                    ///call back: 会回传一个动画执行状态
-                    ///duration： 动画时间 可选，默认1秒
-                    ///
-                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image.asset('assets/images/cai1.png',width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
                   }
               );
 
@@ -756,8 +836,196 @@ class _MenuPageState extends State<MenuPage> {
 
             //加入刷新购物车
             print(item);
-            var result = controller.addToCart(item);
-            controller.getCardList();
+            //var result = controller.addToCart(item);
+            //controller.getCardList();
+          },
+        child:Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+                width: ScreenAdapter.width(533),
+                //height: ScreenAdapter.height(361),
+                child: Image.asset('assets/images/22.png',
+                    width: ScreenAdapter.width(533),
+                    height: ScreenAdapter.height(361),
+                    fit: BoxFit.fill)),
+            Container(
+              padding: EdgeInsets.only(
+                left: ScreenAdapter.width(25),
+                right: ScreenAdapter.width(25),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Text(
+                    item['mainTitle'],
+                    overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
+                    style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(
+                            GFontSize.mainFoodTitle),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(
+                            Gcolor.mainTitleColor)),
+                  ),
+                  RichText(
+                    text: TextSpan(
+                        text: '  税込 ',
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(
+                              GFontSize.mainPriceLift),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: item['currentPrice'].toString(),
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.mainPrice),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.priceColor),
+                            ),
+                          ),
+                          TextSpan(
+                            text: " 円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.mainPriceRight),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.priceColor),
+                            ),
+                          ),
+                        ]),
+                  )
+                ],
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(
+                left: ScreenAdapter.width(25),
+                right: ScreenAdapter.width(25),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                      width: ScreenAdapter.width(120),
+                      height: ScreenAdapter.height(55),
+                      child:
+                      Image.asset('assets/images/redPutong.png')),
+                  Container(
+                      width: ScreenAdapter.width(120),
+                      height: ScreenAdapter.height(55),
+                      child:
+                      Image.asset('assets/images/redDafen.png')),
+                ],
+              ),
+            ),
+          ],
+        )
+      ),
+    );
+  }
+
+  //第二个分类
+  _showCategoryTwo() {
+    if(itemstwo.length >0){
+      return Expanded(
+          child: Container(
+            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+            //height: 450,
+            child: showCategoryTwoItemList(itemstwo),
+          )
+      );
+    }else{
+      return Container(height: 0,);
+    }
+
+  }
+  showCategoryTwoItemList(items) {
+    return Padding(
+      padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      child: GridView.builder(
+        shrinkWrap: true,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: ScreenAdapter.height(10),crossAxisCount: 4, childAspectRatio: 0.68),
+        itemBuilder: (BuildContext context, int index) {
+          return showCategoryTwoItemOne(items[index]);
+        },
+        itemCount: itemstwo.length,
+      ),
+    );
+  }
+
+  showCategoryTwoItemOne(item) {
+    Offset temp;
+
+    //标签循环相关
+    var subtitleList = item["subtitle"];
+    var labelSubtitleLength = subtitleList.length;
+    List<Widget> labels = [];//先建一个数组用于存放循环生成的widget
+    Widget labelContent;
+    for (var i = 0; i < labelSubtitleLength; i++) {
+      labels.add(
+          Chip(
+            label: Text(subtitleList[i],
+                style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
+                    color: ColorsUtil.hexToColor(Gcolor.foodTagColor))),
+            labelPadding: EdgeInsets.only(right:ScreenAdapter.width(5), bottom:ScreenAdapter.height(0),left:ScreenAdapter.width(5), top: ScreenAdapter.height(0)),
+            padding:EdgeInsets.only(right:ScreenAdapter.width(5), bottom:ScreenAdapter.height(0),left:ScreenAdapter.width(5), top: ScreenAdapter.height(0)),
+            shape: new RoundedRectangleBorder(
+              side: new BorderSide(
+                //设置 界面效果
+                  color: ColorsUtil.hexToColor(Gcolor.foodTagColor),
+                  style: BorderStyle.solid,
+                  width: 0.5
+              ),
+            ),
+            backgroundColor:Colors.white70,
+          )
+      );
+    }
+    labelContent = new Wrap(
+        spacing: ScreenAdapter.width(5), // set spacing here
+        runSpacing: ScreenAdapter.height(-20),
+        children: labels
+    );
+
+    return Container(
+      padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
+      child: GestureDetector(
+          onPanDown: (details){
+            temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
+          },
+          onTap: () {
+            Function callback ;
+            setState(() {
+              OverlayEntry entry = OverlayEntry(
+                  builder: (ctx){
+
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                  }
+              );
+
+              callback = (status){
+                if(status == AnimationStatus.completed){
+                  entry?.remove();
+                }
+              };
+              Overlay.of(rootKey.currentContext).insert(entry);
+            });
+
+
+            //加入刷新购物车
+            print(item);
+            //var result = controller.addToCart(item);
+            //controller.getCardList();
           },
           child: Material(
             child: Container(
@@ -770,42 +1038,57 @@ class _MenuPageState extends State<MenuPage> {
                     Container(
                       width: ScreenAdapter.width(350),
                       height: ScreenAdapter.height(255),
-                      child:Image.asset(
-                        'assets/images/cai1.png',
-                        fit: BoxFit.fitWidth,
-                      )
-                      /*child: CachedNetworkImage(
-                        imageUrl: item.image,
+                      child: CachedNetworkImage(
+                        imageUrl: item['homeImage'],
+                        fit: BoxFit.fill,
+                        width: ScreenAdapter.width(350),
+                        height: ScreenAdapter.height(255),
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
                             CircularProgressIndicator(
                                 value: downloadProgress.progress),
                         errorWidget: (context, url, error) =>
                             Icon(Icons.error),
-                      ),*/
+                      ),
                     ),
                     SizedBox(
                       height: ScreenAdapter.height(10),
                     ),
                     Container(
-                      //width: ScreenAdapter.width(1080),
+                      //width: ScreenAdapter.width(20),
                       //height: ScreenAdapter.height(315),
                       padding: EdgeInsets.only(
                           left: ScreenAdapter.width(15),
                           right: ScreenAdapter.width(15)),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        mainAxisAlignment: MainAxisAlignment.start,
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
-                          Text(
-                            '甘蘭炒麺',
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.menuTwoListTitle),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor)),
+                          Expanded(
+                            child: Text(
+                              item['mainTitle'],
+                              overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
+                              style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(
+                                      GFontSize.menuTwoListTitle),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.mainTitleColor)),
+                            ),
                           ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      //width: ScreenAdapter.width(20),
+                      //height: ScreenAdapter.height(315),
+                      padding: EdgeInsets.only(
+                          left: ScreenAdapter.width(15),
+                          right: ScreenAdapter.width(15)),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
                           RichText(
                             text: TextSpan(
                                 text: '税込 ',
@@ -818,7 +1101,7 @@ class _MenuPageState extends State<MenuPage> {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: "1280",
+                                    text: item['currentPrice'].toString(),
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(
                                           GFontSize.menuTwoprice),
@@ -843,58 +1126,14 @@ class _MenuPageState extends State<MenuPage> {
                       ),
                     ),
                     SizedBox(
-                      height: ScreenAdapter.height(15),
+                      height: ScreenAdapter.height(7),
                     ),
                     Container(
                       padding: EdgeInsets.only(
                           left: ScreenAdapter.width(15),
                           //top: ScreenAdapter.height(20),
                           right: ScreenAdapter.width(15)),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                            width: ScreenAdapter.width(80.0),
-                            height: ScreenAdapter.height(25.0),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: new Border.all(
-                                  color: ColorsUtil.hexToColor(
-                                      Gcolor.foodTagColor),
-                                  width: 0.5),
-                              // 边色与边宽度
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((8.0)),
-                            ),
-                            child: Text("300g",
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.foodTagColor))),
-                          ),
-                          SizedBox(width: ScreenAdapter.width(10),),
-                          Container(
-                            width: ScreenAdapter.width(80.0),
-                            height: ScreenAdapter.height(25.0),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              border: new Border.all(
-                                  color: ColorsUtil.hexToColor(
-                                      Gcolor.foodTagColor),
-                                  width: 0.5),
-                              // 边色与边宽度
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((8.0)),
-                            ),
-                            child: Text("牛筋",
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.foodTagColor))),
-                          ),
-                        ],
-                      ),
+                      child: labelContent,
                     ),
                   ],
                 )),
@@ -903,54 +1142,58 @@ class _MenuPageState extends State<MenuPage> {
   }
 
 
+
+
   //第三个分类
-  _showCategoryThree(items) {
-    return Expanded(
-        child: Column(
-          children: [
-            Container(
-              width: ScreenAdapter.width(1080),
-              alignment: Alignment.bottomLeft,
-              color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-              padding: EdgeInsets.only(left: ScreenAdapter.width(30), top: ScreenAdapter.height(40), bottom: ScreenAdapter.height(20)),
-              child: RichText(
-                text: TextSpan(
-                    text: '定食メニュ ',
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(
-                          GFontSize.menuThreeListTitle),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(
-                          Gcolor.mainTitleColor),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "（11：00-14：00）",
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(
-                              GFontSize.menuThreeListTag),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor(
-                              Gcolor.mainTitleColor),
-                        ),
+  _showCategoryThree() {
+    if(itemsthree.length>0){
+      return Expanded(
+          child: Column(
+            children: [
+              Container(
+                width: ScreenAdapter.width(1080),
+                alignment: Alignment.bottomLeft,
+                color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                padding: EdgeInsets.only(left: ScreenAdapter.width(30), top: ScreenAdapter.height(40), bottom: ScreenAdapter.height(20)),
+                child: RichText(
+                  text: TextSpan(
+                      text: '定食メニュ ',
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(
+                            GFontSize.menuThreeListTitle),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(
+                            Gcolor.mainTitleColor),
                       ),
-                    ]),
+                      children: [
+                        TextSpan(
+                          text: "（11：00-14：00）",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.menuThreeListTag),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
+                      ]),
+                ),
               ),
-            ),
-            Expanded(
-                child: Container(
-                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(15), right: ScreenAdapter.width(15), bottom: ScreenAdapter.height(20)),
-                  //height: 450,
-                  child: GetBuilder<HomePageController>(
-                    init: controller,
-                    builder: (_) => showCategoryThreeItemList(controller.itemstwo),
-                  ),
-                )
-            ),
-          ],
-        )
-    );
+              Expanded(
+                  child: Container(
+                    color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(15), right: ScreenAdapter.width(15), bottom: ScreenAdapter.height(20)),
+                    //height: 450,
+                    child: showCategoryThreeItemList(itemsthree),
+                  )
+              ),
+            ],
+          )
+      );
+    }else{
+      return Container(height: 0,);
+    }
+
   }
   showCategoryThreeItemList(items) {
     return Container(
@@ -959,13 +1202,21 @@ class _MenuPageState extends State<MenuPage> {
         itemBuilder: (BuildContext context, int index) {
           return showCategoryThreeItemOne(items[index]);
         },
-        itemCount: items.length,
+        itemCount: itemsthree.length,
       ),
     );
   }
 
   showCategoryThreeItemOne(item) {
     Offset temp;
+
+    var subtitle = "";
+    if(item["subtitle"].length > 0){
+      for(var i=0; i<item["subtitle"].length;i++){
+        subtitle += item["subtitle"][i];
+      }
+    }
+
 
     return Container(
       padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
@@ -975,9 +1226,27 @@ class _MenuPageState extends State<MenuPage> {
                 details.globalPosition.dx, details.globalPosition.dy);
           },
           onTap: () {
+            Function callback ;
+            setState(() {
+              OverlayEntry entry = OverlayEntry(
+                  builder: (ctx){
+
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                  }
+              );
+
+              callback = (status){
+                if(status == AnimationStatus.completed){
+                  entry?.remove();
+                }
+              };
+              Overlay.of(rootKey.currentContext).insert(entry);
+            });
+
+
             print(item);
-            var result = controller.addToCart(item);
-            controller.getCardList();
+            //var result = controller.addToCart(item);
+            //controller.getCardList();
           },
           child: Material(
             child: Container(
@@ -990,19 +1259,18 @@ class _MenuPageState extends State<MenuPage> {
                     Container(
                         width: ScreenAdapter.width(485),
                         height: ScreenAdapter.height(315),
-                        child:Image.asset(
-                          'assets/images/dingshi1.png',
-                          fit: BoxFit.fitWidth,
-                        )
-                      /*child: CachedNetworkImage(
-                        imageUrl: item.image,
+                        child: CachedNetworkImage(
+                        imageUrl: item['homeImage'],
+                          fit: BoxFit.fill,
+                          width: ScreenAdapter.width(485),
+                          height: ScreenAdapter.height(315),
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
                             CircularProgressIndicator(
                                 value: downloadProgress.progress),
                         errorWidget: (context, url, error) =>
                             Icon(Icons.error),
-                      ),*/
+                      ),
                     ),
 
                     Container(
@@ -1019,7 +1287,8 @@ class _MenuPageState extends State<MenuPage> {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               children: [
                                 Text(
-                                  'A 定食',
+                                  item['mainTitle'],
+                                  overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
                                   style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(
                                           GFontSize.menuThreeListFoodTitle),
@@ -1045,10 +1314,10 @@ class _MenuPageState extends State<MenuPage> {
                             ),
                           ),
                           //副标题
-                          Container(
+                          subtitle !="" ?Container(
                             alignment: Alignment.center,
                             child: Text(
-                              '（甘蘭牛肉麺 ＋ 特製牛肉 + ご飯）',
+                              '（${subtitle}）',
                               style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menuThreeListFoodSubtitle),
@@ -1056,6 +1325,8 @@ class _MenuPageState extends State<MenuPage> {
                                   color: ColorsUtil.hexToColor(
                                       Gcolor.mainTitleColor)),
                             ),
+                          ):Container(
+                            width: 0,
                           ),
                           //价格
                           Container(
@@ -1072,7 +1343,7 @@ class _MenuPageState extends State<MenuPage> {
                                   ),
                                   children: [
                                     TextSpan(
-                                      text: "1280",
+                                      text: "${item["currentPrice"].toString()}",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(
                                             GFontSize.menuThreeprice),
@@ -1228,17 +1499,19 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   //第四个酒水分类
-  _showCategoryFour(items) {
-    return Expanded(
-        child: Container(
-          color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-          //height: 450,
-          child: GetBuilder<HomePageController>(
-            init: controller,
-            builder: (_) => showCategoryFourItemList(controller.itemsfour),
-          ),
-        )
-    );
+  _showCategoryFour() {
+    if(itemsfour.length >0){
+      return Expanded(
+          child: Container(
+            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+            //height: 450,
+            child: showCategoryFourItemList(controller.itemsfour),
+          )
+      );
+    }else{
+      return Container(height: 0,);
+    }
+
   }
   showCategoryFourItemList(items) {
     return Padding(
@@ -1248,9 +1521,9 @@ class _MenuPageState extends State<MenuPage> {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 4, childAspectRatio: 0.42),
         itemBuilder: (BuildContext context, int index) {
-          return showCategoryFourItemOne(items[index]);
+          return showCategoryFourItemOne(itemsfour[index]);
         },
-        itemCount: items.length,
+        itemCount: itemsfour.length,
       ),
     );
   }
@@ -1266,9 +1539,27 @@ class _MenuPageState extends State<MenuPage> {
                 details.globalPosition.dx, details.globalPosition.dy);
           },
           onTap: () {
+            Function callback ;
+            setState(() {
+              OverlayEntry entry = OverlayEntry(
+                  builder: (ctx){
+
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                  }
+              );
+
+              callback = (status){
+                if(status == AnimationStatus.completed){
+                  entry?.remove();
+                }
+              };
+              Overlay.of(rootKey.currentContext).insert(entry);
+            });
+
+
             print(item);
-            var result = controller.addToCart(item);
-            controller.getCardList();
+            //var result = controller.addToCart(item);
+            //controller.getCardList();
           },
           child: Material(
             child: Container(
@@ -1281,19 +1572,18 @@ class _MenuPageState extends State<MenuPage> {
                     Container(
                         width: ScreenAdapter.width(230),
                         height: ScreenAdapter.height(523),
-                        child:Image.asset(
-                          'assets/images/yin1.png',
-                          fit: BoxFit.fitWidth,
-                        )
-                      /*child: CachedNetworkImage(
-                        imageUrl: item.image,
+                        child: CachedNetworkImage(
+                        imageUrl: item['homeImage'],
+                          fit: BoxFit.fill,
+                          width: ScreenAdapter.width(230),
+                          height: ScreenAdapter.height(523),
                         progressIndicatorBuilder:
                             (context, url, downloadProgress) =>
                             CircularProgressIndicator(
                                 value: downloadProgress.progress),
                         errorWidget: (context, url, error) =>
                             Icon(Icons.error),
-                      ),*/
+                      ),
                     ),
                     SizedBox(
                       height: ScreenAdapter.height(10),
@@ -1309,7 +1599,8 @@ class _MenuPageState extends State<MenuPage> {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Text(
-                            'ワンラオジー（310ml）',
+                            item['mainTitle'],
+                            overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
                             style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(
                                     GFontSize.menuFourListTitle),
@@ -1341,7 +1632,7 @@ class _MenuPageState extends State<MenuPage> {
                                 ),
                                 children: [
                                   TextSpan(
-                                    text: "300",
+                                    text: item['currentPrice'].toString(),
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(
                                           GFontSize.menuFourprice),
@@ -1759,7 +2050,7 @@ class _MenuPageState extends State<MenuPage> {
               ),
             ),
             (classTag == 1)
-                ? _showCategoryOne(controller.items)
+                ? _showCategoryOne()
                 /*Container(
                     key: rootKey,
                     height: 450,
@@ -1772,7 +2063,7 @@ class _MenuPageState extends State<MenuPage> {
                     height: 0,
                   ),
             (classTag == 2)
-                ? _showCategoryTwo(controller.itemstwo)/*Container(
+                ? _showCategoryTwo()/*Container(
                     height: 450,
                     child: GetBuilder<HomePageController>(
                       init: controller,
@@ -1783,7 +2074,7 @@ class _MenuPageState extends State<MenuPage> {
                     height: 0,
                   ),
             (classTag == 3)
-                ? _showCategoryThree(controller.itemsthree)/*Container(
+                ? _showCategoryThree()/*Container(
                     height: 450,
                     child: GetBuilder<HomePageController>(
                       init: controller,
@@ -1794,7 +2085,7 @@ class _MenuPageState extends State<MenuPage> {
                     height: 0,
                   ),
             (classTag == 4)
-                ? _showCategoryFour(controller.itemsfour)/*Container(
+                ? _showCategoryFour()/*Container(
                     height: 450,
                     child: GetBuilder<HomePageController>(
                       init: controller,

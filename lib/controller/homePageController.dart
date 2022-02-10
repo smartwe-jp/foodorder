@@ -36,7 +36,7 @@ class HomePageController extends GetxController {
   //获取购物车数据
   getCardList() async{
     try {
-       getcartItems = await itemServices.getCartList();
+      getcartItems = await itemServices.getCartList();
       cartItems.clear();
       getcartItems.forEach((element) {
         cartItems.add(ShopItemModel.fromJson(element));
