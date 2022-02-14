@@ -143,7 +143,7 @@ print("获取购物车商品方法");
               //width: ScreenAdapter.width(495),
               child: RichText(
                 text: TextSpan(
-                    text: d.name,
+                    text: d.mainTitle,
                     style: TextStyle(
                         fontSize:
                             ScreenAdapter.fontSize(GFontSize.cartListTitle),
@@ -172,7 +172,7 @@ print("获取购物车商品方法");
             Container(
               width: ScreenAdapter.width(140),
               child: Text(
-                d.price.toString(),
+                d.currentPrice.toString(),
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,

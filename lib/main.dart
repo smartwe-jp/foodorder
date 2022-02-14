@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       designSize: Size(1080, 1920), //Size(1080, 1920),
       allowFontScaling: false,
       builder: () => MaterialApp(
-        title: GString.mainTitle, //谷町君
+        title: "甘蘭牛肉面", //谷町君
         debugShowCheckedModeBanner: false,
         //onGenerateRoute: Application.router.generator,
         //主题
@@ -69,14 +69,13 @@ class _MyHomePageState extends State<MyHomePage> {
   final String url = "https://jsonplaceholder.typicode.com/posts";
   final sqlHelper = SqfliteHelper();
 
-  var _local_version; //本appversion版本号
+
   var _activation_code; //激活码
 
 
   @override
   void initState() {
     super.initState();
-    _getPackageInfo(); //获取版本号并保存,在查看是否引导页还是广告业
 
     //判断是否第一次打开
     this.getIsFirstOpen();
@@ -84,15 +83,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-
-  //获取版本号
-  _getPackageInfo() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    setState(() {
-      this._local_version = packageInfo.version;
-    });
-
-  }
 
   //保存最新数据到本地数据库
   loaddata() async {
@@ -108,16 +98,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
-    var isFirst = await HomeServices.getOpenFirstState();
-    if(isFirst == true){
+    //var isFirst = await HomeServices.getOpenFirstState();
+    //if(isFirst == true){
+
+
       _goMain();
       //loaddata();
 
-    }
+    //}
   }
 
   void _goMain() async {
-    Navigator.of(context).pushReplacementNamed('/home');
+
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
     //Future.delayed(Duration(milliseconds: 100)).then((e) {
       //Navigator.of(context).pushReplacementNamed('/tab');
       //Navigator.push(context, CustomRoute(HomePage()));
@@ -128,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //发送邮件
   sendActivationCode() async {
-    loaddata();
+    //loaddata();
     /*if (this._activation_code == null ||
         this._activation_code.length <= 0) {
       showToast('请输入正确激活码');
@@ -197,11 +192,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     )
                 ),
-                onChanged: (value) {
+                /*onChanged: (value) {
                   setState(() {
                     this._activation_code = value;
                   });
-                },
+                },*/
               ),),
             Divider(
               thickness: 1.0,

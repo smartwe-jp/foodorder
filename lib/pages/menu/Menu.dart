@@ -19,13 +19,15 @@ import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/SqfliteHelper.dart';
 import 'package:foodorder/services/addCartParabola.dart';
 import 'package:foodorder/services/itemService.dart';
+import 'package:foodorder/widget/LoadState.dart';
 import 'package:foodorder/widget/iosAlter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
 
 class MenuPage extends StatefulWidget {
-  MenuPage({Key key}) : super(key: key);
+  Map arguments;
+  MenuPage({Key key, this.arguments}) : super(key: key);
 
   _MenuPageState createState() => _MenuPageState();
 }
@@ -37,6 +39,7 @@ class _MenuPageState extends State<MenuPage> {
   Storage storageService = Storage();
 
   ItemServices itemServices = ItemServices();
+  List topMenu = [];
   List items = [];
   List itemstwo = [];
   List itemsthree = [];
@@ -45,7 +48,10 @@ class _MenuPageState extends State<MenuPage> {
   Map itemsFirst = {};
   List itemsTree = [];
   final HomePageController controller = Get.put(HomePageController());
-  int classTag = 1;
+  var classTag;
+
+  //默认语言包选择
+  var _checkLanguage = "jp";
 
   final sqlHelper = SqfliteHelper();
 
@@ -58,11 +64,8 @@ class _MenuPageState extends State<MenuPage> {
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_){
-      RenderBox renderBox = floatKey.currentContext.findRenderObject();
-      floatOffset = renderBox.localToGlobal(Offset.zero);
-    });
 
+    this._checkLanguage = widget.arguments['checkLanguage'];
     _getBookingBootMenu();
   }
 
@@ -70,6 +73,97 @@ class _MenuPageState extends State<MenuPage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  //页面加载状态，默认为加载中
+  LoadState _layoutState = LoadState.State_Loading;
+  Widget _listView(BuildContext context){
+    return LoadStateLayout(
+      state: _layoutState,
+      emptyRetry: (){
+        setState(() {
+          _layoutState = LoadState.State_Empty;
+        });
+        this._getBookingBootMenu();
+      },
+      errorRetry: () {
+        setState(() {
+          _layoutState = LoadState.State_Error;
+        });
+        this._getBookingBootMenu();
+      }, //错误按钮点击过后进行重新加载
+      successWidget: Stack(
+        children: <Widget>[
+          buildDetailWidget(),
+        ],
+      ),
+    );
+  }
+
+  buildDetailWidget(){
+    return topMenu.length >0 ?Column(
+      key: rootKey,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Container(
+          width: ScreenAdapter.getScreenWidth(),
+          height: ScreenAdapter.height(120),
+          alignment: Alignment.bottomLeft,
+          decoration: BoxDecoration(
+            color: ColorsUtil.hexToColor("#000000"),
+          ),
+          child: Row(
+            children: [
+              SizedBox(width: ScreenAdapter.width(30)),
+              showTopCategoryMenu(),
+              SizedBox(width: ScreenAdapter.width(80)),
+              Container(
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                width: ScreenAdapter.width(243),
+                height: ScreenAdapter.height(64),
+                child: Image.asset('assets/images/logo.png'),
+              ),
+            ],
+          ),
+        ),
+        showMiddleMenuList(),
+
+        //展示购物车
+        _showShoppingCart(),
+
+        //购物车价格总数
+        /*Container(
+              color: Colors.white,
+              child: SafeArea(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Container(child: GetBuilder<HomePageController>(
+                      builder: (_) {
+                        return RichText(
+                          text: TextSpan(
+                              text: "Total  ",
+                              style:
+                                  TextStyle(color: Colors.black, fontSize: 18),
+                              children: <TextSpan>[
+                                TextSpan(
+                                    text: getItemTotal(controller.cartItems)
+                                        .toString(),
+                                    style:
+                                        TextStyle(fontWeight: FontWeight.bold))
+                              ]),
+                        );
+                      },
+                    )),
+
+                  ],
+                ),
+              ),
+            ),*/
+      ],
+    ):Container(height: 0,);
   }
 
   //获取菜单
@@ -84,7 +178,6 @@ class _MenuPageState extends State<MenuPage> {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
-        print('获取菜单成功');
         //1、保存店铺信息
         var shopData = response['data'];
         var ShopInfo = {
@@ -102,8 +195,22 @@ class _MenuPageState extends State<MenuPage> {
         List myList = response['data']['categoryVoList'];
 
         setState(() {
+          //定位购物车特效
+          _layoutState = LoadState.State_Success;
+          WidgetsBinding.instance.addPostFrameCallback((_){
+            RenderBox renderBox = floatKey.currentContext.findRenderObject();
+            floatOffset = renderBox.localToGlobal(Offset.zero);
+          });
+
+
           for(var i=0; i<myList.length;i++){
             var categoryVoList = myList[i];
+            //配置顶部菜单
+            topMenu.add({"categoryCode":categoryVoList['categoryCode'],"categoryName":categoryVoList['categoryName'],"showType":categoryVoList['showType']});
+
+            //配置顶部菜单默认项
+            if(i == 0) classTag = categoryVoList['categoryCode'];
+
             if(categoryVoList['showType'] == "featured"){
               items = categoryVoList['menuVoList'];
               if(items.length >0){
@@ -130,20 +237,14 @@ class _MenuPageState extends State<MenuPage> {
         });
 
       } else {
+        setState(() {
+          _layoutState = LoadState.State_Empty;
+        });
         print('${response["msg"]}');
       }
     });
   }
 
-  getAllPost() async {
-    await sqlHelper.open();
-    return await sqlHelper.queryAll();
-  }
-
-  deleteitem(id) async {
-    await sqlHelper.delete(id);
-    setState(() {});
-  }
 
   //循环列表
 /*  showItemList(items) {
@@ -349,6 +450,77 @@ class _MenuPageState extends State<MenuPage> {
       ),
     );
   }*/
+
+  //顶部分类导航
+  showTopCategoryMenu(){
+  List<Widget> categoryMenus = [];//先建一个数组用于存放循环生成的widget
+             Widget content; //单独一个widget组件，用于返回需要生成的内容widget
+               for(var item in topMenu) {
+                 categoryMenus.add(
+                     InkWell(
+                       onTap: () {
+                         setState(() {
+                           classTag = item['categoryCode'];
+                         });
+                       },
+                       child: Container(
+                         margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
+                         width: ScreenAdapter.width(161),
+                         height: ScreenAdapter.height(65),
+                         decoration: BoxDecoration(
+                           image: new DecorationImage(
+                             fit: BoxFit.fitWidth,
+                             image: classTag == item['categoryCode']
+                                 ? AssetImage(
+                                 'assets/images/category_selected.png')
+                                 : AssetImage(
+                                 'assets/images/category_unselected.png'),
+                           ),
+                         ),
+                         child: Center(
+                           //加上Center让文字居中
+                           child: Text(
+                             item['categoryName'],
+                             style: TextStyle(
+                                 fontSize: ScreenAdapter.fontSize(
+                                     GFontSize.categoryTitle),
+                                 color: classTag == 1
+                                     ? ColorsUtil.hexToColor(
+                                     Gcolor.categoryTitleSelected)
+                                     : ColorsUtil.hexToColor(Gcolor.categoryTitle),
+                                 fontWeight: FontWeight.w600),
+                           ),
+                         ),
+                       ),
+                     )
+                    );
+                }
+                content = Row(
+                  children: categoryMenus,
+                );
+                return content;
+
+  }
+
+  //中间分类页面
+  showMiddleMenuList(){
+    for(var item in topMenu) {
+      if(classTag == item['categoryCode']){
+        if(item['showType'] == "featured"){
+          return _showCategoryOne();
+        }else if(item['showType'] == "table"){
+          return _showCategoryTwo();
+        }else if(item['showType'] == "block"){
+          return _showCategoryThree();
+        }else if(item['showType'] == "grid"){
+          return _showCategoryFour();
+        }
+      }
+
+    }
+
+
+  }
 
   //第一分类页面
   _showCategoryOne() {
@@ -804,42 +976,94 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   showCategoryOneItemOne(item) {
-    Offset temp;
+    Offset temp;print(item);
+    if(item['optionGroupVoList'].length >0){
+      //循环option点击事件
+      List<Widget> optionButtons = [];//先建一个数组用于存放循环生成的widget
+      List optionButtonscount = [];//先建一个数组用于存放循环生成的widget
+      for(var itemson in item['optionGroupVoList']) {
+        if(itemson['optionVoList'].length >0){
+          for(var optionSon in itemson['optionVoList']){
+            optionButtonscount.add("test1");
+            optionButtons.add(
+                InkWell(
+                  onTapDown: (details) {
+                    temp = new Offset(
+                        details.globalPosition.dx, details.globalPosition.dy);
+                  },
+                  onTap: () async {
+                    Function callback ;
+                    setState(() {
+                      OverlayEntry entry = OverlayEntry(
+                          builder: (ctx){
+                            return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                          }
+                      );
 
-    return Container(
-      width: ScreenAdapter.width(533),
-      //height: ScreenAdapter.height(480),
-      color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-      child: InkWell(
-          onTapDown: (details) {
-            temp = new Offset(
-                details.globalPosition.dx, details.globalPosition.dy);
-          },
-          onTap: () {
-            Function callback ;
-            setState(() {
-              OverlayEntry entry = OverlayEntry(
-                  builder: (ctx){
+                      callback = (status){
+                        if(status == AnimationStatus.completed){
+                          entry?.remove();
+                        }
+                      };
+                      Overlay.of(rootKey.currentContext).insert(entry);
+                    });
 
-                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
-                  }
-              );
+                    var checked_option = {
+                      "optionCode":optionSon['optionCode'],
+                      "mainTitle":optionSon['mainTitle'],
+                      "currentPrice":optionSon['currentPrice'],
+                      "bounds":optionSon['bounds'],
+                    };
 
-              callback = (status){
-                if(status == AnimationStatus.completed){
-                  entry?.remove();
-                }
-              };
-              Overlay.of(rootKey.currentContext).insert(entry);
-            });
+                    //加入刷新购物车
+                    var cartItem = {
+                      "menuCode": item['menuCode'],
+                      "mainTitle": item['mainTitle'],
+                      "image": item['homeImage'],
+                      "currentPrice":item['currentPrice'],
+                      "optionGroupVoList": json.encode(checked_option),
+                      "goodsNum": 1
+                    };
+                    try {
+                      var result = await controller.addToCart(cartItem,checkItem: false);
+                      controller.getCardList();
+                    } catch (e) {
+                      print(e);
+                    }
+                  },
+                  child: Container(
+                    width: ScreenAdapter.width(110),
+                    height: ScreenAdapter.height(55),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                      image: new DecorationImage(
+                        fit: BoxFit.fitWidth,
+                        image: AssetImage('assets/images/redPutong.png'),
+                      ),
+                      //设置圆角
+                      borderRadius: new BorderRadius.circular((16.0)),
+                    ),
+                    child: Text(optionSon['mainTitle'],
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(29),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                        )),
+                  ),
 
+                )
+            );
+          }
+        }
 
-            //加入刷新购物车
-            print(item);
-            //var result = controller.addToCart(item);
-            //controller.getCardList();
-          },
-        child:Column(
+      }
+print(optionButtonscount);
+
+      return Container(
+        width: ScreenAdapter.width(533),
+        //height: ScreenAdapter.height(480),
+        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -913,24 +1137,168 @@ class _MenuPageState extends State<MenuPage> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.start,
                 crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Container(
-                      width: ScreenAdapter.width(120),
-                      height: ScreenAdapter.height(55),
-                      child:
-                      Image.asset('assets/images/redPutong.png')),
-                  Container(
-                      width: ScreenAdapter.width(120),
-                      height: ScreenAdapter.height(55),
-                      child:
-                      Image.asset('assets/images/redDafen.png')),
-                ],
+                children: optionButtons,
               ),
             ),
           ],
-        )
-      ),
-    );
+        ),
+      );
+    }else{
+      //标签循环相关
+      var subtitleList = item["subtitle"];
+      var labelSubtitleLength = subtitleList.length;
+      List<Widget> labels = [];//先建一个数组用于存放循环生成的widget
+      Widget labelContent;
+      for (var i = 0; i < labelSubtitleLength; i++) {
+        labels.add(
+            Chip(
+              label: Text(subtitleList[i],
+                  style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
+                      color: ColorsUtil.hexToColor(Gcolor.foodTagColor))),
+              labelPadding: EdgeInsets.only(right:ScreenAdapter.width(5), bottom:ScreenAdapter.height(0),left:ScreenAdapter.width(5), top: ScreenAdapter.height(0)),
+              padding:EdgeInsets.only(right:ScreenAdapter.width(5), bottom:ScreenAdapter.height(0),left:ScreenAdapter.width(5), top: ScreenAdapter.height(0)),
+              shape: new RoundedRectangleBorder(
+                side: new BorderSide(
+                  //设置 界面效果
+                    color: ColorsUtil.hexToColor(Gcolor.foodTagColor),
+                    style: BorderStyle.solid,
+                    width: 0.5
+                ),
+              ),
+              backgroundColor:Colors.white70,
+            )
+        );
+      }
+      labelContent = new Wrap(
+          spacing: ScreenAdapter.width(5), // set spacing here
+          runSpacing: ScreenAdapter.height(-20),
+          children: labels
+      );
+
+      return Container(
+        width: ScreenAdapter.width(533),
+        //height: ScreenAdapter.height(480),
+        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+        child: InkWell(
+            onTapDown: (details) {
+              temp = new Offset(
+                  details.globalPosition.dx, details.globalPosition.dy);
+            },
+            onTap: () async {
+              Function callback ;
+              setState(() {
+                OverlayEntry entry = OverlayEntry(
+                    builder: (ctx){
+
+                      return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                    }
+                );
+
+                callback = (status){
+                  if(status == AnimationStatus.completed){
+                    entry?.remove();
+                  }
+                };
+                Overlay.of(rootKey.currentContext).insert(entry);
+              });
+
+
+              //加入刷新购物车
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice":item['currentPrice'],
+                "optionGroupVoList": json.encode(item['optionGroupVoList']),
+                "goodsNum": 1
+              };
+              try {
+                var result = await controller.addToCart(cartItem,checkItem: false);
+                controller.getCardList();
+              } catch (e) {
+                print(e);
+              }
+            },
+            child:Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                    width: ScreenAdapter.width(533),
+                    //height: ScreenAdapter.height(361),
+                    child: Image.asset('assets/images/22.png',
+                        width: ScreenAdapter.width(533),
+                        height: ScreenAdapter.height(361),
+                        fit: BoxFit.fill)),
+                Container(
+                  padding: EdgeInsets.only(
+                    left: ScreenAdapter.width(25),
+                    right: ScreenAdapter.width(25),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Text(
+                        item['mainTitle'],
+                        overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
+                        style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.mainFoodTitle),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor)),
+                      ),
+                      RichText(
+                        text: TextSpan(
+                            text: '  税込 ',
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.mainPriceLift),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                            ),
+                            children: [
+                              TextSpan(
+                                text: item['currentPrice'].toString(),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(
+                                      GFontSize.mainPrice),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.priceColor),
+                                ),
+                              ),
+                              TextSpan(
+                                text: " 円",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(
+                                      GFontSize.mainPriceRight),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.priceColor),
+                                ),
+                              ),
+                            ]),
+                      )
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(
+                    left: ScreenAdapter.width(25),
+                    right: ScreenAdapter.width(25),
+                  ),
+                  child: labelContent,
+                ),
+              ],
+            )
+        ),
+      );
+    }
+
   }
 
   //第二个分类
@@ -1505,7 +1873,7 @@ class _MenuPageState extends State<MenuPage> {
           child: Container(
             color: ColorsUtil.hexToColor(Gcolor.mainBackground),
             //height: 450,
-            child: showCategoryFourItemList(controller.itemsfour),
+            child: showCategoryFourItemList(itemsfour),
           )
       );
     }else{
@@ -1538,13 +1906,13 @@ class _MenuPageState extends State<MenuPage> {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
           },
-          onTap: () {
+          onTap: ()  async {
             Function callback ;
             setState(() {
               OverlayEntry entry = OverlayEntry(
                   builder: (ctx){
 
-                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(60),fit: BoxFit.fitWidth,),callback, duration: 1000,);
+                    return ParabolaAnimateWidget(rootKey,temp,floatOffset, Image(image:NetworkImage(item['homeImage']),width:ScreenAdapter.width(80),fit: BoxFit.fitWidth,),callback, duration: 1000,);
                   }
               );
 
@@ -1557,8 +1925,24 @@ class _MenuPageState extends State<MenuPage> {
             });
 
 
-            print(item);
-            //var result = controller.addToCart(item);
+
+            var cartItem = {
+              "menuCode": item['menuCode'],
+              "mainTitle": item['mainTitle'],
+              "image": item['homeImage'],
+              "currentPrice":item['currentPrice'],
+              "optionGroupVoList": json.encode(item['optionGroupVoList']),
+              "goodsNum": 1
+            };
+            try {
+              var result = await controller.addToCart(cartItem,checkItem: true);
+              controller.getCardList();
+            } catch (e) {
+              print(e);
+            }
+
+            //var result = controller.addToCart(cartItem,checkItem: true);
+
             //controller.getCardList();
           },
           child: Material(
@@ -1691,7 +2075,7 @@ class _MenuPageState extends State<MenuPage> {
                     builder: (_) {
                       if (controller.cartItems.length == 0) {
                         return Center(
-                          child: Text("请选择菜品"),
+                          child: Text(GString.getToString(this._checkLanguage, "cart_tag")),
                         );
                       }
                       return ListView(
@@ -1746,7 +2130,7 @@ class _MenuPageState extends State<MenuPage> {
                       //设置圆角
                       borderRadius: new BorderRadius.circular((16.0)),
                     ),
-                    child: Text("すべてキャンセル",
+                    child: Text(GString.getToString(this._checkLanguage, "cancle_button"),
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(36),
                           fontWeight: FontWeight.w600,
@@ -1772,7 +2156,7 @@ class _MenuPageState extends State<MenuPage> {
                       //设置圆角
                       borderRadius: new BorderRadius.circular((16.0)),
                     ),
-                    child: Text("お会計",
+                    child: Text(GString.getToString(this._checkLanguage, "settlement_button"),
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(48),
                           fontWeight: FontWeight.w600,
@@ -1789,6 +2173,13 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
+    var subTitle;
+    var optionGroupVoList = json.decode(d.optionGroupVoList);
+    if(optionGroupVoList.length >0){
+      for(var i=0; i<optionGroupVoList.length; i++){
+        subTitle +="test-";
+      }
+    }
     return Padding(
       padding: EdgeInsets.all(2.0),
       child: Container(
@@ -1804,7 +2195,7 @@ class _MenuPageState extends State<MenuPage> {
             InkResponse(
               onTap: (){
                 Get.find<HomePageController>()
-                    .removeFromCart(d.shopId ?? 0);
+                    .removeFromCart(d.id ?? 0);
                 print("Item removed from cart successfully");
               },
               child: Container(
@@ -1820,7 +2211,7 @@ class _MenuPageState extends State<MenuPage> {
               width: ScreenAdapter.width(495),
               child: RichText(
                 text: TextSpan(
-                    text: d.name,
+                    text: d.mainTitle,
                     style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(GFontSize.cartListTitle),
                         fontWeight: FontWeight.w600,
@@ -1828,7 +2219,7 @@ class _MenuPageState extends State<MenuPage> {
                         ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
                     children: [
                       TextSpan(
-                        text: " X1",
+                        text: " X${d.goodsNum}",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                           color: ColorsUtil.hexToColor(
@@ -1849,7 +2240,7 @@ class _MenuPageState extends State<MenuPage> {
             Container(
               width: ScreenAdapter.width(120),
               child: Text(
-                d.price.toString(),
+                d.currentPrice.toString(),
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,
@@ -1867,7 +2258,7 @@ class _MenuPageState extends State<MenuPage> {
 
   //清空购物车弹出提示、
   showDialogTag(){
-    AppTool().showCenterTipsAlter(context, _clearCartList, "温馨提示", "您确定要清空购物车?", "确定", "取消");
+    AppTool().showCenterTipsAlter(context, _clearCartList, GString.getToString(this._checkLanguage, "tag_title"), GString.getToString(this._checkLanguage, "tag_content"), GString.getToString(this._checkLanguage, "tag_button_yes"), GString.getToString(this._checkLanguage, "tag_button_no"));
   }
 
   void _clearCartList(value) async {
@@ -1882,255 +2273,7 @@ class _MenuPageState extends State<MenuPage> {
     return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.light,
-        child: Column(
-          key: rootKey,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Container(
-              width: ScreenAdapter.getScreenWidth(),
-              height: ScreenAdapter.height(120),
-              alignment: Alignment.bottomLeft,
-              decoration: BoxDecoration(
-                color: ColorsUtil.hexToColor("#000000"),
-              ),
-              child: Row(
-                children: [
-                  SizedBox(width: ScreenAdapter.width(30)),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        classTag = 1;
-                      });
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(161),
-                      height: ScreenAdapter.height(65),
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: classTag == 1
-                              ? AssetImage(
-                                  'assets/images/category_selected.png')
-                              : AssetImage(
-                                  'assets/images/category_unselected.png'),
-                        ),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '麺',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.categoryTitle),
-                              color: classTag == 1
-                                  ? ColorsUtil.hexToColor(
-                                      Gcolor.categoryTitleSelected)
-                                  : ColorsUtil.hexToColor(Gcolor.categoryTitle),
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(10)),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        classTag = 2;
-                      });
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(161),
-                      height: ScreenAdapter.height(65),
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: classTag == 2
-                              ? AssetImage(
-                                  'assets/images/category_selected.png')
-                              : AssetImage(
-                                  'assets/images/category_unselected.png'),
-                        ),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '小皿中華',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.categoryTitle),
-                              color: classTag == 2
-                                  ? ColorsUtil.hexToColor(
-                                      Gcolor.categoryTitleSelected)
-                                  : ColorsUtil.hexToColor(Gcolor.categoryTitle),
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(10)),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        classTag = 3;
-                      });
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(161),
-                      height: ScreenAdapter.height(65),
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: classTag == 3
-                              ? AssetImage(
-                                  'assets/images/category_selected.png')
-                              : AssetImage(
-                                  'assets/images/category_unselected.png'),
-                        ),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '定食',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.categoryTitle),
-                              color: classTag == 3
-                                  ? ColorsUtil.hexToColor(
-                                      Gcolor.categoryTitleSelected)
-                                  : ColorsUtil.hexToColor(Gcolor.categoryTitle),
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(10)),
-                  InkWell(
-                    onTap: () {
-                      setState(() {
-                        classTag = 4;
-                      });
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(161),
-                      height: ScreenAdapter.height(65),
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: classTag == 4
-                              ? AssetImage(
-                                  'assets/images/category_selected.png')
-                              : AssetImage(
-                                  'assets/images/category_unselected.png'),
-                        ),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '飲み物',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.categoryTitle),
-                              color: classTag == 4
-                                  ? ColorsUtil.hexToColor(
-                                      Gcolor.categoryTitleSelected)
-                                  : ColorsUtil.hexToColor(Gcolor.categoryTitle),
-                              fontWeight: FontWeight.w600),
-                        ),
-                      ),
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(80)),
-                  Container(
-                    alignment: Alignment.centerRight,
-                    width: ScreenAdapter.width(243),
-                    height: ScreenAdapter.height(64),
-                    child: Image.asset('assets/images/logo.png'),
-                  ),
-                ],
-              ),
-            ),
-            (classTag == 1)
-                ? _showCategoryOne()
-                /*Container(
-                    key: rootKey,
-                    height: 450,
-                    child: GetBuilder<HomePageController>(
-                      init: controller,
-                      builder: (_) => showItemList(controller.items),
-                    ),
-                  )*/
-                : Container(
-                    height: 0,
-                  ),
-            (classTag == 2)
-                ? _showCategoryTwo()/*Container(
-                    height: 450,
-                    child: GetBuilder<HomePageController>(
-                      init: controller,
-                      builder: (_) => showItemList(controller.itemstwo),
-                    ),
-                  )*/
-                : Container(
-                    height: 0,
-                  ),
-            (classTag == 3)
-                ? _showCategoryThree()/*Container(
-                    height: 450,
-                    child: GetBuilder<HomePageController>(
-                      init: controller,
-                      builder: (_) => showItemList(controller.itemsthree),
-                    ),
-                  )*/
-                : Container(
-                    height: 0,
-                  ),
-            (classTag == 4)
-                ? _showCategoryFour()/*Container(
-                    height: 450,
-                    child: GetBuilder<HomePageController>(
-                      init: controller,
-                      builder: (_) => showItemList(controller.itemsfour),
-                    ),
-                  )*/
-                : Container(
-                    height: 0,
-                  ),
-
-            //展示购物车
-            _showShoppingCart(),
-
-            //购物车价格总数
-            /*Container(
-              color: Colors.white,
-              child: SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(child: GetBuilder<HomePageController>(
-                      builder: (_) {
-                        return RichText(
-                          text: TextSpan(
-                              text: "Total  ",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 18),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: getItemTotal(controller.cartItems)
-                                        .toString(),
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold))
-                              ]),
-                        );
-                      },
-                    )),
-   
-                  ],
-                ),
-              ),
-            ),*/
-          ],
-        ),
+        child: _listView(context),
       ),
     );
   }

@@ -4,11 +4,7 @@ import 'package:get/get.dart';
 
 class HomePageController extends GetxController {
   ItemServices itemServices = ItemServices();
-  List<ShopItemModel> items = [];
-  List<ShopItemModel> itemstwo = [];
-  List<ShopItemModel> itemsthree = [];
-  List<ShopItemModel> itemsfour = [];
-  List<ShopItemModel> cartItems = [];
+  List cartItems = [];
   List getcartItems = [];
   bool isLoading = true;
 
@@ -17,20 +13,18 @@ class HomePageController extends GetxController {
     // TODO: implement onInit
     super.onInit();
     loadDB();
+
+    getCardList();
   }
 
   loadDB() async {
     await itemServices.openDB();
-    loadItems();print("loadItems234");
+
     getCardList();
   }
 
-  getItem(int id) {
-    return items.singleWhere((element) => element.id == id);
-  }
-
   bool isAlreadyInCart(id) {
-    return cartItems.indexWhere((element) => element.shopId == id) > -1;
+    return cartItems.indexWhere((element) => element.id == id) > -1;
   }
 
   //获取购物车数据
@@ -48,58 +42,30 @@ class HomePageController extends GetxController {
     }
   }
 
-  //获取商品数据
-  loadItems()async{
-    try {
-      isLoading = true;
-      update();
 
-      List list = await itemServices.loadItems();
-      list.forEach((element) {
-        var item = ShopItemModel.fromJson(element);
-        if(item.classid == 1){
-          items.add(item);
-        }else if(item.classid == 2){
-          itemstwo.add(item);
-        }else if(item.classid == 3){
-          itemsthree.add(item);
-        }else if(item.classid == 4){
-          itemsfour.add(item);
-        }
-
-      });
-
-      isLoading = false;
-      update();
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  setToFav(int id, bool flag) async {
-    int index = items.indexWhere((element) => element.id == id);
-
-    items[index].fav = flag;
-    update();
-    try {
-      await itemServices.setItemAsFavourite(id, flag);
-    } catch (e) {
-      print(e);
-    }
-  }
-
-  Future addToCart(ShopItemModel item) async {
+  Future addToCart(item, {bool checkItem = false}) async {
     isLoading = true;
     update();
-    var result = await itemServices.addToCart(item);
+    var result;
+    if(checkItem == true){
+      var checkResult= await itemServices.checkToCartItem(item['menuCode']);
+      if(checkResult.length>0){
+        result = await itemServices.updateToCartNum(item);
+      }else{
+        result = await itemServices.addToCart(item);
+      }
+    }else{
+      result = await itemServices.addToCart(item);
+    }
+
     isLoading = false;
     update();
     return result;
   }
 
-  removeFromCart(int shopId) async {
-    itemServices.removeFromCart(shopId);
-    int index = cartItems.indexWhere((element) => element.shopId == shopId);
+  removeFromCart(int Id) async {
+    itemServices.removeFromCart(Id);
+    int index = cartItems.indexWhere((element) => element.id == Id);
     cartItems.removeAt(index);
     update();
   }

@@ -31,26 +31,14 @@ class SQLService {
 
   createTables() async {
     try {
-      var qry = "CREATE TABLE IF NOT EXISTS shopping ( "
+      var qry = "CREATE TABLE IF NOT EXISTS cart_list ( "
           "id INTEGER PRIMARY KEY,"
-          "name TEXT,"
+          "menuCode TEXT,"
+          "mainTitle TEXT,"
           "image Text,"
-          "price REAL,"
-          "fav INTEGER,"
-          "rating REAL,"
-          "classid INTEGER,"
-          "datetime DATETIME)";
-      await db?.execute(qry);
-      qry = "CREATE TABLE IF NOT EXISTS cart_list ( "
-          "id INTEGER PRIMARY KEY,"
-          "shop_id INTEGER,"
-          "name TEXT,"
-          "image Text,"
-          "price REAL,"
-          "fav INTEGER,"
-          "rating REAL,"
-          "classid INTEGER,"
-          "datetime DATETIME)";
+          "currentPrice INTEGER,"
+          "optionGroupVoList TEXT,"
+          "goodsNum INTEGER)";
 
       await db?.execute(qry);
     } catch (e) {
@@ -59,35 +47,6 @@ class SQLService {
     }
   }
 
-  Future saveRecord(ShopItemModel data) async {
-    await this.db?.transaction((txn) async {
-      var qry =
-          'INSERT INTO shopping(name, price, image,rating,classid,fav) VALUES("${data.name}",${data.price}, "${data.image}",${data.rating},${data.classid},${data.fav ? 1 : 0})';
-      int id1 = await txn.rawInsert(qry);
-      return id1;
-    });
-  }
-
-  Future deleteRecord(String tableName) async {
-    await this.db?.transaction((txn) async {
-      var status = await txn.delete(tableName);
-      return status;
-    });
-  }
-
-  Future setItemAsFavourite(int id, bool flag) async {
-    var query = "UPDATE shopping set fav = ? WHERE id = ?";
-    return await this.db?.rawUpdate(query, [flag ? 1 : 0, id]);
-  }
-
-  Future getItemsRecord() async {
-    try {
-      var list = await db?.rawQuery('SELECT * FROM shopping', []);
-      return list ?? [];
-    } catch (e) {
-      return Future.error(e);
-    }
-  }
 
   Future getCartList() async {
     try {
@@ -98,17 +57,27 @@ class SQLService {
     }
   }
 
+  Future checkItemAsCartList(String menuCode) async {
+    var query = "SELECT * FROM cart_list where menuCode = ${menuCode}";
+    return await this.db?.rawQuery(query);
+  }
+
   Future addToCart(data) async {
     await this.db?.transaction((txn) async {
       var qry =
-          'INSERT INTO cart_list(shop_id, name, price, image,rating,classid,fav) VALUES(${data.id}, "${data.name}",${data.price}, "${data.image}",${data.rating},${data.classid},${data.fav ? 1 : 0})';
+          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,optionGroupVoList,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},"${data["optionGroupVoList"]}",${data["goodsNum"]})';
       int id1 = await txn.rawInsert(qry);
       return id1;
     });
   }
 
-  Future removeFromCart(int shopId) async {
-    var qry = "DELETE FROM cart_list where shop_id = ${shopId}";
+  Future updateToCartNum(data) async {
+    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]} where menuCode = '${data["menuCode"]}'";
+    return await this.db?.rawUpdate(query);
+  }
+
+  Future removeFromCart(int Id) async {
+    var qry = "DELETE FROM cart_list where id = ${Id}";
     return await this.db?.rawDelete(qry);
   }
 

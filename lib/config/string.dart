@@ -1,9 +1,43 @@
 class GString{
-  static const String mainTitle = "谷町君";
-  static const String homeTitle = "首页";
-  static const String memberTitle = "个人中心";
+  //语言包 语言 key
+  static String getToString(String languageCode, String stringTag) {
+    // 语言包
+    var languagePack;
+    if (languageCode == 'jp') {
+      languagePack = {
+        "settlement_button":"お会計",
+        "cancle_button":"すべてキャンセル",
+        "tag_title":"お知らせ",
+        "tag_content":"ショッピングカートを空にします?",
+        "tag_button_yes":"はい",
+        "tag_button_no":"いいえ",
 
-  static const String loading = '加载中';
-  static const String loadReadyText = '上拉加载';
-  static const String loadNoText = '已经到底了';
+        "cart_tag":"メニューをお選びください"
+      };
+    }else if(languageCode == 'zh'){
+      languagePack = {
+        "settlement_button":"结算",
+        "cancle_button":"全部取消",
+        "tag_title":"温馨提示",
+        "tag_content":"您确定要清空购物车?",
+        "tag_button_yes":"确定",
+        "tag_button_no":"取消",
+
+        "cart_tag":"请选择菜品"
+      };
+    }else if(languageCode == 'en'){
+      languagePack = {
+        "settlement_button":"Settlement",
+        "cancle_button":"Cancel all",
+        "tag_title":"Reminder",
+        "tag_content":"Are you sure you want to empty the shopping cart?",
+        "tag_button_yes":"Yes",
+        "tag_button_no":"No",
+
+        "cart_tag":"Please select dishes"
+      };
+    }
+
+    return languagePack[stringTag];
+  }
 }
