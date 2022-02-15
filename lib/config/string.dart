@@ -5,6 +5,7 @@ class GString{
     var languagePack;
     if (languageCode == 'jp') {
       languagePack = {
+        "show_price_front":"税込",
         "settlement_button":"お会計",
         "cancle_button":"すべてキャンセル",
         "tag_title":"お知らせ",
@@ -16,6 +17,7 @@ class GString{
       };
     }else if(languageCode == 'zh'){
       languagePack = {
+        "show_price_front":"含税",
         "settlement_button":"结算",
         "cancle_button":"全部取消",
         "tag_title":"温馨提示",
@@ -27,6 +29,7 @@ class GString{
       };
     }else if(languageCode == 'en'){
       languagePack = {
+        "show_price_front":"Tax included",
         "settlement_button":"Settlement",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
