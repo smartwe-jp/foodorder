@@ -215,14 +215,19 @@ print("获取购物车商品方法");
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Container(
-                width: ScreenAdapter.getScreenWidth(),
-                height: ScreenAdapter.height(120),
-                alignment: Alignment.bottomRight,
-                decoration: BoxDecoration(
-                  color: ColorsUtil.hexToColor("#000000"),
+              width: ScreenAdapter.getScreenWidth(),
+              height: ScreenAdapter.height(120),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+              alignment: Alignment.bottomLeft,
+              decoration: BoxDecoration(
+                color: ColorsUtil.hexToColor("#000000"),
+                image: new DecorationImage(
+                  alignment: Alignment.centerRight,
+                  //fit: BoxFit.fitWidth,
+                  image: AssetImage('assets/images/logo.png'),
                 ),
-                padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
-                child: Image.asset('assets/images/logo.png')),
+              ),
+            ),
 
             //展示购物车
             Expanded(
