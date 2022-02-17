@@ -60,9 +60,9 @@ class _MenuPageState extends State<MenuPage> {
 
   String _machineCode = "";
 
-  var _menuOption; //牛肉面及定食的option数组
-  var _initialMenuOption; //牛肉面及定食的初始option数组
-  var _selectedMenuOptionList; //牛肉面选中的option组成的数组
+  var _menuOption ={}; //牛肉面及定食的option数组
+  var _initialMenuOption ={}; //牛肉面及定食的初始option数组
+  var _selectedMenuOptionList ={}; //牛肉面选中的option组成的数组
 
   @override
   void initState() {
@@ -211,8 +211,7 @@ class _MenuPageState extends State<MenuPage> {
         List myList = response['data']['categoryVoList'];
 
         setState(() {
-          //定位购物车特效
-          _layoutState = LoadState.State_Success;
+
 
           for (var i = 0; i < myList.length; i++) {
             var categoryVoList = myList[i];
@@ -225,8 +224,7 @@ class _MenuPageState extends State<MenuPage> {
 
             //配置顶部菜单默认项
             if (i == 0) classTag = categoryVoList['categoryCode'];
-            showItem[categoryVoList['categoryCode']] =
-                categoryVoList['menuVoList'];
+            showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
 
             /*if(categoryVoList['showType'] == "featured"){
               showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
@@ -254,6 +252,9 @@ class _MenuPageState extends State<MenuPage> {
               showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
               //itemsfour = categoryVoList['menuVoList'];
             }*/
+
+            //定位购物车特效
+            _layoutState = LoadState.State_Success;
           }
         });
       } else {
@@ -543,9 +544,9 @@ class _MenuPageState extends State<MenuPage> {
           return _showCategoryTwo(showItem[classTag]);
         } else if (item['showType'] == "block") {
           var optionList = showItem[classTag];
-          if(optionList !="" && optionList.length>0){
+          if(optionList !=null &&optionList !="" && optionList.length>0){
             for(var i=0; i<optionList.length; i++){
-              (optionList[i]['optionGroupVoList'].length >0) ? publicShowMenuOptionGroup(item['menuCode'], item['optionGroupVoList']):Container(height: 0,);
+              (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
             }
           }
           return  _showCategoryThree(showItem[classTag]);
@@ -698,7 +699,7 @@ class _MenuPageState extends State<MenuPage> {
     //属性循环相关
     var attr = optionGroupVoList;
     List tempArr = [];
-    if(attr.length >0 && attr !="" && attr != null){
+    if(attr != null && attr.length >0 && attr !=""){
       for (var i = 0; i < attr.length; i++) {
         for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
           attr[i]['optionVoList'][j]["checked"] = false;
@@ -710,14 +711,14 @@ class _MenuPageState extends State<MenuPage> {
           }
         }
       }
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        //需要创建的小组件
-        setState(() {
-          _menuOption = {menuCode:attr};
-          _initialMenuOption = {menuCode:tempArr};
-          _selectedMenuOptionList = {menuCode:tempArr};
-        });
+
+      //需要创建的小组件
+      setState(() {
+        _menuOption[menuCode] = attr;
+        _initialMenuOption[menuCode] = tempArr;
+        _selectedMenuOptionList[menuCode] = tempArr;
       });
+      tempArr = [];
     }
 
   }
@@ -967,11 +968,11 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   //定食第三个分类
-  //获取第一个页面的option widget
+  //获取第三个页面的option widget
   _getThreeOptionWidget(menuCode, setFirstState){
     var optionGroupVoList = _menuOption[menuCode];
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
-    if(optionGroupVoList.length >0 && optionGroupVoList != null && optionGroupVoList !=""){
+    if(optionGroupVoList != null && optionGroupVoList.length >0 && optionGroupVoList !=""){
       for (var i = 0; i < optionGroupVoList.length; i++) {
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
@@ -1003,8 +1004,8 @@ class _MenuPageState extends State<MenuPage> {
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(210),
-                        height: ScreenAdapter.height(75),
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
                         decoration: BoxDecoration(
                           image: new DecorationImage(
                             fit: BoxFit.fitWidth,
@@ -1022,13 +1023,13 @@ class _MenuPageState extends State<MenuPage> {
                         opacity: 0.6,//设置透明度
                         child: Container(
                             color: Colors.grey,
-                            width: ScreenAdapter.width(210),
-                            height: ScreenAdapter.height(75),
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
                             //padding: EdgeInsets.all(16.0),
                             alignment:Alignment.center,
                             child: Image.asset(
                               'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(60),
+                              width: ScreenAdapter.width(40),
                               //height: ScreenAdapter.height(75),
                               fit: BoxFit.fitWidth,
                             )
@@ -1052,8 +1053,8 @@ class _MenuPageState extends State<MenuPage> {
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(210),
-                        height: ScreenAdapter.height(75),
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
 
@@ -1069,13 +1070,13 @@ class _MenuPageState extends State<MenuPage> {
                         opacity: 0.6,//设置透明度
                         child: Container(
                             color: Colors.grey,
-                            width: ScreenAdapter.width(210),
-                            height: ScreenAdapter.height(75),
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
                             //padding: EdgeInsets.all(16.0),
                             alignment:Alignment.center,
                             child: Image.asset(
                               'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(60),
+                              width: ScreenAdapter.width(40),
                               //height: ScreenAdapter.height(75),
                               fit: BoxFit.fitWidth,
                             )
@@ -1099,8 +1100,8 @@ class _MenuPageState extends State<MenuPage> {
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(210),
-                        height: ScreenAdapter.height(75),
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
                         decoration: BoxDecoration(
                           image: new DecorationImage(
                             fit: BoxFit.fitWidth,
@@ -1119,13 +1120,13 @@ class _MenuPageState extends State<MenuPage> {
                         opacity: 0.6,//设置透明度
                         child: Container(
                             color: Colors.grey,
-                            width: ScreenAdapter.width(210),
-                            height: ScreenAdapter.height(75),
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
                             //padding: EdgeInsets.all(16.0),
                             alignment:Alignment.center,
                             child: Image.asset(
                               'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(60),
+                              width: ScreenAdapter.width(40),
                               //height: ScreenAdapter.height(75),
                               fit: BoxFit.fitWidth,
                             )
@@ -1156,13 +1157,14 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   //获取第三个页面的widget
-  publicShowThreeMenuOptionGroupWidget(menuCode) {
+  publicShowThreeMenuOptionGroupWidget(menuCode,menuindex) {
     return Container(
       child: StatefulBuilder(
           builder: (BuildContext context, setFirstState){
+            menuindex = setFirstState;
             return Container(
               child: Column(
-                children:  _getThreeOptionWidget(menuCode,setFirstState),
+                children:_getThreeOptionWidget(menuCode,menuindex),
               ),
             );
           }
@@ -1200,44 +1202,7 @@ class _MenuPageState extends State<MenuPage> {
         height: ScreenAdapter.height(1480),
         child: ListView(
           children: [
-           /* InkWell(
-              onTapDown: (details) {
-                temp = new Offset(
-                    details.globalPosition.dx, details.globalPosition.dy);
-                RenderBox renderBox =
-                    floatKey.currentContext.findRenderObject();
-                floatOffset = renderBox.localToGlobal(Offset.zero);
-              },
-              onTap: () {
-                Function callback;
-                setState(() {
-                  OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                    return ParabolaAnimateWidget(
-                      rootKey,
-                      temp,
-                      floatOffset,
-                      itemsFirst['homeImage'],
-                      callback,
-                      duration: 1000,
-                    );
-                  });
 
-                  callback = (status) {
-                    if (status == AnimationStatus.completed) {
-                      entry?.remove();
-                    }
-                  };
-                  Overlay.of(rootKey.currentContext).insert(entry);
-                });
-
-                //加入刷新购物车
-                //print(itemsFirst);
-                //var result = controller.addToCart(item);
-                //controller.getCardList();
-              },
-              child:
-                  publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 680.0),
-            ),*/
             publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 680.0),
             Container(
               color: ColorsUtil.hexToColor(Gcolor.whiteColor),
@@ -1250,7 +1215,7 @@ class _MenuPageState extends State<MenuPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  publicShowMenuOptionGroupWidget(itemsFirst['menuCode']),
+                  (itemsFirst['optionGroupVoList']?.length >0)?publicShowMenuOptionGroupWidget(itemsFirst['menuCode']) : Container(height: 0,),
                   /*Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,
@@ -1954,14 +1919,14 @@ class _MenuPageState extends State<MenuPage> {
       child: ListView.builder(
         shrinkWrap: true,
         itemBuilder: (BuildContext context, int index) {
-          return showCategoryThreeItemOne(items[index]);
+          return showCategoryThreeItemOne(items[index],index);
         },
         itemCount: items.length,
       ),
     );
   }
 
-  showCategoryThreeItemOne(item) {
+  showCategoryThreeItemOne(item,index) {
     Offset temp;
 
     //(item['optionGroupVoList'].length >0) ? publicShowMenuOptionGroup(item['menuCode'], item['optionGroupVoList']):Container(height: 0,);
@@ -1985,10 +1950,10 @@ class _MenuPageState extends State<MenuPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     publicShowMenuImage(item['homeImage'], 485.0, 315.0),
-
+                    (item['optionGroupVoList']?.length >0) ? publicShowThreeMenuOptionGroupWidget(item['menuCode'],"menu$index"):Container(height: 0,),
                   ],
                 ),
-                (item['optionGroupVoList'].length >0) ? publicShowThreeMenuOptionGroupWidget(item['menuCode']):Container(height: 0,),
+
                 /*Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.end,

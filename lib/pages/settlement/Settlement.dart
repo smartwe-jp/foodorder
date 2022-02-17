@@ -86,7 +86,7 @@ print("获取购物车商品方法");
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor))),
-              Text('¥1,480',
+              Text('${getItemTotal(controller.cartItems).toString()}',
                   style: TextStyle(
                       fontSize:
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
@@ -122,6 +122,14 @@ print("获取购物车商品方法");
         ],
       ),
     );
+  }
+
+  getItemTotal(List items) {
+    int sum = 0;
+    items.forEach((e) {
+      sum += e.currentPrice;
+    });
+    return "¥$sum";
   }
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
