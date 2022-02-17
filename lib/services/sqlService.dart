@@ -72,7 +72,7 @@ class SQLService {
   }
 
   Future updateToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]} where menuCode = '${data["menuCode"]}'";
+    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["currentPrice"]} where menuCode = '${data["menuCode"]}'";
     return await this.db?.rawUpdate(query);
   }
 

@@ -10,14 +10,14 @@ class ParabolaAnimateWidget extends StatefulWidget{
   final GlobalKey rootKey;
   final Offset startOffset;
   final Offset endOffset;
-  final Widget animateWidget;
+  final String animateImgUrl;
   final Function animateCallback;
   final int duration;
   final double controlRatio;
 
 
-  ParabolaAnimateWidget(this.rootKey,this.startOffset,this.endOffset,this.animateWidget,this.animateCallback,{int duration = -1,double controlRatio})
-      : this.duration = duration,this.controlRatio = controlRatio,assert(animateWidget != null);
+  ParabolaAnimateWidget(this.rootKey,this.startOffset,this.endOffset,this.animateImgUrl,this.animateCallback,{int duration = -1,double controlRatio})
+      : this.duration = duration,this.controlRatio = controlRatio,assert(animateImgUrl != null);
 
 
   @override
@@ -125,8 +125,15 @@ class _ParabolaAnimateWidgetState extends State<ParabolaAnimateWidget> with Sing
       left: widgetLeft,
       top: widgetTop,
       child: Opacity(
-        opacity: 0.6,
-        child: widget.animateWidget,
+        opacity: 0.8,
+        //child: widget.animateWidget,
+        child: ClipOval(
+          child: Image.network(
+            widget.animateImgUrl,
+            width: 100,
+            height: 100,
+          ),
+        ),
       ),
     );
   }

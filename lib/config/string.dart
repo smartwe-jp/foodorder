@@ -13,7 +13,9 @@ class GString{
         "tag_button_yes":"はい",
         "tag_button_no":"いいえ",
 
-        "cart_tag":"メニューをお選びください"
+        "cart_tag":"メニューをお選びください",
+
+        "add_option_cart":"確認"
       };
     }else if(languageCode == 'zh'){
       languagePack = {
@@ -25,7 +27,9 @@ class GString{
         "tag_button_yes":"确定",
         "tag_button_no":"取消",
 
-        "cart_tag":"请选择菜品"
+        "cart_tag":"请选择菜品",
+
+        "add_option_cart":"确认"
       };
     }else if(languageCode == 'en'){
       languagePack = {
@@ -37,7 +41,9 @@ class GString{
         "tag_button_yes":"Yes",
         "tag_button_no":"No",
 
-        "cart_tag":"Please select dishes"
+        "cart_tag":"Please select dishes",
+
+        "add_option_cart":"Confirm"
       };
     }
 

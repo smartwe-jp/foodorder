@@ -14,6 +14,7 @@ import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 import 'package:http/http.dart' as http;
+import 'package:foodorder/services/Storage.dart';
 
 import 'config/index.dart';
 
@@ -83,29 +84,16 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-
-  //保存最新数据到本地数据库
-  loaddata() async {
-    await sqlHelper.open();
-    var res = await http.get(url);
-    List l = jsonDecode(res.body);print(l);
-    l.forEach((e) async=>await sqlHelper.insert(e));
-
-    Future.delayed(Duration(milliseconds: 600)).then((e) {
-      _goMain();
-    });
-  }
-
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
-    //var isFirst = await HomeServices.getOpenFirstState();
-    //if(isFirst == true){
+    var isFirst = await HomeServices.getOpenFirstState();
+    if(isFirst == true){
 
 
       _goMain();
       //loaddata();
 
-    //}
+    }
   }
 
   void _goMain() async {
@@ -121,36 +109,21 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  //发送邮件
+  //把机器码保存到本地
   sendActivationCode() async {
-    //loaddata();
-    /*if (this._activation_code == null ||
+
+    if (this._activation_code == null ||
         this._activation_code.length <= 0) {
       showToast('请输入正确激活码');
     } else {
 
-      var formData = {
-        "accountHistoryId": this._activation_code,
-      };
-      request('voucherToMail',
-          method: 'GET',
-          parameters: formData)
-          .then((val) {
-        var response = json.decode(val.toString());
 
-        if (response["code"] == 200) {
-          //showToast('发送成功，可能需要几分钟，请注意查收');
-          //Navigator.pop(context);
-          _goMain();
-        } else if (response["code"] == 4001) {
-          showToast('服务正在更新，请过几分钟再试重试');
-        } else if (response["code"] == 401 || response["code"] == 403) {
-          showToast('授权失败，请尝试重新登录');
-        } else {
-          showToast('送失败，请检查邮箱地址后重试');
-        }
-      });
-    }*/
+      //保存机器信息
+      Storage.setString('machineInfo', _activation_code);
+      Storage.setBool('homeOpen', true);
+
+      _goMain();
+    }
   }
 
 
@@ -192,11 +165,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       ),
                     )
                 ),
-                /*onChanged: (value) {
+                onChanged: (value) {
                   setState(() {
                     this._activation_code = value;
                   });
-                },*/
+                },
               ),),
             Divider(
               thickness: 1.0,

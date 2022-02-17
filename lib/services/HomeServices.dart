@@ -11,4 +11,15 @@ class HomeServices{
       }
       return false;
   }
+
+  static getMachineInfo() async{
+    String machineinfo;
+    try {
+      String machineInfoData = await Storage.getString('machineInfo');
+      machineinfo = machineInfoData;
+    } catch (e) {
+      machineinfo = "";
+    }
+    return machineinfo;
+  }
 }
