@@ -32,7 +32,7 @@ class SQLService {
   createTables() async {
     try {
       var qry = "CREATE TABLE IF NOT EXISTS cart_list ( "
-          "id INTEGER AUTO_INCREMENT PRIMARY KEY,"
+          "id INTEGER PRIMARY KEY,"
           "menuCode TEXT,"
           "mainTitle TEXT,"
           "image Text,"

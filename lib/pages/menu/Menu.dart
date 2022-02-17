@@ -49,7 +49,7 @@ class _MenuPageState extends State<MenuPage> {
   var classTag;
 
   //默认语言包选择
-  var _checkLanguage = "jp";
+  var _checkLanguage = "JP";
 
   final sqlHelper = SqfliteHelper();
 
@@ -286,211 +286,6 @@ class _MenuPageState extends State<MenuPage> {
     return checkResult;
   }
 
-  //循环列表
-/*  showItemList(items) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: GridView.builder(
-        shrinkWrap: true,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, childAspectRatio: 0.8),
-        itemBuilder: (BuildContext context, int index) {
-          return showItemOne(items[index]);
-        },
-        itemCount: items.length,
-      ),
-    );
-  }
-
-  showItemOne(item) {
-    Offset temp;
-
-    return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: InkWell(
-          onTapDown: (details) {
-            temp = new Offset(
-                details.globalPosition.dx, details.globalPosition.dy);
-          },
-          onTap: () {
-            //Navigator.push(
-                //context,
-                //MaterialPageRoute( builder: (context) => ItemDetailPage(itemId: item.id)));
-            print(item);
-            var result = controller.addToCart(item);
-            print("8888888888888----$result");
-            controller.getCardList();
-          },
-          child: Material(
-            child: Container(
-                height: ScreenAdapter.height(380),
-                padding: EdgeInsets.all(5.0),
-                decoration: BoxDecoration(
-                    color: Colors.white,
-                    shape: BoxShape.rectangle,
-                    boxShadow: [
-                      BoxShadow(color: Colors.black12, blurRadius: 8.0)
-                    ]),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      height: ScreenAdapter.height(180),
-                      child: Padding(
-                        padding: EdgeInsets.all(10.0),
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Expanded(
-                              child: Container(
-                                width: 30,
-                                height: 50,
-                                child: CachedNetworkImage(
-                                  imageUrl: item.image,
-                                  progressIndicatorBuilder:
-                                      (context, url, downloadProgress) =>
-                                          CircularProgressIndicator(
-                                              value: downloadProgress.progress),
-                                  errorWidget: (context, url, error) =>
-                                      Icon(Icons.error),
-                                ),
-                              ),
-                            ),
-                            Container(
-                              child: item.fav
-                                  ? Icon(
-                                      Icons.favorite,
-                                      size: 20.0,
-                                      color: Colors.red,
-                                    )
-                                  : Icon(
-                                      Icons.favorite_border,
-                                      size: 20.0,
-                                    ),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                    SizedBox(
-                      height: 10.0,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Text(
-                        "${item.name}",
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 15.0,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.only(left: 10.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Padding(
-                            padding: EdgeInsets.only(right: 10.0),
-                            child: Text(
-                              "\$${item.price.toString()}",
-                              style: TextStyle(fontWeight: FontWeight.w500),
-                            ),
-                          )
-                        ],
-                      ),
-                    )
-                  ],
-                )),
-          )),
-    );
-  }
-
-  getItemTotal(List<ShopItemModel> items) {
-    double sum = 0.0;
-    items.forEach((e) {
-      sum += e.price;
-    });
-    return "\$$sum";
-  }
-
-  Widget generateCart(BuildContext context, ShopItemModel d) {
-    return Padding(
-      padding: EdgeInsets.all(5.0),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white12,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey.shade100, width: 1.0),
-              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-            )),
-        height: 100.0,
-        child: Row(
-          children: <Widget>[
-            Container(
-              alignment: Alignment.topLeft,
-              height: 100.0,
-              width: 100.0,
-              decoration: BoxDecoration(
-                  boxShadow: [
-                    BoxShadow(color: Colors.black12, blurRadius: 5.0)
-                  ],
-                  borderRadius: BorderRadius.only(
-                      topRight: Radius.circular(10.0),
-                      bottomRight: Radius.circular(10.0)),
-                  image: DecorationImage(
-                      image: NetworkImage(d.image), fit: BoxFit.fitHeight)),
-            ),
-            Expanded(
-                child: Padding(
-              padding: EdgeInsets.only(top: 10.0, left: 15.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          d.name,
-                          style: TextStyle(
-                              fontWeight: FontWeight.w600, fontSize: 15.0),
-                        ),
-                      ),
-                      Container(
-                        alignment: Alignment.bottomRight,
-                        child: InkResponse(
-                          onTap: () {
-                            Get.find<HomePageController>()
-                                .removeFromCart(d.shopId ?? 0);
-                            print("Item removed from cart successfully");
-
-                          },
-                          child: Padding(
-                            padding: EdgeInsets.only(right: 10.0),
-                            child: Icon(
-                              Icons.remove_circle,
-                              color: Colors.red,
-                            ),
-                          ),
-                        ),
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 5.0,
-                  ),
-                  Text("Price ${d.price.toString()}"),
-                ],
-              ),
-            ))
-          ],
-        ),
-      ),
-    );
-  }*/
-
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
@@ -552,6 +347,15 @@ class _MenuPageState extends State<MenuPage> {
           return  _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
           return _showCategoryFour(showItem[classTag]);
+        }
+        else if (item['showType'] == "waterfall") {
+          var optionList = showItem[classTag];
+          if(optionList !=null &&optionList !="" && optionList.length>0){
+            for(var i=0; i<optionList.length; i++){
+              (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
+            }
+          }
+          return _showCategoryFive(showItem[classTag]);
         }
       }
     }
@@ -1172,6 +976,210 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  //定食第五个分类
+  //获取第五个页面的option widget
+  _getFiveOptionWidget(menuCode, setFirstState){
+    var optionGroupVoList = _menuOption[menuCode];
+    List<Widget> options = []; //先建一个数组用于存放循环生成的widget
+    if(optionGroupVoList != null && optionGroupVoList.length >0 && optionGroupVoList !=""){
+      for (var i = 0; i < optionGroupVoList.length; i++) {
+        List<Widget> optionSons = [];
+        var optionVoList = optionGroupVoList[i]['optionVoList'];
+        options.add(Row(
+          children: [
+            Text(
+              optionGroupVoList[i]['groupName'],
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(18.0),
+                color: ColorsUtil.hexToColor(
+                    Gcolor.mainTitleColor),
+              ),
+            ),
+          ],
+        ));
+
+        for (var j = 0; j < optionVoList.length; j++) {
+          var optionVolistSon = optionVoList[j];
+
+
+          if (optionVolistSon['homeImage'] != "") {
+            optionSons.add(Container(
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              child: InkWell(
+                onTap: (){
+                  _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
+
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
+                        decoration: BoxDecoration(
+                          image: new DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: NetworkImage(optionVolistSon['homeImage']),
+                          ),
+                        ),
+                        child: Text(optionVolistSon['mainTitle'])
+                    ),
+                    //绝对定位 盖章
+                    (optionVolistSon['checked'] == true)
+                        ? Positioned(
+                      left: ScreenAdapter.width(0),
+                      top: ScreenAdapter.height(0),
+                      child: Opacity(
+                        opacity: 0.6,//设置透明度
+                        child: Container(
+                            color: Colors.grey,
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
+                            //padding: EdgeInsets.all(16.0),
+                            alignment:Alignment.center,
+                            child: Image.asset(
+                              'assets/images/optionChecked.png',
+                              width: ScreenAdapter.width(40),
+                              //height: ScreenAdapter.height(75),
+                              fit: BoxFit.fitWidth,
+                            )
+                        ),
+                      ),
+                    )
+                        : Container(
+                      height: 0,
+                    ),
+                  ],
+                ),
+              ),
+            ));
+          }else if(optionVolistSon['buttonColorValue'] != ""){
+            optionSons.add(Container(
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              child: InkWell(
+                onTap: (){
+                  _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+
+                        ),
+                        child: Text(optionVolistSon['mainTitle'])
+                    ),
+                    //绝对定位 盖章
+                    (optionVolistSon['checked'] == true)
+                        ? Positioned(
+                      left: ScreenAdapter.width(0),
+                      top: ScreenAdapter.height(0),
+                      child: Opacity(
+                        opacity: 0.6,//设置透明度
+                        child: Container(
+                            color: Colors.grey,
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
+                            //padding: EdgeInsets.all(16.0),
+                            alignment:Alignment.center,
+                            child: Image.asset(
+                              'assets/images/optionChecked.png',
+                              width: ScreenAdapter.width(40),
+                              //height: ScreenAdapter.height(75),
+                              fit: BoxFit.fitWidth,
+                            )
+                        ),
+                      ),
+                    )
+                        : Container(
+                      height: 0,
+                    ),
+                  ],
+                ),
+              ),
+            ));
+          }else{
+            optionSons.add(Container(
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              child: InkWell(
+                onTap: (){
+                  _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
+                },
+                child: Stack(
+                  children: [
+                    Container(
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(55),
+                        decoration: BoxDecoration(
+                          image: new DecorationImage(
+                            fit: BoxFit.fitWidth,
+                            image: AssetImage('assets/images/ximian1.png'),
+                          ),
+
+                        ),
+                        child: Text(optionVolistSon['mainTitle'])
+                    ),
+                    //绝对定位 盖章
+                    (optionVolistSon['checked'] == true)
+                        ? Positioned(
+                      left: ScreenAdapter.width(0),
+                      top: ScreenAdapter.height(0),
+                      child: Opacity(
+                        opacity: 0.6,//设置透明度
+                        child: Container(
+                            color: Colors.grey,
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(55),
+                            //padding: EdgeInsets.all(16.0),
+                            alignment:Alignment.center,
+                            child: Image.asset(
+                              'assets/images/optionChecked.png',
+                              width: ScreenAdapter.width(40),
+                              //height: ScreenAdapter.height(75),
+                              fit: BoxFit.fitWidth,
+                            )
+                        ),
+                      ),
+                    )
+                        : Container(
+                      height: 0,
+                    ),
+                  ],
+                ),
+              ),
+            ));
+          }
+
+        }
+        options.add(Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: optionSons,
+        ));
+      }
+    }
+
+
+
+    return options;
+  }
+
+  //获取第五个页面的widget
+  publicShowFiveMenuOptionGroupWidget(menuCode,menuindex) {
+    return Container(
+      child: StatefulBuilder(
+          builder: (BuildContext context, setFirstState){
+            menuindex = setFirstState;
+            return Container(
+              child: Column(
+                children:_getFiveOptionWidget(menuCode,menuindex),
+              ),
+            );
+          }
+      ),
+    );
+  }
 
   //第一分类页面
   _showCategoryOne(showItemList) {
@@ -1185,16 +1193,16 @@ class _MenuPageState extends State<MenuPage> {
     if (items.length > 0) {
       itemsFirst = items[0];
 
-      if (items.length > 1) {
+      /*if (items.length > 1) {
         for (var m = 0; m < items.length; m++) {
           if (m > 0) {
             itemsTree.add(items[m]);
           }
         }
-      }
+      }*/
     }
 
-    if (items.length > 0) {
+    if (itemsFirst != null) {
       publicShowMenuOptionGroup(itemsFirst['menuCode'], itemsFirst['optionGroupVoList']);
       return Expanded(
           child: Container(
@@ -1355,6 +1363,12 @@ class _MenuPageState extends State<MenuPage> {
 
                       //确认按钮
                       InkWell(
+                        onTapDown: (details) {
+                          temp = new Offset(
+                              details.globalPosition.dx, details.globalPosition.dy);
+                          RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                          floatOffset = renderBox.localToGlobal(Offset.zero);
+                        },
                         onTap: () {
                           Function callback;
                           //判断选择后option是否与optiongroup相等
@@ -1523,8 +1537,7 @@ class _MenuPageState extends State<MenuPage> {
                   "goodsNum": 1
                 };
                 try {
-                  var result =
-                      await controller.addToCart(cartItem, checkItem: false);
+                  var result = await controller.addToCart(cartItem, checkItem: false);
                   controller.getCardList();
                 } catch (e) {
                   print(e);
@@ -1696,7 +1709,7 @@ class _MenuPageState extends State<MenuPage> {
     }
   }
 
-  //第二个分类
+  //第二个分类 小菜
   _showCategoryTwo(showItemList) {
     if (showItemList.length > 0) {
       return Expanded(
@@ -1859,53 +1872,18 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
-  //第三个分类
+  //第三个分类 定食
   _showCategoryThree(showItemList) {
     if (showItemList.length > 0) {
       return Expanded(
-          child: Column(
-        children: [
-          Container(
-            width: ScreenAdapter.width(1080),
-            alignment: Alignment.bottomLeft,
-            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            padding: EdgeInsets.only(
-                left: ScreenAdapter.width(30),
-                top: ScreenAdapter.height(40),
-                bottom: ScreenAdapter.height(20)),
-            child: RichText(
-              text: TextSpan(
-                  text: '定食メニュ ',
-                  style: TextStyle(
-                    fontSize:
-                        ScreenAdapter.fontSize(GFontSize.menuThreeListTitle),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "（11：00-14：00）",
-                      style: TextStyle(
-                        fontSize:
-                            ScreenAdapter.fontSize(GFontSize.menuThreeListTag),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                      ),
-                    ),
-                  ]),
-            ),
-          ),
-          Expanded(
-              child: Container(
-            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            padding: EdgeInsets.only(
-                left: ScreenAdapter.width(15),
-                right: ScreenAdapter.width(15),
-                bottom: ScreenAdapter.height(20)),
-            //height: 450,
-            child: showCategoryThreeItemList(showItemList),
-          )),
-        ],
+          child: Container(
+        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+        padding: EdgeInsets.only(
+            left: ScreenAdapter.width(15),
+            right: ScreenAdapter.width(15),
+            bottom: ScreenAdapter.height(20)),
+        //height: 450,
+        child: showCategoryThreeItemList(showItemList),
       ));
     } else {
       return Container(
@@ -2111,6 +2089,12 @@ class _MenuPageState extends State<MenuPage> {
 
                           //确认按钮
                           InkWell(
+                            onTapDown: (details) {
+                              temp = new Offset(
+                                  details.globalPosition.dx, details.globalPosition.dy);
+                              RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                              floatOffset = renderBox.localToGlobal(Offset.zero);
+                            },
                             onTap: () {
                               Function callback;
                               //判断选择后option是否与optiongroup相等
@@ -2364,6 +2348,208 @@ class _MenuPageState extends State<MenuPage> {
     );
   }
 
+  //第五个分类 期间限定
+  _showCategoryFive(showItemList) {
+    if (showItemList.length > 0) {
+      return Expanded(
+          child: Container(
+            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+            padding: EdgeInsets.only(
+                left: ScreenAdapter.width(15),
+                right: ScreenAdapter.width(15),
+                bottom: ScreenAdapter.height(20)),
+            //height: 450,
+            child: showCategoryFiveItemList(showItemList),
+          ));
+    } else {
+      return Container(
+        height: 0,
+      );
+    }
+  }
+
+  showCategoryFiveItemList(items) {
+    return Container(
+      child: ListView.builder(
+        shrinkWrap: true,
+        itemBuilder: (BuildContext context, int index) {
+          return showCategoryFiveItemOne(items[index],index);
+        },
+        itemCount: items.length,
+      ),
+    );
+  }
+
+  showCategoryFiveItemOne(item,index) {
+    Offset temp;
+
+    //(item['optionGroupVoList'].length >0) ? publicShowMenuOptionGroup(item['menuCode'], item['optionGroupVoList']):Container(height: 0,);
+
+    var subtitle = "";
+    if (item["subtitle"].length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
+
+    return Container(
+      padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+      child: Material(
+        child: Container(
+          //height: ScreenAdapter.height(280),
+          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+          child: Column(
+            children: [
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  publicShowMenuImage(item['homeImage'], 485.0, 315.0),
+                  (item['optionGroupVoList']?.length >0) ? publicShowFiveMenuOptionGroupWidget(item['menuCode'],"menu$index"):Container(height: 0,),
+                ],
+              ),
+
+              //标题价格
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        //菜单Title
+                        Container(
+                          width: ScreenAdapter.width(180),
+                          child: publicShowMenuTitle(item['mainTitle'], 42.0, Gcolor.mainTitleColor),
+                        ),
+                        //副标题
+                        subtitle != ""
+                            ? Container(
+                          width: ScreenAdapter.width(180),
+                          alignment: Alignment.center,
+                          child: Text(
+                            '${subtitle}',
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(
+                                    GFontSize
+                                        .menuThreeListFoodSubtitle),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.mainTitleColor)),
+                          ),
+                        )
+                            : Container(
+                          width: ScreenAdapter.width(500),
+                        ),
+
+                        //价格展示
+                        publicShowMenuPrice(
+                            item['currentPrice'],
+                            35.0,
+                            Gcolor.mainTitleColor,
+                            55.0,
+                            Gcolor.priceColor,
+                            28.0,
+                            Gcolor.mainTitleColor),
+
+                        //确认按钮
+                        InkWell(
+                          onTapDown: (details) {
+                            temp = new Offset(
+                                details.globalPosition.dx, details.globalPosition.dy);
+                            RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                            floatOffset = renderBox.localToGlobal(Offset.zero);
+                          },
+                          onTap: () {
+                            Function callback;
+                            //判断选择后option是否与optiongroup相等
+                            if(_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length){
+                              showToast('请选择面选项');
+                              return;
+                            }
+                            var currentPrice = item['currentPrice'];
+                            var optionCodeList = "";
+                            var optionTitle = "";
+                            for(var optionItem in _selectedMenuOptionList[item['menuCode']]){
+                              if(optionItem['currentPrice'] >0){
+                                currentPrice += optionItem['currentPrice'];
+
+                              }
+                              optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
+                              optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
+                            }
+
+                            var cartItem = {
+                              "menuCode": item['menuCode'],
+                              "mainTitle": item['mainTitle'],
+                              "image": item['homeImage'],
+                              "currentPrice": currentPrice,
+                              "optionGroupVoList": optionCodeList,
+                              "optionVoListMsg":optionTitle,
+                              "goodsNum": 1
+                            };
+                            publicAddCartMenu(cartItem, false).then((val) {
+                              setState(() {
+                                OverlayEntry entry = OverlayEntry(builder: (ctx) {
+                                  return ParabolaAnimateWidget(
+                                    rootKey,
+                                    temp,
+                                    floatOffset,
+                                    item['homeImage'],
+                                    callback,
+                                    duration: 1000,
+                                  );
+                                });
+
+                                callback = (status) {
+                                  if (status == AnimationStatus.completed) {
+                                    entry?.remove();
+                                  }
+                                };
+                                Overlay.of(rootKey.currentContext).insert(entry);
+
+                                //将选中option还原为默认
+                                _selectedMenuOptionList[item['menuCode']] = _initialMenuOption[item['menuCode']];
+                              });
+                            });
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(260),
+                            height: ScreenAdapter.height(87),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: new DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage('assets/images/btn002.png'),
+                              ),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text(
+                                GString.getToString(
+                                    this._checkLanguage, "add_option_cart"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(32),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.settlementBtnColor),
+                                )),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+
+
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   //购物车
   _showShoppingCart() {
     return Container(
@@ -2462,7 +2648,7 @@ class _MenuPageState extends State<MenuPage> {
                 SizedBox(height: ScreenAdapter.height(18)),
                 InkWell(
                   onTap: () {
-                    Navigator.pushNamed(context, '/settlement');
+                    Navigator.pushNamed(context, '/settlement',arguments: {"checkLanguage": this._checkLanguage});
                   },
                   child: Container(
                     width: ScreenAdapter.width(319),
@@ -2519,6 +2705,7 @@ class _MenuPageState extends State<MenuPage> {
               onTap: () {
                 Get.find<HomePageController>().removeFromCart(d.id ?? 0);
                 print("Item removed from cart successfully");
+                controller.getCardList();
               },
               child: Container(
                 width: ScreenAdapter.width(40),

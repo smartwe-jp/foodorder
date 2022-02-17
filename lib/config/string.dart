@@ -3,7 +3,7 @@ class GString{
   static String getToString(String languageCode, String stringTag) {
     // 语言包
     var languagePack;
-    if (languageCode == 'jp') {
+    if (languageCode == 'JP') {
       languagePack = {
         "show_price_front":"税込",
         "settlement_button":"お会計",
@@ -17,7 +17,7 @@ class GString{
 
         "add_option_cart":"確認"
       };
-    }else if(languageCode == 'zh'){
+    }else if(languageCode == 'CH'){
       languagePack = {
         "show_price_front":"含税",
         "settlement_button":"结算",
@@ -31,7 +31,7 @@ class GString{
 
         "add_option_cart":"确认"
       };
-    }else if(languageCode == 'en'){
+    }else if(languageCode == 'EN'){
       languagePack = {
         "show_price_front":"Tax included",
         "settlement_button":"Settlement",

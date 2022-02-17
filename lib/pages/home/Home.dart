@@ -46,7 +46,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "jp"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP"});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -73,7 +73,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "zh"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH"});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -100,7 +100,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "en"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN"});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),

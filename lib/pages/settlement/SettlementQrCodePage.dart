@@ -4,6 +4,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/services/HomeServices.dart';
+import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 
 class SettlementQrCodePage extends StatefulWidget {
@@ -18,19 +20,66 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
   TextEditingController _scanQrCodeController;
   final FocusNode _scanQrCodeFocusNode = FocusNode();
 
-  var _paymentMethod;
+  var _paymentType;
+  var _orderId;
   var _scanQrCode = "";
+  String _machineCode = "";
+  String _payStatus = "请扫码……";
+
 
   @override
   void initState() {
     super.initState();
 
-    this._paymentMethod = widget.arguments['paymentMethod'];
-
+    this._paymentType = widget.arguments['paymentType'];
+    this._orderId = widget.arguments['orderId'];
+    _getMachineInfo();
     _scanQrCodeController = TextEditingController();
 
 
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+  }
+
+  //获取机器信息
+  _getMachineInfo() async {
+    var machineCode = await HomeServices.getMachineInfo();
+    if (machineCode != "") {
+      setState(() {
+        _machineCode = machineCode;
+      });
+    }
+  }
+
+  _doToPay(){
+    if (_machineCode != "" && _scanQrCode !="") {
+
+      var formData = {
+        "auth_code": this._scanQrCode,
+        "machineCode": _machineCode,
+        "orderId": this._orderId,
+        "payType": this._paymentType
+      };print(formData);
+      request('webBootToPay', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+
+        if (response['code'] == 200) {
+          if(response['data'] == true){
+            setState(() {
+              _payStatus = "支付成功，等待打印小票";
+            });
+          }else{
+            _payStatus = "支付失败请重试";
+          }
+print(response);
+
+          setState(() {
+          });
+        } else {
+
+        }
+      });
+
+    }
   }
 
   @override
@@ -110,12 +159,25 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
                             setState(() {
                               this._scanQrCode = value;
                             });
+                            _doToPay();
                             print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
                           },
 
                           /// 扫码密码
                         )),
                       ],
+                    ),
+                  ),
+
+                  Container(
+                    padding: EdgeInsets.only(left:ScreenAdapter.width(48), top:ScreenAdapter.height(0), right:ScreenAdapter.width(48), bottom:ScreenAdapter.height(4)),
+
+                    child: Center(
+                        child: Text(_payStatus,style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(38.0),
+                            fontWeight: FontWeight.w600,
+                            color: Colors.red
+                        ))
                     ),
                   ),
 

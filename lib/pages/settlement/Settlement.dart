@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 
@@ -9,6 +10,8 @@ import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
+import 'package:foodorder/services/HomeServices.dart';
+import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +19,8 @@ import 'SettlementCashPage.dart';
 import 'SettlementQrCodePage.dart';
 
 class SettlementPage extends StatefulWidget {
-  SettlementPage({Key key}) : super(key: key);
+  Map arguments;
+  SettlementPage({Key key, this.arguments}) : super(key: key);
 
   _SettlementPageState createState() => _SettlementPageState();
 }
@@ -26,11 +30,19 @@ class _SettlementPageState extends State<SettlementPage> {
 
   bool checkboxSelected = true;
 
+  String _machineCode = "";
+
+  //默认语言包选择
+  var _checkLanguage = "JP";
+
   @override
   void initState() {
     super.initState();
-print("获取购物车商品方法");
-    print(controller.getcartItems);
+
+
+    this._checkLanguage = widget.arguments['checkLanguage'];
+    _getMachineInfo();
+
     /*
     * [{id: 31, shop_id: 17, name: Shoefly 99999, image: https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70, price: 200.0, fav: 0, rating: 4.9, classid: 4, datetime: null}, {id: 33, shop_id: 4, name: Running Shoe Brooks Highly, image: https://cdn.pixabay.com/photo/2014/06/18/18/42/running-shoe-371625_960_720.jpg, price: 3001.0, fav: 0, rating: 3.5, classid: 2, datetime: null}]*/
   }
@@ -39,6 +51,16 @@ print("获取购物车商品方法");
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  //获取机器信息
+  _getMachineInfo() async {
+    var machineCode = await HomeServices.getMachineInfo();
+    if (machineCode != "") {
+      setState(() {
+        _machineCode = machineCode;
+      });
+    }
   }
 
   //购物车
@@ -86,7 +108,7 @@ print("获取购物车商品方法");
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor))),
-              Text('${getItemTotal(controller.cartItems).toString()}',
+              Text('￥ ${getItemTotal(controller.cartItems).toString()}',
                   style: TextStyle(
                       fontSize:
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
@@ -129,7 +151,7 @@ print("获取购物车商品方法");
     items.forEach((e) {
       sum += e.currentPrice;
     });
-    return "¥$sum";
+    return sum;
   }
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
@@ -193,6 +215,52 @@ print("获取购物车商品方法");
     );
   }
 
+  _doSubmitOrder(paymentMethod){
+    if(_machineCode !=""){
+      var cartItems = controller.getcartItems;
+      List selectedItem = [];
+
+
+      for(var oneItem in cartItems){
+        var optionMap = {};
+        if(oneItem["optionGroupVoList"] == ""){
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "qty": oneItem["goodsNum"]
+          };
+        }else{
+          var optionGroupVoList = oneItem["optionGroupVoList"];
+          var itemsOption = optionGroupVoList.split(',');
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "optionList": itemsOption,
+            "qty": oneItem["goodsNum"]
+          };
+        }
+        selectedItem.add(optionMap);
+      }
+
+      var formData = {
+        "language": this._checkLanguage,
+        "machineCode": _machineCode,
+        "orderLineList": selectedItem,
+        "total": getItemTotal(controller.cartItems)
+      };print(formData);
+      request('webBootOrder', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+
+        if (response['code'] == 200) {
+
+          doShowSettlementQrCodePage(paymentMethod,response['data']);
+          setState(() {
+          });
+        } else {
+
+        }
+      });
+    }
+  }
+
   //弹窗加载新widget页面
   doShowSettlementCashPage() async {
     var result = await showDialog(
@@ -203,13 +271,14 @@ print("获取购物车商品方法");
         });
   }
 
-  doShowSettlementQrCodePage(paymentMethod) async {
+  doShowSettlementQrCodePage(paymentType, orderId) async {
+
     var result = await showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (context) {
           return SettlementQrCodePage(
-              arguments: {"paymentMethod": paymentMethod});
+              arguments: {"paymentType": paymentType,"orderId": orderId});
         });
   }
 
@@ -279,7 +348,7 @@ print("获取购物车商品方法");
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   InkWell(
-                    onTap: () {
+                    onTap: () {//Crash
                       doShowSettlementCashPage();
                     },
                     child: Container(
@@ -351,7 +420,7 @@ print("获取购物车商品方法");
                           children: [
                             InkWell(
                               onTap: () {
-                                doShowSettlementQrCodePage("paypay");
+                                _doSubmitOrder("PayPay");
                               },
                               child: Container(
                                   width: ScreenAdapter.width(120),
@@ -361,7 +430,7 @@ print("获取购物车商品方法");
                             ),
                             InkWell(
                               onTap: () {
-                                doShowSettlementQrCodePage("alipay");
+                                _doSubmitOrder("Alipay");
                               },
                               child: Container(
                                   width: ScreenAdapter.width(120),
@@ -371,7 +440,7 @@ print("获取购物车商品方法");
                             ),
                             InkWell(
                               onTap: () {
-                                doShowSettlementQrCodePage("wechat");
+                                _doSubmitOrder("Wechat");
                               },
                               child: Container(
                                   width: ScreenAdapter.width(120),
