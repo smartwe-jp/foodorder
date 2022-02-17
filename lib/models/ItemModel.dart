@@ -6,6 +6,7 @@ class ShopItemModel {
   String image;
   int currentPrice;
   String optionGroupVoList;
+  String optionVoListMsg;
   int goodsNum;
   int id;
 
@@ -16,6 +17,7 @@ class ShopItemModel {
         this.image,
         this.currentPrice,
         this.optionGroupVoList,
+        this.optionVoListMsg,
         this.goodsNum});
 
   factory ShopItemModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +28,7 @@ class ShopItemModel {
       image: json['image'],
       currentPrice:json['currentPrice'],
       optionGroupVoList: json['optionGroupVoList'],
+      optionVoListMsg: json['optionVoListMsg'],
       goodsNum: json['goodsNum']
     );
   }

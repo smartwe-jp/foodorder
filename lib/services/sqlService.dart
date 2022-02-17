@@ -32,12 +32,13 @@ class SQLService {
   createTables() async {
     try {
       var qry = "CREATE TABLE IF NOT EXISTS cart_list ( "
-          "id INTEGER PRIMARY KEY,"
+          "id INTEGER AUTO_INCREMENT PRIMARY KEY,"
           "menuCode TEXT,"
           "mainTitle TEXT,"
           "image Text,"
           "currentPrice INTEGER,"
           "optionGroupVoList TEXT,"
+          "optionVoListMsg TEXT,"
           "goodsNum INTEGER)";
 
       await db?.execute(qry);
@@ -65,7 +66,7 @@ class SQLService {
   Future addToCart(data) async {
     await this.db?.transaction((txn) async {
       var qry =
-          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,optionGroupVoList,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},"${data["optionGroupVoList"]}",${data["goodsNum"]})';
+          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,optionGroupVoList,optionVoListMsg,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]})';
       int id1 = await txn.rawInsert(qry);
       return id1;
     });
