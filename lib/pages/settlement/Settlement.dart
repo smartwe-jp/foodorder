@@ -41,7 +41,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     this._checkLanguage = widget.arguments['checkLanguage'];
-    _getMachineInfo();
+    this._machineCode = widget.arguments['machineCode'];
 
     /*
     * [{id: 31, shop_id: 17, name: Shoefly 99999, image: https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70, price: 200.0, fav: 0, rating: 4.9, classid: 4, datetime: null}, {id: 33, shop_id: 4, name: Running Shoe Brooks Highly, image: https://cdn.pixabay.com/photo/2014/06/18/18/42/running-shoe-371625_960_720.jpg, price: 3001.0, fav: 0, rating: 3.5, classid: 2, datetime: null}]*/
@@ -54,21 +54,19 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //获取机器信息
-  _getMachineInfo() async {
+/*  _getMachineInfo() async {
     var machineCode = await HomeServices.getMachineInfo();
     if (machineCode != "") {
       setState(() {
         _machineCode = machineCode;
       });
     }
-  }
+  }*/
 
   //购物车
   _showShoppingCart() {
 
     return Container(
-      //width: ScreenAdapter.width(1080),
-      //height: ScreenAdapter.height(680),
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(30),
           top: ScreenAdapter.height(40),
@@ -108,7 +106,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor))),
-              Text('￥ ${getItemTotal(controller.cartItems).toString()}',
+              Text('￥ ${getItemTotal(controller.cartItems).toString()} ',
                   style: TextStyle(
                       fontSize:
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
@@ -181,7 +179,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
                     children: [
                       TextSpan(
-                        text: " X1",
+                        text: " X ${d.goodsNum}",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(
                               GFontSize.cartListTitleCount),
@@ -189,7 +187,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         ),
                       ),
                       TextSpan(
-                        text: "（中太麵、大盛(130g)、香菜普通、唐辛子無し）",
+                        text: d.optionVoListMsg,
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(
                               GFontSize.cartListTitleTag),
@@ -202,7 +200,7 @@ class _SettlementPageState extends State<SettlementPage> {
             Container(
               width: ScreenAdapter.width(140),
               child: Text(
-                d.currentPrice.toString(),
+                "￥ ${d.currentPrice.toString()}",
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,
@@ -215,7 +213,7 @@ class _SettlementPageState extends State<SettlementPage> {
     );
   }
 
-  _doSubmitOrder(paymentMethod){
+  _doSubmitOrder(){
     if(_machineCode !=""){
       var cartItems = controller.getcartItems;
       List selectedItem = [];
@@ -251,7 +249,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         if (response['code'] == 200) {
 
-          doShowSettlementQrCodePage(paymentMethod,response['data']);
+          doShowSettlementQrCodePage(response['data']);
           setState(() {
           });
         } else {
@@ -271,14 +269,14 @@ class _SettlementPageState extends State<SettlementPage> {
         });
   }
 
-  doShowSettlementQrCodePage(paymentType, orderId) async {
+  doShowSettlementQrCodePage(orderId) async {
 
     var result = await showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (context) {
           return SettlementQrCodePage(
-              arguments: {"paymentType": paymentType,"orderId": orderId});
+              arguments: {"orderId": orderId});
         });
   }
 
@@ -309,10 +307,6 @@ class _SettlementPageState extends State<SettlementPage> {
             //展示购物车
             Expanded(
                 child: Container(
-              /*padding: EdgeInsets.only(
-                  left: ScreenAdapter.width(40),
-                  top: ScreenAdapter.height(20),
-                  right: ScreenAdapter.width(40)),*/
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               alignment: Alignment.center,
               child: _showShoppingCart(),
@@ -389,70 +383,62 @@ class _SettlementPageState extends State<SettlementPage> {
                   SizedBox(
                     width: ScreenAdapter.width(60),
                   ),
-                  Container(
-                    padding: EdgeInsets.only(
-                        top: ScreenAdapter.height(30),
-                        bottom: ScreenAdapter.height(25)),
-                    width: ScreenAdapter.width(386),
-                    height: ScreenAdapter.height(352),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: ColorsUtil.hexToColor("#A61C1C"),
-                      //设置圆角
-                      borderRadius: new BorderRadius.circular((16.0)),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text("QRコード決済",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(48),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.settlementBtnColor),
-                            )),
-                        SizedBox(
-                          height: ScreenAdapter.height(30),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                _doSubmitOrder("PayPay");
-                              },
-                              child: Container(
+                  InkWell(
+                    onTap: (){
+                      print("qqqqqqqqq");
+                      _doSubmitOrder();
+                    },
+                    child: Container(
+                      padding: EdgeInsets.only(
+                          top: ScreenAdapter.height(30),
+                          bottom: ScreenAdapter.height(25)),
+                      width: ScreenAdapter.width(386),
+                      height: ScreenAdapter.height(352),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: ColorsUtil.hexToColor("#A61C1C"),
+                        //设置圆角
+                        borderRadius: new BorderRadius.circular((16.0)),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Text("QRコード決済",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(48),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.settlementBtnColor),
+                              )),
+                          SizedBox(
+                            height: ScreenAdapter.height(30),
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Container(
                                   width: ScreenAdapter.width(120),
                                   height: ScreenAdapter.height(120),
                                   child: Image.asset(
                                       'assets/images/settlement_paypay.png')),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                _doSubmitOrder("Alipay");
-                              },
-                              child: Container(
+                              Container(
                                   width: ScreenAdapter.width(120),
                                   height: ScreenAdapter.height(120),
                                   child: Image.asset(
                                       'assets/images/settlement_alipay.png')),
-                            ),
-                            InkWell(
-                              onTap: () {
-                                _doSubmitOrder("Wechat");
-                              },
-                              child: Container(
+                              Container(
                                   width: ScreenAdapter.width(120),
                                   height: ScreenAdapter.height(120),
                                   child: Image.asset(
                                       'assets/images/settlement_wechat.png')),
-                            ),
-                          ],
-                        ),
-                      ],
+                            ],
+                          ),
+                        ],
+                      ),
                     ),
                   ),
+
                 ],
               )
             ],

@@ -20,7 +20,7 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
   TextEditingController _scanQrCodeController;
   final FocusNode _scanQrCodeFocusNode = FocusNode();
 
-  var _paymentType;
+
   var _orderId;
   var _scanQrCode = "";
   String _machineCode = "";
@@ -31,7 +31,6 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
   void initState() {
     super.initState();
 
-    this._paymentType = widget.arguments['paymentType'];
     this._orderId = widget.arguments['orderId'];
     _getMachineInfo();
     _scanQrCodeController = TextEditingController();
