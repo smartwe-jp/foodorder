@@ -57,7 +57,7 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
         "orderId": this._orderId,
-        "payType": this._paymentType
+        //"payType": this._paymentType
       };print(formData);
       request('webBootToPay', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());

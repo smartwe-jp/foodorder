@@ -226,6 +226,34 @@ class _MenuPageState extends State<MenuPage> {
             if (i == 0) classTag = categoryVoList['categoryCode'];
             showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
 
+            //该分类下有option，先初始化页面数据
+            if(categoryVoList['menuVoList']?.length >0){
+              for(var menuVoList in categoryVoList['menuVoList']){
+                if(menuVoList['optionGroupVoList'] != null && menuVoList['optionGroupVoList']?.length >0 && menuVoList['optionGroupVoList'] != ""){
+                  //初始化菜品option选项
+                  //属性循环相关
+                  var attr = menuVoList['optionGroupVoList'];
+                  List tempArr = [];
+
+                  for (var m = 0; m < attr.length; m++) {
+                    for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
+                      attr[m]['optionVoList'][n]["checked"] = false;
+                      if(n == 0){
+                        tempArr.add(attr[m]['optionVoList'][n]);
+                      }
+                    }
+                  }
+                  //需要创建的小组件
+                  _menuOption[menuVoList['menuCode']] = attr;
+                  _initialMenuOption[menuVoList['menuCode']] = tempArr;
+                  _selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+                  attr = [];
+                  tempArr = [];
+
+                }
+              }
+            }
+
             /*if(categoryVoList['showType'] == "featured"){
               showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
               items = categoryVoList['menuVoList'];
@@ -253,10 +281,12 @@ class _MenuPageState extends State<MenuPage> {
               //itemsfour = categoryVoList['menuVoList'];
             }*/
 
-            //定位购物车特效
+            //执行完后过 加载动画
             _layoutState = LoadState.State_Success;
           }
-        });
+        }
+
+        );
       } else {
         setState(() {
           _layoutState = LoadState.State_Empty;
@@ -264,6 +294,8 @@ class _MenuPageState extends State<MenuPage> {
         print('${response["msg"]}');
       }
     });
+
+    print(_menuOption);
   }
 
   //限量商品请求接口
@@ -338,23 +370,23 @@ class _MenuPageState extends State<MenuPage> {
         } else if (item['showType'] == "table") {
           return _showCategoryTwo(showItem[classTag]);
         } else if (item['showType'] == "block") {
-          var optionList = showItem[classTag];
+          /*var optionList = showItem[classTag];
           if(optionList !=null &&optionList !="" && optionList.length>0){
             for(var i=0; i<optionList.length; i++){
               (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
             }
-          }
+          }*/
           return  _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
           return _showCategoryFour(showItem[classTag]);
         }
         else if (item['showType'] == "waterfall") {
-          var optionList = showItem[classTag];
+          /*var optionList = showItem[classTag];
           if(optionList !=null &&optionList !="" && optionList.length>0){
             for(var i=0; i<optionList.length; i++){
               (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
             }
-          }
+          }*/
           return _showCategoryFive(showItem[classTag]);
         }
       }
@@ -1203,7 +1235,7 @@ class _MenuPageState extends State<MenuPage> {
     }
 
     if (itemsFirst != null) {
-      publicShowMenuOptionGroup(itemsFirst['menuCode'], itemsFirst['optionGroupVoList']);
+      //publicShowMenuOptionGroup(itemsFirst['menuCode'], itemsFirst['optionGroupVoList']);
       return Expanded(
           child: Container(
         color: ColorsUtil.hexToColor(Gcolor.mainBackground),

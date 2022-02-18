@@ -18,7 +18,7 @@ class NoDataView extends StatefulWidget {
 class _NoDataViewState extends State<NoDataView> {
   @override
   Widget build(BuildContext context) {
-    ScreenAdapter.init(context);
+    //ScreenAdapter.init(context);
     return Container(
       width: double.infinity,
       height: double.infinity,
