@@ -189,10 +189,10 @@ class _MenuPageState extends State<MenuPage> {
 
   //获取菜单
   _getBookingBootMenu() {
-    var formData = {"machineCode": _machineCode};
+    var formData = {"machineCode": _machineCode,"language": this._checkLanguage};
     request('webBootIndex', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
+      print(response);
       if (response['code'] == 200) {
         //1、保存店铺信息
         var shopData = response['data'];
@@ -209,7 +209,7 @@ class _MenuPageState extends State<MenuPage> {
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
-
+print(myList);
         setState(() {
 
 
@@ -701,9 +701,9 @@ class _MenuPageState extends State<MenuPage> {
                     left: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Opacity(
-                      opacity: 0.6,//设置透明度
+                      opacity: 0.4,//设置透明度
                       child: Container(
-                          color: Colors.grey,
+                          color: ColorsUtil.hexToColor("#D8D8D8"),
                           width: ScreenAdapter.width(210),
                           height: ScreenAdapter.height(75),
                           //padding: EdgeInsets.all(16.0),
