@@ -531,7 +531,7 @@ class _MenuPageState extends State<MenuPage> {
   }
 
   //公共设置选项 optionGroup
-  publicShowMenuOptionGroup(menuCode, optionGroupVoList) {
+  /*publicShowMenuOptionGroup(menuCode, optionGroupVoList) {
     //属性循环相关
     var attr = optionGroupVoList;
     List tempArr = [];
@@ -540,10 +540,7 @@ class _MenuPageState extends State<MenuPage> {
         for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
           attr[i]['optionVoList'][j]["checked"] = false;
           if(j == 0){
-            //attr[i]['optionVoList'][j]["checked"] = true;
             tempArr.add(attr[i]['optionVoList'][j]);
-            //}else{
-            //attr[i]['optionVoList'][j]["checked"] = false;
           }
         }
       }
@@ -557,7 +554,7 @@ class _MenuPageState extends State<MenuPage> {
       tempArr = [];
     }
 
-  }
+  }*/
 
   //改变选项
   _changeOption(menuCode, groupCode, optionCode, setMenuState) {
@@ -1765,8 +1762,8 @@ class _MenuPageState extends State<MenuPage> {
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
-            crossAxisCount: 4,
-            childAspectRatio: 0.68),
+            crossAxisCount: 3,
+            childAspectRatio: 0.95),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryTwoItemOne(items[index]);
         },
@@ -1778,8 +1775,7 @@ class _MenuPageState extends State<MenuPage> {
   showCategoryTwoItemOne(item) {
     Offset temp;
     return Container(
-      padding: EdgeInsets.only(
-          left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: GestureDetector(
           onPanDown: (details) {
             temp = new Offset(
@@ -1847,8 +1843,8 @@ class _MenuPageState extends State<MenuPage> {
                           //width: ScreenAdapter.width(20),
                           //height: ScreenAdapter.height(315),
                           padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(15),
-                              right: ScreenAdapter.width(15)),
+                              left: ScreenAdapter.width(2),
+                              right: ScreenAdapter.width(2)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
@@ -1859,31 +1855,32 @@ class _MenuPageState extends State<MenuPage> {
                                     GFontSize.menuTwoListTitle,
                                     Gcolor.mainTitleColor),
                               ),
+                              Container(
+                                //width: ScreenAdapter.width(125),
+                                //height: ScreenAdapter.height(315),
+                                padding: EdgeInsets.only(
+                                    left: ScreenAdapter.width(8),
+                                    right: ScreenAdapter.width(8)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    //价格展示
+                                    publicShowMenuPrice(
+                                        item['currentPrice'],
+                                        GFontSize.menuTwopriceLift,
+                                        Gcolor.mainTitleColor,
+                                        GFontSize.menuTwoprice,
+                                        Gcolor.priceColor,
+                                        GFontSize.menuTwopriceRight,
+                                        Gcolor.mainTitleColor),
+                                  ],
+                                ),
+                              ),
                             ],
                           ),
                         ),
-                        Container(
-                          //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(15),
-                              right: ScreenAdapter.width(15)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              //价格展示
-                              publicShowMenuPrice(
-                                  item['currentPrice'],
-                                  GFontSize.menuTwopriceLift,
-                                  Gcolor.mainTitleColor,
-                                  GFontSize.menuTwoprice,
-                                  Gcolor.priceColor,
-                                  GFontSize.menuTwopriceRight,
-                                  Gcolor.mainTitleColor),
-                            ],
-                          ),
-                        ),
+
                         SizedBox(
                           height: ScreenAdapter.height(7),
                         ),
@@ -2680,6 +2677,10 @@ class _MenuPageState extends State<MenuPage> {
                 SizedBox(height: ScreenAdapter.height(18)),
                 InkWell(
                   onTap: () {
+                    if (controller.cartItems.length == 0) {
+                      showToast("请先选择菜品");
+                      return false;
+                    }
                     Navigator.pushNamed(context, '/settlement',arguments: {"checkLanguage": this._checkLanguage});
                   },
                   child: Container(
