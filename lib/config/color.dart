@@ -12,6 +12,7 @@ class Gcolor{
   static const String categoryTitleSelected = "#FFFFFF";
   static const String categoryTitle = "#CEA062";
   static const String mainTitleColor = "#000000";
+  static const String optionBtnColor = "#FFFFFF";
   static const String priceColor = "#A61C1C";
   static const String whiteColor = "#F9F9F9";
   static const String foodTagColor = "#777777";

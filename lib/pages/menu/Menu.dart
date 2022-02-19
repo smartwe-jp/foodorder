@@ -70,11 +70,6 @@ class _MenuPageState extends State<MenuPage> {
 
     this._checkLanguage = widget.arguments['checkLanguage'];
     _getMachineInfo();
-
-    /*WidgetsBinding.instance.addPostFrameCallback((_){
-      RenderBox renderBox = floatKey.currentContext.findRenderObject();
-      floatOffset = renderBox.localToGlobal(Offset.zero);
-    });*/
   }
 
   @override
@@ -101,80 +96,42 @@ class _MenuPageState extends State<MenuPage> {
         });
         this._getBookingBootMenu();
       }, //错误按钮点击过后进行重新加载
-      successWidget: Stack(
-        children: <Widget>[
-          buildDetailWidget(),
-          //展示购物车
-          Positioned(
-            bottom: 0,
-            child: _showShoppingCart(),
+      successWidget: Column(
+        children: [
+          //顶部导航
+          Container(
+            width: ScreenAdapter.getScreenWidth(),
+            height: ScreenAdapter.height(120),
+            padding: EdgeInsets.only(
+                left: ScreenAdapter.width(20),
+                right: ScreenAdapter.width(20)),
+            alignment: Alignment.bottomLeft,
+            decoration: BoxDecoration(
+              color: ColorsUtil.hexToColor("#000000"),
+              image: new DecorationImage(
+                alignment: Alignment.centerRight,
+                //fit: BoxFit.fitWidth,
+                image: AssetImage('assets/images/logo.png'),
+              ),
+            ),
+            child: showTopCategoryMenu(),
           ),
+
+          Expanded(
+              child: Container(
+                key: rootKey,
+            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+            height: ScreenAdapter.height(1480),
+            child:  showMiddleMenuList(),
+          )
+          ),
+
+          _showShoppingCart(),
         ],
       ),
     );
   }
 
-  buildDetailWidget() {
-    return topMenu.length > 0
-        ? Column(
-            key: rootKey,
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                width: ScreenAdapter.getScreenWidth(),
-                height: ScreenAdapter.height(120),
-                padding: EdgeInsets.only(
-                    left: ScreenAdapter.width(20),
-                    right: ScreenAdapter.width(20)),
-                alignment: Alignment.bottomLeft,
-                decoration: BoxDecoration(
-                  color: ColorsUtil.hexToColor("#000000"),
-                  image: new DecorationImage(
-                    alignment: Alignment.centerRight,
-                    //fit: BoxFit.fitWidth,
-                    image: AssetImage('assets/images/logo.png'),
-                  ),
-                ),
-                child: showTopCategoryMenu(),
-              ),
-              showMiddleMenuList(),
-
-              //购物车价格总数
-              /*Container(
-              color: Colors.white,
-              child: SafeArea(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(child: GetBuilder<HomePageController>(
-                      builder: (_) {
-                        return RichText(
-                          text: TextSpan(
-                              text: "Total  ",
-                              style:
-                                  TextStyle(color: Colors.black, fontSize: 18),
-                              children: <TextSpan>[
-                                TextSpan(
-                                    text: getItemTotal(controller.cartItems)
-                                        .toString(),
-                                    style:
-                                        TextStyle(fontWeight: FontWeight.bold))
-                              ]),
-                        );
-                      },
-                    )),
-
-                  ],
-                ),
-              ),
-            ),*/
-            ],
-          )
-        : Container(
-            height: 0,
-          );
-  }
 
   //获取机器信息
   _getMachineInfo() async {
@@ -192,7 +149,7 @@ class _MenuPageState extends State<MenuPage> {
     var formData = {"machineCode": _machineCode,"language": this._checkLanguage};
     request('webBootIndex', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-      print(response);
+
       if (response['code'] == 200) {
         //1、保存店铺信息
         var shopData = response['data'];
@@ -209,7 +166,7 @@ class _MenuPageState extends State<MenuPage> {
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
-print(myList);
+
         setState(() {
 
 
@@ -295,7 +252,7 @@ print(myList);
       }
     });
 
-    print(_menuOption);
+    //print(_menuOption);
   }
 
   //限量商品请求接口
@@ -370,23 +327,12 @@ print(myList);
         } else if (item['showType'] == "table") {
           return _showCategoryTwo(showItem[classTag]);
         } else if (item['showType'] == "block") {
-          /*var optionList = showItem[classTag];
-          if(optionList !=null &&optionList !="" && optionList.length>0){
-            for(var i=0; i<optionList.length; i++){
-              (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
-            }
-          }*/
           return  _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
           return _showCategoryFour(showItem[classTag]);
         }
         else if (item['showType'] == "waterfall") {
-          /*var optionList = showItem[classTag];
-          if(optionList !=null &&optionList !="" && optionList.length>0){
-            for(var i=0; i<optionList.length; i++){
-              (optionList[i]['optionGroupVoList']?.length >0) ? publicShowMenuOptionGroup(optionList[i]['menuCode'], optionList[i]['optionGroupVoList']):Container(height: 0,);
-            }
-          }*/
+
           return _showCategoryFive(showItem[classTag]);
         }
       }
@@ -530,32 +476,6 @@ print(myList);
     return result;
   }
 
-  //公共设置选项 optionGroup
-  /*publicShowMenuOptionGroup(menuCode, optionGroupVoList) {
-    //属性循环相关
-    var attr = optionGroupVoList;
-    List tempArr = [];
-    if(attr != null && attr.length >0 && attr !=""){
-      for (var i = 0; i < attr.length; i++) {
-        for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
-          attr[i]['optionVoList'][j]["checked"] = false;
-          if(j == 0){
-            tempArr.add(attr[i]['optionVoList'][j]);
-          }
-        }
-      }
-
-      //需要创建的小组件
-      setState(() {
-        _menuOption[menuCode] = attr;
-        _initialMenuOption[menuCode] = tempArr;
-        _selectedMenuOptionList[menuCode] = tempArr;
-      });
-      tempArr = [];
-    }
-
-  }*/
-
   //改变选项
   _changeOption(menuCode, groupCode, optionCode, setMenuState) {
     var attr = _menuOption[menuCode];
@@ -574,6 +494,20 @@ print(myList);
     });
 
     _getSelectedAttrValue(menuCode, attr, setMenuState);
+  }
+
+  _changeInitialOption(menuCode, setMenuState) {
+    var attr = _menuOption[menuCode];
+    for (var i = 0; i < attr.length; i++) {
+        for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
+          attr[i]['optionVoList'][j]["checked"] = false;
+        }
+    }
+    setMenuState(() {
+      _menuOption[menuCode] =attr;
+      _selectedMenuOptionList[menuCode] = _initialMenuOption[menuCode];
+    });
+
   }
 
   //获取选中的值
@@ -609,17 +543,20 @@ print(myList);
     for (var i = 0; i < optionGroupVoList.length; i++) {
       List<Widget> optionSons = [];
       var optionVoList = optionGroupVoList[i]['optionVoList'];
-      options.add(Row(
-        children: [
-          Text(
-            optionGroupVoList[i]['groupName'],
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(18.0),
-              color: ColorsUtil.hexToColor(
-                  Gcolor.mainTitleColor),
+      options.add(Container(
+        padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+        child: Row(
+          children: [
+            Text(
+              optionGroupVoList[i]['groupName'],
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(16.0),
+                color: ColorsUtil.hexToColor(
+                    Gcolor.mainTitleColor),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ));
 
       for (var j = 0; j < optionVoList.length; j++) {
@@ -628,7 +565,8 @@ print(myList);
 
         if (optionVolistSon['homeImage'] != "") {
           optionSons.add(Container(
-            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
             child: InkWell(
               onTap: (){
                 _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -637,36 +575,29 @@ print(myList);
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(210),
-                      height: ScreenAdapter.height(75),
+                      width: ScreenAdapter.width(220),
+                      height: ScreenAdapter.height(60),
                       decoration: BoxDecoration(
                         image: new DecorationImage(
                           fit: BoxFit.fitWidth,
                           image: NetworkImage(optionVolistSon['homeImage']),
                         ),
                       ),
-                      //child: Text(optionVolistSon['mainTitle'])
                   ),
                   //绝对定位 盖章
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
-                    left: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Opacity(
-                      opacity: 0.6,//设置透明度
-                      child: Container(
-                          color: Colors.grey,
-                          width: ScreenAdapter.width(210),
-                          height: ScreenAdapter.height(75),
-                          //padding: EdgeInsets.all(16.0),
-                          alignment:Alignment.center,
-                          child: Image.asset(
-                            'assets/images/optionChecked.png',
-                            width: ScreenAdapter.width(60),
-                            //height: ScreenAdapter.height(75),
-                            fit: BoxFit.fitWidth,
-                          )
-                      ),
+                    left: ScreenAdapter.width(10),
+                    top: ScreenAdapter.height(5),
+                    child: Container(
+                        width: ScreenAdapter.width(200),
+                        height: ScreenAdapter.height(50),
+                        alignment:Alignment.center,
+                        child: Image.asset(
+                          'assets/images/optionChecked.png',
+                          width: ScreenAdapter.width(50),
+                          fit: BoxFit.fitWidth,
+                        )
                     ),
                   )
                       : Container(
@@ -678,7 +609,8 @@ print(myList);
           ));
         }else if(optionVolistSon['buttonColorValue'] != ""){
           optionSons.add(Container(
-            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
             child: InkWell(
               onTap: (){
                 _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -686,35 +618,32 @@ print(myList);
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(210),
-                      height: ScreenAdapter.height(75),
+                      width: ScreenAdapter.width(220),
+                      height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
 
                       ),
-                      child: Text(optionVolistSon['mainTitle'])
+                      child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(28.0),
+                        fontWeight: FontWeight.w500,
+                        color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),),)
                   ),
                   //绝对定位 盖章
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
-                    left: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Opacity(
-                      opacity: 0.4,//设置透明度
-                      child: Container(
-                          color: ColorsUtil.hexToColor("#D8D8D8"),
-                          width: ScreenAdapter.width(210),
-                          height: ScreenAdapter.height(75),
-                          //padding: EdgeInsets.all(16.0),
-                          alignment:Alignment.center,
-                          child: Image.asset(
-                            'assets/images/optionChecked.png',
-                            width: ScreenAdapter.width(60),
-                            //height: ScreenAdapter.height(75),
-                            fit: BoxFit.fitWidth,
-                          )
-                      ),
+                    left: ScreenAdapter.width(10),
+                    top: ScreenAdapter.height(5),
+                    child: Container(
+                        width: ScreenAdapter.width(200),
+                        height: ScreenAdapter.height(50),
+                        alignment:Alignment.center,
+                        child: Image.asset(
+                          'assets/images/optionChecked.png',
+                          width: ScreenAdapter.width(50),
+                          fit: BoxFit.fitWidth,
+                        )
                     ),
                   )
                       : Container(
@@ -726,7 +655,8 @@ print(myList);
           ));
         }else{
           optionSons.add(Container(
-            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+            alignment: Alignment.center,
+            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
             child: InkWell(
               onTap: (){
                 _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -734,38 +664,35 @@ print(myList);
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(210),
-                      height: ScreenAdapter.height(75),
+                      width: ScreenAdapter.width(220),
+                      height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         image: new DecorationImage(
                           fit: BoxFit.fitWidth,
-                          image: AssetImage('assets/images/ximian1.png'),
+                          image: AssetImage('assets/images/public_index_submit.png'),
                         ),
 
                       ),
-                      child: Text(optionVolistSon['mainTitle'])
+                      child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                        fontWeight: FontWeight.w500,
+                        fontSize: ScreenAdapter.fontSize(28.0),
+                        color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
                   ),
                   //绝对定位 盖章
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
-                    left: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Opacity(
-                      opacity: 0.6,//设置透明度
-                      child: Container(
-                          color: Colors.grey,
-                          width: ScreenAdapter.width(210),
-                          height: ScreenAdapter.height(75),
-                          //padding: EdgeInsets.all(16.0),
-                          alignment:Alignment.center,
-                          child: Image.asset(
-                            'assets/images/optionChecked.png',
-                            width: ScreenAdapter.width(60),
-                            //height: ScreenAdapter.height(75),
-                            fit: BoxFit.fitWidth,
-                          )
-                      ),
+                    left: ScreenAdapter.width(10),
+                    top: ScreenAdapter.height(5),
+                    child: Container(
+                        width: ScreenAdapter.width(220),
+                        height: ScreenAdapter.height(50),
+                        alignment:Alignment.center,
+                        child: Image.asset(
+                          'assets/images/optionChecked.png',
+                          width: ScreenAdapter.width(50),
+                          fit: BoxFit.fitWidth,
+                        )
                     ),
                   )
                       : Container(
@@ -788,16 +715,11 @@ print(myList);
     return options;
   }
   //获取第一个页面的widget
-  publicShowMenuOptionGroupWidget(menuCode) {
+  publicShowMenuOptionGroupWidget(menuCode,setFirstMenuState) {
     return Container(
-      child: StatefulBuilder(
-          builder: (BuildContext context, setFirstState){
-            return Container(
-              child: Column(
-                children:  _getFirstOptionWidget(menuCode,setFirstState),
-              ),
-            );
-          }
+      padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
+      child: Column(
+        children:  _getFirstOptionWidget(menuCode,setFirstMenuState),
       ),
     );
   }
@@ -811,18 +733,22 @@ print(myList);
       for (var i = 0; i < optionGroupVoList.length; i++) {
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
-        options.add(Row(
-          children: [
-            Text(
-              optionGroupVoList[i]['groupName'],
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(18.0),
-                color: ColorsUtil.hexToColor(
-                    Gcolor.mainTitleColor),
-              ),
+        options.add(
+          Container(
+            padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+            child: Row(
+              children: [
+                Text(
+                  optionGroupVoList[i]['groupName'],
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(16.0),
+                    color: ColorsUtil.hexToColor(
+                        Gcolor.mainTitleColor),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ));
+          ));
 
         for (var j = 0; j < optionVoList.length; j++) {
           var optionVolistSon = optionVoList[j];
@@ -830,7 +756,7 @@ print(myList);
 
           if (optionVolistSon['homeImage'] != "") {
             optionSons.add(Container(
-              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
               child: InkWell(
                 onTap: (){
                   _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -839,8 +765,8 @@ print(myList);
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(55),
+                        width: ScreenAdapter.width(130),
+                        height: ScreenAdapter.height(50),
                         decoration: BoxDecoration(
                           image: new DecorationImage(
                             fit: BoxFit.fitWidth,
@@ -852,23 +778,19 @@ print(myList);
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      left: ScreenAdapter.width(10),
+                      top: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(120),
+                          height: ScreenAdapter.height(45),
+                          //padding: EdgeInsets.all(16.0),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(40),
+                            //height: ScreenAdapter.height(75),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -880,7 +802,7 @@ print(myList);
             ));
           }else if(optionVolistSon['buttonColorValue'] != ""){
             optionSons.add(Container(
-              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
               child: InkWell(
                 onTap: (){
                   _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -888,35 +810,34 @@ print(myList);
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(55),
+                        width: ScreenAdapter.width(130),
+                        height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'])
+                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: ScreenAdapter.fontSize(28.0),
+                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      left: ScreenAdapter.width(10),
+                      top: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(120),
+                          height: ScreenAdapter.height(45),
+                          //padding: EdgeInsets.all(16.0),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(40),
+                            //height: ScreenAdapter.height(75),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -928,7 +849,7 @@ print(myList);
             ));
           }else{
             optionSons.add(Container(
-              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
               child: InkWell(
                 onTap: (){
                   _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
@@ -936,8 +857,8 @@ print(myList);
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(55),
+                        width: ScreenAdapter.width(130),
+                        height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           image: new DecorationImage(
@@ -946,28 +867,27 @@ print(myList);
                           ),
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'])
+                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                          fontWeight: FontWeight.w500,
+                          fontSize: ScreenAdapter.fontSize(28.0),
+                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      left: ScreenAdapter.width(10),
+                      top: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(120),
+                          height: ScreenAdapter.height(45),
+                          //padding: EdgeInsets.all(16.0),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(40),
+                            //height: ScreenAdapter.height(75),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -996,15 +916,10 @@ print(myList);
   //获取第三个页面的widget
   publicShowThreeMenuOptionGroupWidget(menuCode,menuindex) {
     return Container(
-      padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-      child: StatefulBuilder(
-          builder: (BuildContext context, setFirstState){
-            menuindex = setFirstState;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:_getThreeOptionWidget(menuCode,menuindex),
-            );
-          }
+      padding: EdgeInsets.only(left: ScreenAdapter.width(15),right: ScreenAdapter.width(5),top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:_getThreeOptionWidget(menuCode,menuindex),
       ),
     );
   }
@@ -1018,18 +933,22 @@ print(myList);
       for (var i = 0; i < optionGroupVoList.length; i++) {
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
-        options.add(Row(
-          children: [
-            Text(
-              optionGroupVoList[i]['groupName'],
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(18.0),
-                color: ColorsUtil.hexToColor(
-                    Gcolor.mainTitleColor),
-              ),
+        options.add(
+          Container(
+            padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+            child: Row(
+              children: [
+                Text(
+                  optionGroupVoList[i]['groupName'],
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(16.0),
+                    color: ColorsUtil.hexToColor(
+                        Gcolor.mainTitleColor),
+                  ),
+                ),
+              ],
             ),
-          ],
-        ));
+          ));
 
         for (var j = 0; j < optionVoList.length; j++) {
           var optionVolistSon = optionVoList[j];
@@ -1041,12 +960,11 @@ print(myList);
               child: InkWell(
                 onTap: (){
                   _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
-
                 },
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         decoration: BoxDecoration(
                           image: new DecorationImage(
@@ -1054,28 +972,23 @@ print(myList);
                             image: NetworkImage(optionVolistSon['homeImage']),
                           ),
                         ),
-                        //child: Text(optionVolistSon['mainTitle'])
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      left: ScreenAdapter.width(10),
+                      top: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(160),
+                          height: ScreenAdapter.height(45),
+                          //padding: EdgeInsets.all(16.0),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(45),
+                            //height: ScreenAdapter.height(75),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -1095,35 +1008,33 @@ print(myList);
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'])
+                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(25.0),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      left: ScreenAdapter.width(10),
+                      top: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(160),
+                          height: ScreenAdapter.height(45),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(45),
+                            //height: ScreenAdapter.height(75),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -1143,38 +1054,35 @@ print(myList);
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           image: new DecorationImage(
                             fit: BoxFit.fitWidth,
-                            image: AssetImage('assets/images/ximian1.png'),
+                            image: AssetImage('assets/images/public_dingshi_option.png'),
                           ),
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'])
+                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(25.0),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                      left: ScreenAdapter.width(0),
-                      top: ScreenAdapter.height(0),
-                      child: Opacity(
-                        opacity: 0.6,//设置透明度
-                        child: Container(
-                            color: Colors.grey,
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(55),
-                            //padding: EdgeInsets.all(16.0),
-                            alignment:Alignment.center,
-                            child: Image.asset(
-                              'assets/images/optionChecked.png',
-                              width: ScreenAdapter.width(40),
-                              //height: ScreenAdapter.height(75),
-                              fit: BoxFit.fitWidth,
-                            )
-                        ),
+                      width: ScreenAdapter.width(10),
+                      height: ScreenAdapter.height(5),
+                      child: Container(
+                          width: ScreenAdapter.width(160),
+                          height: ScreenAdapter.height(45),
+                          alignment:Alignment.center,
+                          child: Image.asset(
+                            'assets/images/optionChecked.png',
+                            width: ScreenAdapter.width(45),
+                            fit: BoxFit.fitWidth,
+                          )
                       ),
                     )
                         : Container(
@@ -1203,15 +1111,10 @@ print(myList);
   //获取第五个页面的widget
   publicShowFiveMenuOptionGroupWidget(menuCode,menuindex) {
     return Container(
-      padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-      child: StatefulBuilder(
-          builder: (BuildContext context, setFirstState){
-            menuindex = setFirstState;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children:_getFiveOptionWidget(menuCode,menuindex),
-            );
-          }
+      padding: EdgeInsets.only(left: ScreenAdapter.width(15),right: ScreenAdapter.width(5),top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children:_getFiveOptionWidget(menuCode,menuindex),
       ),
     );
 
@@ -1239,15 +1142,13 @@ print(myList);
     }
 
     if (itemsFirst != null) {
-      //publicShowMenuOptionGroup(itemsFirst['menuCode'], itemsFirst['optionGroupVoList']);
-      return Expanded(
-          child: Container(
+      return Container(
         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-        height: ScreenAdapter.height(1480),
-        child: ListView(
+
+        child: Column(
           children: [
 
-            publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 680.0),
+            publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 955.0),
             Container(
               color: ColorsUtil.hexToColor(Gcolor.whiteColor),
               width: ScreenAdapter.width(1080),
@@ -1256,252 +1157,146 @@ print(myList);
                   left: ScreenAdapter.width(25),
                   right: ScreenAdapter.width(25),
                   bottom: ScreenAdapter.height(25)),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: [
-                  (itemsFirst['optionGroupVoList']?.length >0)?publicShowMenuOptionGroupWidget(itemsFirst['menuCode']) : Container(height: 0,),
-                  Divider(
-                    height: 1,
-                    color: Color.fromRGBO(227, 227, 227, 1),
-                  ),
-                  /*Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                                text: '    STEP 1',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22.0),
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                    ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                                children: [
-                                  TextSpan(
-                                    text: " 麺の型が選び下さい",
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(18.0),
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.mainTitleColor),
-                                    ),
-                                  ),
-                                ]),
-                          ),
-
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/ximian1.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/zhongtai2.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/sanjiao1.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/pingmian1.png')),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          RichText(
-                            text: TextSpan(
-                                text: '    STEP 2',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22.0),
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                    ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                                children: [
-                                  TextSpan(
-                                    text: " 唐辛子無料追加、パクチーは1つ無料で、追加のは100円",
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(18.0),
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.mainTitleColor),
-                                    ),
-                                  ),
-                                  TextSpan(
-                                      text: '        STEP 3',
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(22.0),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.mainTitleColor),
-                                      )),
-                                  TextSpan(
-                                    text: " 麺の量をお選び下さい",
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(18.0),
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.mainTitleColor),
-                                    ),
-                                  ),
-                                ]),
-                          ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/xiangcai1.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/lajiao1.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/putong1.png')),
-                          Container(
-                              width: ScreenAdapter.width(257),
-                              height: ScreenAdapter.height(108),
-                              child: Image.asset('assets/images/dafen2.png')),
-                        ],
-                      ),*/
-                  //标题价格
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+              child: StatefulBuilder(
+                builder: (BuildContext context, setFirstMenuState){
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Expanded(
-                          child: Container(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              children: [
-                                //菜单Title
-                                publicShowMenuTitle(itemsFirst['mainTitle'], 42.0,
-                                    Gcolor.mainTitleColor),
-
-
-                              ],
-                            ),
-                          )
-                      ),
-                      //价格展示
-                      Container(
-                        width: ScreenAdapter.width(240),
-                        child: publicShowMenuPrice(
-                            itemsFirst['currentPrice'],
-                            35.0,
-                            Gcolor.mainTitleColor,
-                            55.0,
-                            Gcolor.priceColor,
-                            28.0,
-                            Gcolor.mainTitleColor),
+                      (itemsFirst['optionGroupVoList']?.length >0)?publicShowMenuOptionGroupWidget(itemsFirst['menuCode'],setFirstMenuState) : Container(height: 0,),
+                      Divider(
+                        height: 1,
+                        color: Color.fromRGBO(227, 227, 227, 1),
                       ),
 
-                      //确认按钮
-                      InkWell(
-                        onTapDown: (details) {
-                          temp = new Offset(
-                              details.globalPosition.dx, details.globalPosition.dy);
-                          RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                          floatOffset = renderBox.localToGlobal(Offset.zero);
-                        },
-                        onTap: () {
-                          Function callback;
-                          //判断选择后option是否与optiongroup相等
-                          if(_selectedMenuOptionList[itemsFirst['menuCode']].length != itemsFirst['optionGroupVoList'].length){
-                            showToast('请选择面选项');
-                            return;
-                          }
-                          var currentPrice = itemsFirst['currentPrice'];
-                          var optionCodeList = "";
-                          var optionTitle = "";
-                          for(var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]){
-                            if(optionItem['currentPrice'] >0){
-                              currentPrice += optionItem['currentPrice'];
+                      //标题价格
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                              child: Container(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.start,
+                                  children: [
+                                    //菜单Title
+                                    publicShowMenuTitle(itemsFirst['mainTitle'], 42.0,
+                                        Gcolor.mainTitleColor),
 
-                            }
-                            optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
-                            optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
-                          }
 
-                          var cartItem = {
-                            "menuCode": itemsFirst['menuCode'],
-                            "mainTitle": itemsFirst['mainTitle'],
-                            "image": itemsFirst['homeImage'],
-                            "currentPrice": currentPrice,
-                            "optionGroupVoList": optionCodeList,
-                            "optionVoListMsg":optionTitle,
-                            "goodsNum": 1
-                          };
-                          publicAddCartMenu(cartItem, false).then((val) {
-                            setState(() {
-                              OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                                return ParabolaAnimateWidget(
-                                  rootKey,
-                                  temp,
-                                  floatOffset,
-                                  itemsFirst['homeImage'],
-                                  callback,
-                                  duration: 1000,
-                                );
-                              });
-
-                              callback = (status) {
-                                if (status == AnimationStatus.completed) {
-                                  entry?.remove();
-                                }
-                              };
-                              Overlay.of(rootKey.currentContext).insert(entry);
-
-                              //将选中option还原为默认
-                              _selectedMenuOptionList[itemsFirst['menuCode']] = _initialMenuOption[itemsFirst['menuCode']];
-                            });
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                          width: ScreenAdapter.width(220),
-                          height: ScreenAdapter.height(87),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            image: new DecorationImage(
-                              fit: BoxFit.fitWidth,
-                              image: AssetImage('assets/images/btn002.png'),
-                            ),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
+                                  ],
+                                ),
+                              )
                           ),
-                          child: Text(
-                              GString.getToString(
-                                  this._checkLanguage, "add_option_cart"),
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(32),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.settlementBtnColor),
-                              )),
-                        ),
+                          //价格展示
+                          Container(
+                            width: ScreenAdapter.width(240),
+                            child: publicShowMenuPrice(
+                                itemsFirst['currentPrice'],
+                                35.0,
+                                Gcolor.mainTitleColor,
+                                55.0,
+                                Gcolor.priceColor,
+                                28.0,
+                                Gcolor.mainTitleColor),
+                          ),
+
+                          //确认按钮
+                          InkWell(
+                            onTapDown: (details) {
+                              temp = new Offset(
+                                  details.globalPosition.dx, details.globalPosition.dy);
+                              RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                              floatOffset = renderBox.localToGlobal(Offset.zero);
+                            },
+                            onTap: () {
+                              Function callback;
+                              //判断选择后option是否与optiongroup相等
+                              if(_selectedMenuOptionList[itemsFirst['menuCode']].length != itemsFirst['optionGroupVoList'].length){
+                                showToast('请选择面选项');
+                                return;
+                              }
+                              var currentPrice = itemsFirst['currentPrice'];
+                              var optionCodeList = "";
+                              var optionTitle = "";
+                              for(var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]){
+                                if(optionItem['currentPrice'] >0){
+                                  currentPrice += optionItem['currentPrice'];
+
+                                }
+                                optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
+                                optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
+                              }
+
+                              var cartItem = {
+                                "menuCode": itemsFirst['menuCode'],
+                                "mainTitle": itemsFirst['mainTitle'],
+                                "image": itemsFirst['homeImage'],
+                                "currentPrice": currentPrice,
+                                "optionGroupVoList": optionCodeList,
+                                "optionVoListMsg":optionTitle,
+                                "goodsNum": 1
+                              };
+                              publicAddCartMenu(cartItem, false).then((val) {
+                                setState(() {
+                                  OverlayEntry entry = OverlayEntry(builder: (ctx) {
+                                    return ParabolaAnimateWidget(
+                                      rootKey,
+                                      temp,
+                                      floatOffset,
+                                      itemsFirst['homeImage'],
+                                      callback,
+                                      duration: 1000,
+                                    );
+                                  });
+
+                                  callback = (status) {
+                                    if (status == AnimationStatus.completed) {
+                                      entry?.remove();
+                                    }
+                                  };
+                                  Overlay.of(rootKey.currentContext).insert(entry);
+
+
+                                });
+                                _changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
+                              });
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                              width: ScreenAdapter.width(270),
+                              height: ScreenAdapter.height(75),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                image: new DecorationImage(
+                                  fit: BoxFit.fitWidth,
+                                  image: AssetImage('assets/images/public_index_submit.png'),
+                                ),
+                                //设置圆角
+                                //borderRadius: new BorderRadius.circular((16.0)),
+                              ),
+                              child: Text(
+                                  GString.getToString(
+                                      this._checkLanguage, "add_option_cart"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(34),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.settlementBtnColor),
+                                  )),
+                            ),
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
+                  );
+                },
               ),
             ),
             //第二三个商品
             //showCategoryOneItemList(itemsTree),
           ],
         ),
-      ));
+      );
     } else {
       return Container(
         height: 0,
@@ -1759,12 +1554,10 @@ print(myList);
   //第二个分类 小菜
   _showCategoryTwo(showItemList) {
     if (showItemList.length > 0) {
-      return Expanded(
-          child: Container(
-        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+      return Container(
         //height: 450,
         child: showCategoryTwoItemList(showItemList),
-      ));
+      );
     } else {
       return Container(
         height: 0,
@@ -1922,16 +1715,14 @@ print(myList);
   //第三个分类 定食
   _showCategoryThree(showItemList) {
     if (showItemList.length > 0) {
-      return Expanded(
-          child: Container(
-        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+      return Container(
         padding: EdgeInsets.only(
-            left: ScreenAdapter.width(8),
-            right: ScreenAdapter.width(8),
-            bottom: ScreenAdapter.height(20)),
+        left: ScreenAdapter.width(8),
+        right: ScreenAdapter.width(8),
+        bottom: ScreenAdapter.height(20)),
         //height: 450,
         child: showCategoryThreeItemList(showItemList),
-      ));
+      );
     } else {
       return Container(
         height: 0,
@@ -1955,7 +1746,7 @@ print(myList);
     Offset temp;
 
     var subtitle = "";
-    if (item["subtitle"].length > 0) {
+    if (item["subtitle"]?.length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -1968,167 +1759,174 @@ print(myList);
           padding: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
           margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
             color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5),),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      publicShowMenuImage(item['homeImage'], 485.0, 315.0),
-                      (item['optionGroupVoList']?.length >0) ? publicShowThreeMenuOptionGroupWidget(item['menuCode'],"menu$index"):Container(height: 0,),
-                    ],
-                  ),
-                ),
-
-                Divider(
-                  height: 1,
-                  color: Color.fromRGBO(227, 227, 227, 1),
-                ),
-                //标题价格
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
+            child: StatefulBuilder(
+              builder: (BuildContext context, menuindex){
+                return Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(
-                        child: Container(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              //菜单Title
-                              Container(
-                                padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
-                                alignment: Alignment.center,
-                                child: publicShowMenuTitle(item['mainTitle'], 42.0, Gcolor.mainTitleColor),
-                              ),
-                              //副标题
-                              subtitle != ""
-                                  ? Container(
-                                alignment: Alignment.center,
-                                child: Text(
-                                  '${subtitle}',
-                                  style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(
-                                          GFontSize
-                                              .menuThreeListFoodSubtitle),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.mainTitleColor)),
-                                ),
-                              )
-                                  : Container(width: 0,),
-
-
-                            ],
-                          ),
-                        )
-                    ),
-                      //价格展示
                     Container(
-                      width: ScreenAdapter.width(240),
-                      child: publicShowMenuPrice(
-                          item['currentPrice'],
-                          35.0,
-                          Gcolor.mainTitleColor,
-                          55.0,
-                          Gcolor.priceColor,
-                          28.0,
-                          Gcolor.mainTitleColor),
-                    ),
-
-                    //确认按钮
-                    InkWell(
-                      onTapDown: (details) {
-                        temp = new Offset(
-                            details.globalPosition.dx, details.globalPosition.dy);
-                        RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                        floatOffset = renderBox.localToGlobal(Offset.zero);
-                      },
-                      onTap: () {
-                        Function callback;
-                        //判断选择后option是否与optiongroup相等
-                        if(_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length){
-                          showToast('请选择面选项');
-                          return;
-                        }
-                        var currentPrice = item['currentPrice'];
-                        var optionCodeList = "";
-                        var optionTitle = "";
-                        for(var optionItem in _selectedMenuOptionList[item['menuCode']]){
-                          if(optionItem['currentPrice'] >0){
-                            currentPrice += optionItem['currentPrice'];
-
-                          }
-                          optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
-                          optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
-                        }
-
-                        var cartItem = {
-                          "menuCode": item['menuCode'],
-                          "mainTitle": item['mainTitle'],
-                          "image": item['homeImage'],
-                          "currentPrice": currentPrice,
-                          "optionGroupVoList": optionCodeList,
-                          "optionVoListMsg":optionTitle,
-                          "goodsNum": 1
-                        };
-                        publicAddCartMenu(cartItem, false).then((val) {
-                          setState(() {
-                            OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                              return ParabolaAnimateWidget(
-                                rootKey,
-                                temp,
-                                floatOffset,
-                                item['homeImage'],
-                                callback,
-                                duration: 1000,
-                              );
-                            });
-
-                            callback = (status) {
-                              if (status == AnimationStatus.completed) {
-                                entry?.remove();
-                              }
-                            };
-                            Overlay.of(rootKey.currentContext).insert(entry);
-
-                            //将选中option还原为默认
-                            _selectedMenuOptionList[item['menuCode']] = _initialMenuOption[item['menuCode']];
-                          });
-                        });
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(top: ScreenAdapter.height(15)),
-                        width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(87),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          image: new DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            image: AssetImage('assets/images/btn002.png'),
-                          ),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text(
-                            GString.getToString(
-                                this._checkLanguage, "add_option_cart"),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(32),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.settlementBtnColor),
-                            )),
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5),),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          publicShowMenuImage(item['homeImage'], 460.0, 310.0),
+                          (item['optionGroupVoList']?.length >0) ? publicShowThreeMenuOptionGroupWidget(item['menuCode'],menuindex):Container(height: 0,),
+                        ],
                       ),
                     ),
 
+                    Divider(
+                      height: 1,
+                      color: Color.fromRGBO(227, 227, 227, 1),
+                    ),
+                    //标题价格
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Expanded(
+                            child: Container(
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  //菜单Title
+                                  Container(
+                                    padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
+                                    alignment: Alignment.center,
+                                    child: publicShowMenuTitle(item['mainTitle'], 42.0, Gcolor.mainTitleColor),
+                                  ),
+                                  //副标题
+                                  subtitle != ""
+                                      ? Container(
+                                    alignment: Alignment.center,
+                                    child: Text(
+                                      '${subtitle}',
+                                      style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize
+                                                  .menuThreeListFoodSubtitle),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor)),
+                                    ),
+                                  )
+                                      : Container(width: 0,),
+
+
+                                ],
+                              ),
+                            )
+                        ),
+                        //价格展示
+                        Container(
+                          width: ScreenAdapter.width(240),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              35.0,
+                              Gcolor.mainTitleColor,
+                              54.0,
+                              Gcolor.priceColor,
+                              28.0,
+                              Gcolor.mainTitleColor),
+                        ),
+
+                        //确认按钮
+                        InkWell(
+                          onTapDown: (details) {
+                            temp = new Offset(
+                                details.globalPosition.dx, details.globalPosition.dy);
+                            RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                            floatOffset = renderBox.localToGlobal(Offset.zero);
+                          },
+                          onTap: () {
+                            Function callback;
+                            //判断选择后option是否与optiongroup相等
+                            var currentPrice = item['currentPrice'];
+                            var optionCodeList = "";
+                            var optionTitle = "";
+                            if(item['optionGroupVoList']?.length >0){
+                              if(_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length){
+                                showToast('请选择面选项');
+                                return;
+                              }
+
+                              for(var optionItem in _selectedMenuOptionList[item['menuCode']]){
+                                if(optionItem['currentPrice'] >0){
+                                  currentPrice += optionItem['currentPrice'];
+
+                                }
+                                optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
+                                optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
+                              }
+                            }
+
+
+                            var cartItem = {
+                              "menuCode": item['menuCode'],
+                              "mainTitle": item['mainTitle'],
+                              "image": item['homeImage'],
+                              "currentPrice": currentPrice,
+                              "optionGroupVoList": optionCodeList,
+                              "optionVoListMsg":optionTitle,
+                              "goodsNum": 1
+                            };
+                            publicAddCartMenu(cartItem, false).then((val) {
+                              setState(() {
+                                OverlayEntry entry = OverlayEntry(builder: (ctx) {
+                                  return ParabolaAnimateWidget(
+                                    rootKey,
+                                    temp,
+                                    floatOffset,
+                                    item['homeImage'],
+                                    callback,
+                                    duration: 1000,
+                                  );
+                                });
+
+                                callback = (status) {
+                                  if (status == AnimationStatus.completed) {
+                                    entry?.remove();
+                                  }
+                                };
+                                Overlay.of(rootKey.currentContext).insert(entry);
+
+                              });
+                              _changeInitialOption(item['menuCode'], menuindex);
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(15)),
+                            width: ScreenAdapter.width(250),
+                            height: ScreenAdapter.height(67),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: new DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage('assets/images/public_dingshi_submit.png'),
+                              ),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text(
+                                GString.getToString(
+                                    this._checkLanguage, "add_option_cart"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(32),
+                                  fontWeight: FontWeight.w500,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.optionBtnColor),
+                                )),
+                          ),
+                        ),
+
+                      ],
+                    ),
                   ],
-                ),
-              ],
+                );
+              },
             ),
         ),
       ),
@@ -2138,12 +1936,10 @@ print(myList);
   //第四个酒水分类
   _showCategoryFour(showItemList) {
     if (showItemList.length > 0) {
-      return Expanded(
-          child: Container(
-        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+      return Container(
         //height: 450,
         child: showCategoryFourItemList(showItemList),
-      ));
+      );
     } else {
       return Container(
         height: 0,
@@ -2155,12 +1951,12 @@ print(myList);
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8),
-          left: ScreenAdapter.width(45),
-          right: ScreenAdapter.width(45)),
+          left: ScreenAdapter.width(15),
+          right: ScreenAdapter.width(15)),
       child: GridView.builder(
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: ScreenAdapter.height(10),
+            mainAxisSpacing: ScreenAdapter.height(7),
             crossAxisCount: 4,
             childAspectRatio: 0.42),
         itemBuilder: (BuildContext context, int index) {
@@ -2176,7 +1972,7 @@ print(myList);
 
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(9), right: ScreenAdapter.width(9)),
+          left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
           onTapDown: (details) {
             temp = new Offset(
@@ -2235,7 +2031,7 @@ print(myList);
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 230.0, 523.0),
+                        publicShowMenuImage(item['homeImage'], 255.0, 525.0),
                         SizedBox(
                           height: ScreenAdapter.height(10),
                         ),
@@ -2301,16 +2097,14 @@ print(myList);
   //第五个分类 期间限定
   _showCategoryFive(showItemList) {
     if (showItemList.length > 0) {
-      return Expanded(
-          child: Container(
-            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            padding: EdgeInsets.only(
-                left: ScreenAdapter.width(8),
-                right: ScreenAdapter.width(8),
-                bottom: ScreenAdapter.height(20)),
-            //height: 450,
-            child: showCategoryFiveItemList(showItemList),
-          ));
+      return Container(
+        padding: EdgeInsets.only(
+            left: ScreenAdapter.width(8),
+            right: ScreenAdapter.width(8),
+            bottom: ScreenAdapter.height(20)),
+        //height: 450,
+        child: showCategoryFiveItemList(showItemList),
+      );
     } else {
       return Container(
         height: 0,
@@ -2332,9 +2126,6 @@ print(myList);
 
   showCategoryFiveItemOne(item,index) {
     Offset temp;
-
-    //(item['optionGroupVoList'].length >0) ? publicShowMenuOptionGroup(item['menuCode'], item['optionGroupVoList']):Container(height: 0,);
-
     var subtitle = "";
     if (item["subtitle"].length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
@@ -2349,164 +2140,171 @@ print(myList);
           padding: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
           margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-          child: Column(
-            children: [
-              Container(
-                padding: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5),),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    publicShowMenuImage(item['homeImage'], 485.0, 315.0),
-                    (item['optionGroupVoList']?.length >0) ? publicShowFiveMenuOptionGroupWidget(item['menuCode'],"menu$index"):Container(height: 0,),
-                  ],
-                ),
-              ),
-              Divider(
-                height: 1,
-                color: Color.fromRGBO(227, 227, 227, 1),
-              ),
-
-              //标题价格
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
+          child: StatefulBuilder(
+            builder: (BuildContext context, menuFiveindex){
+              return Column(
                 children: [
-                  Expanded(
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            //菜单Title
-                            Container(
-                              padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
-                              child: publicShowMenuTitle(item['mainTitle'], 42.0, Gcolor.mainTitleColor),
-                            ),
-                            //副标题
-                            subtitle != ""
-                                ? Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                '${subtitle}',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(
-                                        GFontSize
-                                            .menuThreeListFoodSubtitle),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.mainTitleColor)),
-                              ),
-                            )
-                                : Container(width: 0,),
-
-
-
-
-                          ],
-                        ),
-                      )
-                  ),
-                  //价格展示
                   Container(
-                      width:ScreenAdapter.width(240),
-                    child: publicShowMenuPrice(
-                        item['currentPrice'],
-                        35.0,
-                        Gcolor.mainTitleColor,
-                        55.0,
-                        Gcolor.priceColor,
-                        28.0,
-                        Gcolor.mainTitleColor),
-                  ),
-                  //确认按钮
-                  InkWell(
-                    onTapDown: (details) {
-                      temp = new Offset(
-                          details.globalPosition.dx, details.globalPosition.dy);
-                      RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                      floatOffset = renderBox.localToGlobal(Offset.zero);
-                    },
-                    onTap: () {
-                      Function callback;
-                      //判断选择后option是否与optiongroup相等
-                      if(_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length){
-                        showToast('请选择面选项');
-                        return;
-                      }
-                      var currentPrice = item['currentPrice'];
-                      var optionCodeList = "";
-                      var optionTitle = "";
-                      for(var optionItem in _selectedMenuOptionList[item['menuCode']]){
-                        if(optionItem['currentPrice'] >0){
-                          currentPrice += optionItem['currentPrice'];
-
-                        }
-                        optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
-                        optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
-                      }
-
-                      var cartItem = {
-                        "menuCode": item['menuCode'],
-                        "mainTitle": item['mainTitle'],
-                        "image": item['homeImage'],
-                        "currentPrice": currentPrice,
-                        "optionGroupVoList": optionCodeList,
-                        "optionVoListMsg":optionTitle,
-                        "goodsNum": 1
-                      };
-                      publicAddCartMenu(cartItem, false).then((val) {
-                        setState(() {
-                          OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                            return ParabolaAnimateWidget(
-                              rootKey,
-                              temp,
-                              floatOffset,
-                              item['homeImage'],
-                              callback,
-                              duration: 1000,
-                            );
-                          });
-
-                          callback = (status) {
-                            if (status == AnimationStatus.completed) {
-                              entry?.remove();
-                            }
-                          };
-                          Overlay.of(rootKey.currentContext).insert(entry);
-
-                          //将选中option还原为默认
-                          _selectedMenuOptionList[item['menuCode']] = _initialMenuOption[item['menuCode']];
-                        });
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(top: ScreenAdapter.height(15)),
-                      width: ScreenAdapter.width(200),
-                      height: ScreenAdapter.height(87),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: AssetImage('assets/images/btn002.png'),
-                        ),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
-                      ),
-                      child: Text(
-                          GString.getToString(
-                              this._checkLanguage, "add_option_cart"),
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(32),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(
-                                Gcolor.settlementBtnColor),
-                          )),
+                    padding: EdgeInsets.only(bottom: ScreenAdapter.height(5),),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        publicShowMenuImage(item['homeImage'], 490.0, 325.0),
+                        (item['optionGroupVoList']?.length >0) ? publicShowFiveMenuOptionGroupWidget(item['menuCode'],menuFiveindex):Container(height: 0,),
+                      ],
                     ),
                   ),
+                  Divider(
+                    height: 1,
+                    color: Color.fromRGBO(227, 227, 227, 1),
+                  ),
 
+                  //标题价格
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Expanded(
+                          child: Container(
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                //菜单Title
+                                Container(
+                                  padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
+                                  child: publicShowMenuTitle(item['mainTitle'], 42.0, Gcolor.mainTitleColor),
+                                ),
+                                //副标题
+                                subtitle != ""
+                                    ? Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    '${subtitle}',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize
+                                                .menuThreeListFoodSubtitle),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor)),
+                                  ),
+                                )
+                                    : Container(width: 0,),
+
+
+
+
+                              ],
+                            ),
+                          )
+                      ),
+                      //价格展示
+                      Container(
+                        width:ScreenAdapter.width(240),
+                        child: publicShowMenuPrice(
+                            item['currentPrice'],
+                            35.0,
+                            Gcolor.mainTitleColor,
+                            54.0,
+                            Gcolor.priceColor,
+                            28.0,
+                            Gcolor.mainTitleColor),
+                      ),
+                      //确认按钮
+                      InkWell(
+                        onTapDown: (details) {
+                          temp = new Offset(
+                              details.globalPosition.dx, details.globalPosition.dy);
+                          RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                          floatOffset = renderBox.localToGlobal(Offset.zero);
+                        },
+                        onTap: () {
+                          Function callback;
+                          //判断选择后option是否与optiongroup相等
+                          var optionCodeList = "";
+                          var optionTitle = "";
+                          var currentPrice = item['currentPrice'];
+                          if(item['optionGroupVoList']?.length >0){
+                            if(_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length){
+                              showToast('请选择面选项');
+                              return;
+                            }
+
+                            for(var optionItem in _selectedMenuOptionList[item['menuCode']]){
+                              if(optionItem['currentPrice'] >0){
+                                currentPrice += optionItem['currentPrice'];
+
+                              }
+                              optionCodeList += (optionCodeList !="") ? ","+optionItem['optionCode'] : optionItem['optionCode'];
+                              optionTitle += (optionTitle !="") ? ","+optionItem['mainTitle'] : optionItem['mainTitle'];
+                            }
+                          }
+
+
+                          var cartItem = {
+                            "menuCode": item['menuCode'],
+                            "mainTitle": item['mainTitle'],
+                            "image": item['homeImage'],
+                            "currentPrice": currentPrice,
+                            "optionGroupVoList": optionCodeList,
+                            "optionVoListMsg":optionTitle,
+                            "goodsNum": 1
+                          };
+                          publicAddCartMenu(cartItem, false).then((val) {
+                            setState(() {
+                              OverlayEntry entry = OverlayEntry(builder: (ctx) {
+                                return ParabolaAnimateWidget(
+                                  rootKey,
+                                  temp,
+                                  floatOffset,
+                                  item['homeImage'],
+                                  callback,
+                                  duration: 1000,
+                                );
+                              });
+
+                              callback = (status) {
+                                if (status == AnimationStatus.completed) {
+                                  entry?.remove();
+                                }
+                              };
+                              Overlay.of(rootKey.currentContext).insert(entry);
+
+                            });
+                            _changeInitialOption(item['menuCode'], menuFiveindex);
+                          });
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(15)),
+                          width: ScreenAdapter.width(250),
+                          height: ScreenAdapter.height(67),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            image: new DecorationImage(
+                              fit: BoxFit.fitWidth,
+                              image: AssetImage('assets/images/public_dingshi_submit.png'),
+                            ),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
+                          ),
+                          child: Text(
+                              GString.getToString(
+                                  this._checkLanguage, "add_option_cart"),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(32),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.optionBtnColor),
+                              )),
+                        ),
+                      ),
+
+                    ],
+                  ),
                 ],
-              ),
-            ],
+              );
+            },
           ),
         ),
       ),
@@ -2516,146 +2314,149 @@ print(myList);
   //购物车
   _showShoppingCart() {
     return Container(
-      color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-      width: ScreenAdapter.width(1080),
       height: ScreenAdapter.height(320),
-      padding: EdgeInsets.only(
-          left: ScreenAdapter.width(20),
-          top: ScreenAdapter.height(10),
-          right: ScreenAdapter.width(20),
-          bottom: ScreenAdapter.height(10)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Stack(
         children: [
-          Expanded(
-              child: Container(
-            key: floatKey,
-            height: ScreenAdapter.height(272),
-            child: Row(
-              children: [
-                Container(
-                  width: ScreenAdapter.width(630),
-                  height: ScreenAdapter.height(272),
-                  color: ColorsUtil.hexToColor(Gcolor.cartListColor),
-                  child: GetBuilder<HomePageController>(
-                    builder: (_) {
-                      if (controller.cartItems.length == 0) {
-                        return Center(
-                          child: Text(GString.getToString(
-                              this._checkLanguage, "cart_tag")),
-                        );
-                      }
-                      return ListView(
-                        shrinkWrap: true,
-                        children: controller.cartItems
-                            .map((d) => generateCartList(context, d))
-                            .toList(),
-                      );
-                    },
-                  ),
-                ),
-                Container(
-                  width: ScreenAdapter.width(58),
-                  height: ScreenAdapter.height(272),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Image.asset('assets/images/up.png',
-                          width: ScreenAdapter.width(58),
-                          height: ScreenAdapter.height(58),
-                          fit: BoxFit.fitWidth),
-                      Image.asset('assets/images/down.png',
-                          width: ScreenAdapter.width(58),
-                          height: ScreenAdapter.height(58),
-                          fit: BoxFit.fitWidth)
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )),
-          Container(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    showDialogTag();
-                    //Get.find<HomePageController>().removeAllFromCart();
-                    print("Item removed from cart successfully");
-                  },
-                  child: Container(
-                    width: ScreenAdapter.width(319),
-                    height: ScreenAdapter.height(117),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      image: new DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: AssetImage('assets/images/btn001.png'),
-                      ),
-                      //设置圆角
-                      borderRadius: new BorderRadius.circular((16.0)),
+          Positioned(
+            bottom: 0,
+            child: Container(
+              color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+              width: ScreenAdapter.width(1080),
+              height: ScreenAdapter.height(320),
+              padding: EdgeInsets.only(
+                  left: ScreenAdapter.width(20),
+                  top: ScreenAdapter.height(10),
+                  right: ScreenAdapter.width(20),
+                  bottom: ScreenAdapter.height(10)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                        key: floatKey,
+                        height: ScreenAdapter.height(272),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: ScreenAdapter.width(630),
+                              height: ScreenAdapter.height(272),
+                              color: ColorsUtil.hexToColor(Gcolor.cartListColor),
+                              child: GetBuilder<HomePageController>(
+                                builder: (_) {
+                                  if (controller.cartItems.length == 0) {
+                                    return Center(
+                                      child: Text(GString.getToString(
+                                          this._checkLanguage, "cart_tag")),
+                                    );
+                                  }
+                                  return ListView(
+                                    shrinkWrap: true,
+                                    children: controller.cartItems
+                                        .map((d) => generateCartList(context, d))
+                                        .toList(),
+                                  );
+                                },
+                              ),
+                            ),
+                            Container(
+                              width: ScreenAdapter.width(58),
+                              height: ScreenAdapter.height(272),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Image.asset('assets/images/up.png',
+                                      width: ScreenAdapter.width(58),
+                                      height: ScreenAdapter.height(58),
+                                      fit: BoxFit.fitWidth),
+                                  Image.asset('assets/images/down.png',
+                                      width: ScreenAdapter.width(58),
+                                      height: ScreenAdapter.height(58),
+                                      fit: BoxFit.fitWidth)
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      )),
+                  Container(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            showDialogTag();
+                            //Get.find<HomePageController>().removeAllFromCart();
+                            print("Item removed from cart successfully");
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(319),
+                            height: ScreenAdapter.height(117),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: new DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage('assets/images/btn001.png'),
+                              ),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text(
+                                GString.getToString(
+                                    this._checkLanguage, "cancle_button"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(36),
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                  ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                )),
+                          ),
+                        ),
+                        SizedBox(height: ScreenAdapter.height(18)),
+                        InkWell(
+                          onTap: () {
+                            if (controller.cartItems.length == 0) {
+                              showToast("请先选择菜品");
+                              return false;
+                            }
+                            Navigator.pushNamed(context, '/settlement',arguments: {"checkLanguage": this._checkLanguage,"machineCode": this._machineCode});
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(319),
+                            height: ScreenAdapter.height(117),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              image: new DecorationImage(
+                                fit: BoxFit.fitWidth,
+                                image: AssetImage('assets/images/btn002.png'),
+                              ),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text(
+                                GString.getToString(
+                                    this._checkLanguage, "settlement_button"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(48),
+                                  fontWeight: FontWeight.w600,
+                                  color:
+                                  ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                )),
+                          ),
+                        ),
+                      ],
                     ),
-                    child: Text(
-                        GString.getToString(
-                            this._checkLanguage, "cancle_button"),
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(36),
-                          fontWeight: FontWeight.w600,
-                          color:
-                              ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                        )),
                   ),
-                ),
-                SizedBox(height: ScreenAdapter.height(18)),
-                InkWell(
-                  onTap: () {
-                    if (controller.cartItems.length == 0) {
-                      showToast("请先选择菜品");
-                      return false;
-                    }
-                    Navigator.pushNamed(context, '/settlement',arguments: {"checkLanguage": this._checkLanguage,"machineCode": this._machineCode});
-                  },
-                  child: Container(
-                    width: ScreenAdapter.width(319),
-                    height: ScreenAdapter.height(117),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      image: new DecorationImage(
-                        fit: BoxFit.fitWidth,
-                        image: AssetImage('assets/images/btn002.png'),
-                      ),
-                      //设置圆角
-                      borderRadius: new BorderRadius.circular((16.0)),
-                    ),
-                    child: Text(
-                        GString.getToString(
-                            this._checkLanguage, "settlement_button"),
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(48),
-                          fontWeight: FontWeight.w600,
-                          color:
-                              ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                        )),
-                  ),
-                ),
-              ],
+                ],
+              ),
             ),
-          ),
+          )
         ],
       ),
     );
   }
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
-    /*var subTitle;
-    var optionGroupVoList = json.decode(d.optionGroupVoList);
-    if (optionGroupVoList.length > 0) {
-      for (var i = 0; i < optionGroupVoList.length; i++) {
-        subTitle += ","+optionGroupVoList[i]["mainTitle"];
-      }
-    }*/
     return Padding(
       padding: EdgeInsets.all(2.0),
       child: Container(
@@ -2755,7 +2556,6 @@ print(myList);
     Get.find<HomePageController>().removeAllFromCart();
 
     controller.getCardList();
-    //Navigator.pop(context);
   }
 
   @override

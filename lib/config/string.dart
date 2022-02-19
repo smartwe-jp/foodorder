@@ -15,7 +15,13 @@ class GString{
 
         "cart_tag":"メニューをお選びください",
 
-        "add_option_cart":"確認"
+        "add_option_cart":"確認",
+        "settlement_total_price":"合計",
+        "settlement_small_ticket_tag":"領収書が必要ですのでこちらをご注文ください",
+        "settlement_payment_method":"支払方法の選択",
+        "settlement_payment_method_cash":"現金",
+        "settlement_payment_method_qr":"QRコード決済",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -29,7 +35,12 @@ class GString{
 
         "cart_tag":"请选择菜品",
 
-        "add_option_cart":"确认"
+        "add_option_cart":"确认",
+        "settlement_total_price":"合计",
+        "settlement_small_ticket_tag":"确认领取小票",
+        "settlement_payment_method":"请选择支付方式",
+        "settlement_payment_method_cash":"现金",
+        "settlement_payment_method_qr":"扫码支付",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -43,7 +54,12 @@ class GString{
 
         "cart_tag":"Please select dishes",
 
-        "add_option_cart":"Confirm"
+        "add_option_cart":"Confirm",
+        "settlement_total_price":"Total",
+        "settlement_small_ticket_tag":"We need a receipt, so please order us",
+        "settlement_payment_method":"Payment method",
+        "settlement_payment_method_cash":"Cash",
+        "settlement_payment_method_qr":"QR code settlement",
       };
     }
 

@@ -96,11 +96,11 @@ class _SettlementPageState extends State<SettlementPage> {
             ),
           )),
           Container(
-            height: ScreenAdapter.height(180),
+            height: ScreenAdapter.height(150),
               child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text('合計',
+              Text(GString.getToString(this._checkLanguage, "settlement_total_price"),
                   style: TextStyle(
                       fontSize:
                           ScreenAdapter.fontSize(GFontSize.menusettlementHeji),
@@ -131,7 +131,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         });
                       }
                   ),
-                  Text('領収書が必要ですのでこちらをご注文ください',
+                  Text(GString.getToString(this._checkLanguage, "settlement_small_ticket_tag"),
                       style: TextStyle(
                           fontSize:
                           ScreenAdapter.fontSize(GFontSize.menusettlementLingshoushu),
@@ -330,7 +330,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     top: ScreenAdapter.height(20),
                     bottom: ScreenAdapter.height(35)),
                 alignment: Alignment.centerLeft,
-                child: Text("支払方法の選択",
+                child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_cash"),
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(48),
                       fontWeight: FontWeight.w600,
@@ -361,7 +361,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("現金",
+                          Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(48),
                                 fontWeight: FontWeight.w600,
@@ -385,7 +385,6 @@ class _SettlementPageState extends State<SettlementPage> {
                   ),
                   InkWell(
                     onTap: (){
-                      print("qqqqqqqqq");
                       _doSubmitOrder();
                     },
                     child: Container(
@@ -404,7 +403,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text("QRコード決済",
+                          Text(GString.getToString(this._checkLanguage, "settlement_payment_method_qr"),
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(48),
                                 fontWeight: FontWeight.w600,
