@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/EventBus.dart';
@@ -33,6 +34,7 @@ class _SettlementCashPageState extends State<SettlementCashPage> {
   Timer outmoneytimer;
   Timer getoutmoneytimer;
   Timer endtimer;
+  Timer OutMoneytimer;
 
   var _allowStatus;
   var _stopStatus;
@@ -65,6 +67,7 @@ print(this._totalPrice );
     outmoneytimer?.cancel();
     getoutmoneytimer?.cancel();
     endtimer?.cancel();
+    OutMoneytimer?.cancel();
     eventBus.fire(new PayCubeEvent('支付成功...'));
     eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
@@ -76,7 +79,7 @@ print(this._totalPrice );
     String strartPayCube = await Paycube.strartPayCube;
     await Paycube.setReceiveEvent;
     allowtimer?.cancel();
-    allowtimer = Timer.periodic(Duration(milliseconds: 300), (Timer allowt) async {
+    allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
       _allowStatus =  await Paycube.getPayCubeAllowCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
@@ -104,7 +107,7 @@ print(this._totalPrice );
   getPutInMoney() async {
     await Paycube.setReceiveEvent;
     timer?.cancel();
-    timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
+    timer = Timer.periodic(Duration(milliseconds: 150), (Timer t) async {
       var result = await Paycube.getPayCubeMoney;print("投币金额result--------$result");
       if (int.parse(result) > 0) {
         setState(() {
@@ -132,7 +135,7 @@ print(this._totalPrice );
       var endStatus = await Paycube.endPayCube;
       await Paycube.setReceiveEvent;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 300), (Timer stopt) async {
+      stoptimer = Timer.periodic(Duration(milliseconds: 150), (Timer stopt) async {
 
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         //await Paycube.setReceiveEvent;
@@ -141,18 +144,16 @@ print(this._totalPrice );
           startOutPutMoney(putMoney);
           print("不准投币");
           stopt.cancel();
-          /*setState(() {
-            stoptimer?.cancel();
-          });*/
 
+        }else if(_stopStatus == "Error-A0--02"){
+          //处理中
+          sleep(Duration(milliseconds: 500));
         }else{
           sleep(Duration(milliseconds: 150));
           await Paycube.endPayCube;
           print("_stopStatus:$_stopStatus");
         }
       });
-
-
 
     } else if (putMoney == int.parse(this._totalPrice)) {
       //结束入金
@@ -190,20 +191,22 @@ print(this._totalPrice );
     String outResult = await Paycube.outPayCubeMoney(outStringMoney);print(outResult);
     await Paycube.setReceiveEvent;
     outmoneytimer?.cancel();
-    outmoneytimer = Timer.periodic(Duration(milliseconds: 300), (Timer outmoneyt) async {
+    outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
       _outStatus =  await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //获取出金金额
-        sleep(Duration(milliseconds: 300));
-        getPayCubeoutMoney();
+        sleep(Duration(milliseconds: 100));
+        //getPayCubeoutMoney();
+        //结束交易
+        newendtradepay();
         print("开始出币了");
         outmoneyt.cancel();
 
       }else if(_outStatus == "Error-A0--02"){
-        await Paycube.setReceiveEvent;
-        sleep(Duration(milliseconds: 500));
-        await Paycube.getPayCubeOutMoneyStatus;
+        //await Paycube.setReceiveEvent;
+        sleep(Duration(milliseconds: 300));
+        //await Paycube.getPayCubeOutMoneyStatus;
         print("_outStatus处理中:$_outStatus");
       }else{
         sleep(Duration(milliseconds: 200));
@@ -214,7 +217,7 @@ print(this._totalPrice );
 
   }
 
-  getPayCubeoutMoney() async {
+ /* getPayCubeoutMoney() async {
     getoutmoneytimer?.cancel();
     getoutmoneytimer = Timer.periodic(Duration(milliseconds: 300), (Timer getoutmoneyt) async {
       String result = await Paycube.getPayCubeOutMoney;
@@ -226,24 +229,9 @@ print(this._totalPrice );
         print("result ========= outStringMoney-------$result == $outStringMoney");
         //如果出金金额与找零金额相同，则关闭机器
         if (result == outStringMoney) {
-          //出金币种
-          sleep(Duration(milliseconds: 100));
-          String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
-          if(currencyString !=""){
-            setState(() {
-              _currencyString = currencyString;
-
-            });
-            print("_currencyString现金机出款币种:${currencyString}");
-          }
-
-
           //结束交易
           newendtradepay();
-
           getoutmoneyt.cancel();
-
-
           //outtimer.cancel();
         } else {
           print("出金错误了:${result}");
@@ -252,19 +240,25 @@ print(this._totalPrice );
         print("_getOutMoney现金机出款金额:$result");
       }
     });
-  }
+  }*/
 
   newendtradepay() async {
   //取引终了结束交易
   var endTrade = await Paycube.endTrade;
   await Paycube.setReceiveEvent;print("88888");
   endtimer?.cancel();
-  endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
+  endtimer = Timer.periodic(Duration(milliseconds: 200), (Timer endtradet) async {
     _endStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
     // 循环一定要记得设置取消条件，手动取消
     if (_endStatus == "EndSuccess" || _endStatus == "Error-A0--02") {
 
-      gotonewMyhome();
+      //如果出金金额大于0 则先获取出金币种，否则跳转
+      if(int.parse(outStringMoney) >0){
+        _getPayCubeOutMoney();
+      }else{
+        //去打印小票
+        doPrintOrderMenu();
+      }
 
       print("交易结束关闭了");
       endtradet.cancel();
@@ -278,6 +272,59 @@ print(this._totalPrice );
     }
   });
   }
+
+  _getPayCubeOutMoney() async {print("tongjichujin");
+  //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
+  OutMoneytimer?.cancel();
+  await Paycube.setReceiveEvent;
+  OutMoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outMoneyTime) async {
+    // 循环一定要记得设置取消条件，手动取消
+    String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
+    if(currencyString !=""){
+      setState(() {
+        _currencyString = currencyString;
+
+      });
+      print("_currencyString现金机出款币种:${currencyString}");
+      print("出金币种获取到了交易结束关闭了");
+      //汇报出金币种然后去打印小票
+      reportOutMoney();
+
+      //gotonewMyhome();
+      outMoneyTime.cancel();
+    }
+
+  });
+  }
+
+  //汇报出金币种,请求后台
+  reportOutMoney(){
+    var formData = {
+      "changeInfo": this._currencyString,
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+      "price": int.parse(this._getPutMoney)
+    };print(formData);
+    request('webBootToReport', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+print("huibao$response");
+      if (response['code'] == 200) {
+        //去打印小票
+        doPrintOrderMenu();
+      } else {
+
+      }
+    });
+
+
+  }
+
+  //去打印小票
+  doPrintOrderMenu(){
+    print("打印小票来了");
+    gotonewMyhome();
+  }
+  
 
   gotonewMyhome(){
     Navigator.pop(context);
@@ -338,14 +385,14 @@ print(this._totalPrice );
                     child: Column(
                       children: [
                         Center(
-                            child: Text("应付金额:$this._totalPrice",style: TextStyle(
+                            child: Text("应付金额:${this._totalPrice}",style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(38.0),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000")
                             ))
                         ),
                         Center(
-                            child: Text("已投金额:$this._getPutMoney",style: TextStyle(
+                            child: Text("已投金额:${this._getPutMoney}",style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(38.0),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000")
@@ -357,8 +404,8 @@ print(this._totalPrice );
                           },
                           child: Center(
                               child: Container(
-                                width: 50,
-                                height: 15,
+                                width: ScreenAdapter.width(250),
+                                height: ScreenAdapter.height(80),
                                 color: Colors.blue,
                                 child: Text("投币结束，打印小票"),
                               )

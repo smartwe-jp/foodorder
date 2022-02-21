@@ -21,6 +21,7 @@ class GString{
         "settlement_payment_method":"支払方法の選択",
         "settlement_payment_method_cash":"現金",
         "settlement_payment_method_qr":"QRコード決済",
+        "settlement_back":"戻る",
 
       };
     }else if(languageCode == 'CH'){
@@ -41,6 +42,7 @@ class GString{
         "settlement_payment_method":"请选择支付方式",
         "settlement_payment_method_cash":"现金",
         "settlement_payment_method_qr":"扫码支付",
+        "settlement_back":"返回",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -60,6 +62,7 @@ class GString{
         "settlement_payment_method":"Payment method",
         "settlement_payment_method_cash":"Cash",
         "settlement_payment_method_qr":"QR code settlement",
+        "settlement_back":"Back",
       };
     }
 

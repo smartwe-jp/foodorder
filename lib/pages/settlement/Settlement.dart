@@ -39,7 +39,6 @@ class _SettlementPageState extends State<SettlementPage> {
   void initState() {
     super.initState();
 
-
     this._checkLanguage = widget.arguments['checkLanguage'];
     this._machineCode = widget.arguments['machineCode'];
 
@@ -293,6 +292,7 @@ class _SettlementPageState extends State<SettlementPage> {
         value: SystemUiOverlayStyle.light,
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
               width: ScreenAdapter.getScreenWidth(),
@@ -329,13 +329,14 @@ class _SettlementPageState extends State<SettlementPage> {
               right: ScreenAdapter.width(40)),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: EdgeInsets.only(
                     top: ScreenAdapter.height(20),
                     bottom: ScreenAdapter.height(35)),
                 alignment: Alignment.centerLeft,
-                child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_cash"),
+                child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(48),
                       fontWeight: FontWeight.w600,
@@ -367,7 +368,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
+                          Text(GString.getToString(this._checkLanguage, "settlement_payment_method_cash"),
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(48),
                                 fontWeight: FontWeight.w600,
@@ -445,22 +446,28 @@ class _SettlementPageState extends State<SettlementPage> {
                   ),
 
                 ],
-              )
-            ],
               ),
-            ),
-            InkWell(
-              onTap: () {
-                Navigator.pop(context);
-              },
-              child: InkWell(
-                onTap: () {},
+              InkWell(
+                onTap: (){
+                  Navigator.pop(context);
+
+                  Future.delayed(Duration.zero, () {
+                    Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": this._checkLanguage});
+                  });
+
+                },
                 child: Container(
-                  padding: EdgeInsets.only(
-                      top: ScreenAdapter.height(20),
-                      bottom: ScreenAdapter.height(35)),
+                  width: ScreenAdapter.width(240),
+                  height: ScreenAdapter.height(90),
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
                   alignment: Alignment.center,
-                  child: Text("戻る",
+                  decoration: BoxDecoration(
+                    image: new DecorationImage(
+                      image: AssetImage('assets/images/settlement_back.png'),
+                    ),
+                  ),
+                  child: Text(GString.getToString(this._checkLanguage, "settlement_back"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(48),
                         fontWeight: FontWeight.w600,
@@ -468,7 +475,10 @@ class _SettlementPageState extends State<SettlementPage> {
                       )),
                 ),
               ),
+            ],
+              ),
             ),
+
           ],
         ),
       ),
