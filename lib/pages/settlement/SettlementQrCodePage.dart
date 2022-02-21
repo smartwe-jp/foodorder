@@ -32,7 +32,8 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
     super.initState();
 
     this._orderId = widget.arguments['orderId'];
-    _getMachineInfo();
+    this._machineCode = widget.arguments['machineCode'];
+    //_getMachineInfo();
     _scanQrCodeController = TextEditingController();
 
 

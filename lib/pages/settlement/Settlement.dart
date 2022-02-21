@@ -213,7 +213,7 @@ class _SettlementPageState extends State<SettlementPage> {
     );
   }
 
-  _doSubmitOrder(){
+  _doSubmitOrder(paymentMethod){
     if(_machineCode !=""){
       var cartItems = controller.getcartItems;
       List selectedItem = [];
@@ -237,19 +237,23 @@ class _SettlementPageState extends State<SettlementPage> {
         }
         selectedItem.add(optionMap);
       }
-
+      var orderTotlaPrice = getItemTotal(controller.cartItems);
       var formData = {
         "language": this._checkLanguage,
         "machineCode": _machineCode,
         "orderLineList": selectedItem,
-        "total": getItemTotal(controller.cartItems)
+        "total": orderTotlaPrice
       };print(formData);
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
 
         if (response['code'] == 200) {
+          if(paymentMethod == "cash"){
+            doShowSettlementCashPage(response['data'],orderTotlaPrice);
+          }else if(paymentMethod == "qrCode"){
+            doShowSettlementQrCodePage(response['data']);
+          }
 
-          doShowSettlementQrCodePage(response['data']);
           setState(() {
           });
         } else {
@@ -260,12 +264,13 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //弹窗加载新widget页面
-  doShowSettlementCashPage() async {
+  doShowSettlementCashPage(orderId, totalPrice) async {
     var result = await showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (context) {
-          return SettlementCashPage();
+          return SettlementCashPage(arguments: {"orderId": orderId, "totalPrice":totalPrice, "machineCode":_machineCode});
+
         });
   }
 
@@ -276,7 +281,7 @@ class _SettlementPageState extends State<SettlementPage> {
         context: context,
         builder: (context) {
           return SettlementQrCodePage(
-              arguments: {"orderId": orderId});
+              arguments: {"orderId": orderId, "machineCode":_machineCode});
         });
   }
 
@@ -343,7 +348,8 @@ class _SettlementPageState extends State<SettlementPage> {
                 children: [
                   InkWell(
                     onTap: () {//Crash
-                      doShowSettlementCashPage();
+                      _doSubmitOrder("cash");
+                      //doShowSettlementCashPage();
                     },
                     child: Container(
                       padding: EdgeInsets.only(
@@ -385,7 +391,7 @@ class _SettlementPageState extends State<SettlementPage> {
                   ),
                   InkWell(
                     onTap: (){
-                      _doSubmitOrder();
+                      _doSubmitOrder("qrCode");
                     },
                     child: Container(
                       padding: EdgeInsets.only(

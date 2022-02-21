@@ -3,6 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
+import 'package:foodorder/services/EventBus.dart';
+import 'package:paycube/paycube.dart';
+import 'package:get/get.dart';
+import 'package:foodorder/controller/homePageController.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -11,9 +15,24 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
+  final HomePageController controller = Get.put(HomePageController());
+
   @override
   void initState() {
     super.initState();
+
+    //进入页面后打开现金机
+    OpenPayCube();
+
+    //监听增加打开现金机的广播
+    eventBus.on<PayCubeEvent>().listen((event) {
+      OpenPayCube();
+    });
+
+    //监听清除购物车的广播
+    eventBus.on<clearCartEvent>().listen((event) {
+      _clearCartList();
+    });
 
   }
 
@@ -21,6 +40,29 @@ class _HomePageState extends State<HomePage> {
   void dispose() {
     // TODO: implement dispose
     super.dispose();
+  }
+
+  //打开打印机
+  OpenPayCube() async {
+    String checkStatus = await Paycube.CheckPayCubeStatus;
+
+    //如果检测现金机打开错误，则重新打开一下
+    if(checkStatus == "openError"){
+      String openStatus = await Paycube.openPayCube;
+      print("机器未打开lib未null，重新打开并连接了");
+    }else{
+      await Paycube.setReceiveEvent;
+      print("机器已打开，并setreceive");
+    }
+
+    //await Paycube.endTrade;
+
+  }
+
+  _clearCartList() async {
+    Get.find<HomePageController>().removeAllFromCart();
+
+    controller.getCardList();
   }
 
   @override

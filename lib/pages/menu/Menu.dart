@@ -349,8 +349,15 @@ class _MenuPageState extends State<MenuPage> {
         fit: BoxFit.fill,
         width: ScreenAdapter.width(imgWidth),
         height: ScreenAdapter.height(imgHeight),
-        progressIndicatorBuilder: (context, url, downloadProgress) =>
-            CircularProgressIndicator(value: downloadProgress.progress),
+        placeholder: (context, url) => Container(
+          width: ScreenAdapter.width(200),
+          height: ScreenAdapter.height(200),
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+        ),
         errorWidget: (context, url, error) => Icon(Icons.error),
       ),
     );
@@ -563,51 +570,7 @@ class _MenuPageState extends State<MenuPage> {
         var optionVolistSon = optionVoList[j];
 
 
-        if (optionVolistSon['homeImage'] != "") {
-          optionSons.add(Container(
-            alignment: Alignment.center,
-            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
-            child: InkWell(
-              onTap: (){
-                _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
-
-              },
-              child: Stack(
-                children: [
-                  Container(
-                      width: ScreenAdapter.width(220),
-                      height: ScreenAdapter.height(60),
-                      decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: NetworkImage(optionVolistSon['homeImage']),
-                        ),
-                      ),
-                  ),
-                  //绝对定位 盖章
-                  (optionVolistSon['checked'] == true)
-                      ? Positioned(
-                    left: ScreenAdapter.width(10),
-                    top: ScreenAdapter.height(5),
-                    child: Container(
-                        width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(50),
-                        alignment:Alignment.center,
-                        child: Image.asset(
-                          'assets/images/optionChecked.png',
-                          width: ScreenAdapter.width(50),
-                          fit: BoxFit.fitWidth,
-                        )
-                    ),
-                  )
-                      : Container(
-                    height: 0,
-                  ),
-                ],
-              ),
-            ),
-          ));
-        }else if(optionVolistSon['buttonColorValue'] != ""){
+        if(optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != ""){
           optionSons.add(Container(
             alignment: Alignment.center,
             padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
@@ -623,12 +586,19 @@ class _MenuPageState extends State<MenuPage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-
+                        //设置阴影
+                        boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
                       ),
-                      child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(28.0),
-                        fontWeight: FontWeight.w500,
-                        color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),),)
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ?  Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                          Text(optionVolistSon['mainTitle'],style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(28.0),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),),),
+                        ],
+                      )
                   ),
                   //绝对定位 盖章
                   (optionVolistSon['checked'] == true)
@@ -668,16 +638,29 @@ class _MenuPageState extends State<MenuPage> {
                       height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-                        image: new DecorationImage(
-                          fit: BoxFit.fitWidth,
-                          image: AssetImage('assets/images/public_index_submit.png'),
+                        //color: ColorsUtil.hexToColor("#C47829"),
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            ColorsUtil.hexToColor("#C47829"),
+                            ColorsUtil.hexToColor("#854610"),
+                          ],
                         ),
+                        //设置阴影
+                        boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
 
                       ),
-                      child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                        fontWeight: FontWeight.w500,
-                        fontSize: ScreenAdapter.fontSize(28.0),
-                        color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ? Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                          Text("${optionVolistSon['mainTitle']}",style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(28.0),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),)),
+                        ],
+                      )
                   ),
                   //绝对定位 盖章
                   (optionVolistSon['checked'] == true)
@@ -754,53 +737,7 @@ class _MenuPageState extends State<MenuPage> {
           var optionVolistSon = optionVoList[j];
 
 
-          if (optionVolistSon['homeImage'] != "") {
-            optionSons.add(Container(
-              padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
-              child: InkWell(
-                onTap: (){
-                  _changeOption(menuCode,optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"],setFirstState);
-
-                },
-                child: Stack(
-                  children: [
-                    Container(
-                        width: ScreenAdapter.width(130),
-                        height: ScreenAdapter.height(50),
-                        decoration: BoxDecoration(
-                          image: new DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            image: NetworkImage(optionVolistSon['homeImage']),
-                          ),
-                        ),
-                        //child: Text(optionVolistSon['mainTitle'])
-                    ),
-                    //绝对定位 盖章
-                    (optionVolistSon['checked'] == true)
-                        ? Positioned(
-                      left: ScreenAdapter.width(10),
-                      top: ScreenAdapter.height(5),
-                      child: Container(
-                          width: ScreenAdapter.width(120),
-                          height: ScreenAdapter.height(45),
-                          //padding: EdgeInsets.all(16.0),
-                          alignment:Alignment.center,
-                          child: Image.asset(
-                            'assets/images/optionChecked.png',
-                            width: ScreenAdapter.width(40),
-                            //height: ScreenAdapter.height(75),
-                            fit: BoxFit.fitWidth,
-                          )
-                      ),
-                    )
-                        : Container(
-                      height: 0,
-                    ),
-                  ],
-                ),
-              ),
-            ));
-          }else if(optionVolistSon['buttonColorValue'] != ""){
+          if(optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != ""){
             optionSons.add(Container(
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(2)),
               child: InkWell(
@@ -815,12 +752,19 @@ class _MenuPageState extends State<MenuPage> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-
+                          //设置阴影
+                          boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
                         ),
-                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: ScreenAdapter.fontSize(28.0),
-                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ?  Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                            Text(optionVolistSon['mainTitle'],style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenAdapter.fontSize(25.0),
+                              color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),)),
+                          ],
+                        )
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
@@ -861,16 +805,29 @@ class _MenuPageState extends State<MenuPage> {
                         height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          image: new DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            image: AssetImage('assets/images/ximian1.png'),
+                          //color: ColorsUtil.hexToColor("#C47829"),
+                          gradient: LinearGradient(
+                            begin: Alignment.centerLeft,
+                            end: Alignment.centerRight,
+                            colors: [
+                              ColorsUtil.hexToColor("#C47829"),
+                              ColorsUtil.hexToColor("#854610"),
+                            ],
                           ),
+                          //设置阴影
+                          boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: ScreenAdapter.fontSize(28.0),
-                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ?  Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                            Text("${optionVolistSon['mainTitle']}",style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(25.0),
+                              fontWeight: FontWeight.w500,
+                              color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),)),
+                          ],
+                        )
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
@@ -954,7 +911,7 @@ class _MenuPageState extends State<MenuPage> {
           var optionVolistSon = optionVoList[j];
 
 
-          if (optionVolistSon['homeImage'] != "") {
+          /*if (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) {
             optionSons.add(Container(
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
               child: InkWell(
@@ -998,7 +955,7 @@ class _MenuPageState extends State<MenuPage> {
                 ),
               ),
             ));
-          }else if(optionVolistSon['buttonColorValue'] != ""){
+          }else */if(optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != ""){
             optionSons.add(Container(
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
               child: InkWell(
@@ -1013,12 +970,19 @@ class _MenuPageState extends State<MenuPage> {
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-
+                          //设置阴影
+                          boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
                         ),
-                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(25.0),
-                          fontWeight: FontWeight.w500,
-                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ? Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                            Text("${optionVolistSon['mainTitle']}",style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(25.0),
+                              fontWeight: FontWeight.w500,
+                              color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),)),
+                          ],
+                        )
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
@@ -1058,16 +1022,29 @@ class _MenuPageState extends State<MenuPage> {
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
-                          image: new DecorationImage(
-                            fit: BoxFit.fitWidth,
-                            image: AssetImage('assets/images/public_dingshi_option.png'),
-                          ),
+                          //color: ColorsUtil.hexToColor("#C47829"),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                ColorsUtil.hexToColor("#C47829"),
+                                ColorsUtil.hexToColor("#854610"),
+                              ],
+                            ),
+                          //设置阴影
+                          boxShadow: [BoxShadow(color: Colors.black26, offset: Offset(2, 3), blurRadius: 2.0, spreadRadius: 0), ],
 
                         ),
-                        child: Text(optionVolistSon['mainTitle'],style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(25.0),
-                          fontWeight: FontWeight.w500,
-                          color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),))
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null) ? Image.network(optionVolistSon['homeImage'],width: ScreenAdapter.width(30),height: ScreenAdapter.height(30),fit: BoxFit.fitWidth) :Container(width: 0,),
+                            Text("${optionVolistSon['mainTitle']}",style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(25.0),
+                              fontWeight: FontWeight.w500,
+                              color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),)),
+                          ],
+                        )
                     ),
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
