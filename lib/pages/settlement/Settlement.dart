@@ -250,7 +250,7 @@ class _SettlementPageState extends State<SettlementPage> {
           if(paymentMethod == "cash"){
             doShowSettlementCashPage(response['data'],orderTotlaPrice);
           }else if(paymentMethod == "qrCode"){
-            doShowSettlementQrCodePage(response['data']);
+            doShowSettlementQrCodePage(response['data'],orderTotlaPrice);
           }
 
           setState(() {
@@ -273,14 +273,14 @@ class _SettlementPageState extends State<SettlementPage> {
         });
   }
 
-  doShowSettlementQrCodePage(orderId) async {
+  doShowSettlementQrCodePage(orderId, totalPrice) async {
 
     var result = await showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (context) {
           return SettlementQrCodePage(
-              arguments: {"orderId": orderId, "machineCode":_machineCode});
+              arguments: {"orderId": orderId, "totalPrice":totalPrice, "machineCode":_machineCode});
         });
   }
 

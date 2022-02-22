@@ -501,7 +501,6 @@ class _MenuPageState extends State<MenuPage> {
           attr[i]['optionVoList'][j]["checked"] = false;
           if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
             attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
-            //print(_noChangeinitialmenuOption[menuCode][i]['optionVoList'][j]["checked"]);
           }
         }
       }
@@ -513,6 +512,7 @@ class _MenuPageState extends State<MenuPage> {
     _getSelectedAttrValue(menuCode, attr, setMenuState);
   }
 
+  //初始化默认option选项
   _changeInitialOption(menuCode, setMenuState) {
     var attr = _menuOption[menuCode];
     var initMenuOption = _noChangeinitialmenuOption[menuCode];
@@ -608,7 +608,7 @@ class _MenuPageState extends State<MenuPage> {
                       width: ScreenAdapter.width(220),
                       height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
+                      decoration: /*(optionVolistSon['checked'] == true)
                           ? BoxDecoration(
                               color: ColorsUtil.hexToColor("#BCA48E"),
                               //设置阴影
@@ -620,7 +620,7 @@ class _MenuPageState extends State<MenuPage> {
                                     spreadRadius: 0),
                               ],
                             )
-                          : BoxDecoration(
+                          : */BoxDecoration(
                               color: ColorsUtil.hexToColor(
                                   optionVolistSon['buttonColorValue']),
                               gradient: LinearGradient(
@@ -677,7 +677,7 @@ class _MenuPageState extends State<MenuPage> {
                               height: ScreenAdapter.height(60),
                               padding: EdgeInsets.only(
                                   top: ScreenAdapter.height(4),
-                                  left: ScreenAdapter.width(33)),
+                                  left: ScreenAdapter.width(30)),
                               //alignment: Alignment.topCenter,
                               decoration: BoxDecoration(
                                 image: DecorationImage(
@@ -690,7 +690,7 @@ class _MenuPageState extends State<MenuPage> {
                                 // 旋转
                                 transform: Matrix4.rotationZ(0.8),
                                 child: Text(
-                                    "${optionVolistSon['currentPrice'].toString()}",
+                                    "+${optionVolistSon['currentPrice'].toString()}",
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(13),
                                       color: ColorsUtil.hexToColor(
@@ -703,10 +703,10 @@ class _MenuPageState extends State<MenuPage> {
                         ),
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
-                          left: ScreenAdapter.width(10),
-                          top: ScreenAdapter.height(5),
+                          right: ScreenAdapter.width(10),
+                          top: ScreenAdapter.height(8),
                           child: Container(
-                              width: ScreenAdapter.width(200),
+                              width: ScreenAdapter.width(90),
                               height: ScreenAdapter.height(50),
                               alignment: Alignment.center,
                               child: Image.asset(
@@ -741,7 +741,7 @@ class _MenuPageState extends State<MenuPage> {
                       width: ScreenAdapter.width(220),
                       height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
+                      decoration: /*(optionVolistSon['checked'] == true)
                           ? BoxDecoration(
                               color: ColorsUtil.hexToColor("#BCA48E"),
                               //设置阴影
@@ -753,7 +753,7 @@ class _MenuPageState extends State<MenuPage> {
                                     spreadRadius: 0),
                               ],
                             )
-                          : BoxDecoration(
+                          : */BoxDecoration(
                               color: ColorsUtil.hexToColor(
                                   optionVolistSon['buttonColorValue']),
                               gradient: LinearGradient(
@@ -820,7 +820,7 @@ class _MenuPageState extends State<MenuPage> {
                                 // 旋转
                                 transform: Matrix4.rotationZ(0.8),
                                 child: Text(
-                                    "${optionVolistSon['currentPrice'].toString()}",
+                                    "+${optionVolistSon['currentPrice'].toString()}",
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(13),
                                       color: ColorsUtil.hexToColor(
@@ -833,10 +833,10 @@ class _MenuPageState extends State<MenuPage> {
                         ),
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
-                          left: ScreenAdapter.width(10),
-                          top: ScreenAdapter.height(5),
+                          right: ScreenAdapter.width(10),
+                          top: ScreenAdapter.height(8),
                           child: Container(
-                              width: ScreenAdapter.width(220),
+                              width: ScreenAdapter.width(100),
                               height: ScreenAdapter.height(50),
                               alignment: Alignment.center,
                               child: Image.asset(
@@ -925,7 +925,7 @@ class _MenuPageState extends State<MenuPage> {
                         width: ScreenAdapter.width(130),
                         height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
-                        decoration: (optionVolistSon['checked'] == true)
+                        decoration: /*(optionVolistSon['checked'] == true)
                             ? BoxDecoration(
                                 color: ColorsUtil.hexToColor("#BCA48E"),
                                 //设置阴影
@@ -937,7 +937,7 @@ class _MenuPageState extends State<MenuPage> {
                                       spreadRadius: 0),
                                 ],
                               )
-                            : BoxDecoration(
+                            : */BoxDecoration(
                                 color: ColorsUtil.hexToColor(
                                     optionVolistSon['buttonColorValue']),
                                 gradient: LinearGradient(
@@ -1004,7 +1004,7 @@ class _MenuPageState extends State<MenuPage> {
                                   // 旋转
                                   transform: Matrix4.rotationZ(0.8),
                                   child: Text(
-                                      "${optionVolistSon['currentPrice'].toString()}",
+                                      "+${optionVolistSon['currentPrice'].toString()}",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(13),
                                         color: ColorsUtil.hexToColor(
@@ -1018,10 +1018,10 @@ class _MenuPageState extends State<MenuPage> {
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10),
                             top: ScreenAdapter.height(5),
                             child: Container(
-                                width: ScreenAdapter.width(120),
+                                width: ScreenAdapter.width(60),
                                 height: ScreenAdapter.height(45),
                                 //padding: EdgeInsets.all(16.0),
                                 alignment: Alignment.center,
@@ -1057,7 +1057,7 @@ class _MenuPageState extends State<MenuPage> {
                         width: ScreenAdapter.width(130),
                         height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
-                        decoration: (optionVolistSon['checked'] == true)
+                        decoration: /*(optionVolistSon['checked'] == true)
                             ? BoxDecoration(
                                 color: ColorsUtil.hexToColor("#BCA48E"),
                                 //设置阴影
@@ -1069,7 +1069,7 @@ class _MenuPageState extends State<MenuPage> {
                                       spreadRadius: 0),
                                 ],
                               )
-                            : BoxDecoration(
+                            : */BoxDecoration(
                                 color: ColorsUtil.hexToColor(
                                     optionVolistSon['buttonColorValue']),
                                 gradient: LinearGradient(
@@ -1135,7 +1135,7 @@ class _MenuPageState extends State<MenuPage> {
                                   // 旋转
                                   transform: Matrix4.rotationZ(0.8),
                                   child: Text(
-                                      "${optionVolistSon['currentPrice'].toString()}",
+                                      "+${optionVolistSon['currentPrice'].toString()}",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(13),
                                         color: ColorsUtil.hexToColor(
@@ -1149,10 +1149,10 @@ class _MenuPageState extends State<MenuPage> {
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10),
                             top: ScreenAdapter.height(5),
                             child: Container(
-                                width: ScreenAdapter.width(120),
+                                width: ScreenAdapter.width(60),
                                 height: ScreenAdapter.height(45),
                                 //padding: EdgeInsets.all(16.0),
                                 alignment: Alignment.center,
@@ -1293,7 +1293,7 @@ class _MenuPageState extends State<MenuPage> {
                         width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
-                        decoration: (optionVolistSon['checked'] == true)
+                        decoration: /*(optionVolistSon['checked'] == true)
                             ? BoxDecoration(
                                 color: ColorsUtil.hexToColor("#BCA48E"),
                                 //设置阴影
@@ -1305,7 +1305,7 @@ class _MenuPageState extends State<MenuPage> {
                                       spreadRadius: 0),
                                 ],
                               )
-                            : BoxDecoration(
+                            : */BoxDecoration(
                                 color: ColorsUtil.hexToColor(
                                     optionVolistSon['buttonColorValue']),
                                 gradient: LinearGradient(
@@ -1371,7 +1371,7 @@ class _MenuPageState extends State<MenuPage> {
                                   // 旋转
                                   transform: Matrix4.rotationZ(0.8),
                                   child: Text(
-                                      "${optionVolistSon['currentPrice'].toString()}",
+                                      "+${optionVolistSon['currentPrice'].toString()}",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(13),
                                         color: ColorsUtil.hexToColor(
@@ -1385,10 +1385,10 @@ class _MenuPageState extends State<MenuPage> {
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10),
                             top: ScreenAdapter.height(5),
                             child: Container(
-                                width: ScreenAdapter.width(160),
+                                width: ScreenAdapter.width(60),
                                 height: ScreenAdapter.height(45),
                                 alignment: Alignment.center,
                                 child: Image.asset(
@@ -1423,7 +1423,7 @@ class _MenuPageState extends State<MenuPage> {
                         width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
-                        decoration: (optionVolistSon['checked'] == true)
+                        decoration: /*(optionVolistSon['checked'] == true)
                             ? BoxDecoration(
                                 color: ColorsUtil.hexToColor("#BCA48E"),
                                 //设置阴影
@@ -1435,7 +1435,7 @@ class _MenuPageState extends State<MenuPage> {
                                       spreadRadius: 0),
                                 ],
                               )
-                            : BoxDecoration(
+                            : */BoxDecoration(
                                 color: ColorsUtil.hexToColor(
                                     optionVolistSon['buttonColorValue']),
                                 gradient: LinearGradient(
@@ -1501,7 +1501,7 @@ class _MenuPageState extends State<MenuPage> {
                                   // 旋转
                                   transform: Matrix4.rotationZ(0.8),
                                   child: Text(
-                                      "${optionVolistSon['currentPrice'].toString()}",
+                                      "+${optionVolistSon['currentPrice'].toString()}",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(13),
                                         color: ColorsUtil.hexToColor(
@@ -1515,10 +1515,10 @@ class _MenuPageState extends State<MenuPage> {
                     //绝对定位 盖章
                     (optionVolistSon['checked'] == true)
                         ? Positioned(
-                            width: ScreenAdapter.width(10),
-                            height: ScreenAdapter.height(5),
+                            right: ScreenAdapter.width(10),
+                            top: ScreenAdapter.height(5),
                             child: Container(
-                                width: ScreenAdapter.width(160),
+                                width: ScreenAdapter.width(60),
                                 height: ScreenAdapter.height(45),
                                 alignment: Alignment.center,
                                 child: Image.asset(
@@ -1586,6 +1586,7 @@ class _MenuPageState extends State<MenuPage> {
     if (itemsFirst != null) {
       return Container(
         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+        padding: EdgeInsets.only(top:ScreenAdapter.height(10)),
         child: Column(
           children: [
             publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 955.0),
@@ -1702,11 +1703,12 @@ class _MenuPageState extends State<MenuPage> {
                               height: ScreenAdapter.height(75),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                image: new DecorationImage(
+                                color: ColorsUtil.hexToColor("#078E42"),
+                                /*image: new DecorationImage(
                                   fit: BoxFit.fitWidth,
                                   image: AssetImage(
                                       'assets/images/public_index_submit.png'),
-                                ),
+                                ),*/
                                 //设置圆角
                                 //borderRadius: new BorderRadius.circular((16.0)),
                               ),
@@ -1857,7 +1859,7 @@ class _MenuPageState extends State<MenuPage> {
             Container(
                 width: ScreenAdapter.width(533),
                 //height: ScreenAdapter.height(361),
-                child: Image.asset('assets/images/22.png',
+                child: Image.asset('assets/images/logo.png',
                     width: ScreenAdapter.width(533),
                     height: ScreenAdapter.height(361),
                     fit: BoxFit.fill)),
@@ -2154,9 +2156,9 @@ class _MenuPageState extends State<MenuPage> {
     if (showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
-            left: ScreenAdapter.width(8),
-            right: ScreenAdapter.width(8),
-            bottom: ScreenAdapter.height(20)),
+            //left: ScreenAdapter.width(8),
+            //right: ScreenAdapter.width(8),
+            bottom: ScreenAdapter.height(15)),
         //height: 450,
         child: showCategoryThreeItemList(showItemList),
       );
@@ -2358,13 +2360,14 @@ class _MenuPageState extends State<MenuPage> {
                           height: ScreenAdapter.height(67),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            image: new DecorationImage(
+                            color: ColorsUtil.hexToColor("#078E42"),
+                            /*image: new DecorationImage(
                               fit: BoxFit.fitWidth,
                               image: AssetImage(
                                   'assets/images/public_dingshi_submit.png'),
                             ),
                             //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
+                            borderRadius: new BorderRadius.circular((16.0)),*/
                           ),
                           child: Text(
                               GString.getToString(
@@ -2406,8 +2409,9 @@ class _MenuPageState extends State<MenuPage> {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8),
-          left: ScreenAdapter.width(15),
-          right: ScreenAdapter.width(15)),
+          //left: ScreenAdapter.width(15),
+          //right: ScreenAdapter.width(15)
+          ),
       child: GridView.builder(
         shrinkWrap: true,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -2486,7 +2490,7 @@ class _MenuPageState extends State<MenuPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 255.0, 525.0),
+                        publicShowMenuImage(item['homeImage'], 260.0, 525.0),
                         SizedBox(
                           height: ScreenAdapter.height(10),
                         ),
@@ -2554,9 +2558,9 @@ class _MenuPageState extends State<MenuPage> {
     if (showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
-            left: ScreenAdapter.width(8),
-            right: ScreenAdapter.width(8),
-            bottom: ScreenAdapter.height(20)),
+            //left: ScreenAdapter.width(8),
+            //right: ScreenAdapter.width(8),
+            bottom: ScreenAdapter.height(15)),
         //height: 450,
         child: showCategoryFiveItemList(showItemList),
       );
@@ -2750,13 +2754,14 @@ class _MenuPageState extends State<MenuPage> {
                           height: ScreenAdapter.height(67),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            image: new DecorationImage(
+                            color: ColorsUtil.hexToColor("#078E42"),
+                            /*image: new DecorationImage(
                               fit: BoxFit.fitWidth,
                               image: AssetImage(
                                   'assets/images/public_dingshi_submit.png'),
                             ),
                             //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
+                            borderRadius: new BorderRadius.circular((16.0)),*/
                           ),
                           child: Text(
                               GString.getToString(

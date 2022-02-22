@@ -8,7 +8,7 @@ class Gcolor{
   static const Color greyBackground = Color.fromRGBO(246, 246, 246, 1.0);//灰色背景颜色
 
 
-  static const String mainBackground = "#B58843";
+  static const String mainBackground = "#CEA264";
   static const String categoryTitleSelected = "#FFFFFF";
   static const String categoryTitle = "#CEA062";
   static const String mainTitleColor = "#000000";

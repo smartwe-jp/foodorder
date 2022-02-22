@@ -24,6 +24,7 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
   var _orderId;
   var _scanQrCode = "";
   String _machineCode = "";
+  var _totalPrice = "";
   String _payStatus = "请扫码……";
 
 
@@ -33,6 +34,7 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
 
     this._orderId = widget.arguments['orderId'];
     this._machineCode = widget.arguments['machineCode'];
+    this._totalPrice = widget.arguments['totalPrice'].toString();
     //_getMachineInfo();
     _scanQrCodeController = TextEditingController();
 
@@ -64,6 +66,7 @@ class _SettlementQrCodePageState extends State<SettlementQrCodePage> {
 
         if (response['code'] == 200) {
           if(response['data'] == true){
+            doPrintOrderMenu();
             setState(() {
               _payStatus = "支付成功，等待打印小票";
             });
@@ -81,6 +84,22 @@ print(response);
 
     }
   }
+
+  //去打印小票
+  doPrintOrderMenu(){
+    print("打印小票来了");
+    gotonewMyhome();
+  }
+
+
+  gotonewMyhome(){
+    Navigator.pop(context);
+
+    Future.delayed(Duration.zero, () {
+      Navigator.of(context).pushReplacementNamed('/home');
+    });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -102,7 +121,7 @@ print(response);
               padding: EdgeInsets.only(left:ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/images/22.png"),
+                  image: AssetImage("assets/images/logo.png"),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -129,7 +148,7 @@ print(response);
                     padding: EdgeInsets.only(left:ScreenAdapter.width(48), top:ScreenAdapter.height(0), right:ScreenAdapter.width(48), bottom:ScreenAdapter.height(4)),
 
                     child: Center(
-                        child: Text("应付金额3000",style: TextStyle(
+                        child: Text("应付金额:${this._totalPrice}",style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(38.0),
                             fontWeight: FontWeight.w500,
                             color: ColorsUtil.hexToColor("#000000")

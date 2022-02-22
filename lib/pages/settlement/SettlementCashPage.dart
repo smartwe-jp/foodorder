@@ -40,8 +40,9 @@ class _SettlementCashPageState extends State<SettlementCashPage> {
   var _stopStatus;
   var _outStatus;
   var _endStatus;
-  var outStringMoney; //找零金额
+  var outStringMoney = "0"; //找零金额
   var _currencyString; // 出金币种
+  var _isPrint = true; //是否打印小票，默认打印，如果取消订单则不打印。
 
   var _showPrintButton = false; //如果投币金额不足，则不显示打印按钮
 
@@ -53,7 +54,7 @@ class _SettlementCashPageState extends State<SettlementCashPage> {
     this._orderId = widget.arguments['orderId'];
     this._machineCode = widget.arguments['machineCode'];
     this._totalPrice = widget.arguments['totalPrice'].toString();
-print(this._totalPrice );
+
     //打开现金机
     Starttoubi();
   }
@@ -92,6 +93,8 @@ print(this._totalPrice );
         await Paycube.endTrade;
         sleep(Duration(milliseconds: 200));
         await Paycube.strartPayCube;
+      }else if (_allowStatus == "Error-A0--02") {
+        sleep(Duration(milliseconds: 300));
       }else{
 
         await Paycube.strartPayCube;
@@ -107,7 +110,7 @@ print(this._totalPrice );
   getPutInMoney() async {
     await Paycube.setReceiveEvent;
     timer?.cancel();
-    timer = Timer.periodic(Duration(milliseconds: 150), (Timer t) async {
+    timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
       var result = await Paycube.getPayCubeMoney;print("投币金额result--------$result");
       if (int.parse(result) > 0) {
         setState(() {
@@ -127,16 +130,16 @@ print(this._totalPrice );
     setState(() {
       timer?.cancel();
     });
-
+print("aaaaaa");
     int putMoney = int.parse(this._getPutMoney); //投币金额
     //如果投币金额大于等于收款金额，则判断找零或结束
     if (putMoney > int.parse(this._totalPrice)) {
 
-      var endStatus = await Paycube.endPayCube;
       await Paycube.setReceiveEvent;
+      var endStatus = await Paycube.endPayCube;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 150), (Timer stopt) async {
-
+      stoptimer = Timer.periodic(Duration(milliseconds: 300), (Timer stopt) async {
+        print("bbbbbbb");
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         //await Paycube.setReceiveEvent;
         // 循环一定要记得设置取消条件，手动取消
@@ -147,7 +150,9 @@ print(this._totalPrice );
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
-          sleep(Duration(milliseconds: 500));
+          sleep(Duration(milliseconds: 150));
+          await Paycube.endPayCube;
+          print("ccccccc");
         }else{
           sleep(Duration(milliseconds: 150));
           await Paycube.endPayCube;
@@ -188,8 +193,10 @@ print(this._totalPrice );
       outStringMoney = outMoney.toString();
       print("outStringMoney找零金额:${outStringMoney}");
     });
-    String outResult = await Paycube.outPayCubeMoney(outStringMoney);print(outResult);
     await Paycube.setReceiveEvent;
+
+    String outResult = await Paycube.outPayCubeMoney(outStringMoney);print(outResult);
+
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
       _outStatus =  await Paycube.getPayCubeOutMoneyStatus;
@@ -205,7 +212,7 @@ print(this._totalPrice );
 
       }else if(_outStatus == "Error-A0--02"){
         //await Paycube.setReceiveEvent;
-        sleep(Duration(milliseconds: 300));
+        sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
         print("_outStatus处理中:$_outStatus");
       }else{
@@ -256,8 +263,14 @@ print(this._totalPrice );
       if(int.parse(outStringMoney) >0){
         _getPayCubeOutMoney();
       }else{
-        //去打印小票
-        doPrintOrderMenu();
+        if(_isPrint == true){
+          //去打印小票
+          doPrintOrderMenu();
+        }else{
+          showToast("投币后已取消订单");
+          sleep(Duration(milliseconds: 3000));
+          gotonewMyhome();
+        }
       }
 
       print("交易结束关闭了");
@@ -287,8 +300,15 @@ print(this._totalPrice );
       });
       print("_currencyString现金机出款币种:${currencyString}");
       print("出金币种获取到了交易结束关闭了");
-      //汇报出金币种然后去打印小票
-      reportOutMoney();
+      if(_isPrint == true){
+        //汇报出金币种然后去打印小票
+        reportOutMoney();
+      }else{
+        showToast("投币后已取消订单");
+        sleep(Duration(milliseconds: 3000));
+        gotonewMyhome();
+      }
+
 
       //gotonewMyhome();
       outMoneyTime.cancel();
@@ -334,6 +354,27 @@ print("huibao$response");
     });
   }
 
+  //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页
+  CancelOrder(){
+    //已投钱
+    if(int.parse(_getPutMoney) >0){
+      setState(() {
+        _isPrint = false;
+        _totalPrice = "0";
+      });
+      //如果现金机投币大于0后取消，则直接关机出金
+      Endtoubi();
+    }else{
+      setState(() {
+        _isPrint = false;
+        _totalPrice = "0";
+        _getPutMoney = "0";
+      });
+      //如果现金机投币大于0后取消，则直接关机出金
+      Endtoubi();
+    }
+  }
+
 
 
 
@@ -354,15 +395,15 @@ print("huibao$response");
               width: ScreenAdapter.width(640),
               height: ScreenAdapter.height(580),
               padding: EdgeInsets.only(left:ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
-              decoration: BoxDecoration(
+              /*decoration: BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage("assets/images/22.png"),
                   fit: BoxFit.fill,
                 ),
-              ),
+              ),*/
               child: Column(
                 children: [
-                  InkWell(
+                  /*InkWell(
                     onTap: (){
                       Navigator.pop(context);
                     },
@@ -377,7 +418,7 @@ print("huibao$response");
                         ],
                       ),
                     ),
-                  ),
+                  ),*/
 
                   Container(
                     padding: EdgeInsets.only(left:ScreenAdapter.width(48), top:ScreenAdapter.height(0), right:ScreenAdapter.width(48), bottom:ScreenAdapter.height(4)),
@@ -397,6 +438,19 @@ print("huibao$response");
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000")
                             ))
+                        ),
+                        InkWell(
+                          onTap: (){
+                            CancelOrder();
+                          },
+                          child: Center(
+                              child: Container(
+                                width: ScreenAdapter.width(250),
+                                height: ScreenAdapter.height(80),
+                                color: Colors.lightBlueAccent,
+                                child: Text("取消购买"),
+                              )
+                          ),
                         ),
                         _showPrintButton == true ? InkWell(
                           onTap: (){
