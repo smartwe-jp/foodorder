@@ -36,7 +36,7 @@ class GString{
 
         "cart_tag":"请选择菜品",
 
-        "add_option_cart":"确认",
+        "add_option_cart":"确 认",
         "settlement_total_price":"合计",
         "settlement_small_ticket_tag":"确认领取小票",
         "settlement_payment_method":"请选择支付方式",

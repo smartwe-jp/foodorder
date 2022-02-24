@@ -34,4 +34,7 @@ class GFontSize{
 
   static const double menusettlementHeji = 70;
   static const double menusettlementLingshoushu = 28;
+
+  static const double menusettlementBottomHeji = 48;
+  static const double menusettlementBottomPrice = 72;
 }

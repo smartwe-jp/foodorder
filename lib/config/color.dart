@@ -13,10 +13,12 @@ class Gcolor{
   static const String categoryTitle = "#CEA062";
   static const String mainTitleColor = "#000000";
   static const String optionBtnColor = "#FFFFFF";
+  static const String optionBtnColorBlack = "#FFFFFF";
   static const String priceColor = "#A61C1C";
   static const String whiteColor = "#F9F9F9";
   static const String foodTagColor = "#777777";
   static const String settlementBtnColor = "#FFFFFF";
   static const String settlementBackgroundColor = "#FFFFFF";
   static const String cartListColor = "#F3F3F3";
+  static const String mainBottomSettlementColor = "#000000";
 }

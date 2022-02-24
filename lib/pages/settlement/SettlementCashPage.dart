@@ -342,7 +342,23 @@ print("huibao$response");
   //去打印小票
   doPrintOrderMenu(){
     print("打印小票来了");
-    gotonewMyhome();
+    var formData = {
+      "orderId": this._orderId,
+    };print(formData);
+    request('webBootToPrint', method: 'GET', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      print("print$response");
+      if (response['code'] == 200) {
+        //去打印小票
+        //doPrintOrderMenu();
+        showToast("打印小票");
+        sleep(Duration(milliseconds: 3000));
+        gotonewMyhome();
+      } else {
+
+      }
+    });
+
   }
   
 
