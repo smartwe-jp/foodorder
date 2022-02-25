@@ -87,9 +87,9 @@ class _SettlementPageState extends State<SettlementPage> {
 
     //打开现金机
     Starttoubi();
+    //CancelOrder();
+    //newendtradepay();
 
-    /*
-    * [{id: 31, shop_id: 17, name: Shoefly 99999, image: https://rukminim1.flixcart.com/image/612/612/j95y4cw0/shoe/d/p/8/sho-black-303-9-shoefly-black-original-imaechtbjzqbhygf.jpeg?q=70, price: 200.0, fav: 0, rating: 4.9, classid: 4, datetime: null}, {id: 33, shop_id: 4, name: Running Shoe Brooks Highly, image: https://cdn.pixabay.com/photo/2014/06/18/18/42/running-shoe-371625_960_720.jpg, price: 3001.0, fav: 0, rating: 3.5, classid: 2, datetime: null}]*/
   }
 
   @override
@@ -441,7 +441,7 @@ class _SettlementPageState extends State<SettlementPage> {
       await Paycube.setReceiveEvent;
       var endStatus = await Paycube.endPayCube;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 300), (Timer stopt) async {
+      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
         print("bbbbbbb");
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         //await Paycube.setReceiveEvent;
@@ -453,11 +453,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
-          sleep(Duration(milliseconds: 150));
+          sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("ccccccc");
         }else{
-          sleep(Duration(milliseconds: 150));
+          sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("_stopStatus:$_stopStatus");
         }
@@ -607,7 +607,7 @@ class _SettlementPageState extends State<SettlementPage> {
   //汇报出金币种,请求后台
   reportOutMoney(){
     var formData = {
-      "changeInfo": this._currencyString,
+      "changeInfo": this._currencyString.trim(),
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney)
