@@ -58,6 +58,11 @@ class SQLService {
     }
   }
 
+  Future getCartListPrice() async {
+    var query = "SELECT SUM(currentPrice) AS totalPrice FROM cart_list";
+    return await this.db?.rawQuery(query);
+  }
+
   Future checkItemAsCartList(String menuCode) async {
     var query = "SELECT * FROM cart_list where menuCode = ${menuCode}";
     return await this.db?.rawQuery(query);

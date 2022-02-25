@@ -35,11 +35,18 @@ class HomePageController extends GetxController {
       getcartItems.forEach((element) {
         cartItems.add(ShopItemModel.fromJson(element));
       });
+
       update();
 
     } catch (e) {
       print(e);
     }
+  }
+
+  getCartAllPrice() async {
+    var result;
+    result = await itemServices.getCartListPrice();
+    return result[0];
   }
 
 

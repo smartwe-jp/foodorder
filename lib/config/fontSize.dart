@@ -12,29 +12,31 @@ class GFontSize{
   static const double cartListTitleTag = 12;
 
   static const double menuTwoListTitle = 24;
-  static const double menuTwopriceLift = 18;
+  static const double menuTwopriceLift = 25;
   static const double menuTwoprice = 34;
-  static const double menuTwopriceRight = 24;
-  static const double menuTwoTitleTag = 12;
+  static const double menuTwopriceRight = 17;
+  static const double menuTwoTitleTag = 14;
 
   static const double menuThreeListTitle = 50;
   static const double menuThreeListTag = 30;
 
   static const double menuThreeListFoodTitle = 40;
   static const double menuThreeListFoodSubtitle = 24;
-  static const double menuThreepriceLift = 25;
+  static const double menuThreepriceLift = 42;
   static const double menuThreeprice = 48;
-  static const double menuThreepriceRight = 29;
+  static const double menuThreepriceRight = 24;
 
-  static const double menuFourListTitle = 15;
-  static const double menuFourpriceLift = 14;
-  static const double menuFourprice = 21;
-  static const double menuFourpriceRight = 16;
+  static const double menuFourListTitle = 21;
+  static const double menuFourpriceLift = 24;
+  static const double menuFourprice = 30;
+  static const double menuFourpriceRight = 15;
 
 
   static const double menusettlementHeji = 70;
   static const double menusettlementLingshoushu = 28;
 
   static const double menusettlementBottomHeji = 48;
-  static const double menusettlementBottomPrice = 72;
+  static const double menusettlementBottomPriceLeft = 45;
+  static const double menusettlementBottomPrice = 55;
+  static const double menusettlementBottomPriceRight = 28;
 }
