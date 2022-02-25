@@ -18,9 +18,12 @@ class GString{
         "add_option_cart":"確認",
         "settlement_total_price":"合計",
         "settlement_small_ticket_tag":"領収書が必要ですのでこちらをご注文ください",
-        "settlement_payment_method":"支払方法の選択",
+        "settlement_payment_method":"以下のお支払い方法をご利用いただけます。",
         "settlement_payment_method_cash":"現金",
-        "settlement_payment_method_qr":"QRコード決済",
+        "settlement_payment_method_paypay":"PAYPAY",
+        "settlement_payment_method_wechat":"微信支付",
+        "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_title":"支払方法のガイド",
         "settlement_back":"戻る",
 
       };
@@ -39,9 +42,12 @@ class GString{
         "add_option_cart":"确 认",
         "settlement_total_price":"合计",
         "settlement_small_ticket_tag":"确认领取小票",
-        "settlement_payment_method":"请选择支付方式",
+        "settlement_payment_method":"可以使用以下支付方法。",
         "settlement_payment_method_cash":"现金",
-        "settlement_payment_method_qr":"扫码支付",
+        "settlement_payment_method_paypay":"PAYPAY",
+        "settlement_payment_method_wechat":"微信支付",
+        "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_title":"支付方法指南",
         "settlement_back":"返回",
       };
     }else if(languageCode == 'EN'){
@@ -59,9 +65,12 @@ class GString{
         "add_option_cart":"Confirm",
         "settlement_total_price":"Total",
         "settlement_small_ticket_tag":"We need a receipt, so please order us",
-        "settlement_payment_method":"Payment method",
+        "settlement_payment_method":"The following payment methods are available.",
         "settlement_payment_method_cash":"Cash",
-        "settlement_payment_method_qr":"QR code settlement",
+        "settlement_payment_method_paypay":"PAYPAY",
+        "settlement_payment_method_wechat":"微信支付",
+        "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_title":"Guide to payment methods",
         "settlement_back":"Back",
       };
     }

@@ -116,16 +116,15 @@ class _MenuPageState extends State<MenuPage> {
           Container(
             width: ScreenAdapter.getScreenWidth(),
             height: ScreenAdapter.height(95),
-            padding: EdgeInsets.only(
-                left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
+            padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
             alignment: Alignment.bottomLeft,
             decoration: BoxDecoration(
               color: ColorsUtil.hexToColor("#000000"),
-              /*image: new DecorationImage(
+              image: new DecorationImage(
                 alignment: Alignment.centerRight,
                 //fit: BoxFit.fitWidth,
                 image: AssetImage('assets/images/logo.png'),
-              ),*/
+              ),
             ),
             child: showTopCategoryMenu(),
           ),
@@ -347,7 +346,7 @@ class _MenuPageState extends State<MenuPage> {
         });
       },
       child: Container(
-        margin: EdgeInsets.only(left: ScreenAdapter.width(25)),
+        margin: EdgeInsets.only(left: ScreenAdapter.width(5)),
         width: ScreenAdapter.width(110),
         height: ScreenAdapter.height(55),
         decoration: BoxDecoration(

@@ -19,6 +19,7 @@ class Gcolor{
   static const String foodTagColor = "#777777";
   static const String settlementBtnColor = "#FFFFFF";
   static const String settlementBackgroundColor = "#FFFFFF";
+  static const String settlementTitleColor = "#AE6C31";
   static const String cartListColor = "#F3F3F3";
   static const String mainBottomSettlementColor = "#000000";
 }
