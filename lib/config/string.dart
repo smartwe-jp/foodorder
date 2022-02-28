@@ -5,6 +5,8 @@ class GString{
     var languagePack;
     if (languageCode == 'JP') {
       languagePack = {
+        "top_back_button":"言語",
+
         "show_price_front":"税込",
         "settlement_button":"お会計",
         "cancle_button":"すべてキャンセル",
@@ -23,12 +25,23 @@ class GString{
         "settlement_payment_method_paypay":"PAYPAY",
         "settlement_payment_method_wechat":"微信支付",
         "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_study_cash":"現金",
+        "settlement_payment_method_study_qr":"QRコード決済",
         "settlement_payment_method_title":"支払方法のガイド",
         "settlement_back":"戻る",
+        "settlement_confirmButton":"投币结束，打印小票",
+        "settlement_continueMoney":"请继续投币",
+
+        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
+        "tag_print_content_paper_error":"打印故障，请联系工作人员",
+        "tag_print_button_yes":"已处理",
+        "tag_print_button_no":"不打印",
 
       };
     }else if(languageCode == 'CH'){
       languagePack = {
+        "top_back_button":"语言",
+
         "show_price_front":"含税",
         "settlement_button":"结算",
         "cancle_button":"全部取消",
@@ -47,11 +60,25 @@ class GString{
         "settlement_payment_method_paypay":"PAYPAY",
         "settlement_payment_method_wechat":"微信支付",
         "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_study_cash":"现金",
+        "settlement_payment_method_study_qr":"扫码支付",
         "settlement_payment_method_title":"支付方法指南",
         "settlement_back":"返回",
+        "settlement_confirmButton":"投币结束，打印小票",
+        "settlement_continueMoney":"请继续投币",
+
+
+        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
+        "tag_print_content_paper_error":"打印故障，请联系工作人员",
+        "tag_print_button_yes":"已处理",
+        "tag_print_button_no":"不打印",
+
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
+        "top_back_button":"Language",
+
         "show_price_front":"Tax included",
         "settlement_button":"Settlement",
         "cancle_button":"Cancel all",
@@ -70,8 +97,17 @@ class GString{
         "settlement_payment_method_paypay":"PAYPAY",
         "settlement_payment_method_wechat":"微信支付",
         "settlement_payment_method_alipay":"支付宝支付",
+        "settlement_payment_method_study_cash":"现金",
+        "settlement_payment_method_study_qr":"扫码支付",
         "settlement_payment_method_title":"Guide to payment methods",
         "settlement_back":"Back",
+        "settlement_confirmButton":"投币结束，打印小票",
+        "settlement_continueMoney":"请继续投币",
+
+        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
+        "tag_print_content_paper_error":"打印故障，请联系工作人员",
+        "tag_print_button_yes":"已处理",
+        "tag_print_button_no":"不打印",
       };
     }
 

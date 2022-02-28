@@ -9,6 +9,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
@@ -82,6 +83,17 @@ class _MenuPageState extends State<MenuPage> {
 
 
     getCartPriceTotal();
+
+    EasyLoading.instance
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+      ..loadingStyle = EasyLoadingStyle.dark
+      ..indicatorSize = 45.0
+      ..radius = 10.0
+      ..backgroundColor = Colors.green
+      ..indicatorColor = Colors.yellow
+      ..textColor = Colors.yellow
+      ..maskColor = Colors.blue.withOpacity(0.5);
+
   }
 
   @override
@@ -358,7 +370,7 @@ class _MenuPageState extends State<MenuPage> {
         child: Center(
           //加上Center让文字居中
           child: Text(
-            "言語",
+            GString.getToString(this._checkLanguage, "top_back_button"),
             style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(26),
                 color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
@@ -3088,11 +3100,19 @@ class _MenuPageState extends State<MenuPage> {
                                 if (int.parse(_shopCartTotalPrice) ==0) {
                                   return false;
                                 }
-                                Navigator.pushNamed(context, '/settlement',
-                                    arguments: {
-                                      "checkLanguage": this._checkLanguage,
-                                      "machineCode": this._machineCode
-                                    });
+                                EasyLoading.show(
+                                    status: 'loading...',
+                                  /*indicator: Container(
+
+                                    width: ScreenAdapter.width(305),
+                                    height: ScreenAdapter.height(220),
+                                    child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth,color: ColorsUtil.hexToColor("#A6804A"),),
+                                  ),*/
+                                    maskType: EasyLoadingMaskType.black,
+                                );
+                                _doSubmitOrder();
+
+
                               },
                               child: Container(
                                 width: ScreenAdapter.width(319),
@@ -3222,6 +3242,58 @@ class _MenuPageState extends State<MenuPage> {
         ),
       ),
     );
+  }
+
+  //提交订单
+  _doSubmitOrder(){
+    if(_machineCode !=""){
+      var cartItems = controller.getcartItems;
+      List selectedItem = [];
+
+
+      for(var oneItem in cartItems){
+        var optionMap = {};
+        if(oneItem["optionGroupVoList"] == ""){
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "qty": oneItem["goodsNum"]
+          };
+        }else{
+          var optionGroupVoList = oneItem["optionGroupVoList"];
+          var itemsOption = optionGroupVoList.split(',');
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "optionList": itemsOption,
+            "qty": oneItem["goodsNum"]
+          };
+        }
+        selectedItem.add(optionMap);
+      }
+      var orderTotlaPrice = getItemTotal(controller.cartItems);
+      var formData = {
+        "language": this._checkLanguage,
+        "machineCode": _machineCode,
+        "orderLineList": selectedItem,
+        "total": orderTotlaPrice
+      };
+      request('webBootOrder', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+
+        if (response['code'] == 200) {
+          EasyLoading.dismiss();
+          Navigator.pushNamed(context, '/settlement',
+              arguments: {
+                "checkLanguage": this._checkLanguage,
+                "machineCode": this._machineCode,
+                "orderId" : response['data'],
+                "totalPrice" : orderTotlaPrice.toString(),
+              });
+
+        }else{
+          showToast(response['msg']);
+        }
+      });
+    }
   }
 
 /*  _showShoppingCartBottom() {
@@ -3386,11 +3458,12 @@ class _MenuPageState extends State<MenuPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return FlutterEasyLoading(
+        child: Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.light,
         child: _listView(context),
       ),
-    );
+    ));
   }
 }

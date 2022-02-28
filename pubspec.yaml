@@ -38,8 +38,11 @@ dependencies:
   http: ^0.12.2
   cached_network_image: ^2.5.1
   event_bus: ^1.1.1
+  flutter_easyloading: ^2.2.2
   paycube:
     path: ./lib/plugins/paycube
+  flutter_plugin_msprinter:
+    path: ./lib/plugins/flutter_plugin_msprint
 
 dev_dependencies:
   flutter_test:
