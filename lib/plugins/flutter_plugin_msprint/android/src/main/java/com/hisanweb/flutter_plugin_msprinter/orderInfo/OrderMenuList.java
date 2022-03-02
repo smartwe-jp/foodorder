@@ -5,6 +5,7 @@ import java.util.List;
 
 public class OrderMenuList {
 
+    private String orderId;
     private String orderDate;
     private String payPrice;
     private String shopName;
@@ -14,6 +15,14 @@ public class OrderMenuList {
     private String excludingTax;
     private String tax;
     private List<CategoryVos> categoryVos;
+
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
+    }
+
+    public String getOrderId() {
+        return orderId;
+    }
 
     public void setOrderDate(String orderDate) {
         this.orderDate = orderDate;

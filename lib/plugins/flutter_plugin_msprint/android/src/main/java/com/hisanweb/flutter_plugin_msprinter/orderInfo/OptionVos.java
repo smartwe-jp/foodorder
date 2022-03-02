@@ -6,21 +6,29 @@ public class OptionVos {
 
     private String optionName;
     private String groupName;
-
-    public void setOptionName(String optionName) {
-        this.optionName = optionName;
-    }
+    private String optionPrintStr;
 
     public String getOptionName() {
         return optionName;
     }
 
-    public void setGroupName(String groupName) {
-        this.groupName = groupName;
+    public void setOptionName(String optionName) {
+        this.optionName = optionName;
     }
 
     public String getGroupName() {
         return groupName;
     }
 
+    public void setGroupName(String groupName) {
+        this.groupName = groupName;
+    }
+
+    public String getOptionPrintStr() {
+        return optionPrintStr;
+    }
+
+    public void setOptionPrintStr(String optionPrintStr) {
+        this.optionPrintStr = optionPrintStr;
+    }
 }

@@ -15,6 +15,7 @@ import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
+import 'package:foodorder/services/CachedNetworkImageManager.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/HomeServices.dart';
@@ -38,9 +39,10 @@ class MenuPage extends StatefulWidget {
   _MenuPageState createState() => _MenuPageState();
 }
 
-class _MenuPageState extends State<MenuPage> {
-  var imgUrl =
-      'https://kanran.co.jp/fanxing/sites/6/2021/10/1635210298859_1026-1024x1024.jpg';
+class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin {
+
+  bool get wantKeepAlive =>true;
+  final ScrollController _controllerOne = ScrollController();
 
   var _alignmentY = -1.0;
 
@@ -84,16 +86,8 @@ class _MenuPageState extends State<MenuPage> {
 
     getCartPriceTotal();
 
-    EasyLoading.instance
-      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-      ..loadingStyle = EasyLoadingStyle.dark
-      ..indicatorSize = 45.0
-      ..radius = 10.0
-      ..backgroundColor = Colors.green
-      ..indicatorColor = Colors.yellow
-      ..textColor = Colors.yellow
-      ..maskColor = Colors.blue.withOpacity(0.5);
 
+    EasyLoading.dismiss();
   }
 
   @override
@@ -151,6 +145,7 @@ class _MenuPageState extends State<MenuPage> {
 
           _showShoppingCart(),
           //_showShoppingCartBottom(),
+
         ],
       ),
     );
@@ -291,6 +286,7 @@ class _MenuPageState extends State<MenuPage> {
     //print(_menuOption);
   }
 
+
   //限量商品请求接口
   _checkQtyBoundsCount(menuCode, optionCode) {
     var checkResult;
@@ -414,6 +410,16 @@ class _MenuPageState extends State<MenuPage> {
         fit: BoxFit.fill,
         width: ScreenAdapter.width(imgWidth),
         height: ScreenAdapter.height(imgHeight),
+        cacheManager: EsoImageCacheManager(),
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: imageProvider,
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+            ),
+          ),
+        ),
         placeholder: (context, url) => Container(
           width: ScreenAdapter.width(200),
           height: ScreenAdapter.height(200),
@@ -423,7 +429,11 @@ class _MenuPageState extends State<MenuPage> {
             ),
           ),
         ),
-        errorWidget: (context, url, error) => Icon(Icons.error),
+        errorWidget: (context, url, error) => Image.network(
+          imgPath,fit: BoxFit.fill,
+          width: ScreenAdapter.width(imgWidth),
+          height: ScreenAdapter.height(imgHeight)
+        ),
       ),
     );
   }
@@ -448,14 +458,14 @@ class _MenuPageState extends State<MenuPage> {
                 color: ColorsUtil.hexToColor(priceFontColor),
               ),
             ),
-            TextSpan(
+            /*TextSpan(
               text: "（${GString.getToString(this._checkLanguage, "show_price_front")}）",//" 円",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(priceBackFontSize),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor(priceBackFontColor),
               ),
-            ),
+            ),*/
           ]),
     );
   }
@@ -1754,12 +1764,9 @@ class _MenuPageState extends State<MenuPage> {
                           //确认按钮
                           InkWell(
                             onTapDown: (details) {
-                              temp = new Offset(details.globalPosition.dx,
-                                  details.globalPosition.dy);
-                              RenderBox renderBox =
-                                  floatKey.currentContext.findRenderObject();
-                              floatOffset =
-                                  renderBox.localToGlobal(Offset.zero);
+                              temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
+                              //RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                              //floatOffset = renderBox.localToGlobal(Offset.zero);
                             },
                             onTap: () {
                               Function callback;
@@ -1792,7 +1799,7 @@ class _MenuPageState extends State<MenuPage> {
                                 setState(() {
                                   OverlayEntry entry =
                                       OverlayEntry(builder: (ctx) {
-                                    return ParabolaAnimateWidget(rootKey,temp,floatOffset,itemsFirst['homeImage'],callback,duration: 1000,);
+                                    return ParabolaAnimateWidget(rootKey,temp,Offset(486.5, 1600.0),itemsFirst['homeImage'],callback,duration: 1000,);
                                   });
 
                                   callback = (status) {
@@ -1886,9 +1893,8 @@ class _MenuPageState extends State<MenuPage> {
               onTapDown: (details) {
                 temp = new Offset(
                     details.globalPosition.dx, details.globalPosition.dy);
-                RenderBox renderBox =
-                    floatKey.currentContext.findRenderObject();
-                floatOffset = renderBox.localToGlobal(Offset.zero);
+                //RenderBox renderBox =  floatKey.currentContext.findRenderObject();
+               // floatOffset = renderBox.localToGlobal(Offset.zero);
               },
               onTap: () async {
                 Function callback;
@@ -1897,7 +1903,7 @@ class _MenuPageState extends State<MenuPage> {
                     return ParabolaAnimateWidget(
                       rootKey,
                       temp,
-                      floatOffset,
+                      Offset(486.5, 1600.0),
                       item['homeImage'],
                       callback,
                       duration: 1000,
@@ -2024,8 +2030,8 @@ class _MenuPageState extends State<MenuPage> {
             onTapDown: (details) {
               temp = new Offset(
                   details.globalPosition.dx, details.globalPosition.dy);
-              RenderBox renderBox = floatKey.currentContext.findRenderObject();
-              floatOffset = renderBox.localToGlobal(Offset.zero);
+             // RenderBox renderBox = floatKey.currentContext.findRenderObject();
+              //floatOffset = renderBox.localToGlobal(Offset.zero);
             },
             onTap: () async {
               Function callback;
@@ -2044,7 +2050,7 @@ class _MenuPageState extends State<MenuPage> {
                     return ParabolaAnimateWidget(
                       rootKey,
                       temp,
-                      floatOffset,
+                      Offset(486.5, 1600.0),
                       item['homeImage'],
                       callback,
                       duration: 1000,
@@ -2146,8 +2152,8 @@ class _MenuPageState extends State<MenuPage> {
           onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
-            RenderBox renderBox = floatKey.currentContext.findRenderObject();
-            floatOffset = renderBox.localToGlobal(Offset.zero);
+            //RenderBox renderBox = floatKey.currentContext.findRenderObject();
+            //floatOffset = renderBox.localToGlobal(Offset.zero);
           },
           onTap: () async {
             Function callback;
@@ -2176,7 +2182,7 @@ class _MenuPageState extends State<MenuPage> {
                   return ParabolaAnimateWidget(
                     rootKey,
                     temp,
-                    floatOffset,
+                    Offset(486.5, 1600.0),
                     item['homeImage'],
                     callback,
                     duration: 1000,
@@ -2409,9 +2415,8 @@ class _MenuPageState extends State<MenuPage> {
                         onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx,
                               details.globalPosition.dy);
-                          RenderBox renderBox =
-                              floatKey.currentContext.findRenderObject();
-                          floatOffset = renderBox.localToGlobal(Offset.zero);
+                          //RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                          //floatOffset = renderBox.localToGlobal(Offset.zero);
                         },
                         onTap: () {
                           Function callback;
@@ -2456,7 +2461,7 @@ class _MenuPageState extends State<MenuPage> {
                                 return ParabolaAnimateWidget(
                                   rootKey,
                                   temp,
-                                  floatOffset,
+                                  Offset(486.5, 1600.0),
                                   item['homeImage'],
                                   callback,
                                   duration: 1000,
@@ -2559,8 +2564,8 @@ class _MenuPageState extends State<MenuPage> {
           onTapDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
-            RenderBox renderBox = floatKey.currentContext.findRenderObject();
-            floatOffset = renderBox.localToGlobal(Offset.zero);
+            //RenderBox renderBox = floatKey.currentContext.findRenderObject();
+           // floatOffset = renderBox.localToGlobal(Offset.zero);
           },
           onTap: () async {
             Function callback;
@@ -2588,7 +2593,7 @@ class _MenuPageState extends State<MenuPage> {
                   return ParabolaAnimateWidget(
                     rootKey,
                     temp,
-                    floatOffset,
+                    Offset(486.5, 1600.0),
                     item['homeImage'],
                     callback,
                     duration: 1000,
@@ -2810,8 +2815,8 @@ class _MenuPageState extends State<MenuPage> {
                       InkWell(
                         onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
-                          RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                          floatOffset = renderBox.localToGlobal(Offset.zero);
+                          //RenderBox renderBox = floatKey.currentContext.findRenderObject();
+                          //floatOffset = renderBox.localToGlobal(Offset.zero);
                         },
                         onTap: () {
                           Function callback;
@@ -2849,7 +2854,7 @@ class _MenuPageState extends State<MenuPage> {
                                 return ParabolaAnimateWidget(
                                   rootKey,
                                   temp,
-                                  floatOffset,
+                                  Offset(486.5, 1600.0),
                                   item['homeImage'],
                                   callback,
                                   duration: 1000,
@@ -2929,6 +2934,7 @@ class _MenuPageState extends State<MenuPage> {
 
   getCartPriceTotal() async {
 
+    controller.getCardList();
     var total = await controller.getCartAllPrice();
       setState(() {
         _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
@@ -2972,13 +2978,14 @@ class _MenuPageState extends State<MenuPage> {
                         height: ScreenAdapter.height(300),
                         child: Row(
                           children: [
-                            Container(
-                              width: ScreenAdapter.width(690),
-                              height: ScreenAdapter.height(300),
-                              color:
-                                  ColorsUtil.hexToColor(Gcolor.cartListColor),
-                              child: NotificationListener<ScrollNotification>(
-                                onNotification: _handleScrollNotification,
+                            Scrollbar(
+                                child: SingleChildScrollView(
+                              physics: ClampingScrollPhysics(),
+                              child: Container(
+                                width: ScreenAdapter.width(690),
+                                height: ScreenAdapter.height(300),
+                                color:
+                                ColorsUtil.hexToColor(Gcolor.cartListColor),
                                 child: Stack(
                                   alignment: Alignment.topRight,
                                   children: [
@@ -3000,23 +3007,26 @@ class _MenuPageState extends State<MenuPage> {
                                       },
                                     ),
                                     //滚动条
-                                    (controller.cartItems.length>4 ) ? Container(
-                                      alignment: Alignment(1, _alignmentY),
-                                      padding: EdgeInsets.only(right: 0),
-                                      child: Container(
-                                        width: ScreenAdapter.width(20),
-                                        height: ScreenAdapter.height(116),
-                                        decoration: BoxDecoration(
-                                            shape: BoxShape.rectangle,
-                                            borderRadius: BorderRadius.all(Radius.circular(20)),
-                                            color: ColorsUtil.hexToColor("#D0D0D0")),
-
+                                    /*Container(
+                                    alignment: Alignment(1, _alignmentY),
+                                    padding: EdgeInsets.only(right: 0),
+                                    child: Container(
+                                      width: ScreenAdapter.width(20),
+                                      height: ScreenAdapter.height(116),
+                                      decoration: BoxDecoration(
+                                          shape: BoxShape.rectangle,
+                                          borderRadius: BorderRadius.all(Radius.circular(20)),
+                                          color: (controller.cartItems.length>4 ) ? ColorsUtil.hexToColor("#D0D0D0"):ColorsUtil.hexToColor(Gcolor.cartListColor),
                                       ),
-                                    ) : Container(height: 0,),
+
+                                    ),
+                                  ) ,*/
                                   ],
                                 ),
                               ),
+                            )
                             ),
+
                             /*Container(
                               width: ScreenAdapter.width(58),
                               height: ScreenAdapter.height(272),
@@ -3101,16 +3111,14 @@ class _MenuPageState extends State<MenuPage> {
                                   return false;
                                 }
                                 EasyLoading.show(
-                                    status: 'loading...',
-                                  /*indicator: Container(
-
-                                    width: ScreenAdapter.width(305),
-                                    height: ScreenAdapter.height(220),
-                                    child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth,color: ColorsUtil.hexToColor("#A6804A"),),
-                                  ),*/
+                                    //status: 'loading...',
+                                  indicator: Container(
+                                    width: ScreenAdapter.width(200),
+                                    child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth),
+                                  ),
                                     maskType: EasyLoadingMaskType.black,
                                 );
-                                _doSubmitOrder();
+                               _doSubmitOrder();
 
 
                               },
@@ -3155,7 +3163,7 @@ class _MenuPageState extends State<MenuPage> {
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
     return Padding(
-      padding: EdgeInsets.only(left:ScreenAdapter.width(2),top: ScreenAdapter.height(2),right: ScreenAdapter.width(20),bottom: ScreenAdapter.height(2)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
       child: Container(
         decoration: BoxDecoration(
             color: Colors.white12,

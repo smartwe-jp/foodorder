@@ -100,9 +100,12 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
           result.error("40001","无法获得usb权限",null);
           return;
         }else{
-          print.execute_print(mUsbDriver,oh,sed);
-
           print.execute_printRreceipt(mUsbDriver,oh,sed);
+
+          print.execute_print(mUsbDriver,oh,sed,1);
+          print.execute_print(mUsbDriver,oh,sed,0);
+
+
           //print.execute_print(mUsbDriver,oh);
 
           //doPrint();

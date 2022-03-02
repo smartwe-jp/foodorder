@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
 import 'package:foodorder/pages/home/Home.dart';
 import 'package:foodorder/routers/custom_router.dart';
@@ -30,7 +31,7 @@ void main() {
   });
 
   //显示底部栏(隐藏顶部状态栏)
-    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.bottom]);
+    SystemChrome.setEnabledSystemUIOverlays([]);
   //显示顶部栏(隐藏底部栏)
 //    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
   //隐藏底部栏和顶部状态栏
@@ -67,8 +68,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final String url = "https://jsonplaceholder.typicode.com/posts";
-  final sqlHelper = SqfliteHelper();
+
+  //final sqlHelper = SqfliteHelper();
 
 
   var _activation_code; //激活码
@@ -81,7 +82,17 @@ class _MyHomePageState extends State<MyHomePage> {
     //判断是否第一次打开
     this.getIsFirstOpen();
 
+    EasyLoading.instance
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+      ..progressColor = Colors.transparent
+      ..backgroundColor = Colors.transparent
+      ..indicatorColor = Colors.transparent
+      ..textColor = Colors.transparent
+      ..loadingStyle = EasyLoadingStyle.custom;
+
   }
+
+
 
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
