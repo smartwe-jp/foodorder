@@ -76,6 +76,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   var _allowClick = true;
 
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +97,8 @@ class _SettlementPageState extends State<SettlementPage> {
     //newendtradepay();
     //payCubeCloseTransaction();
 
+
+
   }
 
   @override
@@ -114,6 +117,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
     super.dispose();
   }
+
+
 
 
   //购物车
@@ -335,9 +340,9 @@ class _SettlementPageState extends State<SettlementPage> {
 
           showToast("打印小票");
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
-          sleep(Duration(milliseconds: 3000));
+          //sleep(Duration(milliseconds: 3000));
 
-          EasyLoading.dismiss();
+
           gotonewMyhome();
         } else {
 
@@ -398,9 +403,10 @@ class _SettlementPageState extends State<SettlementPage> {
                                         fontSize: ScreenAdapter.fontSize(32.0)),
                                   ),
                                   onPressed: () {
-                                    sleep(Duration(milliseconds: 3000));
-                                    gotonewMyhome();
+                                    //sleep(Duration(milliseconds: 3000));
                                     Navigator.pop(context);
+                                    gotonewMyhome();
+
                                   },
                                 ),
                               ),
@@ -461,10 +467,10 @@ class _SettlementPageState extends State<SettlementPage> {
 
       }else if (_allowStatus == "Error-F0--16") {
         await Paycube.endTrade;
-        sleep(Duration(milliseconds: 200));
+        //sleep(Duration(milliseconds: 200));
         await Paycube.strartPayCube;
       }else if (_allowStatus == "Error-A0--02") {
-        sleep(Duration(milliseconds: 300));
+        //sleep(Duration(milliseconds: 300));
       }else{
 
         await Paycube.strartPayCube;
@@ -531,7 +537,7 @@ class _SettlementPageState extends State<SettlementPage> {
           await Paycube.endPayCube;
           print("ccccccc");
         }else{
-          sleep(Duration(milliseconds: 350));
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("_stopStatus:$_stopStatus");
         }
@@ -552,11 +558,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
-          sleep(Duration(milliseconds: 350));
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("ccccccc");
         }else{
-          sleep(Duration(milliseconds: 350));
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("_stopStatus:$_stopStatus");
         }
@@ -585,7 +591,7 @@ class _SettlementPageState extends State<SettlementPage> {
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //获取出金金额
-        sleep(Duration(milliseconds: 100));
+        //sleep(Duration(milliseconds: 100));
         //getPayCubeoutMoney();
         //结束交易
         newendtradepay();
@@ -594,11 +600,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
       }else if(_outStatus == "Error-A0--02"){
         //await Paycube.setReceiveEvent;
-        sleep(Duration(milliseconds: 200));
+        //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
         print("_outStatus处理中:$_outStatus");
       }else{
-        sleep(Duration(milliseconds: 200));
+        //sleep(Duration(milliseconds: 200));
         await Paycube.outPayCubeMoney(outStringMoney);
         print("_outStatus:$_outStatus");
       }
@@ -686,7 +692,7 @@ class _SettlementPageState extends State<SettlementPage> {
         reportOutMoney();
       }else{
         showToast("投币后已取消订单");
-        sleep(Duration(milliseconds: 3000));
+        //sleep(Duration(milliseconds: 3000));
         gotonewMyhome();
       }
 
@@ -741,11 +747,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
       }else if(_stopStatus == "Error-A0--02"){
         //处理中
-        sleep(Duration(milliseconds: 350));
+        //sleep(Duration(milliseconds: 350));
         await Paycube.endPayCube;
         print("ccccccc");
       }else{
-        sleep(Duration(milliseconds: 350));
+        //sleep(Duration(milliseconds: 350));
         await Paycube.endPayCube;
         print("_stopStatus:$_stopStatus");
       }
@@ -926,7 +932,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             ),
                             maskType: EasyLoadingMaskType.black,
                           );
-                          sleep(Duration(milliseconds: 800));
+                          //sleep(Duration(milliseconds: 800));
                           CancelOrder();
                         },
                         child: Container(

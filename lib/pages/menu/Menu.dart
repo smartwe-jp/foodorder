@@ -1,4 +1,6 @@
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -62,7 +64,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   final sqlHelper = SqfliteHelper();
 
   //购物车抛物线
-  GlobalKey floatKey = GlobalKey();
   GlobalKey rootKey = GlobalKey();
   Offset floatOffset;
 
@@ -76,6 +77,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _shopCartTotalPrice = "0";
   var cartnum = 6;
 
+
   @override
   void initState() {
     super.initState();
@@ -85,6 +87,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
     getCartPriceTotal();
+
 
 
     EasyLoading.dismiss();
@@ -97,6 +100,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     super.dispose();
 
   }
+
+
+
 
   //页面加载状态，默认为加载中
   LoadState _layoutState = LoadState.State_Loading;
@@ -400,6 +406,23 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     }
   }
 
+  //公共展示加入购物车动画
+  _publicShowAddCart(temp,imgUrl){
+    Function callback;
+    setState(() {
+      OverlayEntry entry =
+      OverlayEntry(builder: (ctx) {
+        return ParabolaAnimateWidget(rootKey,temp,Offset(486.5, 1600.0),imgUrl,callback,duration: 1000,);
+      });
+
+      callback = (status) {
+        if (status == AnimationStatus.completed) {
+          entry?.remove();
+        }
+      };
+      Overlay.of(rootKey.currentContext).insert(entry);
+    });
+  }
   //公共展示菜品图片
   publicShowMenuImage(imgPath, imgWidth, imgHeight) {
     return Container(
@@ -547,6 +570,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //公共加入购物车
   publicAddCartMenu(cartItem, checkItem) async {
+    setState(() {
+      _timeout = const Duration(seconds: 300);
+    });
     var result;
     try {
       result = await controller.addToCart(cartItem, checkItem: checkItem);
@@ -604,6 +630,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //获取选中的值
   _getSelectedAttrValue(menuCode, optionGroupList, setMenuState) {
+    setState(() {
+      _timeout = const Duration(seconds: 300);
+    });
     var _list = optionGroupList;
     List tempArr = [];
     for (var i = 0; i < _list.length; i++) {
@@ -1765,11 +1794,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           InkWell(
                             onTapDown: (details) {
                               temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
-                              //RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                              //floatOffset = renderBox.localToGlobal(Offset.zero);
+
                             },
                             onTap: () {
-                              Function callback;
+
                               //判断选择后option是否与optiongroup相等
                               if (_selectedMenuOptionList[itemsFirst['menuCode']].length !=itemsFirst['optionGroupVoList'].length) {
                                 showToast('请选择面选项');
@@ -1796,19 +1824,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 "goodsNum": 1
                               };
                               publicAddCartMenu(cartItem, false).then((val) {
-                                setState(() {
-                                  OverlayEntry entry =
-                                      OverlayEntry(builder: (ctx) {
-                                    return ParabolaAnimateWidget(rootKey,temp,Offset(486.5, 1600.0),itemsFirst['homeImage'],callback,duration: 1000,);
-                                  });
+                                _publicShowAddCart(temp,itemsFirst['homeImage']);
 
-                                  callback = (status) {
-                                    if (status == AnimationStatus.completed) {
-                                      entry?.remove();
-                                    }
-                                  };
-                                  Overlay.of(rootKey.currentContext).insert(entry);
-                                });
                                 _changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
                                 //更改显示购物车价格
                                 getCartPriceTotal();
@@ -1893,30 +1910,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               onTapDown: (details) {
                 temp = new Offset(
                     details.globalPosition.dx, details.globalPosition.dy);
-                //RenderBox renderBox =  floatKey.currentContext.findRenderObject();
-               // floatOffset = renderBox.localToGlobal(Offset.zero);
+
               },
               onTap: () async {
-                Function callback;
-                setState(() {
-                  OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                    return ParabolaAnimateWidget(
-                      rootKey,
-                      temp,
-                      Offset(486.5, 1600.0),
-                      item['homeImage'],
-                      callback,
-                      duration: 1000,
-                    );
-                  });
 
-                  callback = (status) {
-                    if (status == AnimationStatus.completed) {
-                      entry?.remove();
-                    }
-                  };
-                  Overlay.of(rootKey.currentContext).insert(entry);
-                });
+                _publicShowAddCart(temp,item['homeImage']);
 
                 var checked_option = {
                   "optionCode": optionSon['optionCode'],
@@ -2030,11 +2028,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             onTapDown: (details) {
               temp = new Offset(
                   details.globalPosition.dx, details.globalPosition.dy);
-             // RenderBox renderBox = floatKey.currentContext.findRenderObject();
-              //floatOffset = renderBox.localToGlobal(Offset.zero);
+
             },
             onTap: () async {
-              Function callback;
+
               var cartItem = {
                 "menuCode": item['menuCode'],
                 "mainTitle": item['mainTitle'],
@@ -2045,25 +2042,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "goodsNum": 1
               };
               publicAddCartMenu(cartItem, false).then((val) {
-                setState(() {
-                  OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                    return ParabolaAnimateWidget(
-                      rootKey,
-                      temp,
-                      Offset(486.5, 1600.0),
-                      item['homeImage'],
-                      callback,
-                      duration: 1000,
-                    );
-                  });
 
-                  callback = (status) {
-                    if (status == AnimationStatus.completed) {
-                      entry?.remove();
-                    }
-                  };
-                  Overlay.of(rootKey.currentContext).insert(entry);
-                });
+                _publicShowAddCart(temp,item['homeImage']);
                 //更改显示购物车价格
                 getCartPriceTotal();
               });
@@ -2152,11 +2132,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
-            //RenderBox renderBox = floatKey.currentContext.findRenderObject();
-            //floatOffset = renderBox.localToGlobal(Offset.zero);
+
           },
           onTap: () async {
-            Function callback;
+
             if (item['qtyBounds'] == 0) {
               return;
             } else if (item['qtyBounds'] > 0) {
@@ -2177,25 +2156,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               "goodsNum": 1
             };
             publicAddCartMenu(cartItem, true).then((val) {
-              setState(() {
-                OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                  return ParabolaAnimateWidget(
-                    rootKey,
-                    temp,
-                    Offset(486.5, 1600.0),
-                    item['homeImage'],
-                    callback,
-                    duration: 1000,
-                  );
-                });
 
-                callback = (status) {
-                  if (status == AnimationStatus.completed) {
-                    entry?.remove();
-                  }
-                };
-                Overlay.of(rootKey.currentContext).insert(entry);
-              });
+              _publicShowAddCart(temp,item['homeImage']);
 
               //更改显示购物车价格
               getCartPriceTotal();
@@ -2399,7 +2361,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       )),
                       //价格展示
                       Container(
+                        padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
                         width: ScreenAdapter.width(200),
+                        alignment: Alignment.bottomRight,
                         child: publicShowMenuPrice(
                             item['currentPrice'],
                             35.0,
@@ -2415,11 +2379,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx,
                               details.globalPosition.dy);
-                          //RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                          //floatOffset = renderBox.localToGlobal(Offset.zero);
+
                         },
                         onTap: () {
-                          Function callback;
+
                           //判断选择后option是否与optiongroup相等
                           var currentPrice = item['currentPrice'];
                           var optionCodeList = "";
@@ -2456,25 +2419,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             "goodsNum": 1
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
-                            setState(() {
-                              OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                                return ParabolaAnimateWidget(
-                                  rootKey,
-                                  temp,
-                                  Offset(486.5, 1600.0),
-                                  item['homeImage'],
-                                  callback,
-                                  duration: 1000,
-                                );
-                              });
 
-                              callback = (status) {
-                                if (status == AnimationStatus.completed) {
-                                  entry?.remove();
-                                }
-                              };
-                              Overlay.of(rootKey.currentContext).insert(entry);
-                            });
+                            _publicShowAddCart(temp,item['homeImage']);
                             _changeInitialOption(item['menuCode'], menuindex);
                             //更改显示购物车价格
                             getCartPriceTotal();
@@ -2564,11 +2510,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           onTapDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
-            //RenderBox renderBox = floatKey.currentContext.findRenderObject();
-           // floatOffset = renderBox.localToGlobal(Offset.zero);
+
           },
           onTap: () async {
-            Function callback;
+
             if (item['qtyBounds'] == 0) {
               return;
             } else if (item['qtyBounds'] > 0) {
@@ -2588,25 +2533,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               "goodsNum": 1
             };
             publicAddCartMenu(cartItem, true).then((val) {
-              setState(() {
-                OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                  return ParabolaAnimateWidget(
-                    rootKey,
-                    temp,
-                    Offset(486.5, 1600.0),
-                    item['homeImage'],
-                    callback,
-                    duration: 1000,
-                  );
-                });
 
-                callback = (status) {
-                  if (status == AnimationStatus.completed) {
-                    entry?.remove();
-                  }
-                };
-                Overlay.of(rootKey.currentContext).insert(entry);
-              });
+              _publicShowAddCart(temp,item['homeImage']);
               //更改显示购物车价格
               getCartPriceTotal();
             });
@@ -2801,7 +2729,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       )),
                       //价格展示
                       Container(
+                        padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
                         width: ScreenAdapter.width(200),
+                        alignment: Alignment.bottomRight,
                         //alignment: Alignment.centerRight,
                         child: publicShowMenuPrice(
                             item['currentPrice'],
@@ -2816,11 +2746,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       InkWell(
                         onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
-                          //RenderBox renderBox = floatKey.currentContext.findRenderObject();
-                          //floatOffset = renderBox.localToGlobal(Offset.zero);
                         },
                         onTap: () {
-                          Function callback;
+
                           //判断选择后option是否与optiongroup相等
                           var optionCodeList = "";
                           var optionTitle = "";
@@ -2850,25 +2778,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             "goodsNum": 1
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
-                            setState(() {
-                              OverlayEntry entry = OverlayEntry(builder: (ctx) {
-                                return ParabolaAnimateWidget(
-                                  rootKey,
-                                  temp,
-                                  Offset(486.5, 1600.0),
-                                  item['homeImage'],
-                                  callback,
-                                  duration: 1000,
-                                );
-                              });
 
-                              callback = (status) {
-                                if (status == AnimationStatus.completed) {
-                                  entry?.remove();
-                                }
-                              };
-                              Overlay.of(rootKey.currentContext).insert(entry);
-                            });
+                            _publicShowAddCart(temp,item['homeImage']);
+
                             if (item['optionGroupVoList']?.length > 0) {
                               _changeInitialOption(item['menuCode'], menuFiveindex);
                             }
@@ -2963,13 +2875,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   bottom: ScreenAdapter.height(10)),
               child: Column(
                 children: [
-                  Container(
-                    //color: Colors.red,
-                    width: ScreenAdapter.width(107),
-                    height: ScreenAdapter.height(1),
-                    key: floatKey,
-                    alignment: Alignment.centerRight,
-                  ),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -3148,6 +3054,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   ),
                                     maskType: EasyLoadingMaskType.black,
                                 );
+                                setState(() {
+                                  _timeout = const Duration(seconds: 300);
+                                });
                                _doSubmitOrder();
 
 

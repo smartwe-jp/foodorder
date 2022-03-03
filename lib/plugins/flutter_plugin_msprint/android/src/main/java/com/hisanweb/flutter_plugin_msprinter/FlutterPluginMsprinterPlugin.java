@@ -102,7 +102,8 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
         }else{
           print.execute_printRreceipt(mUsbDriver,oh,sed);
 
-          print.execute_print(mUsbDriver,oh,sed,1);
+          //print.execute_print(mUsbDriver,oh,sed,1);
+
           print.execute_print(mUsbDriver,oh,sed,0);
 
 

@@ -158,7 +158,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Text("请输入激活码",
                 style: TextStyle(fontSize: ScreenAdapter.fontSize(32.0))),
             Container(
-              width: ScreenAdapter.width(150.0),
+              width: ScreenAdapter.width(250.0),
               padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: TextField(
                 keyboardType: TextInputType.text,
@@ -177,7 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                 ),
                 onChanged: (value) {
-                  setState(() {
+                  setState(() {print(value);
                     this._activation_code = value;
                   });
                 },

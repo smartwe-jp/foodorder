@@ -90,7 +90,7 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
         mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
-        mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        //mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
         m_sbData = new StringBuilder(oh.getPayPrice()+" ");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         m_sbData = new StringBuilder("--------------------------------");
@@ -220,10 +220,81 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getShopAddress());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-
         mUsbDriver.write(PrintCmd.PrintFeedline(5));
+        mUsbDriver.write(PrintCmd.PrintCutpaper(1));
+
+
+        //--------菜单1
+        mUsbDriver.write(PrintCmd.SetClean());
+        printbmp(mUsbDriver,sed);
+        PrintFeedDot(30);
+
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        PrintFeedDot(20);
+
+        mUsbDriver.write(PrintCmd.PrintFeedline(2));
+        List<CategoryVos> lineList = oh.getCategoryVos();
+        for (CategoryVos line:lineList) {
+            mUsbDriver.write(PrintCmd.SetClean());
+            List<LineVos> lineVosList = line.getLineVos();
+            for (LineVos lineVos:lineVosList){
+                mUsbDriver.write(PrintCmd.SetClean());
+
+                mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
+
+                m_sbData = new StringBuilder(lineVos.getMenuNamePrintStr());
+                mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+
+                mUsbDriver.write(PrintCmd.SetClean());
+
+                List<OptionVos> lineoptionlist = lineVos.getOptionVos();
+                for (OptionVos lineoptionVos:lineoptionlist){
+
+                    m_sbData = new StringBuilder(lineoptionVos.getOptionPrintStr());
+                    mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+
+
+                }
+                mUsbDriver.write(PrintCmd.SetClean());
+                mUsbDriver.write(PrintCmd.PrintFeedline(1));
+
+            }
+
+            mUsbDriver.write(PrintCmd.SetAlignment(1));
+            m_sbData = new StringBuilder("-------------------------------");
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+            mUsbDriver.write(PrintCmd.PrintFeedline(1));
+            //mUsbDriver.write(PrintCmd.SetClean());
+        }
+
+
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
+
+
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        m_sbData = new StringBuilder("合計：    ");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        mUsbDriver.write(PrintCmd.PrintNextHT());
+        m_sbData = new StringBuilder(oh.getPayPrice());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+        mUsbDriver.write(PrintCmd.SetClean());
+
+        PrintFeedDot(20);
+
+
+        mUsbDriver.write(PrintCmd.PrintFeedline(10));
 
         mUsbDriver.write(PrintCmd.PrintCutpaper(1));
+
+
+
     }
 
     public void execute_print(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed,int CutpaperSet){
@@ -243,7 +314,7 @@ public class PrintService  {
 */
         //mUsbDriver.write(PrintCmd.SetClean());
 
-        printbmp(mUsbDriver,sed);
+        //printbmp(mUsbDriver,sed);
 
         mUsbDriver.write(PrintCmd.SetReadZKmode(0));
         PrintFeedDot(30);
