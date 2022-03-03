@@ -1750,7 +1750,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           )),
                           //价格展示
                           Container(
-                            width: ScreenAdapter.width(240),
+                            width: ScreenAdapter.width(200),
                             child: publicShowMenuPrice(
                                 itemsFirst['currentPrice'],
                                 45.0,
@@ -2399,7 +2399,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       )),
                       //价格展示
                       Container(
-                        width: ScreenAdapter.width(260),
+                        width: ScreenAdapter.width(200),
                         child: publicShowMenuPrice(
                             item['currentPrice'],
                             35.0,
@@ -2766,7 +2766,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     children: [
                       Expanded(
                           child: Container(
-                        child: Row(
+                        padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
+                      child: Row(
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -2800,7 +2801,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       )),
                       //价格展示
                       Container(
-                        width: ScreenAdapter.width(260),
+                        width: ScreenAdapter.width(200),
                         //alignment: Alignment.centerRight,
                         child: publicShowMenuPrice(
                             item['currentPrice'],
@@ -3093,14 +3094,43 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     bottom: BorderSide(color: Colors.black, width: 1.5),
                                     //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                                   )),
-                              child: publicShowMenuPrice(
-                                  _shopCartTotalPrice,
-                                  GFontSize.menusettlementBottomPriceLeft,
-                                  Gcolor.mainTitleColor,
-                                  GFontSize.menusettlementBottomPrice,
-                                  Gcolor.priceColor,
-                                  GFontSize.menusettlementBottomPriceRight,
-                                  Gcolor.mainTitleColor),
+                              child: RichText(
+                                text: TextSpan(
+                                    text: "¥",
+                                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(GFontSize
+                                          .menusettlementBottomPriceLeft),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: _shopCartTotalPrice.toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize
+                                                  .menusettlementBottomPrice),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.priceColor),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                            "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize
+                                                  .menusettlementBottomPriceRight),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor),
+                                        ),
+                                      ),
+                                    ]),
+                              ),
                             ),
 
 
@@ -3127,11 +3157,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 height: ScreenAdapter.height(117),
                                 alignment: Alignment.center,
                                 decoration: BoxDecoration(
-                                  /*image: new DecorationImage(
-                                    fit: BoxFit.fitWidth,
-                                    image:
-                                        AssetImage('assets/images/btn002.png'),
-                                  ),*/
+
                                   color: (int.parse(_shopCartTotalPrice) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((16.0)),

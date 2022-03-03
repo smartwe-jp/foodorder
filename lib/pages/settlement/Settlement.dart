@@ -319,7 +319,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //去打印小票
   doPrintOrderMenu() async {
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    var printStatus = await FlutterPluginMsprinter.getPrintStatus();print("printStatus${printStatus}");
     if(printStatus == "0"){
       print("打印小票来了");
       var formData = {
@@ -527,7 +527,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
-          sleep(Duration(milliseconds: 350));
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           print("ccccccc");
         }else{
@@ -855,8 +855,9 @@ class _SettlementPageState extends State<SettlementPage> {
                           EasyLoading.show(
                             //status: 'loading...',
                             indicator: Container(
-                              width: ScreenAdapter.width(200),
-                              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth),
+                              //width: ScreenAdapter.width(400),
+                              height: ScreenAdapter.height(400),
+                              child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
                             ),
                             maskType: EasyLoadingMaskType.black,
                           );
@@ -920,8 +921,8 @@ class _SettlementPageState extends State<SettlementPage> {
                           EasyLoading.show(
                             //status: 'loading...',
                             indicator: Container(
-                              width: ScreenAdapter.width(200),
-                              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth),
+                              height: ScreenAdapter.width(400),
+                              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
                             ),
                             maskType: EasyLoadingMaskType.black,
                           );
@@ -1357,8 +1358,9 @@ class _SettlementPageState extends State<SettlementPage> {
                             EasyLoading.show(
                               //status: 'loading...',
                               indicator: Container(
-                                width: ScreenAdapter.width(200),
-                                child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth),
+                                //width: ScreenAdapter.width(400),
+                                height: ScreenAdapter.height(400),
+                                child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
                               ),
                               maskType: EasyLoadingMaskType.black,
                             );
@@ -1399,17 +1401,18 @@ class _SettlementPageState extends State<SettlementPage> {
                       padding: EdgeInsets.only(left: ScreenAdapter.width(40), right: ScreenAdapter.width(40)),
                       alignment: Alignment.center,
                       color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
-                      child: Container(
-                          width: ScreenAdapter.width(930),
-                        padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(30),
-                            top: ScreenAdapter.height(0),
-                            right: ScreenAdapter.width(30),
-                            bottom: ScreenAdapter.height(10)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            GetBuilder<HomePageController>(
+                      child: Scrollbar(
+                        child: SingleChildScrollView(
+                          physics: ClampingScrollPhysics(),
+                          child: Container(
+                            width: ScreenAdapter.width(930),
+                            height: ScreenAdapter.height(620),
+                            padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(30),
+                                top: ScreenAdapter.height(5),
+                                right: ScreenAdapter.width(30),
+                                bottom: ScreenAdapter.height(40)),
+                            child: GetBuilder<HomePageController>(
                               builder: (_) {
                                 if (controller.cartItems.length == 0) {
                                   return Center(
@@ -1424,7 +1427,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                 );
                               },
                             ),
-                          ],
+                          ),
                         ),
                       ),
 

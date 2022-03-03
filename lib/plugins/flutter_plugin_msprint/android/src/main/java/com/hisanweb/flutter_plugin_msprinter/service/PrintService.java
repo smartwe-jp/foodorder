@@ -90,7 +90,8 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
         mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
-        m_sbData = new StringBuilder("￥"+oh.getPayPrice()+"  ");
+        mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        m_sbData = new StringBuilder(oh.getPayPrice()+" ");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
@@ -101,7 +102,7 @@ public class PrintService  {
         //m_sbData = new StringBuilder("--------------------");
         //mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
+        //mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
 
         byte[] bByte = new byte[1];
@@ -144,7 +145,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder("(内消費税");
+        m_sbData = new StringBuilder("   (内消費税");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
         mUsbDriver.write(PrintCmd.PrintNextHT());
         mUsbDriver.write(PrintCmd.PrintNextHT());
@@ -162,7 +163,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder("(内消費税");
+        m_sbData = new StringBuilder("   (内消費税");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
         mUsbDriver.write(PrintCmd.PrintNextHT());
         mUsbDriver.write(PrintCmd.PrintNextHT());
@@ -212,7 +213,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder(oh.getTelephone());
+        m_sbData = new StringBuilder("Tel "+oh.getTelephone());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
@@ -283,7 +284,7 @@ public class PrintService  {
 
                 }
                 mUsbDriver.write(PrintCmd.SetClean());
-                mUsbDriver.write(PrintCmd.PrintFeedline(2));
+                mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
             }
 
@@ -302,7 +303,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        m_sbData = new StringBuilder("合計：");
+        m_sbData = new StringBuilder("合計：    ");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
         mUsbDriver.write(PrintCmd.PrintNextHT());
         m_sbData = new StringBuilder(oh.getPayPrice());

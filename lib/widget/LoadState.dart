@@ -65,20 +65,21 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
     return Container(
       width: double.infinity,
       height: double.infinity,
-      alignment: Alignment.topCenter,
+      alignment: Alignment.center,
       color: Colors.white,
       child: Container(
-        height: ScreenUtil().setHeight(400),
+        //height: ScreenUtil().setHeight(400),
         padding: EdgeInsets.all(10),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
               width: ScreenUtil().setWidth(405),
-              height: ScreenUtil().setHeight(320),
-              child: Image.asset('assets/images/cargo_loading.gif',fit: BoxFit.fitWidth,),
+              //height: ScreenUtil().setHeight(320),
+              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth,),
             ),
-            Text('拼命加载中...',style: TextStyle(color: Colors.black),)],
+            //Text('拼命加载中...',style: TextStyle(color: Colors.black),)
+        ],
         ),
       ),
     );
