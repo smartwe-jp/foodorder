@@ -315,7 +315,7 @@ class _SettlementPageState extends State<SettlementPage> {
           setState(() {
           });
         } else {
-        showToast("服务器错误请重试");
+        showToast(GString.getToString(this._checkLanguage, "show_server_error"));
         }
       });
 
@@ -325,7 +325,7 @@ class _SettlementPageState extends State<SettlementPage> {
   //去打印小票
   doPrintOrderMenu() async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();print("printStatus${printStatus}");
-    if(printStatus == "0"){
+    if(printStatus == "0" || printStatus == "8"){
       print("打印小票来了");
       var formData = {
         "orderId": this._orderId,
@@ -338,7 +338,7 @@ class _SettlementPageState extends State<SettlementPage> {
           //doPrintOrderMenu();
 
 
-          showToast("打印小票");
+
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
           //sleep(Duration(milliseconds: 3000));
 
@@ -350,7 +350,7 @@ class _SettlementPageState extends State<SettlementPage> {
       });
     }else{
       var show_dialog_content = "";
-      if(printStatus == "7" || printStatus == "8"){
+      if(printStatus == "7"){
         show_dialog_content = GString.getToString(this._checkLanguage, "tag_print_content_paper_shortage");
       }else{
         show_dialog_content = GString.getToString(this._checkLanguage, "tag_print_content_paper_error");
@@ -570,7 +570,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     } else {
-      showToast("请继续投币");
+      showToast(GString.getToString(this._checkLanguage, "show_put_money_error"));
     }
   }
 
@@ -691,7 +691,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //汇报出金币种然后去打印小票
         reportOutMoney();
       }else{
-        showToast("投币后已取消订单");
+        //showToast("投币后已取消订单");
         //sleep(Duration(milliseconds: 3000));
         gotonewMyhome();
       }

@@ -40,6 +40,10 @@ class GString{
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
 
+        "show_server_error":"服务器错误请稍后重试",
+        "show_put_money_error":"请继续投币",
+        "show_please_select_error":"请选择",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -78,14 +82,16 @@ class GString{
         "tag_print_content_paper_error":"打印故障，请联系工作人员",
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
-
+        "show_server_error":"服务器错误请稍后重试",
+        "show_put_money_error":"请继续投币",
+        "show_please_select_error":"请选择",
 
       };
     }else if(languageCode == 'EN'){
       languagePack = {
         "top_back_button":"Language",
 
-        "show_price_front":"Tax included",
+        "show_price_front":"Tax-In",
         "settlement_button":"Settlement",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
@@ -117,6 +123,9 @@ class GString{
         "tag_print_content_paper_error":"打印故障，请联系工作人员",
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
+        "show_server_error":"服务器错误请稍后重试",
+        "show_put_money_error":"请继续投币",
+        "show_please_select_error":"请选择",
       };
     }
 

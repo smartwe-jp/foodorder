@@ -570,9 +570,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //公共加入购物车
   publicAddCartMenu(cartItem, checkItem) async {
-    setState(() {
-      _timeout = const Duration(seconds: 300);
-    });
+
     var result;
     try {
       result = await controller.addToCart(cartItem, checkItem: checkItem);
@@ -630,9 +628,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //获取选中的值
   _getSelectedAttrValue(menuCode, optionGroupList, setMenuState) {
-    setState(() {
-      _timeout = const Duration(seconds: 300);
-    });
+
     var _list = optionGroupList;
     List tempArr = [];
     for (var i = 0; i < _list.length; i++) {
@@ -1800,7 +1796,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                               //判断选择后option是否与optiongroup相等
                               if (_selectedMenuOptionList[itemsFirst['menuCode']].length !=itemsFirst['optionGroupVoList'].length) {
-                                showToast('请选择面选项');
+                                showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                                 return;
                               }
                               var currentPrice = itemsFirst['currentPrice'];
@@ -2391,7 +2387,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             if (_selectedMenuOptionList[item['menuCode']]
                                     .length !=
                                 item['optionGroupVoList'].length) {
-                              showToast('请选择面选项');
+                              showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
 
@@ -2755,7 +2751,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           var currentPrice = item['currentPrice'];
                           if (item['optionGroupVoList']?.length > 0) {
                             if (_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length) {
-                              showToast('请选择面选项');
+                              showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
 
@@ -3054,9 +3050,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   ),
                                     maskType: EasyLoadingMaskType.black,
                                 );
-                                setState(() {
-                                  _timeout = const Duration(seconds: 300);
-                                });
+
                                _doSubmitOrder();
 
 
@@ -3131,7 +3125,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   left: ScreenAdapter.width(5),
                   top: ScreenAdapter.height(8),
                   bottom: ScreenAdapter.height(8)),
-              width: ScreenAdapter.width(495),
+              //width: ScreenAdapter.width(495),
               child: RichText(
                 text: TextSpan(
                     text: d.mainTitle,

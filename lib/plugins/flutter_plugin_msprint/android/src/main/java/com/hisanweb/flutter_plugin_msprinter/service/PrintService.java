@@ -90,7 +90,7 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
         mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
-        //mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
         m_sbData = new StringBuilder(oh.getPayPrice()+" ");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         m_sbData = new StringBuilder("--------------------------------");
@@ -229,7 +229,7 @@ public class PrintService  {
         printbmp(mUsbDriver,sed);
         PrintFeedDot(30);
 
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        // mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         mUsbDriver.write(PrintCmd.SetAlignment(1));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
@@ -312,7 +312,7 @@ public class PrintService  {
             System.out.println("http Exception");
         }
 */
-        //mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetClean());
 
         //printbmp(mUsbDriver,sed);
 
@@ -320,15 +320,17 @@ public class PrintService  {
         PrintFeedDot(30);
         StringBuilder m_sbData;
 
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        //mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         mUsbDriver.write(PrintCmd.SetAlignment(1));
 
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         PrintFeedDot(20);
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(2));
-
+        mUsbDriver.write(PrintCmd.PrintFeedline(3));
+        m_sbData = new StringBuilder("-------------------------------");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
         List<CategoryVos> lineList = oh.getCategoryVos();
         for (CategoryVos line:lineList) {
             mUsbDriver.write(PrintCmd.SetClean());
