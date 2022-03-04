@@ -43,6 +43,8 @@ dependencies:
     path: ./lib/plugins/paycube
   flutter_plugin_msprinter:
     path: ./lib/plugins/flutter_plugin_msprint
+  appset:
+    path: ./lib/plugins/appset
 
 dev_dependencies:
   flutter_test:

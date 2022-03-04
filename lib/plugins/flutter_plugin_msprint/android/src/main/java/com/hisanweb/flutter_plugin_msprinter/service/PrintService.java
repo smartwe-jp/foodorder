@@ -110,6 +110,32 @@ public class PrintService  {
         //bByte[1] = 10;
         mUsbDriver.write(PrintCmd.SetHTseat(bByte, 1));
 
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        m_sbData = new StringBuilder(oh.getLine1());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        m_sbData = new StringBuilder(oh.getLine2());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        m_sbData = new StringBuilder(oh.getLine3());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        m_sbData = new StringBuilder(oh.getLine4());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        m_sbData = new StringBuilder(oh.getLine5());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        m_sbData = new StringBuilder(oh.getLine6());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //设置行间距
+        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+/*
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder("税抜金額");
@@ -170,6 +196,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.SetAlignment(2));
         m_sbData = new StringBuilder("0)");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+*/
 
         mUsbDriver.write(PrintCmd.PrintFeedline(1));
         m_sbData = new StringBuilder("--------------------------------");
@@ -232,10 +259,8 @@ public class PrintService  {
         // mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         mUsbDriver.write(PrintCmd.SetAlignment(1));
 
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
-        PrintFeedDot(20);
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(2));
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
         List<CategoryVos> lineList = oh.getCategoryVos();
         for (CategoryVos line:lineList) {
             mUsbDriver.write(PrintCmd.SetClean());
@@ -261,7 +286,7 @@ public class PrintService  {
 
                 }
                 mUsbDriver.write(PrintCmd.SetClean());
-                mUsbDriver.write(PrintCmd.PrintFeedline(1));
+
 
             }
 
@@ -269,12 +294,9 @@ public class PrintService  {
             m_sbData = new StringBuilder("-------------------------------");
             mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-            mUsbDriver.write(PrintCmd.PrintFeedline(1));
+
             //mUsbDriver.write(PrintCmd.SetClean());
         }
-
-
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
@@ -289,7 +311,7 @@ public class PrintService  {
         PrintFeedDot(20);
 
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(10));
+        mUsbDriver.write(PrintCmd.PrintFeedline(5));
 
         mUsbDriver.write(PrintCmd.PrintCutpaper(1));
 

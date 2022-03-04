@@ -14,86 +14,139 @@ public class OrderMenuList {
     private String signValue;
     private String excludingTax;
     private String tax;
+    private String line1;
+    private String line2;
+    private String line3;
+    private String line4;
+    private String line5;
+    private String line6;
     private List<CategoryVos> categoryVos;
-
-    public void setOrderId(String orderId) {
-        this.orderId = orderId;
-    }
 
     public String getOrderId() {
         return orderId;
     }
 
-    public void setOrderDate(String orderDate) {
-        this.orderDate = orderDate;
+    public void setOrderId(String orderId) {
+        this.orderId = orderId;
     }
 
     public String getOrderDate() {
         return orderDate;
     }
 
-    public void setPayPrice(String payPrice) {
-        this.payPrice = payPrice;
+    public void setOrderDate(String orderDate) {
+        this.orderDate = orderDate;
     }
 
     public String getPayPrice() {
         return payPrice;
     }
 
-    public void setShopName(String shopName) {
-        this.shopName = shopName;
+    public void setPayPrice(String payPrice) {
+        this.payPrice = payPrice;
     }
 
     public String getShopName() {
         return shopName;
     }
 
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
     public String getTelephone() {
         return telephone;
     }
 
-    public void setShopAddress(String shopAddress) {
-        this.shopAddress = shopAddress;
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
     }
 
     public String getShopAddress() {
         return shopAddress;
     }
 
-    public void setSignValue(String signValue) {
-        this.signValue = signValue;
+    public void setShopAddress(String shopAddress) {
+        this.shopAddress = shopAddress;
     }
 
     public String getSignValue() {
         return signValue;
     }
 
-    public void setExcludingTax(String excludingTax) {
-        this.excludingTax = excludingTax;
+    public void setSignValue(String signValue) {
+        this.signValue = signValue;
     }
 
     public String getExcludingTax() {
         return excludingTax;
     }
 
-    public void setTax(String tax) {
-        this.tax = tax;
+    public void setExcludingTax(String excludingTax) {
+        this.excludingTax = excludingTax;
     }
 
     public String getTax() {
         return tax;
     }
 
-    public void setCategoryVos(List<CategoryVos> categoryVos) {
-        this.categoryVos = categoryVos;
+    public void setTax(String tax) {
+        this.tax = tax;
+    }
+
+    public String getLine1() {
+        return line1;
+    }
+
+    public void setLine1(String line1) {
+        this.line1 = line1;
+    }
+
+    public String getLine2() {
+        return line2;
+    }
+
+    public void setLine2(String line2) {
+        this.line2 = line2;
+    }
+
+    public String getLine3() {
+        return line3;
+    }
+
+    public void setLine3(String line3) {
+        this.line3 = line3;
+    }
+
+    public String getLine4() {
+        return line4;
+    }
+
+    public void setLine4(String line4) {
+        this.line4 = line4;
+    }
+
+    public String getLine5() {
+        return line5;
+    }
+
+    public void setLine5(String line5) {
+        this.line5 = line5;
+    }
+
+    public String getLine6() {
+        return line6;
+    }
+
+    public void setLine6(String line6) {
+        this.line6 = line6;
     }
 
     public List<CategoryVos> getCategoryVos() {
         return categoryVos;
     }
 
+    public void setCategoryVos(List<CategoryVos> categoryVos) {
+        this.categoryVos = categoryVos;
+    }
 }

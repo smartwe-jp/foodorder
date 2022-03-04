@@ -73,9 +73,9 @@ class GString{
         "settlement_back":"返回",
         "settlement_confirmButton":"确定支付",
         "settlement_continueMoney":"请继续投币",
-        "settlement_orderPrice":"注文金額",
-        "settlement_putMoney":"預り金",
-        "settlement_outMoney":"おつり",
+        "settlement_orderPrice":"订单金额",
+        "settlement_putMoney":"已投币",
+        "settlement_outMoney":"找零",
 
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
@@ -89,10 +89,10 @@ class GString{
       };
     }else if(languageCode == 'EN'){
       languagePack = {
-        "top_back_button":"Language",
+        "top_back_button":"Languages",
 
         "show_price_front":"Tax-In",
-        "settlement_button":"Settlement",
+        "settlement_button":"PAY",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
         "tag_content":"Are you sure you want to empty the shopping cart?",
@@ -104,14 +104,14 @@ class GString{
         "add_option_cart":"Confirm",
         "settlement_total_price":"Total",
         "settlement_small_ticket_tag":"We need a receipt, so please order us",
-        "settlement_payment_method":"The following payment methods are available.",
-        "settlement_payment_method_cash":"Crash",
+        "settlement_payment_method":"Please select a payment method for your order：",
+        "settlement_payment_method_cash":"Cash",
         "settlement_payment_method_paypay":"PayPay",
         "settlement_payment_method_wechat":"WeChat Pay",
         "settlement_payment_method_alipay":"Alipay",
-        "settlement_payment_method_study_cash":"Crash",
-        "settlement_payment_method_study_qr":"扫码支付",
-        "settlement_payment_method_title":"Guide to payment methods",
+        "settlement_payment_method_study_cash":"Cash",
+        "settlement_payment_method_study_qr":"QR Code Payments",
+        "settlement_payment_method_title":"Guide to Payment Methods",
         "settlement_back":"Back",
         "settlement_confirmButton":"确定支付",
         "settlement_continueMoney":"请继续投币",

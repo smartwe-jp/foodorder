@@ -9,27 +9,17 @@ import io.flutter.embedding.android.FlutterActivity;
 public class MainActivity extends FlutterActivity {
     private Context mContext;
 
-    /*if(mContext != null){
-        System.out.println("设置来了");
-        Intent statusbarIntent = new Intent("com.android.HIDE_STATUSBAR");
-        mContext.sendBroadcast(statusbarIntent);
-
-        Intent navabarIntent = new Intent("com.android.HIDE_NAVBAR");
-        mContext.sendBroadcast(navabarIntent);
-
-
-    }*/
 
    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
        mContext = this;
         if(mContext != null){
-            /*Intent statusbarIntent = new Intent("com.android.HIDE_STATUSBAR");
+            Intent statusbarIntent = new Intent("com.android.HIDE_STATUSBAR");
             mContext.sendBroadcast(statusbarIntent);
 
             Intent navabarIntent = new Intent("com.android.HIDE_NAVBAR");
-            mContext.sendBroadcast(navabarIntent);*/
+            mContext.sendBroadcast(navabarIntent);
         }
     }
 

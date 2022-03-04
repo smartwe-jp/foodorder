@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,6 +19,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   final HomePageController controller = Get.put(HomePageController());
 
+  Timer checkTimer;
+  Timer stopChecktimer;
+  Timer closetimer;
+
+  var _stopStatus;
+  var _closeStatus;
+
   @override
   void initState() {
     super.initState();
@@ -26,9 +35,10 @@ class _HomePageState extends State<HomePage> {
 
     //监听增加打开现金机的广播
     eventBus.on<PayCubeEvent>().listen((event) {
-      OpenPayCube();
+      CheckPayCube();
     });
 
+    _clearCartList();
     //监听清除购物车的广播
     eventBus.on<clearCartEvent>().listen((event) {
       _clearCartList();
@@ -42,7 +52,7 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  //打开打印机
+  //打开现金机
   OpenPayCube() async {
     String checkStatus = await Paycube.CheckPayCubeStatus;
 
@@ -56,8 +66,70 @@ class _HomePageState extends State<HomePage> {
     }
 
     //await Paycube.endTrade;
+  }
+
+  //检测现金机状态
+  CheckPayCube() async {
+    String machineStatus = await Paycube.getPayCubeMachineStatus;
+
+    checkTimer?.cancel();
+    checkTimer = Timer.periodic(Duration(milliseconds: 600), (Timer checktimer) async {
+      String machineStatus = await Paycube.getPayCubeMachineStatus;print(machineStatus);
+      // 循环一定要记得设置取消条件，手动取消
+      //如果是20说明机器还处于开机状态，需要先入金禁止在取引终了
+      if (machineStatus == "10--A0--A0--A0") {
+        checktimer.cancel();
+      }else{
+        stopPaycube();
+        checktimer.cancel();
+      }
+    });
 
   }
+
+  stopPaycube() async {
+    await Paycube.setReceiveEvent;
+    var endStatus = await Paycube.endPayCube;
+    stopChecktimer?.cancel();
+    stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
+      print("bbbbbbb");
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
+      //await Paycube.setReceiveEvent;
+      // 循环一定要记得设置取消条件，手动取消
+      if (_stopStatus == "StopSuccess") {
+        closePaycube();
+        stopcheck.cancel();
+
+      }else if(_stopStatus == "Error-A0--02"){
+        //处理中
+        await Paycube.endPayCube;
+        print("首页检测处理中");
+      }else{
+        await Paycube.endPayCube;
+        print("_stopStatus:$_stopStatus");
+      }
+    });
+  }
+
+  closePaycube() async {
+    //取引终了结束交易
+    var endTrade = await Paycube.endTrade;
+    await Paycube.setReceiveEvent;print("88888");
+    closetimer?.cancel();
+    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
+      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
+      // 循环一定要记得设置取消条件，手动取消
+      if (_closeStatus == "EndSuccess" || _closeStatus == "Error-A0--02") {
+        print("首页检查结束关闭了");
+        closecheck.cancel();
+      }else{
+
+        await Paycube.endTrade;
+        print("_closeStatus:$_closeStatus");
+      }
+    });
+  }
+
 
   _clearCartList() async {
     Get.find<HomePageController>().removeAllFromCart();

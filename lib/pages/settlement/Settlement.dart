@@ -76,6 +76,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
   var _allowClick = true;
 
+  var _doSetting = false;
+
 
   @override
   void initState() {
@@ -634,6 +636,12 @@ class _SettlementPageState extends State<SettlementPage> {
     });*/
   }
 
+  gotonewSettingPage(){
+    EasyLoading.dismiss();
+    Navigator.pop(context);
+    Navigator.pushNamed(context, "/settingPage");
+  }
+
   newendtradepay() async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
@@ -641,8 +649,8 @@ class _SettlementPageState extends State<SettlementPage> {
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
       _endStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
-      // 循环一定要记得设置取消条件，手动取消
-      if (_endStatus == "EndSuccess" || _endStatus == "Error-A0--02") {
+      // 循环一定要记得设置取消条件，手动取消 _endStatus == "Error-A0--02"
+      if (_endStatus == "EndSuccess") {
 
         //如果出金金额大于0 则先获取出金币种，否则跳转
         if(int.parse(outStringMoney) >0){
@@ -654,9 +662,12 @@ class _SettlementPageState extends State<SettlementPage> {
             //去打印小票
             //doPrintOrderMenu();
           }else{
+            if(_doSetting == true){
+              gotonewSettingPage();
+            }else{
+              gotonewMenuPage();
+            }
 
-            //showToast("投币后已取消订单");
-            gotonewMenuPage();
           }
         }
 
@@ -890,7 +901,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     ),
                   ),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       /*InkWell(
                         onTap: () {
@@ -952,6 +963,34 @@ class _SettlementPageState extends State<SettlementPage> {
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                               )),
+                        ),
+                      ),
+
+                      InkWell(
+                        onLongPress: (){
+                          EasyLoading.show(
+                            //status: 'loading...',
+                            indicator: Container(
+                              height: ScreenAdapter.width(400),
+                              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+                            ),
+                            maskType: EasyLoadingMaskType.black,
+                          );
+                          setState(() {
+                            _doSetting = true;
+                          });
+                          //sleep(Duration(milliseconds: 800));
+                          CancelOrder();
+                        },
+                        child: Container(
+                          width: ScreenAdapter.width(180),
+                          height: ScreenAdapter.height(85),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+                          //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            //color: Colors.red,
+                          ),
                         ),
                       ),
                     ],
