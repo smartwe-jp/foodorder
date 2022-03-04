@@ -49,6 +49,9 @@ class _HomePageState extends State<HomePage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    checkTimer?.cancel();
+    stopChecktimer?.cancel();
+    closetimer?.cancel();
     super.dispose();
   }
 
@@ -131,10 +134,13 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  _clearCartList() async {
+  _clearCartList() async {print("是否清空购物车了");
+  if(controller.cartItems.length >0){print("是否清空购物车了222");
     Get.find<HomePageController>().removeAllFromCart();
+  }
 
-    controller.getCardList();
+
+    //controller.getCardList();
   }
 
   @override

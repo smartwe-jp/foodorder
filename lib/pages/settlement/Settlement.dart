@@ -514,6 +514,16 @@ class _SettlementPageState extends State<SettlementPage> {
     setState(() {
       timer?.cancel();
     });
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        //width: ScreenAdapter.width(400),
+        height: ScreenAdapter.height(400),
+        child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+
     print("aaaaaa");
     int putMoney = int.parse(this._getPutMoney); //投币金额
     //如果投币金额大于等于收款金额，则判断找零或结束
@@ -621,7 +631,7 @@ class _SettlementPageState extends State<SettlementPage> {
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.pop(context);
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 100), () {
       Navigator.of(context).pushReplacementNamed('/home');
     });
   }
@@ -629,17 +639,19 @@ class _SettlementPageState extends State<SettlementPage> {
   gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
+    //Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
 
-    /*Future.delayed(Duration.zero, () {
-      Navigator.of(context).pushReplacementNamed('/menuPage',arguments: {"checkLanguage": this._checkLanguage});
-    });*/
+    Future.delayed(Duration(milliseconds: 100), () {
+      Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
+
+      //Navigator.of(context).pushReplacementNamed('/menuPage',arguments: {"checkLanguage": this._checkLanguage});
+    });
   }
 
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, "/settingPage");
+    Navigator.pushNamed(context, "/settingPage",arguments: {"machineCode": this._machineCode});
   }
 
   newendtradepay() async {
@@ -789,6 +801,13 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页
   CancelOrder(){
+    var formData = {
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+    };
+    //不用查看返回
+    request('webBootCancel', method: 'POST', parameters: formData);
+
     //已投钱
     if(int.parse(_getPutMoney) >0){
       setState(() {
@@ -1400,15 +1419,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             setState(() {
                               _allowClick = false;
                             });
-                            EasyLoading.show(
-                              //status: 'loading...',
-                              indicator: Container(
-                                //width: ScreenAdapter.width(400),
-                                height: ScreenAdapter.height(400),
-                                child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
-                              ),
-                              maskType: EasyLoadingMaskType.black,
-                            );
+
                             Endtoubi();
                           }
 

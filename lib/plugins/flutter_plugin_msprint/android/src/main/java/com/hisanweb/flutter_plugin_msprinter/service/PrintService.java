@@ -58,7 +58,7 @@ public class PrintService  {
 
         printbmp(mUsbDriver,sed);
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(2));
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
         mUsbDriver.write(PrintCmd.SetClean());
 
         mUsbDriver.write(PrintCmd.SetReadZKmode(0));
@@ -90,13 +90,13 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
         mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
-        mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
-        m_sbData = new StringBuilder(oh.getPayPrice()+" ");
+        //mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        //mUsbDriver.write(PrintCmd.SetClean());
+
+        m_sbData = new StringBuilder(oh.getPayPrice());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
-        mUsbDriver.write(PrintCmd.SetUnderline(0));
 
         mUsbDriver.write(PrintCmd.SetClean());
         //m_sbData = new StringBuilder("--------------------");
@@ -114,27 +114,33 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getLine1());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+
         m_sbData = new StringBuilder(oh.getLine2());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+
         m_sbData = new StringBuilder(oh.getLine3());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+
         m_sbData = new StringBuilder(oh.getLine4());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+
         m_sbData = new StringBuilder(oh.getLine5());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        mUsbDriver.write(PrintCmd.SetClean());
+        //mUsbDriver.write(PrintCmd.SetUnderline(2));
         m_sbData = new StringBuilder(oh.getLine6());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-        //设置行间距
-        mUsbDriver.write(PrintCmd.SetReadZKmode(3));
+        //mUsbDriver.write(PrintCmd.SetUnderline(0));
+
+        /*mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetUnderline(2));
+        m_sbData = new StringBuilder("                                ");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetUnderline(0));*/
 /*
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
@@ -198,8 +204,8 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 */
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
-        m_sbData = new StringBuilder("--------------------------------");
+        //mUsbDriver.write(PrintCmd.PrintFeedline(1));
+       m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
@@ -229,18 +235,17 @@ public class PrintService  {
 
 
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
         m_sbData = new StringBuilder(oh.getSignValue());
         mUsbDriver.write(PrintCmd.PrintQrcode(m_sbData.toString(), 27, 4, 0));
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(2));
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder(oh.getShopName());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder("Tel "+oh.getTelephone());
+        m_sbData = new StringBuilder("TEL "+oh.getTelephone());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
@@ -299,10 +304,14 @@ public class PrintService  {
         }
 
 
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        m_sbData = new StringBuilder("合計：    ");
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
-        mUsbDriver.write(PrintCmd.PrintNextHT());
+        //mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        //m_sbData = new StringBuilder("合計：");
+        //mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        //mUsbDriver.write(PrintCmd.PrintNextHT());
+        mUsbDriver.write(PrintCmd.SetAlignment(2));
+        mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
+        //mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        //mUsbDriver.write(PrintCmd.SetClean());
         m_sbData = new StringBuilder(oh.getPayPrice());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
@@ -392,15 +401,18 @@ public class PrintService  {
         }
 
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
+        //mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
        /* m_sbData = new StringBuilder("-------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
-
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        m_sbData = new StringBuilder("合計：    ");
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
-        mUsbDriver.write(PrintCmd.PrintNextHT());
+        mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetAlignment(2));
+        mUsbDriver.write(PrintCmd.SetBold(1)); //加粗
+        //mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        //m_sbData = new StringBuilder("合計：");
+        //mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        //mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
+        //mUsbDriver.write(PrintCmd.SetClean());
         m_sbData = new StringBuilder(oh.getPayPrice());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 

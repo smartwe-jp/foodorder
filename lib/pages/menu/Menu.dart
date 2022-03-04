@@ -123,6 +123,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         this._getBookingBootMenu();
       }, //错误按钮点击过后进行重新加载
       successWidget: Column(
+        key: rootKey,
         children: [
           //顶部导航
           Container(
@@ -143,7 +144,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
           Expanded(
               child: Container(
-            key: rootKey,
             color: ColorsUtil.hexToColor(Gcolor.mainBackground),
             height: ScreenAdapter.height(1480),
             child: showMiddleMenuList(),

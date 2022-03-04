@@ -7,4 +7,6 @@ const servicePath = {
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
   'webBootToReport': base_url + 'pad/web/boot/report', //现金支付提交请求地址
   'webBootToPrint': base_url + 'pad/web/boot/print', //打印小票请求地址
+  'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
+  'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
 };
