@@ -70,7 +70,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
 
   //final sqlHelper = SqfliteHelper();
-
+  TextEditingController _activationCodeController = new TextEditingController();
+  final FocusNode _activationCodeFocusNode = FocusNode();
 
   var _activation_code; //激活码
 
@@ -163,8 +164,11 @@ class _MyHomePageState extends State<MyHomePage> {
               child: TextField(
                 keyboardType: TextInputType.text,
                 //controller: _emailEditController,
+                controller: _activationCodeController,
+                focusNode: _activationCodeFocusNode,
                 decoration: InputDecoration(
                     hintText: "请输入激活码",
+
                     border: UnderlineInputBorder(
                       borderRadius: BorderRadius.circular(1),
                       borderSide: BorderSide(
@@ -177,9 +181,13 @@ class _MyHomePageState extends State<MyHomePage> {
                     )
                 ),
                 onChanged: (value) {
-                  setState(() {print(value);
+                  /*setState(() {print(value);
                     this._activation_code = value;
-                  });
+                  });*/
+                },
+                onSubmitted: (value){
+                  sendActivationCode();
+                  print("确定激活-${value}");
                 },
               ),),
             Divider(
