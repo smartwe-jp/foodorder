@@ -3048,7 +3048,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     //status: 'loading...',
                                   indicator: Container(
                                     width: ScreenAdapter.width(200),
-                                    child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth),
+                                    child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitWidth),
                                   ),
                                     maskType: EasyLoadingMaskType.black,
                                 );
