@@ -47,7 +47,7 @@ class GString{
       };
     }else if(languageCode == 'CH'){
       languagePack = {
-        "top_back_button":"语言",
+        "top_back_button":"言語",
 
         "show_price_front":"含税",
         "settlement_button":"结算",
@@ -89,10 +89,10 @@ class GString{
       };
     }else if(languageCode == 'EN'){
       languagePack = {
-        "top_back_button":"Languages",
+        "top_back_button":"言語",
 
         "show_price_front":"Tax-In",
-        "settlement_button":"PAY",
+        "settlement_button":"Check out",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
         "tag_content":"Are you sure you want to empty the shopping cart?",

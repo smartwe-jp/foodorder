@@ -13,21 +13,23 @@ import 'package:foodorder/controller/homePageController.dart';
 
 class SettingPage extends StatefulWidget {
   Map arguments;
+
   SettingPage({Key key, this.arguments}) : super(key: key);
 
   _SettingPageState createState() => _SettingPageState();
 }
 
 class _SettingPageState extends State<SettingPage> {
-
   final HomePageController controller = Get.put(HomePageController());
 
   String _machineCode = "";
   var _cashList = [];
+  var _lastTotalList = [];
+  var _depositData = {};
 
   //监听页面销毁的事件
   dispose() {
-    eventBus.fire(new clearCartEvent('支付成功...'));
+    //eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
   }
 
@@ -36,37 +38,40 @@ class _SettingPageState extends State<SettingPage> {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
 
-      //查看机器零钱状态
+    //查看机器零钱状态
     _getPaycubeChangeState();
 
     _clearCartList();
   }
 
-  //获取菜单
+  //获取现金机列表
   _getPaycubeChangeState() {
     var formData = {
       "machineCode": _machineCode,
     };
-    request('webBootChangeState', method: 'POST', parameters: formData).then((val) {
+    request('webBootChangeState', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200 && null != response['data']) {
+        print(response['data']);
         setState(() {
-          _cashList = response['data'];
+          _depositData = response['data'];
+          _cashList = response['data']['changeStates'];
+          _lastTotalList = response['data']['last7daysTotal'];
         });
-      } else {
-
-      }
+      } else {}
     });
 
     //print(_menuOption);
   }
 
-  _clearCartList() async {print("是否清空购物车了");
-  if(controller.cartItems.length >0){print("是否清空购物车了222");
-  Get.find<HomePageController>().removeAllFromCart();
-  }
-
+  _clearCartList() async {
+    print("是否清空购物车了");
+    if (controller.cartItems.length > 0) {
+      print("是否清空购物车了222");
+      Get.find<HomePageController>().removeAllFromCart();
+    }
 
     //controller.getCardList();
   }
@@ -81,80 +86,111 @@ class _SettingPageState extends State<SettingPage> {
     await Appset.showBullyScreen;
   }
 
-  getCashListShow(){
-    return this._cashList.length > 0
-        ? ListView.builder(
-        shrinkWrap: true, //为true可以解决子控件必须设置高度的问题
-        physics: NeverScrollableScrollPhysics(), //禁用滑动事件
-        itemCount: this._cashList.length,
-        itemBuilder: (context, index) {
-          var _detail = this._cashList[index];
-
-          return Container(
-            padding: EdgeInsets.only(top:ScreenAdapter.height(15)),
+  //支付金额展示
+  getDepositListShow() {
+    return Container(
+      margin: EdgeInsets.only(
+          top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("待结算明细",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
+            //width: ScreenAdapter.width(620),
+            decoration: BoxDecoration(
+                color: Colors.white12,
+                border: Border(
+                  //bottom: BorderSide(color: Colors.grey, width: 1.0),
+                  top: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  left: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  right: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                )),
             child: Column(
               children: [
-                (index == 0) ? Container(
+                Container(
+                  decoration: BoxDecoration(
+                      color: Colors.white12,
+                      border: Border(
+                        bottom:
+                            BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                      )),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(250),
                         height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            "币种",
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: Text("现金",
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
+                              fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(250),
                         height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            "最小枚数",
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: Text("Alipay",
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
+                              fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(250),
                         height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            "初期枚数",
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: Text("PayPay",
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
+                              fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
+                        width: ScreenAdapter.width(250),
                         height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            "使用枚数",
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: Text("WechatPay",
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
+                              fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
                     ],
                   ),
-                ):Container(height: 0,),
+                ),
                 Container(
                   alignment: Alignment.center,
+                  padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                   decoration: BoxDecoration(
                       color: Colors.white12,
                       border: Border(
-                        bottom: BorderSide(color: Colors.grey, width: 1.0),
+                        bottom:
+                            BorderSide(color: Colors.grey.shade400, width: 1.0),
                         //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                       )),
                   child: Row(
@@ -162,78 +198,466 @@ class _SettingPageState extends State<SettingPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(40),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            _detail['name'],
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
-                              fontWeight: FontWeight.w500,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
+                        width: ScreenAdapter.width(250),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                              text: _depositData['deposit_crash'].toString(),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "円",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  ),
+                                ),
+                              ]),
+                        ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(40),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            _detail['warm'].toString(),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
-                              fontWeight: FontWeight.w500,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
+                        width: ScreenAdapter.width(250),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                              text: _depositData['deposit_alipay'].toString(),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "円",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  ),
+                                ),
+                              ]),
+                        ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(40),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            _detail['standard'].toString(),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
-                              fontWeight: FontWeight.w500,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
+                        width: ScreenAdapter.width(250),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                              text: _depositData['deposit_paypay'].toString(),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "円",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  ),
+                                ),
+                              ]),
+                        ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(120),
-                        height: ScreenAdapter.height(40),
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        child: Text(
-                            _detail['used'].toString(),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
-                              fontWeight: FontWeight.w500,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
+                        width: ScreenAdapter.width(250),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child:  RichText(
+                          text: TextSpan(
+                              text: _depositData['deposit_wechat'].toString(),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "円",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  ),
+                                ),
+                              ]),
+                        ),
                       ),
                     ],
                   ),
                 ),
               ],
             ),
-          );
-        })
+          ),
+        ],
+      ),
+    );
+  }
+
+  getCashListShow() {
+    return this._cashList.length > 0
+        ? Container(
+          margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+          child: Column(
+            children: [
+              Text("现金机状态",
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(22),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  )),
+              Container(
+                  //width: ScreenAdapter.width(520),
+                margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                  decoration: BoxDecoration(
+                      color: Colors.white12,
+                      border: Border(
+                        //bottom: BorderSide(color: Colors.grey, width: 1.0),
+                        top: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        left: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        right: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                      )),
+                  child: Column(
+                    children: [
+                      Container(
+                        padding: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5)),
+                        decoration: BoxDecoration(
+                            color: Colors.white12,
+                            border: Border(
+                              bottom: BorderSide(
+                                  color: Colors.grey.shade400,
+                                  width: 1.0),
+                              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                            )),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(110),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("币种",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(120),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("最小枚数",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(120),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("初期枚数",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(120),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("使用枚数",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+                          ],
+                        ),
+                      ),
+                      ListView.builder(
+                          shrinkWrap: true, //为true可以解决子控件必须设置高度的问题
+                          physics: NeverScrollableScrollPhysics(), //禁用滑动事件
+                          itemCount: this._cashList.length,
+                          itemBuilder: (context, index) {
+                            var _detail = this._cashList[index];
+
+                            return Container(
+                              alignment: Alignment.center,
+                              padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
+                              decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  border: Border(
+                                    bottom: BorderSide( color: Colors.grey.shade400, width: 1.0),
+                                    //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                  )),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(100),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.centerLeft,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(15),
+                                        right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['name'],
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(18),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor("#000000"),
+                                        )),
+                                  )),
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(120),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(5),
+                                        right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['warm'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(20),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor("#000000"),
+                                        )),
+                                  )),
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(120),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(5),
+                                        right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['standard'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(20),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor("#000000"),
+                                        )),
+                                  )),
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(120),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(5),
+                                        right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['used'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(20),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor("#000000"),
+                                        )),
+                                  )),
+                                ],
+                              ),
+                            );
+                          }),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+        )
         : Text("");
   }
 
+  getLastOrderTotalShow() {
+    List<Widget> cashListRows = []; //先建一个数组用于存放循环生成的widget
+    for (var _detail in this._lastTotalList) {
+      cashListRows.add(Expanded(child: Container(
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        decoration: BoxDecoration(
+            color: Colors.white12,
+            border: Border(
+              right: BorderSide( color: Colors.grey.shade400, width: 1.0),
+
+              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+            )),
+        alignment: Alignment.center,
+        child: Column(
+          children: [
+            Container(
+              //width: ScreenAdapter.width(140),
+              height: ScreenAdapter.height(40),
+              padding: EdgeInsets.only(
+                  bottom: ScreenAdapter.height(15)),
+              decoration: BoxDecoration(
+                  color: Colors.white12,
+                  border: Border(
+                    bottom: BorderSide( color: Colors.grey.shade400, width: 1.0),
+
+                    //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                  )),
+              alignment: Alignment.center,
+              child: Text(_detail['day'],
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(20),
+                    fontWeight: FontWeight.w500,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  )),
+            ),
+            Container(
+              //width: ScreenAdapter.width(140),
+              height: ScreenAdapter.height(25),
+              margin: EdgeInsets.only(
+                  left: ScreenAdapter.width(5),
+                  top: ScreenAdapter.height(16),
+                  right: ScreenAdapter.width(5)),
+              alignment: Alignment.center,
+              child: RichText(
+                text: TextSpan(
+                    text: _detail['total'].toString(),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(22),
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "円",
+                        style: TextStyle(
+                          fontSize:
+                          ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(
+                              "#000000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ],
+        ),
+      )));
+    }
+
+    return this._lastTotalList.length > 0
+        ? Container(
+            margin: EdgeInsets.only(
+                top: ScreenAdapter.height(15),
+                bottom: ScreenAdapter.height(15)),
+            child: Column(
+              children: [
+                Text("最近7日收入明细",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(22),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    )),
+                Container(
+                  //width: ScreenAdapter.width(570),
+                  height: ScreenAdapter.height(110),
+                  margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                  //padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                  decoration: BoxDecoration(
+                      color: Colors.white12,
+                      border: Border(
+                        bottom:BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        top:BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        left:BorderSide(color: Colors.grey.shade400, width: 1.0),
+                        //right:BorderSide(color: Colors.grey.shade400, width: 1.0),
+                      )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    mainAxisSize: MainAxisSize.max,
+                    children: cashListRows,
+                  ),
+                ),
+              ],
+            ),
+          )
+        : Text("");
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-        appBar: AppBar(title:Text("设置")),
+        //appBar: AppBar(title: Text("设置")),
         body: ListView(
           children: <Widget>[
-            Container(
-              height: 0,
-            ),
+            /*Container(
+              width: ScreenAdapter.getScreenWidth(),
+              height: ScreenAdapter.height(95),
+              //padding: EdgeInsets.only(right: ScreenAdapter.width(20)),
+              alignment: Alignment.bottomRight,
+              decoration: BoxDecoration(
+                color: ColorsUtil.hexToColor("#000000"),
+                image: new DecorationImage(
+                  alignment: Alignment.centerRight,
+                  fit: BoxFit.fitHeight,
+                  image: AssetImage('assets/images/logo.png'),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
 
+                ],
+              ),
+            ),*/
             Container(
               decoration: new BoxDecoration(color: Colors.white),
-              margin:EdgeInsets.only(top: ScreenAdapter.height(15.0),),
+              margin: EdgeInsets.only(
+                top: ScreenAdapter.height(30.0),
+              ),
               alignment: Alignment.center,
               padding: EdgeInsets.only(
                 top: ScreenAdapter.height(5.0),
@@ -250,22 +674,22 @@ class _SettingPageState extends State<SettingPage> {
                             return new HomePage();
                           },
                         ),
-                            (Route route) => false,
+                        (Route route) => false,
                       );
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)),
                       width: ScreenAdapter.width(120),
                       height: ScreenAdapter.height(65),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-
                         color: ColorsUtil.hexToColor("#67c23a"),
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text(
-                          "回到首页",
+                      child: Text("回到菜单",
                           style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
@@ -273,24 +697,23 @@ class _SettingPageState extends State<SettingPage> {
                           )),
                     ),
                   ),
-
-                  InkWell(
+                  /*InkWell(
                     onTap: () {
                       hideBullyScreen();
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)),
                       width: ScreenAdapter.width(280),
                       height: ScreenAdapter.height(65),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-
                         color: ColorsUtil.hexToColor("#8f9398"),
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text(
-                          "隐藏状态栏、导航栏",
+                      child: Text("隐藏状态栏、导航栏",
                           style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
@@ -298,50 +721,49 @@ class _SettingPageState extends State<SettingPage> {
                           )),
                     ),
                   ),
-
                   InkWell(
-                    onTap: (){
+                    onTap: () {
                       showBullyScreen();
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)),
                       width: ScreenAdapter.width(280),
                       height: ScreenAdapter.height(65),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-
                         color: ColorsUtil.hexToColor("#409eff"),
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text(
-                          "显示状态栏、导航栏",
+                      child: Text("显示状态栏、导航栏",
                           style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#FFFFFF"),
                           )),
                     ),
-                  ),
-
+                  ),*/
                   InkWell(
                     onTap: () {
+                      Navigator.pop(context);
                       //退出关闭
                       exit(0);
                     },
                     child: Container(
-                      margin: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)),
                       width: ScreenAdapter.width(180),
                       height: ScreenAdapter.height(65),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
-
                         color: ColorsUtil.hexToColor("#e6a23c"),
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text(
-                          "退出App",
+                      child: Text("退出App",
                           style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
@@ -352,26 +774,31 @@ class _SettingPageState extends State<SettingPage> {
                 ],
               ),
             ),
-
-
             Container(
               decoration: new BoxDecoration(color: Colors.white),
-              margin:EdgeInsets.only(top: ScreenAdapter.height(15.0),),
+              margin: EdgeInsets.only(
+                top: ScreenAdapter.height(15.0),
+              ),
               padding: EdgeInsets.only(
                 top: ScreenAdapter.height(10.0),
-                left: ScreenAdapter.width(20.0),
-                right: ScreenAdapter.width(20.0),
+                left: ScreenAdapter.width(18.0),
+                right: ScreenAdapter.width(18.0),
               ),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  getDepositListShow(),
+                  SizedBox(
+                    height: ScreenAdapter.height(20),
+                  ),
+                  getLastOrderTotalShow(),
+                  SizedBox(
+                    height: ScreenAdapter.height(20),
+                  ),
                   getCashListShow(),
-
-
                 ],
               ),
             ),
-
-
           ],
         ));
   }

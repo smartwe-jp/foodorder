@@ -17,6 +17,8 @@ import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
+import 'package:foodorder/pages/home/Home.dart';
+import 'package:foodorder/routers/custom_router.dart';
 import 'package:foodorder/services/CachedNetworkImageManager.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HttpService.dart';
@@ -44,7 +46,6 @@ class MenuPage extends StatefulWidget {
 class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin {
 
   bool get wantKeepAlive =>true;
-  final ScrollController _controllerOne = ScrollController();
 
   var _alignmentY = -1.0;
 
@@ -55,13 +56,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   List topMenu = [];
   Map showItem = {};
 
-  final HomePageController controller = Get.put(HomePageController());
+  HomePageController controller = Get.put(HomePageController());
   var classTag;
 
   //默认语言包选择
   var _checkLanguage = "JP";
 
-  final sqlHelper = SqfliteHelper();
 
   //购物车抛物线
   GlobalKey rootKey = GlobalKey();
@@ -353,11 +353,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     categoryMenus.add(InkWell(
       onTap: () {
-        Navigator.pop(context);
 
-        Future.delayed(Duration.zero, () {
-          Navigator.of(context).pushReplacementNamed('/home');
+
+        Future.delayed(Duration(milliseconds: 100), () {
+          Navigator.push(context, CustomRoute(HomePage()));
+          //Navigator.of(context).pushReplacementNamed('/home');
         });
+        Navigator.pop(context);
       },
       child: Container(
         margin: EdgeInsets.only(left: ScreenAdapter.width(5)),

@@ -14,7 +14,10 @@ import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
+import 'package:foodorder/pages/home/Home.dart';
+import 'package:foodorder/pages/setting/SettingPage.dart';
 import 'package:foodorder/plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import 'package:foodorder/routers/custom_router.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/HttpService.dart';
@@ -34,10 +37,10 @@ class SettlementPage extends StatefulWidget {
 }
 
 class _SettlementPageState extends State<SettlementPage> {
-  final HomePageController controller = Get.put(HomePageController());
+  HomePageController controller = Get.put(HomePageController());
 
   TextEditingController _scanQrCodeController = new TextEditingController();
-  final FocusNode _scanQrCodeFocusNode = FocusNode();
+  FocusNode _scanQrCodeFocusNode = FocusNode();
 
   bool checkboxSelected = true;
 
@@ -342,7 +345,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
-          //sleep(Duration(milliseconds: 3000));
+          sleep(Duration(milliseconds: 1500));
 
 
           gotonewMyhome();
@@ -493,6 +496,8 @@ class _SettlementPageState extends State<SettlementPage> {
       if (int.parse(result) > 0) {
         setState(() {
           _getPutMoney = result;
+
+          _scanQrCodeFocusNode.unfocus();
         });
         if(int.parse(result) >= int.parse(this._totalPrice)){
           setState(() {
@@ -514,7 +519,7 @@ class _SettlementPageState extends State<SettlementPage> {
     setState(() {
       timer?.cancel();
     });
-    EasyLoading.show(
+    /*EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
         //width: ScreenAdapter.width(400),
@@ -522,7 +527,7 @@ class _SettlementPageState extends State<SettlementPage> {
         child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
       ),
       maskType: EasyLoadingMaskType.black,
-    );
+    );*/
 
     print("aaaaaa");
     int putMoney = int.parse(this._getPutMoney); //投币金额
@@ -632,26 +637,32 @@ class _SettlementPageState extends State<SettlementPage> {
     Navigator.pop(context);
     Navigator.pop(context);
     Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.of(context).pushReplacementNamed('/home');
+      //Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.push(context, CustomRoute(HomePage()));
     });
   }
 
   gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    //Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
+    Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
 
-    Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
+    //Future.delayed(Duration(milliseconds: 100), () {
+      //Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
 
       //Navigator.of(context).pushReplacementNamed('/menuPage',arguments: {"checkLanguage": this._checkLanguage});
-    });
+    //});
   }
 
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, "/settingPage",arguments: {"machineCode": this._machineCode});
+    Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
+   /* Future.delayed(Duration(milliseconds: 100), () {
+      Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
+      //Navigator.pushNamed(context, "/settingPage",arguments: {"machineCode": this._machineCode});
+    });*/
+
   }
 
   newendtradepay() async {
@@ -1419,6 +1430,16 @@ class _SettlementPageState extends State<SettlementPage> {
                             setState(() {
                               _allowClick = false;
                             });
+                            EasyLoading.show(
+                              //status: 'loading...',
+                              indicator: Container(
+                                //width: ScreenAdapter.width(400),
+                                height: ScreenAdapter.height(400),
+                                child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+                              ),
+                              maskType: EasyLoadingMaskType.black,
+                            );
+
 
                             Endtoubi();
                           }
@@ -1442,8 +1463,9 @@ class _SettlementPageState extends State<SettlementPage> {
                               )),
                         ),
                       ) : Container(
-                        height: 0,
+                        margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         width: ScreenAdapter.width(260),
+                        height: ScreenAdapter.height(120),
                       ),
                     ],
                   ),

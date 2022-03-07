@@ -17,7 +17,7 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final HomePageController controller = Get.put(HomePageController());
+  HomePageController controller = Get.put(HomePageController());
 
   Timer checkTimer;
   Timer stopChecktimer;
@@ -79,8 +79,8 @@ class _HomePageState extends State<HomePage> {
     checkTimer = Timer.periodic(Duration(milliseconds: 600), (Timer checktimer) async {
       String machineStatus = await Paycube.getPayCubeMachineStatus;print(machineStatus);
       // 循环一定要记得设置取消条件，手动取消
-      //如果是20说明机器还处于开机状态，需要先入金禁止在取引终了
-      if (machineStatus == "10--A0--A0--A0") {
+      //待機中(入金不可)正常
+      if (machineStatus == "30--10--10--10") {
         checktimer.cancel();
       }else{
         stopPaycube();
