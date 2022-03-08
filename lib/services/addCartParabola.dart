@@ -4,7 +4,10 @@ library add_cart_parabola;
 
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+
+import 'ScreenAdapter.dart';
 
 class ParabolaAnimateWidget extends StatefulWidget{
   final GlobalKey rootKey;
@@ -128,10 +131,34 @@ class _ParabolaAnimateWidgetState extends State<ParabolaAnimateWidget> with Sing
         opacity: 0.8,
         //child: widget.animateWidget,
         child: ClipOval(
-          child: Image.network(
-            widget.animateImgUrl,
-            width: 100,
-            height: 100,
+          child: CachedNetworkImage(
+            imageUrl: widget.animateImgUrl,
+            fit: BoxFit.fill,
+            width: ScreenAdapter.width(150),
+            height: ScreenAdapter.height(150),
+            imageBuilder: (context, imageProvider) => Container(
+              decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: imageProvider,
+                    fit: BoxFit.cover,
+                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+                ),
+              ),
+            ),
+            placeholder: (context, url) => Container(
+              width: ScreenAdapter.width(200),
+              height: ScreenAdapter.height(200),
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                ),
+              ),
+            ),
+            errorWidget: (context, url, error) => Image.network(
+                widget.animateImgUrl,fit: BoxFit.fill,
+                width: ScreenAdapter.width(90),
+                height: ScreenAdapter.height(90)
+            ),
           ),
         ),
       ),

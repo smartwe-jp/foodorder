@@ -29,20 +29,20 @@ class GString{
         "settlement_payment_method_study_qr":"QRコード決済",
         "settlement_payment_method_title":"支払方法のガイド",
         "settlement_back":"戻る",
-        "settlement_confirmButton":"確定支払",
+        "settlement_confirmButton":"支払確定",
         "settlement_continueMoney":"请继续投币",
         "settlement_orderPrice":"注文金額",
         "settlement_putMoney":"預り金",
         "settlement_outMoney":"おつり",
 
-        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
-        "tag_print_content_paper_error":"打印故障，请联系工作人员",
-        "tag_print_button_yes":"已处理",
-        "tag_print_button_no":"不打印",
+        "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
+        "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
+        "tag_print_button_yes":"処理済み",
+        "tag_print_button_no":"印刷しない",
 
-        "show_server_error":"服务器错误请稍后重试",
-        "show_put_money_error":"请继续投币",
-        "show_please_select_error":"请选择",
+        "show_server_error":"しばらく経ってから、やり直してください",
+        "show_put_money_error":"続けてコインを入れてください",
+        "show_please_select_error":"メニューをお選びください",
 
       };
     }else if(languageCode == 'CH'){

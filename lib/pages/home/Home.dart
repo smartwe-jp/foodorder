@@ -77,7 +77,7 @@ class _HomePageState extends State<HomePage> {
 
     checkTimer?.cancel();
     checkTimer = Timer.periodic(Duration(milliseconds: 600), (Timer checktimer) async {
-      String machineStatus = await Paycube.getPayCubeMachineStatus;print(machineStatus);
+      String machineStatus = await Paycube.getPayCubeMachineStatus;
       // 循环一定要记得设置取消条件，手动取消
       //待機中(入金不可)正常
       if (machineStatus == "30--10--10--10") {
@@ -95,7 +95,6 @@ class _HomePageState extends State<HomePage> {
     var endStatus = await Paycube.endPayCube;
     stopChecktimer?.cancel();
     stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
-      print("bbbbbbb");
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       //await Paycube.setReceiveEvent;
       // 循环一定要记得设置取消条件，手动取消
@@ -106,10 +105,8 @@ class _HomePageState extends State<HomePage> {
       }else if(_stopStatus == "Error-A0--02"){
         //处理中
         await Paycube.endPayCube;
-        print("首页检测处理中");
       }else{
         await Paycube.endPayCube;
-        print("_stopStatus:$_stopStatus");
       }
     });
   }
@@ -117,25 +114,23 @@ class _HomePageState extends State<HomePage> {
   closePaycube() async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;print("88888");
+    await Paycube.setReceiveEvent;
     closetimer?.cancel();
     closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
-      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
+      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess" || _closeStatus == "Error-A0--02") {
-        print("首页检查结束关闭了");
         closecheck.cancel();
       }else{
 
         await Paycube.endTrade;
-        print("_closeStatus:$_closeStatus");
       }
     });
   }
 
 
-  _clearCartList() async {print("是否清空购物车了");
-  if(controller.cartItems.length >0){print("是否清空购物车了222");
+  _clearCartList() async {
+  if(controller.cartItems.length >0){
     Get.find<HomePageController>().removeAllFromCart();
   }
 

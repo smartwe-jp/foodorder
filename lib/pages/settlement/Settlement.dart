@@ -92,7 +92,7 @@ class _SettlementPageState extends State<SettlementPage> {
     this._totalPrice = widget.arguments['totalPrice'];
 
 
-    EasyLoading.dismiss();
+    //EasyLoading.dismiss();
 
     //Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
@@ -292,12 +292,21 @@ class _SettlementPageState extends State<SettlementPage> {
   _doToPay(){
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
 
+      EasyLoading.show(
+        //status: 'loading...',
+        indicator: Container(
+          //width: ScreenAdapter.width(400),
+          height: ScreenAdapter.height(400),
+          child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+        ),
+        maskType: EasyLoadingMaskType.black,
+      );
+
       var formData = {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
         "orderId": this._orderId,
-        //"payType": this._paymentType
-      };print(formData);
+      };
       request('webBootToPay', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
 
@@ -315,10 +324,7 @@ class _SettlementPageState extends State<SettlementPage> {
             });
 
           }
-          print(response);
 
-          setState(() {
-          });
         } else {
         showToast(GString.getToString(this._checkLanguage, "show_server_error"));
         }
@@ -339,14 +345,9 @@ class _SettlementPageState extends State<SettlementPage> {
         var response = json.decode(val.toString());
         print("print$response");
         if (response['code'] == 200) {
-          //去打印小票
-          //doPrintOrderMenu();
-
-
 
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
           sleep(Duration(milliseconds: 1500));
-
 
           gotonewMyhome();
         } else {
@@ -354,6 +355,8 @@ class _SettlementPageState extends State<SettlementPage> {
         }
       });
     }else{
+      EasyLoading.dismiss();
+
       var show_dialog_content = "";
       if(printStatus == "7"){
         show_dialog_content = GString.getToString(this._checkLanguage, "tag_print_content_paper_shortage");
@@ -492,7 +495,7 @@ class _SettlementPageState extends State<SettlementPage> {
     await Paycube.setReceiveEvent;
     timer?.cancel();
     timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
-      var result = await Paycube.getPayCubeMoney;print("投币金额result--------$result");
+      var result = await Paycube.getPayCubeMoney;
       if (int.parse(result) > 0) {
         setState(() {
           _getPutMoney = result;
@@ -519,15 +522,6 @@ class _SettlementPageState extends State<SettlementPage> {
     setState(() {
       timer?.cancel();
     });
-    /*EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        //width: ScreenAdapter.width(400),
-        height: ScreenAdapter.height(400),
-        child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );*/
 
     print("aaaaaa");
     int putMoney = int.parse(this._getPutMoney); //投币金额
@@ -593,8 +587,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
   startOutPutMoney(outMoney) async {
     setState(() {
-
-      //print("找零outMoney:${outMoney}");
       outStringMoney = outMoney.toString();
       print("outStringMoney找零金额:${outStringMoney}");
     });
@@ -607,9 +599,6 @@ class _SettlementPageState extends State<SettlementPage> {
       _outStatus =  await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
-        //获取出金金额
-        //sleep(Duration(milliseconds: 100));
-        //getPayCubeoutMoney();
         //结束交易
         newendtradepay();
         print("开始出币了");
@@ -668,7 +657,7 @@ class _SettlementPageState extends State<SettlementPage> {
   newendtradepay() async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;print("88888");
+    await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
       _endStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
@@ -699,8 +688,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
       }else{
-
-
         await Paycube.endTrade;
         print("_endStatus:$_endStatus");
       }
@@ -745,7 +732,7 @@ class _SettlementPageState extends State<SettlementPage> {
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney)
-    };print(formData);
+    };
     request('webBootToReport', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       print("huibao$response");
@@ -781,7 +768,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
       }else if(_stopStatus == "Error-A0--02"){
         //处理中
-        //sleep(Duration(milliseconds: 350));
         await Paycube.endPayCube;
         print("ccccccc");
       }else{
@@ -836,6 +822,30 @@ class _SettlementPageState extends State<SettlementPage> {
       //如果现金机投币大于0后取消，则直接关机出金
       Endtoubi();
     }
+  }
+
+  _showEasyLoading(){
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        //width: ScreenAdapter.width(400),
+        height: ScreenAdapter.height(400),
+        child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
+  _showBackEasyLoading(){
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        //width: ScreenAdapter.width(400),
+        height: ScreenAdapter.height(400),
+        child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
   }
 
 
@@ -899,15 +909,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           setState(() {
                             this._scanQrCode = value;
                           });
-                          EasyLoading.show(
-                            //status: 'loading...',
-                            indicator: Container(
-                              //width: ScreenAdapter.width(400),
-                              height: ScreenAdapter.height(400),
-                              child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
-                            ),
-                            maskType: EasyLoadingMaskType.black,
-                          );
+
                           _doToPay();
                           print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
                         },
@@ -965,14 +967,7 @@ class _SettlementPageState extends State<SettlementPage> {
                       )*/
                       InkWell(
                         onTap: (){
-                          EasyLoading.show(
-                            //status: 'loading...',
-                            indicator: Container(
-                              height: ScreenAdapter.width(400),
-                              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
-                            ),
-                            maskType: EasyLoadingMaskType.black,
-                          );
+                          _showBackEasyLoading();
                           //sleep(Duration(milliseconds: 800));
                           CancelOrder();
                         },
@@ -998,14 +993,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
                       InkWell(
                         onLongPress: (){
-                          EasyLoading.show(
-                            //status: 'loading...',
-                            indicator: Container(
-                              height: ScreenAdapter.width(400),
-                              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
-                            ),
-                            maskType: EasyLoadingMaskType.black,
-                          );
+                          _showBackEasyLoading();
                           setState(() {
                             _doSetting = true;
                           });
@@ -1430,17 +1418,8 @@ class _SettlementPageState extends State<SettlementPage> {
                             setState(() {
                               _allowClick = false;
                             });
-                            EasyLoading.show(
-                              //status: 'loading...',
-                              indicator: Container(
-                                //width: ScreenAdapter.width(400),
-                                height: ScreenAdapter.height(400),
-                                child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
-                              ),
-                              maskType: EasyLoadingMaskType.black,
-                            );
 
-
+                            _showEasyLoading();
                             Endtoubi();
                           }
 

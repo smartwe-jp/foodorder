@@ -5,27 +5,11 @@ import 'package:dio/dio.dart';
 import 'dart:async';
 import 'package:foodorder/config/index.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/services/showToast.dart';
 
 Future request(String url, {method, parameters, link_parameters=""}) async {
   //parameters = parameters ?? {};
   method = method ?? 'GET';
-
-  Map<String, String> formData_pinjie = {
-    /*"adid": "202d82a58855159ee553397008731aaa",
-    "app_platform": "app",
-    "app_version": "1.0.0",
-    "device_brand": "apple",
-    "device_model": "iPhone9,4",
-    "network_type":"",
-    "os_version": "13.3.1",*/
-  };
-
-  //整理请求参数
-  /*if (parameters == null) {
-    parameters = formData_pinjie;
-  } else {
-    parameters.addAll(formData_pinjie);
-  }*/
 
   try {
     Response response;
@@ -38,10 +22,6 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
       dio.options.contentType = Headers.jsonContentType;
     }
 
-    /*if(token  != null){
-      //print(token);
-      dio.options.headers["Authorization"]="${token}";
-    }*/
 
     var request_url = servicePath[url];
     if((link_parameters?.isNotEmpty ?? true)){
@@ -79,6 +59,17 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     }
 
   } catch (e) {
+    var newe = e.toString();
+    if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
+
+      showToast('服务请求失败，请稍后重试~');
+      Future.delayed(Duration(milliseconds: 1000)).then((e) {
+
+        Global.navigatorKey.currentState.pushNamed("/home");
+      });
+    }else{
+      showToast('请求失败，请稍后重试或咨询您的顾问');
+    }
     return print('error:::${e}');
   }
 }

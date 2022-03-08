@@ -46,6 +46,7 @@ class MyApp extends StatelessWidget {
       designSize: Size(1080, 1920), //Size(1080, 1920),
       allowFontScaling: false,
       builder: () => MaterialApp(
+        navigatorKey: Global.navigatorKey,
         title: "甘蘭牛肉面", //谷町君
         debugShowCheckedModeBanner: false,
         //onGenerateRoute: Application.router.generator,

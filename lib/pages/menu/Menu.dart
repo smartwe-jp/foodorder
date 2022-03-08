@@ -90,7 +90,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
 
-    EasyLoading.dismiss();
+    //EasyLoading.dismiss();
   }
 
   @override
@@ -135,7 +135,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               color: ColorsUtil.hexToColor("#000000"),
               image: new DecorationImage(
                 alignment: Alignment.centerRight,
-                //fit: BoxFit.fitWidth,
+                fit: BoxFit.fitHeight,
                 image: AssetImage('assets/images/logo.png'),
               ),
             ),
@@ -3044,14 +3044,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 if (int.parse(_shopCartTotalPrice) ==0) {
                                   return false;
                                 }
-                                EasyLoading.show(
-                                    //status: 'loading...',
-                                  indicator: Container(
-                                    width: ScreenAdapter.width(200),
-                                    child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitWidth),
-                                  ),
-                                    maskType: EasyLoadingMaskType.black,
-                                );
+
 
                                _doSubmitOrder();
 
@@ -3186,6 +3179,15 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //提交订单
   _doSubmitOrder(){
     if(_machineCode !=""){
+      EasyLoading.show(
+        //status: 'loading...',
+        indicator: Container(
+          width: ScreenAdapter.width(400),
+          child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+        ),
+        maskType: EasyLoadingMaskType.black,
+      );
+
       var cartItems = controller.getcartItems;
       List selectedItem = [];
 
@@ -3220,6 +3222,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         if (response['code'] == 200) {
           EasyLoading.dismiss();
+
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,

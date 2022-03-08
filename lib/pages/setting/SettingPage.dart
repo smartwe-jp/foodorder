@@ -436,12 +436,21 @@ class _SettingPageState extends State<SettingPage> {
                           itemCount: this._cashList.length,
                           itemBuilder: (context, index) {
                             var _detail = this._cashList[index];
-
+                            /*if (_detail['warm'] is String) {
+                              print('str is String');
+                            }else if (_detail['warm'] is int) {
+                              print('str is int');
+                            } else {
+                              print('str is another');
+                            }*/
+                            var _surplusNum = _detail['standard']-int.parse(_detail['used']);
+                            var _backColor = (_detail['warm'] < _surplusNum)?"#A61C1C":"#F9F9F9";
+                            var _textColor = (_detail['warm'] < _surplusNum)?"#FFFFFF":"#000000";
                             return Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
                               decoration: BoxDecoration(
-                                  color: Colors.white12,
+                                  color: ColorsUtil.hexToColor(_backColor),
                                   border: Border(
                                     bottom: BorderSide( color: Colors.grey.shade400, width: 1.0),
                                     //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
@@ -461,7 +470,7 @@ class _SettingPageState extends State<SettingPage> {
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(18),
                                           fontWeight: FontWeight.w500,
-                                          color: ColorsUtil.hexToColor("#000000"),
+                                          color: ColorsUtil.hexToColor(_textColor),
                                         )),
                                   )),
                                   Expanded(child: Container(
@@ -475,7 +484,7 @@ class _SettingPageState extends State<SettingPage> {
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(20),
                                           fontWeight: FontWeight.w500,
-                                          color: ColorsUtil.hexToColor("#000000"),
+                                          color: ColorsUtil.hexToColor(_textColor),
                                         )),
                                   )),
                                   Expanded(child: Container(
@@ -489,7 +498,7 @@ class _SettingPageState extends State<SettingPage> {
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(20),
                                           fontWeight: FontWeight.w500,
-                                          color: ColorsUtil.hexToColor("#000000"),
+                                          color: ColorsUtil.hexToColor(_textColor),
                                         )),
                                   )),
                                   Expanded(child: Container(
@@ -503,7 +512,7 @@ class _SettingPageState extends State<SettingPage> {
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(20),
                                           fontWeight: FontWeight.w500,
-                                          color: ColorsUtil.hexToColor("#000000"),
+                                          color: ColorsUtil.hexToColor(_textColor),
                                         )),
                                   )),
                                 ],
