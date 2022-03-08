@@ -756,6 +756,8 @@ class _SettingPageState extends State<SettingPage> {
                   ),*/
                   InkWell(
                     onTap: () {
+                      showBullyScreen();
+                      sleep(Duration(milliseconds: 1500));
                       Navigator.pop(context);
                       //退出关闭
                       exit(0);

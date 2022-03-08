@@ -3400,12 +3400,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   @override
   Widget build(BuildContext context) {
-    return FlutterEasyLoading(
-        child: Scaffold(
+    return Scaffold(
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.light,
         child: _listView(context),
       ),
-    ));
+    );
   }
 }

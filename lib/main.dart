@@ -53,11 +53,12 @@ class MyApp extends StatelessWidget {
         //主题
         theme: ThemeData(
           primaryColor: Gcolor.primaryColor,
+          //fontFamily: 'MeiryoUI',
         ),
         home: MyHomePage(),
         initialRoute: '/',
         onGenerateRoute:onGenerateRoute,
-
+        builder: EasyLoading.init(),
       ),
     );
   }
@@ -114,11 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pushReplacementNamed('/home');
     });
-    //Future.delayed(Duration(milliseconds: 100)).then((e) {
-      //Navigator.of(context).pushReplacementNamed('/tab');
-      //Navigator.push(context, CustomRoute(HomePage()));
-      //Navigator.pushNamed(context, '/home');
-    //});
 
   }
 

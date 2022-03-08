@@ -636,21 +636,13 @@ class _SettlementPageState extends State<SettlementPage> {
     Navigator.pop(context);
     Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
 
-    //Future.delayed(Duration(milliseconds: 100), () {
-      //Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
-
-      //Navigator.of(context).pushReplacementNamed('/menuPage',arguments: {"checkLanguage": this._checkLanguage});
-    //});
   }
 
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
-   /* Future.delayed(Duration(milliseconds: 100), () {
-      Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
-      //Navigator.pushNamed(context, "/settingPage",arguments: {"machineCode": this._machineCode});
-    });*/
+
 
   }
 
@@ -663,7 +655,6 @@ class _SettlementPageState extends State<SettlementPage> {
       _endStatus =  await Paycube.getPayCubeEndTradeStatus;print("777777");
       // 循环一定要记得设置取消条件，手动取消 _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
-
         //如果出金金额大于0 则先获取出金币种，否则跳转
         if(int.parse(outStringMoney) >0){
           _getPayCubeOutMoney();
@@ -679,14 +670,10 @@ class _SettlementPageState extends State<SettlementPage> {
             }else{
               gotonewMenuPage();
             }
-
           }
         }
-
         print("交易结束关闭了");
         endtradet.cancel();
-
-
       }else{
         await Paycube.endTrade;
         print("_endStatus:$_endStatus");
@@ -694,7 +681,7 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
-  _getPayCubeOutMoney() async {print("tongjichujin");
+  _getPayCubeOutMoney() async {
   //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
   OutMoneytimer?.cancel();
   await Paycube.setReceiveEvent;
@@ -735,7 +722,6 @@ class _SettlementPageState extends State<SettlementPage> {
     };
     request('webBootToReport', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-      print("huibao$response");
       if (response['code'] == 200) {
         //去打印小票
         doPrintOrderMenu();
@@ -875,67 +861,66 @@ class _SettlementPageState extends State<SettlementPage> {
   @override
   Widget build(BuildContext context) {
 
-    return FlutterEasyLoading(
-        child: Scaffold(
-          backgroundColor: ColorsUtil.hexToColor("#D8D8D8"),
-          body: AnnotatedRegion(
-            value: SystemUiOverlayStyle.light,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  height: 0,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(child: TextField(
-                        keyboardType: TextInputType.number,
-                        autofocus: true,
-                        showCursor: false, // 显示光标
-                        //readOnly: true,
-                        controller: _scanQrCodeController,
-                        focusNode: _scanQrCodeFocusNode,
-                        decoration: InputDecoration(
-                          hintText: "请扫码",
-                          border: InputBorder.none,
-                          isDense: true,
-                        ),
-                        style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
-                        obscureText: false,
-                        onChanged: (value) {
-                          print(this._scanQrCode);
-                        },
-                        onSubmitted: (value){
-                          setState(() {
-                            this._scanQrCode = value;
-                          });
-
-                          _doToPay();
-                          print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
-                        },
-
-                        /// 扫码密码
-                      )),
-                    ],
-                  ),
-                ),
-                Container(
-                  width: ScreenAdapter.getScreenWidth(),
-                  height: ScreenAdapter.height(95),
-                  //padding: EdgeInsets.only(right: ScreenAdapter.width(20)),
-                  alignment: Alignment.bottomRight,
-                  decoration: BoxDecoration(
-                    color: ColorsUtil.hexToColor("#000000"),
-                    image: new DecorationImage(
-                      alignment: Alignment.centerRight,
-                      fit: BoxFit.fitHeight,
-                      image: AssetImage('assets/images/logo.png'),
+    return Scaffold(
+      backgroundColor: ColorsUtil.hexToColor("#D8D8D8"),
+      body: AnnotatedRegion(
+        value: SystemUiOverlayStyle.light,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Container(
+              height: 0,
+              child: Row(
+                children: <Widget>[
+                  Expanded(child: TextField(
+                    keyboardType: TextInputType.number,
+                    autofocus: true,
+                    showCursor: false, // 显示光标
+                    //readOnly: true,
+                    controller: _scanQrCodeController,
+                    focusNode: _scanQrCodeFocusNode,
+                    decoration: InputDecoration(
+                      hintText: "请扫码",
+                      border: InputBorder.none,
+                      isDense: true,
                     ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      /*InkWell(
+                    style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                    obscureText: false,
+                    onChanged: (value) {
+                      print(this._scanQrCode);
+                    },
+                    onSubmitted: (value){
+                      setState(() {
+                        this._scanQrCode = value;
+                      });
+
+                      _doToPay();
+                      print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
+                    },
+
+                    /// 扫码密码
+                  )),
+                ],
+              ),
+            ),
+            Container(
+              width: ScreenAdapter.getScreenWidth(),
+              height: ScreenAdapter.height(95),
+              //padding: EdgeInsets.only(right: ScreenAdapter.width(20)),
+              alignment: Alignment.bottomRight,
+              decoration: BoxDecoration(
+                color: ColorsUtil.hexToColor("#000000"),
+                image: new DecorationImage(
+                  alignment: Alignment.centerRight,
+                  fit: BoxFit.fitHeight,
+                  image: AssetImage('assets/images/logo.png'),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  /*InkWell(
                         onTap: () {
                           Navigator.pop(context);
 
@@ -965,305 +950,373 @@ class _SettlementPageState extends State<SettlementPage> {
                           ),
                         ),
                       )*/
-                      InkWell(
-                        onTap: (){
-                          _showBackEasyLoading();
-                          //sleep(Duration(milliseconds: 800));
-                          CancelOrder();
-                        },
-                        child: Container(
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(65),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-                          //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            image: new DecorationImage(
-                              image: AssetImage('assets/images/settlement_back.png'),
-                            ),
-                          ),
-                          child: Text(GString.getToString(this._checkLanguage, "settlement_back"),
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                              )),
+                  InkWell(
+                    onTap: (){
+                      _showBackEasyLoading();
+                      //sleep(Duration(milliseconds: 800));
+                      CancelOrder();
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(180),
+                      height: ScreenAdapter.height(65),
+                      margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+                      //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        image: new DecorationImage(
+                          image: AssetImage('assets/images/settlement_back.png'),
                         ),
                       ),
-
-                      InkWell(
-                        onLongPress: (){
-                          _showBackEasyLoading();
-                          setState(() {
-                            _doSetting = true;
-                          });
-                          //sleep(Duration(milliseconds: 800));
-                          CancelOrder();
-                        },
-                        child: Container(
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(85),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-                          //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            //color: Colors.red,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-
-                //顶部支持支付类型
-                Container(
-                  height: ScreenAdapter.height(250),
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-                  color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
+                      child: Text(GString.getToString(this._checkLanguage, "settlement_back"),
                           style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(36),
+                            fontSize: ScreenAdapter.fontSize(30),
                             fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                            color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                           )),
-                      SizedBox(height: ScreenAdapter.height(25),),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Container(
-                              margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
-                              //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
-                              width: ScreenAdapter.width(130),
-                              height: ScreenAdapter.height(140),
-                              child: Column(
-                                children: [
-                                  Image.asset('assets/images/settlement_cash.png',
-                                      width: ScreenAdapter.width(85),
-                                      height: ScreenAdapter.height(85)),
-                                  SizedBox(height: ScreenAdapter.height(5)),
-                                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method_cash"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(18),
-                                        fontWeight: FontWeight.w500,
-                                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                      )),
-                                ],
-                              )),
+                    ),
+                  ),
 
-                          Container(
-                              margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
-                              //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
-                              width: ScreenAdapter.width(130),
-                              height: ScreenAdapter.height(140),
-                              child: Column(
-                                children: [
-                                  Image.asset('assets/images/settlement_alipay.png',
-                                      width: ScreenAdapter.width(85),
-                                      height: ScreenAdapter.height(85)),
-                                  SizedBox(height: ScreenAdapter.height(5)),
-                                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method_alipay"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(18),
-                                        fontWeight: FontWeight.w500,
-                                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                      )),
-                                ],
-                              )),
-                          Container(
-                              margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
-                              //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
-                              width: ScreenAdapter.width(130),
-                              height: ScreenAdapter.height(140),
-                              child: Column(
-                                children: [
-                                  Image.asset(
-                                      'assets/images/settlement_wechat.png',
-                                      width: ScreenAdapter.width(85),
-                                      height: ScreenAdapter.height(85)
-                                  ),
-                                  SizedBox(height: ScreenAdapter.height(5)),
-                                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method_wechat"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(18),
-                                        fontWeight: FontWeight.w500,
-                                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                      )),
-                                ],
-                              )),
-
-                          Container(
-                              margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
-                              //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
-                              width: ScreenAdapter.width(130),
-                              height: ScreenAdapter.height(140),
-                              child: Column(
-                                children: [
-                                  Image.asset('assets/images/settlement_paypay.png',
-                                      width: ScreenAdapter.width(85),
-                                      height: ScreenAdapter.height(85)),
-                                  SizedBox(height: ScreenAdapter.height(5)),
-                                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method_paypay"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(18),
-                                        fontWeight: FontWeight.w500,
-                                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                      )),
-                                ],
-                              )),
-
-                        ],
+                  InkWell(
+                    onLongPress: (){
+                      _showBackEasyLoading();
+                      setState(() {
+                        _doSetting = true;
+                      });
+                      //sleep(Duration(milliseconds: 800));
+                      CancelOrder();
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(180),
+                      height: ScreenAdapter.height(85),
+                      margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+                      //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        //color: Colors.red,
                       ),
-
-                    ],
+                    ),
                   ),
-                ),
+                ],
+              ),
+            ),
 
-                SizedBox(
-                  height: ScreenAdapter.height(8),
-                ),
-                //选择结算方式
-                Container(
-                  //height: ScreenAdapter.height(750),
-                  padding: EdgeInsets.only(
-                    left: ScreenAdapter.width(20),
-                    top: ScreenAdapter.height(20),
-                    right: ScreenAdapter.width(20),
-                    bottom: ScreenAdapter.height(30),
-                  ),
-                  color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+            //顶部支持支付类型
+            Container(
+              height: ScreenAdapter.height(250),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+              color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(36),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                      )),
+                  SizedBox(height: ScreenAdapter.height(25),),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                        padding: EdgeInsets.only(
-                            top: ScreenAdapter.height(15),
-                            bottom: ScreenAdapter.height(15)),
-                        alignment: Alignment.centerLeft,
-                        child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_title"),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(36),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(Gcolor.settlementTitleColor),
-                            )),
-                      ),
-                      SizedBox(
-                        width: ScreenAdapter.height(30),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(130),
+                          height: ScreenAdapter.height(140),
+                          child: Column(
+                            children: [
+                              Image.asset('assets/images/settlement_cash.png',
+                                  width: ScreenAdapter.width(85),
+                                  height: ScreenAdapter.height(85)),
+                              SizedBox(height: ScreenAdapter.height(5)),
+                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_cash"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  )),
+                            ],
+                          )),
+
+                      Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(130),
+                          height: ScreenAdapter.height(140),
+                          child: Column(
+                            children: [
+                              Image.asset('assets/images/settlement_alipay.png',
+                                  width: ScreenAdapter.width(85),
+                                  height: ScreenAdapter.height(85)),
+                              SizedBox(height: ScreenAdapter.height(5)),
+                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_alipay"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  )),
+                            ],
+                          )),
+                      Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(130),
+                          height: ScreenAdapter.height(140),
+                          child: Column(
+                            children: [
+                              Image.asset(
+                                  'assets/images/settlement_wechat.png',
+                                  width: ScreenAdapter.width(85),
+                                  height: ScreenAdapter.height(85)
+                              ),
+                              SizedBox(height: ScreenAdapter.height(5)),
+                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_wechat"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  )),
+                            ],
+                          )),
+
+                      Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(130),
+                          height: ScreenAdapter.height(140),
+                          child: Column(
+                            children: [
+                              Image.asset('assets/images/settlement_paypay.png',
+                                  width: ScreenAdapter.width(85),
+                                  height: ScreenAdapter.height(85)),
+                              SizedBox(height: ScreenAdapter.height(5)),
+                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_paypay"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  )),
+                            ],
+                          )),
+
+                    ],
+                  ),
+
+                ],
+              ),
+            ),
+
+            SizedBox(
+              height: ScreenAdapter.height(8),
+            ),
+            //选择结算方式
+            Container(
+              //height: ScreenAdapter.height(750),
+              padding: EdgeInsets.only(
+                left: ScreenAdapter.width(20),
+                top: ScreenAdapter.height(20),
+                right: ScreenAdapter.width(20),
+                bottom: ScreenAdapter.height(30),
+              ),
+              color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                    padding: EdgeInsets.only(
+                        top: ScreenAdapter.height(15),
+                        bottom: ScreenAdapter.height(15)),
+                    alignment: Alignment.centerLeft,
+                    child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_title"),
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(36),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor(Gcolor.settlementTitleColor),
+                        )),
+                  ),
+                  SizedBox(
+                    width: ScreenAdapter.height(30),
+                  ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(3),
-                                width: ScreenAdapter.width(320),
-                                color: ColorsUtil.hexToColor("#9A5718"),
-                                alignment: Alignment.center,
-                                child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_qr"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(32),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor("#FFFFFF"),
-                                    )),
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(
-                                    bottom: ScreenAdapter.height(25)),
-                                width: ScreenAdapter.width(500),
-                                //height: ScreenAdapter.height(580),
-                                alignment: Alignment.center,
-                                child: Container(
-                                    width: ScreenAdapter.width(450),
-                                    //height: ScreenAdapter.height(620),
-                                    child: Image.asset(
-                                        'assets/images/settlement_zhinan_qr.gif')),
-                              ),
-                            ],
+                          Container(
+                            padding: EdgeInsets.all(3),
+                            width: ScreenAdapter.width(320),
+                            color: ColorsUtil.hexToColor("#9A5718"),
+                            alignment: Alignment.center,
+                            child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_qr"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(32),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
                           ),
-
-                          SizedBox(
-                            width: ScreenAdapter.width(30),
-                          ),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              Container(
-                                padding: EdgeInsets.all(3),
-                                width: ScreenAdapter.width(220),
-                                color: ColorsUtil.hexToColor("#9A5718"),
-                                alignment: Alignment.center,
-                                child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_cash"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(32),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor("#FFFFFF"),
-                                    )),
-                              ),
-                              Container(
-                                padding: EdgeInsets.only(
-                                    bottom: ScreenAdapter.height(25)),
-                                width: ScreenAdapter.width(500),
+                          Container(
+                            padding: EdgeInsets.only(
+                                bottom: ScreenAdapter.height(25)),
+                            width: ScreenAdapter.width(500),
+                            //height: ScreenAdapter.height(580),
+                            alignment: Alignment.center,
+                            child: Container(
+                                width: ScreenAdapter.width(450),
                                 //height: ScreenAdapter.height(620),
-                                alignment: Alignment.center,
-                                child: Container(
-                                    width: ScreenAdapter.width(450),
-                                    //height: ScreenAdapter.height(620),
-                                    child: Image.asset('assets/images/settlement_zhinan_cash.gif')),
-                              ),
-                            ],
+                                child: Image.asset(
+                                    'assets/images/settlement_zhinan_qr.gif')),
                           ),
+                        ],
+                      ),
 
+                      SizedBox(
+                        width: ScreenAdapter.width(30),
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.all(3),
+                            width: ScreenAdapter.width(220),
+                            color: ColorsUtil.hexToColor("#9A5718"),
+                            alignment: Alignment.center,
+                            child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_cash"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(32),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(
+                                bottom: ScreenAdapter.height(25)),
+                            width: ScreenAdapter.width(500),
+                            //height: ScreenAdapter.height(620),
+                            alignment: Alignment.center,
+                            child: Container(
+                                width: ScreenAdapter.width(450),
+                                //height: ScreenAdapter.height(620),
+                                child: Image.asset('assets/images/settlement_zhinan_cash.gif')),
+                          ),
                         ],
                       ),
 
                     ],
                   ),
-                ),
-                SizedBox(
-                  height: ScreenAdapter.height(8),
-                ),
-                Container(
-                  //width: ScreenAdapter.width(240),
-                  height: ScreenAdapter.height(200),
-                  // margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
-                  padding: EdgeInsets.only(
-                      left: ScreenAdapter.width(20),
-                      top: ScreenAdapter.height(20),
-                      right: ScreenAdapter.width(20),
-                      bottom: ScreenAdapter.height(20)
-                  ),
-                  color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
-                  alignment: Alignment.center,
 
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            top: ScreenAdapter.height(20),
-                            left: ScreenAdapter.width(30),
-                            bottom: ScreenAdapter.height(20),
-                          right: ScreenAdapter.width(30),
-                        ),
-                        width: ScreenAdapter.width(260),
-                        alignment: Alignment.center,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(GString.getToString(this._checkLanguage, "settlement_orderPrice"),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: ScreenAdapter.height(8),
+            ),
+            Container(
+              //width: ScreenAdapter.width(240),
+              height: ScreenAdapter.height(200),
+              // margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
+              padding: EdgeInsets.only(
+                  left: ScreenAdapter.width(20),
+                  top: ScreenAdapter.height(20),
+                  right: ScreenAdapter.width(20),
+                  bottom: ScreenAdapter.height(20)
+              ),
+              color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
+              alignment: Alignment.center,
+
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Container(
+                    margin: EdgeInsets.only(
+                      top: ScreenAdapter.height(20),
+                      left: ScreenAdapter.width(30),
+                      bottom: ScreenAdapter.height(20),
+                      right: ScreenAdapter.width(30),
+                    ),
+                    width: ScreenAdapter.width(260),
+                    alignment: Alignment.center,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(GString.getToString(this._checkLanguage, "settlement_orderPrice"),
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(25),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                            )),
+                        SizedBox(height: ScreenAdapter.height(10)),
+                        Container(
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                              color: Colors.white12,
+                              border: Border(
+                                bottom: BorderSide(color: Colors.black, width: 1.5),
+                                //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                              )),
+                          child: RichText(
+                            text: TextSpan(
+                                text: this._totalPrice,//GString.getToString(this._checkLanguage, "show_price_front"),
                                 style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(25),
+                                  fontSize: ScreenAdapter.fontSize(52),
                                   fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                )),
-                            SizedBox(height: ScreenAdapter.height(10)),
+                                  color: ColorsUtil.hexToColor("#9A5718"),
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: " 円",//" 円",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(28),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  //垂直分割线
+                  SizedBox(
+                    width: 1,
+                    height: ScreenAdapter.height(180),
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.black12),
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.only(
+                        left: ScreenAdapter.width(30),
+                        top: ScreenAdapter.height(10),
+                        right: ScreenAdapter.width(40),
+                        bottom: ScreenAdapter.height(10)
+                    ),
+                    width: ScreenAdapter.width(340),
+                    child: Table(
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      //所有列宽
+                      columnWidths: {
+                        //列宽
+                        0: FixedColumnWidth(ScreenAdapter.width(80)),
+                        1: FixedColumnWidth(ScreenAdapter.width(260)),
+                      },
+                      children: [
+                        TableRow(
+                          children: [
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(GString.getToString(this._checkLanguage, "settlement_putMoney"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(25),
+                                    fontWeight: FontWeight.w600,
+                                    color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
+                                  )),
+                            ),
                             Container(
-                              alignment: Alignment.center,
+                              alignment: Alignment.centerRight,
                               decoration: BoxDecoration(
                                   color: Colors.white12,
                                   border: Border(
@@ -1272,11 +1325,11 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                               child: RichText(
                                 text: TextSpan(
-                                    text: this._totalPrice,//GString.getToString(this._checkLanguage, "show_price_front"),
+                                    text: this._getPutMoney,//" 円",
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(52),
                                       fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor("#9A5718"),
+                                      color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor("#FF0000"):ColorsUtil.hexToColor("#808080"),
                                     ),
                                     children: [
                                       TextSpan(
@@ -1284,7 +1337,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(28),
                                           fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor("#000000"),
+                                          color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
                                         ),
                                       ),
                                     ]),
@@ -1293,209 +1346,140 @@ class _SettlementPageState extends State<SettlementPage> {
 
                           ],
                         ),
-                      ),
-                      //垂直分割线
-                      SizedBox(
-                        width: 1,
-                        height: ScreenAdapter.height(180),
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(color: Colors.black12),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(30),
-                            top: ScreenAdapter.height(10),
-                            right: ScreenAdapter.width(40),
-                            bottom: ScreenAdapter.height(10)
-                        ),
-                        width: ScreenAdapter.width(340),
-                        child: Table(
-                          defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                          //所有列宽
-                          columnWidths: {
-                            //列宽
-                            0: FixedColumnWidth(ScreenAdapter.width(80)),
-                            1: FixedColumnWidth(ScreenAdapter.width(260)),
-                          },
+                        TableRow(
                           children: [
-                            TableRow(
-                              children: [
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(GString.getToString(this._checkLanguage, "settlement_putMoney"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(25),
-                                        fontWeight: FontWeight.w600,
-                                        color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
-                                      )),
-                                ),
-                                Container(
-                                  alignment: Alignment.centerRight,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white12,
-                                      border: Border(
-                                        bottom: BorderSide(color: Colors.black, width: 1.5),
-                                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                      )),
-                                  child: RichText(
-                                    text: TextSpan(
-                                        text: this._getPutMoney,//" 円",
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(52),
-                                          fontWeight: FontWeight.w600,
-                                          color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor("#FF0000"):ColorsUtil.hexToColor("#808080"),
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text: " 円",//" 円",
-                                            style: TextStyle(
-                                              fontSize: ScreenAdapter.fontSize(28),
-                                              fontWeight: FontWeight.w600,
-                                              color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
-                                            ),
-                                          ),
-                                        ]),
-                                  ),
-                                ),
 
-                              ],
+                            Align(
+                              alignment: Alignment.centerLeft,
+                              child: Text(GString.getToString(this._checkLanguage, "settlement_outMoney"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(25),
+                                    fontWeight: FontWeight.w600,
+                                    color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
+                                  )),
                             ),
-                            TableRow(
-                              children: [
-
-                                Align(
-                                  alignment: Alignment.centerLeft,
-                                  child: Text(GString.getToString(this._checkLanguage, "settlement_outMoney"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(25),
-                                        fontWeight: FontWeight.w600,
-                                        color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
-                                      )),
-                                ),
-                                Container(
-                                  alignment: Alignment.centerRight,
-                                  decoration: BoxDecoration(
-                                      color: Colors.white12,
-                                      border: Border(
-                                        bottom: BorderSide(color: Colors.black, width: 1.5),
-                                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                      )),
-                                  child: RichText(
-                                    text: TextSpan(
-                                        text: this._showOutMoney,//" 円",
+                            Container(
+                              alignment: Alignment.centerRight,
+                              decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.black, width: 1.5),
+                                    //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                  )),
+                              child: RichText(
+                                text: TextSpan(
+                                    text: this._showOutMoney,//" 円",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(52),
+                                      fontWeight: FontWeight.w600,
+                                      color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor("#008000"):ColorsUtil.hexToColor("#808080"),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: " 円",//" 円",
                                         style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(52),
+                                          fontSize: ScreenAdapter.fontSize(28),
                                           fontWeight: FontWeight.w600,
-                                          color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor("#008000"):ColorsUtil.hexToColor("#808080"),
+                                          color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
                                         ),
-                                        children: [
-                                          TextSpan(
-                                            text: " 円",//" 円",
-                                            style: TextStyle(
-                                              fontSize: ScreenAdapter.fontSize(28),
-                                              fontWeight: FontWeight.w600,
-                                              color: (int.parse(this._showOutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
-                                            ),
-                                          ),
-                                        ]),
-                                  ),
-                                ),
-
-
-                              ],
+                                      ),
+                                    ]),
+                              ),
                             ),
+
 
                           ],
                         ),
 
+                      ],
+                    ),
 
+
+                  ),
+
+                  _showPrintButton == true ? InkWell(
+                    onTap: (){
+                      if(_allowClick == true){
+                        setState(() {
+                          _allowClick = false;
+                        });
+
+                        _showEasyLoading();
+                        Endtoubi();
+                      }
+
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(260),
+                      height: ScreenAdapter.height(120),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: ColorsUtil.hexToColor("#148DE8"),
+                        //设置圆角
+                        borderRadius: new BorderRadius.circular((16.0)),
                       ),
-
-                      _showPrintButton == true ? InkWell(
-                        onTap: (){
-                          if(_allowClick == true){
-                            setState(() {
-                              _allowClick = false;
-                            });
-
-                            _showEasyLoading();
-                            Endtoubi();
+                      child: Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(30),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                          )),
+                    ),
+                  ) : Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                    width: ScreenAdapter.width(260),
+                    height: ScreenAdapter.height(120),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(
+              height: ScreenAdapter.height(8),
+            ),
+            Expanded(
+              child: Container(
+                width: ScreenAdapter.width(1080),
+                padding: EdgeInsets.only(left: ScreenAdapter.width(40), right: ScreenAdapter.width(40)),
+                alignment: Alignment.center,
+                color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
+                child: Scrollbar(
+                  child: SingleChildScrollView(
+                    physics: ClampingScrollPhysics(),
+                    child: Container(
+                      width: ScreenAdapter.width(930),
+                      height: ScreenAdapter.height(620),
+                      padding: EdgeInsets.only(
+                          left: ScreenAdapter.width(30),
+                          top: ScreenAdapter.height(5),
+                          right: ScreenAdapter.width(30),
+                          bottom: ScreenAdapter.height(40)),
+                      child: GetBuilder<HomePageController>(
+                        builder: (_) {
+                          if (controller.cartItems.length == 0) {
+                            return Center(
+                              child: Text("No item found"),
+                            );
                           }
-
+                          return ListView(
+                            shrinkWrap: true,
+                            children: controller.cartItems
+                                .map((d) => generateCartList(context, d))
+                                .toList(),
+                          );
                         },
-                        child: Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                          width: ScreenAdapter.width(260),
-                          height: ScreenAdapter.height(120),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor("#148DE8"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                              )),
-                        ),
-                      ) : Container(
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        width: ScreenAdapter.width(260),
-                        height: ScreenAdapter.height(120),
                       ),
-                    ],
+                    ),
                   ),
                 ),
-                SizedBox(
-                  height: ScreenAdapter.height(8),
-                ),
-                Expanded(
-                    child: Container(
-                      width: ScreenAdapter.width(1080),
-                      padding: EdgeInsets.only(left: ScreenAdapter.width(40), right: ScreenAdapter.width(40)),
-                      alignment: Alignment.center,
-                      color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
-                      child: Scrollbar(
-                        child: SingleChildScrollView(
-                          physics: ClampingScrollPhysics(),
-                          child: Container(
-                            width: ScreenAdapter.width(930),
-                            height: ScreenAdapter.height(620),
-                            padding: EdgeInsets.only(
-                                left: ScreenAdapter.width(30),
-                                top: ScreenAdapter.height(5),
-                                right: ScreenAdapter.width(30),
-                                bottom: ScreenAdapter.height(40)),
-                            child: GetBuilder<HomePageController>(
-                              builder: (_) {
-                                if (controller.cartItems.length == 0) {
-                                  return Center(
-                                    child: Text("No item found"),
-                                  );
-                                }
-                                return ListView(
-                                  shrinkWrap: true,
-                                  children: controller.cartItems
-                                      .map((d) => generateCartList(context, d))
-                                      .toList(),
-                                );
-                              },
-                            ),
-                          ),
-                        ),
-                      ),
 
-                      ),
+              ),
 
-                ),
-
-              ],
             ),
-          ),
-        )
+
+          ],
+        ),
+      ),
     );
   }
 }
