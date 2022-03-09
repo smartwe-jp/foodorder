@@ -135,8 +135,8 @@ class _ParabolaAnimateWidgetState extends State<ParabolaAnimateWidget> with Sing
             child: CachedNetworkImage(
               imageUrl: widget.animateImgUrl,
               fit: BoxFit.fill,
-              width: ScreenAdapter.width(150),
-              height: ScreenAdapter.height(150),
+              width: ScreenAdapter.width(100),
+              height: ScreenAdapter.height(100),
               imageBuilder: (context, imageProvider) => Container(
                 decoration: BoxDecoration(
                   image: DecorationImage(
@@ -147,8 +147,8 @@ class _ParabolaAnimateWidgetState extends State<ParabolaAnimateWidget> with Sing
                 ),
               ),
               placeholder: (context, url) => Container(
-                width: ScreenAdapter.width(150),
-                height: ScreenAdapter.height(150),
+                width: ScreenAdapter.width(100),
+                height: ScreenAdapter.height(100),
                 child: Center(
                   child: CircularProgressIndicator(
                     strokeWidth: 2,
