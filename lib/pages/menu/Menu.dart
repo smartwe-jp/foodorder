@@ -75,6 +75,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _selectedMenuOptionList = {}; //牛肉面选中的option组成的数组
   var _selectedMenuOptionCheckedNum = {}; //牛肉面默认选中的option 数量
 
+  var _selectedMenuOptionChangePrice = {}; //牛肉面默认选中的option 价格
+  var _addselectedMenuOptionChangePrice = {}; //牛肉面默认选中的option 需要增加的加个
+
+
   var _shopCartTotalPrice = "0";
   var cartnum = 6;
 
@@ -91,7 +95,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
 
-    //EasyLoading.dismiss();
+    EasyLoading.dismiss();
   }
 
   @override
@@ -252,6 +256,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   tempArr = [];
                   checkNum = 0;
                 }
+                _selectedMenuOptionChangePrice[menuVoList['menuCode']] = menuVoList['currentPrice'];
+                _addselectedMenuOptionChangePrice[menuVoList['menuCode']] = 0;
               }
             }
 
@@ -485,8 +491,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   }
 
   //公共设置价格
-  publicShowMenuPrice(currentPrice, priceFrontFontSize, priceFrontFontColor,
-      priceFontSize, priceFontColor, priceBackFontSize, priceBackFontColor) {
+  publicShowMenuPrice(currentPrice, priceFrontFontSize, priceFrontFontColor, priceFontSize, priceFontColor, priceBackFontSize, priceBackFontColor) {
     return RichText(
       text: TextSpan(
           text: "¥",//GString.getToString(this._checkLanguage, "show_price_front"),
@@ -616,6 +621,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           attr[i]['optionVoList'][j]["checked"] = false;
           if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
             attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
+
           }
         }
       }
@@ -646,6 +652,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     setMenuState(() {
       _menuOption[menuCode] = attr;
       _selectedMenuOptionList[menuCode] = _initialMenuOption[menuCode];
+      _addselectedMenuOptionChangePrice[menuCode] = 0;
     });
   }
 
@@ -654,6 +661,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     var _list = optionGroupList;
     List tempArr = [];
+    var selectPrice = 0;
     for (var i = 0; i < _list.length; i++) {
       for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
         if (_list[i]['optionVoList'][j]['checked'] == true) {
@@ -663,6 +671,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             "currentPrice": _list[i]['optionVoList'][j]["currentPrice"],
           };
           tempArr.add(selectMapItem);
+
+
+          selectPrice +=_list[i]['optionVoList'][j]["currentPrice"];
+
+
         }
       }
     }
@@ -670,6 +683,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     if (tempArr.length > 0) {
       setMenuState(() {
         _selectedMenuOptionList[menuCode] = tempArr;
+        _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
       });
       tempArr = [];
     }
@@ -1803,11 +1817,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ],
                             ),
                           )),
-                          //价格展示
+                          //价格展示 //itemsFirst['currentPrice']
                           Container(
                             width: ScreenAdapter.width(200),
                             child: publicShowMenuPrice(
-                                itemsFirst['currentPrice'],
+                                _selectedMenuOptionChangePrice[itemsFirst['menuCode']]+_addselectedMenuOptionChangePrice[itemsFirst['menuCode']],
                                 45.0,
                                 Gcolor.mainTitleColor,
                                 55.0,
@@ -2382,13 +2396,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           ],
                         ),
                       )),
-                      //价格展示
+                      //价格展示 item['currentPrice']
                       Container(
                         padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
                         width: ScreenAdapter.width(200),
                         alignment: Alignment.bottomRight,
                         child: publicShowMenuPrice(
-                            item['currentPrice'],
+                            _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
                             35.0,
                             Gcolor.mainTitleColor,
                             54.0,
@@ -2748,14 +2762,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           ],
                         ),
                       )),
-                      //价格展示
+                      //价格展示 item['currentPrice']
                       Container(
                         padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
                         width: ScreenAdapter.width(200),
                         alignment: Alignment.bottomRight,
                         //alignment: Alignment.centerRight,
                         child: publicShowMenuPrice(
-                            item['currentPrice'],
+                            _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
                             35.0,
                             Gcolor.mainTitleColor,
                             54.0,

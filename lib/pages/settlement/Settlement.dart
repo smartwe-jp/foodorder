@@ -92,7 +92,7 @@ class _SettlementPageState extends State<SettlementPage> {
     this._totalPrice = widget.arguments['totalPrice'];
 
 
-    //EasyLoading.dismiss();
+    EasyLoading.dismiss();
 
     //Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 

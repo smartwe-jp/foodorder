@@ -84,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //判断是否第一次打开
     this.getIsFirstOpen();
-    sendActivationCode();
+    //sendActivationCode();
 
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
@@ -121,7 +121,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //把机器码保存到本地
   sendActivationCode() async {
-    this._activation_code = "4RW8RLCGBRH3HVZPML";
+    //this._activation_code = "4RW8RLCGBRH3HVZPML";
     if (this._activation_code == null ||
         this._activation_code.length <= 0) {
       showToast('请输入正确激活码');

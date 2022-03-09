@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/EventBus.dart';
@@ -29,7 +30,7 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-
+    EasyLoading.dismiss();
     //进入页面后打开现金机
     OpenPayCube();
 

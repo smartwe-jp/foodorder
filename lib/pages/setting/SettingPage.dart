@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/pages/home/Home.dart';
 import 'package:foodorder/plugins/appset/lib/appset.dart';
@@ -37,7 +38,7 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
-
+    EasyLoading.dismiss();
     //查看机器零钱状态
     _getPaycubeChangeState();
 
