@@ -2315,7 +2315,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           child: StatefulBuilder(
             builder: (BuildContext context, menuindex) {
               return Column(
-                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Container(
@@ -2325,7 +2325,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
                         publicShowMenuImage(item['homeImage'], 460.0, 310.0),
                         (item['optionGroupVoList']?.length > 0)

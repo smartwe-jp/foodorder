@@ -85,6 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //判断是否第一次打开
     this.getIsFirstOpen();
 
+
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
       ..progressColor = Colors.transparent
@@ -160,32 +161,40 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: TextField(
                 keyboardType: TextInputType.text,
-                //controller: _emailEditController,
+                autofocus: true,
+                showCursor: false, // 显示光标
+                //readOnly: true,
                 controller: _activationCodeController,
                 focusNode: _activationCodeFocusNode,
                 decoration: InputDecoration(
-                    hintText: "请输入激活码",
+                  hintText: "请输入激活码",
+                  border: UnderlineInputBorder(
+                    borderRadius: BorderRadius.circular(1),
+                    borderSide: BorderSide(
+                      ///设置边框的颜色
+                      color: Colors.black12,
 
-                    border: UnderlineInputBorder(
-                      borderRadius: BorderRadius.circular(1),
-                      borderSide: BorderSide(
-                        ///设置边框的颜色
-                        color: Colors.black12,
-
-                        ///设置边框的粗细
-                        width: 0.5,
-                      ),
-                    )
+                      ///设置边框的粗细
+                      width: 0.5,
+                    ),
+                  ),
+                  isDense: true,
                 ),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                obscureText: false,
                 onChanged: (value) {
-                  /*setState(() {print(value);
+                  print(value);
+                },
+                onSubmitted: (value){print(value);
+                  setState(() {
                     this._activation_code = value;
-                  });*/
-                },
-                onSubmitted: (value){
+                  });
+
                   sendActivationCode();
-                  print("确定激活-${value}");
+
                 },
+
+                /// 扫码密码
               ),),
             Divider(
               thickness: 1.0,
