@@ -9,4 +9,5 @@ const servicePath = {
   'webBootToPrint': base_url + 'pad/web/boot/print', //打印小票请求地址
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
+  'webBootChangeReset': base_url + 'pad/web/boot/change/reset', //重置机器零钱状态
 };

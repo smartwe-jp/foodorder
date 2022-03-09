@@ -34,6 +34,8 @@ class GString{
         "settlement_orderPrice":"注文金額",
         "settlement_putMoney":"預り金",
         "settlement_outMoney":"おつり",
+        "settlement_print_outprice_tag":"お釣りを取って下さい \r\n しばらくお待ちください",
+        "settlement_print_tag":"しばらくお待ちください",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
         "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
@@ -76,6 +78,8 @@ class GString{
         "settlement_orderPrice":"订单金额",
         "settlement_putMoney":"已投币",
         "settlement_outMoney":"找零",
+        "settlement_print_outprice_tag":"请取出零钱 \r\n 请等待小票打印",
+        "settlement_print_tag":"请等待小票打印",
 
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
@@ -113,19 +117,21 @@ class GString{
         "settlement_payment_method_study_qr":"QR Code Payments",
         "settlement_payment_method_title":"Guide to Payment Methods",
         "settlement_back":"Back",
-        "settlement_confirmButton":"确定支付",
+        "settlement_confirmButton":"Comfirm payment",
         "settlement_continueMoney":"请继续投币",
-        "settlement_orderPrice":"注文金額",
-        "settlement_putMoney":"預り金",
-        "settlement_outMoney":"おつり",
+        "settlement_orderPrice":"Tatol amount",
+        "settlement_putMoney":"Amount paid",
+        "settlement_outMoney":"Change due",
+        "settlement_print_outprice_tag":"Please take your change and receipt",
+        "settlement_print_tag":"Please take your receipt.",
 
-        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
-        "tag_print_content_paper_error":"打印故障，请联系工作人员",
+        "tag_print_content_paper_shortage":"System error. Please contact our staff.",
+        "tag_print_content_paper_error":"System error. Please contact our staff.",
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
-        "show_server_error":"服务器错误请稍后重试",
+        "show_server_error":"System error. Please contact our staff.",
         "show_put_money_error":"请继续投币",
-        "show_please_select_error":"请选择",
+        "show_please_select_error":"Please complete your order.",
       };
     }
 

@@ -335,7 +335,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //去打印小票
   doPrintOrderMenu() async {
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();print("printStatus${printStatus}");
+    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
       print("打印小票来了");
       var formData = {
@@ -343,7 +343,7 @@ class _SettlementPageState extends State<SettlementPage> {
       };print(formData);
       request('webBootToPrint', method: 'GET', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
-        print("print$response");
+        //print("print$response");
         if (response['code'] == 200) {
 
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
@@ -811,12 +811,66 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   _showEasyLoading(){
+    var _showTag;
+    if(int.parse(this._showOutMoney) >0){print("dayinzhaoling");
+    _showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+      /*_showTag = Column(
+        children: [
+          Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(25),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              )),
+          SizedBox(height: ScreenAdapter.height(5)),
+          Text(GString.getToString(this._checkLanguage, "settlement_print_tag"),
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(25),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              )),
+        ],
+      );*/
+    }else{print("yihang");
+      _showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_tag"),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(25),
+            fontWeight: FontWeight.w600,
+            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+          ));
+    }
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
-        //width: ScreenAdapter.width(400),
-        height: ScreenAdapter.height(400),
-        child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+        width: ScreenAdapter.width(550),
+          padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+          decoration: BoxDecoration(
+            //设置边框
+            border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+            //背景颜色
+            color: Colors.white,
+            //设置圆角
+            borderRadius: new BorderRadius.circular((15.0)),
+            //设置阴影
+            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
+          ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            SizedBox(height: ScreenAdapter.height(5)),
+            Container(
+              //width: ScreenAdapter.width(400),
+              height: ScreenAdapter.height(400),
+              child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
       ),
       maskType: EasyLoadingMaskType.black,
     );
@@ -888,7 +942,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
                     obscureText: false,
                     onChanged: (value) {
-                      print(this._scanQrCode);
+                      //print(this._scanQrCode);
                     },
                     onSubmitted: (value){
                       setState(() {
@@ -896,7 +950,7 @@ class _SettlementPageState extends State<SettlementPage> {
                       });
 
                       _doToPay();
-                      print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
+                      //print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
                     },
 
                     /// 扫码密码

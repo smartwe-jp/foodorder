@@ -89,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
       ..progressColor = Colors.transparent
       ..backgroundColor = Colors.transparent
-      ..indicatorColor = Colors.transparent
+      ..indicatorColor = Colors.grey
       ..textColor = Colors.transparent
       ..loadingStyle = EasyLoadingStyle.custom;
 

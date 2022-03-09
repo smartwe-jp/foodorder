@@ -54,7 +54,7 @@ class _SettingPageState extends State<SettingPage> {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200 && null != response['data']) {
-        print(response['data']);
+        //print(response['data']);
         setState(() {
           _depositData = response['data'];
           _cashList = response['data']['changeStates'];
@@ -443,9 +443,10 @@ class _SettingPageState extends State<SettingPage> {
                             } else {
                               print('str is another');
                             }*/
+
                             var _surplusNum = _detail['standard']-int.parse(_detail['used']);
-                            var _backColor = (_detail['warm'] < _surplusNum)?"#A61C1C":"#F9F9F9";
-                            var _textColor = (_detail['warm'] < _surplusNum)?"#FFFFFF":"#000000";
+                            var _backColor = (_detail['warm'] > _surplusNum)?"#A61C1C":"#F9F9F9";
+                            var _textColor = (_detail['warm'] > _surplusNum)?"#FFFFFF":"#000000";
                             return Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
@@ -636,6 +637,109 @@ class _SettingPageState extends State<SettingPage> {
         : Text("");
   }
 
+  _doResetPaycube(){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text("お知らせ",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(780),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text("金庫のお金をすべて回収し、紙幣と硬貨を補充してください",
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  "いいえ",
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () {
+                                  //sleep(Duration(milliseconds: 3000));
+                                  Navigator.pop(context);
+
+                                },
+                              ),
+                            ),
+                            //垂直分割线
+                            SizedBox(
+                              width: 1,
+                              height: 40,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.black12),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  "はい",
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () async {
+                                  //widget.confirmCallback('确定');
+                                  Navigator.pop(context);
+                                  executeResetPaycube();
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
+  }
+
+  executeResetPaycube(){
+    var formData = {
+      "machineCode": _machineCode,
+    };
+    request('webBootChangeReset', method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+print(response);
+      if (response['code'] == 200 && true == response['data']) {
+        _getPaycubeChangeState();
+      } else {}
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -782,6 +886,30 @@ class _SettingPageState extends State<SettingPage> {
                           )),
                     ),
                   ),
+                  /*InkWell(
+                    onTap: () {
+                      _doResetPaycube();
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(510),
+                          right: ScreenAdapter.width(10)),
+                      width: ScreenAdapter.width(180),
+                      height: ScreenAdapter.height(65),
+                      alignment: Alignment.center,
+                      decoration: BoxDecoration(
+                        color: ColorsUtil.hexToColor("#409eff"),
+                        //设置圆角
+                        borderRadius: new BorderRadius.circular((16.0)),
+                      ),
+                      child: Text("金庫リセット",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(24),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor("#FFFFFF"),
+                          )),
+                    ),
+                  ),*/
                 ],
               ),
             ),
