@@ -3199,17 +3199,56 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     );
   }
 
+  _showOrderEasyLoading(){
+    var _showTag =Text(GString.getToString(this._checkLanguage, "settlement_noprint_tag"),
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        decoration: BoxDecoration(
+          //设置边框
+          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+          //背景颜色
+          color: Colors.white,
+          //设置圆角
+          borderRadius: new BorderRadius.circular((15.0)),
+          //设置阴影
+          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            Container(
+              //width: ScreenAdapter.width(400),
+              height: ScreenAdapter.height(400),
+              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+
+  }
   //提交订单
   _doSubmitOrder(){
     if(_machineCode !=""){
-      EasyLoading.show(
+      _showOrderEasyLoading();
+      /*EasyLoading.show(
         //status: 'loading...',
         indicator: Container(
           width: ScreenAdapter.width(400),
           child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
         ),
         maskType: EasyLoadingMaskType.black,
-      );
+      );*/
 
       var cartItems = controller.getcartItems;
       List selectedItem = [];

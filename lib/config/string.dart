@@ -36,6 +36,7 @@ class GString{
         "settlement_outMoney":"おつり",
         "settlement_print_outprice_tag":"    お釣りを取って下さい  \r\n しばらくお待ちください",
         "settlement_print_tag":"しばらくお待ちください",
+        "settlement_noprint_tag":"しばらくお待ちください",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
         "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
@@ -80,6 +81,7 @@ class GString{
         "settlement_outMoney":"找零",
         "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
         "settlement_print_tag":"请等待小票打印",
+        "settlement_noprint_tag":"请稍候~",
 
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
@@ -124,6 +126,7 @@ class GString{
         "settlement_outMoney":"Change due",
         "settlement_print_outprice_tag":"Please take your change and receipt",
         "settlement_print_tag":"Please take your receipt.",
+        "settlement_noprint_tag":"Please wait a moment.",
 
         "tag_print_content_paper_shortage":"System error. Please contact our staff.",
         "tag_print_content_paper_error":"System error. Please contact our staff.",
