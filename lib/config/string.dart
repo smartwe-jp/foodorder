@@ -34,7 +34,7 @@ class GString{
         "settlement_orderPrice":"注文金額",
         "settlement_putMoney":"預り金",
         "settlement_outMoney":"おつり",
-        "settlement_print_outprice_tag":"お釣りを取って下さい \r\n しばらくお待ちください",
+        "settlement_print_outprice_tag":"    お釣りを取って下さい  \r\n しばらくお待ちください",
         "settlement_print_tag":"しばらくお待ちください",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
@@ -78,7 +78,7 @@ class GString{
         "settlement_orderPrice":"订单金额",
         "settlement_putMoney":"已投币",
         "settlement_outMoney":"找零",
-        "settlement_print_outprice_tag":"请取出零钱 \r\n 请等待小票打印",
+        "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
         "settlement_print_tag":"请等待小票打印",
 
 

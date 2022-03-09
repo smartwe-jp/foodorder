@@ -20,6 +20,9 @@ public class MainActivity extends FlutterActivity {
 
             Intent navabarIntent = new Intent("com.android.HIDE_NAVBAR");
             mContext.sendBroadcast(navabarIntent);
+
+/*            Intent keybordIntent = new Intent("com.android.HIDE_KEYBOARD");
+            mContext.sendBroadcast(keybordIntent);*/
         }
     }
 

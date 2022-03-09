@@ -73,6 +73,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _noChangeinitialmenuOption = {}; //牛肉面及定食的option数组，不做改变
   var _initialMenuOption = {}; //牛肉面及定食的初始option数组
   var _selectedMenuOptionList = {}; //牛肉面选中的option组成的数组
+  var _selectedMenuOptionCheckedNum = {}; //牛肉面默认选中的option 数量
 
   var _shopCartTotalPrice = "0";
   var cartnum = 6;
@@ -221,6 +222,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   var nochangeattr = menuVoList['optionGroupVoList'];
                   List tempArr = [];
                   List initalCode = [];
+                  var checkNum = 0;
 
                   for (var m = 0; m < attr.length; m++) {
                     for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
@@ -233,6 +235,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         nochangeattr[m]['optionVoList'][n]["checked"] = true;
                         tempArr.add(attr[m]['optionVoList'][n]);
                         initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
+                        checkNum++;
                       } else {
                         attr[m]['optionVoList'][n]["checked"] = false;
                         nochangeattr[m]['optionVoList'][n]["checked"] = false;
@@ -244,8 +247,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   _noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
                   _initialMenuOption[menuVoList['menuCode']] = tempArr;//tempArr;
                   _selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+                  _selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
                   attr = [];
                   tempArr = [];
+                  checkNum = 0;
                 }
               }
             }
@@ -316,6 +321,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
+    List MenuColor = ["#A61C1C","#894911","#078E42","#E8A854","#4C7FBC"];
+    var menuIndex = 0;
     for (var item in topMenu) {
       categoryMenus.add(InkWell(
         onTap: () {
@@ -327,13 +334,24 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
           width: ScreenAdapter.width(161),
           height: ScreenAdapter.height(65),
-          decoration: BoxDecoration(
+          /*decoration: BoxDecoration(
             image: new DecorationImage(
               fit: BoxFit.fitWidth,
               image: classTag == item['categoryCode']
                   ? AssetImage('assets/images/category_selected.png')
                   : AssetImage('assets/images/category_unselected.png'),
             ),
+
+          ),*/
+          decoration: BoxDecoration(
+            //设置边框
+            //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+            //背景颜色
+            color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+            //设置圆角
+            //borderRadius: new BorderRadius.circular((15.0)),
+            //设置阴影
+            //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
           ),
           child: Center(
             //加上Center让文字居中
@@ -341,14 +359,17 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               item['categoryName'],
               style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(GFontSize.categoryTitle),
-                  color: classTag == item['categoryCode']
+                  /*color: classTag == item['categoryCode']
                       ? ColorsUtil.hexToColor(Gcolor.categoryTitleSelected)
-                      : ColorsUtil.hexToColor(Gcolor.categoryTitle),
+                      : ColorsUtil.hexToColor(Gcolor.categoryTitle),*/
+                  color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                   fontWeight: FontWeight.w600),
             ),
           ),
         ),
       ));
+
+      menuIndex++;
     }
 
     categoryMenus.add(InkWell(
@@ -659,6 +680,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     var optionGroupVoList = _menuOption[menuCode];
 
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
+
+
     //Widget labelContent;
     for (var i = 0; i < optionGroupVoList.length; i++) {
       List<Widget> optionSons = [];
@@ -689,9 +712,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             alignment: Alignment.center,
             padding: EdgeInsets.only(
                 left: ScreenAdapter.width(14),
-                top: ScreenAdapter.height(5),
+                top: ScreenAdapter.height(3),
                 right: ScreenAdapter.width(14),
-                bottom: ScreenAdapter.height(5)),
+                bottom: ScreenAdapter.height(3)),
             child: InkWell(
               onTap: () {
                 _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
@@ -847,6 +870,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       alignment: Alignment.center,
                       decoration: (optionVolistSon['checked'] == true)
                           ? BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(14.0)),
                              // color: ColorsUtil.hexToColor("#BCA48E"),
                         gradient: LinearGradient(
                           begin: Alignment.centerLeft,
@@ -866,6 +890,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ],
                             )
                           : BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(14.0)),
                               gradient: LinearGradient(
                                 begin: Alignment.centerLeft,
                                 end: Alignment.centerRight,
@@ -970,6 +995,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         crossAxisAlignment: CrossAxisAlignment.end,
         children: optionSons,
       ));
+
+
     }
 
     return options;
@@ -1732,10 +1759,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     if (itemsFirst != null) {
       return Container(
         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-        padding: EdgeInsets.only(top:ScreenAdapter.height(8)),
-        child: Column(
+        padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        child: ListView(
+          shrinkWrap: true,
           children: [
-            publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 955.0),
+            publicShowMenuImage(itemsFirst['homeImage'], 1080.0, 875.0),
             Container(
               color: ColorsUtil.hexToColor(Gcolor.whiteColor),
               width: ScreenAdapter.width(1080),
@@ -1792,12 +1820,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           InkWell(
                             onTapDown: (details) {
                               temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
-
                             },
                             onTap: () {
 
                               //判断选择后option是否与optiongroup相等
-                              if (_selectedMenuOptionList[itemsFirst['menuCode']].length !=itemsFirst['optionGroupVoList'].length) {
+                              if (_selectedMenuOptionList[itemsFirst['menuCode']].length <_selectedMenuOptionCheckedNum[itemsFirst['menuCode']]) {
                                 showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                                 return;
                               }
@@ -2282,10 +2309,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           top: ScreenAdapter.height(8)),
       child: Material(
         child: Container(
-          padding: EdgeInsets.only(
-              top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-          margin: EdgeInsets.only(
-              left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+          padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
+          margin: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
           child: StatefulBuilder(
             builder: (BuildContext context, menuindex) {
@@ -2295,7 +2320,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 children: [
                   Container(
                     padding: EdgeInsets.only(
-                      top: ScreenAdapter.height(5),
+                      //top: ScreenAdapter.height(5),
                       bottom: ScreenAdapter.height(5),
                     ),
                     child: Row(
@@ -2385,10 +2410,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           var currentPrice = item['currentPrice'];
                           var optionCodeList = "";
                           var optionTitle = "";
-                          if (item['optionGroupVoList']?.length > 0) {
-                            if (_selectedMenuOptionList[item['menuCode']]
-                                    .length !=
-                                item['optionGroupVoList'].length) {
+                          if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                            if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
                               showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
@@ -2751,8 +2774,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           var optionCodeList = "";
                           var optionTitle = "";
                           var currentPrice = item['currentPrice'];
-                          if (item['optionGroupVoList']?.length > 0) {
-                            if (_selectedMenuOptionList[item['menuCode']].length != item['optionGroupVoList'].length) {
+                          if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                            if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
                               showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
@@ -3101,7 +3124,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             InkResponse(
               onTap: () {
                 Get.find<HomePageController>().removeFromCart(d.id ?? 0);
-                print("Item removed from cart successfully");
+                //print("Item removed from cart successfully");
                 controller.getCardList();
                 //更改显示购物车价格
                 getCartPriceTotal();

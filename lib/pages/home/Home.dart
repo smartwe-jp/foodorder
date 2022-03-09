@@ -62,10 +62,10 @@ class _HomePageState extends State<HomePage> {
     //如果检测现金机打开错误，则重新打开一下
     if(checkStatus == "openError"){
       String openStatus = await Paycube.openPayCube;
-      print("机器未打开lib未null，重新打开并连接了");
+      //print("机器未打开lib未null，重新打开并连接了");
     }else{
       await Paycube.setReceiveEvent;
-      print("机器已打开，并setreceive");
+      //print("机器已打开，并setreceive");
     }
 
     //await Paycube.endTrade;

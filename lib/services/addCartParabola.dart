@@ -131,33 +131,35 @@ class _ParabolaAnimateWidgetState extends State<ParabolaAnimateWidget> with Sing
         opacity: 0.8,
         //child: widget.animateWidget,
         child: ClipOval(
-          child: CachedNetworkImage(
-            imageUrl: widget.animateImgUrl,
-            fit: BoxFit.fill,
-            width: ScreenAdapter.width(150),
-            height: ScreenAdapter.height(150),
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: imageProvider,
-                    fit: BoxFit.cover,
-                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+          child: Container(
+            child: CachedNetworkImage(
+              imageUrl: widget.animateImgUrl,
+              fit: BoxFit.fill,
+              width: ScreenAdapter.width(150),
+              height: ScreenAdapter.height(150),
+              imageBuilder: (context, imageProvider) => Container(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                      image: imageProvider,
+                      fit: BoxFit.cover,
+                      colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+                  ),
                 ),
               ),
-            ),
-            placeholder: (context, url) => Container(
-              width: ScreenAdapter.width(200),
-              height: ScreenAdapter.height(200),
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
+              placeholder: (context, url) => Container(
+                width: ScreenAdapter.width(150),
+                height: ScreenAdapter.height(150),
+                child: Center(
+                  child: CircularProgressIndicator(
+                    strokeWidth: 2,
+                  ),
                 ),
               ),
-            ),
-            errorWidget: (context, url, error) => Image.network(
-                widget.animateImgUrl,fit: BoxFit.fill,
-                width: ScreenAdapter.width(90),
-                height: ScreenAdapter.height(90)
+              errorWidget: (context, url, error) => Image.network(
+                  widget.animateImgUrl,fit: BoxFit.fill,
+                  width: ScreenAdapter.width(90),
+                  height: ScreenAdapter.height(90)
+              ),
             ),
           ),
         ),
