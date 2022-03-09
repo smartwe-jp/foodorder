@@ -154,15 +154,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Text("请输入激活码",
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(32.0))),
+            /*Text("请输入激活码",
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(32.0))),*/
             Container(
               width: ScreenAdapter.width(250.0),
               padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: TextField(
                 keyboardType: TextInputType.text,
                 autofocus: true,
-                showCursor: false, // 显示光标
+                showCursor: true, // 显示光标
                 //readOnly: true,
                 controller: _activationCodeController,
                 focusNode: _activationCodeFocusNode,

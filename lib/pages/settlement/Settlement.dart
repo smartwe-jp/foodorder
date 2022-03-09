@@ -292,7 +292,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _doToPay(){
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
 
-      EasyLoading.show(
+      /*EasyLoading.show(
         //status: 'loading...',
         indicator: Container(
           //width: ScreenAdapter.width(400),
@@ -300,7 +300,8 @@ class _SettlementPageState extends State<SettlementPage> {
           child: Image.asset('assets/images/printticket.gif',fit: BoxFit.fitHeight),
         ),
         maskType: EasyLoadingMaskType.black,
-      );
+      );*/
+      _showEasyLoading();
 
       var formData = {
         "auth_code": this._scanQrCode,
