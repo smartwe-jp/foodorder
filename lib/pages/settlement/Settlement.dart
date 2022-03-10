@@ -94,7 +94,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     EasyLoading.dismiss();
 
-    //Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+    Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
     //打开现金机
     Starttoubi();
@@ -977,7 +977,8 @@ class _SettlementPageState extends State<SettlementPage> {
                     style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
                     obscureText: false,
                     onChanged: (value) {
-                      //print(this._scanQrCode);
+                      //print(value);
+
                     },
                     onSubmitted: (value){
                       setState(() {

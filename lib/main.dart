@@ -1,21 +1,17 @@
+import 'dart:io';
+import 'dart:ui';
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/screenutil_init.dart';
-import 'package:foodorder/pages/home/Home.dart';
-import 'package:foodorder/routers/custom_router.dart';
+
 import 'package:foodorder/routers/router.dart';
 import 'package:foodorder/services/HomeServices.dart';
-import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
-import 'package:foodorder/services/SqfliteHelper.dart';
 import 'package:foodorder/services/showToast.dart';
-import 'package:get/get.dart';
-import 'package:package_info/package_info.dart';
-import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import 'config/index.dart';
 
@@ -73,7 +69,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //final sqlHelper = SqfliteHelper();
   TextEditingController _activationCodeController = new TextEditingController();
-  final FocusNode _activationCodeFocusNode = FocusNode();
+  FocusNode _activationCodeFocusNode = FocusNode();
 
   var _activation_code; //激活码
 
@@ -81,10 +77,9 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-
+    requestPermission();
     //判断是否第一次打开
     this.getIsFirstOpen();
-    //sendActivationCode();
 
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
@@ -96,6 +91,20 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
+  Future requestPermission() async {
+    /// 权限检测
+    PermissionStatus storageStatus = await Permission.storage.status;
+    if (storageStatus != PermissionStatus.granted) {
+      storageStatus = await Permission.storage.request();
+      if (storageStatus != PermissionStatus.granted) {
+        //showToast("权限申请被拒绝");
+        //print("权限申请被拒绝");
+      }else{
+        //showToast("权限申请通过");
+        //print("权限申请通过");
+      }
+    }
+  }
 
 
 
@@ -103,11 +112,8 @@ class _MyHomePageState extends State<MyHomePage> {
   getIsFirstOpen() async {
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
-
-
       _goMain();
       //loaddata();
-
     }
   }
 
@@ -121,7 +127,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //把机器码保存到本地
   sendActivationCode() async {
-    //this._activation_code = "4RW8RLCGBRH3HVZPML";
+
     if (this._activation_code == null ||
         this._activation_code.length <= 0) {
       showToast('请输入正确激活码');
@@ -160,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
               width: ScreenAdapter.width(250.0),
               padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: TextField(
-                keyboardType: TextInputType.text,
+                //keyboardType: TextInputType.text,
                 autofocus: true,
                 showCursor: true, // 显示光标
                 //readOnly: true,
@@ -168,24 +174,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 focusNode: _activationCodeFocusNode,
                 decoration: InputDecoration(
                   hintText: "请输入激活码",
-                  border: UnderlineInputBorder(
-                    borderRadius: BorderRadius.circular(1),
-                    borderSide: BorderSide(
-                      ///设置边框的颜色
-                      color: Colors.black12,
-
-                      ///设置边框的粗细
-                      width: 0.5,
-                    ),
-                  ),
+                  //border: InputBorder.none,
                   isDense: true,
                 ),
                 style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
                 obscureText: false,
                 onChanged: (value) {
-                  print(value);
+                  //print(value);
                 },
-                onSubmitted: (value){print(value);
+                onSubmitted: (value){//print(value);
+                showToast(value);
                   setState(() {
                     this._activation_code = value;
                   });

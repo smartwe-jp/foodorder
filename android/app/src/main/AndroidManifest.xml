@@ -32,7 +32,7 @@
          FlutterApplication and put your custom class here. -->
     <application
         android:name="io.flutter.app.FlutterApplication"
-        android:label="foodorder"
+        android:label="甘蘭"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
