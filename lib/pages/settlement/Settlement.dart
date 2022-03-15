@@ -626,11 +626,12 @@ class _SettlementPageState extends State<SettlementPage> {
     EasyLoading.dismiss();
     //Navigator.pop(context);
     Navigator.pop(context);
-    Future.delayed(Duration(milliseconds: 100), () {
+    Navigator.pushNamed(context, '/home');
+    /*Future.delayed(Duration(milliseconds: 100), () {
       Navigator.pushNamed(context, '/home');
       //Navigator.of(context).pushReplacementNamed('/home');
       //Navigator.push(context, CustomRoute(HomePage()));
-    });
+    });*/
   }
 
   gotonewMenuPage(){
