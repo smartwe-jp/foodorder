@@ -258,6 +258,13 @@ public class PrintService  {
 
         //--------菜单1
         mUsbDriver.write(PrintCmd.SetClean());
+
+        mUsbDriver.write(PrintCmd.SetAlignment(2));
+        m_sbData = new StringBuilder("お客様用");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+
         printbmp(mUsbDriver,sed);
         PrintFeedDot(30);
 
@@ -330,33 +337,21 @@ public class PrintService  {
 
     public void execute_print(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed,int CutpaperSet){
 
-        /*String imgUrl = "https://images.gutingjun.com/upload/sed.bmp";
-
-        System.out.println("in execute_print");
-        ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
-
-        try{
-            Future<byte[]> future = newCachedThreadPool.submit(new HttpCallable(imgUrl));
-            byte[] result = future.get();
-            mUsbDriver.write(result);
-        }catch (Exception e){
-            System.out.println("http Exception");
-        }
-*/
         mUsbDriver.write(PrintCmd.SetClean());
 
         //printbmp(mUsbDriver,sed);
 
         mUsbDriver.write(PrintCmd.SetReadZKmode(0));
-        PrintFeedDot(30);
+        //PrintFeedDot(30);
         StringBuilder m_sbData;
 
         //mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        mUsbDriver.write(PrintCmd.SetAlignment(1));
 
-
+        mUsbDriver.write(PrintCmd.SetAlignment(2));
+        m_sbData = new StringBuilder("店舗用");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetClean());
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        PrintFeedDot(20);
 
         mUsbDriver.write(PrintCmd.PrintFeedline(3));
         m_sbData = new StringBuilder("-------------------------------");

@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   //print(value);
                 },
                 onSubmitted: (value){//print(value);
-                showToast(value);
+                //showToast(value);
                   setState(() {
                     this._activation_code = value;
                   });

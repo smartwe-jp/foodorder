@@ -782,14 +782,18 @@ print(response);
                 children: [
                   InkWell(
                     onTap: () {
-                      Navigator.of(context).pushAndRemoveUntil(
+                      /*Navigator.of(context).pushAndRemoveUntil(
                         new MaterialPageRoute(
                           builder: (BuildContext context) {
                             return new HomePage();
                           },
                         ),
                         (Route route) => false,
-                      );
+                      );*/
+                      Navigator.pop(context);
+                      Future.delayed(Duration(milliseconds: 100), () {
+                        Navigator.pushNamed(context, '/home');
+                      });
                     },
                     child: Container(
                       margin: EdgeInsets.only(

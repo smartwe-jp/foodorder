@@ -7,6 +7,6 @@ Future showToast(String msg) async {
     msg: msg,
     toastLength: Toast.LENGTH_SHORT,
     gravity: ToastGravity.CENTER,
-    timeInSecForIosWeb: 3
+    timeInSecForIosWeb: 5
   );
 }

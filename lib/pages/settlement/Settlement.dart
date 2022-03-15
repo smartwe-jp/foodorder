@@ -624,11 +624,12 @@ class _SettlementPageState extends State<SettlementPage> {
     Get.find<HomePageController>().removeAllFromCart();
 
     EasyLoading.dismiss();
-    Navigator.pop(context);
+    //Navigator.pop(context);
     Navigator.pop(context);
     Future.delayed(Duration(milliseconds: 100), () {
+      Navigator.pushNamed(context, '/home');
       //Navigator.of(context).pushReplacementNamed('/home');
-      Navigator.push(context, CustomRoute(HomePage()));
+      //Navigator.push(context, CustomRoute(HomePage()));
     });
   }
 
@@ -642,7 +643,8 @@ class _SettlementPageState extends State<SettlementPage> {
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
+    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+    //Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
 
 
   }

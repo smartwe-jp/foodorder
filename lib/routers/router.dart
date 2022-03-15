@@ -10,7 +10,7 @@ final routes = {
   '/home': (context) => HomePage(),
   '/menuPage': (context,{arguments}) => MenuPage(arguments:arguments), //菜单
   "/settlement": (context,{arguments}) => SettlementPage(arguments:arguments), //结算页面
-  "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //结算页面
+  "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //设置页面
 
   '/showImage': (context) => ShowImagePage(), //查看图片
 

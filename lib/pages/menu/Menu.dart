@@ -383,10 +383,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
         Future.delayed(Duration(milliseconds: 100), () {
-          Navigator.push(context, CustomRoute(HomePage()));
+          Navigator.pushNamed(context, '/home');
+          //Navigator.push(context, CustomRoute(HomePage()));
           //Navigator.of(context).pushReplacementNamed('/home');
         });
-        Navigator.pop(context);
+        //Navigator.pop(context);
       },
       child: Container(
         margin: EdgeInsets.only(left: ScreenAdapter.width(5)),
@@ -3295,10 +3296,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
+        EasyLoading.dismiss();
 
         if (response['code'] == 200) {
-          EasyLoading.dismiss();
-
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
@@ -3309,6 +3309,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         }else{
           showToast(response['msg']);
+
         }
       });
     }
