@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -55,7 +56,7 @@ class _SettingPageState extends State<SettingPage> {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200 && null != response['data']) {
-        //print(response['data']);
+        print(response['data']);
         setState(() {
           _depositData = response['data'];
           _cashList = response['data']['changeStates'];
@@ -94,7 +95,7 @@ class _SettingPageState extends State<SettingPage> {
           top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
       child: Column(
         children: [
-          Text("待结算明细",
+          Text("売上",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
@@ -126,13 +127,13 @@ class _SettingPageState extends State<SettingPage> {
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
                             right: ScreenAdapter.width(5)),
                         alignment: Alignment.center,
-                        child: Text("现金",
+                        child: Text("預り金",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
@@ -140,7 +141,21 @@ class _SettingPageState extends State<SettingPage> {
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: Text("買上",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(20),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#000000"),
+                            )),
+                      ),
+                      Container(
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -154,7 +169,7 @@ class _SettingPageState extends State<SettingPage> {
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -168,7 +183,7 @@ class _SettingPageState extends State<SettingPage> {
                             )),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -199,7 +214,37 @@ class _SettingPageState extends State<SettingPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
+                        height: ScreenAdapter.height(45),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        alignment: Alignment.center,
+                        child: RichText(
+                          text: TextSpan(
+                              text: _depositData['deposit_payment'].toString(),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: "円",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  ),
+                                ),
+                              ]),
+                        ),
+                      ),
+
+                      Container(
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -228,7 +273,7 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -257,7 +302,7 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -286,7 +331,7 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                       ),
                       Container(
-                        width: ScreenAdapter.width(250),
+                        width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -331,7 +376,7 @@ class _SettingPageState extends State<SettingPage> {
           margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
           child: Column(
             children: [
-              Text("现金机状态",
+              Text("お釣り状態",
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(22),
                     fontWeight: FontWeight.w600,
@@ -387,22 +432,6 @@ class _SettingPageState extends State<SettingPage> {
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5),
                                   right: ScreenAdapter.width(5)),
-                              child: Text("最小枚数",
-                                  style: TextStyle(
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
-                                  )),
-                            )),
-                            Expanded(child: Container(
-                              width: ScreenAdapter.width(120),
-                              height: ScreenAdapter.height(45),
-                              alignment: Alignment.center,
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(5),
-                                  right: ScreenAdapter.width(5)),
                               child: Text("初期枚数",
                                   style: TextStyle(
                                     fontSize:
@@ -419,7 +448,40 @@ class _SettingPageState extends State<SettingPage> {
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5),
                                   right: ScreenAdapter.width(5)),
-                              child: Text("使用枚数",
+                              child: Text("最小枚数",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(120),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("使った枚数",
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(18),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        "#000000"),
+                                  )),
+                            )),
+                            Expanded(child: Container(
+                              width: ScreenAdapter.width(120),
+                              height: ScreenAdapter.height(45),
+                              alignment: Alignment.center,
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(5),
+                                  right: ScreenAdapter.width(5)),
+                              child: Text("残り枚数",
                                   style: TextStyle(
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
@@ -437,22 +499,15 @@ class _SettingPageState extends State<SettingPage> {
                           itemCount: this._cashList.length,
                           itemBuilder: (context, index) {
                             var _detail = this._cashList[index];
-                            /*if (_detail['warm'] is String) {
-                              print('str is String');
-                            }else if (_detail['warm'] is int) {
-                              print('str is int');
-                            } else {
-                              print('str is another');
-                            }*/
 
                             var _surplusNum = _detail['standard']-int.parse(_detail['used']);
-                            var _backColor = (_detail['warm'] > _surplusNum)?"#A61C1C":"#F9F9F9";
-                            var _textColor = (_detail['warm'] > _surplusNum)?"#FFFFFF":"#000000";
+                            //var _backColor = (_detail['warm'] > _surplusNum)?"#A61C1C":"#F9F9F9";
+                            var _textColor = (_detail['warm'] > _surplusNum)?"#A61C1C":"#000000";
                             return Container(
                               alignment: Alignment.center,
                               padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
                               decoration: BoxDecoration(
-                                  color: ColorsUtil.hexToColor(_backColor),
+                                  color: ColorsUtil.hexToColor("#F9F9F9"),
                                   border: Border(
                                     bottom: BorderSide( color: Colors.grey.shade400, width: 1.0),
                                     //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
@@ -482,20 +537,6 @@ class _SettingPageState extends State<SettingPage> {
                                     margin: EdgeInsets.only(
                                         left: ScreenAdapter.width(5),
                                         right: ScreenAdapter.width(5)),
-                                    child: Text(_detail['warm'].toString(),
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(20),
-                                          fontWeight: FontWeight.w500,
-                                          color: ColorsUtil.hexToColor(_textColor),
-                                        )),
-                                  )),
-                                  Expanded(child: Container(
-                                    //width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(40),
-                                    alignment: Alignment.center,
-                                    margin: EdgeInsets.only(
-                                        left: ScreenAdapter.width(5),
-                                        right: ScreenAdapter.width(5)),
                                     child: Text(_detail['standard'].toString(),
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(20),
@@ -510,7 +551,36 @@ class _SettingPageState extends State<SettingPage> {
                                     margin: EdgeInsets.only(
                                         left: ScreenAdapter.width(5),
                                         right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['warm'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(20),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor(_textColor),
+                                        )),
+                                  )),
+
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(120),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(5),
+                                        right: ScreenAdapter.width(5)),
                                     child: Text(_detail['used'].toString(),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(20),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor(_textColor),
+                                        )),
+                                  )),
+                                  Expanded(child: Container(
+                                    //width: ScreenAdapter.width(120),
+                                    height: ScreenAdapter.height(40),
+                                    alignment: Alignment.center,
+                                    margin: EdgeInsets.only(
+                                        left: ScreenAdapter.width(5),
+                                        right: ScreenAdapter.width(5)),
+                                    child: Text(_detail['remainder'].toString(),
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(20),
                                           fontWeight: FontWeight.w500,
@@ -607,7 +677,7 @@ class _SettingPageState extends State<SettingPage> {
                 bottom: ScreenAdapter.height(15)),
             child: Column(
               children: [
-                Text("最近7日收入明细",
+                Text("一週間売上報告",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(22),
                       fontWeight: FontWeight.w600,
@@ -925,8 +995,8 @@ print(response);
               ),
               padding: EdgeInsets.only(
                 top: ScreenAdapter.height(10.0),
-                left: ScreenAdapter.width(18.0),
-                right: ScreenAdapter.width(18.0),
+                left: ScreenAdapter.width(14.0),
+                right: ScreenAdapter.width(14.0),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

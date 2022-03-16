@@ -1172,7 +1172,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
-                      Container(
+                      /*Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
                           //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
@@ -1190,7 +1190,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                     color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                   )),
                             ],
-                          )),
+                          )),*/
 
                     ],
                   ),
@@ -1382,25 +1382,25 @@ class _SettlementPageState extends State<SettlementPage> {
                   ),
                   Container(
                     margin: EdgeInsets.only(
-                        left: ScreenAdapter.width(30),
+                        left: ScreenAdapter.width(15),
                         top: ScreenAdapter.height(10),
-                        right: ScreenAdapter.width(40),
+                        right: ScreenAdapter.width(20),
                         bottom: ScreenAdapter.height(10)
                     ),
-                    width: ScreenAdapter.width(340),
+                    width: ScreenAdapter.width(375),
                     child: Table(
                       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                       //所有列宽
                       columnWidths: {
                         //列宽
-                        0: FixedColumnWidth(ScreenAdapter.width(80)),
-                        1: FixedColumnWidth(ScreenAdapter.width(260)),
+                        0: FixedColumnWidth(ScreenAdapter.width(145)),
+                        1: FixedColumnWidth(ScreenAdapter.width(230)),
                       },
                       children: [
                         TableRow(
                           children: [
                             Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.centerRight,
                               child: Text(GString.getToString(this._checkLanguage, "settlement_putMoney"),
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(25),
@@ -1428,7 +1428,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       TextSpan(
                                         text: " 円",//" 円",
                                         style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(28),
+                                          fontSize: ScreenAdapter.fontSize(25),
                                           fontWeight: FontWeight.w600,
                                           color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
                                         ),
@@ -1443,7 +1443,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           children: [
 
                             Align(
-                              alignment: Alignment.centerLeft,
+                              alignment: Alignment.centerRight,
                               child: Text(GString.getToString(this._checkLanguage, "settlement_outMoney"),
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(25),

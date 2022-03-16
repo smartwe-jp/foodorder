@@ -327,7 +327,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    List MenuColor = ["#A61C1C","#894911","#078E42","#E8A854","#4C7FBC"];
+    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC"];
     var menuIndex = 0;
     for (var item in topMenu) {
       categoryMenus.add(InkWell(
@@ -336,11 +336,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             classTag = item['categoryCode'];
           });
         },
-        child: Container(
-          margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
-          width: ScreenAdapter.width(161),
-          height: ScreenAdapter.height(65),
-          /*decoration: BoxDecoration(
+        child: Stack(
+            children: [
+              Container(
+                margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
+                width: ScreenAdapter.width(161),
+                height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
+                /*decoration: BoxDecoration(
             image: new DecorationImage(
               fit: BoxFit.fitWidth,
               image: classTag == item['categoryCode']
@@ -349,29 +351,51 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             ),
 
           ),*/
-          decoration: BoxDecoration(
-            //设置边框
-            //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-            //背景颜色
-            color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
-            //设置圆角
-            //borderRadius: new BorderRadius.circular((15.0)),
-            //设置阴影
-            //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-          ),
-          child: Center(
-            //加上Center让文字居中
-            child: Text(
-              item['categoryName'],
-              style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(GFontSize.categoryTitle),
-                  /*color: classTag == item['categoryCode']
+                decoration: (classTag == item['categoryCode']) ? BoxDecoration(
+                  //设置边框
+                  //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+                  //背景颜色
+                  color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+                  //设置圆角
+                  //borderRadius: new BorderRadius.circular((15.0)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                  //设置阴影
+                  //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
+                ) : BoxDecoration(
+                  //背景颜色
+                  color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+                ),
+                child: Center(
+                  //加上Center让文字居中
+                  child: Text(
+                    item['categoryName'],
+                    style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(GFontSize.categoryTitle),
+                        /*color: classTag == item['categoryCode']
                       ? ColorsUtil.hexToColor(Gcolor.categoryTitleSelected)
                       : ColorsUtil.hexToColor(Gcolor.categoryTitle),*/
-                  color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                  fontWeight: FontWeight.w600),
-            ),
-          ),
+                        color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                        fontWeight: FontWeight.w600),
+                  ),
+                ),
+              ),
+              (classTag == item['categoryCode'])
+                  ? Positioned(
+                right: ScreenAdapter.width(71),
+                bottom: 0,
+                child: Container(
+                    alignment: Alignment.center,
+                    child: Image.asset(
+                      'assets/images/menu_up.png',
+                      width: ScreenAdapter.width(35),
+                      fit: BoxFit.fitWidth,
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    ),
+              ))
+                  : Container(
+                height: 0,
+              ),
+            ],
         ),
       ));
 
@@ -380,17 +404,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     categoryMenus.add(InkWell(
       onTap: () {
-
-
-        Future.delayed(Duration(milliseconds: 100), () {
-          Navigator.pushNamed(context, '/home');
-          //Navigator.push(context, CustomRoute(HomePage()));
-          //Navigator.of(context).pushReplacementNamed('/home');
-        });
-        //Navigator.pop(context);
+        Navigator.pushNamed(context, '/home');
       },
       child: Container(
-        margin: EdgeInsets.only(left: ScreenAdapter.width(5)),
+        margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
         width: ScreenAdapter.width(110),
         height: ScreenAdapter.height(55),
         decoration: BoxDecoration(
@@ -413,6 +430,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     ));
 
     return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: categoryMenus,
     );
   }

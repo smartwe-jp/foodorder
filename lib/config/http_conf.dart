@@ -1,5 +1,7 @@
-const base_url = "https://store-sit.kanran.co.jp/";  //测试环境地址
-//const base_url = "https://new.gutingjun.com/api/";  //生产环境地址
+const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://store-sit.kanran.co.jp/";  //测试环境地址
+
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址

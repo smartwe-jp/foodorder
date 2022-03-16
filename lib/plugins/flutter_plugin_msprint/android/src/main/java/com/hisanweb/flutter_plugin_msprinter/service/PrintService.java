@@ -260,7 +260,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.SetClean());
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
-        m_sbData = new StringBuilder("お客様用");
+        m_sbData = new StringBuilder("お客様控え");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
         mUsbDriver.write(PrintCmd.SetAlignment(0));
@@ -348,7 +348,7 @@ public class PrintService  {
         //mUsbDriver.write(PrintCmd.SetSizetext(1,1));
 
         mUsbDriver.write(PrintCmd.SetAlignment(2));
-        m_sbData = new StringBuilder("店舗用");
+        m_sbData = new StringBuilder("店舗控え");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
         mUsbDriver.write(PrintCmd.SetAlignment(0));
