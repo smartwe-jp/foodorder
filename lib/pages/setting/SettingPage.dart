@@ -12,6 +12,7 @@ import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/controller/homePageController.dart';
+import 'package:package_info/package_info.dart';
 
 class SettingPage extends StatefulWidget {
   Map arguments;
@@ -29,6 +30,8 @@ class _SettingPageState extends State<SettingPage> {
   var _lastTotalList = [];
   var _depositData = {};
 
+  var _local_version; //本appversion
+
   //监听页面销毁的事件
   dispose() {
     //eventBus.fire(new clearCartEvent('支付成功...'));
@@ -44,6 +47,17 @@ class _SettingPageState extends State<SettingPage> {
     _getPaycubeChangeState();
 
     _clearCartList();
+
+    _getPackageInfo();
+
+  }
+
+  //获取版本号
+  _getPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    setState(() {
+      this._local_version = packageInfo.version+"+"+packageInfo.buildNumber;
+    });
   }
 
   //获取现金机列表
@@ -376,7 +390,7 @@ class _SettingPageState extends State<SettingPage> {
           margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
           child: Column(
             children: [
-              Text("お釣り状態",
+              Text("お釣り状態(NO.${_machineCode})",
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(22),
                     fontWeight: FontWeight.w600,
@@ -850,42 +864,46 @@ print(response);
               ),
               child: Row(
                 children: [
-                  InkWell(
-                    onTap: () {
-                      /*Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return new HomePage();
+                  Container(
+                    width: ScreenAdapter.width(820.0),
+                    child: Row(
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            /*Navigator.of(context).pushAndRemoveUntil(
+                              new MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return new HomePage();
+                                },
+                              ),
+                              (Route route) => false,
+                            );*/
+                            Navigator.pop(context);
+                            Future.delayed(Duration(milliseconds: 100), () {
+                              Navigator.pushNamed(context, '/home');
+                            });
                           },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#67c23a"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text("回到菜单",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
                         ),
-                        (Route route) => false,
-                      );*/
-                      Navigator.pop(context);
-                      Future.delayed(Duration(milliseconds: 100), () {
-                        Navigator.pushNamed(context, '/home');
-                      });
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)),
-                      width: ScreenAdapter.width(120),
-                      height: ScreenAdapter.height(65),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: ColorsUtil.hexToColor("#67c23a"),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
-                      ),
-                      child: Text("回到菜单",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(24),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )),
-                    ),
-                  ),
-                  /*InkWell(
+                        /*InkWell(
                     onTap: () {
                       hideBullyScreen();
                     },
@@ -933,35 +951,35 @@ print(response);
                           )),
                     ),
                   ),*/
-                  InkWell(
-                    onTap: () {
-                      showBullyScreen();
-                      sleep(Duration(milliseconds: 1500));
-                      Navigator.pop(context);
-                      //退出关闭
-                      exit(0);
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)),
-                      width: ScreenAdapter.width(180),
-                      height: ScreenAdapter.height(65),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: ColorsUtil.hexToColor("#e6a23c"),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
-                      ),
-                      child: Text("退出App",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(24),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )),
-                    ),
-                  ),
-                  /*InkWell(
+                        InkWell(
+                          onTap: () {
+                            showBullyScreen();
+                            sleep(Duration(milliseconds: 1500));
+                            Navigator.pop(context);
+                            //退出关闭
+                            exit(0);
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#e6a23c"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text("退出App",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                        ),
+                        /*InkWell(
                     onTap: () {
                       _doResetPaycube();
                     },
@@ -985,6 +1003,19 @@ print(response);
                           )),
                     ),
                   ),*/
+                      ],
+                    ),
+                  ),
+                  Container(
+                    padding:
+                    EdgeInsets.only(right: ScreenAdapter.width(18)),
+                    child: Text(
+                      "Version：${this._local_version}",
+                      style: TextStyle(
+                          color: Colors.grey[500],
+                          fontSize: ScreenAdapter.fontSize(20.0)),
+                    ),
+                  )
                 ],
               ),
             ),

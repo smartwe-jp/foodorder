@@ -402,36 +402,50 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       menuIndex++;
     }
 
-    categoryMenus.add(InkWell(
-      onTap: () {
-        Navigator.pushNamed(context, '/home');
-      },
-      child: Container(
-        margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
-        width: ScreenAdapter.width(110),
-        height: ScreenAdapter.height(55),
-        decoration: BoxDecoration(
-          image: new DecorationImage(
-            fit: BoxFit.fitWidth,
-            image: AssetImage('assets/images/backbutton_top.png'),
-          ),
-        ),
-        child: Center(
-          //加上Center让文字居中
-          child: Text(
-            GString.getToString(this._checkLanguage, "top_back_button"),
-            style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(26),
-                color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                fontWeight: FontWeight.w600),
-          ),
-        ),
-      ),
-    ));
+    //categoryMenus.add();
 
     return Row(
       crossAxisAlignment: CrossAxisAlignment.end,
-      children: categoryMenus,
+      //mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Container(
+          width: ScreenAdapter.width(860),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: categoryMenus,
+          ),
+        ),
+        Container(
+          //alignment: Alignment.centerRight,
+          child: InkWell(
+            onTap: () {
+              Navigator.pushNamed(context, '/home');
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              width: ScreenAdapter.width(110),
+              height: ScreenAdapter.height(55),
+              alignment: Alignment.centerRight,
+              decoration: BoxDecoration(
+                image: new DecorationImage(
+                  fit: BoxFit.fitWidth,
+                  image: AssetImage('assets/images/backbutton_top.png'),
+                ),
+              ),
+              child: Center(
+                //加上Center让文字居中
+                child: Text(
+                  GString.getToString(this._checkLanguage, "top_back_button"),
+                  style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(26),
+                      color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                      fontWeight: FontWeight.w600),
+                ),
+              ),
+            ),
+          ),
+        )
+      ],
     );
   }
 
