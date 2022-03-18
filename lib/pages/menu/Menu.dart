@@ -293,10 +293,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           }
         });
       } else {
-        setState(() {
-          _layoutState = LoadState.State_Empty;
-        });
-        print('${response["msg"]}');
+        showToast(response['msg']);
+        sleep(Duration(milliseconds: 2000));
+        Navigator.pushNamed(context, '/home');
       }
     });
 
@@ -617,7 +616,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         right: ScreenAdapter.width(10),
         top: ScreenAdapter.height(20),
         child: Image.asset(
-          'assets/images/shouqing.jpeg',
+          'assets/images/shouqing.png',
           width: ScreenAdapter.width(100),
           fit: BoxFit.fitWidth,
         ),
@@ -1852,7 +1851,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           )),
                           //价格展示 //itemsFirst['currentPrice']
                           Container(
+                            alignment: Alignment.centerRight,
                             width: ScreenAdapter.width(200),
+                            padding:EdgeInsets.only(right: ScreenAdapter.width(15)),
                             child: publicShowMenuPrice(
                                 _selectedMenuOptionChangePrice[itemsFirst['menuCode']]+_addselectedMenuOptionChangePrice[itemsFirst['menuCode']],
                                 45.0,
@@ -1861,6 +1862,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 Gcolor.priceColor,
                                 26.0,
                                 Gcolor.mainTitleColor),
+                          ),
+                          //原价格展示 //itemsFirst['currentPrice']
+                          Container(
+                            width: ScreenAdapter.width(80),
+                            child: Text("${itemsFirst['price']}",
+                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),),
+                            ),
                           ),
 
                           //确认按钮
@@ -3341,7 +3350,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         }else{
           showToast(response['msg']);
-
+          sleep(Duration(milliseconds: 2000));
+          Navigator.pushNamed(context, '/home');
         }
       });
     }

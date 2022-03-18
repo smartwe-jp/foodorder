@@ -69,7 +69,10 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder(oh.getOrderDate());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        /*mUsbDriver.write(PrintCmd.SetAlignment(2));
+        m_sbData = new StringBuilder("お客様控え");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
         mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
@@ -252,14 +255,14 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getShopAddress());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-        mUsbDriver.write(PrintCmd.PrintFeedline(5));
-        mUsbDriver.write(PrintCmd.PrintCutpaper(1));
+        //mUsbDriver.write(PrintCmd.PrintFeedline(5));
+        //mUsbDriver.write(PrintCmd.PrintCutpaper(1));
 
 
         //--------菜单1
         mUsbDriver.write(PrintCmd.SetClean());
 
-        mUsbDriver.write(PrintCmd.SetAlignment(2));
+        /*mUsbDriver.write(PrintCmd.SetAlignment(2));
         m_sbData = new StringBuilder("お客様控え");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
@@ -267,8 +270,12 @@ public class PrintService  {
 
         printbmp(mUsbDriver,sed);
         PrintFeedDot(30);
+*/
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        m_sbData = new StringBuilder("-------------------------------");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-        // mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+
         mUsbDriver.write(PrintCmd.SetAlignment(1));
 
 
@@ -329,7 +336,7 @@ public class PrintService  {
 
         mUsbDriver.write(PrintCmd.PrintFeedline(5));
 
-        mUsbDriver.write(PrintCmd.PrintCutpaper(1));
+        mUsbDriver.write(PrintCmd.PrintCutpaper(0));
 
 
 

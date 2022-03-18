@@ -98,8 +98,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
     //打开现金机
     Starttoubi();
-
-
     //CancelOrder();
     //newendtradepay();
     //payCubeCloseTransaction();
@@ -327,7 +325,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //去打印小票
-  doPrintOrderMenu() async {//print("888");
+  doPrintOrderMenu() async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
@@ -340,10 +338,9 @@ class _SettlementPageState extends State<SettlementPage> {
         if (response['code'] == 200) {
 
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
-          sleep(Duration(milliseconds: 800));
-          //已经结束入金，处理取引终了
-          payCubeCloseTransaction();
+          sleep(Duration(milliseconds: 1500));
 
+          gotonewMyhome();
         } else {
 
         }
@@ -517,16 +514,19 @@ class _SettlementPageState extends State<SettlementPage> {
       timer?.cancel();
     });
 
+    //print("aaaaaa");
     int putMoney = int.parse(this._getPutMoney); //投币金额
     //如果投币金额大于等于收款金额，则判断找零或结束
     if (putMoney > int.parse(this._totalPrice)) {
       var _outmoney = putMoney - int.parse(this._totalPrice);
-//print("111");
+
       await Paycube.setReceiveEvent;
       var endStatus = await Paycube.endPayCube;
       stoptimer?.cancel();
       stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
+        //print("bbbbbbb");
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
+        //await Paycube.setReceiveEvent;
         // 循环一定要记得设置取消条件，手动取消
         if (_stopStatus == "StopSuccess") {
           startOutPutMoney(_outmoney);
@@ -535,14 +535,17 @@ class _SettlementPageState extends State<SettlementPage> {
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
+          //print("ccccccc");
         }else{
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           //print("_stopStatus:$_stopStatus");
         }
       });
 
-    } else if (putMoney == int.parse(this._totalPrice)) {//print("222");
+    } else if (putMoney == int.parse(this._totalPrice)) {
       //结束入金
       var endStatus = await Paycube.endPayCube;
       await Paycube.setReceiveEvent;
@@ -552,21 +555,16 @@ class _SettlementPageState extends State<SettlementPage> {
         // 循环一定要记得设置取消条件，手动取消
         if (_stopStatus == "StopSuccess" || _stopStatus == "Error-F0--16") {
           //结束交易
-          //newendtradepay();
-          //先打印小票，再去取引终了现金机;
-          if(_isPrint == true){
-            doPrintOrderMenu();
-          }else{
-            //已经结束入金，处理取引终了
-            payCubeCloseTransaction();
-          }
-
+          newendtradepay();
           stopt.cancel();
 
         }else if(_stopStatus == "Error-A0--02"){
           //处理中
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
+          //print("ccccccc");
         }else{
+          //sleep(Duration(milliseconds: 350));
           await Paycube.endPayCube;
           //print("_stopStatus:$_stopStatus");
         }
@@ -578,7 +576,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
-  startOutPutMoney(outMoney) async {//print("333");
+  startOutPutMoney(outMoney) async {
     setState(() {
       outStringMoney = outMoney.toString();
       //print("outStringMoney找零金额:${outStringMoney}");
@@ -593,12 +591,7 @@ class _SettlementPageState extends State<SettlementPage> {
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //结束交易
-        //newendtradepay();
-
-        //出金汇报
-        _getPayCubeOutMoney();
-
-
+        newendtradepay();
         //print("开始出币了");
         outmoneyt.cancel();
 
@@ -624,7 +617,11 @@ class _SettlementPageState extends State<SettlementPage> {
     //Navigator.pop(context);
     Navigator.pop(context);
     Navigator.pushNamed(context, '/home');
-
+    /*Future.delayed(Duration(milliseconds: 100), () {
+      Navigator.pushNamed(context, '/home');
+      //Navigator.of(context).pushReplacementNamed('/home');
+      //Navigator.push(context, CustomRoute(HomePage()));
+    });*/
   }
 
   gotonewMenuPage(){
@@ -638,6 +635,7 @@ class _SettlementPageState extends State<SettlementPage> {
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+    //Navigator.push(context, CustomRoute(SettingPage(arguments: {"machineCode": this._machineCode})));
 
 
   }
@@ -657,8 +655,7 @@ class _SettlementPageState extends State<SettlementPage> {
         }else{
           if(_isPrint == true){
             //汇报出金币种然后去打印小票 出金为0时候也需要回报
-            //reportOutMoney();
-            gotonewMyhome();
+            reportOutMoney();
             //去打印小票
             //doPrintOrderMenu();
           }else{
@@ -678,11 +675,11 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
-  _getPayCubeOutMoney() async {//print("444");
+  _getPayCubeOutMoney() async {
   //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
   OutMoneytimer?.cancel();
   await Paycube.setReceiveEvent;
-  OutMoneytimer = Timer.periodic(Duration(milliseconds: 400), (Timer outMoneyTime) async {
+  OutMoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outMoneyTime) async {
     // 循环一定要记得设置取消条件，手动取消
     String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
     if(currencyString !=""){
@@ -692,9 +689,14 @@ class _SettlementPageState extends State<SettlementPage> {
       });
       //print("_currencyString现金机出款币种:${currencyString}");
       //print("出金币种获取到了交易结束关闭了");
+      if(_isPrint == true){
         //汇报出金币种然后去打印小票
         reportOutMoney();
-
+      }else{
+        //showToast("投币后已取消订单");
+        //sleep(Duration(milliseconds: 3000));
+        gotonewMyhome();
+      }
 
 
       //gotonewMyhome();
@@ -705,7 +707,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //汇报出金币种,请求后台
-  reportOutMoney(){//print("555");
+  reportOutMoney(){
     var formData = {
       "changeInfo": this._currencyString.trim(),
       "machineCode": _machineCode,
@@ -713,20 +715,10 @@ class _SettlementPageState extends State<SettlementPage> {
       "price": int.parse(this._getPutMoney)
     };
     request('webBootToReport', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
         //去打印小票
-        //doPrintOrderMenu();
-
-        if(_isPrint == true){//print("666");
-          //先打印小票，再去取引终了现金机;
-          doPrintOrderMenu();
-        }else{//print("777");
-          //已经结束入金，处理取引终了
-          payCubeCloseTransaction();
-        }
-
-
+        doPrintOrderMenu();
       } else {
 
       }
@@ -745,11 +737,12 @@ class _SettlementPageState extends State<SettlementPage> {
     var endStatus = await Paycube.endPayCube;
     stoptimer?.cancel();
     stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
+      //print("payCubeEndDepositbbbbbbb");
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       //await Paycube.setReceiveEvent;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
-        //payCubeCloseTransaction();
+        payCubeCloseTransaction();
         //print("扫码成功结束");
         stopt.cancel();
 
@@ -764,7 +757,7 @@ class _SettlementPageState extends State<SettlementPage> {
       }
     });
   }
-  payCubeCloseTransaction() async {//print("999");
+  payCubeCloseTransaction() async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
@@ -773,22 +766,11 @@ class _SettlementPageState extends State<SettlementPage> {
       _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");
       // 循环一定要记得设置取消条件，手动取消
       if (_endStatus == "EndSuccess" || _endStatus == "Error-A0--02") {
-        //关闭机器后的跳转
-        if(_isPrint == true){
-          gotonewMyhome();
-        }else{
-          if(_doSetting == true){
-            gotonewSettingPage();
-          }else{
-            gotonewMenuPage();
-          }
-        }
-
-
         endtradet.cancel();
 
       }else{
         await Paycube.endTrade;
+        //print("_endStatus:$_endStatus");
       }
     });
   }
@@ -831,7 +813,23 @@ class _SettlementPageState extends State<SettlementPage> {
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));
-
+      /*_showTag = Column(
+        children: [
+          Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(25),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              )),
+          SizedBox(height: ScreenAdapter.height(5)),
+          Text(GString.getToString(this._checkLanguage, "settlement_print_tag"),
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(25),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              )),
+        ],
+      );*/
     }else{
       _showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_tag"),
           style: TextStyle(
@@ -907,7 +905,15 @@ class _SettlementPageState extends State<SettlementPage> {
       ),
       maskType: EasyLoadingMaskType.black,
     );
-
+    /*EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        //width: ScreenAdapter.width(400),
+        height: ScreenAdapter.height(400),
+        child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );*/
   }
 
 

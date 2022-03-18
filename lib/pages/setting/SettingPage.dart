@@ -70,7 +70,7 @@ class _SettingPageState extends State<SettingPage> {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200 && null != response['data']) {
-        print(response['data']);
+       // print(response['data']);
         setState(() {
           _depositData = response['data'];
           _cashList = response['data']['changeStates'];
@@ -83,9 +83,9 @@ class _SettingPageState extends State<SettingPage> {
   }
 
   _clearCartList() async {
-    print("是否清空购物车了");
+    //print("是否清空购物车了");
     if (controller.cartItems.length > 0) {
-      print("是否清空购物车了222");
+      //print("是否清空购物车了222");
       Get.find<HomePageController>().removeAllFromCart();
     }
 
