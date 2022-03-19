@@ -71,6 +71,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _stopStatus;
   var _outStatus;
   var _endStatus;
+  var _giveChangeMoney = 0;
   var outStringMoney = "0"; //找零金额
   var _currencyString = ""; // 出金币种
   var _isPrint = true; //是否打印小票，默认打印，如果取消订单则不打印。
@@ -80,6 +81,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _allowClick = true;
 
   var _doSetting = false;
+  var _isReport = true;
 
 
   @override
@@ -307,7 +309,9 @@ class _SettlementPageState extends State<SettlementPage> {
 
           if(response['data'] == true){
             payCubeEndDeposit();
-
+            setState(() {
+              _isReport = false;
+            });
             doPrintOrderMenu();
           }else{
             setState(() {
@@ -341,8 +345,20 @@ class _SettlementPageState extends State<SettlementPage> {
 
           await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
           sleep(Duration(milliseconds: 800));
-          //已经结束入金，处理取引终了
-          payCubeCloseTransaction();
+          if(_giveChangeMoney >0){
+            startOutPutMoney(_giveChangeMoney);
+          }else{
+
+            if(_isReport == true){
+              //汇报，关闭现金机
+              reportOutMoney();
+            }else{
+              //已经结束入金，处理取引终了
+              payCubeCloseTransaction();
+            }
+
+          }
+
 
         } else {
 
@@ -521,6 +537,9 @@ class _SettlementPageState extends State<SettlementPage> {
     //如果投币金额大于等于收款金额，则判断找零或结束
     if (putMoney > int.parse(this._totalPrice)) {
       var _outmoney = putMoney - int.parse(this._totalPrice);
+      setState(() {
+        _giveChangeMoney = _outmoney;
+      });
 //print("111");
       await Paycube.setReceiveEvent;
       var endStatus = await Paycube.endPayCube;
@@ -529,7 +548,14 @@ class _SettlementPageState extends State<SettlementPage> {
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         // 循环一定要记得设置取消条件，手动取消
         if (_stopStatus == "StopSuccess") {
-          startOutPutMoney(_outmoney);
+          //startOutPutMoney(_outmoney);
+          if(_isPrint == true){
+            //如果有找零先查出小票打印小票
+            doPrintOrderMenu();
+          }else{//print("stopout1111111");
+            startOutPutMoney(_giveChangeMoney);
+          }
+
           //print("不准投币");
           stopt.cancel();
 
@@ -555,6 +581,9 @@ class _SettlementPageState extends State<SettlementPage> {
           //newendtradepay();
           //先打印小票，再去取引终了现金机;
           if(_isPrint == true){
+            /*setState(() {
+              _isReport = false;
+            });*/
             doPrintOrderMenu();
           }else{
             //已经结束入金，处理取引终了
@@ -589,14 +618,21 @@ class _SettlementPageState extends State<SettlementPage> {
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
-      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;
+      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //结束交易
         //newendtradepay();
 
-        //出金汇报
-        _getPayCubeOutMoney();
+
+//如果取消不汇报，则出金后直接关闭 ？？？？？？
+        //if(_isPrint == true){
+          //出金汇报
+          _getPayCubeOutMoney();
+        //}else{
+          //已经结束入金，处理取引终了
+          //payCubeCloseTransaction();
+        //}
 
 
         //print("开始出币了");
@@ -692,8 +728,16 @@ class _SettlementPageState extends State<SettlementPage> {
       });
       //print("_currencyString现金机出款币种:${currencyString}");
       //print("出金币种获取到了交易结束关闭了");
-        //汇报出金币种然后去打印小票
+
+      //该处有问题，应该是只要出金就汇报？？？？？？？？
+      //if(_isPrint == true){
+        //汇报出金币种
         reportOutMoney();
+      //}else{
+        //已经结束入金，处理取引终了
+        //payCubeCloseTransaction();
+      //}
+
 
 
 
@@ -718,13 +762,13 @@ class _SettlementPageState extends State<SettlementPage> {
         //去打印小票
         //doPrintOrderMenu();
 
-        if(_isPrint == true){//print("666");
+        //if(_isPrint == true){//print("666");
           //先打印小票，再去取引终了现金机;
-          doPrintOrderMenu();
-        }else{//print("777");
+          //doPrintOrderMenu();
+        //}else{//print("777");
           //已经结束入金，处理取引终了
           payCubeCloseTransaction();
-        }
+        //}
 
 
       } else {
@@ -771,8 +815,8 @@ class _SettlementPageState extends State<SettlementPage> {
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
       _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");
-      // 循环一定要记得设置取消条件，手动取消
-      if (_endStatus == "EndSuccess" || _endStatus == "Error-A0--02") {
+      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+      if (_endStatus == "EndSuccess") {
         //关闭机器后的跳转
         if(_isPrint == true){
           gotonewMyhome();
@@ -804,14 +848,14 @@ class _SettlementPageState extends State<SettlementPage> {
     request('webBootCancel', method: 'POST', parameters: formData);
 
     //已投钱
-    if(int.parse(_getPutMoney) >0){
+    if(int.parse(_getPutMoney) >0){//print("touqianquxiao");
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
       });
       //如果现金机投币大于0后取消，则直接关机出金
       Endtoubi();
-    }else{
+    }else{//print("weitouqianquxiao");
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
