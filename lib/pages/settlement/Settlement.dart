@@ -319,7 +319,7 @@ class _SettlementPageState extends State<SettlementPage> {
               _scanQrCodeController.text = "";
               _scanQrCode = "";
             });
-
+            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
           }
 
         } else {
