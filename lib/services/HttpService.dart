@@ -60,16 +60,16 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
 
   } catch (e) {
     var newe = e.toString();
-    if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
+    //if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
 
       showToast('異常が生じてます。お近くのスタッフにお声かけください〜。');
       Future.delayed(Duration(milliseconds: 1000)).then((e) {
 
         Global.navigatorKey.currentState.pushNamed("/home");
       });
-    }else{
-      showToast('異常が生じてます。お近くのスタッフにお声かけください。');
-    }
+    //}else{
+      //showToast('異常が生じてます。お近くのスタッフにお声かけください。');
+    //}
     return print('error:::${e}');
   }
 }

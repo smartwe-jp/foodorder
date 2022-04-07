@@ -303,27 +303,88 @@ class _SettlementPageState extends State<SettlementPage> {
         "orderId": this._orderId,
       };
       request('webBootToPay', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
+        var response = json.decode(val.toString());print(response);
 
-        if (response['code'] == 200) {
-
-          if(response['data'] == true){
+        if (response['code'] == 200 && response['data'] == true) {
             payCubeEndDeposit();
             setState(() {
               _isReport = false;
             });
             doPrintOrderMenu();
-          }else{
-            setState(() {
-              EasyLoading.dismiss();
-              _scanQrCodeController.text = "";
-              _scanQrCode = "";
-            });
-            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-          }
+
 
         } else {
-        showToast(GString.getToString(this._checkLanguage, "show_server_error"));
+          EasyLoading.dismiss();
+          setState(() {
+            _scanQrCodeController.text = "";
+            _scanQrCode = "";
+            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+          });
+
+        //showToast(GString.getToString(this._checkLanguage, "show_server_error"));
+
+        var show_dialog_content = GString.getToString(this._checkLanguage, "settlement_nopayment_error");
+
+        //支付状态
+        showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return Container(
+                width: ScreenAdapter.width(950),
+                child: SimpleDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(5),
+                    ),
+                    title: Align(
+                        alignment: Alignment.center,
+                        child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                    ),
+                    children: <Widget>[
+                      Container(
+                        width: ScreenAdapter.width(650),
+
+                        child: Column(
+                          children: <Widget>[
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Align(
+                              child: Text(show_dialog_content,
+                                  style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                              alignment: Alignment(0, 0),
+                            ),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            Divider(
+                              thickness: 1.0,
+                              color: Colors.black12,
+                            ),
+                            Container(
+                              alignment: Alignment.center,
+                              child: Padding(
+                                padding: const EdgeInsets.only(right: 70.0),
+                                child: TextButton(
+                                  child: Text(
+                                    GString.getToString(this._checkLanguage, "settlement_change_method"),
+                                    style: TextStyle(
+                                        color: Colors.lightBlue,
+                                        fontSize: ScreenAdapter.fontSize(32.0)),
+                                  ),
+                                  onPressed: () async {
+                                    Navigator.pop(context);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ]
+                ),
+              );
+            });
+
         }
       });
 
@@ -1265,7 +1326,7 @@ class _SettlementPageState extends State<SettlementPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
+                          /*Container(
                             padding: EdgeInsets.all(3),
                             width: ScreenAdapter.width(320),
                             color: ColorsUtil.hexToColor("#9A5718"),
@@ -1276,18 +1337,18 @@ class _SettlementPageState extends State<SettlementPage> {
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )),
-                          ),
+                          ),*/
                           Container(
                             padding: EdgeInsets.only(
                                 bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(500),
+                            width: ScreenAdapter.width(450),
                             //height: ScreenAdapter.height(580),
                             alignment: Alignment.center,
                             child: Container(
-                                width: ScreenAdapter.width(450),
+                                width: ScreenAdapter.width(400),
                                 //height: ScreenAdapter.height(620),
                                 child: Image.asset(
-                                    'assets/images/settlement_zhinan_qr.gif')),
+                                    'assets/images/saoma.jpg')),
                           ),
                         ],
                       ),
@@ -1298,7 +1359,7 @@ class _SettlementPageState extends State<SettlementPage> {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          Container(
+                          /*Container(
                             padding: EdgeInsets.all(3),
                             width: ScreenAdapter.width(220),
                             color: ColorsUtil.hexToColor("#9A5718"),
@@ -1309,17 +1370,17 @@ class _SettlementPageState extends State<SettlementPage> {
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )),
-                          ),
+                          ),*/
                           Container(
                             padding: EdgeInsets.only(
                                 bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(500),
+                            width: ScreenAdapter.width(450),
                             //height: ScreenAdapter.height(620),
                             alignment: Alignment.center,
                             child: Container(
-                                width: ScreenAdapter.width(450),
+                                width: ScreenAdapter.width(400),
                                 //height: ScreenAdapter.height(620),
-                                child: Image.asset('assets/images/settlement_zhinan_cash.gif')),
+                                child: Image.asset('assets/images/xianjin.jpg')),
                           ),
                         ],
                       ),
