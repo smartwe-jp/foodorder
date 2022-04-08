@@ -20,6 +20,12 @@ public class OrderMenuList {
     private String line4;
     private String line5;
     private String line6;
+    private String excludingTaxStr;
+    private String taxStr;
+    private String priceStr;
+    private String taxRate0Str;
+    private String taxRate1Str;
+
     private List<CategoryVos> categoryVos;
 
     public String getOrderId() {
@@ -140,6 +146,46 @@ public class OrderMenuList {
 
     public void setLine6(String line6) {
         this.line6 = line6;
+    }
+
+    public String getExcludingTaxStr() {
+        return excludingTaxStr;
+    }
+
+    public void setExcludingTaxStr(String excludingTaxStr) {
+        this.excludingTaxStr = excludingTaxStr;
+    }
+
+    public String getTaxStr() {
+        return taxStr;
+    }
+
+    public void setTaxStr(String taxStr) {
+        this.taxStr = taxStr;
+    }
+
+    public String getPriceStr() {
+        return priceStr;
+    }
+
+    public void setPriceStr(String priceStr) {
+        this.priceStr = priceStr;
+    }
+
+    public String getTaxRate0Str() {
+        return taxRate0Str;
+    }
+
+    public void setTaxRate0Str(String taxRate0Str) {
+        this.taxRate0Str = taxRate0Str;
+    }
+
+    public String getTaxRate1Str() {
+        return taxRate1Str;
+    }
+
+    public void setTaxRate1Str(String taxRate1Str) {
+        this.taxRate1Str = taxRate1Str;
     }
 
     public List<CategoryVos> getCategoryVos() {
