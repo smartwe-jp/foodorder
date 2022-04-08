@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -19,6 +20,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   HomePageController controller = Get.put(HomePageController());
+  //HomePageController controller = Get.find<HomePageController>();
 
   Timer checkTimer;
   Timer stopChecktimer;
@@ -32,7 +34,7 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     EasyLoading.dismiss();
     //进入页面后打开现金机
-    OpenPayCube();
+    //OpenPayCube();
 
     //监听增加打开现金机的广播
     eventBus.on<PayCubeEvent>().listen((event) {
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
     checkTimer?.cancel();
     stopChecktimer?.cancel();
     closetimer?.cancel();
+    eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
   }
 
@@ -130,13 +133,12 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  _clearCartList() async {
-  if(controller.cartItems.length >0){
-    Get.find<HomePageController>().removeAllFromCart();
-  }
+  _clearCartList() {
 
+  //if(controller.cartItems.length >0){
+    controller.removeAllFromCart();
 
-    //controller.getCardList();
+  //}
   }
 
   @override
@@ -162,6 +164,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   InkWell(
                     onTap: () {
+                      _clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP"});
                     },
                     child: Container(
@@ -189,6 +192,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
+                      _clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH"});
                     },
                     child: Container(
@@ -216,6 +220,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
+                      _clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN"});
                     },
                     child: Container(

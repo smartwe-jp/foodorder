@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/pages/activation/Activation.dart';
 import 'package:foodorder/pages/home/Home.dart';
 import 'package:foodorder/pages/menu/Menu.dart';
 import 'package:foodorder/pages/setting/SettingPage.dart';
@@ -8,6 +9,7 @@ import 'package:foodorder/pages/showImage/ShowImage.dart';
 //配置路由
 final routes = {
   '/home': (context) => HomePage(),
+  '/activation': (context) => ActivationPage(),
   '/menuPage': (context,{arguments}) => MenuPage(arguments:arguments), //菜单
   "/settlement": (context,{arguments}) => SettlementPage(arguments:arguments), //结算页面
   "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //设置页面
