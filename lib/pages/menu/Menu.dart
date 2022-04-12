@@ -26,6 +26,7 @@ import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/SqfliteHelper.dart';
 import 'package:foodorder/services/addCartParabola.dart';
+import 'package:foodorder/services/formatMoney.dart';
 import 'package:foodorder/services/itemService.dart';
 import 'package:foodorder/services/logUtil.dart';
 import 'package:foodorder/services/showToast.dart';
@@ -237,6 +238,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       if (attr[m]['optionVoList'][n]["standard"] == 1) {
                         attr[m]['optionVoList'][n]["checked"] = true;
                         nochangeattr[m]['optionVoList'][n]["checked"] = true;
+                        attr[m]['optionVoList'][n]["groupTitle"]=attr[m]["groupName"];
                         tempArr.add(attr[m]['optionVoList'][n]);
                         initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
                         checkNum++;
@@ -698,6 +700,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
         if (_list[i]['optionVoList'][j]['checked'] == true) {
           var selectMapItem = {
+            "groupTitle": _list[i]["groupName"],
             "optionCode": _list[i]['optionVoList'][j]["optionCode"],
             "mainTitle": _list[i]['optionVoList'][j]["mainTitle"],
             "currentPrice": _list[i]['optionVoList'][j]["currentPrice"],
@@ -1892,7 +1895,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   currentPrice += optionItem['currentPrice'];
                                 }
                                 optionCodeList += (optionCodeList != "") ? "," + optionItem['optionCode'] : optionItem['optionCode'];
-                                optionTitle += (optionTitle != "") ? "," + optionItem['mainTitle'] : optionItem['mainTitle'];
+                                optionTitle += (optionTitle != "") ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle'] : optionItem['groupTitle']+":"+optionItem['mainTitle'];
                               }
 
                               var cartItem = {
@@ -2481,8 +2484,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   ? "," + optionItem['optionCode']
                                   : optionItem['optionCode'];
                               optionTitle += (optionTitle != "")
-                                  ? "," + optionItem['mainTitle']
-                                  : optionItem['mainTitle'];
+                                  ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
+                                  : optionItem['groupTitle']+":"+optionItem['mainTitle'];
                             }
                           }
 
@@ -2841,7 +2844,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 currentPrice += optionItem['currentPrice'];
                               }
                               optionCodeList += (optionCodeList != "") ? "," + optionItem['optionCode'] : optionItem['optionCode'];
-                              optionTitle += (optionTitle != "") ? "," + optionItem['mainTitle'] : optionItem['mainTitle'];
+                              optionTitle += (optionTitle != "") ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle'] : optionItem['groupTitle']+":"+optionItem['mainTitle'];
                             }
                           }
 
@@ -3090,7 +3093,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     ),
                                     children: [
                                       TextSpan(
-                                        text: _shopCartTotalPrice.toString(),
+                                        text: formatMoney(_shopCartTotalPrice.toString()),
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(
                                               GFontSize
@@ -3209,15 +3212,17 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
                     children: [
-                      TextSpan(
+                      d.goodsNum>1?TextSpan(
                         text: " X${d.goodsNum}",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(
                               GFontSize.cartListTitleCount),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                         ),
+                      ):TextSpan(
+                        text: "",
                       ),
-                      (d.optionVoListMsg != "")
+                      /*(d.optionVoListMsg != "")
                           ? TextSpan(
                               text: "（${d.optionVoListMsg}）",
                               style: TextStyle(
@@ -3235,14 +3240,15 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.mainTitleColor),
                               ),
-                            ),
+                            ),*/
                     ]),
               ),
             )),
             Container(
               width: ScreenAdapter.width(120),
+              alignment: Alignment.centerRight,
               child: Text(
-                d.currentPrice.toString(),
+                formatMoney(d.currentPrice.toString()),
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,

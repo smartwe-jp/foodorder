@@ -347,6 +347,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
                 putMoney = "0";
                 currencyString = "";
+                _payCubeEndTradeStatus = "Error";
                 // 入金許可
                 byte[] seqNo = getSeqNo();
                 doBeginDeposit(seqNo);
@@ -476,7 +477,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     _payCubeAllowCashStatus = "Error";
                     _payCubeStopCashStatus = "Error";
                     _payCubeOutMoneyStatus = "Error";
-                    _payCubeEndTradeStatus = "Error";
+
 
                     //lib.close();
                     //listener.removeListener();

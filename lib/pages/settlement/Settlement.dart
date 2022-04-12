@@ -22,6 +22,7 @@ import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
+import 'package:foodorder/services/formatMoney.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
 import 'package:paycube/paycube.dart';
@@ -229,7 +230,7 @@ class _SettlementPageState extends State<SettlementPage> {
           children: <Widget>[
             Expanded(
                 child: Container(
-              padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
+              //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
               //width: ScreenAdapter.width(495),
               child: RichText(
                 text: TextSpan(
@@ -240,13 +241,15 @@ class _SettlementPageState extends State<SettlementPage> {
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
                     children: [
-                      TextSpan(
+                      d.goodsNum > 1?TextSpan(
                         text: " x ${d.goodsNum}",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(
                               GFontSize.cartListTitleCount),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                         ),
+                      ):TextSpan(
+                        text: "",
                       ),
                       (d.optionVoListMsg != "") ?TextSpan(
                         text: "（${d.optionVoListMsg}）",
@@ -268,8 +271,9 @@ class _SettlementPageState extends State<SettlementPage> {
             )),
             Container(
               width: ScreenAdapter.width(140),
+              alignment: Alignment.centerRight,
               child: Text(
-                "￥ ${d.currentPrice.toString()}",
+                "￥ ${formatMoney(d.currentPrice.toString())}",
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,
@@ -680,7 +684,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
-      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");
+      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");print(_outStatus);
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //结束交易
@@ -859,12 +863,8 @@ class _SettlementPageState extends State<SettlementPage> {
         //print("扫码成功结束");
         stopt.cancel();
 
-      }else if(_stopStatus == "Error-A0--02"){
-        //处理中
-        await Paycube.endPayCube;
-        //print("ccccccc");
       }else{
-        //sleep(Duration(milliseconds: 350));
+        sleep(Duration(milliseconds: 150));
         await Paycube.endPayCube;
         //print("_stopStatus:$_stopStatus");
       }
@@ -876,7 +876,7 @@ class _SettlementPageState extends State<SettlementPage> {
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");
+      _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");print(_endStatus);
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
         //关闭机器后的跳转
@@ -894,7 +894,7 @@ class _SettlementPageState extends State<SettlementPage> {
         endtradet.cancel();
 
       }else{
-        sleep(Duration(milliseconds: 150));
+        sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }
     });
@@ -1187,14 +1187,14 @@ class _SettlementPageState extends State<SettlementPage> {
             //顶部支持支付类型
             Container(
               height: ScreenAdapter.height(250),
-              padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(15),right: ScreenAdapter.width(20),  bottom: ScreenAdapter.height(15)),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
                       style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(36),
+                        fontSize: ScreenAdapter.fontSize(32),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                       )),
@@ -1203,7 +1203,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
@@ -1223,7 +1223,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           )),
 
                       Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
@@ -1242,7 +1242,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
                       Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
@@ -1263,8 +1263,8 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
-                      /*Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(55), right: ScreenAdapter.width(55)),
+                      Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
@@ -1281,7 +1281,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                     color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                   )),
                             ],
-                          )),*/
+                          )),
 
                     ],
                   ),
@@ -1291,16 +1291,16 @@ class _SettlementPageState extends State<SettlementPage> {
             ),
 
             SizedBox(
-              height: ScreenAdapter.height(8),
+              height: ScreenAdapter.height(5),
             ),
             //选择结算方式
             Container(
               //height: ScreenAdapter.height(750),
               padding: EdgeInsets.only(
                 left: ScreenAdapter.width(20),
-                top: ScreenAdapter.height(20),
+                top: ScreenAdapter.height(15),
                 right: ScreenAdapter.width(20),
-                bottom: ScreenAdapter.height(30),
+                bottom: ScreenAdapter.height(15),
               ),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               child: Column(
@@ -1309,18 +1309,18 @@ class _SettlementPageState extends State<SettlementPage> {
                   Container(
                     padding: EdgeInsets.only(
                         top: ScreenAdapter.height(15),
-                        bottom: ScreenAdapter.height(15)),
+                        bottom: ScreenAdapter.height(5)),
                     alignment: Alignment.centerLeft,
                     child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_title"),
                         style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(36),
+                          fontSize: ScreenAdapter.fontSize(34),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor(Gcolor.settlementTitleColor),
                         )),
                   ),
-                  SizedBox(
-                    width: ScreenAdapter.height(30),
-                  ),
+                  /*SizedBox(
+                    height: ScreenAdapter.height(10),
+                  ),*/
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
@@ -1347,7 +1347,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             //height: ScreenAdapter.height(580),
                             alignment: Alignment.center,
                             child: Container(
-                                width: ScreenAdapter.width(400),
+                                width: ScreenAdapter.width(350),
                                 //height: ScreenAdapter.height(620),
                                 child: Image.asset(
                                     'assets/images/saoma.jpg')),
@@ -1380,7 +1380,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             //height: ScreenAdapter.height(620),
                             alignment: Alignment.center,
                             child: Container(
-                                width: ScreenAdapter.width(400),
+                                width: ScreenAdapter.width(350),
                                 //height: ScreenAdapter.height(620),
                                 child: Image.asset('assets/images/xianjin.jpg')),
                           ),
@@ -1414,15 +1414,16 @@ class _SettlementPageState extends State<SettlementPage> {
                 children: [
                   Container(
                     margin: EdgeInsets.only(
-                      top: ScreenAdapter.height(20),
+                      top: ScreenAdapter.height(15),
                       left: ScreenAdapter.width(30),
-                      bottom: ScreenAdapter.height(20),
+                      bottom: ScreenAdapter.height(16),
                       right: ScreenAdapter.width(30),
                     ),
                     width: ScreenAdapter.width(260),
-                    alignment: Alignment.center,
+                    alignment: Alignment.bottomCenter,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         Text(GString.getToString(this._checkLanguage, "settlement_orderPrice"),
                             style: TextStyle(
@@ -1519,7 +1520,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       TextSpan(
                                         text: " 円",//" 円",
                                         style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(25),
+                                          fontSize: ScreenAdapter.fontSize(28),
                                           fontWeight: FontWeight.w600,
                                           color: (int.parse(this._getPutMoney) >0) ? ColorsUtil.hexToColor(Gcolor.mainTitleColor):ColorsUtil.hexToColor("#808080"),
                                         ),
@@ -1624,19 +1625,19 @@ class _SettlementPageState extends State<SettlementPage> {
             Expanded(
               child: Container(
                 width: ScreenAdapter.width(1080),
-                padding: EdgeInsets.only(left: ScreenAdapter.width(40), right: ScreenAdapter.width(40)),
-                alignment: Alignment.center,
+                padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+                alignment: Alignment.topCenter,
                 color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
                 child: Scrollbar(
                   child: SingleChildScrollView(
                     physics: ClampingScrollPhysics(),
                     child: Container(
-                      width: ScreenAdapter.width(930),
+                      width: ScreenAdapter.width(1030),
                       height: ScreenAdapter.height(620),
                       padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(30),
-                          top: ScreenAdapter.height(5),
-                          right: ScreenAdapter.width(30),
+                          left: ScreenAdapter.width(15),
+                          top: ScreenAdapter.height(20),
+                          right: ScreenAdapter.width(15),
                           bottom: ScreenAdapter.height(40)),
                       child: GetBuilder<HomePageController>(
                         builder: (_) {

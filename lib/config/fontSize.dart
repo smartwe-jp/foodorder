@@ -7,9 +7,9 @@ class GFontSize{
   static const double mainPriceRight = 30;
   static const double mainFoodTitle = 26;
 
-  static const double cartListTitle = 26;
-  static const double cartListTitleCount = 24;
-  static const double cartListTitleTag = 16;
+  static const double cartListTitle = 30;
+  static const double cartListTitleCount = 28;
+  static const double cartListTitleTag = 20;
 
   static const double menuTwoListTitle = 24;
   static const double menuTwopriceLift = 25;
