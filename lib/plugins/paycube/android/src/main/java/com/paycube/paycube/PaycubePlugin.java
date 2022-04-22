@@ -51,6 +51,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     int seqNo = 0;
     int openCnt = 0;
     String putMoney = "0";
+    String putCurrency = "";
     String listenOutMoney = "0";
     String machineStatus = "10"; //10关闭状态  20 可投币  30异常
     String currencyString = ""; //币种 截取0B 81的43位开始
@@ -173,6 +174,15 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
                                             //入金金额大于0后，说明允许投币了
                                             _payCubeAllowCashStatus = "AllowSuccess";
+                                        }
+                                        //入金币种
+                                        if(event.getReceiveData()[3] == (byte) 0x82){
+                                            if (receiveStr.length() >26) {
+                                                //出金币种
+                                                //putCurrency = ("".equals(putCurrency)) ? receiveStr.substring(24) : putCurrency + " "+receiveStr.substring(24);
+                                                putCurrency = receiveStr.substring(26);
+                                            }
+
                                         }
 
                                         // 入金金額コマンド
@@ -347,6 +357,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
                 putMoney = "0";
                 currencyString = "";
+                putCurrency = "";
                 _payCubeEndTradeStatus = "Error";
                 // 入金許可
                 byte[] seqNo = getSeqNo();
@@ -383,6 +394,10 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 //返回币种枚数字符串;
                 // -- body --
                 result.success(currencyString);
+            } else if (operEvent.equals("getPayCubePutMoneyCurrency")) {
+                //返回入金币种枚数字符串;
+                // -- body --
+                result.success(putCurrency);
             } else if (operEvent.equals("setReceiveEventStatus")) {
                 //现金机 Setreceive;
                 // -- body --

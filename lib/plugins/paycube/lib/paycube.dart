@@ -110,6 +110,13 @@ class Paycube {
     return currencyString;
   }
 
+  //获取入金币种
+  static Future<String> get getPayCubePutMoneyCurrency async {
+    Map<String, Object> map = {'operEvent': 'getPayCubePutMoneyCurrency'};
+    final String currencyString = await _channel.invokeMethod('startOpenPayCube',map);
+    return currencyString;
+  }
+
   //机器状态
   static Future<String> get getPayCubeMachineStatus async {
     Map<String, Object> map = {'operEvent': 'getPayCubeMachineStatus'};

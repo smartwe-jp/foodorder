@@ -55,6 +55,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   var _totalPrice = "";
   var _getPutMoney = "0"; //投币金额
+  var _getPutMoneyCurrency = ""; //投币金额币种
   var _getOutMoney = "0"; //出金金额
   var _showOutMoney = "0"; //展示应出金金额
 
@@ -67,6 +68,7 @@ class _SettlementPageState extends State<SettlementPage> {
   Timer getoutmoneytimer;
   Timer endtimer;
   Timer OutMoneytimer;
+  Timer putMoneyCurrencytimer;
 
   var _allowStatus;
   var _stopStatus;
@@ -122,6 +124,7 @@ class _SettlementPageState extends State<SettlementPage> {
     getoutmoneytimer?.cancel();
     endtimer?.cancel();
     OutMoneytimer?.cancel();
+    putMoneyCurrencytimer?.cancel();
     eventBus.fire(new PayCubeEvent('支付成功...'));
     //eventBus.fire(new clearCartEvent('支付成功...'));
 
@@ -680,11 +683,11 @@ class _SettlementPageState extends State<SettlementPage> {
     });
     await Paycube.setReceiveEvent;
 
-    String outResult = await Paycube.outPayCubeMoney(outStringMoney);//print(outResult);
+    String outResult = await Paycube.outPayCubeMoney(outStringMoney);
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
-      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");print(_outStatus);
+      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
         //结束交易
@@ -871,6 +874,12 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
   payCubeCloseTransaction() async {//print("999");
+    if(int.parse(_getPutMoney) >0){
+      //汇报入金币种
+      _getPayCubePutMoneyCurrency();
+    }
+
+
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
@@ -916,6 +925,7 @@ class _SettlementPageState extends State<SettlementPage> {
         _isPrint = false;
         _totalPrice = "0";
       });
+
       //如果现金机投币大于0后取消，则直接关机出金
       Endtoubi();
     }else{//print("weitouqianquxiao");
@@ -927,6 +937,43 @@ class _SettlementPageState extends State<SettlementPage> {
       //如果现金机投币大于0后取消，则直接关机出金
       Endtoubi();
     }
+  }
+
+  _getPayCubePutMoneyCurrency() async {//print("rurururururu");
+    //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
+    putMoneyCurrencytimer?.cancel();
+    await Paycube.setReceiveEvent;
+    putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400), (Timer putMoneyCurrencyTime) async {
+      // 循环一定要记得设置取消条件，手动取消
+      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
+      if(putcurrencyString !=""){
+        setState(() {
+          _getPutMoneyCurrency = putcurrencyString;
+
+        });
+        //汇报入金币种
+        reportPutMoneyCurrency();
+        //gotonewMyhome();
+        putMoneyCurrencyTime.cancel();
+      }
+
+    });
+  }
+
+  //汇报入金币种,请求后台
+  reportPutMoneyCurrency(){//print("555");
+    var formData = {
+      "paymentInfo": this._getPutMoneyCurrency.trim(),
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+      "price": int.parse(this._getPutMoney)
+    };//print("formData======${formData}");
+    request('webBootToReport', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());//print(response);
+
+    });
+
+
   }
 
   _showEasyLoading(){
