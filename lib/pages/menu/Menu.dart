@@ -423,6 +423,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               Navigator.pushNamed(context, '/home');
             },
             child: Container(
+              padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
               margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
               width: ScreenAdapter.width(110),
               height: ScreenAdapter.height(55),
@@ -445,7 +446,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               ),
             ),
           ),
+        ),
+        Expanded(
+            child: InkWell(
+          onLongPress: (){
+            if(int.parse(_shopCartTotalPrice) >0){
+              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+            }
+
+          },
+          child: Container(
+            //width: ScreenAdapter.width(180),
+            height: ScreenAdapter.height(85),
+            margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+            //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              //color: Colors.red,
+            ),
+            child: Text(""),//设置
+          ),
         )
+        ),
       ],
     );
   }

@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,23 +20,32 @@ import 'package:permission_handler/permission_handler.dart';
 import 'config/colorsUtil.dart';
 import 'config/index.dart';
 
-void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runZonedGuarded(() {
 
-  WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(MyApp());
-    //runApp(GetMaterialApp(home: Home()));
-  });
 
-  //显示底部栏(隐藏顶部状态栏)
+    //WidgetsFlutterBinding.ensureInitialized();
+
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
+    WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+      runApp(MyApp());
+      //runApp(GetMaterialApp(home: Home()));
+    });
+
+    //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIOverlays([]);
-  //显示顶部栏(隐藏底部栏)
-//    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
-  //隐藏底部栏和顶部状态栏
-  //SystemChrome.setEnabledSystemUIOverlays([]);
+
+
+  }, (error, stackTrace) {
+    print('runZonedGuarded: Caught error in my root zone.');
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }
 
 class MyApp extends StatelessWidget {

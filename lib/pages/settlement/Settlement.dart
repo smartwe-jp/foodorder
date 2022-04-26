@@ -1207,7 +1207,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     ),
                   ),
 
-                  InkWell(
+                  /*InkWell(
                     onLongPress: (){
                       _showBackEasyLoading();
                       setState(() {
@@ -1226,7 +1226,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         //color: Colors.red,
                       ),
                     ),
-                  ),
+                  ),*/
                 ],
               ),
             ),
