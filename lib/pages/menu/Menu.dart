@@ -420,6 +420,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           //alignment: Alignment.centerRight,
           child: InkWell(
             onTap: () {
+              controller.removeAllFromCart();
               Navigator.pushNamed(context, '/home');
             },
             child: Container(
