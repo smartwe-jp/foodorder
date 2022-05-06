@@ -524,6 +524,32 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
 
                 //Log.logger.info("-----------------现金机 取引终了开结束----------------- ");
+            } else if (operEvent.equals("prohibitOneCash")) {
+                //禁止一块入金和出金
+                try {
+                    if (lib == null) {
+                        result.success("prohibitOneCashsuccess");
+                        return;
+                    }
+
+                    ByteBuffer buf = ByteBuffer.allocate(10);
+                    buf.put(new byte[]{(byte) 0x00, (byte) 0x06});    // Len2
+                    buf.put(new byte[]{(byte) 0x0C, (byte) 0x11});    // Header
+                    buf.put(getSeqNo());
+                    //入金
+                    //buf.put(new byte[]{(byte) 0x4A, (byte) 0x50, (byte) 0x59});
+                    buf.put(new byte[]{(byte) 0x61, (byte) 0x90});
+                    buf.put(new byte[]{(byte) 0xA1, (byte) 0x40});
+                    lib.write(buf.array());
+
+                    //putMoney = "0";
+                    result.success("prohibitOneCashsuccess");
+
+                    //lib.setReceiveEventEnable(false);
+                } catch (COMException e) {
+                    e.printStackTrace();
+                }
+
             }
         } else {
             result.notImplemented();

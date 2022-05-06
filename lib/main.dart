@@ -162,19 +162,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-        Text("正在测试现金机，请稍候~",
+        Text("テスト中です、しばらくお待ちください。",
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -225,19 +225,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("正在测试现金机，请稍候~",
+            Text("テスト中です、しばらくお待ちください。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -301,19 +301,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("正在测试现金机，请稍候~",
+            Text("テスト中です、しばらくお待ちください。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -359,14 +359,22 @@ class _MyHomePageState extends State<MyHomePage> {
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess" ) {
         //现金机打开一次后，判断是否第一次打开
-        //判断是否第一次打开
-        getIsFirstOpen();
+        prohibitOneCash();
+
         closecheck.cancel();
       }else{
         sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }
     });
+  }
+
+  //禁用一元入金和出金
+  prohibitOneCash() async {
+    var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+
+    //判断是否第一次打开
+    getIsFirstOpen();
   }
 
 
