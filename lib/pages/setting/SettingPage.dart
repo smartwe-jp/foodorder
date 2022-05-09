@@ -79,7 +79,7 @@ class _SettingPageState extends State<SettingPage> {
                 ),
                 title: Align(
                     alignment: Alignment.center,
-                    child:  Text("更新提示",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                    child:  Text("アップデートのお知らせ",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
                 ),
                 children: <Widget>[
                   Container(
@@ -87,14 +87,14 @@ class _SettingPageState extends State<SettingPage> {
 
                     child: Column(
                       children: <Widget>[
-                        SizedBox(
+                        /*SizedBox(
                           height: 10,
                         ),
                         Align(
                           child: Text("确定已经接收到更新App的通知？",
                               style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
                           alignment: Alignment(0, 0),
-                        ),
+                        ),*/
                         SizedBox(
                           height: 10,
                         ),
@@ -109,7 +109,7 @@ class _SettingPageState extends State<SettingPage> {
                               padding: const EdgeInsets.only(left: 70.0),
                               child: TextButton(
                                 child: Text(
-                                  "取消",
+                                  "キャンセル",
                                   style: TextStyle(
                                       color: Colors.lightBlue,
                                       fontSize: ScreenAdapter.fontSize(32.0)),
@@ -133,7 +133,7 @@ class _SettingPageState extends State<SettingPage> {
                               padding: const EdgeInsets.only(right: 70.0),
                               child: TextButton(
                                 child: Text(
-                                  "更新",
+                                  "アップデート",
                                   style: TextStyle(
                                       color: Colors.lightBlue,
                                       fontSize: ScreenAdapter.fontSize(32.0)),
@@ -191,7 +191,7 @@ class _SettingPageState extends State<SettingPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("请不要关闭,下载中……",
+            Text("アップデート中……",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -1078,7 +1078,7 @@ class _SettingPageState extends State<SettingPage> {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("回到菜单",
+                            child: Text("戻る",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
@@ -1155,7 +1155,7 @@ class _SettingPageState extends State<SettingPage> {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("退出App",
+                            child: Text("ログアウト",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
@@ -1179,7 +1179,7 @@ class _SettingPageState extends State<SettingPage> {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("更新App",
+                            child: Text("アップデート",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
