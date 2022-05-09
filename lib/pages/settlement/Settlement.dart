@@ -876,7 +876,7 @@ class _SettlementPageState extends State<SettlementPage> {
   payCubeCloseTransaction() async {//print("999");
     if(int.parse(_getPutMoney) >0){
       //汇报入金币种
-      _getPayCubePutMoneyCurrency();
+      //_getPayCubePutMoneyCurrency();
     }
 
 
