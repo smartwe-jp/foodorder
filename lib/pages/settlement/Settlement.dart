@@ -773,7 +773,7 @@ print(response);
       await Paycube.setReceiveEvent;
       var endStatus = await Paycube.endPayCube;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {print("end111");
+      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         // 循环一定要记得设置取消条件，手动取消
         if (_stopStatus == "StopSuccess") {
@@ -794,12 +794,12 @@ print(response);
         }
       });
 
-    } else if (putMoney == int.parse(this._totalPrice)) {print("222");
+    } else if (putMoney == int.parse(this._totalPrice)) {
       //结束入金
       var endStatus = await Paycube.endPayCube;
       await Paycube.setReceiveEvent;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {print("end11");
+      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
         _stopStatus =  await Paycube.getPayCubeStopCashStatus;
         // 循环一定要记得设置取消条件，手动取消
         if (_stopStatus == "StopSuccess" || _stopStatus == "Error-A0--02" || _stopStatus == "Error-F0--16") {
@@ -828,10 +828,10 @@ print(response);
     }
   }
 
-  startOutPutMoney(outMoney) async {//print("333");
+  startOutPutMoney(outMoney) async {
     setState(() {
       outStringMoney = outMoney.toString();
-      //print("outStringMoney找零金额:${outStringMoney}");
+
     });
     await Paycube.setReceiveEvent;
 
@@ -839,7 +839,7 @@ print(response);
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
-      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;//print("outjinqian111111");
+      _outStatus =  await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_outStatus == "OutSuccess") {
 
@@ -897,7 +897,7 @@ print(response);
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");
+      _endStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消 _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
         //如果出金金额大于0 则先获取出金币种，否则跳转
@@ -925,7 +925,7 @@ print(response);
     });
   }
 
-  _getPayCubeOutMoney() async {//print("444");
+  _getPayCubeOutMoney() async {
   //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
   OutMoneytimer?.cancel();
   await Paycube.setReceiveEvent;
@@ -948,7 +948,7 @@ print(response);
   }
 
   //汇报出金币种,请求后台
-  reportOutMoney(){//print("555");
+  reportOutMoney(){
     var formData = {
       "changeInfo": this._currencyString.trim(),
       "machineCode": _machineCode,
@@ -993,11 +993,10 @@ print(response);
       }else{
         sleep(Duration(milliseconds: 150));
         await Paycube.endPayCube;
-        //print("_stopStatus:$_stopStatus");
       }
     });
   }
-  payCubeCloseTransaction() async {//print("999");
+  payCubeCloseTransaction() async {
     if(int.parse(_getPutMoney) >0){
       //汇报入金币种
       _getPayCubePutMoneyCurrency();
@@ -1009,7 +1008,7 @@ print(response);
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;//print("777777");print(_endStatus);
+      _endStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
         //关闭机器后的跳转
@@ -1044,7 +1043,7 @@ print(response);
     request('webBootCancel', method: 'POST', parameters: formData);
 
     //已投钱
-    if(int.parse(_getPutMoney) >0){//print("touqianquxiao");
+    if(int.parse(_getPutMoney) >0){
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
@@ -1052,7 +1051,7 @@ print(response);
 
       //如果现金机投币大于0后取消，则直接关机出金
       Endtoubi();
-    }else{//print("weitouqianquxiao");
+    }else{
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
@@ -1063,7 +1062,7 @@ print(response);
     }
   }
 
-  _getPayCubePutMoneyCurrency() async {//print("rurururururu");
+  _getPayCubePutMoneyCurrency() async {
     //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
     putMoneyCurrencytimer?.cancel();
     await Paycube.setReceiveEvent;
@@ -1085,17 +1084,14 @@ print(response);
   }
 
   //汇报入金币种,请求后台
-  reportPutMoneyCurrency(){//print("555");
+  reportPutMoneyCurrency(){
     var formData = {
       "paymentInfo": this._getPutMoneyCurrency.trim(),
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney)
     };//print("formData======${formData}");
-    request('webBootToReport', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
-
-    });
+    request('webBootToReport', method: 'POST', parameters: formData);
 
 
   }
