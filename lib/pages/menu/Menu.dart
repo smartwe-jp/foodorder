@@ -31,6 +31,7 @@ import 'package:foodorder/services/itemService.dart';
 import 'package:foodorder/services/logUtil.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/widget/LoadState.dart';
+import 'package:foodorder/widget/ToastCompoent.dart';
 import 'package:foodorder/widget/iosAlter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -494,7 +495,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //公共展示加入购物车动画
   _publicShowAddCart(temp,imgUrl){
-    Function callback;
+    /*Function callback;
     setState(() {
       OverlayEntry entry =
       OverlayEntry(builder: (ctx) {
@@ -507,7 +508,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         }
       };
       Overlay.of(rootKey.currentContext).insert(entry);
-    });
+    });*/
+    ToastCompoent.toast(context,msg: "",img: 'assets/images/checked_green.png',showTime:500);
+
   }
   //公共展示菜品图片
   publicShowMenuImage(imgPath, imgWidth, imgHeight) {

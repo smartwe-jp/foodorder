@@ -335,7 +335,7 @@ print(response);
         var response = json.decode(val.toString());
 
         if (response['code'] == 200 && response['data'] == true) {
-            payCubeEndDeposit();
+            //payCubeEndDeposit();
             setState(() {
               _isReport = false;
               _scanCode = true;
@@ -434,7 +434,8 @@ print(response);
         //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
       if(_scanCode == true){
         //已经结束入金，处理取引终了
-        payCubeCloseTransaction();
+        payCubeEndDeposit();
+        //payCubeCloseTransaction();
       }else{
         nextOper();
       }
@@ -613,7 +614,7 @@ print(response);
       await Paycube.setReceiveEvent;
       var endStatus = await Paycube.endPayCube;
       stoptimer?.cancel();
-      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {print("endttt");
+      stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
@@ -988,6 +989,7 @@ print(response);
       if (_stopStatus == "StopSuccess") {
         //payCubeCloseTransaction();
         //print("扫码成功结束");
+        payCubeCloseTransaction();
         stopt.cancel();
 
       }else{
@@ -1760,9 +1762,7 @@ print(response);
                         });
 
                         _showEasyLoading();
-                        var now = new DateTime.now();
 
-                        print("点了确认支付按钮:${now.millisecondsSinceEpoch}");
                         //Endtoubi();
                         doPrintOrderMenu();
                       }
