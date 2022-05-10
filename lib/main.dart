@@ -255,11 +255,18 @@ class _MyHomePageState extends State<MyHomePage> {
       maskType: EasyLoadingMaskType.black,
     );
     //入金开始
+    int connectCount = 0;
     String strartPayCube = await Paycube.strartPayCube;
     await Paycube.setReceiveEvent;
     allowtimer?.cancel();
     allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
       _allowStatus =  await Paycube.getPayCubeAllowCashStatus;
+      connectCount++;
+      if(connectCount > 50){
+        //退出关闭
+        exit(0);
+      }
+      //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
         stopPaycube();
@@ -277,6 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //print("_allowStatus:$_allowStatus");
 
       }
+
     });
 
 
@@ -354,7 +362,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
     closetimer?.cancel();
-    closetimer = Timer.periodic(Duration(milliseconds: 700), (Timer closecheck) async {
+    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
       _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess" ) {
@@ -363,7 +371,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
         closecheck.cancel();
       }else{
-        sleep(Duration(milliseconds: 200));
+
         await Paycube.endTrade;
       }
     });

@@ -142,7 +142,7 @@ class _SettingPageState extends State<SettingPage> {
                                   //widget.confirmCallback('确定');
                                   Navigator.pop(context);
                                   //https://app.gutingjun.com/kanran-release.apk
-                                  downloadAndroid("https://app.gutingjun.com/app-release.apk");
+                                  downloadAndroid("https://app.gutingjun.com/kanran-release.apk");
                                 },
                               ),
                             )
