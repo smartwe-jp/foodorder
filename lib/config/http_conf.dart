@@ -1,5 +1,5 @@
-//const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
 
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址

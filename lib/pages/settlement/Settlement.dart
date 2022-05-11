@@ -426,7 +426,7 @@ print(response);
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
-      if(_ticketData != null){print("先请求了小票数据打印小票来了");
+      if(_ticketData != null){//print("先请求了小票数据打印小票来了");
         await FlutterPluginMsprinter.sendPrint(_ticketData);
 
         //sleep(Duration(milliseconds: 800));
@@ -1092,7 +1092,7 @@ print(response);
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney)
-    };//print("formData======${formData}");
+    };
     request('webBootToReport', method: 'POST', parameters: formData);
 
 
