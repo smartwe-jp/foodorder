@@ -164,7 +164,7 @@ class _HomePageState extends State<HomePage> {
                 children: <Widget>[
                   InkWell(
                     onTap: () {
-                      _clearCartList();
+                      //_clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP"});
                     },
                     child: Container(
@@ -192,7 +192,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      _clearCartList();
+                      //_clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH"});
                     },
                     child: Container(
@@ -220,7 +220,7 @@ class _HomePageState extends State<HomePage> {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      _clearCartList();
+                      //_clearCartList();
                       Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN"});
                     },
                     child: Container(

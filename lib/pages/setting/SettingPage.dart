@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
@@ -10,9 +11,13 @@ import 'package:foodorder/plugins/appset/lib/appset.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
-import 'package:get/get.dart';
+
 import 'package:foodorder/controller/homePageController.dart';
+import 'package:get/get.dart' hide Response;
+import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class SettingPage extends StatefulWidget {
   Map arguments;
@@ -31,6 +36,7 @@ class _SettingPageState extends State<SettingPage> {
   var _depositData = {};
 
   var _local_version; //本appversion
+  var progressValue = 0.0;
 
   //监听页面销毁的事件
   dispose() {
@@ -46,7 +52,7 @@ class _SettingPageState extends State<SettingPage> {
     //查看机器零钱状态
     _getPaycubeChangeState();
 
-    _clearCartList();
+    //_clearCartList();
 
     _getPackageInfo();
 
@@ -58,6 +64,192 @@ class _SettingPageState extends State<SettingPage> {
     setState(() {
       this._local_version = packageInfo.version+"+"+packageInfo.buildNumber;
     });
+  }
+
+  showDownloadingAlert() {
+    //支付状态
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text("アップデートのお知らせ",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        /*SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text("确定已经接收到更新App的通知？",
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),*/
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  "キャンセル",
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () {
+                                  //sleep(Duration(milliseconds: 3000));
+                                  Navigator.pop(context);
+
+                                },
+                              ),
+                            ),
+                            //垂直分割线
+                            SizedBox(
+                              width: 1,
+                              height: 40,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.black12),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  "アップデート",
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () async {
+                                  //widget.confirmCallback('确定');
+                                  Navigator.pop(context);
+                                  //https://app.gutingjun.com/kanran-release.apk
+                                  downloadAndroid("https://app.gutingjun.com/smartwe_ticket_machine.apk");
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
+  }
+
+  /// 下载安卓更新包
+  Future<String> downloadAndroid(String url) async {
+    final permissions = await Permission.storage.status;
+    //print('permission $permissions');
+    if (!permissions.isGranted) {
+      final permission = await Permission.storage.request();
+      //print('permission $permission');
+    } else {
+      //print('permission granted');
+    }
+
+    startDownLoad(url);
+  }
+
+  ///开始下载
+  startDownLoad(String url) async{
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        decoration: BoxDecoration(
+          //设置边框
+          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+          //背景颜色
+          color: Colors.white,
+          //设置圆角
+          borderRadius: new BorderRadius.circular((15.0)),
+          //设置阴影
+          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text("アップデート中……",
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(25),
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor("#000000"),
+                )),
+            Container(
+              //width: ScreenAdapter.width(400),
+              height: ScreenAdapter.height(400),
+              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+
+    /// 创建存储文件
+    //print(url);
+    Directory storageDir = await getTemporaryDirectory();
+    String storagePath = storageDir.path;
+    final path = storagePath + '/kanranBooking.apk';
+    try {
+      var dio = Dio();
+      final Response response =  await dio.download(url, path, onReceiveProgress: (int count, int total) {
+        if (total == -1) {
+          progressValue = 0.1;
+        } else {
+          progressValue = count / total.toDouble();
+        }
+        //print('progress: $progressValue');
+        setState(() {});
+        if (progressValue == 1) {
+          //下载完成，跳转到程序安装界面
+          openApk(path);
+        }
+      });
+      //print(response.data);
+
+    } catch (e) {
+      print('$e');
+      progressValue = 0;
+    }
+  }
+
+//打开apk 开始安装
+  openApk(String path) async {
+    EasyLoading.dismiss();
+
+    final openResult = await OpenFile.open(path);
+    //print('openResult:${openResult.type}');
+    if (openResult.type == ResultType.error) {
+    } else if (openResult.type == ResultType.permissionDenied) {
+    } else if (openResult.type == ResultType.fileNotFound) {
+    } else if (openResult.type == ResultType.noAppToOpen) {
+    } else {
+      //if (widget.forceUpdate) Navigator.pop(context);
+      //print('open result done');
+    }
   }
 
   //获取现金机列表
@@ -82,15 +274,6 @@ class _SettingPageState extends State<SettingPage> {
     //print(_menuOption);
   }
 
-  _clearCartList() async {
-    //print("是否清空购物车了");
-    if (controller.cartItems.length > 0) {
-      //print("是否清空购物车了222");
-      Get.find<HomePageController>().removeAllFromCart();
-    }
-
-    //controller.getCardList();
-  }
 
   //隐藏状态栏导航栏
   hideBullyScreen() async {
@@ -818,7 +1001,7 @@ class _SettingPageState extends State<SettingPage> {
     request('webBootChangeReset', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
-print(response);
+
       if (response['code'] == 200 && true == response['data']) {
         _getPaycubeChangeState();
       } else {}
@@ -895,7 +1078,7 @@ print(response);
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("回到菜单",
+                            child: Text("戻る",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
@@ -953,6 +1136,7 @@ print(response);
                   ),*/
                         InkWell(
                           onTap: () {
+                            controller.removeAllFromCart();
                             showBullyScreen();
                             sleep(Duration(milliseconds: 1500));
                             Navigator.pop(context);
@@ -971,7 +1155,31 @@ print(response);
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("退出App",
+                            child: Text("ログアウト",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                        ),
+                        InkWell(
+                          onTap: () {
+                            showDownloadingAlert();
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#409eff"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text("アップデート",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,

@@ -51,6 +51,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     int seqNo = 0;
     int openCnt = 0;
     String putMoney = "0";
+    String putCurrency = "";
     String listenOutMoney = "0";
     String machineStatus = "10"; //10关闭状态  20 可投币  30异常
     String currencyString = ""; //币种 截取0B 81的43位开始
@@ -173,6 +174,15 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
                                             //入金金额大于0后，说明允许投币了
                                             _payCubeAllowCashStatus = "AllowSuccess";
+                                        }
+                                        //入金币种
+                                        if(event.getReceiveData()[3] == (byte) 0x82){
+                                            if (receiveStr.length() >26) {
+                                                //出金币种
+                                                //putCurrency = ("".equals(putCurrency)) ? receiveStr.substring(24) : putCurrency + " "+receiveStr.substring(24);
+                                                putCurrency = receiveStr.substring(26);
+                                            }
+
                                         }
 
                                         // 入金金額コマンド
@@ -347,6 +357,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
                 putMoney = "0";
                 currencyString = "";
+                putCurrency = "";
                 _payCubeEndTradeStatus = "Error";
                 // 入金許可
                 byte[] seqNo = getSeqNo();
@@ -383,6 +394,10 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 //返回币种枚数字符串;
                 // -- body --
                 result.success(currencyString);
+            } else if (operEvent.equals("getPayCubePutMoneyCurrency")) {
+                //返回入金币种枚数字符串;
+                // -- body --
+                result.success(putCurrency);
             } else if (operEvent.equals("setReceiveEventStatus")) {
                 //现金机 Setreceive;
                 // -- body --
@@ -509,6 +524,32 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
 
                 //Log.logger.info("-----------------现金机 取引终了开结束----------------- ");
+            } else if (operEvent.equals("prohibitOneCash")) {
+                //禁止一块入金和出金
+                try {
+                    if (lib == null) {
+                        result.success("prohibitOneCashsuccess");
+                        return;
+                    }
+
+                    ByteBuffer buf = ByteBuffer.allocate(10);
+                    buf.put(new byte[]{(byte) 0x00, (byte) 0x06});    // Len2
+                    buf.put(new byte[]{(byte) 0x0C, (byte) 0x11});    // Header
+                    buf.put(getSeqNo());
+                    //入金
+                    //buf.put(new byte[]{(byte) 0x4A, (byte) 0x50, (byte) 0x59});
+                    buf.put(new byte[]{(byte) 0x61, (byte) 0x90});
+                    buf.put(new byte[]{(byte) 0xA1, (byte) 0x40});
+                    lib.write(buf.array());
+
+                    //putMoney = "0";
+                    result.success("prohibitOneCashsuccess");
+
+                    //lib.setReceiveEventEnable(false);
+                } catch (COMException e) {
+                    e.printStackTrace();
+                }
+
             }
         } else {
             result.notImplemented();

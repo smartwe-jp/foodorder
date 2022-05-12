@@ -31,6 +31,7 @@ import 'package:foodorder/services/itemService.dart';
 import 'package:foodorder/services/logUtil.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/widget/LoadState.dart';
+import 'package:foodorder/widget/ToastCompoent.dart';
 import 'package:foodorder/widget/iosAlter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -420,9 +421,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           //alignment: Alignment.centerRight,
           child: InkWell(
             onTap: () {
+              controller.removeAllFromCart();
               Navigator.pushNamed(context, '/home');
             },
             child: Container(
+              padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
               margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
               width: ScreenAdapter.width(110),
               height: ScreenAdapter.height(55),
@@ -445,7 +448,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               ),
             ),
           ),
+        ),
+        Expanded(
+            child: InkWell(
+          onLongPress: (){
+            if(int.parse(_shopCartTotalPrice) >0){
+              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+            }
+
+          },
+          child: Container(
+            //width: ScreenAdapter.width(180),
+            height: ScreenAdapter.height(85),
+            margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+            //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              //color: Colors.red,
+            ),
+            child: Text(""),//设置
+          ),
         )
+        ),
       ],
     );
   }
@@ -471,7 +495,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //公共展示加入购物车动画
   _publicShowAddCart(temp,imgUrl){
-    Function callback;
+    /*Function callback;
     setState(() {
       OverlayEntry entry =
       OverlayEntry(builder: (ctx) {
@@ -484,7 +508,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         }
       };
       Overlay.of(rootKey.currentContext).insert(entry);
-    });
+    });*/
+    ToastCompoent.toast(context,msg: "",img: 'assets/images/checked_green.png',showTime:500);
+
   }
   //公共展示菜品图片
   publicShowMenuImage(imgPath, imgWidth, imgHeight) {

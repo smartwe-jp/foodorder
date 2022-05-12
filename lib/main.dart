@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -18,23 +20,32 @@ import 'package:permission_handler/permission_handler.dart';
 import 'config/colorsUtil.dart';
 import 'config/index.dart';
 
-void main() {
-  SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
-  SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  runZonedGuarded(() {
 
-  WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
-  SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
-      .then((_) {
-    runApp(MyApp());
-    //runApp(GetMaterialApp(home: Home()));
-  });
 
-  //显示底部栏(隐藏顶部状态栏)
+    //WidgetsFlutterBinding.ensureInitialized();
+
+    FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
+    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+
+    WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
+    SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
+      runApp(MyApp());
+      //runApp(GetMaterialApp(home: Home()));
+    });
+
+    //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIOverlays([]);
-  //显示顶部栏(隐藏底部栏)
-//    SystemChrome.setEnabledSystemUIOverlays([SystemUiOverlay.top]);
-  //隐藏底部栏和顶部状态栏
-  //SystemChrome.setEnabledSystemUIOverlays([]);
+
+
+  }, (error, stackTrace) {
+    print('runZonedGuarded: Caught error in my root zone.');
+    FirebaseCrashlytics.instance.recordError(error, stackTrace);
+  });
 }
 
 class MyApp extends StatelessWidget {
@@ -151,19 +162,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-        Text("正在测试现金机，请稍候~",
+        Text("テスト中です、しばらくお待ちください。",
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -214,19 +225,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("正在测试现金机，请稍候~",
+            Text("テスト中です、しばらくお待ちください。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -244,11 +255,18 @@ class _MyHomePageState extends State<MyHomePage> {
       maskType: EasyLoadingMaskType.black,
     );
     //入金开始
+    int connectCount = 0;
     String strartPayCube = await Paycube.strartPayCube;
     await Paycube.setReceiveEvent;
     allowtimer?.cancel();
     allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
       _allowStatus =  await Paycube.getPayCubeAllowCashStatus;
+      connectCount++;
+      if(connectCount > 50){
+        //退出关闭
+        exit(0);
+      }
+      //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
         stopPaycube();
@@ -266,6 +284,7 @@ class _MyHomePageState extends State<MyHomePage> {
         //print("_allowStatus:$_allowStatus");
 
       }
+
     });
 
 
@@ -290,19 +309,19 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text("正在测试现金机，请稍候~",
+            Text("テスト中です、しばらくお待ちください。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("1、正在打开现金机",
+            Text("1、釣銭機を開けています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("2、正在关闭现金机",
+            Text("2、現金機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -343,19 +362,27 @@ class _MyHomePageState extends State<MyHomePage> {
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
     closetimer?.cancel();
-    closetimer = Timer.periodic(Duration(milliseconds: 700), (Timer closecheck) async {
+    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
       _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess" ) {
         //现金机打开一次后，判断是否第一次打开
-        //判断是否第一次打开
-        getIsFirstOpen();
+        prohibitOneCash();
+
         closecheck.cancel();
       }else{
-        sleep(Duration(milliseconds: 200));
+
         await Paycube.endTrade;
       }
     });
+  }
+
+  //禁用一元入金和出金
+  prohibitOneCash() async {
+    var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+
+    //判断是否第一次打开
+    getIsFirstOpen();
   }
 
 
