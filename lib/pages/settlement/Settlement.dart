@@ -11,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/fontSize.dart';
+import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
@@ -49,6 +50,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //默认语言包选择
   var _checkLanguage = "JP";
+
+  var _shopInfo = "kanran";
 
   var _orderId;
   var _scanQrCode = "";
@@ -94,6 +97,7 @@ class _SettlementPageState extends State<SettlementPage> {
     super.initState();
 
     this._checkLanguage = widget.arguments['checkLanguage'];
+    this._shopInfo = widget.arguments['shopInfo'];
     this._machineCode = widget.arguments['machineCode'];
     this._orderId = widget.arguments['orderId'];
     this._totalPrice = widget.arguments['totalPrice'];
@@ -887,7 +891,7 @@ print(response);
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
 
 
   }
@@ -1141,7 +1145,7 @@ print(response);
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset('assets/images/printticketloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -1179,7 +1183,7 @@ print(response);
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(400),
-              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString(_shopInfo, "backloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -1270,7 +1274,7 @@ print(response);
                 image: new DecorationImage(
                   alignment: Alignment.centerRight,
                   fit: BoxFit.fitHeight,
-                  image: AssetImage('assets/images/logo.png'),
+                  image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
                 ),
               ),
               child: Row(
@@ -1320,7 +1324,7 @@ print(response);
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         image: new DecorationImage(
-                          image: AssetImage('assets/images/settlement_back.png'),
+                          image: AssetImage(GImage.getImageString(_shopInfo, "settlement_back")),
                         ),
                       ),
                       child: Text(GString.getToString(this._checkLanguage, "settlement_back"),
@@ -1381,7 +1385,7 @@ print(response);
                           height: ScreenAdapter.height(140),
                           child: Column(
                             children: [
-                              Image.asset('assets/images/settlement_cash.png',
+                              Image.asset(GImage.getImageString(_shopInfo, "settlement_cash"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
@@ -1401,7 +1405,7 @@ print(response);
                           height: ScreenAdapter.height(140),
                           child: Column(
                             children: [
-                              Image.asset('assets/images/settlement_alipay.png',
+                              Image.asset(GImage.getImageString(_shopInfo, "settlement_alipay"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
@@ -1421,7 +1425,7 @@ print(response);
                           child: Column(
                             children: [
                               Image.asset(
-                                  'assets/images/settlement_wechat.png',
+                                  GImage.getImageString(_shopInfo, "settlement_wechat"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)
                               ),
@@ -1442,7 +1446,7 @@ print(response);
                           height: ScreenAdapter.height(140),
                           child: Column(
                             children: [
-                              Image.asset('assets/images/settlement_paypay.png',
+                              Image.asset(GImage.getImageString(_shopInfo, "settlement_paypay"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
@@ -1522,7 +1526,7 @@ print(response);
                                 width: ScreenAdapter.width(350),
                                 //height: ScreenAdapter.height(620),
                                 child: Image.asset(
-                                    'assets/images/saoma.jpg')),
+                                    GImage.getImageString(_shopInfo, "saoma"))),
                           ),
                         ],
                       ),
@@ -1554,7 +1558,7 @@ print(response);
                             child: Container(
                                 width: ScreenAdapter.width(350),
                                 //height: ScreenAdapter.height(620),
-                                child: Image.asset('assets/images/xianjin.jpg')),
+                                child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"))),
                           ),
                         ],
                       ),

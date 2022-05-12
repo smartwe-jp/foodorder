@@ -6,6 +6,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/pages/home/Home.dart';
 import 'package:foodorder/plugins/appset/lib/appset.dart';
 import 'package:foodorder/services/EventBus.dart';
@@ -38,6 +39,8 @@ class _SettingPageState extends State<SettingPage> {
   var _local_version; //本appversion
   var progressValue = 0.0;
 
+  var _shopInfo = "kanran";
+
   //监听页面销毁的事件
   dispose() {
     //eventBus.fire(new clearCartEvent('支付成功...'));
@@ -48,6 +51,7 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
+    this._shopInfo = widget.arguments['shopInfo'];
     EasyLoading.dismiss();
     //查看机器零钱状态
     _getPaycubeChangeState();
@@ -200,7 +204,7 @@ class _SettingPageState extends State<SettingPage> {
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(400),
-              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString(_shopInfo, "newloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),

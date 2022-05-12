@@ -1,16 +1,19 @@
 import 'dart:async';
-import 'dart:io';
+
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/config/imageData.dart';
+import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:paycube/paycube.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/controller/homePageController.dart';
+import 'package:foodorder/services/Storage.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
@@ -28,11 +31,14 @@ class _HomePageState extends State<HomePage> {
 
   var _stopStatus;
   var _closeStatus;
+  var _shopInfo = "kanran";
 
   @override
   void initState() {
     super.initState();
     EasyLoading.dismiss();
+    //先获取店铺信息已获取路径用
+    _getShopInfo();
     //进入页面后打开现金机
     //OpenPayCube();
 
@@ -141,6 +147,19 @@ class _HomePageState extends State<HomePage> {
   //}
   }
 
+
+  //获取机器信息
+  _getShopInfo() async {
+    var shopInfo = await HomeServices.getShopInfo();
+    if (shopInfo != "") {
+      setState(() {
+        _shopInfo = shopInfo;
+      });
+    }else{
+      Storage.setString('shopInfo', "kanran");
+
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -152,7 +171,7 @@ class _HomePageState extends State<HomePage> {
             height: ScreenAdapter.getScreenHeight(),
             decoration: BoxDecoration(
               image: DecorationImage(
-                image: AssetImage("assets/images/home.png"),
+                image: AssetImage(GImage.getImageString(_shopInfo, "home")),
                 fit: BoxFit.fill,
               ),
             ),
@@ -165,7 +184,7 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -174,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage('assets/images/home_button.png'),
+                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(
@@ -193,7 +212,7 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -202,7 +221,7 @@ class _HomePageState extends State<HomePage> {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage('assets/images/home_button.png'),
+                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(
@@ -221,7 +240,7 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN"});
+                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -230,7 +249,7 @@ class _HomePageState extends State<HomePage> {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage('assets/images/home_button.png'),
+                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(

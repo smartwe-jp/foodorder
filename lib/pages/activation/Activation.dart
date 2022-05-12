@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
@@ -14,19 +16,19 @@ class ActivationPage extends StatefulWidget {
 }
 
 class _ActivationPageState extends State<ActivationPage> {
-
   //final sqlHelper = SqfliteHelper();
   TextEditingController _activationCodeController = new TextEditingController();
   FocusNode _activationCodeFocusNode = FocusNode();
 
   var _activation_code; //激活码
+  var _checkedShop = null;
 
   @override
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
-
+    Future.delayed(const Duration(),
+        () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
   }
 
   @override
@@ -37,24 +39,21 @@ class _ActivationPageState extends State<ActivationPage> {
   }
 
   void _goMain() async {
-
     Future.delayed(Duration.zero, () {
       Navigator.of(context).pushReplacementNamed('/home');
     });
-
   }
-
 
   //把机器码保存到本地
   sendActivationCode() async {
-
     if (this._activation_code == null || this._activation_code.length != 18) {
       showToast('请输入正确激活码');
+    }else if(this._checkedShop == null){
+      showToast('请选择该机器所在商家');
     } else {
-
-
       //保存机器信息
       Storage.setString('machineInfo', _activation_code);
+      Storage.setString('shopInfo', _checkedShop);
       Storage.setBool('homeOpen', true);
 
       _goMain();
@@ -63,46 +62,103 @@ class _ActivationPageState extends State<ActivationPage> {
 
   @override
   Widget build(BuildContext context) {
-
     return new Scaffold(
       body: new Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            /*Text("请输入激活码",
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(32.0))),*/
             Container(
               width: ScreenAdapter.width(450.0),
-              padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
+              padding:
+                  EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "请选择所在店铺",
+                    style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(32.0),
+                        color: ColorsUtil.hexToColor("#0000"),
+                        fontWeight: FontWeight.w600),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      setState(() {
+                        _checkedShop = "kanran";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      height: ScreenAdapter.height(100),
+                      decoration: (_checkedShop == "kanran")
+                          ? BoxDecoration(
+                          //color: Colors.transparent, // 背景色
+                          border: new Border.all(color: Color(0xFFFF0000), width: 1),// border
+                          borderRadius: BorderRadius.circular((5)), // 圆角
+                      )
+                          : BoxDecoration(
+                          color: Colors.transparent
+                        //border: new Border.all(color: Colors.transparent, width: 0),// border
+                        //borderRadius: BorderRadius.circular((5)), // 圆角
+
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            GImage.getImageString("kanran", "logo"),
+                            width: ScreenAdapter.width(120),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          Text(
+                            "甘蘭",
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(32.0),
+                                color: ColorsUtil.hexToColor("#000000"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: ScreenAdapter.height(80),),
+            Container(
+              width: ScreenAdapter.width(450.0),
+              padding:
+                  EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: TextField(
-        //keyboardType: TextInputType.number,
-        autofocus: true,
-        showCursor: true, // 显示光标
-        //readOnly: true,
-        controller: _activationCodeController,
-        focusNode: _activationCodeFocusNode,
-        decoration: InputDecoration(
-          hintText: "请输入激活码",
-          border: InputBorder.none,
-          isDense: true,
-        ),
-        style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
-        obscureText: false,
-        onChanged: (value) {
-          //print(value);
+                //keyboardType: TextInputType.number,
+                autofocus: true,
+                showCursor: true,
+                // 显示光标
+                //readOnly: true,
+                controller: _activationCodeController,
+                focusNode: _activationCodeFocusNode,
+                decoration: InputDecoration(
+                  hintText: "请输入激活码",
+                  border: InputBorder.none,
+                  isDense: true,
+                ),
+                style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                obscureText: false,
+                onChanged: (value) {
+                  //print(value);
+                },
+                onSubmitted: (value) {
+                  setState(() {
+                    this._activation_code = value;
+                  });
 
-        },
-        onSubmitted: (value){
-          setState(() {
-            this._activation_code = value;
-          });
+                  //sendActivationCode();
+                  //print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
+                },
 
-          sendActivationCode();
-          //print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
-        },
-
-        /// 扫码密码
-      ),),
+                /// 扫码密码
+              ),
+            ),
             Divider(
               thickness: 1.0,
               color: Colors.black12,
@@ -122,7 +178,5 @@ class _ActivationPageState extends State<ActivationPage> {
         ),
       ),
     );
-
   }
-
 }

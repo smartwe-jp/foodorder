@@ -14,6 +14,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/fontSize.dart';
+import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/config/index.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/models/ItemModel.dart';
@@ -64,6 +65,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //默认语言包选择
   var _checkLanguage = "JP";
 
+  var _shopInfo = "kanran";
+
 
   //购物车抛物线
   GlobalKey rootKey = GlobalKey();
@@ -90,6 +93,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     super.initState();
 
     this._checkLanguage = widget.arguments['checkLanguage'];
+    this._shopInfo = widget.arguments['shopInfo'];
     _getMachineInfo();
 
 
@@ -143,7 +147,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               image: new DecorationImage(
                 alignment: Alignment.centerRight,
                 fit: BoxFit.fitHeight,
-                image: AssetImage('assets/images/logo.png'),
+                image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
               ),
             ),
             child: showTopCategoryMenu(),
@@ -388,7 +392,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Container(
                     alignment: Alignment.center,
                     child: Image.asset(
-                      'assets/images/menu_up.png',
+                      GImage.getImageString(_shopInfo, "menu_up"),
                       width: ScreenAdapter.width(35),
                       fit: BoxFit.fitWidth,
                       color: ColorsUtil.hexToColor(Gcolor.mainBackground),
@@ -433,7 +437,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               decoration: BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.fitWidth,
-                  image: AssetImage('assets/images/backbutton_top.png'),
+                  image: AssetImage(GImage.getImageString(_shopInfo, "backbutton_top")),
                 ),
               ),
               child: Center(
@@ -453,7 +457,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             child: InkWell(
           onLongPress: (){
             if(int.parse(_shopCartTotalPrice) >0){
-              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
             }
 
           },
@@ -509,7 +513,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       };
       Overlay.of(rootKey.currentContext).insert(entry);
     });*/
-    ToastCompoent.toast(context,msg: "",img: 'assets/images/checked_green.png',showTime:500);
+    ToastCompoent.toast(context,msg: "",img: GImage.getImageString(_shopInfo, "checked_green"),showTime:500);
 
   }
   //公共展示菜品图片
@@ -644,7 +648,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         right: ScreenAdapter.width(10),
         top: ScreenAdapter.height(20),
         child: Image.asset(
-          'assets/images/shouqing.png',
+          GImage.getImageString(_shopInfo, "shouqing_png"),
           width: ScreenAdapter.width(100),
           fit: BoxFit.fitWidth,
         ),
@@ -884,7 +888,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                 image: DecorationImage(
                                   image:
-                                      AssetImage("assets/images/price_tag.png"),
+                                      AssetImage(GImage.getImageString(_shopInfo, "price_tag")),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -1023,7 +1027,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                 image: DecorationImage(
                                   image:
-                                      AssetImage("assets/images/price_tag.png"),
+                                      AssetImage(GImage.getImageString(_shopInfo, "price_tag")),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -1219,7 +1223,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   image: DecorationImage(
                                     image: AssetImage(
-                                        "assets/images/price_tag.png"),
+                                        GImage.getImageString(_shopInfo, "price_tag")),
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -1357,7 +1361,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   image: DecorationImage(
                                     image: AssetImage(
-                                        "assets/images/price_tag.png"),
+                                        GImage.getImageString(_shopInfo, "price_tag")),
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -1604,7 +1608,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   image: DecorationImage(
 
                                     image: AssetImage(
-                                        "assets/images/price_tag.png"),
+                                        GImage.getImageString(_shopInfo, "price_tag")),
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -1741,7 +1745,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   image: DecorationImage(
                                     image: AssetImage(
-                                        "assets/images/price_tag.png"),
+                                        GImage.getImageString(_shopInfo, "price_tag")),
                                     fit: BoxFit.fill,
                                   ),
                                 ),
@@ -2058,7 +2062,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 decoration: BoxDecoration(
                   image: new DecorationImage(
                     fit: BoxFit.fitWidth,
-                    image: AssetImage('assets/images/redPutong.png'),
+                    image: AssetImage(GImage.getImageString(_shopInfo, "redPutong")),
                   ),
                   //设置圆角
                   borderRadius: new BorderRadius.circular((16.0)),
@@ -2086,7 +2090,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             Container(
                 width: ScreenAdapter.width(533),
                 //height: ScreenAdapter.height(361),
-                child: Image.asset('assets/images/logo.png',
+                child: Image.asset(GImage.getImageString(_shopInfo, "logo"),
                     width: ScreenAdapter.width(533),
                     height: ScreenAdapter.height(361),
                     fit: BoxFit.fill)),
@@ -3216,7 +3220,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               },
               child: Container(
                 width: ScreenAdapter.width(40),
-                child: Image.asset('assets/images/delOne.png',
+                child: Image.asset(GImage.getImageString(_shopInfo, "delOne"),
                     width: ScreenAdapter.width(30),
                     //height: ScreenAdapter.height(44),
                     fit: BoxFit.fill),
@@ -3316,7 +3320,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(400),
-              child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString(_shopInfo, "backloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -3375,6 +3379,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
+                "shopInfo":_shopInfo,
                 "machineCode": this._machineCode,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),

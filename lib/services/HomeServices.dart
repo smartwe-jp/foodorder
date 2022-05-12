@@ -22,4 +22,14 @@ class HomeServices{
     }
     return machineinfo;
   }
+  static getShopInfo() async{
+    String shopinfo;
+    try {
+      String shopInfoData = await Storage.getString('shopInfo');
+      shopinfo = shopInfoData;
+    } catch (e) {
+      shopinfo = "";
+    }
+    return shopinfo;
+  }
 }
