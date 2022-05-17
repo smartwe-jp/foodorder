@@ -109,6 +109,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   void dispose() {
     // TODO: implement dispose
     eventBus.fire(new clearCartEvent('支付成功...'));
+
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+
+    _imageCache.clear();
+
+    _imageCache.clearLiveImages();
+
     super.dispose();
 
   }
@@ -529,15 +536,16 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   }
   //公共展示菜品图片
   publicShowMenuImage(imgPath, imgWidth, imgHeight) {
-    return Container(
+    _checkMemory();
+    /*return Container(
       width: ScreenAdapter.width(imgWidth),
       height: ScreenAdapter.height(imgHeight),
       child: Image(
           image: NetworkImageSSL(imgPath),
         fit: BoxFit.cover,
       ),
-    );
-    /*return Container(
+    );*/
+    return Container(
       width: ScreenAdapter.width(imgWidth),
       height: ScreenAdapter.height(imgHeight),
       child: CachedNetworkImage(
@@ -545,7 +553,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         fit: BoxFit.fill,
         width: ScreenAdapter.width(imgWidth),
         height: ScreenAdapter.height(imgHeight),
-        memCacheHeight: 400,
+        memCacheWidth: imgWidth.toInt(),
+        memCacheHeight: imgHeight.toInt(),
         //cacheManager: EsoImageCacheManager(),
         imageBuilder: (context, imageProvider) => Container(
           decoration: BoxDecoration(
@@ -576,7 +585,18 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             //height: ScreenAdapter.height(imgHeight)
         //),
       ),
-    );*/
+    );
+  }
+
+  void _checkMemory(){
+    var Image_Maxnum = 200;
+    var maxSize = 55 << 20;
+
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    if(_imageCache.currentSizeBytes >= maxSize || _imageCache.currentSize >= Image_Maxnum){
+      _imageCache.clear();
+      _imageCache.clearLiveImages();
+    }
   }
 
   //公共设置价格
@@ -2250,7 +2270,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
@@ -2402,7 +2422,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       child: ListView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         itemBuilder: (BuildContext context, int index) {
           return showCategoryThreeItemOne(items[index], index);
@@ -2627,7 +2647,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           ),
       child: GridView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(7),
@@ -2775,7 +2795,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       child: ListView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         itemBuilder: (BuildContext context, int index) {
           return showCategoryFiveItemOne(items[index], index);
@@ -2990,7 +3010,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
@@ -3140,7 +3160,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         shrinkWrap: true,
-        //addAutomaticKeepAlives:false,
+        addAutomaticKeepAlives:false,
         //addRepaintBoundaries:false,
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
