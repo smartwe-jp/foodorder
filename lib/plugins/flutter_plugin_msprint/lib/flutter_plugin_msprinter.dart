@@ -17,8 +17,8 @@ class FlutterPluginMsprinter {
     return printStatus;
   }
 
-  static Future<String> sendPrint(printdata) async {
-    Map<String, String> map = {'operdata': printdata};
+  static Future<String> sendPrint(printdata,shopInfo) async {
+    Map<String, String> map = {'operdata': printdata,'shopInfo':shopInfo};
     final String printStatus = await _channel.invokeMethod('sendPrint',map);
     return printStatus;
   }

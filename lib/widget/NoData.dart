@@ -35,7 +35,7 @@ class _NoDataViewState extends State<NoDataView> {
               Container(
                 width: ScreenUtil().setWidth(405),
                 height: ScreenUtil().setHeight(320),
-                child: Image.asset('assets/images/load_nodata.png',fit: BoxFit.fitWidth,),
+                child: Image.asset('assets/images/public/load_nodata.png',fit: BoxFit.fitWidth,),
               ),
               Text('暂无相关数据...',style: TextStyle(color: Colors.black),)],
           ),

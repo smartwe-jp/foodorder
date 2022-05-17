@@ -329,8 +329,8 @@ print(response);
   _doToPay(){
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
       _showEasyLoading();
-
-      var formData = {
+      doPrintOrderMenu();
+      /*var formData = {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
         "orderId": this._orderId,
@@ -420,7 +420,7 @@ print(response);
             });
 
         }
-      });
+      });*/
 
     }
   }
@@ -431,7 +431,8 @@ print(response);
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
       if(_ticketData != null){//print("先请求了小票数据打印小票来了");
-        await FlutterPluginMsprinter.sendPrint(_ticketData);
+        print(_shopInfo);
+        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo);
 
         //sleep(Duration(milliseconds: 800));
 
@@ -466,7 +467,7 @@ print(response);
           //print("print$response");
           if (response['code'] == 200) {
 
-            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']));
+            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo);
 
             sleep(Duration(milliseconds: 500));
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -884,7 +885,7 @@ print(response);
   gotonewMenuPage(){//print("closereturn11");
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
+    Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
 
   }
 
@@ -1183,7 +1184,7 @@ print(response);
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(400),
-              child: Image.asset(GImage.getImageString(_shopInfo, "backloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),

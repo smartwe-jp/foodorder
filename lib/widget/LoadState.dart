@@ -6,19 +6,19 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'NoData.dart';
 
-enum LoadState { State_Success, State_Error, State_Loading, State_Empty }
+enum LoadDataState { State_Success, State_Error, State_Loading, State_Empty }
 
 ///根据不同状态来展示不同的视图
 class LoadStateLayout extends StatefulWidget {
 
-  final LoadState state; //页面状态
+  final LoadDataState state; //页面状态
   final Widget successWidget;//成功视图
   final VoidCallback errorRetry; //错误事件处理
   final VoidCallback emptyRetry; //空数据事件处理
 
   LoadStateLayout(
       {Key key,
-        this.state = LoadState.State_Loading,//默认为加载状态
+        this.state = LoadDataState.State_Loading,//默认为加载状态
         this.successWidget,
         this.errorRetry,
         this.emptyRetry
@@ -43,16 +43,16 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
   ///根据不同状态来显示不同的视图
   Widget get _buildWidget {
     switch (widget.state) {
-      case LoadState.State_Success:
+      case LoadDataState.State_Success:
         return widget.successWidget;
         break;
-      case LoadState.State_Error:
+      case LoadDataState.State_Error:
         return _errorView;
         break;
-      case LoadState.State_Loading:
+      case LoadDataState.State_Loading:
         return _loadingView;
         break;
-      case LoadState.State_Empty:
+      case LoadDataState.State_Empty:
         return NoDataView(widget.emptyRetry);
         break;
       default:
@@ -76,7 +76,7 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
             Container(
               width: ScreenUtil().setWidth(405),
               //height: ScreenUtil().setHeight(320),
-              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitWidth,),
+              child: Image.asset('assets/images/public/newloading.gif',fit: BoxFit.fitWidth,),
             ),
             //Text('拼命加载中...',style: TextStyle(color: Colors.black),)
         ],
@@ -103,7 +103,7 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
                 Container(
                   width: ScreenUtil().setWidth(405),
                   height: ScreenUtil().setHeight(317),
-                  child: Image.asset('assets/images/load_error.png',fit: BoxFit.fitWidth,),
+                  child: Image.asset('assets/images/public/load_error.png',fit: BoxFit.fitWidth,),
                 ),
                 Text("加载失败，请轻触重试!",style: TextStyle(color: Colors.black),),
               ],

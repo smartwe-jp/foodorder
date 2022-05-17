@@ -66,6 +66,8 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
   public static Drawable drawable;
   public static Drawable sed;
+  public static Drawable kanran;
+  public static Drawable sanfeng;
 
   private final String TAG = "PrintDemoUsb";
   private static final String ACTION_USB_PERMISSION = "com.usb.sample.USB_PERMISSION";
@@ -82,7 +84,8 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
     PendingIntent permissionIntent = PendingIntent.getBroadcast(mContext, 0, new Intent(ACTION_USB_PERMISSION), 0);
     mUsbDriver.setPermissionIntent(permissionIntent);
 
-    sed= ContextCompat.getDrawable(mContext,R.drawable.sed);
+    kanran= ContextCompat.getDrawable(mContext,R.drawable.kanran);
+    sanfeng= ContextCompat.getDrawable(mContext,R.drawable.sanfeng);
   }
 
   @Override
@@ -91,6 +94,9 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
     switch (call.method) {
       case "sendPrint":
         String operdata = call.argument("operdata");
+        String shopInfo = call.argument("shopInfo");
+
+
 
 
         OrderMenuList oh = JSONObject.parseObject(operdata, OrderMenuList.class);
@@ -100,8 +106,15 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
           result.error("40001","无法获得usb权限",null);
           return;
         }else{
-          print.execute_print(mUsbDriver,oh,sed,1);
-          print.execute_printRreceipt(mUsbDriver,oh,sed);
+          //甘蘭
+          if(shopInfo.equals("kanran")){
+            print.execute_print(mUsbDriver,oh,kanran,1);
+            print.execute_printRreceipt(mUsbDriver,oh,kanran);
+        }else if(shopInfo.equals("sanfeng")){//sanfeng
+            print.execute_print(mUsbDriver,oh,sanfeng,1);
+            print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
+        }
+
 
           //print.execute_print(mUsbDriver,oh,sed,1);
 

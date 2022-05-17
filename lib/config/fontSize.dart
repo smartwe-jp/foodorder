@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 class GFontSize{
   static const double categoryTitle = 36.0;
+  static const double categoryTitle32 = 32.0;
   static const double mainPrice = 39;
   static const double mainPriceLift = 26;
   static const double mainPriceRight = 30;

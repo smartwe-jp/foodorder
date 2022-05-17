@@ -90,17 +90,15 @@ class _ActivationPageState extends State<ActivationPage> {
                     },
                     child: Container(
                       padding: EdgeInsets.all(5),
-                      height: ScreenAdapter.height(100),
+                      height: ScreenAdapter.height(95),
                       decoration: (_checkedShop == "kanran")
                           ? BoxDecoration(
                           //color: Colors.transparent, // 背景色
-                          border: new Border.all(color: Color(0xFFFF0000), width: 1),// border
+                          border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
                           borderRadius: BorderRadius.circular((5)), // 圆角
                       )
                           : BoxDecoration(
                           color: Colors.transparent
-                        //border: new Border.all(color: Colors.transparent, width: 0),// border
-                        //borderRadius: BorderRadius.circular((5)), // 圆角
 
                       ),
                       child: Row(
@@ -112,6 +110,44 @@ class _ActivationPageState extends State<ActivationPage> {
                           ),
                           Text(
                             "甘蘭",
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(32.0),
+                                color: ColorsUtil.hexToColor("#000000"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      setState(() {
+                        _checkedShop = "sanfeng";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      height: ScreenAdapter.height(95),
+                      decoration: (_checkedShop == "sanfeng")
+                          ? BoxDecoration(
+                        //color: Colors.transparent, // 背景色
+                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
+                        borderRadius: BorderRadius.circular((5)), // 圆角
+                      )
+                          : BoxDecoration(
+                          color: Colors.transparent
+
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            GImage.getImageString("sanfeng", "logo"),
+                            width: ScreenAdapter.width(120),
+                            fit: BoxFit.fitWidth,
+                            color: Colors.black,
+                          ),
+                          Text(
+                            "三豊麺",
                             style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(32.0),
                                 color: ColorsUtil.hexToColor("#000000"),

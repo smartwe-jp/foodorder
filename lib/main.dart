@@ -183,7 +183,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -247,7 +247,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -330,7 +330,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/newloading.gif',fit: BoxFit.fitHeight),
+              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
             ),
           ],
         ),
