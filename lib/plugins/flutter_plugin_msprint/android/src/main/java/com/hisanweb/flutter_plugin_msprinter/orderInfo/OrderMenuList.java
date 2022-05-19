@@ -25,6 +25,7 @@ public class OrderMenuList {
     private String priceStr;
     private String taxRate0Str;
     private String taxRate1Str;
+    private String line4Rate;
 
     private List<CategoryVos> categoryVos;
 
@@ -186,6 +187,14 @@ public class OrderMenuList {
 
     public void setTaxRate1Str(String taxRate1Str) {
         this.taxRate1Str = taxRate1Str;
+    }
+
+    public String getLine4Rate() {
+        return line4Rate;
+    }
+
+    public void setLine4Rate(String line4Rate) {
+        this.line4Rate = line4Rate;
     }
 
     public List<CategoryVos> getCategoryVos() {

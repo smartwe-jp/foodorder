@@ -89,7 +89,9 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
 
         m_sbData = new StringBuilder(oh.getPayPrice());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+
+        mUsbDriver.write(PrintCmd.PrintString(" ", 0));
         m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
@@ -126,7 +128,7 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getLine4());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
         mUsbDriver.write(PrintCmd.JNAStringToByte("9D",1));
-        m_sbData = new StringBuilder(oh.getTaxStr());
+        m_sbData = new StringBuilder(oh.getLine4Rate());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         //设置行间距
 
