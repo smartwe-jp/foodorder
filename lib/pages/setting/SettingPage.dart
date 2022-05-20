@@ -1037,7 +1037,7 @@ class _SettingPageState extends State<SettingPage> {
       margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
       child: Column(
         children: [
-          Text("食事のタイプ",
+          Text("利用形式",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
@@ -1120,6 +1120,7 @@ class _SettingPageState extends State<SettingPage> {
                           //设置圆角
                           borderRadius: new BorderRadius.circular((16.0)),
                         ),
+                        //お持ち帰り
                         child: Text("テイクアウト",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(24),
