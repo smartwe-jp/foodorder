@@ -32,4 +32,15 @@ class HomeServices{
     }
     return shopinfo;
   }
+
+  static getDiningTypeInfo() async{
+    String diningTypeInfo;
+    try {
+      String diningTypeData = await Storage.getString('diningType');
+      diningTypeInfo = diningTypeData;
+    } catch (e) {
+      diningTypeInfo = "";
+    }
+    return diningTypeInfo;
+  }
 }

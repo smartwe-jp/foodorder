@@ -88,6 +88,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _shopCartTotalPrice = "0";
   var cartnum = 6;
 
+  //就餐类型
+  var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
 
   @override
   void initState() {
@@ -101,7 +103,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     getCartPriceTotal();
 
 
-
+    //_getDiningTypeInfo();
     EasyLoading.dismiss();
   }
 
@@ -183,10 +185,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       setState(() {
         _machineCode = machineCode;
       });
-      _getBookingBootMenu();
+
+      _getDiningTypeInfo();
     }
   }
 
+  //获取就餐类型信息
+  _getDiningTypeInfo() async {
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
+    if (DiningTypeInfo != "") {
+      setState(() {
+        _dining_type = DiningTypeInfo;
+      });
+    }
+    _getBookingBootMenu();
+  }
   //获取菜单
   _getBookingBootMenu() {
     var formData = {
@@ -3724,7 +3737,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         "language": this._checkLanguage,
         "machineCode": _machineCode,
         "orderLineList": selectedItem,
-        "total": orderTotlaPrice
+        "total": orderTotlaPrice,
+        "takeout": (_dining_type == "2") ? true: false,
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());

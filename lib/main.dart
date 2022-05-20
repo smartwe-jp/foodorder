@@ -386,12 +386,21 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
+  //获取就餐类型信息
+  _getDiningTypeInfo() async {
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
+    if (DiningTypeInfo == "" || null==DiningTypeInfo) {
 
+      Storage.setString('diningType', "1");//1 堂食  2 外袋  0 两种都可
+
+    }
+  }
 
 
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
+    _getDiningTypeInfo();
     EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();
