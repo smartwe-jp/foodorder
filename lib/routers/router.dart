@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/pages/activation/Activation.dart';
+import 'package:foodorder/pages/attendance/attendance.dart';
 import 'package:foodorder/pages/home/Home.dart';
 import 'package:foodorder/pages/menu/Menu.dart';
 import 'package:foodorder/pages/setting/SettingPage.dart';
@@ -15,6 +16,8 @@ final routes = {
   "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //设置页面
 
   '/showImage': (context) => ShowImagePage(), //查看图片
+
+  '/attendance': (context) => AttendancePage(),//打卡
 
 
 };

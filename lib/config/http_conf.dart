@@ -1,5 +1,7 @@
-const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+
+const oa_base_url = "https://testoa.gutingjun.com/api/";  //刷脸测试环境地址
 
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
@@ -12,4 +14,7 @@ const servicePath = {
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
   'webBootChangeReset': base_url + 'pad/web/boot/change/reset', //重置机器零钱状态
+
+
+  'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
 };

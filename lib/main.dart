@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
+import 'package:appset/appset.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
       allowFontScaling: false,
       builder: () => MaterialApp(
         navigatorKey: Global.navigatorKey,
-        title: "甘蘭牛肉面", //谷町君
+        title: "券売君", //谷町君
         debugShowCheckedModeBanner: false,
         //onGenerateRoute: Application.router.generator,
         //主题
@@ -123,6 +124,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future requestPermission() async {
+    //霸屏隐藏状态栏导航栏
+    await Appset.hideBullyScreen;
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
     if (storageStatus != PermissionStatus.granted) {
@@ -131,15 +134,17 @@ class _MyHomePageState extends State<MyHomePage> {
         //showToast("权限申请被拒绝");
         //print("权限申请被拒绝");
       }else{
+
         //第一步，链接现金机，并打开现金机
         OpenPayCube();
-        //showToast("权限申请通过");
-        //print("权限申请通过");
       }
     }else{
+
       OpenPayCube();
     }
   }
+
+
 
 
   //打开现金机
@@ -396,16 +401,25 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
-
+//获取机器信息
+  _getShopInfo() async {
+    var shopInfo = await HomeServices.getShopInfo();
+    if (""==shopInfo|| null ==shopInfo) {
+      Storage.setString('shopInfo', "kanran");
+    }
+    _goMain();
+  }
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
+
     _getDiningTypeInfo();
     EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
-      _goMain();
+      _getShopInfo();
+
       //loaddata();
     }else{
       _goActivation();
