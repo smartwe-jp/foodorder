@@ -76,7 +76,7 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
             Container(
               width: ScreenUtil().setWidth(405),
               //height: ScreenUtil().setHeight(320),
-              child: Image.asset('assets/images/public/newloading.gif',fit: BoxFit.fitWidth,),
+              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitWidth,),
             ),
             //Text('拼命加载中...',style: TextStyle(color: Colors.black),)
         ],

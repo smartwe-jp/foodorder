@@ -153,6 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
         decoration: BoxDecoration(
           //设置边框
@@ -187,8 +188,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             Container(
               //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
+              height: ScreenAdapter.height(250),
+              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -216,6 +217,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
         decoration: BoxDecoration(
           //设置边框
@@ -251,8 +253,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
             Container(
               //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
+              height: ScreenAdapter.height(250),
+              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -300,6 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
         decoration: BoxDecoration(
           //设置边框
@@ -334,8 +337,8 @@ class _MyHomePageState extends State<MyHomePage> {
                 )),
             Container(
               //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(350),
-              child: Image.asset('assets/images/kanran/newloading.gif',fit: BoxFit.fitHeight),
+              height: ScreenAdapter.height(250),
+              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
             ),
           ],
         ),

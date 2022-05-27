@@ -2213,7 +2213,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
-      child: GestureDetector(
+      child: InkWell(
           /*onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
@@ -2957,7 +2957,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
-      child: GestureDetector(
+      child: InkWell(
           /*onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
@@ -3108,7 +3108,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
-      child: GestureDetector(
+      child: InkWell(
           /*onPanDown: (details) {
             temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
 

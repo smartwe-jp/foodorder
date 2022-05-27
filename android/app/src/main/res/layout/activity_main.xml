@@ -21,7 +21,7 @@
             <com.fanxing.foodorder.opengl.GLFrameSurface
                 android:id="@+id/gl_rgb"
                 android:layout_width="625px"
-                android:layout_height="1000px"
+                android:layout_height="1030px"
                 android:layout_gravity="center_vertical"
                 android:layout_marginBottom="5dp" />
 

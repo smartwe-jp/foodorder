@@ -145,7 +145,7 @@ class _SettlementPageState extends State<SettlementPage> {
     request('webBootToPrint', method: 'GET', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
-print(response);
+//print(response);
         setState(() {
           _ticketData = json.encode(response['data']);
         });
@@ -329,8 +329,7 @@ print(response);
   _doToPay(){
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
       _showEasyLoading();
-      doPrintOrderMenu();
-      /*var formData = {
+      var formData = {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
         "orderId": this._orderId,
@@ -420,7 +419,7 @@ print(response);
             });
 
         }
-      });*/
+      });
 
     }
   }

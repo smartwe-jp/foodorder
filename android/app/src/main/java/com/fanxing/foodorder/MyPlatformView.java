@@ -212,10 +212,10 @@ public class MyPlatformView implements PlatformView,IDeviceListener, IStreamList
         DeptrumSdkApi.getApi().stopStream(StreamType.STREAM_RGB);
         DeptrumSdkApi.getApi().setStreamListener(null);
 
-        mRgbSurface.onPause();
+        //mRgbSurface.onPause();
 
-        mRgbisplay.release();
-        mRgbisplay=null;
+        //mRgbisplay.release();
+        //mRgbisplay=null;
     }
 
 }
