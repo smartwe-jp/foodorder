@@ -1,4 +1,5 @@
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
@@ -16,9 +17,11 @@ class ToastCompoent {
   static double _pdHorizontal; // 左右边距
   static double _pdVertical; // 上下边距
   static String _img; //图片
+  static String _sound; //声音 1确定 2删除
   static void toast(
       BuildContext context, {
         String img,
+        String sound,
         String msg,
         int showTime = 1000,
         Color bgColor = Colors.transparent,
@@ -32,6 +35,7 @@ class ToastCompoent {
     assert(img != null);
     _msg = msg;
     _img = img;
+    _sound = sound;
     _startedTime = DateTime.now();
     _showTime = showTime;
     _bgColor = bgColor;
@@ -62,6 +66,7 @@ class ToastCompoent {
                   ),
                 )),
           ));
+      _sound=="1"?_playQRScannerSound():_deleteItemSound();
       overlayState.insert(_overlayEntry);
     } else {
       //重新绘制UI，类似setState
@@ -77,6 +82,22 @@ class ToastCompoent {
       _overlayEntry.remove();
       _overlayEntry = null;
     }
+  }
+
+  static _playQRScannerSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/14428.wav"),
+      autoStart: true,
+      volume: 0.3,
+    );
+  }
+
+  static _deleteItemSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/697.wav"),
+      autoStart: true,
+      volume: 0.8,
+    );
   }
 
   //toast绘制

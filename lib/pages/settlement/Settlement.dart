@@ -430,7 +430,7 @@ class _SettlementPageState extends State<SettlementPage> {
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
       if(_ticketData != null){//print("先请求了小票数据打印小票来了");
-        print(_shopInfo);
+        //print(_shopInfo);
         await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo);
 
         //sleep(Duration(milliseconds: 800));
@@ -1220,7 +1220,12 @@ class _SettlementPageState extends State<SettlementPage> {
 
   @override
   Widget build(BuildContext context) {
-
+    var _settlement_payment_method;
+    if(_shopInfo == "rijindoujin"){
+      _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method_only_cash");
+    }else{
+      _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method");
+    }
     return Scaffold(
       backgroundColor: ColorsUtil.hexToColor("#D8D8D8"),
       body: AnnotatedRegion(
@@ -1369,7 +1374,7 @@ class _SettlementPageState extends State<SettlementPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(GString.getToString(this._checkLanguage, "settlement_payment_method"),
+                  Text(_settlement_payment_method,
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(32),
                         fontWeight: FontWeight.w600,
@@ -1399,9 +1404,9 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
-                      Container(
+                      if(_shopInfo != "rijindoujin")
+                        Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
-                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
                           child: Column(
@@ -1418,9 +1423,9 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                             ],
                           )),
+                      if(_shopInfo != "rijindoujin")
                       Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
-                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
                           child: Column(
@@ -1440,9 +1445,9 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
+                      if(_shopInfo != "rijindoujin")
                       Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
-                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(5), right: ScreenAdapter.width(20)),
                           width: ScreenAdapter.width(130),
                           height: ScreenAdapter.height(140),
                           child: Column(
@@ -1502,21 +1507,11 @@ class _SettlementPageState extends State<SettlementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      if(_shopInfo != "rijindoujin")
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          /*Container(
-                            padding: EdgeInsets.all(3),
-                            width: ScreenAdapter.width(320),
-                            color: ColorsUtil.hexToColor("#9A5718"),
-                            alignment: Alignment.center,
-                            child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_qr"),
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(32),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),*/
+
                           Container(
                             padding: EdgeInsets.only(
                                 bottom: ScreenAdapter.height(25)),
@@ -1531,25 +1526,14 @@ class _SettlementPageState extends State<SettlementPage> {
                           ),
                         ],
                       ),
-
+                      if(_shopInfo != "rijindoujin")
                       SizedBox(
                         width: ScreenAdapter.width(30),
                       ),
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          /*Container(
-                            padding: EdgeInsets.all(3),
-                            width: ScreenAdapter.width(220),
-                            color: ColorsUtil.hexToColor("#9A5718"),
-                            alignment: Alignment.center,
-                            child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_study_cash"),
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(32),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),*/
                           Container(
                             padding: EdgeInsets.only(
                                 bottom: ScreenAdapter.height(25)),

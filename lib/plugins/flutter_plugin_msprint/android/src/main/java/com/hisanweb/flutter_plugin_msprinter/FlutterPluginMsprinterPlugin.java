@@ -68,6 +68,7 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
   public static Drawable sed;
   public static Drawable kanran;
   public static Drawable sanfeng;
+  public static Drawable rijindoujin;
 
   private final String TAG = "PrintDemoUsb";
   private static final String ACTION_USB_PERMISSION = "com.usb.sample.USB_PERMISSION";
@@ -86,6 +87,7 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
     kanran= ContextCompat.getDrawable(mContext,R.drawable.kanran);
     sanfeng= ContextCompat.getDrawable(mContext,R.drawable.sanfeng);
+    rijindoujin= ContextCompat.getDrawable(mContext,R.drawable.rijindoujin);
   }
 
   @Override
@@ -113,7 +115,10 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
         }else if(shopInfo.equals("sanfeng")){//sanfeng
             print.execute_print(mUsbDriver,oh,sanfeng,1);
             print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
-        }
+        }else if(shopInfo.equals("rijindoujin")){//sanfeng
+            print.execute_print(mUsbDriver,oh,rijindoujin,1);
+            print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
+          }
 
 
           //print.execute_print(mUsbDriver,oh,sed,1);

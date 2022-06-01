@@ -200,6 +200,7 @@ class _SettingPageState extends State<SettingPage> {
       //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
+        height:ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
         decoration: BoxDecoration(
           //设置边框
@@ -220,10 +221,11 @@ class _SettingPageState extends State<SettingPage> {
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor("#000000"),
                 )),
+            SizedBox(height: ScreenAdapter.height(30),),
             Container(
               //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(400),
-              child: Image.asset(GImage.getImageString(_shopInfo, "newloading"),fit: BoxFit.fitHeight),
+              height: ScreenAdapter.height(250),
+              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -235,7 +237,7 @@ class _SettingPageState extends State<SettingPage> {
     //print(url);
     Directory storageDir = await getTemporaryDirectory();
     String storagePath = storageDir.path;
-    final path = storagePath + '/kanranBooking.apk';
+    final path = storagePath + '/smartwe_ticket_machine.apk';
     try {
       var dio = Dio();
       final Response response =  await dio.download(url, path, onReceiveProgress: (int count, int total) {
@@ -1328,7 +1330,8 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
 
-                        /*InkWell(
+                        if(_shopInfo == "kanran")
+                          InkWell(
                           onTap: () {
                             Navigator.of(context).pushNamed('/attendance');
                           },
@@ -1352,7 +1355,7 @@ class _SettingPageState extends State<SettingPage> {
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )),
                           ),
-                        ),*/
+                        ),
                         InkWell(
                           onTap: () {
                             showDownloadingAlert();

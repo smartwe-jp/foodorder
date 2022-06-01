@@ -105,8 +105,8 @@ public class MyPlatformView implements PlatformView,IDeviceListener, IStreamList
     public void dispose() {
 
         DeptrumSdkApi.getApi().stopStream(StreamType.STREAM_RGB);
-        DeptrumSdkApi.getApi().setStreamListener(null);
-
+        //DeptrumSdkApi.getApi().setStreamListener(null);
+        DeptrumSdkApi.getApi().close();
         mRgbSurface.onPause();
 
         mRgbisplay.release();
@@ -210,7 +210,9 @@ public class MyPlatformView implements PlatformView,IDeviceListener, IStreamList
 
     public void stopCameraImage(){
         DeptrumSdkApi.getApi().stopStream(StreamType.STREAM_RGB);
-        DeptrumSdkApi.getApi().setStreamListener(null);
+        //DeptrumSdkApi.getApi().setStreamListener(null);
+
+        DeptrumSdkApi.getApi().close();
 
         //mRgbSurface.onPause();
 

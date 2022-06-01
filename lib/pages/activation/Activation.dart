@@ -90,6 +90,7 @@ class _ActivationPageState extends State<ActivationPage> {
                     },
                     child: Container(
                       padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.only(top: 3),
                       height: ScreenAdapter.height(95),
                       decoration: (_checkedShop == "kanran")
                           ? BoxDecoration(
@@ -105,13 +106,51 @@ class _ActivationPageState extends State<ActivationPage> {
                         children: [
                           Image.asset(
                             GImage.getImageString("kanran", "logo"),
-                            width: ScreenAdapter.width(120),
+                            width: ScreenAdapter.width(80),
                             fit: BoxFit.fitWidth,
                           ),
                           Text(
                             "甘蘭",
                             style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(32.0),
+                                fontSize: ScreenAdapter.fontSize(30.0),
+                                color: ColorsUtil.hexToColor("#000000"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      setState(() {
+                        _checkedShop = "rijindoujin";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.only(top: 3),
+                      height: ScreenAdapter.height(95),
+                      decoration: (_checkedShop == "rijindoujin")
+                          ? BoxDecoration(
+                        //color: Colors.transparent, // 背景色
+                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
+                        borderRadius: BorderRadius.circular((5)), // 圆角
+                      )
+                          : BoxDecoration(
+                          color: Colors.transparent
+
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            GImage.getImageString("rijindoujin", "logo"),
+                            width: ScreenAdapter.width(80),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          Text(
+                            "日進斗金フライドチキン",
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(30.0),
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w600),
                           ),
@@ -142,14 +181,14 @@ class _ActivationPageState extends State<ActivationPage> {
                         children: [
                           Image.asset(
                             GImage.getImageString("sanfeng", "logo"),
-                            width: ScreenAdapter.width(120),
+                            width: ScreenAdapter.width(80),
                             fit: BoxFit.fitWidth,
                             color: Colors.black,
                           ),
                           Text(
                             "三豊麺",
                             style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(32.0),
+                                fontSize: ScreenAdapter.fontSize(30.0),
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w600),
                           ),

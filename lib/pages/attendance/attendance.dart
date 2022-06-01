@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/config/colorsUtil.dart';
+import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/HttpService.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -75,7 +76,8 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   showDialogUser(userName,employeeNo,avatarUrl){
-
+    DateTime dateTime = DateTime.now();
+    var _showTime = dateTime.toString().substring(11,19);
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -118,6 +120,8 @@ class _AttendancePageState extends State<AttendancePage> {
                                 //Text("部署:研发部", style: TextStyle(fontSize: 28)),
                                 SizedBox(height: 15,),
                                 Text("社員番号:${employeeNo}", style: TextStyle(fontSize: 28)),
+                                SizedBox(height: 15,),
+                                Text("打刻時間:${_showTime}", style: TextStyle(fontSize: 28)),
                               ],
                             )
                           ],
@@ -265,18 +269,19 @@ class _AttendancePageState extends State<AttendancePage> {
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
+          SizedBox(height: ScreenAdapter.height(80),),
           Expanded(child: AndroidView(
             //与 Android 原生交互时唯一标识符,与Android端有对应关系
             viewType: 'plugins.com.fanxing.foodorder/android_view',
           )),
-          SizedBox(height: 25,),
+          SizedBox(height: 50,),
           Expanded(
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  Container(
+                  /*Container(
                       child: InkWell(
                         onTap: (){
                           //在Flutter端调用执行函数，将Flutter端按钮的点击次数传递到安卓端
@@ -308,7 +313,7 @@ class _AttendancePageState extends State<AttendancePage> {
                         ),
                       )
                   ),
-                  SizedBox(width: 35,),
+                  SizedBox(width: 35,),*/
                   Container(
                       child: InkWell(
                         onTap: (){
@@ -320,14 +325,19 @@ class _AttendancePageState extends State<AttendancePage> {
                           _channel.invokeMethod("takePictureButtonAndNoticeAndroid", map);
                         },
                         child: Container(
-                          width: ScreenAdapter.width(250),
-                          height: ScreenAdapter.height(100),
+                          width: ScreenAdapter.width(400),
+                          height: ScreenAdapter.height(400),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
 
-                            color: ColorsUtil.hexToColor("#A61C1C"),
+                            //color: ColorsUtil.hexToColor("#A61C1C"),
                             //设置圆角
                             borderRadius: new BorderRadius.circular((16.0)),
+                            image: new DecorationImage(
+                              alignment: Alignment.centerRight,
+                              fit: BoxFit.fitHeight,
+                              image: AssetImage(GImage.getImageString("kanran", "qiandaobutton")),
+                            ),
                           ),
                           //打卡
                           child: Text(

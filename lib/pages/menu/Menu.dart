@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -117,6 +118,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     _imageCache.clear();
 
     _imageCache.clearLiveImages();
+    AssetsAudioPlayer.newPlayer().dispose();
 
     super.dispose();
 
@@ -364,6 +366,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     var menuIndex = 0;
     for (var item in topMenu) {
       categoryMenus.add(InkWell(
+        //enableFeedback: false,
         onTap: () {
           setState(() {
             classTag = item['categoryCode'];
@@ -451,6 +454,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         Container(
           //alignment: Alignment.centerRight,
           child: InkWell(
+            enableFeedback: false,
             onTap: () {
               controller.removeAllFromCart();
               Navigator.pushNamed(context, '/home');
@@ -482,6 +486,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         ),
         Expanded(
             child: InkWell(
+              enableFeedback: false,
           onLongPress: (){
             if(int.parse(_shopCartTotalPrice) >0){
               Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
@@ -528,6 +533,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     }
   }
 
+  playQRScannerSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/14428.wav"),
+      autoStart: true,
+      volume: 0.3,
+    );
+  }
+
+  deleteItemSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/697.wav"),
+      autoStart: true,
+      volume: 0.8,
+    );
+  }
   //公共展示加入购物车动画
   _publicShowAddCart(temp,imgUrl){
     /*Function callback;
@@ -549,8 +569,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   }
   _publicShowAddCartNew(){
 
-    ToastCompoent.toast(context,msg: "",img: GImage.getImageString(_shopInfo, "checked_green"),showTime:500);
-
+    ToastCompoent.toast(context,msg: "",img: GImage.getImageString(_shopInfo, "checked_green"),showTime:400,sound: "1");
+    //playQRScannerSound();
   }
   //公共展示菜品图片
   publicShowMenuImage(imgPath, imgWidth, imgHeight) {
@@ -741,6 +761,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //改变选项
   _changeOption(menuCode, groupCode, optionCode, setMenuState) {
+    //playQRScannerSound();
+
     var attr = _menuOption[menuCode];
     for (var i = 0; i < attr.length; i++) {
       if (attr[i]["groupCode"] == groupCode) {
@@ -859,6 +881,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 right: ScreenAdapter.width(14),
                 bottom: ScreenAdapter.height(3)),
             child: InkWell(
+              //enableFeedback: true,
               onTap: () {
                 _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
@@ -909,24 +932,24 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     spreadRadius: 0),
                               ],
                             )  :BoxDecoration(
-            borderRadius: BorderRadius.all(Radius.circular(14.0)),
-            gradient: LinearGradient(
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight,
-              colors: [
-                ColorsUtil.hexToColor("#E9CE9B"),
-                ColorsUtil.hexToColor("#CEA062"),
-              ],
-            ),
-            //设置阴影
-            boxShadow: [
-              BoxShadow(
-                  color: Colors.black26,
-                  offset: Offset(2, 3),
-                  blurRadius: 3.0,
-                  spreadRadius: 0),
-            ],
-          ),
+                                  borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.centerLeft,
+                                    end: Alignment.centerRight,
+                                    colors: [
+                                      ColorsUtil.hexToColor("#E9CE9B"),
+                                      ColorsUtil.hexToColor("#CEA062"),
+                                    ],
+                                  ),
+                                  //设置阴影
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.black26,
+                                        offset: Offset(2, 3),
+                                        blurRadius: 3.0,
+                                        spreadRadius: 0),
+                                  ],
+                                ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
@@ -1183,6 +1206,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   right: ScreenAdapter.width(7),
                   bottom: ScreenAdapter.height(2)),
               child: InkWell(
+                //enableFeedback: false,
                 onTap: () {
                   _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
                       optionVolistSon["optionCode"], setFirstState);
@@ -1508,6 +1532,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   right: ScreenAdapter.width(7),
                   bottom: ScreenAdapter.height(5)),
               child: InkWell(
+                //enableFeedback: false,
                 onTap: () {
                   _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
                       optionVolistSon["optionCode"], setFirstState);
@@ -1880,6 +1905,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                           //确认按钮
                           InkWell(
+                            enableFeedback: false,
                             /*onTapDown: (details) {
                               temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
                             },*/
@@ -1988,6 +2014,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           for (var optionSon in itemson['optionVoList']) {
             optionButtonscount.add("test1");
             optionButtons.add(InkWell(
+              enableFeedback: false,
               /*onTapDown: (details) {
                 temp = new Offset(
                     details.globalPosition.dx, details.globalPosition.dy);
@@ -2107,6 +2134,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         //height: ScreenAdapter.height(480),
         color: ColorsUtil.hexToColor(Gcolor.whiteColor),
         child: InkWell(
+            enableFeedback: false,
             /*onTapDown: (details) {
               temp = new Offset(
                   details.globalPosition.dx, details.globalPosition.dy);
@@ -2214,6 +2242,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
+          enableFeedback: false,
           /*onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
@@ -2462,6 +2491,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                       //确认按钮
                       InkWell(
+                        enableFeedback: false,
                         /*onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx,
                               details.globalPosition.dy);
@@ -2594,6 +2624,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
+          enableFeedback: false,
           /*onTapDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
@@ -2834,6 +2865,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       ),
                       //确认按钮
                       InkWell(
+                        enableFeedback: false,
                         /*onTapDown: (details) {
                           temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
                         },*/
@@ -2958,6 +2990,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
+          enableFeedback: false,
           /*onPanDown: (details) {
             temp = new Offset(
                 details.globalPosition.dx, details.globalPosition.dy);
@@ -3109,6 +3142,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
+          enableFeedback: false,
           /*onPanDown: (details) {
             temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
 
@@ -3435,6 +3469,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                             SizedBox(height: ScreenAdapter.height(18)),
                             InkWell(
+                              enableFeedback: false,
                               onTap: () {
                                 if (int.parse(_shopCartTotalPrice) ==0) {
                                   return false;
@@ -3497,6 +3532,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               onTap: () {
                 Get.find<HomePageController>().removeFromCart(d.id ?? 0);
                 //print("Item removed from cart successfully");
+                //删除商品声音
+                deleteItemSound();
                 controller.getCardList();
                 //更改显示购物车价格
                 getCartPriceTotal();
@@ -3618,14 +3655,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   _doSubmitOrder(){
     if(_machineCode !=""){
       _showOrderEasyLoading();
-      /*EasyLoading.show(
-        //status: 'loading...',
-        indicator: Container(
-          width: ScreenAdapter.width(400),
-          child: Image.asset('assets/images/backloading.gif',fit: BoxFit.fitHeight),
-        ),
-        maskType: EasyLoadingMaskType.black,
-      );*/
+
+      //自定义声音
+      playQRScannerSound();
 
       var cartItems = controller.getcartItems;
       List selectedItem = [];

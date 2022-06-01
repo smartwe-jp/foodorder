@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-      ..progressColor = Colors.transparent
+      ..progressColor = Colors.grey
       ..backgroundColor = Colors.transparent
       ..indicatorColor = Colors.grey
       ..textColor = Colors.transparent
