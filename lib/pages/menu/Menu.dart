@@ -375,8 +375,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         child: Stack(
             children: [
               Container(
-                margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
-                width: ScreenAdapter.width(161),
+                margin: EdgeInsets.only(right: ScreenAdapter.width(6)),
+                width: ScreenAdapter.width(162),
                 height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
                 /*decoration: BoxDecoration(
             image: new DecorationImage(
@@ -588,7 +588,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       height: ScreenAdapter.height(imgHeight),
       child: CachedNetworkImage(
         imageUrl: imgPath,
-        fit: BoxFit.fill,
+        fit: BoxFit.cover,
         width: ScreenAdapter.width(imgWidth),
         height: ScreenAdapter.height(imgHeight),
         memCacheWidth: imgWidth.toInt(),
@@ -613,7 +613,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           ),
         ),
         errorWidget: (context, url, error) => Image.network(
-          imgPath,fit: BoxFit.fill,
+          imgPath,fit: BoxFit.cover,
           width: ScreenAdapter.width(imgWidth),
           height: ScreenAdapter.height(imgHeight)
         ),

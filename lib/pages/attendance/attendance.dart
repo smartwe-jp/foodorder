@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/config/color.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/HttpService.dart';
@@ -58,7 +59,7 @@ class _AttendancePageState extends State<AttendancePage> {
           EasyLoading.dismiss();
           if (response['code'] == 200 && null != response['data']['name'] && "" != response['data']['name']) {
 
-            showDialogUser(response['data']['name'],response['data']['employeeNo'],response['data']['avatarUrl']);
+            showDialogUser(response['data']['name'],response['data']['employeeNo'],response['data']['avatarUrl'],response['data']['time'],response['data']['message']);
 
 
           }else{
@@ -75,9 +76,7 @@ class _AttendancePageState extends State<AttendancePage> {
     }
   }
 
-  showDialogUser(userName,employeeNo,avatarUrl){
-    DateTime dateTime = DateTime.now();
-    var _showTime = dateTime.toString().substring(11,19);
+  showDialogUser(userName,employeeNo,avatarUrl,showTime,showMessage){
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -95,10 +94,11 @@ class _AttendancePageState extends State<AttendancePage> {
                 children: <Widget>[
                   Container(
                     width: ScreenAdapter.width(550),
-                    height: ScreenAdapter.height(360),
+                    height: ScreenAdapter.height(410),
 
                     child: Column(
                       //crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: <Widget>[
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -121,9 +121,17 @@ class _AttendancePageState extends State<AttendancePage> {
                                 SizedBox(height: 15,),
                                 Text("社員番号:${employeeNo}", style: TextStyle(fontSize: 28)),
                                 SizedBox(height: 15,),
-                                Text("打刻時間:${_showTime}", style: TextStyle(fontSize: 28)),
+                                Text("打刻時間:${showTime}", style: TextStyle(fontSize: 28)),
                               ],
                             )
+                          ],
+                        ),
+                        Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text("${showMessage}", style: TextStyle(fontSize: 30,color: ColorsUtil.hexToColor("#0000EE"),
+                                fontWeight: FontWeight.w600)),
                           ],
                         ),
                         SizedBox(
@@ -136,14 +144,16 @@ class _AttendancePageState extends State<AttendancePage> {
                         ),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
 
                             TextButton(
                               child: Text(
-                                "確認",
+                                "確 認",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
-                                    fontSize: 28),
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 30),
                               ),
                               onPressed: () async {
                                 //widget.confirmCallback('确定');
@@ -203,7 +213,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
                             TextButton(
                               child: Text(
-                                "確認",
+                                "確 認",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
                                     fontSize: ScreenAdapter.fontSize(32.0)),
@@ -264,7 +274,14 @@ class _AttendancePageState extends State<AttendancePage> {
       appBar: AppBar(
         // Here we take the value from the MyHomePage object that was created by
         // the App.build method, and use it to set our appbar title.
-        title: Text("チェックイン"),
+        title: Text("チェックイン",textAlign:TextAlign.center,style: TextStyle(color:Colors.white,fontSize: ScreenAdapter.fontSize(34.0))),
+        centerTitle: true,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back_ios,color: Colors.white,size: 22,),
+          onPressed: (){
+            Navigator.pop(context); // 关闭当前页面
+          },
+        ),
       ),
       body: Column(
         crossAxisAlignment: CrossAxisAlignment.center,

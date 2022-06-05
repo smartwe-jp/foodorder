@@ -430,16 +430,14 @@ class _SettlementPageState extends State<SettlementPage> {
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
       if(_ticketData != null){//print("先请求了小票数据打印小票来了");
-        //print(_shopInfo);
+
         await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo);
 
-        //sleep(Duration(milliseconds: 800));
 
         //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
       if(_scanCode == true){
         //已经结束入金，处理取引终了
         payCubeEndDeposit();
-        //payCubeCloseTransaction();
       }else{
         nextOper();
       }
@@ -1220,12 +1218,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
   @override
   Widget build(BuildContext context) {
-    var _settlement_payment_method;
-    if(_shopInfo == "rijindoujin"){
-      _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method_only_cash");
-    }else{
-      _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method");
-    }
+    var _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method");
+
     return Scaffold(
       backgroundColor: ColorsUtil.hexToColor("#D8D8D8"),
       body: AnnotatedRegion(
@@ -1423,7 +1417,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                             ],
                           )),
-                      if(_shopInfo != "rijindoujin")
+
                       Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           width: ScreenAdapter.width(130),
@@ -1507,7 +1501,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if(_shopInfo != "rijindoujin")
+
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -1526,7 +1520,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           ),
                         ],
                       ),
-                      if(_shopInfo != "rijindoujin")
+
                       SizedBox(
                         width: ScreenAdapter.width(30),
                       ),
