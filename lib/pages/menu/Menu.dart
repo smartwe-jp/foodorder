@@ -362,7 +362,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC"];
+    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42"];
     var menuIndex = 0;
     for (var item in topMenu) {
       categoryMenus.add(InkWell(
@@ -2825,23 +2825,23 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               padding: EdgeInsets.only(
                                   right: ScreenAdapter.width(15)),
                               child: publicShowMenuTitle(item['mainTitle'],
-                                  42.0, Gcolor.mainTitleColor),
+                                  38.0, Gcolor.mainTitleColor),
                             ),
                             //副标题
                             subtitle != ""
-                                ? Container(
-                                    alignment: Alignment.centerLeft,
-                                    child: Text(
-                                      '${subtitle}',
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(
-                                              GFontSize
-                                                  .menuThreeListFoodSubtitle),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor)),
-                                    ),
-                                  )
+                                ? Expanded(child: Container(
+                              alignment: Alignment.centerLeft,
+                              child: Text(
+                                '${subtitle}',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(
+                                        GFontSize
+                                            .menuThreeListFoodSubtitle),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.mainTitleColor)),
+                              ),
+                            ))
                                 : Container(
                                     width: 0,
                                   ),
