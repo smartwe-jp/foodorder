@@ -86,6 +86,7 @@ class _SettingPageState extends State<SettingPage> {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     setState(() {
       this._local_version = packageInfo.version+"+"+packageInfo.buildNumber;
+      //this._local_version = packageInfo.version;
     });
   }
 

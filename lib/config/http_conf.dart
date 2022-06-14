@@ -15,6 +15,7 @@ const servicePath = {
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
   'webBootChangeReset': base_url + 'pad/web/boot/change/reset', //重置机器零钱状态
+  'webBootLinePayConfirm': base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
 
 
   'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传

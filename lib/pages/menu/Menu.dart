@@ -406,12 +406,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   child: Text(
                     item['categoryName'],
                     style: TextStyle(
-                        fontSize: _shopInfo == "kanran" ? ScreenAdapter.fontSize(GFontSize.categoryTitle):ScreenAdapter.fontSize(GFontSize.categoryTitle32),
+                        fontSize: ScreenAdapter.fontSize(GFontSize.categoryTitle32),
                         /*color: classTag == item['categoryCode']
                       ? ColorsUtil.hexToColor(Gcolor.categoryTitleSelected)
                       : ColorsUtil.hexToColor(Gcolor.categoryTitle),*/
                         color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                         fontWeight: FontWeight.w600),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ),
@@ -689,10 +691,15 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       //Widget labelContent;
       for (var i = 0; i < labelSubtitleLength; i++) {
         labels.add(Chip(
-          label: Text(subtitleList[i],
-              style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
-                  color: ColorsUtil.hexToColor("#000000"))),//Gcolor.foodTagColor
+          label: Container(
+            child: Text(subtitleList[i],
+                style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
+                    color: ColorsUtil.hexToColor("#000000")),
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),//Gcolor.foodTagColor
           /*labelPadding: EdgeInsets.only(
               right: ScreenAdapter.width(5),
               bottom: ScreenAdapter.height(0),
@@ -876,9 +883,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           optionSons.add(Container(
             alignment: Alignment.center,
             padding: EdgeInsets.only(
-                left: ScreenAdapter.width(14),
+                left: ScreenAdapter.width(12),
                 top: ScreenAdapter.height(3),
-                right: ScreenAdapter.width(14),
+                right: ScreenAdapter.width(12),
                 bottom: ScreenAdapter.height(3)),
             child: InkWell(
               //enableFeedback: true,
@@ -963,10 +970,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   width: 0,
                                 ),
                           SizedBox(
-                            width: ScreenAdapter.width(12),
+                            width: ScreenAdapter.width(10),
                           ),
                           Text(
                             optionVolistSon['mainTitle'],
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(28.0),
                               fontWeight: FontWeight.w600,
@@ -1201,9 +1210,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           }
             optionSons.add(Container(
               padding: EdgeInsets.only(
-                  left: ScreenAdapter.width(7),
+                  left: ScreenAdapter.width(4),
                   top: ScreenAdapter.height(2),
-                  right: ScreenAdapter.width(7),
+                  right: ScreenAdapter.width(4),
                   bottom: ScreenAdapter.height(2)),
               child: InkWell(
                 //enableFeedback: false,
@@ -1214,7 +1223,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(130),
+                        width: ScreenAdapter.width(135),
                         height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
                         decoration: (optionVolistSon['checked'] == true)
@@ -1289,12 +1298,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     width: 0,
                                   ),
                             SizedBox(
-                              width: ScreenAdapter.width(6),
+                              width: ScreenAdapter.width(4),
                             ),
                             Text(optionVolistSon['mainTitle'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
                                   fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(25.0),
+                                  fontSize: ScreenAdapter.fontSize(24.0),
                                   color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                                 )),
                           ],
@@ -1478,8 +1489,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   publicShowThreeMenuOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(15),
-          right: ScreenAdapter.width(5),
+          left: ScreenAdapter.width(12),
+          right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
       child: Column(
@@ -1618,8 +1629,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               width: ScreenAdapter.width(6),
                             ),
                             Text("${optionVolistSon['mainTitle']}",
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(25.0),
+                                  fontSize: ScreenAdapter.fontSize(24.0),
                                   fontWeight: FontWeight.w500,
                                   color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                                 )),
@@ -2337,11 +2350,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           height: ScreenAdapter.height(10),
                         ),
                         Container(
-                          //padding: EdgeInsets.only(
-                              //left: ScreenAdapter.width(15),
-                              //top: ScreenAdapter.height(20),
-                              //right: ScreenAdapter.width(15)
-                          //),
                           child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
@@ -2442,35 +2450,51 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       Expanded(
                           child: Container(
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             //菜单Title
-                            Container(
-                              padding: EdgeInsets.only(
-                                  right: ScreenAdapter.width(15)),
-                              alignment: Alignment.center,
-                              child: publicShowMenuTitle(item['mainTitle'],
-                                  42.0, Gcolor.mainTitleColor),
+
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                //菜单Title
+                                Expanded(child: Container(
+                                  padding: EdgeInsets.only(
+                                      right: ScreenAdapter.width(15)),
+                                  child: publicShowMenuTitle(item['mainTitle'],
+                                      32.0, Gcolor.mainTitleColor),
+                                ),),
+
+                              ],
                             ),
-                            //副标题
-                            subtitle != ""
-                                ? Container(
-                                    alignment: Alignment.center,
-                                    child: Text(
-                                      '${subtitle}',
-                                      style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(
-                                              GFontSize
-                                                  .menuThreeListFoodSubtitle),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor)),
-                                    ),
-                                  )
-                                : Container(
-                                    width: 0,
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                //副标题
+                                subtitle != ""
+                                    ? Expanded(child: Container(
+                                  alignment: Alignment.centerLeft,
+                                  child: Text(
+                                    '${subtitle}',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(
+                                            GFontSize
+                                                .menuThreeListFoodSubtitle),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor)),
                                   ),
+                                ))
+                                    : Container(
+                                  width: 0,
+                                ),
+
+                              ],
+                            ),
+
                           ],
                         ),
                       )),
@@ -2667,9 +2691,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 260.0, 525.0),
+                        publicShowMenuImage(item['homeImage'], 260.0, 520.0),
                         SizedBox(
-                          height: ScreenAdapter.height(2),
+                          height: ScreenAdapter.height(1),
                         ),
                         Container(
                           //width: ScreenAdapter.width(1080),
@@ -2816,37 +2840,49 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       Expanded(
                           child: Container(
                         padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                      child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            //菜单Title
-                            Container(
-                              padding: EdgeInsets.only(
-                                  right: ScreenAdapter.width(15)),
-                              child: publicShowMenuTitle(item['mainTitle'],
-                                  38.0, Gcolor.mainTitleColor),
+                      child: Column(
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                //菜单Title
+                                Expanded(child: Container(
+                                  padding: EdgeInsets.only(
+                                      right: ScreenAdapter.width(15)),
+                                  child: publicShowMenuTitle(item['mainTitle'],
+                                      32.0, Gcolor.mainTitleColor),
+                                ),),
+
+                              ],
                             ),
-                            //副标题
-                            subtitle != ""
-                                ? Expanded(child: Container(
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                '${subtitle}',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(
-                                        GFontSize
-                                            .menuThreeListFoodSubtitle),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.mainTitleColor)),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              //副标题
+                              subtitle != ""
+                                  ? Expanded(child: Container(
+                                alignment: Alignment.centerLeft,
+                                child: Text(
+                                  '${subtitle}',
+                                  style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(
+                                          GFontSize
+                                              .menuThreeListFoodSubtitle),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor)),
+                                ),
+                              ))
+                                  : Container(
+                                width: 0,
                               ),
-                            ))
-                                : Container(
-                                    width: 0,
-                                  ),
-                          ],
-                        ),
+
+                            ],
+                          ),
+                        ],
+                      ),
                       )),
                       //价格展示 item['currentPrice']
                       Container(

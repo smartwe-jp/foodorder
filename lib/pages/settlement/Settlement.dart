@@ -73,6 +73,8 @@ class _SettlementPageState extends State<SettlementPage> {
   Timer OutMoneytimer;
   Timer putMoneyCurrencytimer;
 
+  Timer ScanCodeConfirmTimer;
+
   var _allowStatus;
   var _stopStatus;
   var _outStatus;
@@ -131,6 +133,7 @@ class _SettlementPageState extends State<SettlementPage> {
     endtimer?.cancel();
     OutMoneytimer?.cancel();
     putMoneyCurrencytimer?.cancel();
+    ScanCodeConfirmTimer?.cancel();
     eventBus.fire(new PayCubeEvent('支付成功...'));
     //eventBus.fire(new clearCartEvent('支付成功...'));
 
@@ -347,76 +350,9 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
         } else {
-          EasyLoading.dismiss();
-          setState(() {
-            _scanQrCodeController.text = "";
-            _scanQrCode = "";
-            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-          });
+          //扫码后超时，再继续请求后台，1秒一次 20次
+          _doScanCodeTimeOut();
 
-        //showToast(GString.getToString(this._checkLanguage, "show_server_error"));
-
-        var show_dialog_content = GString.getToString(this._checkLanguage, "settlement_nopayment_error");
-
-        //支付状态
-        showDialog(
-            context: context,
-            builder: (BuildContext context) {
-              return Container(
-                width: ScreenAdapter.width(950),
-                child: SimpleDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    title: Align(
-                        alignment: Alignment.center,
-                        child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
-                    ),
-                    children: <Widget>[
-                      Container(
-                        width: ScreenAdapter.width(650),
-
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Align(
-                              child: Text(show_dialog_content,
-                                  style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
-                              alignment: Alignment(0, 0),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Divider(
-                              thickness: 1.0,
-                              color: Colors.black12,
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              child: Padding(
-                                padding: const EdgeInsets.only(right: 70.0),
-                                child: TextButton(
-                                  child: Text(
-                                    GString.getToString(this._checkLanguage, "settlement_change_method"),
-                                    style: TextStyle(
-                                        color: Colors.lightBlue,
-                                        fontSize: ScreenAdapter.fontSize(32.0)),
-                                  ),
-                                  onPressed: () async {
-                                    Navigator.pop(context);
-                                  },
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ]
-                ),
-              );
-            });
 
         }
       });
@@ -424,8 +360,116 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
+  //扫码后超时，再继续请求后台，1秒一次 20次
+  _doScanCodeTimeOut(){
+    int queryCount = 0;
+    ScanCodeConfirmTimer?.cancel();
+    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 1500), (Timer ConfirmTimer) async {
+      queryCount++;
+      if(queryCount > 20){
+        //退出关闭
+        ConfirmTimer?.cancel();
+        _showScanCodeTimeOutDialog();
+      }
+
+      var formData = {
+        "orderId": this._orderId,
+      };
+      request('webBootLinePayConfirm', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+
+        if (response['code'] == 200 && response['data'] == true) {
+          //退出关闭
+          ConfirmTimer?.cancel();
+          setState(() {
+            _isReport = false;
+            _scanCode = true;
+          });
+          doPrintOrderMenu();
+
+
+        }
+      });
+
+
+
+    });
+  }
+
+  //扫码超时请求20次后依然失败，弹出dialog
+  _showScanCodeTimeOutDialog(){
+    EasyLoading.dismiss();
+    setState(() {
+      _scanQrCodeController.text = "";
+      _scanQrCode = "";
+      FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+    });
+
+    var show_dialog_content = GString.getToString(this._checkLanguage, "settlement_nopayment_error");
+
+    //支付状态
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(show_dialog_content,
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                GString.getToString(this._checkLanguage, "settlement_change_method"),
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
+  }
+
   //去打印小票
-  doPrintOrderMenu() async {//print("888");
+  doPrintOrderMenu() async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
@@ -442,26 +486,13 @@ class _SettlementPageState extends State<SettlementPage> {
         nextOper();
       }
 
-        /*if(_giveChangeMoney >0){
-          startOutPutMoney(_giveChangeMoney);
-        }else{
-
-          if(_isReport == true){
-            //汇报，关闭现金机
-            reportOutMoney();
-          }else{
-            //已经结束入金，处理取引终了
-            payCubeCloseTransaction();
-          }
-
-        }*/
       }else{
         var formData = {
           "orderId": this._orderId,
         };
         request('webBootToPrint', method: 'GET', parameters: formData).then((val) async {
           var response = json.decode(val.toString());
-          //print("print$response");
+
           if (response['code'] == 200) {
 
             await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo);
@@ -474,21 +505,6 @@ class _SettlementPageState extends State<SettlementPage> {
             }else{
               nextOper();
             }
-
-
-            /*if(_giveChangeMoney >0){
-              startOutPutMoney(_giveChangeMoney);
-            }else{
-
-              if(_isReport == true){
-                //汇报，关闭现金机
-                reportOutMoney();
-              }else{
-                //已经结束入金，处理取引终了
-                payCubeCloseTransaction();
-              }
-
-            }*/
 
 
           } else {
@@ -689,7 +705,7 @@ class _SettlementPageState extends State<SettlementPage> {
           //await Paycube.endPayCube;
         }*/else{
           await Paycube.endPayCube;
-          //print("_stopStatus:$_stopStatus");
+
         }
       });
 
@@ -851,7 +867,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
 
-        //print("开始出币了");
+
         outmoneyt.cancel();
 
       }else if(_outStatus == "Error-A0--02"){
@@ -860,9 +876,9 @@ class _SettlementPageState extends State<SettlementPage> {
         //await Paycube.getPayCubeOutMoneyStatus;
         //print("_outStatus处理中:$_outStatus");
       }else{
-        //sleep(Duration(milliseconds: 200));
+
         await Paycube.outPayCubeMoney(outStringMoney);
-        //print("_outStatus:$_outStatus");
+
       }
     });
 
@@ -879,7 +895,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   }
 
-  gotonewMenuPage(){//print("closereturn11");
+  gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
@@ -989,7 +1005,6 @@ class _SettlementPageState extends State<SettlementPage> {
       //await Paycube.setReceiveEvent;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
-        //payCubeCloseTransaction();
         //print("扫码成功结束");
         payCubeCloseTransaction();
         stopt.cancel();
