@@ -13,7 +13,8 @@ import 'package:flutter/services.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 class AttendancePage extends StatefulWidget {
-  AttendancePage({Key key}) : super(key: key);
+  Map arguments;
+  AttendancePage({Key key, this.arguments}) : super(key: key);
 
   _AttendancePageState createState() => _AttendancePageState();
 }
@@ -25,11 +26,12 @@ class _AttendancePageState extends State<AttendancePage> {
 
   var bytes = null;
   var headBytes;
-  var _userName = "";
+  String _machineCode = "";
+
   @override
   void initState() {
     super.initState();
-
+    this._machineCode = widget.arguments['machineCode'];
     //设置此通道上的监听
     _channel.setMethodCallHandler(_handlerMethodCall);
   }
@@ -50,12 +52,14 @@ class _AttendancePageState extends State<AttendancePage> {
         String backString = androidResultImage.replaceAll('\r', '').replaceAll('\n', '');
 
         var formData = {
+          "machineCode":_machineCode,
           "photo": backString,
+
         };
 
         request('oldrecognitionSearch', method: 'POST', parameters: formData).then((val) {
           var response = json.decode(val.toString());
-          //print("response-${response}");
+
           EasyLoading.dismiss();
           if (response['code'] == 200 && null != response['data']['name'] && "" != response['data']['name']) {
 

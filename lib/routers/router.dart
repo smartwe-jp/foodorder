@@ -17,7 +17,7 @@ final routes = {
 
   '/showImage': (context) => ShowImagePage(), //查看图片
 
-  '/attendance': (context) => AttendancePage(),//打卡
+  '/attendance': (context,{arguments}) => AttendancePage(arguments:arguments),//打卡
 
 
 };

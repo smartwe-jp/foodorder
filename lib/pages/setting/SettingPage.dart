@@ -1334,7 +1334,9 @@ class _SettingPageState extends State<SettingPage> {
                         if(_shopInfo == "kanran")
                           InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed('/attendance');
+                            Navigator.of(context).pushNamed('/attendance',arguments: {
+                            "machineCode": this._machineCode,
+                            });
                           },
                           child: Container(
                             margin: EdgeInsets.only(
