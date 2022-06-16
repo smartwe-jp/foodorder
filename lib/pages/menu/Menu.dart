@@ -92,6 +92,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //就餐类型
   var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
 
+  //顶部展示支付类型
+  var _showWechat = true;
+  var _showAlipay = true;
+  var _showPayPay = true;
+
   @override
   void initState() {
     super.initState();
@@ -225,6 +230,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           "businessTime": shopData["businessTime"],
         };
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
+
+        //保存支付页面顶部图标
+        setState(() {
+          _showWechat = shopData['linePayChannelMap']['Wechat'];
+          _showAlipay = shopData['linePayChannelMap']['Alipay'];
+          _showPayPay = shopData['linePayChannelMap']['PayPay'];
+        });
+
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
         //如果菜单为空则返回言语选择页面并给出提示
@@ -3735,6 +3748,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
                 "machineCode": this._machineCode,
+                "showWechat":_showWechat,
+                "showAlipay":_showAlipay,
+                "showPayPay":_showPayPay,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
               });

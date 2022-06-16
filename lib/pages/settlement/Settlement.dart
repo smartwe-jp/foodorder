@@ -93,6 +93,10 @@ class _SettlementPageState extends State<SettlementPage> {
   var _ticketData = null;
   var _scanCode = false;
 
+  //顶部展示支付类型
+  var _showWechat = true;
+  var _showAlipay = true;
+  var _showPayPay = true;
 
   @override
   void initState() {
@@ -104,6 +108,9 @@ class _SettlementPageState extends State<SettlementPage> {
     this._orderId = widget.arguments['orderId'];
     this._totalPrice = widget.arguments['totalPrice'];
 
+    this._showWechat = widget.arguments['showWechat'];
+    this._showAlipay = widget.arguments['showAlipay'];
+    this._showPayPay = widget.arguments['showPayPay'];
 
     EasyLoading.dismiss();
 
@@ -1413,7 +1420,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
-                      if(_shopInfo != "rijindoujin")
+                      if(_showAlipay == true)
                         Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           width: ScreenAdapter.width(130),
@@ -1432,7 +1439,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                             ],
                           )),
-
+                      if(_showWechat == true)
                       Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           width: ScreenAdapter.width(130),
@@ -1454,7 +1461,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             ],
                           )),
 
-                      if(_shopInfo != "rijindoujin")
+                      if(_showPayPay == true)
                       Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
                           width: ScreenAdapter.width(130),
