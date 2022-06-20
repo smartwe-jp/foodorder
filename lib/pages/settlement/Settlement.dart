@@ -371,7 +371,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _doScanCodeTimeOut(){
     int queryCount = 0;
     ScanCodeConfirmTimer?.cancel();
-    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 1500), (Timer ConfirmTimer) async {
+    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 2000), (Timer ConfirmTimer) async {
       queryCount++;
       if(queryCount > 20){
         //退出关闭

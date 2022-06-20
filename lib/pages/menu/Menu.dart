@@ -233,9 +233,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         //保存支付页面顶部图标
         setState(() {
-          _showWechat = shopData['linePayChannelMap']['Wechat'];
-          _showAlipay = shopData['linePayChannelMap']['Alipay'];
-          _showPayPay = shopData['linePayChannelMap']['PayPay'];
+          _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
+          _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
+          _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
         });
 
         //2、保存商品信息
