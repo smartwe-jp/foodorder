@@ -32,7 +32,7 @@ def keystoreProperties = new Properties()
 keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 
 android {
-    compileSdkVersion 29
+    compileSdkVersion 33
 
     lintOptions {
         disable 'InvalidPackage'
@@ -42,7 +42,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.fanxing.foodorder"
         minSdkVersion 22
-        targetSdkVersion 29
+        targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true

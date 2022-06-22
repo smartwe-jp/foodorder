@@ -4,9 +4,9 @@ import 'dart:ui';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 class ScreenAdapter{
 
-  static init(context){//Size(1080, 1920)
+  /*static init(context){//Size(1080, 1920)
     ScreenUtil.init(context, designSize: Size(750, 1334), allowFontScaling: false);
-  }
+  }*/
   static height(double value){
      return ScreenUtil().setHeight(value);
   }

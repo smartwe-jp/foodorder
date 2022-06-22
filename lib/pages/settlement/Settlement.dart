@@ -338,7 +338,8 @@ class _SettlementPageState extends State<SettlementPage> {
   //扫码支付
   _doToPay(){
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
-      _showEasyLoading();
+      //_showEasyLoading();
+      _showEasyLoadingScan();
       var formData = {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
@@ -367,13 +368,13 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
-  //扫码后超时，再继续请求后台，1秒一次 20次
+  //扫码后超时，再继续请求后台，5秒一次 60次
   _doScanCodeTimeOut(){
     int queryCount = 0;
     ScanCodeConfirmTimer?.cancel();
-    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 2000), (Timer ConfirmTimer) async {
+    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000), (Timer ConfirmTimer) async {
       queryCount++;
-      if(queryCount > 20){
+      if(queryCount > 60){
         //退出关闭
         ConfirmTimer?.cancel();
         _showScanCodeTimeOutDialog();
@@ -393,8 +394,6 @@ class _SettlementPageState extends State<SettlementPage> {
             _scanCode = true;
           });
           doPrintOrderMenu();
-
-
         }
       });
 
@@ -402,6 +401,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     });
   }
+
 
   //扫码超时请求20次后依然失败，弹出dialog
   _showScanCodeTimeOutDialog(){
@@ -1122,7 +1122,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   }
 
-  _showEasyLoading(){
+  _showEasyLoadingScan(){
     var _showTag;
     if(int.parse(this._showOutMoney) >0){
     //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
@@ -1147,16 +1147,54 @@ class _SettlementPageState extends State<SettlementPage> {
         width: ScreenAdapter.width(550),
           height: ScreenAdapter.height(480),
           padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-          decoration: BoxDecoration(
-            //设置边框
-            border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-            //背景颜色
-            color: Colors.white,
-            //设置圆角
-            borderRadius: new BorderRadius.circular((15.0)),
-            //设置阴影
-            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-          ),
+          child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            InkWell(
+              onLongPress: (){
+                ScanCodeConfirmTimer?.cancel();
+                _showScanCodeTimeOutDialog();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
+  _showEasyLoading(){
+    var _showTag;
+    if(int.parse(this._showOutMoney) >0){
+      //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
+      _showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_loading_tag"),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(25),
+            fontWeight: FontWeight.w600,
+            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+          ));
+
+    }else{
+      _showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_loading_tag"),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(25),
+            fontWeight: FontWeight.w600,
+            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+          ));
+    }
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -1187,16 +1225,6 @@ class _SettlementPageState extends State<SettlementPage> {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        decoration: BoxDecoration(
-          //设置边框
-          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-          //背景颜色
-          color: Colors.white,
-          //设置圆角
-          borderRadius: new BorderRadius.circular((15.0)),
-          //设置阴影
-          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

@@ -8,7 +8,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_screenutil/screenutil_init.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import 'package:foodorder/routers/router.dart';
 import 'package:foodorder/services/HomeServices.dart';
@@ -55,22 +55,24 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ScreenUtilInit(
       designSize: Size(1080, 1920), //Size(1080, 1920),
-      allowFontScaling: false,
-      builder: () => MaterialApp(
-        navigatorKey: Global.navigatorKey,
-        title: "券売君", //谷町君
-        debugShowCheckedModeBanner: false,
-        //onGenerateRoute: Application.router.generator,
-        //主题
-        theme: ThemeData(
-          primaryColor: Gcolor.primaryColor,
-          //fontFamily: 'MeiryoUI',
-        ),
-        home: MyHomePage(),
-        initialRoute: '/',
-        onGenerateRoute:onGenerateRoute,
-        builder: EasyLoading.init(),
-      ),
+      builder: (context, child){
+        return MaterialApp(
+          navigatorKey: Global.navigatorKey,
+          title: "券売君", //谷町君
+          debugShowCheckedModeBanner: false,
+          //onGenerateRoute: Application.router.generator,
+          //主题
+          theme: ThemeData(
+            primaryColor: Gcolor.primaryColor,
+            //fontFamily: 'MeiryoUI',
+          ),
+          home: child,
+          initialRoute: '/',
+          onGenerateRoute:onGenerateRoute,
+          builder: EasyLoading.init(),
+        );
+      },
+      child: MyHomePage(),
     );
   }
 }
@@ -105,8 +107,8 @@ class _MyHomePageState extends State<MyHomePage> {
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
       ..progressColor = Colors.grey
-      ..backgroundColor = Colors.transparent
-      ..indicatorColor = Colors.grey
+      ..backgroundColor = Colors.white
+      ..indicatorColor = Colors.transparent
       ..textColor = Colors.transparent
       ..loadingStyle = EasyLoadingStyle.custom;
 
@@ -155,16 +157,6 @@ class _MyHomePageState extends State<MyHomePage> {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        decoration: BoxDecoration(
-          //设置边框
-          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-          //背景颜色
-          color: Colors.white,
-          //设置圆角
-          borderRadius: new BorderRadius.circular((15.0)),
-          //设置阴影
-          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -219,16 +211,6 @@ class _MyHomePageState extends State<MyHomePage> {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        decoration: BoxDecoration(
-          //设置边框
-          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-          //背景颜色
-          color: Colors.white,
-          //设置圆角
-          borderRadius: new BorderRadius.circular((15.0)),
-          //设置阴影
-          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -304,16 +286,6 @@ class _MyHomePageState extends State<MyHomePage> {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        decoration: BoxDecoration(
-          //设置边框
-          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-          //背景颜色
-          color: Colors.white,
-          //设置圆角
-          borderRadius: new BorderRadius.circular((15.0)),
-          //设置阴影
-          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [

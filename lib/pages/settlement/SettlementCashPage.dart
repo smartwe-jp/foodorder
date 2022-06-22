@@ -398,7 +398,7 @@ print("huibao$response");
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.transparent,
-      resizeToAvoidBottomPadding: false, //输入框抵住键盘 内容不随键盘滚动
+      resizeToAvoidBottomInset: false, //输入框抵住键盘 内容不随键盘滚动
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.light,
         child: SimpleDialog(

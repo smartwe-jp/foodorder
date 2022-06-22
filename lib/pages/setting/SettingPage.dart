@@ -203,16 +203,6 @@ class _SettingPageState extends State<SettingPage> {
         width: ScreenAdapter.width(550),
         height:ScreenAdapter.height(450),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        decoration: BoxDecoration(
-          //设置边框
-          border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-          //背景颜色
-          color: Colors.white,
-          //设置圆角
-          borderRadius: new BorderRadius.circular((15.0)),
-          //设置阴影
-          boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-        ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
@@ -225,7 +215,7 @@ class _SettingPageState extends State<SettingPage> {
             SizedBox(height: ScreenAdapter.height(30),),
             Container(
               //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(250),
+              height: ScreenAdapter.height(200),
               child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
