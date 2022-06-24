@@ -176,7 +176,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
             child: Container(
-              padding: EdgeInsets.only(top:ScreenAdapter.height(1450),bottom: ScreenAdapter.height(50)),
+              padding: EdgeInsets.only(top:ScreenAdapter.height(1250),bottom: ScreenAdapter.height(50)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,

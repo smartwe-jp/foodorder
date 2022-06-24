@@ -39,6 +39,7 @@ repositories {
 }
 
 dependencies {
+    //implementation(name: 'comlib', ext: 'aar')
     api fileTree(dir: 'libs', include: ['*.aar'])
     api 'com.android.support:appcompat-v7:28.0.0'
     api 'com.android.support.constraint:constraint-layout:1.1.3'
