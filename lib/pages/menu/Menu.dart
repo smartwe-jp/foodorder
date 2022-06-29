@@ -475,11 +475,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               Navigator.pushNamed(context, '/home');
             },
             child: Container(
-              padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
+              padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
               margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
               width: ScreenAdapter.width(110),
-              height: ScreenAdapter.height(55),
-              alignment: Alignment.centerRight,
+              height: ScreenAdapter.height(60),
+              //alignment: Alignment.center,
               decoration: BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.fitWidth,

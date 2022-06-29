@@ -141,10 +141,10 @@ class _HomePageState extends State<HomePage> {
 
   _clearCartList() {
 
-  //if(controller.cartItems.length >0){
+  if(controller.cartItems.length >0){
     controller.removeAllFromCart();
 
-  //}
+  }
   }
 
 
