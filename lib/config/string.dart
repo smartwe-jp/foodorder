@@ -42,6 +42,8 @@ class GString{
         "settlement_noprint_tag":"しばらくお待ちください",
         "settlement_change_method":"はい",
         "settlement_nopayment_error":"        支払いが失敗しました。  \r\n 他の支払い方法をお選ぶください。",
+        "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
+        "settlement_scancodenochange_error":"済みません、他の支払い方法を選んでください。",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
         "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
@@ -92,7 +94,8 @@ class GString{
         "settlement_noprint_tag":"请稍候~",
         "settlement_change_method":"确定",
         "settlement_nopayment_error":"支付失败，请选择其他方式支付",
-
+        "settlement_scancodenoopen_error":"请选择现金支付。",
+        "settlement_scancodenochange_error":"暂不支持该支付，请选择其他方式。",
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
         "tag_print_content_paper_error":"打印故障，请联系工作人员",
@@ -142,6 +145,8 @@ class GString{
         "settlement_noprint_tag":"Please wait a moment.",
         "settlement_change_method":"Yes",
         "settlement_nopayment_error":"Payment failed, please choose another payment method.",
+        "settlement_scancodenoopen_error":"Please select cash payment.",
+        "settlement_scancodenochange_error":"Please choose another method。",
 
         "tag_print_content_paper_shortage":"System error. Please contact our staff.",
         "tag_print_content_paper_error":"System error. Please contact our staff.",

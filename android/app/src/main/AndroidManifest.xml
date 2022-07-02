@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="19" android:versionName="1.0.7"
+    android:versionCode="20" android:versionName="1.0.8"
     package="com.fanxing.foodorder">
     <!-- 申请Android权限-->
     <!--网络访问-->

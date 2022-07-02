@@ -337,6 +337,27 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //扫码支付
   _doToPay(){
+    if(_showWechat == false && _showAlipay == false && _showPayPay == false){print("ceshiweikaitong saoma");
+      _showScanCodeNoOpenDialog(1);
+      return;
+    }
+
+    var _regExpWechat=r"^1[0-5]\d{16}$";
+    var _regExpAlipay=r"^(?:2[5-9]|30)\d{14,22}$";
+    if(RegExp(_regExpWechat).hasMatch(_scanQrCode)==true && _showWechat == false){
+      _showScanCodeNoOpenDialog(2);
+      return;
+    }else if(RegExp(_regExpAlipay).hasMatch(_scanQrCode)==true && _showAlipay == false){
+      _showScanCodeNoOpenDialog(2);
+      return;
+    }else{
+      if(RegExp(_regExpWechat).hasMatch(_scanQrCode)==false && RegExp(_regExpAlipay).hasMatch(_scanQrCode)==false &&_showPayPay == false){
+      _showScanCodeNoOpenDialog(2);
+      return;
+      }
+    }
+
+
     if (_machineCode != "" && _scanQrCode !="" && _orderId !=null) {
       //_showEasyLoading();
       _showEasyLoadingScan();
@@ -366,6 +387,83 @@ class _SettlementPageState extends State<SettlementPage> {
       });
 
     }
+  }
+
+  //三种扫码支付都未开通，弹出dialog
+  _showScanCodeNoOpenDialog(checknum){
+    EasyLoading.dismiss();
+    setState(() {
+      _scanQrCodeController.text = "";
+      _scanQrCode = "";
+      FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+    });
+
+    var show_dialog_content;
+
+    if(checknum == 1){
+      show_dialog_content = GString.getToString(this._checkLanguage, "settlement_scancodenoopen_error");
+    }else if(checknum == 2){
+      show_dialog_content = GString.getToString(this._checkLanguage, "settlement_scancodenochange_error");
+    }
+    //支付状态
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(show_dialog_content,
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                GString.getToString(this._checkLanguage, "settlement_change_method"),
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
   }
 
   //扫码后超时，再继续请求后台，5秒一次 60次
