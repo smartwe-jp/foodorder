@@ -878,7 +878,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             Text(
               optionGroupVoList[i]['groupName'],
               style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(17.0),
+                fontSize: ScreenAdapter.fontSize(19.0),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
               ),
@@ -1206,7 +1206,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               Text(
                 optionGroupVoList[i]['groupName'],
                 style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(16.0),
+                  fontSize: ScreenAdapter.fontSize(18.0),
                     fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                 ),
@@ -1532,7 +1532,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               Text(
                 optionGroupVoList[i]['groupName'],
                 style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(16.0),
+                  fontSize: ScreenAdapter.fontSize(18.0),
                     fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                 ),
