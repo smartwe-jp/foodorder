@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 
 import 'package:flutter/cupertino.dart';
@@ -10,6 +11,7 @@ import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/EventBus.dart';
+import 'package:foodorder/services/showToast.dart';
 import 'package:paycube/paycube.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/controller/homePageController.dart';
@@ -32,6 +34,7 @@ class _HomePageState extends State<HomePage> {
   var _stopStatus;
   var _closeStatus;
   var _shopInfo = "kanran";
+  var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
 
   @override
   void initState() {
@@ -39,6 +42,11 @@ class _HomePageState extends State<HomePage> {
     EasyLoading.dismiss();
     //先获取店铺信息已获取路径用
     _getShopInfo();
+
+    //系统配置
+    //_getMenuDirection();
+    _getSystemSettingInfo();
+
     //进入页面后打开现金机
     //OpenPayCube();
 
@@ -140,11 +148,9 @@ class _HomePageState extends State<HomePage> {
 
 
   _clearCartList() {
-
-  if(controller.cartItems.length >0){
-    controller.removeAllFromCart();
-
-  }
+    if(controller.cartItems.length >0){
+      controller.removeAllFromCart();
+    }
   }
 
 
@@ -157,9 +163,50 @@ class _HomePageState extends State<HomePage> {
       });
     }else{
       Storage.setString('shopInfo', "kanran");
-
     }
   }
+
+  //获取菜单方向
+  _getMenuDirection() async {
+    var menuDirectionInfo = await HomeServices.getMenuDirectionInfo();
+    if (menuDirectionInfo != "") {
+      setState(() {
+        _menu_direction = menuDirectionInfo;
+      });
+    }else{
+      Storage.setString('menuDirection', "1");//1 默认顶部横向  2 左侧纵向
+    }
+  }
+
+  _getSystemSettingInfo() async {
+    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+
+    if (systemSettingInfo.isEmpty) {//print("jinlailehome");
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
+      var systemSettingData = {
+        "diningType":(DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1", //1堂食 2外带
+        "menuDirection":"1",//1顶部横向 2左侧竖
+        "printPaperSize":"1",//1 58mm 2 80mm
+        "isAllowReceipt":"1",//1必须打印小票 2不必须
+      };
+      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+
+    Map systemSettingInfo2 = await HomeServices.getSystemSettingInfo();
+    //howToast("systemSettingInfo2====:::::${systemSettingInfo2['diningType']}");
+    //print("systemSettingInfo2====:::::${systemSettingInfo2}");
+    setState(() {
+      _menu_direction = "1";
+    });
+    }else{//print("diercibuyongzaishezhihome");
+      //showToast("diercibuyongzaishezhihome");
+      setState(() {
+        _menu_direction = systemSettingInfo['menuDirection'];
+      });
+    }
+
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -184,7 +231,12 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
+                      if(_menu_direction == "1"){
+                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
+                      }else{
+                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
+                      }
+
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -212,7 +264,11 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
+                      if(_menu_direction == "1"){
+                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
+                      }else{
+                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
+                      }
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),
@@ -240,7 +296,11 @@ class _HomePageState extends State<HomePage> {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
+                      if(_menu_direction == "1"){
+                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
+                      }else{
+                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
+                      }
                     },
                     child: Container(
                       width: ScreenAdapter.width(217),

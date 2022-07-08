@@ -376,6 +376,30 @@ class _MyHomePageState extends State<MyHomePage> {
     }
   }
 
+  //获取菜单方向
+  _getMenuDirection() async {
+    var menuDirectionInfo = await HomeServices.getMenuDirectionInfo();
+    if (menuDirectionInfo == "" || null==menuDirectionInfo) {
+      Storage.setString('menuDirection', "1");//1 默认顶部横向  2 左侧纵向
+    }
+  }
+
+  //获取打印纸
+  _getPrintPaperSize() async {
+    var PrintPaperSizeInfo = await HomeServices.getPrintPaperSizeInfo();
+    if (PrintPaperSizeInfo == "" || null==PrintPaperSizeInfo) {
+      Storage.setString('printPaperSize', "1");//1 默认58mm  2 宽纸80mm
+    }
+  }
+
+  //获取菜单方向
+  _getIsAllowReceiptInfo() async {
+    var menuDirectionInfo = await HomeServices.getIsAllowReceiptInfo();
+    if (menuDirectionInfo == "" || null==menuDirectionInfo) {
+      Storage.setString('isAllowReceipt', "1");//1 默认顶部横向  2 左侧纵向
+    }
+  }
+
 //获取机器信息
   _getShopInfo() async {
     var shopInfo = await HomeServices.getShopInfo();
@@ -385,10 +409,35 @@ class _MyHomePageState extends State<MyHomePage> {
     _goMain();
   }
 
+  _getSmartweSystemSettingInfo() async {
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+    //print(SystemSettingInfo.isEmpty);
+
+    if (SystemSettingInfo.isEmpty) {
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();//showToast("main====:::::${DiningTypeInfo}");
+      var systemSettingData = {
+        "diningType": (DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1", //1堂食 2外带
+        "menuDirection":"1",//1顶部横向 2左侧竖
+        "printPaperSize":"1",//1 58mm 2 80mm
+        "isAllowReceipt":"1",//1必须打印小票 2不必须
+      };
+      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+    }
+
+  }
+
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
 
-    _getDiningTypeInfo();
+    /*_getDiningTypeInfo();
+    sleep(Duration(milliseconds: 200));
+    _getMenuDirection();
+    sleep(Duration(milliseconds: 200));
+    _getPrintPaperSize();
+    sleep(Duration(milliseconds: 200));
+    _getIsAllowReceiptInfo();*/
+    _getSmartweSystemSettingInfo();
+    sleep(Duration(milliseconds: 500));
     EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();

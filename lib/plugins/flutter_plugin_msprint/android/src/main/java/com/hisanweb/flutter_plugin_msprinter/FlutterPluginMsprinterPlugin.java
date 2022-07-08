@@ -67,8 +67,11 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
   public static Drawable drawable;
   public static Drawable sed;
   public static Drawable kanran;
+  public static Drawable kanraneighty;
   public static Drawable sanfeng;
+  public static Drawable sanfengeighty;
   public static Drawable rijindoujin;
+  public static Drawable rijindoujineighty;
 
   private final String TAG = "PrintDemoUsb";
   private static final String ACTION_USB_PERMISSION = "com.usb.sample.USB_PERMISSION";
@@ -86,49 +89,90 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
     mUsbDriver.setPermissionIntent(permissionIntent);
 
     kanran= ContextCompat.getDrawable(mContext,R.drawable.kanran);
+    kanraneighty= ContextCompat.getDrawable(mContext,R.drawable.kanraneighty);
     sanfeng= ContextCompat.getDrawable(mContext,R.drawable.sanfeng);
+    sanfengeighty= ContextCompat.getDrawable(mContext,R.drawable.sanfengeighty);
     rijindoujin= ContextCompat.getDrawable(mContext,R.drawable.rijindoujin);
+    rijindoujineighty= ContextCompat.getDrawable(mContext,R.drawable.rijindoujineighty);
   }
 
   @Override
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
 
+    PrintService print = new PrintService();
+    int iDriverCheck_sendPrint = usbDriverCheck();
     switch (call.method) {
       case "sendPrint":
         String operdata = call.argument("operdata");
         String shopInfo = call.argument("shopInfo");
-
-
-
+        String printPaperSize = call.argument("printPaperSize");
+        String isQueryReceipt = call.argument("isQueryReceipt");
 
         OrderMenuList oh = JSONObject.parseObject(operdata, OrderMenuList.class);
-        PrintService print = new PrintService();
-        int iDriverCheck_sendPrint = usbDriverCheck();
+
+        //int iDriverCheck_sendPrint = usbDriverCheck();
         if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
           result.error("40001","无法获得usb权限",null);
           return;
         }else{
           //甘蘭
           if(shopInfo.equals("kanran")){
-            print.execute_print(mUsbDriver,oh,kanran,1);
-            print.execute_printRreceipt(mUsbDriver,oh,kanran);
-        }else if(shopInfo.equals("sanfeng")){//sanfeng
-            print.execute_print(mUsbDriver,oh,sanfeng,1);
-            print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
-        }else if(shopInfo.equals("rijindoujin")){//sanfeng
-            print.execute_print(mUsbDriver,oh,rijindoujin,1);
-            print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
+            if(printPaperSize.equals("1")){
+              if(isQueryReceipt.equals("1")){
+                print.execute_print(mUsbDriver,oh,kanran,1);
+                print.execute_printRreceipt(mUsbDriver,oh,kanran);
+              }else{
+                print.execute_print(mUsbDriver,oh,kanran,0);
+              }
+
+            }else{
+              if(isQueryReceipt.equals("1")){
+                print.execute_print_eighty(mUsbDriver,oh,kanraneighty,1);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,kanraneighty);
+              }else{
+                print.execute_print_eighty(mUsbDriver,oh,kanraneighty,0);
+              }
+
+            }
+          }else if(shopInfo.equals("sanfeng")){//sanfeng
+            if(printPaperSize.equals("1")){
+              if(isQueryReceipt.equals("1")){
+                print.execute_print(mUsbDriver,oh,sanfeng,1);
+                print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
+              }else{
+                print.execute_print(mUsbDriver,oh,sanfeng,0);
+              }
+
+            }else{
+              if(isQueryReceipt.equals("1")){
+                print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,1);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,sanfengeighty);
+              }else{
+                print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,0);
+              }
+
+            }
+          }else if(shopInfo.equals("rijindoujin")){//sanfeng
+            if(printPaperSize.equals("1")){
+              if(isQueryReceipt.equals("1")){
+                print.execute_print(mUsbDriver,oh,rijindoujin,1);
+                print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
+              }else{
+                print.execute_print(mUsbDriver,oh,rijindoujin,0);
+              }
+
+            }else{
+              if(isQueryReceipt.equals("1")){
+                print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,1);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,rijindoujineighty);
+              }else{
+                print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,0);
+              }
+
+            }
           }
 
 
-          //print.execute_print(mUsbDriver,oh,sed,1);
-
-
-
-
-          //print.execute_print(mUsbDriver,oh);
-
-          //doPrint();
           result.success("success");
         }
 
@@ -145,6 +189,50 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
         }
         int iStatus = getPrinterStatus(mUsbDevice);
         result.success(String.valueOf(iStatus));
+        break;
+      case "setPrintPaperSizefiftyeight":
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40002","无法获得usb权限",null);
+          return;
+        }
+
+          byte[] bSendData;
+          String strdata= "13 74 44 88 10";
+
+          bSendData = hexStringToBytes(strdata);
+          mUsbDriver.write(bSendData);
+        //mUsbDriver.closeUsbDevice(mUsbDevice);
+        //mUsbDriver.openUsbDevice(mUsbDevice);
+          mUsbDriver.write(PrintCmd.PrintSelfcheck());
+
+        result.success("success "+strdata);
+        break;
+      case "setPrintPaperSizeeighty":
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40002","无法获得usb权限",null);
+          return;
+        }
+
+        byte[] bSendDataeighty;
+        String strdataeighty= "13 74 44 88 30";
+
+        bSendDataeighty = hexStringToBytes(strdataeighty);
+        mUsbDriver.write(bSendDataeighty);
+        //mUsbDriver.closeUsbDevice(mUsbDevice);
+        //mUsbDriver.openUsbDevice(mUsbDevice);
+        mUsbDriver.write(PrintCmd.PrintSelfcheck());
+
+        result.success("success "+strdataeighty);
+        break;
+      case "setPrintPaperSizePrintTest":
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40002","无法获得usb权限",null);
+          return;
+        }
+
+        mUsbDriver.write(PrintCmd.PrintSelfcheck());
+
+        result.success("success ");
         break;
       case "getPlatformVersion":
         result.success("Android " + Build.VERSION.RELEASE);

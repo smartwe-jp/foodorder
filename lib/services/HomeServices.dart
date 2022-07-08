@@ -43,4 +43,53 @@ class HomeServices{
     }
     return diningTypeInfo;
   }
+
+  //菜单方向
+  static getMenuDirectionInfo() async{
+    String menuDirectionInfo;
+    try {
+      String menuDirectionData = await Storage.getString('menuDirection');
+      menuDirectionInfo = menuDirectionData;
+    } catch (e) {
+      menuDirectionInfo = "";
+    }
+    return menuDirectionInfo;
+  }
+
+  //小票纸大小
+  static getPrintPaperSizeInfo() async{
+    String printPaperSizeInfo;
+    try {
+      String printPaperSizeData = await Storage.getString('printPaperSize');
+      printPaperSizeInfo = printPaperSizeData;
+    } catch (e) {
+      printPaperSizeInfo = "";
+    }
+    return printPaperSizeInfo;
+  }
+
+  //是否必须打印领収书
+  static getIsAllowReceiptInfo() async{
+    String isAllowReceiptInfo;
+    try {
+      String isAllowReceiptData = await Storage.getString('isAllowReceipt');
+      isAllowReceiptInfo = isAllowReceiptData;
+    } catch (e) {
+      isAllowReceiptInfo = "";
+    }
+    return isAllowReceiptInfo;
+  }
+
+  //多参数设置
+  static getSystemSettingInfo() async{
+    Map systemSettingInfo;
+    try {
+      Map systemSettingData = json.decode(await Storage.getString('smartwe_systemSetting'));
+      systemSettingInfo = systemSettingData;
+    } catch (e) {
+      systemSettingInfo = {};
+    }
+    return systemSettingInfo;
+  }
+
 }

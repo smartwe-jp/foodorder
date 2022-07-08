@@ -27,6 +27,7 @@ import 'package:foodorder/services/formatMoney.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
 import 'package:paycube/paycube.dart';
+import 'package:foodorder/services/Storage.dart';
 
 import 'SettlementCashPage.dart';
 import 'SettlementQrCodePage.dart';
@@ -52,6 +53,10 @@ class _SettlementPageState extends State<SettlementPage> {
   var _checkLanguage = "JP";
 
   var _shopInfo = "kanran";
+
+  var _print_paper_size = "1";//1 默认58mm  2 宽纸80mm
+  var _is_query_receipt = "1";//1 要领収书  2 不要领収书
+  var _is_allow_receipt = "1";//1 必须打印  2 不必须
 
   var _orderId;
   var _scanQrCode = "";
@@ -119,12 +124,15 @@ class _SettlementPageState extends State<SettlementPage> {
     //打开现金机
     Starttoubi();
 
+    //获取小票纸大小
+    //_getPrintPaperSize();
+    _getSystemSettingInfo();
 
     //CancelOrder();
     //newendtradepay();
     //payCubeCloseTransaction();
 
-   _getPrintTicketData();
+
 
   }
 
@@ -152,7 +160,14 @@ class _SettlementPageState extends State<SettlementPage> {
     var formData = {
       "orderId": this._orderId,
     };
-    request('webBootToPrint', method: 'GET', parameters: formData).then((val) async {
+    var queryUrl;
+    if(_print_paper_size == "1"){
+      queryUrl = "webBootToPrintV2";
+    }else{
+      queryUrl = "webBootToPrintV3";
+    }
+
+    request(queryUrl, method: 'GET', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
 //print(response);
@@ -167,7 +182,31 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
+//获取菜单方向
+  _getPrintPaperSize() async {
+    var printPaperSizeInfo = await HomeServices.getPrintPaperSizeInfo();
+    if (printPaperSizeInfo != "") {
+      setState(() {
+        _print_paper_size = printPaperSizeInfo;
+      });
+    }else{
+      Storage.setString('printPaperSize', "1");//1 默认58mm  2 宽纸80mm
+    }
+    //获取纸大小后在获取数据
+    _getPrintTicketData();
+  }
 
+  _getSystemSettingInfo() async {
+    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+print(systemSettingInfo);
+    setState(() {
+      _print_paper_size = systemSettingInfo['printPaperSize'];
+      _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
+    });
+    //获取纸大小后在获取数据
+    _getPrintTicketData();
+
+  }
 
 
   //购物车
@@ -337,7 +376,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //扫码支付
   _doToPay(){
-    if(_showWechat == false && _showAlipay == false && _showPayPay == false){print("ceshiweikaitong saoma");
+    if(_showWechat == false && _showAlipay == false && _showPayPay == false){
       _showScanCodeNoOpenDialog(1);
       return;
     }
@@ -578,9 +617,11 @@ class _SettlementPageState extends State<SettlementPage> {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
       //print("打印小票来了");
+      //print(_is_query_receipt);
+      //print(_ticketData);
       if(_ticketData != null){//print("先请求了小票数据打印小票来了");
 
-        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo);
+        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt);
 
 
         //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -600,7 +641,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
           if (response['code'] == 200) {
 
-            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo);
+            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt);
 
             sleep(Duration(milliseconds: 500));
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -783,7 +824,6 @@ class _SettlementPageState extends State<SettlementPage> {
         if (_stopStatus == "StopSuccess" || _stopStatus == "Error-A0--02" || _stopStatus == "Error-F0--16") {
           //先打印小票，再去取引终了现金机;
           if(_isPrint == true){
-            //doPrintOrderMenu();
             if(_giveChangeMoney >0){
               startOutPutMoney(_giveChangeMoney);
             }else{
@@ -813,13 +853,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         }
       });
-
-
     }
-
-
-
-
   }
 
   //现金及支付
@@ -904,9 +938,7 @@ class _SettlementPageState extends State<SettlementPage> {
           //startOutPutMoney(_outmoney);
           if(_isPrint == false){
             startOutPutMoney(_giveChangeMoney);
-
           }
-
 
           stopt.cancel();
 
@@ -931,9 +963,7 @@ class _SettlementPageState extends State<SettlementPage> {
           if(_isPrint == false){
             //已经结束入金，处理取引终了
             payCubeCloseTransaction();
-
           }
-
           stopt.cancel();
 
         }/*else if(_stopStatus == "Error-A0--02"){
@@ -970,9 +1000,6 @@ class _SettlementPageState extends State<SettlementPage> {
 //如果取消不汇报，则出金后直接关闭 ？？？？？？
           _getPayCubeOutMoney();
 
-
-
-
         outmoneyt.cancel();
 
       }else if(_outStatus == "Error-A0--02"){
@@ -997,22 +1024,18 @@ class _SettlementPageState extends State<SettlementPage> {
     //Navigator.pop(context);
     Navigator.pop(context);
     Navigator.pushNamed(context, '/home');
-
   }
 
   gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
-
   }
 
   gotonewSettingPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
     Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
-
-
   }
 
   newendtradepay() async {
@@ -1082,11 +1105,8 @@ class _SettlementPageState extends State<SettlementPage> {
     request('webBootToReport', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
-
           //已经结束入金，处理取引终了
           payCubeCloseTransaction();
-
-
 
       } else {
 
@@ -1545,7 +1565,46 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                             ],
                           )),
-
+                      if(_showPayPay == true)
+                        Container(
+                            margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
+                            width: ScreenAdapter.width(130),
+                            height: ScreenAdapter.height(140),
+                            child: Column(
+                              children: [
+                                Image.asset(GImage.getImageString(_shopInfo, "settlement_paypay"),
+                                    width: ScreenAdapter.width(85),
+                                    height: ScreenAdapter.height(85)),
+                                SizedBox(height: ScreenAdapter.height(5)),
+                                Text(GString.getToString(this._checkLanguage, "settlement_payment_method_paypay"),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18),
+                                      fontWeight: FontWeight.w500,
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    )),
+                              ],
+                            )),
+                      if(_showWechat == true)
+                        Container(
+                            margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
+                            width: ScreenAdapter.width(130),
+                            height: ScreenAdapter.height(140),
+                            child: Column(
+                              children: [
+                                Image.asset(
+                                    GImage.getImageString(_shopInfo, "settlement_wechat"),
+                                    width: ScreenAdapter.width(85),
+                                    height: ScreenAdapter.height(85)
+                                ),
+                                SizedBox(height: ScreenAdapter.height(5)),
+                                Text(GString.getToString(this._checkLanguage, "settlement_payment_method_wechat"),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18),
+                                      fontWeight: FontWeight.w500,
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    )),
+                              ],
+                            )),
                       if(_showAlipay == true)
                         Container(
                           margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
@@ -1558,47 +1617,6 @@ class _SettlementPageState extends State<SettlementPage> {
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
                               Text(GString.getToString(this._checkLanguage, "settlement_payment_method_alipay"),
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                  )),
-                            ],
-                          )),
-                      if(_showWechat == true)
-                      Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
-                          width: ScreenAdapter.width(130),
-                          height: ScreenAdapter.height(140),
-                          child: Column(
-                            children: [
-                              Image.asset(
-                                  GImage.getImageString(_shopInfo, "settlement_wechat"),
-                                  width: ScreenAdapter.width(85),
-                                  height: ScreenAdapter.height(85)
-                              ),
-                              SizedBox(height: ScreenAdapter.height(5)),
-                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_wechat"),
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                  )),
-                            ],
-                          )),
-
-                      if(_showPayPay == true)
-                      Container(
-                          margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
-                          width: ScreenAdapter.width(130),
-                          height: ScreenAdapter.height(140),
-                          child: Column(
-                            children: [
-                              Image.asset(GImage.getImageString(_shopInfo, "settlement_paypay"),
-                                  width: ScreenAdapter.width(85),
-                                  height: ScreenAdapter.height(85)),
-                              SizedBox(height: ScreenAdapter.height(5)),
-                              Text(GString.getToString(this._checkLanguage, "settlement_payment_method_paypay"),
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -1649,7 +1667,26 @@ class _SettlementPageState extends State<SettlementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                                bottom: ScreenAdapter.height(25)),
+                            width: ScreenAdapter.width(400),
+                            //height: ScreenAdapter.height(620),
+                            alignment: Alignment.center,
+                            child: Container(
+                                width: ScreenAdapter.width(320),
+                                //height: ScreenAdapter.height(620),
+                                child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"))),
+                          ),
+                        ],
+                      ),
+                      SizedBox(
+                        width: ScreenAdapter.width(30),
+                      ),
+                      if(_showWechat == true || _showAlipay == true || _showPayPay == true)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
@@ -1657,11 +1694,11 @@ class _SettlementPageState extends State<SettlementPage> {
                           Container(
                             padding: EdgeInsets.only(
                                 bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(450),
+                            width: ScreenAdapter.width(400),
                             //height: ScreenAdapter.height(580),
                             alignment: Alignment.center,
                             child: Container(
-                                width: ScreenAdapter.width(350),
+                                width: ScreenAdapter.width(320),
                                 //height: ScreenAdapter.height(620),
                                 child: Image.asset(
                                     GImage.getImageString(_shopInfo, "saoma"))),
@@ -1669,26 +1706,9 @@ class _SettlementPageState extends State<SettlementPage> {
                         ],
                       ),
 
-                      SizedBox(
-                        width: ScreenAdapter.width(30),
-                      ),
 
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                                bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(450),
-                            //height: ScreenAdapter.height(620),
-                            alignment: Alignment.center,
-                            child: Container(
-                                width: ScreenAdapter.width(350),
-                                //height: ScreenAdapter.height(620),
-                                child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"))),
-                          ),
-                        ],
-                      ),
+
+
 
                     ],
                   ),
@@ -1701,7 +1721,7 @@ class _SettlementPageState extends State<SettlementPage> {
             ),
             Container(
               //width: ScreenAdapter.width(240),
-              height: ScreenAdapter.height(200),
+              height: ScreenAdapter.height(250),
               // margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
               padding: EdgeInsets.only(
                   left: ScreenAdapter.width(20),
@@ -1726,7 +1746,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     alignment: Alignment.bottomCenter,
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Text(GString.getToString(this._checkLanguage, "settlement_orderPrice"),
                             style: TextStyle(
@@ -1885,7 +1905,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
                   ),
 
-                  _showPrintButton == true ? InkWell(
+                  _showPrintButton == true ?
+                  _is_allow_receipt == "1" ? InkWell(
                     onTap: (){
                       if(_allowClick == true){
                         setState(() {
@@ -1902,20 +1923,123 @@ class _SettlementPageState extends State<SettlementPage> {
                     child: Container(
                       margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                       width: ScreenAdapter.width(260),
-                      height: ScreenAdapter.height(120),
+                      height: ScreenAdapter.height(130),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: ColorsUtil.hexToColor("#148DE8"),
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(30),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                          )),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(32),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                              )),
+                          /*Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_yes"),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(20),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                              )),*/
+                        ],
+                      ),
                     ),
+                  ):
+                  Column(
+                    children: [
+                      InkWell(
+                        onTap: (){
+                          if(_allowClick == true){
+                            setState(() {
+                              _allowClick = false;
+                            });
+
+                            _showEasyLoading();
+
+                            //Endtoubi();
+                            doPrintOrderMenu();
+                          }
+
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(260),
+                          height: ScreenAdapter.height(100),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: ColorsUtil.hexToColor("#148DE8"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                  )),
+                              Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_yes"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(20),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: ScreenAdapter.height(8)),
+                      InkWell(
+                        onTap: (){
+                          if(_allowClick == true){
+                            setState(() {
+                              _allowClick = false;
+                              _is_query_receipt = "2";
+                            });
+
+                            _showEasyLoading();
+
+                            //Endtoubi();
+                            doPrintOrderMenu();
+                          }
+
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(260),
+                          height: ScreenAdapter.height(100),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: ColorsUtil.hexToColor("#67c23a"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                  )),
+                              Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_no"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(20),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
                   ) : Container(
                     margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                     width: ScreenAdapter.width(260),

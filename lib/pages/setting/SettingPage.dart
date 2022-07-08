@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/pages/home/Home.dart';
@@ -42,7 +43,6 @@ class _SettingPageState extends State<SettingPage> {
   var progressValue = 0.0;
 
   var _shopInfo = "kanran";
-  var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
 
   //监听页面销毁的事件
   dispose() {
@@ -63,23 +63,9 @@ class _SettingPageState extends State<SettingPage> {
 
     _getPackageInfo();
 
-    _getDiningTypeInfo();
 
   }
 
-  //获取就餐类型信息
-  _getDiningTypeInfo() async {
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-    if (DiningTypeInfo != "") {
-      setState(() {
-        _dining_type = DiningTypeInfo;
-      });
-    }else{
-
-      Storage.setString('diningType', "1");//1 堂食  2 外袋  0 两种都可
-
-    }
-  }
 
   //获取版本号
   _getPackageInfo() async {
@@ -1024,146 +1010,6 @@ class _SettingPageState extends State<SettingPage> {
     });
   }
 
-  //设置就餐类型
-  setDiningtype() {
-    return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
-        children: [
-          Text("利用形式",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    checkDiningtype("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("店内飲食",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (_dining_type == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                            width: ScreenAdapter.width(40),
-                            height: ScreenAdapter.height(40),
-                            padding: EdgeInsets.only(
-                                top: ScreenAdapter.height(4),
-                                left: ScreenAdapter.width(10)),
-                            //alignment: Alignment.topCenter,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                              image: DecorationImage(
-                                image:
-                                AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
-                                fit: BoxFit.fill,
-                              ),
-                            ),
-                            ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    checkDiningtype("2");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("テイクアウト",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (_dining_type == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  checkDiningtype(checkedType){
-    Storage.setString('diningType', checkedType);//1 堂食  2 外袋  0 两种都可
-    setState(() {
-      _dining_type = checkedType;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -1351,7 +1197,8 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         InkWell(
                           onTap: () {
-                            showDownloadingAlert();
+                            Navigator.pushNamed(context, '/systemSettingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                            //showDownloadingAlert();
                           },
                           child: Container(
                             margin: EdgeInsets.only(
@@ -1365,7 +1212,7 @@ class _SettingPageState extends State<SettingPage> {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text("アップデート",
+                            child: Text("システム設定",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
@@ -1438,7 +1285,9 @@ class _SettingPageState extends State<SettingPage> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  setDiningtype(),//食事のタイプ
+                  //setDiningtype(),//食事のタイプ
+                  //setMenuDirection(),//菜单方向
+                  //setPrintPaperSize(),//打印纸大小
                 ],
               ),
             ),
