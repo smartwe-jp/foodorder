@@ -35,6 +35,7 @@ class _SettingPageState extends State<SettingPage> {
   final HomePageController controller = Get.put(HomePageController());
 
   String _machineCode = "";
+  String _shopCode = "";
   var _cashList = [];
   var _lastTotalList = [];
   var _depositData = {};
@@ -54,6 +55,7 @@ class _SettingPageState extends State<SettingPage> {
   void initState() {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
+    this._shopCode = widget.arguments['shopCode'];
     this._shopInfo = widget.arguments['shopInfo'];
     EasyLoading.dismiss();
     //查看机器零钱状态
@@ -1172,6 +1174,7 @@ class _SettingPageState extends State<SettingPage> {
                           onTap: () {
                             Navigator.of(context).pushNamed('/attendance',arguments: {
                             "machineCode": this._machineCode,
+                            "shopCode": this._shopCode
                             });
                           },
                           child: Container(

@@ -75,6 +75,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   Offset floatOffset;
 
   String _machineCode = "";
+  String _shopCode = "";
 
   var _menuOption = {}; //牛肉面及定食的option数组
   var _noChangeinitialmenuOption = {}; //牛肉面及定食的option数组，不做改变
@@ -244,6 +245,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         //保存支付页面顶部图标
         setState(() {
+          _shopCode = shopData["shopCode"];
           _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
           _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
           _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
@@ -515,7 +517,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               enableFeedback: false,
           onLongPress: (){
             if(int.parse(_shopCartTotalPrice) >0){
-              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopCode": this._shopCode,"shopInfo":_shopInfo});
             }
 
           },
