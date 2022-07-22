@@ -31,7 +31,7 @@ Future<void> main() async {
 
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
+    //SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle.dark);
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
