@@ -332,7 +332,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                           //设置圆角
                           borderRadius: new BorderRadius.circular((16.0)),
                         ),
-                        child: Text("店内飲食",
+                        child: Text("店内のみ",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(24),
                               fontWeight: FontWeight.w600,
@@ -377,6 +377,60 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(10),
                             right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(220),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("テイクアウトのみ",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_dining_type == "2")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkDiningtype("3");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
                         width: ScreenAdapter.width(190),
                         height: ScreenAdapter.height(65),
                         alignment: Alignment.center,
@@ -386,7 +440,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                           borderRadius: new BorderRadius.circular((16.0)),
                         ),
                         //お持ち帰り
-                        child: Text("テイクアウト",
+                        child: Text("両方可",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(24),
                               fontWeight: FontWeight.w600,
@@ -394,7 +448,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             )),
                       ),
                       //绝对定位 盖章
-                      (_dining_type == "2")
+                      (_dining_type == "3")
                           ? Positioned(
                         right: ScreenAdapter.width(15),
                         top: ScreenAdapter.height(20),

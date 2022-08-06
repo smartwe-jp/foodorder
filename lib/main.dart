@@ -226,7 +226,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                 )),
-            Text("2、現金機を閉じています。",
+            Text("2、釣銭機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
@@ -301,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   fontWeight: FontWeight.w600,
                   color: Colors.black26,
                 )),
-            Text("2、現金機を閉じています。",
+            Text("2、釣銭機を閉じています。",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,

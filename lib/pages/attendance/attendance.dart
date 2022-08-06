@@ -33,7 +33,7 @@ class _AttendancePageState extends State<AttendancePage> {
   void initState() {
     super.initState();
     this._machineCode = widget.arguments['machineCode'];
-    this._shopCode = widget.arguments['shopCode'];
+    //this._shopCode = widget.arguments['shopCode'];
     //设置此通道上的监听
     _channel.setMethodCallHandler(_handlerMethodCall);
   }
@@ -55,7 +55,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
         var formData = {
           "machineCode":_machineCode,
-          "shopCode":_shopCode,
+          //"shopCode":_shopCode,
           "photo": backString,
 
         };

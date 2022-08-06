@@ -125,7 +125,6 @@ class _SettlementPageState extends State<SettlementPage> {
     Starttoubi();
 
     //获取小票纸大小
-    //_getPrintPaperSize();
     _getSystemSettingInfo();
 
     //CancelOrder();
@@ -182,23 +181,9 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
-//获取菜单方向
-  _getPrintPaperSize() async {
-    var printPaperSizeInfo = await HomeServices.getPrintPaperSizeInfo();
-    if (printPaperSizeInfo != "") {
-      setState(() {
-        _print_paper_size = printPaperSizeInfo;
-      });
-    }else{
-      Storage.setString('printPaperSize', "1");//1 默认58mm  2 宽纸80mm
-    }
-    //获取纸大小后在获取数据
-    _getPrintTicketData();
-  }
-
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-print(systemSettingInfo);
+
     setState(() {
       _print_paper_size = systemSettingInfo['printPaperSize'];
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];

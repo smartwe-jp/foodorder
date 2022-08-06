@@ -46,6 +46,8 @@ class GImage{
         "up":"assets/images/kanran/up.png",
         "xianjin":"assets/images/public/xianjin.jpg",
         "qiandaobutton":"assets/images/kanran/qiandaobutton.png",
+        "eatin":"assets/images/public/eatin.png",
+        "takeout":"assets/images/public/takeout.png",
 
       };
     }else if (shopInfo == 'sanfeng') {
@@ -84,6 +86,8 @@ class GImage{
         "settlement_wechat":"assets/images/sanfeng/settlement_wechat.png",
         "shouqing_png":"assets/images/sanfeng/shouqing.png",
         "xianjin":"assets/images/public/xianjin.jpg",
+        "eatin":"assets/images/public/eatin.png",
+        "takeout":"assets/images/public/takeout.png",
 
       };
     }else if (shopInfo == 'rijindoujin') {
@@ -122,6 +126,8 @@ class GImage{
         "settlement_wechat":"assets/images/rijindoujin/settlement_wechat.png",
         "shouqing_png":"assets/images/rijindoujin/shouqing.png",
         "xianjin":"assets/images/public/xianjin.jpg",
+        "eatin":"assets/images/public/eatin.png",
+        "takeout":"assets/images/public/takeout.png",
 
       };
     }

@@ -15,6 +15,14 @@ class GString{
         "tag_button_yes":"はい",
         "tag_button_no":"いいえ",
 
+        "menu_dingtype_eatin":"店内",
+        "menu_dingtype_takeout":"お持ち帰り",
+        "menu_dingtype_title":"いらっしゃいませ",
+        "menu_dingtype_title_tag":"店内またはお持ち帰りをお選びください",
+        "menu_dingtype_eatin_tag":"店内でお召し上がりのお客様はこちら",
+        "menu_dingtype_takeout_tag":"お持ち帰りのお客様はこちら",
+
+
         "cart_tag":"メニューをお選びください",
 
         "add_option_cart":"確認",
@@ -69,6 +77,13 @@ class GString{
         "tag_button_yes":"确定",
         "tag_button_no":"取消",
 
+        "menu_dingtype_eatin":"堂食",
+        "menu_dingtype_takeout":"打包",
+        "menu_dingtype_title":"欢迎光临",
+        "menu_dingtype_title_tag":"请选择堂食或者打包",
+        "menu_dingtype_eatin_tag":"堂食请点击此处",
+        "menu_dingtype_takeout_tag":"打包请点击此处",
+
         "cart_tag":"请选择菜品",
 
         "add_option_cart":"确 认",
@@ -121,6 +136,13 @@ class GString{
         "tag_content":"Are you sure you want to empty the shopping cart?",
         "tag_button_yes":"Yes",
         "tag_button_no":"No",
+
+        "menu_dingtype_eatin":"Eat in",
+        "menu_dingtype_takeout":"Take out",
+        "menu_dingtype_title":"Welcome",
+        "menu_dingtype_title_tag":"Choose eat-in or takeout",
+        "menu_dingtype_eatin_tag":"Click here for customers who eat in the store",
+        "menu_dingtype_takeout_tag":"Click here for takeaway customers",
 
         "cart_tag":"Please select dishes",
 
