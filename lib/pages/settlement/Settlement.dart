@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -103,6 +104,9 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showAlipay = true;
   var _showPayPay = true;
 
+  var _machineMode = "1"; //机器类型 1普通券卖机 2精算机
+  var _goodsList = [];
+
   @override
   void initState() {
     super.initState();
@@ -111,7 +115,15 @@ class _SettlementPageState extends State<SettlementPage> {
     this._shopInfo = widget.arguments['shopInfo'];
     this._machineCode = widget.arguments['machineCode'];
     this._orderId = widget.arguments['orderId'];
-    this._totalPrice = widget.arguments['totalPrice'];
+    this._machineMode = widget.arguments['machineMode'];
+    if(_machineMode == "1"){
+      this._totalPrice = widget.arguments['totalPrice'];
+    }
+
+    if(_machineMode == "2"){
+      //精算机获得订单
+      _getOrderList();
+    }
 
     this._showWechat = widget.arguments['showWechat'];
     this._showAlipay = widget.arguments['showAlipay'];
@@ -154,22 +166,45 @@ class _SettlementPageState extends State<SettlementPage> {
     super.dispose();
   }
 
+  _getOrderList(){
+    var formData = {
+      "language": this._checkLanguage,
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+    };
+    request('checkOutOrderDetails', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200) {
+        setState(() {
+          _totalPrice = response["data"]["tootalPrice"].toString();
+          _goodsList = response["data"]["checkOutOrderDetails"];
+        });
+
+      }else{
+        showToast(response['msg']);
+        sleep(Duration(milliseconds: 2000));
+        Navigator.pushNamed(context, '/transitPage');
+      }
+    });
+  }
   //进入结算页面获取小票数据
   _getPrintTicketData(){
     var formData = {
       "orderId": this._orderId,
-    };
+    };print(formData);
     var queryUrl;
     if(_print_paper_size == "1"){
       queryUrl = "webBootToPrintV2";
     }else{
       queryUrl = "webBootToPrintV3";
     }
-
+print(queryUrl);
     request(queryUrl, method: 'GET', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
-//print(response);
+print(response);
         setState(() {
           _ticketData = json.encode(response['data']);
         });
@@ -275,9 +310,6 @@ class _SettlementPageState extends State<SettlementPage> {
       ),
     );
   }
-
-
-
   Widget generateCartList(BuildContext context, ShopItemModel d) {
     return Container(
       padding: EdgeInsets.all(ScreenAdapter.height(10)),
@@ -606,7 +638,7 @@ class _SettlementPageState extends State<SettlementPage> {
       //print(_ticketData);
       if(_ticketData != null){//print("先请求了小票数据打印小票来了");
 
-        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt);
+        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
 
         //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -626,7 +658,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
           if (response['code'] == 200) {
 
-            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt);
+            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
             sleep(Duration(milliseconds: 500));
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -1008,13 +1040,22 @@ class _SettlementPageState extends State<SettlementPage> {
     EasyLoading.dismiss();
     //Navigator.pop(context);
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/home');
+    //Navigator.pushNamed(context, '/transitPage');
+    if(_machineMode == "1"){
+      Navigator.pushNamed(context, '/home');
+    }else{
+      Navigator.pushNamed(context, '/checkOutPage');
+    }
   }
 
   gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
+    if(_machineMode == "1"){
+      Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
+    }else{
+      Navigator.pushNamed(context, '/checkOutPage');
+    }
   }
 
   gotonewSettingPage(){
@@ -1368,6 +1409,188 @@ class _SettlementPageState extends State<SettlementPage> {
         });
   }*/
 
+  //券卖机展示购物车商品
+  Widget getmachineModeOneOrderList(BuildContext context){
+    return Container(
+      width: ScreenAdapter.width(1030),
+      height: ScreenAdapter.height(620),
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(15),
+          top: ScreenAdapter.height(20),
+          right: ScreenAdapter.width(15),
+          bottom: ScreenAdapter.height(40)),
+      child: GetBuilder<HomePageController>(
+        builder: (_) {
+          if (controller.cartItems.length == 0) {
+            return Center(
+              child: Text("No item found"),
+            );
+          }
+          return ListView(
+            shrinkWrap: true,
+            children: controller.cartItems
+                .map((d) => generateCartList(context, d))
+                .toList(),
+          );
+        },
+      ),
+    );
+  }
+
+  //精算机订单列表
+  Widget getmachineModeTwoOrderList(BuildContext context){
+    return Container(
+        width: ScreenAdapter.width(1030),
+        height: ScreenAdapter.height(620),
+        padding: EdgeInsets.only(
+            left: ScreenAdapter.width(15),
+            top: ScreenAdapter.height(20),
+            right: ScreenAdapter.width(15),
+            bottom: ScreenAdapter.height(40)),
+        child: this._goodsList.length > 0
+            ? ListView.builder(
+          shrinkWrap: true, //为true可以解决子控件必须设置高度的问题
+          //physics: NeverScrollableScrollPhysics(), //禁用滑动事件
+          itemCount: this._goodsList.length,
+          //controller: _scrollController,
+          itemBuilder: (context, index) {
+            var item = _goodsList[index];
+            return Container(
+              padding: EdgeInsets.only(left:ScreenAdapter.width(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+              child: Container(
+                decoration: BoxDecoration(
+                    color: Colors.white12,
+                    border: Border(
+                      bottom: BorderSide(color: Colors.grey, width: 1.0),
+                      //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                    )),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+
+                    Container(
+                      padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+
+                      width: ScreenAdapter.width(100),
+                      height: ScreenAdapter.height(100),
+                      child: publicShowMenuImage(item["homeImage"],ScreenAdapter.width(120),ScreenAdapter.height(120)),
+                    ),
+                    Expanded(
+                        child: Container(
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
+                          //width: ScreenAdapter.width(495),
+                          child: RichText(
+                            text: TextSpan(
+                                text: "${item["mainTitle"]}",
+                                style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(GFontSize.cartListTitle),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                                children: [
+                                  item["goodsNum"] > 1?TextSpan(
+                                    text: " x ${item["goodsNum"].toString()}",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(
+                                          GFontSize.cartListTitleCount),
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    ),
+                                  ):TextSpan(
+                                    text: "",
+                                  ),
+                                  (item["optionVoListMsg"] != "") ?TextSpan(
+                                    text: "\n(${item["optionVoListMsg"]})",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(GFontSize.cartListTitleTag),
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    ),
+                                  ):TextSpan(
+                                    text: "",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(
+                                          GFontSize.cartListTitleTag),
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    ),
+                                  ),
+                                ]),
+                          ),
+                        )),
+                    Container(
+                      width: ScreenAdapter.width(140),
+                      alignment: Alignment.centerRight,
+                      child: Text(
+                        "￥ ${formatMoney(item["toatlGoodsPrice"].toString())}",
+                        style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        )
+            : Center(child: Text("No item found"),));
+  }
+
+  //公共展示菜品图片
+  publicShowMenuImage(imgPath, imgWidth, imgHeight) {
+    _checkMemory();
+
+    return Container(
+      width: ScreenAdapter.width(imgWidth),
+      height: ScreenAdapter.height(imgHeight),
+
+      child: CachedNetworkImage(
+        imageUrl: imgPath,
+        //fit: BoxFit.cover,
+        width: ScreenAdapter.width(imgWidth),
+        height: ScreenAdapter.height(imgHeight),
+        memCacheWidth: imgWidth.toInt(),
+        memCacheHeight: imgHeight.toInt(),
+        //cacheManager: EsoImageCacheManager(),
+        imageBuilder: (context, imageProvider) => Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+                image: imageProvider,
+                //fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+            ),
+          ),
+        ),
+        placeholder: (context, url) => Container(
+          width: ScreenAdapter.width(200),
+          height: ScreenAdapter.height(200),
+          child: Center(
+            child: CircularProgressIndicator(
+              strokeWidth: 2,
+            ),
+          ),
+        ),
+        errorWidget: (context, url, error) => Image.network(
+            imgPath,
+            //fit: BoxFit.cover,
+            width: ScreenAdapter.width(imgWidth),
+            height: ScreenAdapter.height(imgHeight)
+        ),
+      ),
+    );
+  }
+
+  void _checkMemory(){
+    var Image_Maxnum = 200;
+    var maxSize = 55 << 20;
+
+    ImageCache _imageCache = PaintingBinding.instance.imageCache;
+    if(_imageCache.currentSizeBytes >= maxSize || _imageCache.currentSize >= Image_Maxnum){
+      _imageCache.clear();
+      _imageCache.clearLiveImages();
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1515,8 +1738,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
             //顶部支持支付类型
             Container(
-              height: ScreenAdapter.height(250),
-              padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(15),right: ScreenAdapter.width(20),  bottom: ScreenAdapter.height(15)),
+              height: ScreenAdapter.height(240),
+              padding: EdgeInsets.only(left: ScreenAdapter.width(20), top: ScreenAdapter.height(10),right: ScreenAdapter.width(20),  bottom: ScreenAdapter.height(10)),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -1625,9 +1848,9 @@ class _SettlementPageState extends State<SettlementPage> {
               //height: ScreenAdapter.height(750),
               padding: EdgeInsets.only(
                 left: ScreenAdapter.width(20),
-                top: ScreenAdapter.height(15),
+                top: ScreenAdapter.height(5),
                 right: ScreenAdapter.width(20),
-                bottom: ScreenAdapter.height(15),
+                bottom: ScreenAdapter.height(5),
               ),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               child: Column(
@@ -1635,12 +1858,12 @@ class _SettlementPageState extends State<SettlementPage> {
                 children: [
                   Container(
                     padding: EdgeInsets.only(
-                        top: ScreenAdapter.height(15),
+                        top: ScreenAdapter.height(10),
                         bottom: ScreenAdapter.height(5)),
                     alignment: Alignment.centerLeft,
                     child: Text(GString.getToString(this._checkLanguage, "settlement_payment_method_title"),
                         style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(34),
+                          fontSize: ScreenAdapter.fontSize(32),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor(Gcolor.settlementTitleColor),
                         )),
@@ -1652,43 +1875,32 @@ class _SettlementPageState extends State<SettlementPage> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Container(
-                            padding: EdgeInsets.only(
-                                bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(400),
-                            //height: ScreenAdapter.height(620),
-                            alignment: Alignment.center,
-                            child: Container(
-                                width: ScreenAdapter.width(320),
-                                //height: ScreenAdapter.height(620),
-                                child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"))),
-                          ),
-                        ],
+                      Container(
+                        padding: EdgeInsets.only(
+                            bottom: ScreenAdapter.height(20)),
+                        width: ScreenAdapter.width(400),
+                        //height: ScreenAdapter.height(620),
+                        alignment: Alignment.center,
+                        child: Container(
+                            //width: ScreenAdapter.width(280),
+                            height: ScreenAdapter.height(300),
+                            child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"),fit: BoxFit.fitHeight,)),
                       ),
                       SizedBox(
                         width: ScreenAdapter.width(30),
                       ),
                       if(_showWechat == true || _showAlipay == true || _showPayPay == true)
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-
-                          Container(
-                            padding: EdgeInsets.only(
-                                bottom: ScreenAdapter.height(25)),
-                            width: ScreenAdapter.width(400),
-                            //height: ScreenAdapter.height(580),
-                            alignment: Alignment.center,
-                            child: Container(
-                                width: ScreenAdapter.width(320),
-                                //height: ScreenAdapter.height(620),
-                                child: Image.asset(
-                                    GImage.getImageString(_shopInfo, "saoma"))),
-                          ),
-                        ],
+                      Container(
+                        padding: EdgeInsets.only(
+                            bottom: ScreenAdapter.height(20)),
+                        width: ScreenAdapter.width(400),
+                        //height: ScreenAdapter.height(580),
+                        alignment: Alignment.center,
+                        child: Container(
+                          //width: ScreenAdapter.width(280),
+                            height: ScreenAdapter.height(300),
+                            child: Image.asset(
+                                GImage.getImageString(_shopInfo, "saoma"),fit: BoxFit.fitHeight,)),
                       ),
 
 
@@ -1706,13 +1918,13 @@ class _SettlementPageState extends State<SettlementPage> {
             ),
             Container(
               //width: ScreenAdapter.width(240),
-              height: ScreenAdapter.height(250),
+              height: ScreenAdapter.height(220),
               // margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
               padding: EdgeInsets.only(
                   left: ScreenAdapter.width(20),
-                  top: ScreenAdapter.height(20),
+                  top: ScreenAdapter.height(15),
                   right: ScreenAdapter.width(20),
-                  bottom: ScreenAdapter.height(20)
+                  bottom: ScreenAdapter.height(10)
               ),
               color: ColorsUtil.hexToColor(Gcolor.settlementBackgroundColor),
               alignment: Alignment.center,
@@ -2045,30 +2257,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 child: Scrollbar(
                   child: SingleChildScrollView(
                     physics: ClampingScrollPhysics(),
-                    child: Container(
-                      width: ScreenAdapter.width(1030),
-                      height: ScreenAdapter.height(620),
-                      padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(15),
-                          top: ScreenAdapter.height(20),
-                          right: ScreenAdapter.width(15),
-                          bottom: ScreenAdapter.height(40)),
-                      child: GetBuilder<HomePageController>(
-                        builder: (_) {
-                          if (controller.cartItems.length == 0) {
-                            return Center(
-                              child: Text("No item found"),
-                            );
-                          }
-                          return ListView(
-                            shrinkWrap: true,
-                            children: controller.cartItems
-                                .map((d) => generateCartList(context, d))
-                                .toList(),
-                          );
-                        },
-                      ),
-                    ),
+                    child: (_machineCode == "1") ?getmachineModeOneOrderList(context):getmachineModeTwoOrderList(context),
                   ),
                 ),
 

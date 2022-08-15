@@ -40,7 +40,7 @@ class _ActivationPageState extends State<ActivationPage> {
 
   void _goMain() async {
     Future.delayed(Duration.zero, () {
-      Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.of(context).pushReplacementNamed('/transitPage');
     });
   }
 

@@ -35,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   var _closeStatus;
   var _shopInfo = "kanran";
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
+  var _machineMode = "1";//1 券卖机  2 精算机
 
   @override
   void initState() {
@@ -188,6 +189,7 @@ class _HomePageState extends State<HomePage> {
         "menuDirection":"1",//1顶部横向 2左侧竖
         "printPaperSize":"1",//1 58mm 2 80mm
         "isAllowReceipt":"1",//1必须打印小票 2不必须
+        "machineMode":"1",//1券卖机 2精算机
       };
       Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
 

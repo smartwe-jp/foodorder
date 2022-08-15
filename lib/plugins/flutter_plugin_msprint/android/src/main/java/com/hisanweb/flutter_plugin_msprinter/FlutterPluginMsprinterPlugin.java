@@ -107,6 +107,7 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
         String shopInfo = call.argument("shopInfo");
         String printPaperSize = call.argument("printPaperSize");
         String isQueryReceipt = call.argument("isQueryReceipt");
+        String machineMode = call.argument("machineMode");
 
         OrderMenuList oh = JSONObject.parseObject(operdata, OrderMenuList.class);
 
@@ -118,56 +119,82 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
           //甘蘭
           if(shopInfo.equals("kanran")){
             if(printPaperSize.equals("1")){
-              if(isQueryReceipt.equals("1")){
-                print.execute_print(mUsbDriver,oh,kanran,1);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print(mUsbDriver,oh,kanran,1);
+                  print.execute_printRreceipt(mUsbDriver,oh,kanran);
+                }else{
+                  print.execute_print(mUsbDriver,oh,kanran,0);
+                }
+              }else{
                 print.execute_printRreceipt(mUsbDriver,oh,kanran);
-              }else{
-                print.execute_print(mUsbDriver,oh,kanran,0);
               }
-
             }else{
-              if(isQueryReceipt.equals("1")){
-                print.execute_print_eighty(mUsbDriver,oh,kanraneighty,1);
-                print.execute_printRreceipt_eighty(mUsbDriver,oh,kanraneighty);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print_eighty(mUsbDriver,oh,kanraneighty,1);
+                  print.execute_printRreceipt_eighty(mUsbDriver,oh,kanraneighty);
+                }else{
+                  print.execute_print_eighty(mUsbDriver,oh,kanraneighty,0);
+                }
               }else{
-                print.execute_print_eighty(mUsbDriver,oh,kanraneighty,0);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,kanraneighty);
               }
-
             }
           }else if(shopInfo.equals("sanfeng")){//sanfeng
             if(printPaperSize.equals("1")){
-              if(isQueryReceipt.equals("1")){
-                print.execute_print(mUsbDriver,oh,sanfeng,1);
-                print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print(mUsbDriver,oh,sanfeng,1);
+                  print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
+                }else{
+                  print.execute_print(mUsbDriver,oh,sanfeng,0);
+                }
               }else{
-                print.execute_print(mUsbDriver,oh,sanfeng,0);
+                print.execute_printRreceipt(mUsbDriver,oh,sanfeng);
               }
 
+
             }else{
-              if(isQueryReceipt.equals("1")){
-                print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,1);
-                print.execute_printRreceipt_eighty(mUsbDriver,oh,sanfengeighty);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,1);
+                  print.execute_printRreceipt_eighty(mUsbDriver,oh,sanfengeighty);
+                }else{
+                  print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,0);
+                }
               }else{
-                print.execute_print_eighty(mUsbDriver,oh,sanfengeighty,0);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,sanfengeighty);
               }
+
 
             }
           }else if(shopInfo.equals("rijindoujin")){//sanfeng
             if(printPaperSize.equals("1")){
-              if(isQueryReceipt.equals("1")){
-                print.execute_print(mUsbDriver,oh,rijindoujin,1);
-                print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print(mUsbDriver,oh,rijindoujin,1);
+                  print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
+                }else{
+                  print.execute_print(mUsbDriver,oh,rijindoujin,0);
+                }
               }else{
-                print.execute_print(mUsbDriver,oh,rijindoujin,0);
+                print.execute_printRreceipt(mUsbDriver,oh,rijindoujin);
               }
 
+
             }else{
-              if(isQueryReceipt.equals("1")){
-                print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,1);
-                print.execute_printRreceipt_eighty(mUsbDriver,oh,rijindoujineighty);
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,1);
+                  print.execute_printRreceipt_eighty(mUsbDriver,oh,rijindoujineighty);
+                }else{
+                  print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,0);
+                }
               }else{
-                print.execute_print_eighty(mUsbDriver,oh,rijindoujineighty,0);
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,rijindoujineighty);
               }
+
 
             }
           }

@@ -65,7 +65,7 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
       showToast('異常が生じてます。お近くのスタッフにお声かけください〜。');
       Future.delayed(Duration(milliseconds: 1000)).then((e) {
 
-        Global.navigatorKey.currentState.pushNamed("/home");
+        Global.navigatorKey.currentState.pushNamed("/transitPage");
       });
     //}else{
       //showToast('異常が生じてます。お近くのスタッフにお声かけください。');

@@ -1068,7 +1068,7 @@ class _SettingPageState extends State<SettingPage> {
                             );*/
                             Navigator.pop(context);
                             Future.delayed(Duration(milliseconds: 100), () {
-                              Navigator.pushNamed(context, '/home');
+                              Navigator.pushNamed(context, '/transitPage');
                             });
                           },
                           child: Container(

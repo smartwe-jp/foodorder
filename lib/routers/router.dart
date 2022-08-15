@@ -8,7 +8,10 @@ import 'package:foodorder/pages/setting/SettingPage.dart';
 import 'package:foodorder/pages/settlement/Settlement.dart';
 import 'package:foodorder/pages/showImage/ShowImage.dart';
 
-import '../pages/setting/SystemSettingPage.dart';
+import 'package:foodorder/pages/setting/SystemSettingPage.dart';
+import 'package:foodorder/pages/transitpage/TransitPage.dart';
+
+import 'package:foodorder/pages/checkOut/CheckOut.dart';
 
 //配置路由
 final routes = {
@@ -19,6 +22,9 @@ final routes = {
   "/settlement": (context,{arguments}) => SettlementPage(arguments:arguments), //结算页面
   "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //设置页面
   "/systemSettingPage": (context,{arguments}) => SystemSettingPage(arguments:arguments), //系统设置
+
+  '/transitPage': (context) => TransitPage(), //中转页面
+  '/checkOutPage': (context) => CheckOutPage(), //精算机页面
 
   '/showImage': (context) => ShowImagePage(), //查看图片
 

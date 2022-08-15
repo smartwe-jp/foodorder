@@ -41,6 +41,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
   var _print_paper_size = "1";//1 默认58mm  2 宽纸80mm
   var _is_allow_receipt = "1";//1 必须打印  2 不必须打印
+  var _machine_mode = "1";//1 普通点餐券卖机  2 精算机（结账机）
 
   //监听页面销毁的事件
   dispose() {
@@ -974,6 +975,164 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
 
   }
 
+  //设置是否必须打印领収书
+  setMachineMode() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("マシンモード設定",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Text("（请根据实际情况设定机器模式。）",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkMachineMode("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("券売機モード",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_machine_mode == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkMachineMode("2");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("精算機モード",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_machine_mode == "2")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkMachineMode(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":checkedType,//1普通券卖机 2 精算机
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+
+    //Storage.setString('isAllowReceipt', checkedType);//1 必须  2 不必须
+    setState(() {
+      _machine_mode = checkedType;
+    });
+
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1080,6 +1239,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                   setMenuDirection(),//菜单方向
                   setPrintPaperSize(),//打印纸大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
+                  setMachineMode(),
                 ],
               ),
             ),

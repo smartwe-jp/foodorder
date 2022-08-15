@@ -271,12 +271,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
             //配置顶部菜单默认项
             if (i == 0) classTag = categoryVoList['categoryCode'];
-            showItem[categoryVoList['categoryCode']] =
-                categoryVoList['menuVoList'];
+            showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
 
             //该分类下有option，先初始化页面数据
             if (categoryVoList['menuVoList']?.length > 0) {
               for (var menuVoList in categoryVoList['menuVoList']) {
+                var _addOptionPrice = 0;
                 if (menuVoList['optionGroupVoList'] != null &&
                     menuVoList['optionGroupVoList']?.length > 0 &&
                     menuVoList['optionGroupVoList'] != "") {
@@ -287,6 +287,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   List tempArr = [];
                   List initalCode = [];
                   var checkNum = 0;
+
 
                   for (var m = 0; m < attr.length; m++) {
                     for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
@@ -300,6 +301,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         attr[m]['optionVoList'][n]["groupTitle"]=attr[m]["groupName"];
                         tempArr.add(attr[m]['optionVoList'][n]);
                         initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
+
+                        _addOptionPrice += attr[m]['optionVoList'][n]["currentPrice"];
                         checkNum++;
                       } else {
                         attr[m]['optionVoList'][n]["checked"] = false;
@@ -318,7 +321,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   checkNum = 0;
                 }
                 _selectedMenuOptionChangePrice[menuVoList['menuCode']] = menuVoList['currentPrice'];
-                _addselectedMenuOptionChangePrice[menuVoList['menuCode']] = 0;
+                _addselectedMenuOptionChangePrice[menuVoList['menuCode']] = _addOptionPrice;
               }
             }
 
@@ -3282,6 +3285,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "showPayPay":_showPayPay,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
+                "machineMode":"2",
               });
 
         }else{
