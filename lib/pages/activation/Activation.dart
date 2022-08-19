@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -8,6 +9,8 @@ import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
+
+import 'package:foodorder/services/HttpService.dart';
 
 class ActivationPage extends StatefulWidget {
   ActivationPage({Key key}) : super(key: key);
@@ -22,6 +25,10 @@ class _ActivationPageState extends State<ActivationPage> {
 
   var _activation_code; //激活码
   var _checkedShop = null;
+
+  var _showWechat = true;
+  var _showAlipay = true;
+  var _showPayPay = true;
 
   @override
   void initState() {
@@ -57,8 +64,10 @@ class _ActivationPageState extends State<ActivationPage> {
       Storage.setBool('homeOpen', true);
 
       _goMain();
+
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

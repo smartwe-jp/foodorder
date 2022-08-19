@@ -9,6 +9,8 @@ import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
 import 'package:foodorder/services/HomeServices.dart';
 
+import '../../services/HttpService.dart';
+
 class TransitPage extends StatefulWidget {
   TransitPage({Key key}) : super(key: key);
 
@@ -22,7 +24,7 @@ class _TransitPageState extends State<TransitPage> {
   @override
   void initState() {
     super.initState();
-    _getSystemSettingInfo();
+    _getMachineInfo();
   }
 
   @override
@@ -30,6 +32,18 @@ class _TransitPageState extends State<TransitPage> {
     // TODO: implement dispose
 
     super.dispose();
+  }
+
+  _getMachineInfo() async {
+    var machineCode = await HomeServices.getMachineInfo();
+    if (machineCode != "") {
+      setState(() {
+        _machineCode = machineCode;
+      });
+
+      //_getDiningTypeInfo();
+      _getSystemSettingInfo();
+    }
   }
 
   _getSystemSettingInfo() async {
@@ -44,20 +58,42 @@ class _TransitPageState extends State<TransitPage> {
         "machineMode":"1",//1券卖机 2精算机
       };
       Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+      systemSettingInfo = systemSettingData;
+    }
+    setState(() {
+      _machineMode = systemSettingInfo['machineMode'];
+    });
+    _getMachineActivate();
 
-      _goMain();
-    }else{
-      setState(() {
-        _machineMode = systemSettingInfo['machineMode'];
-      });
-      if(systemSettingInfo['machineMode'] == "2"){
+
+  }
+
+  _getMachineActivate(){
+    var formData = {
+      "machineCode": _machineCode,
+    };
+    request('webBootActivate', method: 'GET', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      if (response['code'] == 200) {
+        var shopData = response['data'];
+          //_shopCode = shopData["shopCode"];
+        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
+        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
+        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
+        var machineActivateData = {
+          "showWechat":_showWechat,
+          "showAlipay":_showAlipay,
+          "showPayPay":_showPayPay,
+        };
+        Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));//1 默认58mm  2 宽纸80mm
+
+      }
+      if(_machineMode == "2"){
         _goCheckOut();
       }else{
         _goMain();
       }
-    }
-
-
+    });
   }
 
   void _goMain() async {

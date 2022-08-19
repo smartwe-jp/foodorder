@@ -120,14 +120,17 @@ class _SettlementPageState extends State<SettlementPage> {
       this._totalPrice = widget.arguments['totalPrice'];
     }
 
+    //获取是否展示微信支付宝图标等
+    _getMachineActivateInfo();
+
     if(_machineMode == "2"){
       //精算机获得订单
       _getOrderList();
     }
 
-    this._showWechat = widget.arguments['showWechat'];
-    this._showAlipay = widget.arguments['showAlipay'];
-    this._showPayPay = widget.arguments['showPayPay'];
+    //this._showWechat = widget.arguments['showWechat'];
+    //this._showAlipay = widget.arguments['showAlipay'];
+    //this._showPayPay = widget.arguments['showPayPay'];
 
     EasyLoading.dismiss();
 
@@ -137,7 +140,7 @@ class _SettlementPageState extends State<SettlementPage> {
     Starttoubi();
 
     //获取小票纸大小
-    _getSystemSettingInfo();
+    //_getSystemSettingInfo();
 
     //CancelOrder();
     //newendtradepay();
@@ -173,12 +176,12 @@ class _SettlementPageState extends State<SettlementPage> {
       "orderId": this._orderId,
     };
     request('checkOutOrderDetails', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print(response);
       EasyLoading.dismiss();
 
       if (response['code'] == 200) {
         setState(() {
-          _totalPrice = response["data"]["tootalPrice"].toString();
+          _totalPrice = response["data"]["totalPrice"].toString();
           _goodsList = response["data"]["checkOutOrderDetails"];
         });
 
@@ -202,7 +205,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 print(queryUrl);
     request(queryUrl, method: 'GET', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print("小票${response}");
       if (response['code'] == 200) {
 print(response);
         setState(() {
@@ -215,7 +218,16 @@ print(response);
       }
     });
   }
+  _getMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
 
+    setState(() {
+      this._showWechat = systemSettingInfo['showWechat'];
+      this._showAlipay = systemSettingInfo['showAlipay'];
+      this._showPayPay = systemSettingInfo['showPayPay'];
+    });
+    _getSystemSettingInfo();
+  }
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
 
@@ -1050,7 +1062,7 @@ print(response);
 
   gotonewMenuPage(){
     EasyLoading.dismiss();
-    Navigator.pop(context);
+    Navigator.pop(context);print(_machineMode);
     if(_machineMode == "1"){
       Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
     }else{
@@ -1205,12 +1217,15 @@ print(response);
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页
   CancelOrder(){
-    var formData = {
-      "machineCode": _machineCode,
-      "orderId": this._orderId,
-    };
-    //不用查看返回
-    request('webBootCancel', method: 'POST', parameters: formData);
+    if(_machineMode == "1"){
+      var formData = {
+        "machineCode": _machineCode,
+        "orderId": this._orderId,
+      };
+      //不用查看返回
+      request('webBootCancel', method: 'POST', parameters: formData);
+    }
+
 
     //已投钱
     if(int.parse(_getPutMoney) >0){
@@ -1413,7 +1428,7 @@ print(response);
   Widget getmachineModeOneOrderList(BuildContext context){
     return Container(
       width: ScreenAdapter.width(1030),
-      height: ScreenAdapter.height(620),
+      height: ScreenAdapter.height(920),
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(15),
           top: ScreenAdapter.height(20),
@@ -1441,7 +1456,7 @@ print(response);
   Widget getmachineModeTwoOrderList(BuildContext context){
     return Container(
         width: ScreenAdapter.width(1030),
-        height: ScreenAdapter.height(620),
+        height: ScreenAdapter.height(920),
         padding: EdgeInsets.only(
             left: ScreenAdapter.width(15),
             top: ScreenAdapter.height(20),
@@ -1520,7 +1535,7 @@ print(response);
                       width: ScreenAdapter.width(140),
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "￥ ${formatMoney(item["toatlGoodsPrice"].toString())}",
+                        "￥ ${formatMoney((item["goodsNum"]*item["goodsPrice"])).toString()}",
                         style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                             fontWeight: FontWeight.w600,
@@ -1686,6 +1701,7 @@ print(response);
                           ),
                         ),
                       )*/
+
                   InkWell(
                     onTap: (){
                       _showBackEasyLoading();
@@ -1962,7 +1978,7 @@ print(response);
                               )),
                           child: RichText(
                             text: TextSpan(
-                                text: this._totalPrice,//GString.getToString(this._checkLanguage, "show_price_front"),
+                                text: formatMoney(this._totalPrice),//GString.getToString(this._checkLanguage, "show_price_front"),
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(52),
                                   fontWeight: FontWeight.w600,
@@ -2030,7 +2046,7 @@ print(response);
                                   )),
                               child: RichText(
                                 text: TextSpan(
-                                    text: this._getPutMoney,//" 円",
+                                    text: formatMoney(this._getPutMoney),//" 円",
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(52),
                                       fontWeight: FontWeight.w600,
@@ -2073,7 +2089,7 @@ print(response);
                                   )),
                               child: RichText(
                                 text: TextSpan(
-                                    text: this._showOutMoney,//" 円",
+                                    text: formatMoney(this._showOutMoney),//" 円",
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(52),
                                       fontWeight: FontWeight.w600,

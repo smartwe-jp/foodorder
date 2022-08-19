@@ -3285,7 +3285,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "showPayPay":_showPayPay,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
-                "machineMode":"2",
+                "machineMode":"1",
               });
 
         }else{

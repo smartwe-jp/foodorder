@@ -92,4 +92,16 @@ class HomeServices{
     return systemSettingInfo;
   }
 
+  //是否展示微信支付宝等
+  static getMachineActivateData() async{
+    Map machineActivateInfo;
+    try {
+      Map machineActivateData = json.decode(await Storage.getString('smartwe_machineActivateData'));
+      machineActivateInfo = machineActivateData;
+    } catch (e) {
+      machineActivateInfo = {};
+    }
+    return machineActivateInfo;
+  }
+
 }

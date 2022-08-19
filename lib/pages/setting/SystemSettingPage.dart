@@ -72,6 +72,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _menu_direction = systemSettingInfo['menuDirection'];
       _print_paper_size = systemSettingInfo['printPaperSize'];
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
+      _machine_mode = systemSettingInfo['machineMode'];
     });
   }
 

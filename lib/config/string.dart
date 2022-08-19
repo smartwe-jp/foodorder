@@ -14,7 +14,7 @@ class GString{
         "tag_content":"ショッピングカートを空にします?",
         "tag_button_yes":"はい",
         "tag_button_no":"いいえ",
-        "tag_checkOut":"请扫码",
+        "tag_checkOut":"QRコードをスキャンしてください",
 
         "menu_dingtype_eatin":"店内",
         "menu_dingtype_takeout":"お持ち帰り",
@@ -138,7 +138,7 @@ class GString{
         "tag_content":"Are you sure you want to empty the shopping cart?",
         "tag_button_yes":"Yes",
         "tag_button_no":"No",
-        "tag_checkOut":"请扫码",
+        "tag_checkOut":"Please scan QR code.",
 
         "menu_dingtype_eatin":"Eat in",
         "menu_dingtype_takeout":"Take out",

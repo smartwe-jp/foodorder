@@ -21,6 +21,8 @@ import 'package:foodorder/services/Storage.dart';
 import 'package:foodorder/config/string.dart';
 import 'package:foodorder/services/HttpService.dart';
 
+import '../../config/color.dart';
+
 class CheckOutPage extends StatefulWidget {
   CheckOutPage({Key key}) : super(key: key);
 
@@ -39,6 +41,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _stopStatus;
   var _closeStatus;
   String _machineCode = "";
+  String _tableCode = "";
   var _shopInfo = "kanran";
   var _checkLanguage = "JP";
   var _scanQrCode = "";
@@ -81,6 +84,8 @@ class _CheckOutPageState extends State<CheckOutPage> {
     }else{
       Storage.setString('shopInfo', "kanran");
     }
+
+    _getMachineInfo();
   }
 
   //打开现金机
@@ -165,7 +170,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       });
 
     }
-    FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+    //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
   }
 
   //扫码，弹出dialog
@@ -177,90 +182,108 @@ class _CheckOutPageState extends State<CheckOutPage> {
         builder: (BuildContext context) {
           return Container(
             width: ScreenAdapter.width(950),
-            child: Column(
-              children: [
-                Container(
-                  height: 100,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: TextField(
-                            keyboardType: TextInputType.number,
-                            autofocus: true,
-                            showCursor: false, // 显示光标
-                            //readOnly: true,
-                            controller: _scanQrCodeController,
-                            focusNode: _scanQrCodeFocusNode,
-                            decoration: InputDecoration(
-                              hintText: "请扫码",
-                              border: InputBorder.none,
-                              isDense: true,
-                            ),
-                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
-                            obscureText: false,
-                            onChanged: (value) {
-                              //print(value);
-
-                            },
-                            onSubmitted: (value){
-                              setState(() {
-                                this._machineCode = value;
-                              });
-                              print(value);
-                              _doNextPay();
-
-                              Navigator.pop(context);
-                            },
-
-                            /// 扫码密码
-                          )
-                      ),
-                    ],
-                  ),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
                 ),
-                SimpleDialog(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(5),
-                    ),
-                    title: Align(
-                        alignment: Alignment.center,
-                        child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
-                    ),
-                    children: <Widget>[
-                      Container(
-                        width: ScreenAdapter.width(650),
+                /*title: Align(
+                    alignment: Alignment.center,
+                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),*/
+                children: <Widget>[
+                  Container(
+                    height: 0,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              autofocus: true,
+                              showCursor: false, // 显示光标
+                              //readOnly: true,
+                              controller: _scanQrCodeController,
+                              focusNode: _scanQrCodeFocusNode,
+                              decoration: InputDecoration(
+                                hintText: "请扫码",
+                                border: InputBorder.none,
+                                isDense: true,
+                              ),
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(1.0)),
+                              obscureText: false,
+                              onChanged: (value) {
+                                //print(value);
 
-                        child: Column(
-                          children: <Widget>[
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Align(
-                              child: Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
-                                  style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
-                              alignment: Alignment(0, 0),
-                            ),
-                            SizedBox(
-                              height: 10,
-                            ),
-                            Divider(
-                              thickness: 1.0,
-                              color: Colors.black12,
-                            ),
+                              },
+                              onSubmitted: (value){
+                                setState(() {
+                                  this._tableCode = value;
+                                });
+                                //print(value);
+                                _doNextPay();
 
-                          ],
+                                Navigator.pop(context);
+                              },
+
+                              /// 扫码密码
+                            )
                         ),
-                      ),
-                    ]
-                ),
-              ],
+                      ],
+                    ),
+                  ),
+                  Container(
+                    width: ScreenAdapter.width(550),
+                    height: ScreenAdapter.height(480),
+                    padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(25),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                            )),
+                        SizedBox(height: ScreenAdapter.height(30),),
+                        Container(
+                          //width: ScreenAdapter.width(280),
+                            height: ScreenAdapter.height(300),
+                            child: Image.asset(GImage.getImageString(_shopInfo, "saoma"),fit: BoxFit.fitHeight,)),
+                      ],
+                    ),
+                  )
+
+                  /*Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+
+                      ],
+                    ),
+                  ),*/
+                ]
             ),
           );
         });
   }
 
   _doNextPay(){
-    if(_machineCode !=""){
+    if(_tableCode !=""){
       _showOrderEasyLoading();
 
       //自定义声音
@@ -268,31 +291,39 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
       var formData = {
         "language": this._checkLanguage,
-        "machineCode": _machineCode,
+        "machineCode": _tableCode,
         "takeout": false,
-      };
+      };print(formData);
       request('shopOrderTableNum', method: 'GET', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
         print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
+        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {print('YIyiyiiy');
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
-                "machineCode": this._machineCode,
-                "showWechat":response["data"]["linePayChannelMap"]["Wechat"],//_showWechat,
-                "showAlipay":response["data"]["linePayChannelMap"]["Alipay"],//_showAlipay,
-                "showPayPay":response["data"]["linePayChannelMap"]["PayPay"],//_showPayPay,
+                "machineCode": this._tableCode,
+                //"showWechat":response["data"]["linePayChannelMap"]["Wechat"],//_showWechat,
+                //"showAlipay":response["data"]["linePayChannelMap"]["Alipay"],//_showAlipay,
+                //"showPayPay":response["data"]["linePayChannelMap"]["PayPay"],//_showPayPay,
                 "orderId" : response["data"]["orderId"],
                 "machineMode":"2",
                 //"totalPrice" : orderTotlaPrice.toString(),
               });
 
+
         }else{
+          setState(() {
+            _scanQrCodeController.text = "";
+            _tableCode = "";
+           // FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+          });
+
+
           showToast(response['msg']);
           sleep(Duration(milliseconds: 2000));
-          Navigator.pop(context);
+          //Navigator.pop(context);
         }
       });
     }
