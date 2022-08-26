@@ -3418,6 +3418,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                 "showPayPay":_showPayPay,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
+                "machineMode":"1",
               });
 
         }else{

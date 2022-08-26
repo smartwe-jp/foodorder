@@ -47,7 +47,7 @@ class _AttendancePageState extends State<AttendancePage> {
   Future<dynamic> _handlerMethodCall(MethodCall call) async {
     //获取通道监听中调用的函数名称
     String method = call.method;
-    if (method == 'clickAndroidButtonAndNoticeFlutter') {
+    if (method == 'clickAndroidButtonAndNoticeFlutter') {print("zz摄像头返回：${DateTime.now()}");
       String androidResultImage = call.arguments['AndroidResultImage'];
 
       if(androidResultImage.length>0){
@@ -65,7 +65,7 @@ class _AttendancePageState extends State<AttendancePage> {
 
           EasyLoading.dismiss();
           if (response['code'] == 200 && null != response['data']['name'] && "" != response['data']['name']) {
-
+            print("zz请求刷脸返回：${DateTime.now()}");
             showDialogUser(response['data']['name'],response['data']['employeeNo'],response['data']['avatarUrl'],response['data']['time'],response['data']['message']);
 
 
@@ -83,7 +83,7 @@ class _AttendancePageState extends State<AttendancePage> {
     }
   }
 
-  showDialogUser(userName,employeeNo,avatarUrl,showTime,showMessage){
+  showDialogUser(userName,employeeNo,avatarUrl,showTime,showMessage){print("zz弹出框：${DateTime.now()}");
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -109,15 +109,15 @@ class _AttendancePageState extends State<AttendancePage> {
                       children: <Widget>[
                         Row(
                           crossAxisAlignment: CrossAxisAlignment.center,
-                          mainAxisAlignment: MainAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Container(
+                            /*Container(
                                 width:ScreenAdapter.width(200),
                                 height: ScreenAdapter.height(250),
                                 padding: EdgeInsets.all(15),
                                 child: Image.network("${avatarUrl}",fit: BoxFit.fitHeight,)
                             ),
-                            SizedBox(width: 10,),
+                            SizedBox(width: 10,),*/
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -295,42 +295,10 @@ class _AttendancePageState extends State<AttendancePage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
 
-                  /*Container(
-                      child: InkWell(
-                        onTap: (){
-                          //在Flutter端调用执行函数，将Flutter端按钮的点击次数传递到安卓端
-                          _channel.invokeMethod("stopPictureButtonAndNoticeAndroid");
-                          Navigator.pop(context);
-                          Navigator.pop(context);
-                          Future.delayed(Duration(milliseconds: 100), () {
-                            Navigator.pushNamed(context, '/home');
-                          });
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-                          width: ScreenAdapter.width(210),
-                          height: ScreenAdapter.height(100),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-
-                            color: ColorsUtil.hexToColor("#67c23a"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: Text(
-                              "戻る",
-                              style: TextStyle(
-                                fontSize: 38,
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )),
-                        ),
-                      )
-                  ),
-                  SizedBox(width: 35,),*/
                   Container(
                       child: InkWell(
                         onTap: (){
+                          print("zz按钮开始：${DateTime.now()}");
                           _showEasyLoading();
                           Map<String, String> map = {
                             'takePicture':"1"

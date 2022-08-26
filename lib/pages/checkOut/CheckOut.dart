@@ -231,23 +231,23 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     ),
                   ),
                   Container(
-                    width: ScreenAdapter.width(550),
-                    height: ScreenAdapter.height(480),
+                    width: ScreenAdapter.width(650),
+                    height: ScreenAdapter.height(580),
                     padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(25),
+                              fontSize: ScreenAdapter.fontSize(28),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                             )),
-                        SizedBox(height: ScreenAdapter.height(30),),
+                        //SizedBox(height: ScreenAdapter.height(10),),
                         Container(
                           //width: ScreenAdapter.width(280),
-                            height: ScreenAdapter.height(300),
-                            child: Image.asset(GImage.getImageString(_shopInfo, "saoma"),fit: BoxFit.fitHeight,)),
+                            height: ScreenAdapter.height(480),
+                            child: Image.asset(GImage.getImageString(_shopInfo, "jingsuantag"),fit: BoxFit.fitHeight,height: ScreenAdapter.height(480),)),
                       ],
                     ),
                   )
@@ -291,14 +291,13 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
       var formData = {
         "language": this._checkLanguage,
-        "machineCode": _tableCode,
-        "takeout": false,
+        "machineCode": _tableCode
       };print(formData);
       request('shopOrderTableNum', method: 'GET', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
         print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {print('YIyiyiiy');
+        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
@@ -311,7 +310,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 "machineMode":"2",
                 //"totalPrice" : orderTotlaPrice.toString(),
               });
-
+          //Navigator.pop(context);
 
         }else{
           setState(() {
@@ -320,9 +319,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
            // FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
           });
 
-
-          showToast(response['msg']);
-          sleep(Duration(milliseconds: 2000));
+          _showDialogError(response['msg']);
+          //showToast(response['msg']);
+          //sleep(Duration(milliseconds: 2000));
           //Navigator.pop(context);
         }
       });
@@ -351,6 +350,106 @@ class _CheckOutPageState extends State<CheckOutPage> {
       maskType: EasyLoadingMaskType.black,
     );
 
+  }
+
+  _showDialogError(msg){
+    //查询订单弹出提示
+      showDialog(
+          context: context,
+          builder: (BuildContext context) {
+            return Container(
+              width: ScreenAdapter.width(950),
+              child: SimpleDialog(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  title: Align(
+                      alignment: Alignment.center,
+                      child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                  ),
+                  children: <Widget>[
+                    Container(
+                      width: ScreenAdapter.width(650),
+                      padding: EdgeInsets.only(left: ScreenAdapter.width(30),right: ScreenAdapter.width(30)),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: <Widget>[
+                          SizedBox(
+                            height: 10,
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Container(
+                                //width: ScreenAdapter.width(400),
+                                //margin: EdgeInsets.only(top: 60),
+                                height: ScreenAdapter.height(75),
+                                child: Image.asset(GImage.getImageString(_shopInfo, "error_public"),fit: BoxFit.fitHeight),
+                              ),
+                              Expanded(
+                                  child: Container(
+                                      padding: EdgeInsets.only(left: ScreenAdapter.width(25),right: ScreenAdapter.width(25)),
+                                      child: Text(msg,style: TextStyle(fontSize: ScreenAdapter.fontSize(28)))
+                                  )
+                              ),
+                            ],
+                          ),
+                          SizedBox(
+                            height: 15,
+                          ),
+                          /*Divider(
+                            thickness: 1.0,
+                            color: Colors.black12,
+                          ),*/
+                          Container(
+                            alignment: Alignment.center,
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(85),
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
+                            decoration: BoxDecoration(
+
+                              color: ColorsUtil.hexToColor("#A61C1C"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: TextButton(
+                              child: Text(
+                                "${GString.getToString(this._checkLanguage,"settlement_change_method")}",
+                                style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                              },
+                            ),
+                          ),
+                          /*Container(
+                            alignment: Alignment.center,
+                            child: Padding(
+                              padding: const EdgeInsets.only(right: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "settlement_change_method"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  //Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                          ),*/
+                        ],
+                      ),
+                    ),
+                  ]
+              ),
+            );
+          });
   }
 
   @override

@@ -48,7 +48,8 @@ class GImage{
         "qiandaobutton":"assets/images/kanran/qiandaobutton.png",
         "eatin":"assets/images/public/eatin.png",
         "takeout":"assets/images/public/takeout.png",
-
+        "jingsuantag":"assets/images/public/jingsuantag.jpg",
+        "error_public":"assets/images/public/error_public.jpg",
       };
     }else if (shopInfo == 'sanfeng') {
       imagePack = {
@@ -88,7 +89,8 @@ class GImage{
         "xianjin":"assets/images/public/xianjin.jpg",
         "eatin":"assets/images/public/eatin.png",
         "takeout":"assets/images/public/takeout.png",
-
+        "jingsuantag":"assets/images/public/jingsuantag.jpg",
+        "error_public":"assets/images/public/error_public.jpg",
       };
     }else if (shopInfo == 'rijindoujin') {
       imagePack = {
@@ -128,6 +130,8 @@ class GImage{
         "xianjin":"assets/images/public/xianjin.jpg",
         "eatin":"assets/images/public/eatin.png",
         "takeout":"assets/images/public/takeout.png",
+        "jingsuantag":"assets/images/public/jingsuantag.jpg",
+        "error_public":"assets/images/public/error_public.jpg",
 
       };
     }

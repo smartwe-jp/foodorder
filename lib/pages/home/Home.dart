@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       CheckPayCube();
     });
 
-    _clearCartList();
+    //_clearCartList();
     //监听清除购物车的广播
     eventBus.on<clearCartEvent>().listen((event) {
       _clearCartList();
@@ -181,7 +181,7 @@ class _HomePageState extends State<HomePage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-
+print("systemSettingInfo:${systemSettingInfo}");
     if (systemSettingInfo.isEmpty) {//print("jinlailehome");
     var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
       var systemSettingData = {

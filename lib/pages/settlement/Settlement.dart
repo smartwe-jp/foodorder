@@ -62,7 +62,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _orderId;
   var _scanQrCode = "";
 
-  var _totalPrice = "";
+  var _totalPrice = "0";
   var _getPutMoney = "0"; //投币金额
   var _getPutMoneyCurrency = ""; //投币金额币种
   var _getOutMoney = "0"; //出金金额
@@ -98,6 +98,8 @@ class _SettlementPageState extends State<SettlementPage> {
   var _isReport = true;
   var _ticketData = null;
   var _scanCode = false;
+  var _isReportOutMoney = false; //新处理 默认不汇报出金信息  先汇报入金信息在汇报出金信息
+  var _isCancel = false; //新增加  取消默认为false
 
   //顶部展示支付类型
   var _showWechat = true;
@@ -132,19 +134,13 @@ class _SettlementPageState extends State<SettlementPage> {
     //this._showAlipay = widget.arguments['showAlipay'];
     //this._showPayPay = widget.arguments['showPayPay'];
 
-    EasyLoading.dismiss();
+    //EasyLoading.dismiss();
 
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
     //打开现金机
     Starttoubi();
 
-    //获取小票纸大小
-    //_getSystemSettingInfo();
-
-    //CancelOrder();
-    //newendtradepay();
-    //payCubeCloseTransaction();
 
 
 
@@ -176,7 +172,7 @@ class _SettlementPageState extends State<SettlementPage> {
       "orderId": this._orderId,
     };
     request('checkOutOrderDetails', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
       EasyLoading.dismiss();
 
       if (response['code'] == 200) {
@@ -194,20 +190,22 @@ class _SettlementPageState extends State<SettlementPage> {
   }
   //进入结算页面获取小票数据
   _getPrintTicketData(){
+    EasyLoading.dismiss();
+
     var formData = {
       "orderId": this._orderId,
-    };print(formData);
+    };
     var queryUrl;
     if(_print_paper_size == "1"){
       queryUrl = "webBootToPrintV2";
     }else{
       queryUrl = "webBootToPrintV3";
     }
-print(queryUrl);
+
     request(queryUrl, method: 'GET', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());print("小票${response}");
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
-print(response);
+
         setState(() {
           _ticketData = json.encode(response['data']);
         });
@@ -645,13 +643,14 @@ print(response);
   doPrintOrderMenu() async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
-      //print("打印小票来了");
-      //print(_is_query_receipt);
-      //print(_ticketData);
-      if(_ticketData != null){//print("先请求了小票数据打印小票来了");
+
+      if(_ticketData != null){
 
         await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
+        if(_machineMode == "1"){
+          eventBus.fire(new clearCartEvent('支付成功...'));
+        }
 
         //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
       if(_scanCode == true){
@@ -665,14 +664,26 @@ print(response);
         var formData = {
           "orderId": this._orderId,
         };
-        request('webBootToPrint', method: 'GET', parameters: formData).then((val) async {
-          var response = json.decode(val.toString());
+        var queryUrl;
+        if(_print_paper_size == "1"){
+          queryUrl = "webBootToPrintV2";
+        }else{
+          queryUrl = "webBootToPrintV3";
+        }
+
+        request(queryUrl, method: 'GET', parameters: formData).then((val) async {
+          var response = json.decode(val.toString());print(response);
 
           if (response['code'] == 200) {
 
             await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
             sleep(Duration(milliseconds: 500));
+
+            if(_machineMode == "1"){
+              eventBus.fire(new clearCartEvent('支付成功...'));
+            }
+
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
             if(_scanCode == true){
               //已经结束入金，处理取引终了
@@ -683,6 +694,10 @@ print(response);
 
 
           } else {
+            //错误后重新调用一次
+            print("错误重新调用一次");
+            doPrintOrderMenu();
+            //EasyLoading.dismiss();
 
           }
         });
@@ -928,7 +943,7 @@ print(response);
 
           _scanQrCodeFocusNode.unfocus();
         });
-        if(int.parse(result) >= int.parse(this._totalPrice)){
+        if(int.parse(result) >= int.parse(this._totalPrice, onError: (source) => -1)){
           setState(() {
             _showPrintButton = true;
             var outMoney = int.parse(result) - int.parse(this._totalPrice); //找零金额
@@ -944,7 +959,7 @@ print(response);
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
-  Endtoubi() async {
+  Endtoubi() async {print("222222");
     setState(() {
       timer?.cancel();
     });
@@ -1001,7 +1016,6 @@ print(response);
           //await Paycube.endPayCube;
         }*/else{
           await Paycube.endPayCube;
-          //print("_stopStatus:$_stopStatus");
         }
       });
 
@@ -1011,7 +1025,7 @@ print(response);
     }
   }
 
-  startOutPutMoney(outMoney) async {
+  startOutPutMoney(outMoney) async {print("333333");
     setState(() {
       outStringMoney = outMoney.toString();
 
@@ -1062,7 +1076,7 @@ print(response);
 
   gotonewMenuPage(){
     EasyLoading.dismiss();
-    Navigator.pop(context);print(_machineMode);
+    Navigator.pop(context);
     if(_machineMode == "1"){
       Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
     }else{
@@ -1076,48 +1090,15 @@ print(response);
     Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
   }
 
-  newendtradepay() async {
-    //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;
-    endtimer?.cancel();
-    endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 _endStatus == "Error-A0--02"
-      if (_endStatus == "EndSuccess") {
-        //如果出金金额大于0 则先获取出金币种，否则跳转
-        if(int.parse(outStringMoney) >0){
-          _getPayCubeOutMoney();
-        }else{
-          if(_isPrint == true){
 
-            gotonewMyhome();
-
-          }else{
-            if(_doSetting == true){
-              gotonewSettingPage();
-            }else{
-              gotonewMenuPage();
-            }
-          }
-        }
-        //print("交易结束关闭了");
-        endtradet.cancel();
-      }else{
-        await Paycube.endTrade;
-
-      }
-    });
-  }
-
-  _getPayCubeOutMoney() async {
+  _getPayCubeOutMoney() async {print("444444");
   //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
   OutMoneytimer?.cancel();
   await Paycube.setReceiveEvent;
   OutMoneytimer = Timer.periodic(Duration(milliseconds: 400), (Timer outMoneyTime) async {
     // 循环一定要记得设置取消条件，手动取消
     String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
-    if(currencyString !=""){
+    if(currencyString.trim() !=""){
       setState(() {
         _currencyString = currencyString;
 
@@ -1133,15 +1114,20 @@ print(response);
   }
 
   //汇报出金币种,请求后台
-  reportOutMoney(){
-    var formData = {
+  reportOutMoney(){print("汇报出金币种：${_getPutMoney}");
+    setState(() {
+      _isReportOutMoney = true;
+    });
+  payCubeCloseTransaction();
+
+    /*var formData = {
       "changeInfo": this._currencyString.trim(),
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney)
-    };
+    };print(formData);
     request('webBootToReport', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200) {
           //已经结束入金，处理取引终了
           payCubeCloseTransaction();
@@ -1149,7 +1135,7 @@ print(response);
       } else {
 
       }
-    });
+    });*/
 
 
   }
@@ -1217,18 +1203,22 @@ print(response);
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页
   CancelOrder(){
-    if(_machineMode == "1"){
-      var formData = {
-        "machineCode": _machineCode,
-        "orderId": this._orderId,
-      };
-      //不用查看返回
-      request('webBootCancel', method: 'POST', parameters: formData);
-    }
+
+    var formData = {
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+      "model": (_machineMode == "1")? "0":"1",
+    };print(formData);
+    //不用查看返回
+    request('webBootCancelV1', method: 'POST', parameters: formData);
+
+    setState(() {
+      _isCancel = true;
+    });
 
 
     //已投钱
-    if(int.parse(_getPutMoney) >0){
+    if(int.parse(_getPutMoney) >0){print("1111111");
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
@@ -1253,8 +1243,8 @@ print(response);
     await Paycube.setReceiveEvent;
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400), (Timer putMoneyCurrencyTime) async {
       // 循环一定要记得设置取消条件，手动取消
-      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
-      if(putcurrencyString !=""){
+      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;print(putcurrencyString);
+      if(putcurrencyString.trim() !=""){print(putcurrencyString);
         setState(() {
           _getPutMoneyCurrency = putcurrencyString;
 
@@ -1270,14 +1260,52 @@ print(response);
 
   //汇报入金币种,请求后台
   reportPutMoneyCurrency(){
+    //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機)
+    var operation = 0;
+    if(_isCancel == true){
+      operation = (_machineMode == "1") ? 1 :2;
+    }
+
     var formData = {
       "paymentInfo": this._getPutMoneyCurrency.trim(),
       "machineCode": _machineCode,
       "orderId": this._orderId,
-      "price": int.parse(this._getPutMoney)
-    };
-    request('webBootToReport', method: 'POST', parameters: formData);
+      "price": int.parse(this._getPutMoney),
+      "operation" :operation,
+    };print("入金${formData}");
+    request('webBootToReportV1', method: 'POST', parameters: formData).then((value) {
+      var response = json.decode(value.toString());print(response);
+      if (response['code'] == 200) {
+        if(_isReportOutMoney == true){
+          //已经结束入金，处理取引终了
+          reportOutMoneyCurrency();
+        }
 
+
+      }
+    }
+    );
+
+
+  }
+
+  reportOutMoneyCurrency(){
+    if(_giveChangeMoney>0){
+      var formData = {
+        "changeInfo": this._currencyString.trim(),
+        "machineCode": _machineCode,
+        "orderId": this._orderId,
+        "price": _giveChangeMoney
+      };print(formData);
+      request('webBootToReportV1', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());print(response);
+        if (response['code'] == 200) {
+
+        } else {
+
+        }
+      });
+    }
 
   }
 
@@ -1425,7 +1453,7 @@ print(response);
   }*/
 
   //券卖机展示购物车商品
-  Widget getmachineModeOneOrderList(BuildContext context){
+  Widget getmachineModeOneOrderList(BuildContext context){print("4324");
     return Container(
       width: ScreenAdapter.width(1030),
       height: ScreenAdapter.height(920),
@@ -2273,7 +2301,7 @@ print(response);
                 child: Scrollbar(
                   child: SingleChildScrollView(
                     physics: ClampingScrollPhysics(),
-                    child: (_machineCode == "1") ?getmachineModeOneOrderList(context):getmachineModeTwoOrderList(context),
+                    child: (_machineMode == "1") ?getmachineModeOneOrderList(context):getmachineModeTwoOrderList(context),
                   ),
                 ),
 
