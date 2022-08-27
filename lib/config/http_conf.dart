@@ -30,4 +30,6 @@ const servicePath = {
   //精算机使用接口
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
   'checkOutOrderDetails': base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
+
+  'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队
 };

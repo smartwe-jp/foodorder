@@ -28,6 +28,8 @@ import com.hisanweb.flutter_plugin_msprinter.orderInfo.LineVos;
 import com.hisanweb.flutter_plugin_msprinter.orderInfo.OptionVos;
 import com.hisanweb.flutter_plugin_msprinter.orderInfo.OrderMenuList;
 
+import com.hisanweb.flutter_plugin_msprinter.reserveInfo.ReserveList;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -357,6 +359,7 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         List<CategoryVos> lineList = oh.getCategoryVos();
         for (CategoryVos line:lineList) {
 
@@ -392,7 +395,7 @@ public class PrintService  {
             mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         }
-
+        mUsbDriver.write(PrintCmd.SetClean());
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder("No."+oh.getOrderId());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
@@ -404,6 +407,34 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintCutpaper(CutpaperSet));
     }
 
+
+    public void execute_reserve_printRreceipt(UsbDriver mUsbDriver,ReserveList oh,Drawable sed){
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        printbmp(mUsbDriver,sed);
+
+        PrintFeedDot(10);
+        StringBuilder m_sbData;
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        mUsbDriver.write(PrintCmd.PrintFeedline(1));
+        m_sbData = new StringBuilder(oh.getReserveTime());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+        mUsbDriver.write(PrintCmd.PrintFeedline(2));
+
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        mUsbDriver.write(PrintCmd.SetBold(1));
+        mUsbDriver.write(PrintCmd.SetSizetext(3,3));
+        m_sbData = new StringBuilder(oh.getTableType()+oh.getReserveNo());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetClean());
+
+
+        PrintFeedDot(20);
+
+        mUsbDriver.write(PrintCmd.PrintFeedline(5));
+        mUsbDriver.write(PrintCmd.PrintCutpaper(0));
+
+    }
 
     public void setPrintPaperSize(UsbDriver mUsbDriver,String checkedType){
 

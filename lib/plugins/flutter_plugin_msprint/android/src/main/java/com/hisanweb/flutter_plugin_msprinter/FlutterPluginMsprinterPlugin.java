@@ -19,6 +19,7 @@ import com.hisanweb.flutter_plugin_msprinter.msprintsdk.HttpCallable;
 import com.hisanweb.flutter_plugin_msprinter.msprintsdk.PrintCmd;
 import com.hisanweb.flutter_plugin_msprinter.msprintsdk.UsbDriver;
 import com.hisanweb.flutter_plugin_msprinter.orderInfo.OrderMenuList;
+import com.hisanweb.flutter_plugin_msprinter.reserveInfo.ReserveList;
 
 import com.alibaba.fastjson.JSONObject;
 import com.hisanweb.flutter_plugin_msprinter.service.PrintService;
@@ -197,6 +198,32 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
 
             }
+          }
+
+
+          result.success("success");
+        }
+
+
+        break;
+      case "sendPrintReserve":
+        String reservedata = call.argument("operdata");
+        String reserveshopInfo = call.argument("shopInfo");
+
+        ReserveList ohreserveItem = JSONObject.parseObject(reservedata, ReserveList.class);
+
+        //int iDriverCheck_sendPrint = usbDriverCheck();
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40001","无法获得usb权限",null);
+          return;
+        }else{
+          //甘蘭
+          if(reserveshopInfo.equals("kanran")){
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
+          }else if(reserveshopInfo.equals("sanfeng")){//sanfeng
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
+          }else if(reserveshopInfo.equals("rijindoujin")){//sanfeng
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
           }
 
 

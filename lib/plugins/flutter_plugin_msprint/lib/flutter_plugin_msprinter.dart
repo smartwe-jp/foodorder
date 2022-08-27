@@ -23,6 +23,12 @@ class FlutterPluginMsprinter {
     return printStatus;
   }
 
+  static Future<String> sendPrintReserve(printdata,shopInfo) async {
+    Map<String, String> map = {'operdata': printdata,'shopInfo':shopInfo};
+    final String printStatus = await _channel.invokeMethod('sendPrintReserve',map);
+    return printStatus;
+  }
+
   static Future<String> setPrintPaperSizefiftyeight() async {
     final String printStatus = await _channel.invokeMethod('setPrintPaperSizefiftyeight');
     return printStatus;

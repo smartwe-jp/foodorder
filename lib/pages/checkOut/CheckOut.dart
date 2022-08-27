@@ -21,7 +21,8 @@ import 'package:foodorder/services/Storage.dart';
 import 'package:foodorder/config/string.dart';
 import 'package:foodorder/services/HttpService.dart';
 
-import '../../config/color.dart';
+import 'package:foodorder/config/color.dart';
+import 'package:foodorder/pages/checkOut/Appointment.dart';
 
 class CheckOutPage extends StatefulWidget {
   CheckOutPage({Key key}) : super(key: key);
@@ -45,6 +46,16 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _shopInfo = "kanran";
   var _checkLanguage = "JP";
   var _scanQrCode = "";
+
+  //预约页面默认值
+  var _tableTypeList = [
+    {"optionVal":"A","optionTable":"任意"},
+    {"optionVal":"C","optionTable":"カウンタ"},
+    {"optionVal":"T","optionTable":"テーブル"},
+    {"optionVal":"P","optionTable":"個室"},
+  ];
+  var _selectTableType = "A";
+  var _selectManyPeople = 1;
 
   @override
   void initState() {
@@ -218,7 +229,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                 setState(() {
                                   this._tableCode = value;
                                 });
-                                //print(value);
                                 _doNextPay();
 
                                 Navigator.pop(context);
@@ -292,11 +302,11 @@ class _CheckOutPageState extends State<CheckOutPage> {
       var formData = {
         "language": this._checkLanguage,
         "machineCode": _tableCode
-      };print(formData);
+      };
       request('shopOrderTableNum', method: 'GET', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-        print(response);
+
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           Navigator.pushNamed(context, '/settlement',
               arguments: {
@@ -452,6 +462,16 @@ class _CheckOutPageState extends State<CheckOutPage> {
           });
   }
 
+  //预约弹出框
+  _showMakeAnAppointmentDialog() async {
+    await showDialog(
+        context: context,
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
+        builder: (BuildContext context) {
+          return AppointmentPage();
+        });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -497,100 +517,137 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 Container(
                   padding: EdgeInsets.only(top:ScreenAdapter.height(1250),bottom: ScreenAdapter.height(50)),
                   width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            _checkLanguage = "JP";
-                          });
-                          _showScanCodeDialog();
+                  child: Column(
+                    children: [
+                      Container(
+                        width: MediaQuery.of(context).size.width,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _checkLanguage = "JP";
+                                });
+                                _showScanCodeDialog();
 
-                        },
-                        child: Container(
-                          width: ScreenAdapter.width(217),
-                          height: ScreenAdapter.height(90),
-                          decoration: BoxDecoration(
-                            //color: Color(0x11111111),
-                            image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
-                                fit: BoxFit.fill),
-                          ),
-                          child: Center(
-                            //加上Center让文字居中
-                            child: Text(
-                              '日本語精算',
-                              style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(36.0),
-                                  color: ColorsUtil.hexToColor("#F9F9F9"),
-                                  fontWeight: FontWeight.w600),
+                              },
+                              child: Container(
+                                width: ScreenAdapter.width(217),
+                                height: ScreenAdapter.height(90),
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                decoration: BoxDecoration(
+                                  //color: Color(0x11111111),
+                                  image: DecorationImage(
+                                    //alignment: Alignment.topCenter,
+                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Center(
+                                  //加上Center让文字居中
+                                  child: Text(
+                                    '精算',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(36.0),
+                                        color: ColorsUtil.hexToColor("#F9F9F9"),
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
                             ),
-                          ),
+                            SizedBox(width:ScreenAdapter.width(35)),
+                            InkWell(
+                              onTap: () {
+
+                                setState(() {
+                                  _checkLanguage = "CH";
+                                });
+                                _showScanCodeDialog();
+                              },
+                              child: Container(
+                                width: ScreenAdapter.width(217),
+                                height: ScreenAdapter.height(90),
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                decoration: BoxDecoration(
+                                  //color: Color(0x11111111),
+                                  image: DecorationImage(
+                                    //alignment: Alignment.topCenter,
+                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Center(
+                                  //加上Center让文字居中
+                                  child: Text(
+                                    '买单',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(36.0),
+                                        color: ColorsUtil.hexToColor("#F9F9F9"),
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            SizedBox(width:ScreenAdapter.width(35)),
+                            InkWell(
+                              onTap: () {
+                                setState(() {
+                                  _checkLanguage = "EN";
+                                });
+                                _showScanCodeDialog();
+
+                              },
+                              child: Container(
+                                width: ScreenAdapter.width(217),
+                                height: ScreenAdapter.height(90),
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                decoration: BoxDecoration(
+                                  //color: Color(0x11111111),
+                                  image: DecorationImage(
+                                    //alignment: Alignment.topCenter,
+                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      fit: BoxFit.fill),
+                                ),
+                                child: Center(
+                                  //加上Center让文字居中
+                                  child: Text(
+                                    'Checkout',
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(36.0),
+                                        color: ColorsUtil.hexToColor("#F9F9F9"),
+                                        fontWeight: FontWeight.w600),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      SizedBox(width:ScreenAdapter.width(35)),
+                      SizedBox(height:ScreenAdapter.height(150)),
                       InkWell(
                         onTap: () {
-
-                          setState(() {
-                            _checkLanguage = "CH";
-                          });
-                          _showScanCodeDialog();
-                        },
-                        child: Container(
-                          width: ScreenAdapter.width(217),
-                          height: ScreenAdapter.height(90),
-                          decoration: BoxDecoration(
-                            //color: Color(0x11111111),
-                            image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
-                                fit: BoxFit.fill),
-                          ),
-                          child: Center(
-                            //加上Center让文字居中
-                            child: Text(
-                              '中文精算',
-                              style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(36.0),
-                                  color: ColorsUtil.hexToColor("#F9F9F9"),
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
-                        ),
-                      ),
-                      SizedBox(width:ScreenAdapter.width(35)),
-                      InkWell(
-                        onTap: () {
-                          setState(() {
-                            _checkLanguage = "EN";
-                          });
-                          _showScanCodeDialog();
+                        //显示预约弹出框
+                        _showOrderEasyLoading();
+                        _showMakeAnAppointmentDialog();
 
                         },
                         child: Container(
-                          width: ScreenAdapter.width(217),
-                          height: ScreenAdapter.height(90),
+                          width: ScreenAdapter.width(360),
+                          height: ScreenAdapter.height(100),
+                          alignment: Alignment.center,
                           decoration: BoxDecoration(
-                            //color: Color(0x11111111),
-                            image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
-                                fit: BoxFit.fill),
+
+                            color: ColorsUtil.hexToColor("#4876FF"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
                           ),
-                          child: Center(
-                            //加上Center让文字居中
-                            child: Text(
-                              'English',
+                          child: Text("予約 / Booking",
                               style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(36.0),
-                                  color: ColorsUtil.hexToColor("#F9F9F9"),
-                                  fontWeight: FontWeight.w600),
-                            ),
-                          ),
+                                fontSize: ScreenAdapter.fontSize(36),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.settlementBtnColor),
+                              )),
                         ),
                       ),
                     ],
