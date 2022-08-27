@@ -20,6 +20,7 @@ public class OrderMenuList {
     private String line4;
     private String line5;
     private String line6;
+    private String line7;
     private String excludingTaxStr;
     private String taxStr;
     private String priceStr;
@@ -147,6 +148,14 @@ public class OrderMenuList {
 
     public void setLine6(String line6) {
         this.line6 = line6;
+    }
+
+    public String getLine7() {
+        return line7;
+    }
+
+    public void setLine7(String line7) {
+        this.line7 = line7;
     }
 
     public String getExcludingTaxStr() {
