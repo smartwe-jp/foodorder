@@ -35,7 +35,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
   //预约页面默认值
   var _tableTypeList = [
-    {"optionVal":"A","optionTable":"任意"},
+    {"optionVal":"A","optionTable":"指定なし"},
     {"optionVal":"C","optionTable":"カウンタ"},
     {"optionVal":"T","optionTable":"テーブル"},
     {"optionVal":"P","optionTable":"個室"},
@@ -85,7 +85,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     height: 10,
                   ),
                   Text(
-                    'お席',
+                    'お席のタイプ',
                     style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(36.0),
                         //color: ColorsUtil.hexToColor("#F9F9F9"),
@@ -160,7 +160,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           ),
                           child: TextButton(
                             child: Text(
-                              "确定",
+                              "確定",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
