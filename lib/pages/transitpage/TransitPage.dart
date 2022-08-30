@@ -47,7 +47,7 @@ class _TransitPageState extends State<TransitPage> {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();print(systemSettingInfo);
+    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();//print(systemSettingInfo);
     if (systemSettingInfo.isEmpty) {
       var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
       var systemSettingData = {
@@ -92,7 +92,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());//print(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];

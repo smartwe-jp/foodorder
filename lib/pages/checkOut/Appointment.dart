@@ -36,7 +36,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   //预约页面默认值
   var _tableTypeList = [
     {"optionVal":"A","optionTable":"指定なし"},
-    {"optionVal":"C","optionTable":"カウンタ"},
+    {"optionVal":"C","optionTable":"カウンター"},
     {"optionVal":"T","optionTable":"テーブル"},
     {"optionVal":"P","optionTable":"個室"},
   ];
@@ -337,6 +337,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         ),
         itemBuilder: (BuildContext context, int index) {
           var showNum = index +1;
+          var showPeople = (showNum == 10) ? "10+":showNum.toString();
           return InkWell(
             onTap: (){
               setState(() {
@@ -387,7 +388,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                 ],
               ),
               alignment: Alignment.center,
-              child: Text("${showNum.toString()}",
+              child: Text("${showPeople}",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(32),
                   color: (showNum == _selectManyPeople) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),

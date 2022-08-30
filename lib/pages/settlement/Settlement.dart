@@ -672,7 +672,7 @@ class _SettlementPageState extends State<SettlementPage> {
         }
 
         request(queryUrl, method: 'GET', parameters: formData).then((val) async {
-          var response = json.decode(val.toString());print(response);
+          var response = json.decode(val.toString());
 
           if (response['code'] == 200) {
 
@@ -695,7 +695,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
           } else {
             //错误后重新调用一次
-            print("错误重新调用一次");
+            //print("错误重新调用一次");
             doPrintOrderMenu();
             //EasyLoading.dismiss();
 
@@ -959,7 +959,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
-  Endtoubi() async {print("222222");
+  Endtoubi() async {
     setState(() {
       timer?.cancel();
     });
@@ -1025,7 +1025,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
-  startOutPutMoney(outMoney) async {print("333333");
+  startOutPutMoney(outMoney) async {
     setState(() {
       outStringMoney = outMoney.toString();
 
@@ -1091,7 +1091,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
 
-  _getPayCubeOutMoney() async {print("444444");
+  _getPayCubeOutMoney() async {
   //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
   OutMoneytimer?.cancel();
   await Paycube.setReceiveEvent;
@@ -1114,7 +1114,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //汇报出金币种,请求后台
-  reportOutMoney(){print("汇报出金币种：${_getPutMoney}");
+  reportOutMoney(){
     setState(() {
       _isReportOutMoney = true;
     });
@@ -1201,14 +1201,14 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
 
-  //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页
+  //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页 model0 券卖机 `1精算机
   CancelOrder(){
 
     var formData = {
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "model": (_machineMode == "1")? "0":"1",
-    };print(formData);
+    };
     //不用查看返回
     request('webBootCancelV1', method: 'POST', parameters: formData);
 
@@ -1218,7 +1218,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     //已投钱
-    if(int.parse(_getPutMoney) >0){print("1111111");
+    if(int.parse(_getPutMoney) >0){
       setState(() {
         _isPrint = false;
         _totalPrice = "0";
@@ -1243,8 +1243,8 @@ class _SettlementPageState extends State<SettlementPage> {
     await Paycube.setReceiveEvent;
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400), (Timer putMoneyCurrencyTime) async {
       // 循环一定要记得设置取消条件，手动取消
-      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;print(putcurrencyString);
-      if(putcurrencyString.trim() !=""){print(putcurrencyString);
+      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
+      if(putcurrencyString.trim() !=""){
         setState(() {
           _getPutMoneyCurrency = putcurrencyString;
 
@@ -1272,9 +1272,9 @@ class _SettlementPageState extends State<SettlementPage> {
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney),
       "operation" :operation,
-    };print("入金${formData}");
+    };
     request('webBootToReportV1', method: 'POST', parameters: formData).then((value) {
-      var response = json.decode(value.toString());print(response);
+      var response = json.decode(value.toString());
       if (response['code'] == 200) {
         if(_isReportOutMoney == true){
           //已经结束入金，处理取引终了
@@ -1296,9 +1296,9 @@ class _SettlementPageState extends State<SettlementPage> {
         "machineCode": _machineCode,
         "orderId": this._orderId,
         "price": _giveChangeMoney
-      };print(formData);
+      };
       request('webBootToReportV1', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());print(response);
+        var response = json.decode(val.toString());
         if (response['code'] == 200) {
 
         } else {
@@ -1453,7 +1453,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }*/
 
   //券卖机展示购物车商品
-  Widget getmachineModeOneOrderList(BuildContext context){print("4324");
+  Widget getmachineModeOneOrderList(BuildContext context){
     return Container(
       width: ScreenAdapter.width(1030),
       height: ScreenAdapter.height(920),

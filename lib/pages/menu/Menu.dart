@@ -390,7 +390,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42"];
+    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42","#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42"];
     var menuIndex = 0;
     for (var item in topMenu) {
       categoryMenus.add(InkWell(
@@ -476,9 +476,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       children: [
         Container(
           width: ScreenAdapter.width(860),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: categoryMenus,
+          child: ListView(
+          scrollDirection: Axis.horizontal,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: categoryMenus,
+            )
+          ],
           ),
         ),
         Container(

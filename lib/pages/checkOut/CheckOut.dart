@@ -675,7 +675,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
                         },
                         child: Container(
-                          width: ScreenAdapter.width(360),
+                          width: ScreenAdapter.width(460),
                           height: ScreenAdapter.height(100),
                           alignment: Alignment.center,
                           decoration: BoxDecoration(
@@ -684,7 +684,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                             //设置圆角
                             borderRadius: new BorderRadius.circular((16.0)),
                           ),
-                          child: Text("予約 / Booking",
+                          child: Text("番号札発行 / Booking",
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(36),
                                 fontWeight: FontWeight.w600,
