@@ -46,7 +46,7 @@ import static com.hisanweb.flutter_plugin_msprinter.msprintsdk.UtilsTools.hexStr
 public class PrintService  {
 
     public void execute_printRreceipt(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed){
-
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
         printbmp(mUsbDriver,sed);
 
         PrintFeedDot(10);
@@ -54,7 +54,7 @@ public class PrintService  {
 
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        //mUsbDriver.write(PrintCmd.SetAlignment(1));
         m_sbData = new StringBuilder("領収書");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
@@ -220,7 +220,7 @@ public class PrintService  {
     }
 
     public void execute_printRreceipt_eighty(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed){
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
         printbmp(mUsbDriver,sed);
         PrintFeedDot(10);
         StringBuilder m_sbData;
@@ -359,10 +359,9 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         List<CategoryVos> lineList = oh.getCategoryVos();
         for (CategoryVos line:lineList) {
-
+            mUsbDriver.write(PrintCmd.SetSizetext(1,1));
             int linNum = 0;
 
             List<LineVos> lineVosList = line.getLineVos();
@@ -384,18 +383,20 @@ public class PrintService  {
                 linNum++;
 
                 if(lineoptionlist.size() >0 && linNum != linVoNum){
+                    mUsbDriver.write(PrintCmd.SetSizetext(0,0));
                     m_sbData = new StringBuilder("------------------------------------------------");
                     mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
                 }
 
             }
 
-
+            mUsbDriver.write(PrintCmd.SetSizetext(0,0));
             m_sbData = new StringBuilder("------------------------------------------------");
             mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         }
-        mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        //mUsbDriver.write(PrintCmd.SetClean());
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder("No."+oh.getOrderId());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
