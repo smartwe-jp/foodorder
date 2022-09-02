@@ -98,6 +98,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _showAlipay = true;
   var _showPayPay = true;
 
+  var _optionMaxNum = 12;
+  var _optionGroupMaxNum = 5;
+
   @override
   void initState() {
     super.initState();
@@ -862,6 +865,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     //Widget labelContent;
     for (var i = 0; i < optionGroupVoList.length; i++) {
+      if(i >= _optionGroupMaxNum) break;
       List<Widget> optionSons = [];
       var optionVoList = optionGroupVoList[i]['optionVoList'];
       options.add(Container(
@@ -882,17 +886,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       ));
 
       for (var j = 0; j < optionVoList.length; j++) {
+        if(j >= _optionMaxNum) break;
         var optionVolistSon = optionVoList[j];
         var buttonColor = [];
         if (optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != "") {
           buttonColor = optionVolistSon['buttonColorValue'].split(',');
         }
           optionSons.add(Container(
+            width: ScreenAdapter.width(250),
+            height: ScreenAdapter.height(75),
             alignment: Alignment.center,
             padding: EdgeInsets.only(
-                left: ScreenAdapter.width(12),
+                left: ScreenAdapter.width(10),
                 top: ScreenAdapter.height(3),
-                right: ScreenAdapter.width(12),
+                right: ScreenAdapter.width(10),
                 bottom: ScreenAdapter.height(3)),
             child: InkWell(
               //enableFeedback: true,
@@ -903,8 +910,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(224),
-                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(250),
+                      height: ScreenAdapter.height(75),
                       alignment: Alignment.center,
                       decoration: (optionVolistSon['checked'] == true)
                           ? BoxDecoration(
@@ -979,16 +986,19 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           SizedBox(
                             width: ScreenAdapter.width(10),
                           ),
-                          Text(
-                            optionVolistSon['mainTitle'],
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(28.0),
-                              fontWeight: FontWeight.w600,
-                              color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                              //color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),
-                            ),
+                          LimitedBox(
+                              maxWidth: ScreenAdapter.width(230),
+                              child: Text(
+                                optionVolistSon['mainTitle'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(28.0),
+                                  fontWeight: FontWeight.w600,
+                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                  //color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),
+                                ),
+                              )
                           ),
                         ],
                       )),
@@ -1033,9 +1043,16 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             ),
           ));
       }
-      options.add(Row(
+      /*options.add(Row(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.end,
+        children: optionSons,
+      ));*/
+
+      options.add(Wrap(
+        spacing: ScreenAdapter.width(5), // set spacing here
+        runSpacing: ScreenAdapter.height(10),
+        alignment: WrapAlignment.start,
         children: optionSons,
       ));
 
@@ -1051,6 +1068,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: _getFirstOptionWidget(menuCode, setFirstMenuState),
       ),
     );
@@ -1065,6 +1083,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         optionGroupVoList.length > 0 &&
         optionGroupVoList != "") {
       for (var i = 0; i < optionGroupVoList.length; i++) {
+        if(i >= _optionGroupMaxNum) break;
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
         options.add(Container(
@@ -1085,16 +1104,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         ));
 
         for (var j = 0; j < optionVoList.length; j++) {
+          if(j >= _optionMaxNum) break;
           var optionVolistSon = optionVoList[j];
           var buttonColor =[];
           if (optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != "") {
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
             optionSons.add(Container(
+              width: ScreenAdapter.width(157),
+              height: ScreenAdapter.height(60),
+              alignment: Alignment.center,
               padding: EdgeInsets.only(
-                  left: ScreenAdapter.width(4),
+                  left: ScreenAdapter.width(2),
                   top: ScreenAdapter.height(2),
-                  right: ScreenAdapter.width(4),
+                  right: ScreenAdapter.width(2),
                   bottom: ScreenAdapter.height(2)),
               child: InkWell(
                 //enableFeedback: false,
@@ -1105,7 +1128,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(135),
+                      //width: ScreenAdapter.width(135),
                         height: ScreenAdapter.height(50),
                         alignment: Alignment.center,
                         decoration: (optionVolistSon['checked'] == true)
@@ -1180,16 +1203,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     width: 0,
                                   ),
                             SizedBox(
-                              width: ScreenAdapter.width(4),
+                              width: ScreenAdapter.width(2),
                             ),
-                            Text(optionVolistSon['mainTitle'],
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(24.0),
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                )),
+                            LimitedBox(
+                                maxWidth: ScreenAdapter.width(130),
+                                child: Text(optionVolistSon['mainTitle'],
+                                    textAlign: TextAlign.center,
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenAdapter.fontSize(21.0),
+                                      color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                    ))
+                            ),
                           ],
                         )),
                     //绝对定位 盖章
@@ -1235,10 +1262,18 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             ));
 
         }
-        options.add(Row(
+        /*options.add(Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: optionSons,
+        ));*/
+        options.add(Container(
+          child: Wrap(
+            spacing: ScreenAdapter.width(5), // set spacing here
+            runSpacing: ScreenAdapter.height(10),
+            alignment: WrapAlignment.start,
+            children: optionSons,
+          ),
         ));
       }
     }
@@ -1250,11 +1285,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   publicShowThreeMenuOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(12),
+          left: ScreenAdapter.width(8),
           right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
       child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _getThreeOptionWidget(menuCode, menuindex),
       ),
@@ -1270,6 +1306,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         optionGroupVoList.length > 0 &&
         optionGroupVoList != "") {
       for (var i = 0; i < optionGroupVoList.length; i++) {
+        if(i >= _optionGroupMaxNum) break;
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
         options.add(Container(
@@ -1290,6 +1327,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         ));
 
         for (var j = 0; j < optionVoList.length; j++) {
+          if(j >= _optionMaxNum) break;
           var optionVolistSon = optionVoList[j];
 
 
@@ -1298,6 +1336,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
             optionSons.add(Container(
+              width: ScreenAdapter.width(207),
               padding: EdgeInsets.only(
                   left: ScreenAdapter.width(7),
                   top: ScreenAdapter.height(5),
@@ -1312,7 +1351,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Stack(
                   children: [
                     Container(
-                        width: ScreenAdapter.width(160),
+                        //width: ScreenAdapter.width(160),
                         height: ScreenAdapter.height(55),
                         alignment: Alignment.center,
                         decoration: (optionVolistSon['checked'] == true)
@@ -1389,14 +1428,17 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             SizedBox(
                               width: ScreenAdapter.width(6),
                             ),
-                            Text("${optionVolistSon['mainTitle']}",
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(24.0),
-                                  fontWeight: FontWeight.w500,
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                )),
+                        LimitedBox(
+                          maxWidth: ScreenAdapter.width(185),
+                          child: Text("${optionVolistSon['mainTitle']}",
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(21.0),
+                                fontWeight: FontWeight.w500,
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              )),
+                        ),
                           ],
                         )),
                     //绝对定位 盖章
@@ -1441,10 +1483,18 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             ));
 
         }
-        options.add(Row(
+        /*options.add(Row(
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: optionSons,
+        ));*/
+        options.add(Container(
+          child: Wrap(
+            spacing: ScreenAdapter.width(5), // set spacing here
+            runSpacing: ScreenAdapter.height(10),
+            alignment: WrapAlignment.start,
+            children: optionSons,
+          ),
         ));
       }
     }
@@ -1456,12 +1506,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   publicShowFiveMenuOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(15),
-          right: ScreenAdapter.width(5),
+          left: ScreenAdapter.width(8),
+          right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
         children: _getFiveOptionWidget(menuCode, menuindex),
       ),
     );
@@ -2044,6 +2095,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     }
 
     return Container(
+      width: MediaQuery.of(context).size.width,
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8)),
       child: Material(
@@ -2066,10 +2118,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 460.0, 310.0),
+                        publicShowMenuImage(item['homeImage'], 400.0, 270.0),
                         (item['optionGroupVoList']?.length > 0)
-                            ? publicShowThreeMenuOptionGroupWidget(
-                                item['menuCode'], menuindex)
+                            ? Expanded(child: publicShowThreeMenuOptionGroupWidget(
+                            item['menuCode'], menuindex))
                             : Container(
                                 height: 0,
                               ),
@@ -2455,10 +2507,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 490.0, 325.0),
+                        publicShowMenuImage(item['homeImage'], 400.0, 260.0),
                         (item['optionGroupVoList']?.length > 0)
-                            ? publicShowFiveMenuOptionGroupWidget(
+                            ? Expanded(
+                            child: publicShowFiveMenuOptionGroupWidget(
                                 item['menuCode'], menuFiveindex)
+                        )
                             : Container(
                                 height: 0,
                               ),

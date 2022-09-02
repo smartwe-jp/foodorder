@@ -54,7 +54,7 @@ public class PrintService  {
 
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        //mUsbDriver.write(PrintCmd.SetAlignment(1));
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
         m_sbData = new StringBuilder("領収書");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
@@ -129,7 +129,7 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getOrderDate());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
+
         m_sbData = new StringBuilder("上記正に領収いたしました。");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
@@ -367,7 +367,7 @@ public class PrintService  {
             List<LineVos> lineVosList = line.getLineVos();
             int linVoNum = lineVosList.size();
             for (LineVos lineVos:lineVosList){
-
+                mUsbDriver.write(PrintCmd.SetSizetext(1,1));
                 m_sbData = new StringBuilder(lineVos.getMenuNamePrintStr());
                 mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
@@ -395,8 +395,8 @@ public class PrintService  {
             mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         }
-        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
-        //mUsbDriver.write(PrintCmd.SetClean());
+        mUsbDriver.write(PrintCmd.SetClean());
+
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder("No."+oh.getOrderId());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
