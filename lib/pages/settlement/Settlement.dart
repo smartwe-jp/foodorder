@@ -806,7 +806,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   }
 
-  nextOper() async {
+  nextOperOld() async {
     setState(() {
       timer?.cancel();
     });
@@ -899,6 +899,50 @@ class _SettlementPageState extends State<SettlementPage> {
       });
     }
   }
+  //打印小票之后在关闭现金机，所以不考虑_isPrint
+  nextOper() async {
+    sleep(Duration(milliseconds: 300));
+    await Paycube.setReceiveEvent;
+    var endStatus = await Paycube.endPayCube;
+    stoptimer?.cancel();
+    stoptimer = Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;print(_stopStatus);
+      // 循环一定要记得设置取消条件，手动取消
+      if (_stopStatus == "StopSuccess") {
+        setState(() {
+          timer?.cancel();
+        });
+        //如果投币金额大于待支付总金额
+        if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
+          setState(() {
+            _giveChangeMoney = int.parse(this._getPutMoney) - int.parse(this._totalPrice);
+          });
+          //找零
+          startOutPutMoney(_giveChangeMoney);
+        }else{
+          /*if(_isReport == true){
+            //汇报，关闭现金机
+            reportOutMoney();
+          }else{*/
+            //已经结束入金，处理取引终了
+            payCubeCloseTransaction();
+          //}
+        }
+
+
+
+        stopt.cancel();
+
+      }/*else if(_stopStatus == "Error-A0--02" || _stopStatus == "Error-F0--16"){
+        //处理中
+        await Paycube.endPayCube;
+      }*/else{
+        await Paycube.endPayCube;
+
+      }
+    });
+
+  }
 
   //现金及支付
   //现金机开始 打开现金机，准备开始投币
@@ -959,7 +1003,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
-  Endtoubi() async {
+  EndtoubiOld() async {
     setState(() {
       timer?.cancel();
     });
@@ -1023,6 +1067,48 @@ class _SettlementPageState extends State<SettlementPage> {
     } else {
       showToast(GString.getToString(this._checkLanguage, "show_put_money_error"));
     }
+  }
+  Endtoubi() async {
+    sleep(Duration(milliseconds: 300));
+    await Paycube.setReceiveEvent;
+    var endStatus = await Paycube.endPayCube;
+    stoptimer?.cancel();
+    stoptimer = Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;print("Endtoubi${_stopStatus}");
+      // 循环一定要记得设置取消条件，手动取消
+      if (_stopStatus == "StopSuccess") {
+        setState(() {
+          timer?.cancel();
+        });
+        if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
+          setState(() {
+            _giveChangeMoney = int.parse(this._getPutMoney) - int.parse(this._totalPrice);
+          });
+
+          if(_isPrint == false){
+            startOutPutMoney(_giveChangeMoney);
+          }
+
+        }else if (int.parse(this._getPutMoney) == int.parse(this._totalPrice)){
+          if(_isPrint == false){
+            //已经结束入金，处理取引终了
+            payCubeCloseTransaction();
+          }
+        }else {
+          showToast(GString.getToString(this._checkLanguage, "show_put_money_error"));
+        }
+
+        stopt.cancel();
+
+      }/*else if(_stopStatus == "Error-A0--02"){
+        //处理中
+        await Paycube.endPayCube;
+      }*/else{
+        await Paycube.endPayCube;
+      }
+    });
+
+
   }
 
   startOutPutMoney(outMoney) async {
@@ -1098,7 +1184,7 @@ class _SettlementPageState extends State<SettlementPage> {
   OutMoneytimer = Timer.periodic(Duration(milliseconds: 400), (Timer outMoneyTime) async {
     // 循环一定要记得设置取消条件，手动取消
     String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
-    if(currencyString.trim() !=""){
+    if(currencyString.trim().length >0){
       setState(() {
         _currencyString = currencyString;
 
@@ -1149,7 +1235,7 @@ class _SettlementPageState extends State<SettlementPage> {
     await Paycube.setReceiveEvent;
     var endStatus = await Paycube.endPayCube;
     stoptimer?.cancel();
-    stoptimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
+    stoptimer = Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       //await Paycube.setReceiveEvent;
       // 循环一定要记得设置取消条件，手动取消
@@ -1159,7 +1245,7 @@ class _SettlementPageState extends State<SettlementPage> {
         stopt.cancel();
 
       }else{
-        sleep(Duration(milliseconds: 150));
+        //sleep(Duration(milliseconds: 150));
         await Paycube.endPayCube;
       }
     });
@@ -1175,8 +1261,8 @@ class _SettlementPageState extends State<SettlementPage> {
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
-    endtimer = Timer.periodic(Duration(milliseconds: 500), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;
+    endtimer = Timer.periodic(Duration(milliseconds: 950), (Timer endtradet) async {
+      _endStatus =  await Paycube.getPayCubeEndTradeStatus;print(_endStatus);
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
         //关闭机器后的跳转
@@ -1194,7 +1280,7 @@ class _SettlementPageState extends State<SettlementPage> {
         endtradet.cancel();
 
       }else{
-        sleep(Duration(milliseconds: 200));
+        //sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }
     });
