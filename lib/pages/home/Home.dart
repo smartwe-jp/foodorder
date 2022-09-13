@@ -180,31 +180,24 @@ class _HomePageState extends State<HomePage> {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-print("systemSettingInfo:${systemSettingInfo}");
-    if (systemSettingInfo.isEmpty) {//print("jinlailehome");
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-      var systemSettingData = {
-        "diningType":(DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1", //1堂食 2外带
-        "menuDirection":"1",//1顶部横向 2左侧竖
-        "printPaperSize":"1",//1 58mm 2 80mm
-        "isAllowReceipt":"1",//1必须打印小票 2不必须
-        "machineMode":"1",//1券卖机 2精算机
-      };
-      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-    Map systemSettingInfo2 = await HomeServices.getSystemSettingInfo();
-    //howToast("systemSettingInfo2====:::::${systemSettingInfo2['diningType']}");
-    //print("systemSettingInfo2====:::::${systemSettingInfo2}");
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
+var systemSettingData = {
+      "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
+      "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
+      "printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
+      "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
+      "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
+      "machineMode":(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null) ? SystemSettingInfo["machineMode"] :"1",//1 普通点餐券卖机  2 精算机（结账机）
+      "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+
     setState(() {
-      _menu_direction = "1";
+      _menu_direction = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
     });
-    }else{//print("diercibuyongzaishezhihome");
-      //showToast("diercibuyongzaishezhihome");
-      setState(() {
-        _menu_direction = systemSettingInfo['menuDirection'];
-      });
-    }
+
 
 
   }

@@ -183,7 +183,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
     }
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-    _getSystemSettingInfo();
+    //_getSystemSettingInfo();
 
   }
 

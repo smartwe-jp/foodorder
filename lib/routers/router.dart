@@ -8,6 +8,7 @@ import 'package:foodorder/pages/setting/SettingPage.dart';
 import 'package:foodorder/pages/settlement/Settlement.dart';
 import 'package:foodorder/pages/showImage/ShowImage.dart';
 
+import 'package:foodorder/pages/attendance/setAttendanceCode.dart';
 import 'package:foodorder/pages/setting/SystemSettingPage.dart';
 import 'package:foodorder/pages/transitpage/TransitPage.dart';
 
@@ -29,6 +30,7 @@ final routes = {
   '/showImage': (context) => ShowImagePage(), //查看图片
 
   '/attendance': (context,{arguments}) => AttendancePage(arguments:arguments),//打卡
+  '/setAttendanceCode': (context,{arguments}) => setAttendanceCodePage(arguments:arguments),//打卡
 
 
 };

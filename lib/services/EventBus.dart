@@ -21,3 +21,11 @@ class clearCartEvent{
   }
 }
 
+//刷脸激活码广播
+class setAttendanceCodeEvent{
+  String str;
+  setAttendanceCodeEvent(String str){
+    this.str=str;
+  }
+}
+

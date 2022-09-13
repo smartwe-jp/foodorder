@@ -1330,7 +1330,7 @@ class _SettlementPageState extends State<SettlementPage> {
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400), (Timer putMoneyCurrencyTime) async {
       // 循环一定要记得设置取消条件，手动取消
       String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
-      if(putcurrencyString.trim() !=""){
+      if(putcurrencyString.trim().length >0){
         setState(() {
           _getPutMoneyCurrency = putcurrencyString;
 

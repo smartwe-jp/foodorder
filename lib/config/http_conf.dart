@@ -24,6 +24,8 @@ const servicePath = {
 
   'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
 
+'recognitionRegister': oa_base_url + 'oa/face/recognition/register', //考勤激活码
+
   //点餐机激活
   'webBootActivate': base_url + 'pad/web/boot/activate', //点餐机激活
 

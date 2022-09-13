@@ -44,6 +44,8 @@ class _SettingPageState extends State<SettingPage> {
   var progressValue = 0.0;
 
   var _shopInfo = "kanran";
+  var _attendanceCode ="";
+  var _is_allow_attendance = "0";//0 不开启  1 开启
 
   //监听页面销毁的事件
   dispose() {
@@ -65,7 +67,36 @@ class _SettingPageState extends State<SettingPage> {
 
     _getPackageInfo();
 
+    //获取系统配置来判断是否获取打卡激活码
+    _getSystemSettingInfo();
+    //监听清除购物车的广播
+    eventBus.on<setAttendanceCodeEvent>().listen((event) {
+      _getSystemSettingInfo();
+    });
 
+
+  }
+
+  _getSystemSettingInfo() async {
+    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    if(systemSettingInfo['isAllowAttendance'] !="" && systemSettingInfo['isAllowAttendance'] !=null) {
+      setState(() {
+        _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
+      });
+      if (_is_allow_attendance == "1") {
+        _getAttendanceCode();
+      }
+    }
+  }
+
+  _getAttendanceCode() async {
+    var attendanceCode = await HomeServices.getAttendanceCode();
+    if (attendanceCode != "" && attendanceCode != null) {
+      setState(() {
+        _attendanceCode = attendanceCode;
+      });
+
+    }
   }
 
 
@@ -1169,13 +1200,20 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
 
-                        if(_shopInfo == "kanran")
+                        if(_is_allow_attendance == "1")
                           InkWell(
                           onTap: () {
-                            Navigator.of(context).pushNamed('/attendance',arguments: {
-                            "machineCode": this._machineCode,
-                            //"shopCode": this._shopCode
-                            });
+                            if(_attendanceCode !="" && _attendanceCode != null){
+                              Navigator.of(context).pushNamed('/attendance',arguments: {
+                                "machineCode": this._machineCode,
+                                "attendanceCode": this._attendanceCode
+                              });
+                            }else{
+                              Navigator.of(context).pushNamed('/setAttendanceCode',arguments: {
+                                "machineCode": this._machineCode,
+                              });
+                            }
+
                           },
                           child: Container(
                             margin: EdgeInsets.only(

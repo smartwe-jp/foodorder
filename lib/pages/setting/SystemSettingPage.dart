@@ -43,10 +43,11 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _is_allow_receipt = "1";//1 必须打印  2 不必须打印
   var _machine_mode = "1";//1 普通点餐券卖机  2 精算机（结账机）
   var _isReservation = "0";// 0 不开启  1开启
+  var _is_allow_attendance = "0";//0 不开启  1 开启
 
   //监听页面销毁的事件
   dispose() {
-    //eventBus.fire(new clearCartEvent('支付成功...'));
+    eventBus.fire(new setAttendanceCodeEvent('支付成功...'));
     super.dispose();
   }
 
@@ -75,6 +76,7 @@ print(systemSettingInfo);
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _machine_mode = systemSettingInfo['machineMode'];
       _isReservation = systemSettingInfo['isReservation'];
+      _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
     });
   }
 
@@ -494,6 +496,7 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -643,6 +646,7 @@ print(systemSettingInfo);
       "menuDirection":checkedType,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -811,6 +815,7 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":checkedType,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -968,6 +973,7 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":checkedType,//1必须打印小票 2不必须
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1283,6 +1289,158 @@ print(systemSettingInfo);
     });
 
   }
+  
+  //设置是否开启摄像头
+  setIsAllowAttendance() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("チェックインの設定",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkIsAllowAttendance("0");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("OFF",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_attendance == "0")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkIsAllowAttendance("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("ON",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_attendance == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkIsAllowAttendance(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "isAllowAttendance":checkedType,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+
+    //Storage.setString('isAllowReceipt', checkedType);//1 必须  2 不必须
+    setState(() {
+      _is_allow_attendance = checkedType;
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -1392,6 +1550,7 @@ print(systemSettingInfo);
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   setMachineMode(), //设置机器类型
                   setIsReservation(),  //是否开启预约服务
+		  setIsAllowAttendance(),//是否开启签到
                 ],
               ),
             ),
