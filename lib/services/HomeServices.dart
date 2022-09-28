@@ -104,4 +104,16 @@ class HomeServices{
     return machineActivateInfo;
   }
 
+  //打卡机器码
+  static getAttendanceCode() async{
+    String attendanceCode;
+    try {
+      String attendanceCodeData = await Storage.getString('machineAttendanceCode');
+      attendanceCode = attendanceCodeData;
+    } catch (e) {
+      attendanceCode = "";
+    }
+    return attendanceCode;
+  }
+
 }

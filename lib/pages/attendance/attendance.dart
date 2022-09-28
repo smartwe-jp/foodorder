@@ -152,7 +152,27 @@ class _AttendancePageState extends State<AttendancePage> {
                           thickness: 1.0,
                           color: Colors.black12,
                         ),
-                        Row(
+                        InkWell(
+                          onTap: (){
+                            Future.delayed(Duration(seconds: 1), (){
+                              Navigator.pop(context); // 关闭当前页面
+
+                            });
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(20)),
+                            height: ScreenAdapter.height(90),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "確 認",
+                              style: TextStyle(
+                                  color: Colors.lightBlue,
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 30),
+                            ),
+                          ),
+                        ),
+                        /*Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -172,7 +192,7 @@ class _AttendancePageState extends State<AttendancePage> {
                               },
                             )
                           ],
-                        ),
+                        ),*/
                       ],
                     ),
                   ),
