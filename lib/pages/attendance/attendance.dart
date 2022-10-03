@@ -90,6 +90,9 @@ class _AttendancePageState extends State<AttendancePage> {
     showDialog(
         context: context,
         builder: (BuildContext context) {
+          Future.delayed(Duration(seconds: 2), () {
+            Navigator.pop(context); // 关闭当前页面
+          });
           return Container(
             //width: 400,
             child: SimpleDialog(
@@ -148,13 +151,13 @@ class _AttendancePageState extends State<AttendancePage> {
                           height: 25,
                         ),
 
-                        Divider(
+                        /*Divider(
                           thickness: 1.0,
                           color: Colors.black12,
                         ),
                         InkWell(
                           onTap: (){
-                            Future.delayed(Duration(seconds: 1), (){
+                            Future.delayed(Duration(milliseconds: 600), (){
                               Navigator.pop(context); // 关闭当前页面
 
                             });
@@ -171,7 +174,7 @@ class _AttendancePageState extends State<AttendancePage> {
                                   fontSize: 30),
                             ),
                           ),
-                        ),
+                        ),*/
                         /*Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,

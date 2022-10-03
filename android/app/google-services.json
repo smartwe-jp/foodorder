@@ -1,33 +1,33 @@
 {
   "project_info": {
-    "project_number": "675496756496",
-    "project_id": "kanran-booking",
-    "storage_bucket": "kanran-booking.appspot.com"
+    "project_number": "1013478066183",
+    "project_id": "kanran-booking-2834c",
+    "storage_bucket": "kanran-booking-2834c.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:675496756496:android:8837aecc2ccf1357c8d195",
+        "mobilesdk_app_id": "1:1013478066183:android:b5e791e394195bf364c2a2",
         "android_client_info": {
           "package_name": "com.fanxing.foodorder"
         }
       },
       "oauth_client": [
         {
-          "client_id": "675496756496-ct2l5rfb0o3degmt02manf58llghgl08.apps.googleusercontent.com",
+          "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDffjOOma47rm3_sXbXQzkfokl0PZrutYI"
+          "current_key": "AIzaSyCpWLucBlqeMFQPG_BTRIcNj4fapjsVhko"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "675496756496-ct2l5rfb0o3degmt02manf58llghgl08.apps.googleusercontent.com",
+              "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
