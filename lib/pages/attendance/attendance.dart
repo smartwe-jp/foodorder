@@ -69,8 +69,13 @@ class _AttendancePageState extends State<AttendancePage> {
           EasyLoading.dismiss();
           if (response['code'] == 200 && null != response['data']['name'] && "" != response['data']['name']) {
             print("zz请求刷脸返回：${DateTime.now()}");
-            showDialogUser(response['data']['name'],response['data']['employeeNo'],response['data']['avatarUrl'],response['data']['time'],response['data']['message']);
-
+            Future.delayed(Duration(milliseconds: 300), ()
+            {
+              showDialogUser(
+                  response['data']['name'], response['data']['employeeNo'],
+                  response['data']['avatarUrl'], response['data']['time'],
+                  response['data']['message']);
+            });
 
           }else{
             showDialogErrorUser("認証ができません");
@@ -87,7 +92,59 @@ class _AttendancePageState extends State<AttendancePage> {
   }
 
   showDialogUser(userName,employeeNo,avatarUrl,showTime,showMessage){print("zz弹出框：${DateTime.now()}");
-    showDialog(
+  EasyLoading.show(
+    //status: 'loading...',
+    indicator: Container(
+      width: ScreenAdapter.width(500),
+      height: ScreenAdapter.height(400),
+
+      child: Column(
+        //crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+
+              Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text("名前:${userName}", style: TextStyle(fontSize: 28)),
+                  //SizedBox(height: 15,),
+                  //Text("部署:研发部", style: TextStyle(fontSize: 28)),
+                  SizedBox(height: 25,),
+                  Text("社員番号:${employeeNo}", style: TextStyle(fontSize: 28)),
+                  SizedBox(height: 25,),
+                  Text("打刻時間:${showTime}", style: TextStyle(fontSize: 28)),
+                ],
+              )
+            ],
+          ),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text("${showMessage}", style: TextStyle(fontSize: 30,color: ColorsUtil.hexToColor("#0000EE"),
+                  fontWeight: FontWeight.w600)),
+            ],
+          ),
+          SizedBox(
+            height: 25,
+          ),
+
+
+        ],
+      ),
+    ),
+    maskType: EasyLoadingMaskType.black,
+  );
+
+  Future.delayed(Duration(milliseconds: 1500), () {
+    EasyLoading.dismiss();
+  });
+    /*showDialog(
         context: context,
         builder: (BuildContext context) {
           Future.delayed(Duration(seconds: 2), () {
@@ -100,10 +157,10 @@ class _AttendancePageState extends State<AttendancePage> {
                   borderRadius: BorderRadius.circular(5),
                 ),
                 //backgroundColor: Colors.transparent,
-                /*title: Align(
+                *//*title: Align(
                     alignment: Alignment.center,
                     child:  Text("温馨提示",style: TextStyle(fontSize: 28,fontWeight: FontWeight.w600))
-                ),*/
+                ),*//*
                 children: <Widget>[
                   Container(
                     width: ScreenAdapter.width(550),
@@ -117,13 +174,13 @@ class _AttendancePageState extends State<AttendancePage> {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            /*Container(
+                            *//*Container(
                                 width:ScreenAdapter.width(200),
                                 height: ScreenAdapter.height(250),
                                 padding: EdgeInsets.all(15),
                                 child: Image.network("${avatarUrl}",fit: BoxFit.fitHeight,)
                             ),
-                            SizedBox(width: 10,),*/
+                            SizedBox(width: 10,),*//*
                             Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -151,7 +208,7 @@ class _AttendancePageState extends State<AttendancePage> {
                           height: 25,
                         ),
 
-                        /*Divider(
+                        *//*Divider(
                           thickness: 1.0,
                           color: Colors.black12,
                         ),
@@ -174,8 +231,8 @@ class _AttendancePageState extends State<AttendancePage> {
                                   fontSize: 30),
                             ),
                           ),
-                        ),*/
-                        /*Row(
+                        ),*//*
+                        *//*Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
@@ -195,14 +252,14 @@ class _AttendancePageState extends State<AttendancePage> {
                               },
                             )
                           ],
-                        ),*/
+                        ),*//*
                       ],
                     ),
                   ),
                 ]
             ),
           );
-        });
+        });*/
   }
 
   showDialogErrorUser(msg){

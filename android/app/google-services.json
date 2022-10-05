@@ -33,6 +33,35 @@
           ]
         }
       }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1013478066183:android:2b86ffa09e94e16f64c2a2",
+        "android_client_info": {
+          "package_name": "com.fanxing.foodorderse"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCpWLucBlqeMFQPG_BTRIcNj4fapjsVhko"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
     }
   ],
   "configuration_version": "1"
