@@ -201,7 +201,7 @@ public class MyPlatformView implements PlatformView,IDeviceListener, IStreamList
         convertRGBToRGBA(mImage,480,768);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         mRGBBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        String resultImage = Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT);
+        String resultImage = (outputStream.toByteArray() != null && outputStream.toByteArray().length != 0) ? Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT) : "ERROR";
 
         Map<String,String> map = new HashMap<>();
         map.put("AndroidResultImage",resultImage+"");

@@ -52,7 +52,7 @@ class _AttendancePageState extends State<AttendancePage> {
     if (method == 'clickAndroidButtonAndNoticeFlutter') {print("zz摄像头返回：${DateTime.now()}");
       String androidResultImage = call.arguments['AndroidResultImage'];
 
-      if(androidResultImage.length>0){
+      if(androidResultImage.length>0 && androidResultImage != "ERROR"){
         String backString = androidResultImage.replaceAll('\r', '').replaceAll('\n', '');
 
         var formData = {
