@@ -1,27 +1,28 @@
 import 'dart:convert';
 import 'dart:ffi';
 import 'dart:io';
+import 'dart:math';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
 import 'package:foodorder/config/colorsUtil.dart';
-import 'package:foodorder/config/imageData.dart';
-import 'package:foodorder/pages/home/Home.dart';
+
 import 'package:foodorder/plugins/appset/lib/appset.dart';
 import 'package:foodorder/services/EventBus.dart';
 import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/HomeServices.dart';
-import 'package:foodorder/services/Storage.dart';
+import 'package:get/get.dart' hide Response,FormData,MultipartFile;
+
 
 import 'package:foodorder/controller/homePageController.dart';
-import 'package:get/get.dart' hide Response;
-import 'package:open_file/open_file.dart';
+
 import 'package:package_info/package_info.dart';
-import 'package:path_provider/path_provider.dart';
-import 'package:permission_handler/permission_handler.dart';
+
+import 'package:foodorder/config/color.dart';
+import 'package:foodorder/config/imageData.dart';
+import 'package:foodorder/services/showToast.dart';
 
 class SettingPage extends StatefulWidget {
   Map arguments;
@@ -764,6 +765,64 @@ class _SettingPageState extends State<SettingPage> {
   }
 
 
+  //上传现金机log
+  uploadErrorLog() async {
+    _showEasyLoading();
+    var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+
+    FormData formData = FormData.fromMap({
+      "machineCode": _machineCode,
+      "file": await MultipartFile.fromFile(logfile),
+    });print(formData);
+
+    request(
+        'webBootLogUpload',
+        method: 'POST',
+        parameters: formData
+    ).then((val) {
+      var response = json.decode(val.toString());print(response);
+      EasyLoading.dismiss();
+      if (response["code"] == 200) {
+
+        showToast('上传成功~~');
+      } else {
+        showToast('上传失败!');
+      }
+    });
+
+
+  }
+
+  _showEasyLoading(){
+    var _showTag;
+    _showTag = Text("Uploading……",
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            Container(
+              //width: ScreenAdapter.width(400),
+              margin: EdgeInsets.only(top: 60),
+              height: ScreenAdapter.height(200),
+              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
 
 
   @override
@@ -772,26 +831,7 @@ class _SettingPageState extends State<SettingPage> {
         //appBar: AppBar(title: Text("设置")),
         body: ListView(
           children: <Widget>[
-            /*Container(
-              width: ScreenAdapter.getScreenWidth(),
-              height: ScreenAdapter.height(95),
-              //padding: EdgeInsets.only(right: ScreenAdapter.width(20)),
-              alignment: Alignment.bottomRight,
-              decoration: BoxDecoration(
-                color: ColorsUtil.hexToColor("#000000"),
-                image: new DecorationImage(
-                  alignment: Alignment.centerRight,
-                  fit: BoxFit.fitHeight,
-                  image: AssetImage('assets/images/logo.png'),
-                ),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
 
-                ],
-              ),
-            ),*/
             Container(
               decoration: new BoxDecoration(color: Colors.white),
               margin: EdgeInsets.only(
@@ -916,7 +956,7 @@ class _SettingPageState extends State<SettingPage> {
                         InkWell(
                           onTap: () {
                             Navigator.pushNamed(context, '/systemSettingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
-                            //showDownloadingAlert();
+
                           },
                           child: Container(
                             margin: EdgeInsets.only(
@@ -942,16 +982,21 @@ class _SettingPageState extends State<SettingPage> {
                       ],
                     ),
                   ),
-                  Container(
-                    padding:
-                    EdgeInsets.only(right: ScreenAdapter.width(18)),
-                    child: Text(
-                      "Version：${this._local_version}",
-                      style: TextStyle(
-                          color: Colors.grey[500],
-                          fontSize: ScreenAdapter.fontSize(20.0)),
+                  GestureDetector(
+                    onTap: (){
+                      uploadErrorLog();
+                    },
+                    child: Container(
+                      padding:
+                      EdgeInsets.only(right: ScreenAdapter.width(18)),
+                      child: Text(
+                        "Version：${this._local_version}",
+                        style: TextStyle(
+                            color: Colors.grey[500],
+                            fontSize: ScreenAdapter.fontSize(20.0)),
+                      ),
                     ),
-                  )
+                  ),
                 ],
               ),
             ),
