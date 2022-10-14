@@ -1097,6 +1097,8 @@ class _SettingPageState extends State<SettingPage> {
                               ),
                               (Route route) => false,
                             );*/
+                            controller.removeAllFromCart();
+                            sleep(Duration(milliseconds: 200));
                             Navigator.pop(context);
                             Future.delayed(Duration(milliseconds: 100), () {
                               Navigator.pushNamed(context, '/transitPage');
