@@ -201,10 +201,15 @@ public class MyPlatformView implements PlatformView,IDeviceListener, IStreamList
         convertRGBToRGBA(mImage,480,768);
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         mRGBBitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream);
-        String resultImage = (outputStream.toByteArray() != null && outputStream.toByteArray().length != 0) ? Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT) : "ERROR";
-
         Map<String,String> map = new HashMap<>();
-        map.put("AndroidResultImage",resultImage+"");
+        try {
+            String resultImage = (outputStream.toByteArray() != null && outputStream.toByteArray().length != 0) ? Base64.encodeToString(outputStream.toByteArray(), Base64.DEFAULT) : "ERROR";
+            map.put("AndroidResultImage",resultImage+"");
+        } catch (Exception e) {
+            map.put("AndroidResultImage","");
+            e.printStackTrace();
+        }
+
         mChannel.invokeMethod("clickAndroidButtonAndNoticeFlutter",map);
     }
 
