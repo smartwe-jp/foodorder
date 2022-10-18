@@ -49,12 +49,14 @@ class _setAttendanceCodePageState extends State<setAttendanceCodePage> {
 
   void _goMain() async {
     Future.delayed(Duration.zero, () {
+      Navigator.pop(context);
+
       Navigator.of(context).pushNamed('/attendance',arguments: {
         "machineCode": this._machineCode,
         "attendanceCode": this._attendance_code
       });
 
-      Navigator.pop(context);
+
     });
   }
 
