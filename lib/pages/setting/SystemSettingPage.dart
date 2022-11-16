@@ -23,6 +23,8 @@ import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import 'SetPosIp.dart';
+
 class SystemSettingPage extends StatefulWidget {
   Map arguments;
 
@@ -44,6 +46,10 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _machine_mode = "1";//1 普通点餐券卖机  2 精算机（结账机）
   var _isReservation = "0";// 0 不开启  1开启
   var _is_allow_attendance = "0";//0 不开启  1 开启
+  //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
+  var _is_allow_pos = "0";//0 不开启  1 开启
+  var _pos_ip = "";
+  var _pos_port = "";
 
   //监听页面销毁的事件
   dispose() {
@@ -68,7 +74,6 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-print(systemSettingInfo);
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _menu_direction = systemSettingInfo['menuDirection'];
@@ -77,6 +82,7 @@ print(systemSettingInfo);
       _machine_mode = systemSettingInfo['machineMode'];
       _isReservation = systemSettingInfo['isReservation'];
       _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
+      _is_allow_pos = systemSettingInfo['isAllowPos'];
     });
   }
 
@@ -496,7 +502,10 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -646,7 +655,10 @@ print(systemSettingInfo);
       "menuDirection":checkedType,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -797,25 +809,15 @@ print(systemSettingInfo);
   }
 
   checkPrintPaperSize(checkedType) async {
-    /*var printstatus;
-    if(checkedType == "1"){
-      printstatus = await FlutterPluginMsprinter.setPrintPaperSizefiftyeight();
-    }else{
-      printstatus = await FlutterPluginMsprinter.setPrintPaperSizeeighty();
-    }
-    sleep(Duration(milliseconds: 500));
-    print(printstatus);*/
-    //if("success" == printstatus){
-      /*var checkprintStatus = await FlutterPluginMsprinter.getPrintStatus();print(checkprintStatus);
-      sleep(Duration(milliseconds: 500));
-      await FlutterPluginMsprinter.setPrintPaperSizePrintTest();*/
-
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":checkedType,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -973,7 +975,10 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":checkedType,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -984,7 +989,7 @@ print(systemSettingInfo);
 
   }
 
-  //设置是否必须打印领収书
+  //设置机器类型
   setMachineMode() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
@@ -1127,6 +1132,8 @@ print(systemSettingInfo);
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":checkedType,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1137,7 +1144,7 @@ print(systemSettingInfo);
 
   }
 
-  //设置是否必须打印领収书
+  //设置是否开启预约
   setIsReservation() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
@@ -1280,6 +1287,8 @@ print(systemSettingInfo);
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":checkedType, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1431,7 +1440,10 @@ print(systemSettingInfo);
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       "printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":checkedType,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1440,6 +1452,233 @@ print(systemSettingInfo);
       _is_allow_attendance = checkedType;
     });
 
+  }
+
+  //设置是否开启pos刷卡
+  setIsAllowPos() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("Pos設定",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkIsAllowPos("0");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("OFF",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_pos == "0")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    //if(_pos_ip == ""){
+                    _showPosSettingDialog();
+
+                    //}
+                    /*else{
+                      checkIsAllowPos("1");
+                    }*/
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(190),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#409eff"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            //お持ち帰り
+                            child: Text("ON",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                          (_pos_ip != "" && _pos_port != "") ? Row(
+                            children: [
+                              Text(
+                                "ip:${_pos_ip}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22),
+                                  )
+                              ),
+                              Text(
+                                  "端口:${_pos_port}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22),
+                                  )
+                              )
+                            ],
+                          ) : Container(height: 0,)
+                        ],
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_pos == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(45),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkIsAllowPos(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":checkedType,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+
+    var posSettingData;
+    if(checkedType == "1"){
+      posSettingData = {
+        "posIp":_pos_ip, //ip
+        "posPort":_pos_port,//port
+      };
+    }else{
+      posSettingData = {
+        "posIp":"", //ip
+        "posPort":"",//port
+      };
+      setState(() {
+        _pos_port = "";
+        _pos_ip = "";
+      });
+    }
+
+    Storage.setString('smartwe_posSetting', json.encode(posSettingData));
+
+    //Storage.setString('isAllowReceipt', checkedType);//1 必须  2 不必须
+    setState(() {
+      _is_allow_pos = checkedType;
+    });
+
+  }
+
+  //预约弹出框
+  _showPosSettingDialog() async {
+    await showDialog(
+        context: context,
+        barrierDismissible: true, //表示点击灰色背景的时候是否消失弹出框
+        builder: (BuildContext context) {
+          return SetPosIpPage(
+            posIp: _pos_ip,
+            posPort: _pos_port,
+            onConfrimClick: (String posIp, String posPort) {
+              print(posIp);
+              print(posPort);
+              if(posIp != ""){
+                setState(() {
+                  _pos_ip = posIp;
+                  _pos_port = posPort;
+
+                });
+                checkIsAllowPos("1");
+              }
+
+            },
+          );
+        });
   }
 
   @override
@@ -1550,7 +1789,8 @@ print(systemSettingInfo);
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   setMachineMode(), //设置机器类型
                   setIsReservation(),  //是否开启预约服务
-		  setIsAllowAttendance(),//是否开启签到
+		              setIsAllowAttendance(),//是否开启签到
+                  setIsAllowPos(),//是否开启pos机刷卡
                 ],
               ),
             ),

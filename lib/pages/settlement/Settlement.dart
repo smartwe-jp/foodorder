@@ -105,6 +105,8 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showWechat = true;
   var _showAlipay = true;
   var _showPayPay = true;
+  //后台返回是否可以使用pos刷卡机，如果后台可以使用，并且券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
+  var _showIsPos = true;
 
   var _machineMode = "1"; //机器类型 1普通券卖机 2精算机
   var _goodsList = [];
@@ -223,6 +225,7 @@ class _SettlementPageState extends State<SettlementPage> {
       this._showWechat = systemSettingInfo['showWechat'];
       this._showAlipay = systemSettingInfo['showAlipay'];
       this._showPayPay = systemSettingInfo['showPayPay'];
+      this._showIsPos = systemSettingInfo['showIsPos'];
     });
     _getSystemSettingInfo();
   }
@@ -1962,6 +1965,25 @@ class _SettlementPageState extends State<SettlementPage> {
                                   )),
                             ],
                           )),
+                      if(_showIsPos == true)
+                        Container(
+                            margin: EdgeInsets.only(left: ScreenAdapter.width(50), right: ScreenAdapter.width(50)),
+                            width: ScreenAdapter.width(130),
+                            height: ScreenAdapter.height(140),
+                            child: Column(
+                              children: [
+                                Image.asset(GImage.getImageString(_shopInfo, "settlement_alipay"),
+                                    width: ScreenAdapter.width(85),
+                                    height: ScreenAdapter.height(85)),
+                                SizedBox(height: ScreenAdapter.height(5)),
+                                Text(GString.getToString(this._checkLanguage, "settlement_payment_method_alipay"),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(18),
+                                      fontWeight: FontWeight.w500,
+                                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                    )),
+                              ],
+                            )),
 
                     ],
                   ),

@@ -50,6 +50,8 @@ class GImage{
         "takeout":"assets/images/public/takeout.png",
         "jingsuantag":"assets/images/public/jingsuantag.jpg",
         "error_public":"assets/images/public/error_public.jpg",
+        "takeaway":"assets/images/public/takeaway.png",
+        "foodbar":"assets/images/public/foodbar.png",
       };
     }else if (shopInfo == 'sanfeng') {
       imagePack = {
@@ -91,6 +93,8 @@ class GImage{
         "takeout":"assets/images/public/takeout.png",
         "jingsuantag":"assets/images/public/jingsuantag.jpg",
         "error_public":"assets/images/public/error_public.jpg",
+        "takeaway":"assets/images/public/takeaway.png",
+        "foodbar":"assets/images/public/foodbar.png",
       };
     }else if (shopInfo == 'rijindoujin') {
       imagePack = {
@@ -132,6 +136,8 @@ class GImage{
         "takeout":"assets/images/public/takeout.png",
         "jingsuantag":"assets/images/public/jingsuantag.jpg",
         "error_public":"assets/images/public/error_public.jpg",
+        "takeaway":"assets/images/public/takeaway.png",
+        "foodbar":"assets/images/public/foodbar.png",
 
       };
     }

@@ -92,6 +92,18 @@ class HomeServices{
     return systemSettingInfo;
   }
 
+  //pos机多参数设置
+  static getPosSettingInfo() async{
+    Map posSettingInfo;
+    try {
+      Map posSettingData = json.decode(await Storage.getString('smartwe_posSetting'));
+      posSettingInfo = posSettingData;
+    } catch (e) {
+      posSettingInfo = {};
+    }
+    return posSettingInfo;
+  }
+
   //是否展示微信支付宝等
   static getMachineActivateData() async{
     Map machineActivateInfo;

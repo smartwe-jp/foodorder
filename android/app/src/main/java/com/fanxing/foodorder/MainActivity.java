@@ -24,7 +24,7 @@ public class MainActivity extends FlutterActivity {
     private ScheduledExecutorService threadPool = null;
     private int betweenTime = 59;//间隔59秒执行一次
     private int delayTime = 50;//线程池开启5秒后执行
-    private String time = "07:00";//重启时间一
+    private String time = "06:00";//重启时间一
     SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.CHINA);
     String dateStr = "";//获取的时间
    @Override

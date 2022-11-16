@@ -99,10 +99,13 @@ class _TransitPageState extends State<TransitPage> {
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
         var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
+        //var _showIsPos = shopData["linePayChannelMap"]["showIsPos"] != null ? shopData["linePayChannelMap"]["showIsPos"] :false;
         var machineActivateData = {
           "showWechat":_showWechat,
           "showAlipay":_showAlipay,
           "showPayPay":_showPayPay,
+          //"showIsPos":_showPayPay,
+          "showIsPos":true,
         };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
 
