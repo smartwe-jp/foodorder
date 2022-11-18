@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -30,8 +31,9 @@ import 'package:get/get.dart';
 import 'package:paycube/paycube.dart';
 import 'package:foodorder/services/Storage.dart';
 
-import 'SettlementCashPage.dart';
-import 'SettlementQrCodePage.dart';
+import 'package:foodorder/services/logUtil.dart';
+//import 'SettlementCashPage.dart';
+//import 'SettlementQrCodePage.dart';
 
 class SettlementPage extends StatefulWidget {
   Map arguments;
@@ -111,6 +113,15 @@ class _SettlementPageState extends State<SettlementPage> {
   var _machineMode = "1"; //机器类型 1普通券卖机 2精算机
   var _goodsList = [];
 
+  //支付类型相关
+  Socket _socket; //socket对象
+  bool _socketState = false; //连接状态
+  var _isAllowPos = "0";
+  var _pos_ip = "192.168.11.180";
+  var _pos_port = "9999";
+  var _payment_method_num = "0"; //"paymentMethod" 1，现金 2，扫码 3，刷卡
+
+
   @override
   void initState() {
     super.initState();
@@ -123,6 +134,10 @@ class _SettlementPageState extends State<SettlementPage> {
     if(_machineMode == "1"){
       this._totalPrice = widget.arguments['totalPrice'];
     }
+    this._isAllowPos = widget.arguments['isAllowPos'];
+    this._pos_ip = widget.arguments['posIp'];print(_pos_ip);
+    this._pos_port = widget.arguments['posPort'];
+    this._payment_method_num = widget.arguments['paymentMethod'];
 
     //获取是否展示微信支付宝图标等
     _getMachineActivateInfo();
@@ -140,8 +155,15 @@ class _SettlementPageState extends State<SettlementPage> {
 
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
-    //打开现金机
-    Starttoubi();
+    //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3只支持刷卡
+    if(_payment_method_num == "0" || _payment_method_num == "1"){
+      //打开现金机
+      Starttoubi();
+    }else if(_payment_method_num == "3"){
+      //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
+      payconnectSocker();
+    }
+
 
 
 
@@ -205,7 +227,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
     request(queryUrl, method: 'GET', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200) {
 
         setState(() {
@@ -402,10 +424,11 @@ class _SettlementPageState extends State<SettlementPage> {
     return sum;
   }
 
-
-
-  //扫码支付
+//扫码支付
   _doToPay(){
+    //不是扫码支付直接return
+    if(_payment_method_num != "2") return;
+
     if(_showWechat == false && _showAlipay == false && _showPayPay == false){
       _showScanCodeNoOpenDialog(1);
       return;
@@ -421,8 +444,8 @@ class _SettlementPageState extends State<SettlementPage> {
       return;
     }else{
       if(RegExp(_regExpWechat).hasMatch(_scanQrCode)==false && RegExp(_regExpAlipay).hasMatch(_scanQrCode)==false &&_showPayPay == false){
-      _showScanCodeNoOpenDialog(2);
-      return;
+        _showScanCodeNoOpenDialog(2);
+        return;
       }
     }
 
@@ -439,12 +462,12 @@ class _SettlementPageState extends State<SettlementPage> {
         var response = json.decode(val.toString());
 
         if (response['code'] == 200 && response['data'] == true) {
-            //payCubeEndDeposit();
-            setState(() {
-              _isReport = false;
-              _scanCode = true;
-            });
-            doPrintOrderMenu();
+          //payCubeEndDeposit();
+          setState(() {
+            _isReport = false;
+            _scanCode = true;
+          });
+          doPrintOrderMenu();
 
 
         } else {
@@ -457,6 +480,8 @@ class _SettlementPageState extends State<SettlementPage> {
 
     }
   }
+
+
 
   //三种扫码支付都未开通，弹出dialog
   _showScanCodeNoOpenDialog(checknum){
@@ -655,13 +680,18 @@ class _SettlementPageState extends State<SettlementPage> {
           eventBus.fire(new clearCartEvent('支付成功...'));
         }
 
-        //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-      if(_scanCode == true){
-        //已经结束入金，处理取引终了
-        payCubeEndDeposit();
-      }else{
-        nextOper();
-      }
+        //只有现金机时候才执行 先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+        if(_payment_method_num == "1"){
+          if(_scanCode == true){
+            //已经结束入金，处理取引终了
+            payCubeEndDeposit();
+          }else{
+            nextOper();
+          }
+        }else{
+          gotonewMyhome();
+        }
+
 
       }else{
         var formData = {
@@ -1305,25 +1335,30 @@ class _SettlementPageState extends State<SettlementPage> {
       _isCancel = true;
     });
 
+    if(_payment_method_num == "1"){
+      //已投钱
+      if(int.parse(_getPutMoney) >0){
+        setState(() {
+          _isPrint = false;
+          _totalPrice = "0";
+        });
 
-    //已投钱
-    if(int.parse(_getPutMoney) >0){
-      setState(() {
-        _isPrint = false;
-        _totalPrice = "0";
-      });
-
-      //如果现金机投币大于0后取消，则直接关机出金
-      Endtoubi();
+        //如果现金机投币大于0后取消，则直接关机出金
+        Endtoubi();
+      }else{
+        setState(() {
+          _isPrint = false;
+          _totalPrice = "0";
+          _getPutMoney = "0";
+        });
+        //如果现金机投币大于0后取消，则直接关机出金
+        Endtoubi();
+      }
     }else{
-      setState(() {
-        _isPrint = false;
-        _totalPrice = "0";
-        _getPutMoney = "0";
-      });
-      //如果现金机投币大于0后取消，则直接关机出金
-      Endtoubi();
+      //返回上一级菜单页面
+      gotonewMenuPage();
     }
+
   }
 
   _getPayCubePutMoneyCurrency() async {
@@ -1721,6 +1756,101 @@ class _SettlementPageState extends State<SettlementPage> {
       _imageCache.clear();
       _imageCache.clearLiveImages();
     }
+  }
+
+
+  //pos机相关
+  payconnectSocker() async {
+    Socket.connect(
+      this._pos_ip,
+      int.parse(this._pos_port),
+      timeout: Duration(seconds: 5),
+    ).then((Socket socket) {print("连接成功了么");
+    this._socket = socket;
+    //获得pos数据并发送
+    _getPaymentPosData();
+    // 监听wifi模块发送的数据
+    this._socket.listen((List<int> event) {
+      print("监听返回打印");
+      //print(event);
+      print("\n\r================================\n\r");
+      LogUtil.d(event);
+      print("\n\r================================\n\r");
+      if(event.length > 40)
+        event.fillRange(266, 289, 32);
+      var zhuanhuan = Uint8List.fromList(event);
+      var eventString = Utf8Codec().decode(zhuanhuan);
+      print(Utf8Codec().decode(zhuanhuan));
+
+      String FirstString = eventString.substring(0, 1);
+      String SecondString = eventString.substring(1, 3);
+      String resultString = eventString.substring(10, 13);
+      String resultMPFSString = eventString.substring(13, 16);
+      print(resultString);print(FirstString);print(SecondString);print(resultMPFSString);
+      //LogUtil.d(utf8.decode(event));
+
+      //机器端取消返回
+      if(FirstString == "3" && SecondString == "11" && resultString =="L11"){
+        print("取消");
+        CancelOrder();
+      }
+      //支付成功 打印，返回首页
+      if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
+        print("支付成功");
+        doPrintOrderMenu();
+      }
+
+
+
+
+    });
+    setState(() {
+      _socketState = true;
+    });
+
+
+
+    }).catchError((e) {
+      setState(() {
+        _socketState = false;
+      });
+      print("Unable to connect: $e");
+    });
+
+    //获得pos数据并发送
+    //_getPaymentPosData();
+  }
+
+  _getPaymentPosData(){
+    var _queryString =       "2101500001       00509                  000000120221114093225";
+    for(var i=0;i<71;i++){
+      _queryString += " ";
+    }
+    _queryString += "10";
+    for(var i=0;i<415;i++){
+      _queryString += " ";
+    }
+    this._socket.write(_queryString);print(_queryString);
+    /*var formData = {
+      "orderId": this._orderId,
+    };
+    var queryUrl;
+    if(_print_paper_size == "1"){
+      queryUrl = "webBootToPrintV2";
+    }else{
+      queryUrl = "webBootToPrintV3";
+    }
+
+    request(queryUrl, method: 'GET', parameters: formData).then((val) async {
+      var response = json.decode(val.toString());
+      if (response['code'] == 200) {
+        var _queryString =       "2101500001       00509                  000000120221114093225";
+        this._socket.write(_queryString);
+
+      } else {
+
+      }
+    });*/
   }
 
 

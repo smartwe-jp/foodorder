@@ -189,7 +189,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   _getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();print(SystemSettingInfo);
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
+    /*var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
 
     var systemSettingData = {
       "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
@@ -201,8 +201,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
       "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+    */
     setState(() {
-      _isReservation = systemSettingData["isReservation"];
+      _isReservation = SystemSettingInfo["isReservation"];
     });
 
 

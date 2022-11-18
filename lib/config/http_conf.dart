@@ -13,8 +13,8 @@ const servicePath = {
   'webBootToReport': base_url + 'pad/web/boot/report', //现金支付提交请求地址
   'webBootToReportV1': base_url + 'pad/web/boot/v1/report', //现金支付提交请求地址
   //'webBootToPrint': base_url + 'pad/web/boot/print', //打印小票请求地址
-  'webBootToPrintV2': base_url + 'pad/web/boot/v2/print', //打印小票请求地址
-  'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址
+  'webBootToPrintV2': base_url + 'pad/web/boot/v2/print', //打印小票请求地址 58mm
+  'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态

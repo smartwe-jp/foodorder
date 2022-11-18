@@ -40,6 +40,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
 
+import 'SelectPayment.dart';
+
 class MenuPage extends StatefulWidget {
   Map arguments;
 
@@ -91,11 +93,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var cartnum = 6;
 
   //就餐类型
-  var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
+  var _dining_type = "1"; //1 堂食  2 外袋  3两种都可以支付
   var _mealType = false; //用于判断下单
   var _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用
   var _pos_ip = "";
   var _pos_port = "";
+
+  var _dining_type_num = "0"; //就餐类型选择
+  var _payment_method_num = "0"; //支付类型选择
 
 
   //顶部展示支付类型
@@ -215,7 +220,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _isAllowPos = systemSettingInfo['isAllowPos'];
-    });
+    });print(_dining_type);
+    print(_isAllowPos);
     _getBookingBootMenu();
   }
 
@@ -3122,7 +3128,17 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   return false;
                                 }
 
-                              if(_dining_type =="1" || _dining_type =="2"){
+                                //点餐方式只有一种并且未开pos
+                                if((_dining_type =="1" || _dining_type =="2") && _isAllowPos == "0"){
+                                  setState(() {
+                                    _mealType = (_dining_type == "2") ? true: false;
+                                  });
+                                  _doSubmitOrder();
+                                }else{
+                                  _showSelectMealTypeAndPaymentMethodDialog();
+                                }
+
+                              /*if(_dining_type =="1" || _dining_type =="2"){
                                 setState(() {
                                   _mealType = (_dining_type == "2") ? true: false;
                                 });
@@ -3140,7 +3156,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   _showSelectMealTypeAndPaymentMethodDialog();
                                 }
 
-                              }
+                              }*/
 
 
 
@@ -3332,6 +3348,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         EasyLoading.dismiss();
 
         if (response['code'] == 200) {
+          //"paymentMethod" 1，现金 2，扫码 3，刷卡
+          print("postip-${_pos_ip}");
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
@@ -3347,6 +3365,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "isAllowPos":_isAllowPos,
                 "posIp":_pos_ip,
                 "posPort":_pos_port,
+                "paymentMethod":_payment_method_num
               });
 
         }else{
@@ -3705,382 +3724,32 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     await showDialog(
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            width: ScreenAdapter.width(950),
-            child: SimpleDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                children: <Widget>[
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Container(
-                        padding: EdgeInsets.only(left: ScreenAdapter.width(30),top: ScreenAdapter.height(25),right: ScreenAdapter.width(30),bottom: ScreenAdapter.height(30)),
-                        //width: ScreenAdapter.width(650),
 
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              //"堂食",
-                              GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                              style: TextStyle(
-                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: ScreenAdapter.fontSize(34.0)),
-                            ),
-                            SizedBox(height: ScreenAdapter.height(15),),
-                            Text(
-                              //"堂食",
-                              GString.getToString(this._checkLanguage, "menu_dingtype_title_tag"),
-                              textAlign: TextAlign.center,
-                              style: TextStyle(
-                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                  fontWeight: FontWeight.w400,
-                                  fontSize: ScreenAdapter.fontSize(22.0)),
-                            ),
-                            SizedBox(height: ScreenAdapter.height(20),),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Container(
-                                  width: ScreenAdapter.width(315),
-                                  height: ScreenAdapter.height(290),
-                                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                  decoration: BoxDecoration(
-                                    //设置边框
-                                    //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                    //背景颜色
-                                    color: Colors.white,
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((5.0)),
-                                    //设置阴影
-                                    boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: TextButton(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString(_shopInfo, "foodbar"),
-                                            width: ScreenAdapter.width(120),
-                                            height: ScreenAdapter.height(120),
-                                            //color:  ColorsUtil.hexToColor(Gcolor.mainBackground),
-                                          ),
-                                        ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        Text(
-                                          //"堂食",
-                                          GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
-                                          style: TextStyle(
-                                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),
+          return SelectPaymentPage(
+            checkLanguage: _checkLanguage,
+            dining_type: _dining_type,
+            dining_type_num: _dining_type_num,
+            shopInfo:_shopInfo,
+            //mealType:_mealType,
+            isAllowPos:_isAllowPos,
+            onConfrimClick: (bool mealType, String dining_type_num, String isAllowPos, String payment_method_num) {
+                print(mealType);
+                print(dining_type_num);
+                print(isAllowPos);
+                print(payment_method_num);
+                setState(() {
+                  _mealType = mealType;
+                  _dining_type_num = dining_type_num;
+                  _isAllowPos = isAllowPos;
+                  _payment_method_num = payment_method_num;
+                });
+                if(_payment_method_num == "3"){
+                  _getPosSettingInfo();
+                }else{
+                  _doSubmitOrder();
+                }
 
-                                      ],
-                                    ),
-                                    onPressed: () async {
-                                      //print("堂食");
-                                      setState(() {
-                                        _mealType = false;
-                                      });
-                                    },
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: ScreenAdapter.width(15),
-                                ),
-                                Container(
-                                  width: ScreenAdapter.width(315),
-                                  height: ScreenAdapter.height(290),
-                                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                  decoration: BoxDecoration(
-                                    //设置边框
-                                    //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                    //背景颜色
-                                    color: Colors.white,
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((5.0)),
-                                    //设置阴影
-                                    boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                                  ),
-                                  child: TextButton(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString(_shopInfo, "takeaway"),
-                                            width: ScreenAdapter.width(120),
-                                            height: ScreenAdapter.height(120),
-                                            //color: Colors.lightGreen,
-                                          ),
-                                        ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        Text(
-                                          //"外带",
-                                          GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),
-                                      ],
-                                    ),
-                                    onPressed: () async {
-                                      setState(() {
-                                        _mealType = true;
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.only(left: ScreenAdapter.width(30),top: ScreenAdapter.height(25),right: ScreenAdapter.width(30),bottom: ScreenAdapter.height(30)),
-                        //width: ScreenAdapter.width(650),
-
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                              "请选择支付方式",
-                              style: TextStyle(
-                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: ScreenAdapter.fontSize(34.0)),
-                            ),
-                            SizedBox(height: ScreenAdapter.height(20),),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                Container(
-                                  width: ScreenAdapter.width(255),
-                                  height: ScreenAdapter.height(290),
-                                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                  decoration: BoxDecoration(
-                                    //设置边框
-                                    //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                    //背景颜色
-                                    color: Colors.white,
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((5.0)),
-                                    //设置阴影
-                                    boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                                  ),
-                                  alignment: Alignment.center,
-                                  child: TextButton(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString(_shopInfo, "foodbar"),
-                                            width: ScreenAdapter.width(100),
-                                            height: ScreenAdapter.height(100),
-                                            //color:  ColorsUtil.hexToColor(Gcolor.mainBackground),
-                                          ),
-                                        ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        Text(
-                                          //"现金",
-                                          //GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
-                                          "现金",
-                                          style: TextStyle(
-                                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),
-
-                                      ],
-                                    ),
-                                    onPressed: () async {
-
-                                      /*_doSubmitOrder();
-                                      Navigator.pop(context);*/
-                                    },
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: ScreenAdapter.width(15),
-                                ),
-                                Container(
-                                  width: ScreenAdapter.width(255),
-                                  height: ScreenAdapter.height(290),
-                                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                  decoration: BoxDecoration(
-                                    //设置边框
-                                    //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                    //背景颜色
-                                    color: Colors.white,
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((5.0)),
-                                    //设置阴影
-                                    boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                                  ),
-                                  child: TextButton(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString(_shopInfo, "takeaway"),
-                                            width: ScreenAdapter.width(100),
-                                            height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                          ),
-                                        ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        Text(
-                                          //"扫码",
-                                          //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                          "扫码",
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),
-                                      ],
-                                    ),
-                                    onPressed: () async {
-                                    },
-                                  ),
-                                ),
-                                SizedBox(
-                                  width: ScreenAdapter.width(15),
-                                ),
-                                Container(
-                                  width: ScreenAdapter.width(255),
-                                  height: ScreenAdapter.height(290),
-                                  padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                  decoration: BoxDecoration(
-                                    //设置边框
-                                    //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                    //背景颜色
-                                    color: Colors.white,
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((5.0)),
-                                    //设置阴影
-                                    boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                                  ),
-                                  child: TextButton(
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString(_shopInfo, "takeaway"),
-                                            width: ScreenAdapter.width(100),
-                                            height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                          ),
-                                        ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        Text(
-                                          //"信用卡",
-                                          //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                          "信用卡",
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),
-                                      ],
-                                    ),
-                                    onPressed: () async {
-                                      setState(() {
-                                        _isAllowPos = "1";
-                                      });
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(height: ScreenAdapter.height(20),),
-                      Container(
-                        padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Container(
-                              alignment: Alignment.center,
-                              width: ScreenAdapter.width(200),
-                              height: ScreenAdapter.height(200),
-                              margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
-                              decoration: BoxDecoration(
-
-                                color: ColorsUtil.hexToColor("#409eff"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              child: TextButton(
-                                child: Text(
-                                  "戻る",
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () async {
-                                  try {
-                                    _doSubmitOrder();
-                                    Navigator.pop(context);
-                                  } catch (_) {}
-
-                                },
-                              ),
-                            ),
-                            SizedBox(width: ScreenAdapter.width(180)),
-                            Container(
-                              alignment: Alignment.center,
-                              width: ScreenAdapter.width(200),
-                              height: ScreenAdapter.height(200),
-                              margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
-                              decoration: BoxDecoration(
-
-                                color: ColorsUtil.hexToColor("#409eff"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              child: TextButton(
-                                child: Text(
-                                  GString.getToString(this._checkLanguage, "tag_button_yes"),
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () async {
-                                  try {
-                                    _doSubmitOrder();
-                                    Navigator.pop(context);
-                                  } catch (_) {}
-
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    ],
-                  ),
-                ]
-            ),
+            },
           );
         });
   }

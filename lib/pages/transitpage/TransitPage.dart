@@ -48,7 +48,7 @@ class _TransitPageState extends State<TransitPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();//print(systemSettingInfo);
-    if (systemSettingInfo.isEmpty) {
+    /*if (systemSettingInfo.isEmpty) {
       var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
       var systemSettingData = {
         "diningType":(DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1", //1堂食 2外带
@@ -80,7 +80,10 @@ class _TransitPageState extends State<TransitPage> {
       setState(() {
         _machineMode = systemSettingInfo['machineMode'];
       });
-    }
+    }*/
+    setState(() {
+      _machineMode = systemSettingInfo['machineMode'];
+    });
 
     _getMachineActivate();
 

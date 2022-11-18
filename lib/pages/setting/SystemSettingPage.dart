@@ -74,6 +74,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _menu_direction = systemSettingInfo['menuDirection'];
@@ -83,6 +85,9 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _isReservation = systemSettingInfo['isReservation'];
       _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
       _is_allow_pos = systemSettingInfo['isAllowPos'];
+
+      _pos_ip = posSettingInfo['posIp'];
+      _pos_port = posSettingInfo['posPort'];
     });
   }
 
@@ -1616,7 +1621,6 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   }
 
   checkIsAllowPos(checkedType) async {
-
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
@@ -1645,7 +1649,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
         _pos_ip = "";
       });
     }
-
+print(posSettingData);
     Storage.setString('smartwe_posSetting', json.encode(posSettingData));
 
     //Storage.setString('isAllowReceipt', checkedType);//1 必须  2 不必须
