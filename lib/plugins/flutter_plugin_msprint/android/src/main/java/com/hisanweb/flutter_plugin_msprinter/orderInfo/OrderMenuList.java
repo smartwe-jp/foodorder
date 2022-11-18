@@ -5,6 +5,7 @@ import java.util.List;
 
 public class OrderMenuList {
 
+    private String serialNumber;
     private String orderId;
     private String orderDate;
     private String payPrice;
@@ -29,6 +30,14 @@ public class OrderMenuList {
     private String line4Rate;
 
     private List<CategoryVos> categoryVos;
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
+    }
 
     public String getOrderId() {
         return orderId;

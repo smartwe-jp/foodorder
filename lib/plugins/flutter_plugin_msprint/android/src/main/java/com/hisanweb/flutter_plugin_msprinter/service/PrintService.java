@@ -49,13 +49,21 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.SetAlignment(1));
         printbmp(mUsbDriver,sed);
 
-        PrintFeedDot(10);
+        PrintFeedDot(2);
         StringBuilder m_sbData;
+
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+
+        m_sbData = new StringBuilder(oh.getTelephone());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+        m_sbData = new StringBuilder(oh.getShopAddress());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         mUsbDriver.write(PrintCmd.SetAlignment(1));
-        m_sbData = new StringBuilder("領収書");
+        m_sbData = new StringBuilder("領 収 書");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
 
@@ -125,32 +133,27 @@ public class PrintService  {
         m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
+
+
+
+        m_sbData = new StringBuilder("お明細は上記のとおりです。");//上記正に領収いたしました。
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+
+        //m_sbData = new StringBuilder(oh.getSignValue());
+        //mUsbDriver.write(PrintCmd.PrintQrcode(m_sbData.toString(), 27, 4, 0));
+
+        //mUsbDriver.write(PrintCmd.PrintFeedline(1));
+
+        //mUsbDriver.write(PrintCmd.SetAlignment(0));
+        //m_sbData = new StringBuilder(oh.getShopName());
+        //mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
         m_sbData = new StringBuilder(oh.getOrderDate());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
-        m_sbData = new StringBuilder("上記正に領収いたしました。");
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-
-
-        m_sbData = new StringBuilder(oh.getSignValue());
-        mUsbDriver.write(PrintCmd.PrintQrcode(m_sbData.toString(), 27, 4, 0));
-
-        mUsbDriver.write(PrintCmd.PrintFeedline(1));
-
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder(oh.getShopName());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-
-        m_sbData = new StringBuilder("TEL "+oh.getTelephone());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-
-        m_sbData = new StringBuilder(oh.getShopAddress());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-
-
-        PrintFeedDot(20);
+        PrintFeedDot(10);
 
         mUsbDriver.write(PrintCmd.PrintFeedline(5));
         mUsbDriver.write(PrintCmd.PrintCutpaper(0));
@@ -160,24 +163,33 @@ public class PrintService  {
     public void execute_print(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed,int CutpaperSet){
         StringBuilder m_sbData;
 
-        mUsbDriver.write(PrintCmd.SetUnderline(1));
+        /*mUsbDriver.write(PrintCmd.SetUnderline(1));
         mUsbDriver.write(PrintCmd.SetBold(1));
         m_sbData = new StringBuilder(oh.getLine7());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetClean());
 
         m_sbData = new StringBuilder(oh.getOrderDate()+"   店舗控え");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        m_sbData = new StringBuilder(oh.getLine7()+"    ");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        //m_sbData = new StringBuilder("001");
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        m_sbData = new StringBuilder(oh.getSerialNumber());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetClean());
 
         m_sbData = new StringBuilder("--------------------------------");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
         List<CategoryVos> lineList = oh.getCategoryVos();
+        int categoryNum = lineList.size();
+        int categoryshowNum = 0;
         for (CategoryVos line:lineList) {
-
             int linNum = 0;
-
             List<LineVos> lineVosList = line.getLineVos();
             int linVoNum = lineVosList.size();
             for (LineVos lineVos:lineVosList){
@@ -202,13 +214,16 @@ public class PrintService  {
 
             }
 
-            m_sbData = new StringBuilder("--------------------------------");
-            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            categoryshowNum++;
+            if(categoryNum != categoryshowNum) {
+                m_sbData = new StringBuilder("--------------------------------");
+                mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            }
 
         }
 
-        m_sbData = new StringBuilder("No."+oh.getOrderId());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        //m_sbData = new StringBuilder("No."+oh.getOrderId());
+        //mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
         PrintFeedDot(20);
@@ -222,12 +237,19 @@ public class PrintService  {
     public void execute_printRreceipt_eighty(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed){
         mUsbDriver.write(PrintCmd.SetAlignment(1));
         printbmp(mUsbDriver,sed);
-        PrintFeedDot(10);
+        PrintFeedDot(5);
         StringBuilder m_sbData;
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+
+        m_sbData = new StringBuilder(oh.getTelephone());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+        m_sbData = new StringBuilder(oh.getShopAddress());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         mUsbDriver.write(PrintCmd.SetSizetext(1,1));
         mUsbDriver.write(PrintCmd.SetAlignment(1));
-        m_sbData = new StringBuilder("領収書");
+        m_sbData = new StringBuilder("領 収 書");
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         mUsbDriver.write(PrintCmd.SetClean());
@@ -300,36 +322,30 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder(oh.getOrderDate());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
-        m_sbData = new StringBuilder("上記正に領収いたしました。");
+        m_sbData = new StringBuilder("お明細は上記のとおりです。");//上記正に領収いたしました。
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
 
 
-        m_sbData = new StringBuilder(oh.getSignValue());
+        /*m_sbData = new StringBuilder(oh.getSignValue());
         mUsbDriver.write(PrintCmd.PrintQrcode(m_sbData.toString(), 27, 4, 0));
 
         mUsbDriver.write(PrintCmd.PrintFeedline(1));
 
         mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder(oh.getShopName());
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
+
+        m_sbData = new StringBuilder(oh.getOrderDate());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
-        m_sbData = new StringBuilder("TEL "+oh.getTelephone());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
-
-        m_sbData = new StringBuilder(oh.getShopAddress());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
-
-
-        PrintFeedDot(20);
+        PrintFeedDot(10);
 
 
         mUsbDriver.write(PrintCmd.PrintFeedline(5));
@@ -346,7 +362,7 @@ public class PrintService  {
         StringBuilder m_sbData;
 
 
-        mUsbDriver.write(PrintCmd.SetBold(1));
+        /*mUsbDriver.write(PrintCmd.SetBold(1));
         mUsbDriver.write(PrintCmd.SetUnderline(1));
         m_sbData = new StringBuilder(oh.getLine7());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
@@ -356,10 +372,21 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
         m_sbData = new StringBuilder("------------------------------------------------");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
+        mUsbDriver.write(PrintCmd.SetSizetext(1,1));
+        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        //m_sbData = new StringBuilder("001");
+        m_sbData = new StringBuilder(oh.getLine7()+"    ");
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 1));
+        mUsbDriver.write(PrintCmd.SetAlignment(1));
+        m_sbData = new StringBuilder(oh.getSerialNumber());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.SetClean());
 
 
         List<CategoryVos> lineList = oh.getCategoryVos();
+        int categoryNum = lineList.size();
+        int categoryshowNum = 0;
         for (CategoryVos line:lineList) {
             mUsbDriver.write(PrintCmd.SetSizetext(1,1));
             int linNum = 0;
@@ -390,16 +417,19 @@ public class PrintService  {
 
             }
 
-            mUsbDriver.write(PrintCmd.SetSizetext(0,0));
-            m_sbData = new StringBuilder("------------------------------------------------");
-            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            categoryshowNum++;
+            if(categoryNum != categoryshowNum) {
+                mUsbDriver.write(PrintCmd.SetSizetext(0, 0));
+                m_sbData = new StringBuilder("------------------------------------------------");
+                mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            }
 
         }
-        mUsbDriver.write(PrintCmd.SetClean());
+        //mUsbDriver.write(PrintCmd.SetClean());
 
-        mUsbDriver.write(PrintCmd.SetAlignment(0));
+        /*mUsbDriver.write(PrintCmd.SetAlignment(0));
         m_sbData = new StringBuilder("No."+oh.getOrderId());
-        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));*/
 
         PrintFeedDot(20);
 
