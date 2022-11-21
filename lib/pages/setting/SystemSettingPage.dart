@@ -255,7 +255,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
             Container(
               //width: ScreenAdapter.width(400),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -372,7 +372,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                               borderRadius: BorderRadius.all(Radius.circular(10.0)),
                               image: DecorationImage(
                                 image:
-                                AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                                AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                                 fit: BoxFit.fill,
                               ),
                             ),
@@ -426,7 +426,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -480,7 +480,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -579,7 +579,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -633,7 +633,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -738,7 +738,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -792,7 +792,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -898,7 +898,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -952,7 +952,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1053,7 +1053,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1107,7 +1107,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1208,7 +1208,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1262,7 +1262,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1363,7 +1363,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1417,7 +1417,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1519,7 +1519,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),
@@ -1599,7 +1599,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
                             image: DecorationImage(
                               image:
-                              AssetImage(GImage.getImageString(_shopInfo, "optionChecked")),
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
                               fit: BoxFit.fill,
                             ),
                           ),

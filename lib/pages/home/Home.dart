@@ -241,7 +241,7 @@ var systemSettingData = {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(
@@ -273,7 +273,7 @@ var systemSettingData = {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(
@@ -305,7 +305,7 @@ var systemSettingData = {
                         //color: Color(0x11111111),
                         image: DecorationImage(
                             //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                             fit: BoxFit.fill),
                       ),
                       child: Center(

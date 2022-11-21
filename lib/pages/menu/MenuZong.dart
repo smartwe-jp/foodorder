@@ -433,7 +433,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               decoration: BoxDecoration(
                 image: new DecorationImage(
                   fit: BoxFit.fitWidth,
-                  image: AssetImage(GImage.getImageString(_shopInfo, "backbutton_top")),
+                  image: AssetImage(GImage.getImageString("imgpublic", "backbutton_top")),
                 ),
               ),
               child: Center(
@@ -654,12 +654,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       };
       Overlay.of(rootKey.currentContext).insert(entry);
     });*/
-    ToastCompoent.toast(context,msg: "",img: GImage.getImageString(_shopInfo, "checked_green"),showTime:500);
+    ToastCompoent.toast(context,msg: "",img: GImage.getImageString("imgpublic", "checked_green"),showTime:500);
 
   }
   _publicShowAddCartNew(){
 
-    ToastCompoent.toast(context,msg: "",img: GImage.getImageString(_shopInfo, "checked_green"),showTime:400,sound: "1");
+    ToastCompoent.toast(context,msg: "",img: GImage.getImageString("imgpublic", "checked_green"),showTime:400,sound: "1");
     //playQRScannerSound();
   }
   //公共展示菜品图片
@@ -1088,7 +1088,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                 image: DecorationImage(
                                   image:
-                                  (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString(_shopInfo, "price_tag")) :AssetImage(GImage.getImageString(_shopInfo, "price_subtraction_tag")),
+                                  (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                                   fit: BoxFit.fill,
                                 ),
                               ),
@@ -1299,7 +1299,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(10.0)),
                           image: DecorationImage(
-                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString(_shopInfo, "price_tag")) :AssetImage(GImage.getImageString(_shopInfo, "price_subtraction_tag")),
+                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -1522,7 +1522,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           image: DecorationImage(
 
                             image: AssetImage(
-                                GImage.getImageString(_shopInfo, "price_tag")),
+                                GImage.getImageString("imgpublic", "price_tag")),
                             fit: BoxFit.fill,
                           ),
                         ),
@@ -1832,7 +1832,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                 decoration: BoxDecoration(
                   image: new DecorationImage(
                     fit: BoxFit.fitWidth,
-                    image: AssetImage(GImage.getImageString(_shopInfo, "redPutong")),
+                    image: AssetImage(GImage.getImageString("imgpublic", "redPutong")),
                   ),
                   //设置圆角
                   borderRadius: new BorderRadius.circular((16.0)),
@@ -2342,13 +2342,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           decoration: BoxDecoration(
                             color: ColorsUtil.hexToColor("#078E42"),
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            /*image: new DecorationImage(
-                              fit: BoxFit.fitWidth,
-                              image: AssetImage(
-                                  'assets/images/public_dingshi_submit.png'),
-                            ),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),*/
+
                           ),
                           child: Text(
                               GString.getToString(
@@ -2727,13 +2721,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           decoration: BoxDecoration(
                             color: ColorsUtil.hexToColor("#078E42"),
                             borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            /*image: new DecorationImage(
-                              fit: BoxFit.fitWidth,
-                              image: AssetImage(
-                                  'assets/images/public_dingshi_submit.png'),
-                            ),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),*/
+
                           ),
                           child: Text(
                               GString.getToString(
@@ -3320,7 +3308,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               },
               child: Container(
                 width: ScreenAdapter.width(40),
-                child: Image.asset(GImage.getImageString(_shopInfo, "delOne"),
+                child: Image.asset(GImage.getImageString("imgpublic", "delOne"),
                     width: ScreenAdapter.width(30),
                     //height: ScreenAdapter.height(44),
                     fit: BoxFit.fill),
@@ -3394,7 +3382,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -3534,7 +3522,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                   children: [
                                     Container(
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "eatin"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "eatin"),
                                         width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(120),
                                         color:  ColorsUtil.hexToColor(Gcolor.mainBackground),),
@@ -3592,7 +3580,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                   children: [
                                     Container(
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "takeout"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "takeout"),
                                         width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(120),
                                         color: Colors.lightGreen,),

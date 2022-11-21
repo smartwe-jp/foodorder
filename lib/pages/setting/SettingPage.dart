@@ -815,7 +815,7 @@ class _SettingPageState extends State<SettingPage> {
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),

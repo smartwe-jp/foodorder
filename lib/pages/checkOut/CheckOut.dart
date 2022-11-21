@@ -284,7 +284,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                         Container(
                           //width: ScreenAdapter.width(280),
                             height: ScreenAdapter.height(480),
-                            child: Image.asset(GImage.getImageString(_shopInfo, "jingsuantag"),fit: BoxFit.fitHeight,height: ScreenAdapter.height(480),)),
+                            child: Image.asset(GImage.getImageString("imgpublic", "jingsuantag"),fit: BoxFit.fitHeight,height: ScreenAdapter.height(480),)),
                       ],
                     ),
                   )
@@ -379,7 +379,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -422,7 +422,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                 //width: ScreenAdapter.width(400),
                                 //margin: EdgeInsets.only(top: 60),
                                 height: ScreenAdapter.height(75),
-                                child: Image.asset(GImage.getImageString(_shopInfo, "error_public"),fit: BoxFit.fitHeight),
+                                child: Image.asset(GImage.getImageString("imgpublic", "error_public"),fit: BoxFit.fitHeight),
                               ),
                               Expanded(
                                   child: Container(
@@ -568,7 +568,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
                                     //alignment: Alignment.topCenter,
-                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                                       fit: BoxFit.fill),
                                 ),
                                 child: Center(
@@ -600,7 +600,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
                                     //alignment: Alignment.topCenter,
-                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                                       fit: BoxFit.fill),
                                 ),
                                 child: Center(
@@ -632,7 +632,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
                                     //alignment: Alignment.topCenter,
-                                      image: AssetImage(GImage.getImageString(_shopInfo, "home_button")),
+                                      image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                                       fit: BoxFit.fill),
                                 ),
                                 child: Center(

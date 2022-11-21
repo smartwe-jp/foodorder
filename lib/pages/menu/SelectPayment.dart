@@ -1,7 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import 'package:foodorder/services/ScreenAdapter.dart';
 
 import 'package:foodorder/config/color.dart';
@@ -9,6 +7,9 @@ import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/config/string.dart';
 import 'package:foodorder/services/showToast.dart';
+
+import 'package:foodorder/config/fontSize.dart';
+import 'package:foodorder/services/formatMoney.dart';
 
 class SelectPaymentPage extends StatefulWidget {
   Map arguments;
@@ -21,6 +22,7 @@ class SelectPaymentPage extends StatefulWidget {
         //this.mealType,
         this.isAllowPos,
         this.payment_method_num,
+        this.shopCartTotalPrice,
         this.onConfrimClick
       }) : super(key: key);
   final String checkLanguage;
@@ -30,6 +32,7 @@ class SelectPaymentPage extends StatefulWidget {
   //final bool mealType;
   final String isAllowPos;
   final String payment_method_num;
+  final String shopCartTotalPrice;
   final Function(bool, String, String, String) onConfrimClick;
 
   @override
@@ -43,7 +46,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _shopInfo = "kanran";
   bool _mealType = false;
   String _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用;
-  String _payment_method_num = "0"; //支付类型选择
+  String _payment_method_num = "0"; //支付类型选择 1现金 2扫码 3pos 4nfc
+  String _shopCartTotalPrice="0"; //合计总价
 
   @override
   void initState() {
@@ -56,6 +60,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     //_mealType = widget.mealType;
     _isAllowPos = widget.isAllowPos;
     _payment_method_num = widget.payment_method_num;
+    _shopCartTotalPrice = widget.shopCartTotalPrice;
 
   }
 
@@ -71,7 +76,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
           Container(
             color: ColorsUtil.hexToColor("#FFFFFF"),
             width: ScreenAdapter.width(1000),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(80),bottom: ScreenAdapter.height(0)),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(20),bottom: ScreenAdapter.height(0)),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
@@ -91,7 +96,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               fontWeight: FontWeight.w600,
                               fontSize: ScreenAdapter.fontSize(34.0)),
                         ),
-                        SizedBox(height: ScreenAdapter.height(15),),
+                        SizedBox(height: ScreenAdapter.height(30),),
                         /*Text(
                               //"堂食",
                               GString.getToString(this._checkLanguage, "menu_dingtype_title_tag"),
@@ -145,7 +150,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset((_dining_type_num == "1") ? GImage.getImageString(_shopInfo, "dining_in_checked") : GImage.getImageString(_shopInfo, "dining_in_nochecked"),
+                                      child: Image.asset((_dining_type_num == "1") ? GImage.getImageString("imgpublic", "dining_in_checked") : GImage.getImageString("imgpublic", "dining_in_nochecked"),
                                         //width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(140),
                                         fit: BoxFit.fitHeight,
@@ -208,7 +213,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset((_dining_type_num == "2") ? GImage.getImageString(_shopInfo, "dining_away_checked") : GImage.getImageString(_shopInfo, "dining_away_nochecked"),
+                                      child: Image.asset((_dining_type_num == "2") ? GImage.getImageString("imgpublic", "dining_away_checked") : GImage.getImageString("imgpublic", "dining_away_nochecked"),
                                         //width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(140),
                                         fit: BoxFit.fitHeight,
@@ -249,7 +254,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               fontWeight: FontWeight.w600,
                               fontSize: ScreenAdapter.fontSize(34.0)),
                         ),
-                        SizedBox(height: ScreenAdapter.height(20),),
+                        SizedBox(height: ScreenAdapter.height(30),),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
@@ -281,7 +286,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "payment_cash"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_cash"),
                                         //width: ScreenAdapter.width(150),
                                         height: ScreenAdapter.height(180),
                                         //color:  ColorsUtil.hexToColor(Gcolor.mainBackground),
@@ -333,7 +338,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "payment_qr"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_qr"),
                                         width: ScreenAdapter.width(245),
                                         //height: ScreenAdapter.height(100),
                                         //color: Colors.lightGreen,
@@ -390,7 +395,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "payment_card"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_card"),
                                         width: ScreenAdapter.width(220),
                                         //height: ScreenAdapter.height(100),
                                         //color: Colors.lightGreen,
@@ -442,7 +447,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString(_shopInfo, "payment_nfc"),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_nfc"),
                                         width: ScreenAdapter.width(200),
                                         //height: ScreenAdapter.height(200),
                                         //color: Colors.lightGreen,
@@ -470,11 +475,68 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                   ),
                 SizedBox(height: ScreenAdapter.height(20),),
                 Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(50),right: ScreenAdapter.width(50)),
+                  height: ScreenAdapter.height(100),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children: [
+                      Text(
+                        //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
+                        "合计",
+                        style: TextStyle(
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: ScreenAdapter.fontSize(40.0)),
+                      ),
+                      Container(
+                        decoration: BoxDecoration(
+                            color: Colors.white12,
+                            border: Border(
+                              bottom: BorderSide(color: Colors.black, width: 1.5),
+                              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                            )),
+                        child: RichText(
+                          text: TextSpan(
+                              text: "¥",
+                              //GString.getToString(this._checkLanguage, "show_price_front"),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(GFontSize
+                                    .menusettlementBottomPriceLeft),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                              ),
+                              children: [
+                                TextSpan(
+                                  text: formatMoney(_shopCartTotalPrice.toString()),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPrice),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                  ),
+                                ),
+                                TextSpan(
+                                  text:
+                                  "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceRight),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  ),
+                                ),
+                              ]),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                SizedBox(height: ScreenAdapter.height(20),),
+                Container(
                   //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                   height: ScreenAdapter.height(200),
                   color: ColorsUtil.hexToColor("#DCDCDC"),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       InkWell(
                         onTap: (){

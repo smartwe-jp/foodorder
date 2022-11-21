@@ -401,7 +401,7 @@ class _AttendancePageState extends State<AttendancePage> {
                             image: new DecorationImage(
                               alignment: Alignment.centerRight,
                               fit: BoxFit.fitHeight,
-                              image: AssetImage(GImage.getImageString("kanran", "qiandaobutton")),
+                              image: AssetImage(GImage.getImageString("imgpublic", "qiandaobutton")),
                             ),
                           ),
                           //打卡

@@ -1471,7 +1471,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 //width: ScreenAdapter.width(400),
                 margin: EdgeInsets.only(top: 60),
                 height: ScreenAdapter.height(200),
-                child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
               ),
             ),
           ],
@@ -1514,7 +1514,7 @@ class _SettlementPageState extends State<SettlementPage> {
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -1543,7 +1543,7 @@ class _SettlementPageState extends State<SettlementPage> {
             Container(
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString(_shopInfo, "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -1963,7 +1963,7 @@ class _SettlementPageState extends State<SettlementPage> {
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         image: new DecorationImage(
-                          image: AssetImage(GImage.getImageString(_shopInfo, "settlement_back")),
+                          image: AssetImage(GImage.getImageString("imgpublic", "settlement_back")),
                         ),
                       ),
                       child: Text(GString.getToString(this._checkLanguage, "settlement_back"),
@@ -2024,7 +2024,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           height: ScreenAdapter.height(140),
                           child: Column(
                             children: [
-                              Image.asset(GImage.getImageString(_shopInfo, "settlement_cash"),
+                              Image.asset(GImage.getImageString("imgpublic", "settlement_cash"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
@@ -2043,7 +2043,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             height: ScreenAdapter.height(140),
                             child: Column(
                               children: [
-                                Image.asset(GImage.getImageString(_shopInfo, "settlement_paypay"),
+                                Image.asset(GImage.getImageString("imgpublic", "settlement_paypay"),
                                     width: ScreenAdapter.width(85),
                                     height: ScreenAdapter.height(85)),
                                 SizedBox(height: ScreenAdapter.height(5)),
@@ -2063,7 +2063,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             child: Column(
                               children: [
                                 Image.asset(
-                                    GImage.getImageString(_shopInfo, "settlement_wechat"),
+                                    GImage.getImageString("imgpublic", "settlement_wechat"),
                                     width: ScreenAdapter.width(85),
                                     height: ScreenAdapter.height(85)
                                 ),
@@ -2083,7 +2083,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           height: ScreenAdapter.height(140),
                           child: Column(
                             children: [
-                              Image.asset(GImage.getImageString(_shopInfo, "settlement_alipay"),
+                              Image.asset(GImage.getImageString("imgpublic", "settlement_alipay"),
                                   width: ScreenAdapter.width(85),
                                   height: ScreenAdapter.height(85)),
                               SizedBox(height: ScreenAdapter.height(5)),
@@ -2102,7 +2102,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             height: ScreenAdapter.height(140),
                             child: Column(
                               children: [
-                                Image.asset(GImage.getImageString(_shopInfo, "settlement_alipay"),
+                                Image.asset(GImage.getImageString("imgpublic", "settlement_alipay"),
                                     width: ScreenAdapter.width(85),
                                     height: ScreenAdapter.height(85)),
                                 SizedBox(height: ScreenAdapter.height(5)),
@@ -2166,7 +2166,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         child: Container(
                             //width: ScreenAdapter.width(280),
                             height: ScreenAdapter.height(300),
-                            child: Image.asset(GImage.getImageString(_shopInfo, "xianjin"),fit: BoxFit.fitHeight,)),
+                            child: Image.asset(GImage.getImageString("imgpublic", "xianjin"),fit: BoxFit.fitHeight,)),
                       ),
                       SizedBox(
                         width: ScreenAdapter.width(30),
@@ -2182,7 +2182,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           //width: ScreenAdapter.width(280),
                             height: ScreenAdapter.height(300),
                             child: Image.asset(
-                                GImage.getImageString(_shopInfo, "saoma"),fit: BoxFit.fitHeight,)),
+                                GImage.getImageString("imgpublic", "saoma"),fit: BoxFit.fitHeight,)),
                       ),
 
 
