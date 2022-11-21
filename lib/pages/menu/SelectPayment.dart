@@ -90,7 +90,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       children: [
                         Text(
                           //"堂食",
-                          GString.getToString(this._checkLanguage, "menu_dingtype_title"),
+                          GString.getToString(this._checkLanguage, "select_payment_dining_title"),
                           style: TextStyle(
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               fontWeight: FontWeight.w600,
@@ -248,7 +248,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       children: [
                         Text(
                           //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                          "请选择支付方式",
+                          GString.getToString(this._checkLanguage, "select_payment_type_title"),
                           style: TextStyle(
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               fontWeight: FontWeight.w600,
@@ -296,8 +296,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //SizedBox(height: ScreenAdapter.height(20),),
                                     Text(
                                       //"现金",
-                                      //GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
-                                      "现金",
+                                      GString.getToString(this._checkLanguage, "settlement_top_title_cash"),
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
@@ -348,8 +347,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //SizedBox(height: ScreenAdapter.height(10),),
                                     Text(
                                       //"扫码",
-                                      //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                      "扫码",
+                                      GString.getToString(this._checkLanguage, "settlement_top_title_qr"),
                                       style: TextStyle(
                                           color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
@@ -405,8 +403,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //SizedBox(height: ScreenAdapter.height(20),),
                                     Text(
                                       //"信用卡",
-                                      //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                      "信用卡",
+                                      GString.getToString(this._checkLanguage, "settlement_top_title_card"),
                                       style: TextStyle(
                                           color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
@@ -457,8 +454,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //SizedBox(height: ScreenAdapter.height(20),),
                                     Text(
                                       //"信用卡",
-                                      //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                      "nfc卡",
+                                      GString.getToString(this._checkLanguage, "settlement_top_title_nfc"),
                                       style: TextStyle(
                                           color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
@@ -481,8 +477,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
-                        //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                        "合计",
+                        GString.getToString(this._checkLanguage, "settlement_total_price"),
                         style: TextStyle(
                             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                             fontWeight: FontWeight.w600,
@@ -556,7 +551,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
                           child: Text(
-                            "戻る",
+                            GString.getToString(this._checkLanguage, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
@@ -570,11 +565,11 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                           try {
                             //_doSubmitOrder();
                             if(_dining_type =="3" && _dining_type_num == "0"){
-                              showToast("请选择就餐方式");
+                              showToast(GString.getToString(this._checkLanguage, "select_payment_dining_title"));
                               return;
                             }
                             if(_isAllowPos == "1" &&_payment_method_num == "0"){
-                              showToast("请选择支付方式");
+                              showToast(GString.getToString(this._checkLanguage, "select_payment_type_title"));
                               return;
                             }
                             if((_dining_type_num != "0" && _dining_type =="3") || (_isAllowPos == "1" &&_payment_method_num != "0")){

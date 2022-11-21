@@ -42,8 +42,6 @@ class GImage{
         "takeout":"assets/images/public/takeout.png",
         "jingsuantag":"assets/images/public/jingsuantag.jpg",
         "error_public":"assets/images/public/error_public.jpg",
-        "takeaway":"assets/images/public/takeaway.png",
-        "foodbar":"assets/images/public/foodbar.png",
         "payment_cash":"assets/images/public/payment_cash.png",
         "payment_qr":"assets/images/public/payment_qr.png",
         "payment_card":"assets/images/public/payment_card.png",
@@ -52,6 +50,14 @@ class GImage{
         "dining_away_checked":"assets/images/public/dining_away_checked.png",
         "dining_in_nochecked":"assets/images/public/dining_in_nochecked.png",
         "dining_in_checked":"assets/images/public/dining_in_checked.png",
+        "settlement_top_cash":"assets/images/public/settlement_top_cash.png",
+        "settlement_top_qr":"assets/images/public/settlement_top_qr.png",
+        "settlement_top_card":"assets/images/public/settlement_top_card.png",
+        "settlement_top_nfc":"assets/images/public/settlement_top_nfc.png",
+        "settlement_top_lead_cash":"assets/images/public/settlement_top_lead_cash.jpg",
+        "settlement_top_lead_qr":"assets/images/public/settlement_top_lead_qr.jpg",
+        "settlement_top_lead_card":"assets/images/public/settlement_top_lead_card.jpg",
+        "settlement_top_lead_nfc":"assets/images/public/settlement_top_lead_nfc.jpg",
 
       };
     }

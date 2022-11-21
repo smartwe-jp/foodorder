@@ -65,6 +65,14 @@ class GString{
         "show_put_money_error":"続けてコインを入れてください",
         "show_please_select_error":"メニューをお選びください",
 
+        "settlement_top_title_cash":"現金",
+        "settlement_top_title_qr":"バーコード決済",
+        "settlement_top_title_card":"クレジットカード",
+        "settlement_top_title_nfc":"タッチ決済",
+
+        "select_payment_dining_title":"店内または持ち帰りをお選びください",
+        "select_payment_type_title":"支払い方法をお選びください",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -126,6 +134,14 @@ class GString{
         "show_put_money_error":"请继续投币",
         "show_please_select_error":"请选择",
 
+        "settlement_top_title_cash":"现金",
+        "settlement_top_title_qr":"扫码支付",
+        "settlement_top_title_card":"信用卡",
+        "settlement_top_title_nfc":"NFC支付",
+
+        "select_payment_dining_title":"请选择堂食还是打包",
+        "select_payment_type_title":"请选择支付方式",
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -186,6 +202,14 @@ class GString{
         "show_server_error":"System error. Please contact our staff.",
         "show_put_money_error":"请继续投币",
         "show_please_select_error":"Please complete your order.",
+
+        "settlement_top_title_cash":"Cash",
+        "settlement_top_title_qr":"Code payment",
+        "settlement_top_title_card":"Credit card",
+        "settlement_top_title_nfc":"Tap to pay",
+
+        "select_payment_dining_title":"Please choose Eat in or Take out",
+        "select_payment_type_title":"Please choose your payment method",
       };
     }
 
