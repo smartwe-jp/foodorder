@@ -1211,11 +1211,11 @@ class _SettlementPageState extends State<SettlementPage> {
   gotonewMenuPage(){
     EasyLoading.dismiss();
     Navigator.pop(context);
-    if(_machineMode == "1"){
+    /*if(_machineMode == "1"){
       Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
     }else{
       Navigator.pushNamed(context, '/checkOutPage');
-    }
+    }*/
   }
 
   gotonewSettingPage(){
@@ -3088,6 +3088,11 @@ class _SettlementPageState extends State<SettlementPage> {
                       ),
                     ),
                     SizedBox(width: ScreenAdapter.width(180)),
+                    Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(270),
+                      height: ScreenAdapter.height(100),
+                    )
                   ],
                 ),
               ),

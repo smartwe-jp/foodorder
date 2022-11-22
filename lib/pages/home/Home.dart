@@ -196,6 +196,7 @@ var systemSettingData = {
   _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {
     var dialogContext = context;
     await showDialog(
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: dialogContext,
         builder: (BuildContext context) {
 

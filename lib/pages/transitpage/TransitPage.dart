@@ -95,20 +95,21 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
+        var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
         var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-        //var _showIsPos = shopData["linePayChannelMap"]["showIsPos"] != null ? shopData["linePayChannelMap"]["showIsPos"] :false;
+        var _showCreditCard = shopData["linePayChannelMap"]["CreditCard"] != null ? shopData["linePayChannelMap"]["CreditCard"] :false;
         var machineActivateData = {
+          "showCash":_showCash,
           "showWechat":_showWechat,
           "showAlipay":_showAlipay,
           "showPayPay":_showPayPay,
-          //"showIsPos":_showPayPay,
-          "showIsPos":true,
+          "showCreditCard":_showCreditCard,
         };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
 

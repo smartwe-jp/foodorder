@@ -40,6 +40,8 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
 
+import 'SelectPayment.dart';
+
 class MenuZongPage extends StatefulWidget {
   Map arguments;
 
@@ -92,10 +94,20 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   //就餐类型
   var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
 
+  var _mealType = false; //用于判断下单
+  var _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用
+  var _pos_ip = "";
+  var _pos_port = "";
+
+  var _payment_method_num = "0"; //支付类型选择
+
+
   //顶部展示支付类型
   var _showWechat = true;
   var _showAlipay = true;
   var _showPayPay = true;
+  var _showCreditCard = true;
+  var _showCash = true;
 
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 5;
@@ -106,6 +118,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
     this._checkLanguage = widget.arguments['checkLanguage'];
     this._shopInfo = widget.arguments['shopInfo'];
+    _mealType = widget.arguments["mealType"];
     _getMachineInfo();
 
 
@@ -238,8 +251,22 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
     });
+    _getMachineActivateInfo();
+  }
+  //获取展示支付方式
+  _getMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+
+    setState(() {
+      this._showCash = systemSettingInfo['showCash'];
+      this._showWechat = systemSettingInfo['showWechat'];
+      this._showAlipay = systemSettingInfo['showAlipay'];
+      this._showPayPay = systemSettingInfo['showPayPay'];
+      this._showCreditCard = systemSettingInfo['showCreditCard'];
+    });
     _getBookingBootMenu();
   }
+
   //获取菜单
   _getBookingBootMenu() {
     var formData = {
@@ -265,11 +292,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
 
         //保存支付页面顶部图标
-        setState(() {
+        /*setState(() {
           _showWechat = shopData['linePayChannelMap']['Wechat'];
           _showAlipay = shopData['linePayChannelMap']['Alipay'];
           _showPayPay = shopData['linePayChannelMap']['PayPay'];
-        });
+        });*/
 
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
@@ -3238,13 +3265,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                   return false;
                                 }
 
-
-                                if(_dining_type =="1" || _dining_type =="2"){
+                                _showSelectMealTypeAndPaymentMethodDialog();
+                                /*if(_dining_type =="1" || _dining_type =="2"){
                                   var _mealType = (_dining_type == "2") ? true: false;
                                   _doSubmitOrder(_mealType);
                                 }else{
                                   _selectMealType();
-                                }
+                                }*/
 
 
                               },
@@ -3392,7 +3419,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   }
   //提交订单
-  _doSubmitOrder(mealType){
+  _doSubmitOrder(){
     if(_machineCode !=""){
       _showOrderEasyLoading();
 
@@ -3428,7 +3455,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout":mealType
+        "takeout":_mealType
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
@@ -3440,12 +3467,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
                 "machineCode": this._machineCode,
-                "showWechat":_showWechat,
-                "showAlipay":_showAlipay,
-                "showPayPay":_showPayPay,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
                 "machineMode":"1",
+                "isAllowPos":_isAllowPos,
+                "posIp":_pos_ip,
+                "posPort":_pos_port,
+                "paymentMethod":_payment_method_num
               });
 
         }else{
@@ -3456,173 +3484,55 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       });
     }
   }
-  _selectMealType(){
-    showDialog(
+  //选择食用方式和支付方式
+  _showSelectMealTypeAndPaymentMethodDialog() async {
+    await showDialog(
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (BuildContext context) {
-          return Container(
-            width: ScreenAdapter.width(950),
-            child: SimpleDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                /*title: Align(
-                    alignment: Alignment.center,
-                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
-                ),*/
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(30),top: ScreenAdapter.height(25),right: ScreenAdapter.width(30),bottom: ScreenAdapter.height(30)),
-                    //width: ScreenAdapter.width(650),
 
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          //"堂食",
-                          GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                          style: TextStyle(
-                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                              fontWeight: FontWeight.w600,
-                              fontSize: ScreenAdapter.fontSize(34.0)),
-                        ),
-                        SizedBox(height: ScreenAdapter.height(15),),
-                        Text(
-                          //"堂食",
-                          GString.getToString(this._checkLanguage, "menu_dingtype_title_tag"),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                              fontWeight: FontWeight.w400,
-                              fontSize: ScreenAdapter.fontSize(22.0)),
-                        ),
-                        SizedBox(height: ScreenAdapter.height(20),),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: <Widget>[
-                            Container(
-                              width: ScreenAdapter.width(315),
-                              height: ScreenAdapter.height(290),
-                              padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                              decoration: BoxDecoration(
-                                //设置边框
-                                //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                //背景颜色
-                                color: Colors.white,
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((5.0)),
-                                //设置阴影
-                                boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                              ),
-                              alignment: Alignment.center,
-                              child: TextButton(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString("imgpublic", "eatin"),
-                                        width: ScreenAdapter.width(120),
-                                        height: ScreenAdapter.height(120),
-                                        color:  ColorsUtil.hexToColor(Gcolor.mainBackground),),
-                                    ),
-                                    //SizedBox(height: ScreenAdapter.height(20),),
-                                    Text(
-                                      //"堂食",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
-                                      style: TextStyle(
-                                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: ScreenAdapter.fontSize(34.0)),
-                                    ),
-                                    /*SizedBox(height: ScreenAdapter.height(10),),
-                                    Text(
-                                      //"堂食",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_eatin_tag"),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                          fontWeight: FontWeight.w400,
-                                          fontSize: ScreenAdapter.fontSize(20.0)),
-                                    ),*/
-                                  ],
-                                ),
-                                onPressed: () async {
-                                  //print("堂食");
-                                  var _mealType = false;
-                                  _doSubmitOrder(_mealType);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                            SizedBox(
-                              width: ScreenAdapter.width(15),
-                            ),
-                            Container(
-                              width: ScreenAdapter.width(315),
-                              height: ScreenAdapter.height(290),
-                              padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                              decoration: BoxDecoration(
-                                //设置边框
-                                //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                //背景颜色
-                                color: Colors.white,
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((5.0)),
-                                //设置阴影
-                                boxShadow: [BoxShadow(color: Colors.grey, offset: Offset(1.0, 1.0), blurRadius: 1.0, spreadRadius: 3.0), ],
-                              ),
-                              child: TextButton(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    Container(
-                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString("imgpublic", "takeout"),
-                                        width: ScreenAdapter.width(120),
-                                        height: ScreenAdapter.height(120),
-                                        color: Colors.lightGreen,),
-                                    ),
-                                    //SizedBox(height: ScreenAdapter.height(20),),
-                                    Text(
-                                      //"外带",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
-                                      style: TextStyle(
-                                          color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: ScreenAdapter.fontSize(34.0)),
-                                    ),
-                                    /*SizedBox(height: ScreenAdapter.height(10),),
-                                    Text(
-                                      //"堂食",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_takeout_tag"),
-                                      textAlign: TextAlign.center,
-                                      style: TextStyle(
-                                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                          fontWeight: FontWeight.w500,
-                                          fontSize: ScreenAdapter.fontSize(20.0)),
-                                    ),*/
-                                  ],
-                                ),
-                                onPressed: () async {
+          return SelectPaymentPage(
+              checkLanguage: _checkLanguage,
+              shopInfo:_shopInfo,
+              //mealType:_mealType,
+              isAllowPos:_isAllowPos,
+              payment_method_num:_payment_method_num,
+              showCash:this._showCash,
+              showWechat:this._showWechat,
+              showAlipay:this._showAlipay,
+              showPayPay:this._showPayPay,
+              showCreditCard:this._showCreditCard,
+              shopCartTotalPrice:_shopCartTotalPrice,
+              onConfrimClick: (String isAllowPos, String payment_method_num) {
+                print(isAllowPos);
+                print(payment_method_num);
+                setState(() {
+                  _isAllowPos = isAllowPos;
+                  _payment_method_num = payment_method_num;
+                });
+                if(_payment_method_num == "3" || _payment_method_num == "4"){
+                  _getPosSettingInfo();
+                }else{
+                  _doSubmitOrder();
+                }
 
-                                  var _mealType = true;
-                                  _doSubmitOrder(_mealType);
-                                  Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]
-            ),
+              },
+              onCancelClick: (String isBack){
+                if(isBack == "back"){
+
+                }
+              }
           );
         });
+  }
+
+  _getPosSettingInfo() async {
+    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    setState(() {
+      _pos_ip = posSettingInfo['posIp'];
+      _pos_port = posSettingInfo['posPort'];
+    });
+    _doSubmitOrder();
   }
 
   //清空购物车弹出提示、

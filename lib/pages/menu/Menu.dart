@@ -106,7 +106,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _showWechat = true;
   var _showAlipay = true;
   var _showPayPay = true;
-  var _showIsPos = true;
+  var _showCreditCard = true;
+  var _showCash = true;
 
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 5;
@@ -220,8 +221,22 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _isAllowPos = systemSettingInfo['isAllowPos'];
-    });print(_dining_type);
-    print(_isAllowPos);
+    });
+    _getMachineActivateInfo();
+
+  }
+
+  //获取展示支付方式
+  _getMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+
+    setState(() {
+      this._showCash = systemSettingInfo['showCash'];
+      this._showWechat = systemSettingInfo['showWechat'];
+      this._showAlipay = systemSettingInfo['showAlipay'];
+      this._showPayPay = systemSettingInfo['showPayPay'];
+      this._showCreditCard = systemSettingInfo['showCreditCard'];
+    });
     _getBookingBootMenu();
   }
 
@@ -250,14 +265,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
 
         //保存支付页面顶部图标
-        setState(() {
+        /*setState(() {
           //_shopCode = shopData["shopCode"];
           _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
           _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
           _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
           //_showIsPos = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
           _showIsPos = true;
-        });
+        });*/
 
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
@@ -3108,11 +3123,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 }
 
                                 //点餐方式只有一种并且未开pos
-                                if(_isAllowPos == "0"){
+                                /*if(_isAllowPos == "0"){
                                   _doSubmitOrder();
-                                }else{
+                                }else{*/
                                   _showSelectMealTypeAndPaymentMethodDialog();
-                                }
+                                //}
 
 
 
@@ -3298,7 +3313,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": _mealType,
-      };print(formData);
+      };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
@@ -3333,6 +3348,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //选择食用方式和支付方式
   _showSelectMealTypeAndPaymentMethodDialog() async {
     await showDialog(
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (BuildContext context) {
 
@@ -3342,6 +3358,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             //mealType:_mealType,
             isAllowPos:_isAllowPos,
             payment_method_num:_payment_method_num,
+            showCash:this._showCash,
+            showWechat:this._showWechat,
+            showAlipay:this._showAlipay,
+            showPayPay:this._showPayPay,
+            showCreditCard:this._showCreditCard,
             shopCartTotalPrice:_shopCartTotalPrice,
             onConfrimClick: (String isAllowPos, String payment_method_num) {
                 print(isAllowPos);
@@ -3357,6 +3378,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 }
 
             },
+            onCancelClick: (String isBack){
+              if(isBack == "back"){
+
+              }
+            }
           );
         });
   }

@@ -24,6 +24,8 @@ import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/config/color.dart';
 import 'package:foodorder/pages/checkOut/Appointment.dart';
 
+import '../menu/SelectPayment.dart';
+
 class CheckOutPage extends StatefulWidget {
   CheckOutPage({Key key}) : super(key: key);
 
@@ -57,6 +59,22 @@ class _CheckOutPageState extends State<CheckOutPage> {
   ];
   var _selectTableType = "A";
   var _selectManyPeople = 1;
+
+  var _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用
+  var _pos_ip = "";
+  var _pos_port = "";
+
+  var _payment_method_num = "0"; //支付类型选择
+
+  //顶部展示支付类型
+  var _showWechat = true;
+  var _showAlipay = true;
+  var _showPayPay = true;
+  var _showCreditCard = true;
+  var _showCash = true;
+
+  var _orderId = "";
+  var _totlaPrice = "0";
 
   @override
   void initState() {
@@ -207,7 +225,20 @@ class _CheckOutPageState extends State<CheckOutPage> {
     });
 
 
+    _getMachineActivateInfo();
+  }
 
+  //获取展示支付方式
+  _getMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+
+    setState(() {
+      this._showCash = systemSettingInfo['showCash'];
+      this._showWechat = systemSettingInfo['showWechat'];
+      this._showAlipay = systemSettingInfo['showAlipay'];
+      this._showPayPay = systemSettingInfo['showPayPay'];
+      this._showCreditCard = systemSettingInfo['showCreditCard'];
+    });
   }
 
 
@@ -329,13 +360,18 @@ class _CheckOutPageState extends State<CheckOutPage> {
       var formData = {
         "language": this._checkLanguage,
         "machineCode": _tableCode
-      };
+      };print(formData);
       request('shopOrderTableNum', method: 'GET', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
 
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          Navigator.pushNamed(context, '/settlement',
+          setState(() {
+            _orderId = response["data"]["orderId"].toString();
+            _totlaPrice = response["data"]["totalPrice"].toString();
+          });
+          _showSelectMealTypeAndPaymentMethodDialog();
+          /*Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
@@ -346,7 +382,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 "orderId" : response["data"]["orderId"],
                 "machineMode":"2",
                 //"totalPrice" : orderTotlaPrice.toString(),
-              });
+              });*/
           //Navigator.pop(context);
 
         }else{
@@ -363,6 +399,76 @@ class _CheckOutPageState extends State<CheckOutPage> {
         }
       });
     }
+  }
+
+  //选择食用方式和支付方式
+  _showSelectMealTypeAndPaymentMethodDialog() async {
+
+    await showDialog(
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
+        context: context,
+        builder: (BuildContext context) {
+
+          return SelectPaymentPage(
+            checkLanguage: _checkLanguage,
+            shopInfo:_shopInfo,
+            //mealType:_mealType,
+            isAllowPos:_isAllowPos,
+            payment_method_num:_payment_method_num,
+            showCash:this._showCash,
+            showWechat:this._showWechat,
+            showAlipay:this._showAlipay,
+            showPayPay:this._showPayPay,
+            showCreditCard:this._showCreditCard,
+            shopCartTotalPrice:_totlaPrice,
+            onConfrimClick: (String isAllowPos, String payment_method_num) {
+              print(isAllowPos);
+              print(payment_method_num);
+              setState(() {
+                _isAllowPos = isAllowPos;
+                _payment_method_num = payment_method_num;
+              });
+              if(_payment_method_num == "3" || _payment_method_num == "4"){
+                _getPosSettingInfo();
+              }else{
+                _goToSettlement();
+              }
+
+            },
+            onCancelClick: (String isBack){
+              if(isBack == "back"){
+                setState(() {
+                  _scanQrCodeController.text = "";
+                  _tableCode = "";
+                });
+              }
+            }
+          );
+        });
+  }
+
+  _getPosSettingInfo() async {
+    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    setState(() {
+      _pos_ip = posSettingInfo['posIp'];
+      _pos_port = posSettingInfo['posPort'];
+    });
+    _goToSettlement();
+  }
+  _goToSettlement(){
+    Navigator.pushNamed(context, '/settlement',
+        arguments: {
+          "checkLanguage": this._checkLanguage,
+          "shopInfo":_shopInfo,
+          "machineCode": this._machineCode,
+          "orderId" : _orderId,
+          "totalPrice" : _totlaPrice,
+          "machineMode":"2",
+          "isAllowPos":_isAllowPos,
+          "posIp":_pos_ip,
+          "posPort":_pos_port,
+          "paymentMethod":_payment_method_num
+        });
   }
 
   _showOrderEasyLoading(){

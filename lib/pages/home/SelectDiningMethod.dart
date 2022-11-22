@@ -109,7 +109,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_dining_type_num == "1") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Column(
@@ -161,7 +161,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_dining_type_num == "2") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Column(

@@ -20,16 +20,28 @@ class SelectPaymentPage extends StatefulWidget {
         //this.mealType,
         this.isAllowPos,
         this.payment_method_num,
+        this.showCash,
+        this.showWechat,
+        this.showAlipay,
+        this.showPayPay,
+        this.showCreditCard,
         this.shopCartTotalPrice,
-        this.onConfrimClick
+        this.onConfrimClick,
+        this.onCancelClick
       }) : super(key: key);
   final String checkLanguage;
   final String shopInfo;
   //final bool mealType;
   final String isAllowPos;
   final String payment_method_num;
+  final bool showCash;
+  final bool showWechat;
+  final bool showAlipay;
+  final bool showPayPay;
+  final bool showCreditCard;
   final String shopCartTotalPrice;
   final Function(String, String) onConfrimClick;
+  final Function(String) onCancelClick;
 
   @override
   _SelectPaymentPageState createState() => _SelectPaymentPageState();
@@ -43,6 +55,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _payment_method_num = "0"; //支付类型选择 1现金 2扫码 3pos 4nfc
   String _shopCartTotalPrice="0"; //合计总价
 
+  var _showWechat = true;
+  var _showAlipay = true;
+  var _showPayPay = true;
+  var _showCreditCard = true;
+  var _showCash = true;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -53,6 +71,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _isAllowPos = widget.isAllowPos;
     _payment_method_num = widget.payment_method_num;
     _shopCartTotalPrice = widget.shopCartTotalPrice;
+
+    _showWechat = widget.showWechat;
+    _showAlipay = widget.showAlipay;
+    _showPayPay = widget.showPayPay;
+    _showCreditCard = widget.showCreditCard;
+    _showCash = widget.showCash;
 
   }
 
@@ -92,6 +116,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
+                            if(_showCash == true)
                             InkWell(
                               onTap: (){
                                 setState(() {
@@ -113,7 +138,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_payment_method_num == "1") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Column(
@@ -147,6 +172,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                             SizedBox(
                               width: ScreenAdapter.width(15),
                             ),
+                            if(_showAlipay == true || _showWechat == true || _showPayPay == true)
                             InkWell(
                               onTap: (){
                                 setState(() {
@@ -168,13 +194,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_payment_method_num == "2") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
+                                    /*Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                       child: Image.asset(GImage.getImageString("imgpublic", "payment_qr"),
@@ -183,6 +209,44 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         //color: Colors.lightGreen,
                                         fit: BoxFit.fitWidth,
                                       ),
+                                    ),*/
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        if(_showAlipay == true)
+                                        Container(
+                                          height: ScreenAdapter.height(210),
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_alipay"),
+                                            width: ScreenAdapter.width(90),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+                                        if(_showWechat == true)
+                                          Container(
+                                            height: ScreenAdapter.height(210),
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                            child: Image.asset(GImage.getImageString("imgpublic", "settlement_wechat"),
+                                              width: ScreenAdapter.width(90),
+                                              //height: ScreenAdapter.height(100),
+                                              //color: Colors.lightGreen,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
+                                        if(_showPayPay == true)
+                                          Container(
+                                            height: ScreenAdapter.height(210),
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                            child: Image.asset(GImage.getImageString("imgpublic", "settlement_paypay"),
+                                              width: ScreenAdapter.width(90),
+                                              //height: ScreenAdapter.height(100),
+                                              //color: Colors.lightGreen,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(10),),
                                     Text(
@@ -202,7 +266,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                         SizedBox(
                           height: ScreenAdapter.height(50),
                         ),
-                        if(_isAllowPos =="1")
+                        if(_showCreditCard == true && _isAllowPos =="1")
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
@@ -228,7 +292,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_payment_method_num == "3") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -282,7 +346,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: (_payment_method_num == "4") ? ColorsUtil.hexToColor("#844811"):ColorsUtil.hexToColor("#DCDCDC"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 10.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -383,7 +447,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       InkWell(
                         onTap: (){
                           try {
-                            Navigator.pop(context);
+                            Navigator.pop(pcontext);
+                            widget.onCancelClick("back");
                           } catch (_) {}
                         },
                         child: Container(
