@@ -153,6 +153,23 @@ public class PrintService  {
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
 
+        if(oh.getPayMethod() != null && oh.getPayMethod().length() > 0){
+            mUsbDriver.write(PrintCmd.PrintFeedline(1));
+            mUsbDriver.write(PrintCmd.SetAlignment(1));
+            mUsbDriver.write(PrintCmd.SetSizechar(0,0,1,0));
+            m_sbData = new StringBuilder(oh.getPayMethod());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+            mUsbDriver.write(PrintCmd.SetAlignment(0));
+            mUsbDriver.write(PrintCmd.SetSizechar(0,0,0,0));
+            m_sbData = new StringBuilder(oh.getMemberNo());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            m_sbData = new StringBuilder(oh.getPayDate());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        }
+
+
+
         PrintFeedDot(10);
 
         mUsbDriver.write(PrintCmd.PrintFeedline(5));
@@ -343,6 +360,20 @@ public class PrintService  {
         m_sbData = new StringBuilder(oh.getOrderDate());
         mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
 
+        if(oh.getPayMethod() != null && oh.getPayMethod().length() > 0){
+            mUsbDriver.write(PrintCmd.PrintFeedline(1));
+            mUsbDriver.write(PrintCmd.SetAlignment(1));
+            mUsbDriver.write(PrintCmd.SetSizechar(0,0,1,0));
+            m_sbData = new StringBuilder(oh.getPayMethod());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+
+            mUsbDriver.write(PrintCmd.SetAlignment(0));
+            mUsbDriver.write(PrintCmd.SetSizechar(0,0,0,0));
+            m_sbData = new StringBuilder(oh.getMemberNo());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+            m_sbData = new StringBuilder(oh.getPayDate());
+            mUsbDriver.write(PrintCmd.PrintString(m_sbData.toString(), 0));
+        }
 
 
         PrintFeedDot(10);

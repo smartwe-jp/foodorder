@@ -17,6 +17,8 @@ import 'package:get/get.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/services/Storage.dart';
 
+import 'SelectDiningMethod.dart';
+
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
 
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   var _shopInfo = "kanran";
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
   var _machineMode = "1";//1 券卖机  2 精算机
+  var _dining_type = "0"; //就餐类型选择 1店内 2外卖 3全可以
 
   @override
   void initState() {
@@ -45,11 +48,8 @@ class _HomePageState extends State<HomePage> {
     _getShopInfo();
 
     //系统配置
-    //_getMenuDirection();
     _getSystemSettingInfo();
 
-    //进入页面后打开现金机
-    //OpenPayCube();
 
     //监听增加打开现金机的广播
     eventBus.on<PayCubeEvent>().listen((event) {
@@ -167,18 +167,6 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
-  //获取菜单方向
-  _getMenuDirection() async {
-    var menuDirectionInfo = await HomeServices.getMenuDirectionInfo();
-    if (menuDirectionInfo != "") {
-      setState(() {
-        _menu_direction = menuDirectionInfo;
-      });
-    }else{
-      Storage.setString('menuDirection', "1");//1 默认顶部横向  2 左侧纵向
-    }
-  }
-
   _getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
@@ -197,11 +185,38 @@ var systemSettingData = {
 */
     setState(() {
       _menu_direction = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
+      _dining_type = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
     });
 
 
 
   }
+
+  //选择食用方式和支付方式
+  _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {
+    var dialogContext = context;
+    await showDialog(
+        context: dialogContext,
+        builder: (BuildContext context) {
+
+          return SelectDiningMethodPage(
+            checkLanguage: checkedLanguage,
+            dining_type: _dining_type,
+            shopInfo:_shopInfo,
+            menu_direction:_menu_direction,
+            onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
+              print(mealType);
+              print(dining_type_num);
+              print(menuDirection);
+
+              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": checkedLanguage,"shopInfo":_shopInfo,"mealType":mealType});
+
+            },
+          );
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -227,11 +242,15 @@ var systemSettingData = {
                   InkWell(
                     onTap: () {
                       //_clearCartList();
-                      if(_menu_direction == "1"){
-                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
+                      if(_dining_type =="1" || _dining_type =="2"){
+                        var mealType = (_dining_type == "2") ? true: false;
+                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
+
                       }else{
-                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "JP","shopInfo":_shopInfo});
+                        _showSelectMealTypeDialog("JP", _menu_direction);
                       }
+
 
                     },
                     child: Container(
@@ -259,11 +278,14 @@ var systemSettingData = {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      //_clearCartList();
-                      if(_menu_direction == "1"){
-                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
+
+                      if(_dining_type =="1" || _dining_type =="2"){
+                        var mealType = (_dining_type == "2") ? true: false;
+                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
+
                       }else{
-                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "CH","shopInfo":_shopInfo});
+                        _showSelectMealTypeDialog("CH", _menu_direction);
                       }
                     },
                     child: Container(
@@ -291,11 +313,13 @@ var systemSettingData = {
                   SizedBox(width:ScreenAdapter.width(35)),
                   InkWell(
                     onTap: () {
-                      //_clearCartList();
-                      if(_menu_direction == "1"){
-                        Navigator.pushNamed(context, '/menuPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
+                      if(_dining_type =="1" || _dining_type =="2"){
+                        var mealType = (_dining_type == "2") ? true: false;
+                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
+
                       }else{
-                        Navigator.pushNamed(context, '/menuZongPage',arguments: {"checkLanguage": "EN","shopInfo":_shopInfo});
+                        _showSelectMealTypeDialog("EN", _menu_direction);
                       }
                     },
                     child: Container(

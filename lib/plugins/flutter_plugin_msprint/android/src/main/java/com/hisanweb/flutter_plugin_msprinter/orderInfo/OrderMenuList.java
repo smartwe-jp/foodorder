@@ -28,6 +28,9 @@ public class OrderMenuList {
     private String taxRate0Str;
     private String taxRate1Str;
     private String line4Rate;
+    private String payDate;
+    private String memberNo;
+    private String payMethod;
 
     private List<CategoryVos> categoryVos;
 
@@ -214,6 +217,25 @@ public class OrderMenuList {
     public void setLine4Rate(String line4Rate) {
         this.line4Rate = line4Rate;
     }
+
+    public String getPayDate() {
+        return payDate;
+    }
+
+    public void setPayDate(String payDate) {
+        this.payDate = payDate;
+    }
+    public String getMemberNo() { return memberNo;}
+
+    public void setMemberNo(String memberNo) {
+        this.memberNo = memberNo;
+    }
+    public String getPayMethod() { return payMethod;}
+
+    public void setPayMethod(String payMethod) {
+        this.payMethod = payMethod;
+    }
+
 
     public List<CategoryVos> getCategoryVos() {
         return categoryVos;

@@ -229,7 +229,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
     request(queryUrl, method: 'GET', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
 
         setState(() {
@@ -709,7 +709,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         request(queryUrl, method: 'GET', parameters: formData).then((val) async {
           var response = json.decode(val.toString());
-
+          LogUtil.d(response);
           if (response['code'] == 200) {
 
             await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
@@ -954,7 +954,7 @@ class _SettlementPageState extends State<SettlementPage> {
     var endStatus = await Paycube.endPayCube;
     stoptimer?.cancel();
     stoptimer = Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      _stopStatus =  await Paycube.getPayCubeStopCashStatus;print(_stopStatus);
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
         setState(() {
@@ -1568,29 +1568,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
   }
 
-
-  //弹窗加载新widget页面
-/*  doShowSettlementCashPage(orderId, totalPrice) async {
-    var result = await showDialog(
-        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
-        context: context,
-        builder: (context) {
-          return SettlementCashPage(arguments: {"orderId": orderId, "totalPrice":totalPrice, "machineCode":_machineCode});
-
-        });
-  }
-
-  doShowSettlementQrCodePage(orderId, totalPrice) async {
-
-    var result = await showDialog(
-        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
-        context: context,
-        builder: (context) {
-          return SettlementQrCodePage(
-              arguments: {"orderId": orderId, "totalPrice":totalPrice, "machineCode":_machineCode});
-        });
-  }*/
-
   //券卖机展示购物车商品
   Widget getmachineModeOneOrderList(BuildContext context){
     return Container(
@@ -1801,7 +1778,6 @@ class _SettlementPageState extends State<SettlementPage> {
       String SecondString = eventString.substring(1, 3);
       String resultString = eventString.substring(10, 13);
       String resultMPFSString = eventString.substring(13, 16);
-      print(resultString);print(FirstString);print(SecondString);print(resultMPFSString);
       //LogUtil.d(utf8.decode(event));
 
       //机器端取消返回
@@ -1845,9 +1821,9 @@ class _SettlementPageState extends State<SettlementPage> {
       "orderId": this._orderId,
       "payType": "CreditCard",
       "paymentInfo": eventString,
-    };print(formData);
+    };
     request('webBootToPay', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
 
       if (response['code'] == 200 && response['data'] == true) {
         doPrintOrderMenu();
@@ -1892,7 +1868,7 @@ class _SettlementPageState extends State<SettlementPage> {
     var _settlement_payment_method = GString.getToString(this._checkLanguage, "settlement_payment_method");
 
     return Scaffold(
-      backgroundColor: ColorsUtil.hexToColor("#D8D8D8"),
+      backgroundColor: ColorsUtil.hexToColor("#FFFFFF"),
       body: AnnotatedRegion(
         value: SystemUiOverlayStyle.light,
         child: Column(
@@ -2180,26 +2156,27 @@ class _SettlementPageState extends State<SettlementPage> {
             ),*/
             if(_payment_method_num == "1")
             Container(
-              height: ScreenAdapter.height(940),
-            child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_cash"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
+              //height: ScreenAdapter.height(940),
+            child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_cash_${_checkLanguage}"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
             ),
             if(_payment_method_num == "2")
               Container(
-                height: ScreenAdapter.height(940),
+                //height: ScreenAdapter.height(940),
                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_qr"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
               ),
             if(_payment_method_num == "3")
               Container(
-                height: ScreenAdapter.height(940),
-                child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_card"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_card_${_checkLanguage}"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
               ),
             if(_payment_method_num == "4")
               Container(
-                height: ScreenAdapter.height(940),
-                child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_nfc"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
               ),
-            SizedBox(
+            Container(
               height: ScreenAdapter.height(5),
+              color: ColorsUtil.hexToColor("#D8D8D8"),
             ),
             /*Divider(
               height: ScreenAdapter.height(5), // Divider 组件高度
@@ -2892,7 +2869,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 ),
               ),
             ),
-            if(_payment_method_num == "1")
+            if(_payment_method_num == "0" || _payment_method_num == "1")
               Container(
                 //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                 height: ScreenAdapter.height(200),
@@ -2904,7 +2881,9 @@ class _SettlementPageState extends State<SettlementPage> {
                     InkWell(
                       onTap: (){
                         try {
-                          Navigator.pop(context);
+                          //Navigator.pop(context);
+                          _showBackEasyLoading();
+                          CancelOrder();
                         } catch (_) {}
                       },
                       child: Container(

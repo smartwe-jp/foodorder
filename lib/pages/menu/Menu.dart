@@ -99,7 +99,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _pos_ip = "";
   var _pos_port = "";
 
-  var _dining_type_num = "0"; //就餐类型选择
   var _payment_method_num = "0"; //支付类型选择
 
 
@@ -119,6 +118,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     this._checkLanguage = widget.arguments['checkLanguage'];
     this._shopInfo = widget.arguments['shopInfo'];
+    _mealType = widget.arguments["mealType"];
     _getMachineInfo();
 
 
@@ -3108,34 +3108,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 }
 
                                 //点餐方式只有一种并且未开pos
-                                if((_dining_type =="1" || _dining_type =="2") && _isAllowPos == "0"){
-                                  setState(() {
-                                    _mealType = (_dining_type == "2") ? true: false;
-                                  });
+                                if(_isAllowPos == "0"){
                                   _doSubmitOrder();
                                 }else{
                                   _showSelectMealTypeAndPaymentMethodDialog();
                                 }
-
-                              /*if(_dining_type =="1" || _dining_type =="2"){
-                                setState(() {
-                                  _mealType = (_dining_type == "2") ? true: false;
-                                });
-
-                                if(_isAllowPos == "0"){
-                                  _doSubmitOrder();
-                                }else{
-                                  _showSelectPaymentMethodDialog();
-                                }
-
-                              }else{
-                                if(_isAllowPos == "0"){
-                                  _selectMealType();
-                                }else{
-                                  _showSelectMealTypeAndPaymentMethodDialog();
-                                }
-
-                              }*/
 
 
 
@@ -3321,7 +3298,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": _mealType,
-      };
+      };print(formData);
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
@@ -3329,15 +3306,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
           print("postip-${_pos_ip}");
+          print("_payment_method_num${_payment_method_num}");
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
                 "machineCode": this._machineCode,
-                "showWechat":_showWechat,
-                "showAlipay":_showAlipay,
-                "showPayPay":_showPayPay,
-                "showIsPos":_showIsPos,
                 "orderId" : response['data'],
                 "totalPrice" : orderTotlaPrice.toString(),
                 "machineMode":"1",
@@ -3364,21 +3338,15 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
           return SelectPaymentPage(
             checkLanguage: _checkLanguage,
-            dining_type: _dining_type,
-            dining_type_num: _dining_type_num,
             shopInfo:_shopInfo,
             //mealType:_mealType,
             isAllowPos:_isAllowPos,
             payment_method_num:_payment_method_num,
             shopCartTotalPrice:_shopCartTotalPrice,
-            onConfrimClick: (bool mealType, String dining_type_num, String isAllowPos, String payment_method_num) {
-                print(mealType);
-                print(dining_type_num);
+            onConfrimClick: (String isAllowPos, String payment_method_num) {
                 print(isAllowPos);
                 print(payment_method_num);
                 setState(() {
-                  _mealType = mealType;
-                  _dining_type_num = dining_type_num;
                   _isAllowPos = isAllowPos;
                   _payment_method_num = payment_method_num;
                 });
