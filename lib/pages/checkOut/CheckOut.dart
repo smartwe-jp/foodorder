@@ -222,6 +222,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
     */
     setState(() {
       _isReservation = SystemSettingInfo["isReservation"];
+      _isAllowPos = SystemSettingInfo['isAllowPos'];
     });
 
 
@@ -231,7 +232,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   //获取展示支付方式
   _getMachineActivateInfo() async {
     Map systemSettingInfo = await HomeServices.getMachineActivateData();
-
+print(systemSettingInfo);
     setState(() {
       this._showCash = systemSettingInfo['showCash'];
       this._showWechat = systemSettingInfo['showWechat'];
@@ -456,6 +457,10 @@ class _CheckOutPageState extends State<CheckOutPage> {
     _goToSettlement();
   }
   _goToSettlement(){
+    setState(() {
+      _scanQrCodeController.text = "";
+      _tableCode = "";
+    });
     Navigator.pushNamed(context, '/settlement',
         arguments: {
           "checkLanguage": this._checkLanguage,
