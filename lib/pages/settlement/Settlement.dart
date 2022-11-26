@@ -863,7 +863,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<Widget> categoryMenus = [];
     var lineHight = 60;
-    var menuNum = 1;
+    var menuNum = 0;
 
     categoryMenus.add(
       Container(
@@ -957,28 +957,32 @@ class _SettlementPageState extends State<SettlementPage> {
             );
             menuNum++;
             }
-
+          menuNum++;
+        }else{
+          menuNum++;
         }
-        menuNum++;
 
         //分割线
-        categoryMenus.add(
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child:Container(
-                margin: EdgeInsets.only(top: 3,bottom: 3),
-                height: 0.5,
-                color:ColorsUtil.hexToColor("#000000"),
-                width: 375,
-              )
-          ),
-        );
+        if(_machineMode == "1"){
+          categoryMenus.add(
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child:Container(
+                  margin: EdgeInsets.only(top: 3,bottom: 3),
+                  height: 0.5,
+                  color:ColorsUtil.hexToColor("#000000"),
+                  width: 375,
+                )
+            ),
+          );
+        }
+
       }
 
 
 
     }
-
+    print("总行数${menuNum}");
     var totalHight = menuNum*60+lineHight;
 
     ByteData byteData = await WidgetToImage.widgetToImage(
@@ -1079,16 +1083,30 @@ class _SettlementPageState extends State<SettlementPage> {
                           fontFamily: 'KoruriLight',
                           color: ColorsUtil.hexToColor("#000000"),))),
                 Expanded(child: Container()),
+
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["payPrice"]} ",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
+                    child: RichText(
+                      text: TextSpan(
+                          text: "￥",//GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 26,
+                            fontFamily: 'KoruriLight',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "${printData["payPrice"]} ",
+                              style: TextStyle(
+                                fontSize: 28,
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'KoruriLight',
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                            ),
+                          ]),
+                    )
+                ),
               ],
             ),
           )),
