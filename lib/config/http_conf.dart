@@ -7,7 +7,8 @@ const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
-  'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
+  //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
+  'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
   'webBootToPayV2': base_url + 'pad/web/boot/v2/toPay', //支付提交请求地址 新 增加交易失败退出扫码情况
   'webBootToReport': base_url + 'pad/web/boot/report', //现金支付提交请求地址

@@ -957,25 +957,11 @@ class _SettlementPageState extends State<SettlementPage> {
             );
             menuNum++;
             }
-          linNum++;
-          if(linNum != linVoNum){
-          categoryMenus.add(
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child:Container(
-                  margin: EdgeInsets.only(top: 3,bottom: 3),
-                  height: 0.5,
-                  color:ColorsUtil.hexToColor("#000000"),
-                  width: 375,
-                )
-            ),
-          );
-          }
+
         }
         menuNum++;
-      }
-      categoryshowNum++;
-      if(categoryNum != categoryshowNum) {
+
+        //分割线
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
@@ -988,6 +974,9 @@ class _SettlementPageState extends State<SettlementPage> {
           ),
         );
       }
+
+
+
     }
 
     var totalHight = menuNum*60+lineHight;
@@ -996,6 +985,7 @@ class _SettlementPageState extends State<SettlementPage> {
         Container(
           width: 380,
           height: totalHight.toDouble(),
+          padding: EdgeInsets.only(left:0.5,right: 0.5),
           color: Colors.white,
           alignment: Alignment.topCenter,
           child: Column(
@@ -1091,7 +1081,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["payPrice"]}",
+                    child: Text("￥${printData["payPrice"]} ",
                         style: TextStyle(
                           fontSize: 28,
                           fontWeight: FontWeight.w600,
@@ -1135,7 +1125,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["excludingTaxStr"]}",
+                    child: Text("￥${printData["excludingTaxStr"]} ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1168,7 +1158,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["taxStr"]}",
+                    child: Text("￥${printData["taxStr"]} ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1201,7 +1191,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] != "外") ? "￥${printData["payPrice"]}":"￥0",
+                    child: Text((printData["line7"] != "外") ? "￥${printData["payPrice"]} ":"￥0 ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1234,7 +1224,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] != "外") ? "￥${printData["taxStr"]}" :"￥0",
+                    child: Text((printData["line7"] != "外") ? "￥${printData["taxStr"]} " :"￥0 ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1267,7 +1257,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] == "外") ? "￥${printData["payPrice"]}":"￥0",
+                    child: Text((printData["line7"] == "外") ? "￥${printData["payPrice"]} ":"￥0 ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1300,7 +1290,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] == "外") ? "￥${printData["taxStr"]}" :"￥0",
+                    child: Text((printData["line7"] == "外") ? "￥${printData["taxStr"]} " :"￥0 ",
                         style: TextStyle(
                           fontSize: 26,
                           fontWeight: FontWeight.w200,
@@ -1344,7 +1334,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 Expanded(child: Container()),
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["payPrice"]}",
+                    child: Text("￥${printData["payPrice"]} ",
                         style: TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.w200,
@@ -1378,7 +1368,7 @@ class _SettlementPageState extends State<SettlementPage> {
                   Expanded(child: Container()),
                   Directionality(
                       textDirection: TextDirection.ltr,
-                      child: Text("${printData["memberNo"]}",
+                      child: Text("${printData["memberNo"]} ",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w100,
@@ -1410,7 +1400,7 @@ class _SettlementPageState extends State<SettlementPage> {
                   Expanded(child: Container()),
                   Directionality(
                       textDirection: TextDirection.ltr,
-                      child: Text("${printData["payDate"]}",
+                      child: Text("${printData["payDate"]} ",
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.w100,
@@ -1471,7 +1461,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     ByteData byteData = await WidgetToImage.widgetToImage(
         Container(
-          width: 378,
+          width: 380,
           height: totalHight.toDouble(),
           color: Colors.white,
           //alignment: Alignment.topCenter,
