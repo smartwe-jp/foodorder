@@ -712,7 +712,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         request(queryUrl, method: 'GET', parameters: formData).then((val) async {
           var response = json.decode(val.toString());
-          LogUtil.d(response);
+          //LogUtil.d(response);
           if (response['code'] == 200) {
             _tpPrintnew(response['data']);
             //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
@@ -859,7 +859,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //打印甘蘭
   _tpPrintnew(printData) async {
-    var categoryVos = printData["categoryVos"];print(categoryVos.length);
+    var categoryVos = printData["categoryVos"];
 
     List<Widget> categoryMenus = [];
     var lineHight = 60;
@@ -1001,7 +1001,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100),() async {
       String base64Image = base64Encode(imageBytes);
-      LogUtil.d(base64Image);
+      //LogUtil.d(base64Image);
       await FlutterPluginMsprinter.sendPrintImg(base64Image,"1",_shopInfo,"0");
       _tpPrintReceipt(printData);
     });
@@ -1478,7 +1478,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100),() async {
       String base64Image = base64Encode(imageBytes);
-      LogUtil.d(base64Image);
+      //LogUtil.d(base64Image);
       await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
     });
   }
@@ -1751,7 +1751,7 @@ class _SettlementPageState extends State<SettlementPage> {
     var endStatus = await Paycube.endPayCube;
     stoptimer?.cancel();
     stoptimer = Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      _stopStatus =  await Paycube.getPayCubeStopCashStatus;print("Endtoubi${_stopStatus}");
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
         setState(() {
@@ -1939,7 +1939,7 @@ class _SettlementPageState extends State<SettlementPage> {
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 950), (Timer endtradet) async {
-      _endStatus =  await Paycube.getPayCubeEndTradeStatus;print(_endStatus);
+      _endStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (_endStatus == "EndSuccess") {
         //关闭机器后的跳转
@@ -2482,7 +2482,7 @@ class _SettlementPageState extends State<SettlementPage> {
     };
 
     request("webBootCreditCard", method: 'POST', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());print("creditcard++++${response}");
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket.write(response['data']);
