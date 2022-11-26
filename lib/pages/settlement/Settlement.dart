@@ -862,7 +862,7 @@ class _SettlementPageState extends State<SettlementPage> {
     var categoryVos = printData["categoryVos"];print(categoryVos.length);
 
     List<Widget> categoryMenus = [];
-    var lineHight = 50;
+    var lineHight = 60;
     var menuNum = 0;
 
     categoryMenus.add(
@@ -988,7 +988,6 @@ class _SettlementPageState extends State<SettlementPage> {
           ),
         );
       }
-
     }
 
     var totalHight = menuNum*60+lineHight;
