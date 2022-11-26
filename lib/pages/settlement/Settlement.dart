@@ -30,6 +30,7 @@ import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
 import 'package:paycube/paycube.dart';
 import 'package:foodorder/services/Storage.dart';
+import 'package:widget_to_image/widget_to_image.dart';
 
 import 'package:foodorder/services/logUtil.dart';
 //import 'SettlementCashPage.dart';
@@ -701,18 +702,20 @@ class _SettlementPageState extends State<SettlementPage> {
           "orderId": this._orderId,
         };
         var queryUrl;
-        if(_print_paper_size == "1"){
+        /*if(_print_paper_size == "1"){
           queryUrl = "webBootToPrintV2";
         }else{
           queryUrl = "webBootToPrintV3";
-        }
+        }*/
+
+        queryUrl = "webBootToPrintV4";
 
         request(queryUrl, method: 'GET', parameters: formData).then((val) async {
           var response = json.decode(val.toString());
           LogUtil.d(response);
           if (response['code'] == 200) {
-
-            await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
+            _tpPrintnew(response['data']);
+            //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
             sleep(Duration(milliseconds: 500));
 
@@ -852,6 +855,522 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
 
+  }
+
+  //打印甘蘭
+  _tpPrintnew(printData) async {
+    var categoryVos = printData["categoryVos"];print(categoryVos.length);
+
+    List<Widget> categoryMenus = [];
+    var lineHight = 50;
+    var menuNum = 0;
+
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["serialNumber"]}",
+                style: TextStyle(
+                  fontSize: 50,
+                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor("#000000"),))),
+      ),
+    );
+
+    int categoryNum = categoryVos.length;
+    int categoryshowNum = 0;
+    for(var i=0; i<categoryVos.length; i++){
+      int linNum = 0;
+      var lineVosList = categoryVos[i]["lineVos"];print(lineVosList);
+      int linVoNum = lineVosList.length;
+
+      for(var m=0; m<lineVosList.length; m++){
+        var lineItem = lineVosList[m];
+        var optionVoList = lineItem["optionVos"];
+
+        categoryMenus.add(
+          Directionality(
+              textDirection: TextDirection.ltr,
+              child: Container(
+                margin: EdgeInsets.only(bottom: 3),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Text("${lineItem["menuName"]}",
+                            style: TextStyle(
+                              fontSize: 28,
+                              //fontWeight: FontWeight.w100,
+                              fontFamily: 'KoruriLight',
+                              color: ColorsUtil.hexToColor("#000000"),))),
+                    Expanded(child: Container()),
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Text("${lineItem["menuQty"]}",
+                            style: TextStyle(
+                                fontSize: 28,
+                              fontWeight: FontWeight.w200,
+                              fontFamily: 'KoruriLight',
+                                color: ColorsUtil.hexToColor("#000000"),
+                                //fontWeight: FontWeight.w600
+                            ))),
+                  ],
+                ),
+              )),
+        );
+        if(optionVoList.length >0){
+          for(var n=0; n<optionVoList.length; n++){
+            var optionVos = optionVoList[n];
+            categoryMenus.add(
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text("　${optionVos["groupName"]}",
+                                style: TextStyle(
+                                  fontSize: 28,
+                                  //fontWeight: FontWeight.w100,
+                                  fontFamily: 'KoruriLight',
+                                  color: ColorsUtil.hexToColor("#000000"),))),
+                        Expanded(child: Container()),
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text("${optionVos["optionName"]}",
+                                style: TextStyle(
+                                    fontSize: 28,
+                                    //fontWeight: FontWeight.w100,
+                                    fontFamily: 'KoruriLight',
+                                    color: ColorsUtil.hexToColor("#000000")))),
+                      ],
+                    ),
+                  )),
+            );
+            menuNum++;
+            }
+          linNum++;
+          if(linNum != linVoNum){
+          categoryMenus.add(
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child:Container(
+                  margin: EdgeInsets.only(top: 3,bottom: 3),
+                  height: 0.5,
+                  color:ColorsUtil.hexToColor("#000000"),
+                  width: 375,
+                )
+            ),
+          );
+          }
+        }
+        menuNum++;
+      }
+      categoryshowNum++;
+      if(categoryNum != categoryshowNum) {
+        categoryMenus.add(
+          Directionality(
+              textDirection: TextDirection.ltr,
+              child:Container(
+                margin: EdgeInsets.only(top: 3,bottom: 3),
+                height: 0.5,
+                color:ColorsUtil.hexToColor("#000000"),
+                width: 375,
+              )
+          ),
+        );
+      }
+
+    }
+
+    var totalHight = menuNum*60+lineHight;
+
+    ByteData byteData = await WidgetToImage.widgetToImage(
+        Container(
+          width: 380,
+          height: totalHight.toDouble(),
+          color: Colors.white,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: categoryMenus,
+          ),
+        )
+    );
+
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
+    Future.delayed(Duration(milliseconds: 100),() async {
+      String base64Image = base64Encode(imageBytes);
+      LogUtil.d(base64Image);
+      await FlutterPluginMsprinter.sendPrintImg(base64Image,"1",_shopInfo,"0");
+      _tpPrintReceipt(printData);
+    });
+
+
+  }
+
+  _tpPrintReceipt(printData) async {
+
+    List<Widget> categoryMenus = [];
+    var lineHight = 580;
+
+    categoryMenus.add(
+      Container(
+        alignment: Alignment.centerLeft,
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("電話 ${printData["telephone"]}",
+                style: TextStyle(
+                  fontSize: 24,
+                  //fontWeight: FontWeight.w100,
+                  fontFamily: 'KoruriLight',
+                  color: ColorsUtil.hexToColor("#000000")
+                ))),
+      ),
+    );
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["shopAddress"]}",
+                style: TextStyle(
+                    fontSize: 24,
+                    //fontWeight: FontWeight.w100,
+                    fontFamily: 'KoruriLight',
+                    color: ColorsUtil.hexToColor("#000000")
+                ))),
+      ),
+    );
+
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("領 収 書",
+                style: TextStyle(
+                  fontSize: 50,
+                  fontFamily: 'KoruriLight',
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor("#000000"),))),
+      ),
+    );
+
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("合計",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("¥${printData["payPrice"]}",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child:Container(
+            margin: EdgeInsets.only(top: 3,bottom: 3),
+            height: 0.5,
+            color:ColorsUtil.hexToColor("#000000"),
+            width: 375,
+          )
+      ),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("税抜金額",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("¥${printData["excludingTaxStr"]}",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("消費税",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("¥${printData["taxStr"]}",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("対象10%",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text((printData["line7"] != "外") ? "¥${printData["payPrice"]}":"¥0",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("　内消費税",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text((printData["line7"] != "外") ? "¥${printData["taxStr"]}" :"¥0",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("対象8%",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text((printData["line7"] == "外") ? "¥${printData["payPrice"]}":"¥0",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("　内消費税",
+                        style: TextStyle(
+                          fontSize: 26,
+                          //fontWeight: FontWeight.w100,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),))),
+                Expanded(child: Container()),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text((printData["line7"] == "外") ? "¥${printData["taxStr"]}" :"¥0",
+                        style: TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.w200,
+                          fontFamily: 'KoruriLight',
+                          color: ColorsUtil.hexToColor("#000000"),
+                          //fontWeight: FontWeight.w600
+                        ))),
+              ],
+            ),
+          )),
+    );
+
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child:Container(
+            margin: EdgeInsets.only(top: 3,bottom: 3),
+            height: 0.5,
+            color:ColorsUtil.hexToColor("#000000"),
+            width: 375,
+          )
+      ),
+    );
+    categoryMenus.add(
+      Container(
+        alignment: Alignment.centerLeft,
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("お明細は上記のとおりです。",
+                style: TextStyle(
+                    fontSize: 24,
+                    //fontWeight: FontWeight.w100,
+                    fontFamily: 'KoruriLight',
+                    color: ColorsUtil.hexToColor("#000000")
+                ))),
+      ),
+    );
+    categoryMenus.add(
+      Container(
+        alignment: Alignment.centerLeft,
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["orderDate"]}",
+                style: TextStyle(
+                    fontSize: 24,
+                    //fontWeight: FontWeight.w100,
+                    fontFamily: 'KoruriLight',
+                    color: ColorsUtil.hexToColor("#000000")
+                ))),
+      ),
+    );
+
+    var totalHight = 10+lineHight;
+
+    ByteData byteData = await WidgetToImage.widgetToImage(
+        Container(
+          width: 378,
+          height: totalHight.toDouble(),
+          color: Colors.white,
+          //alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: categoryMenus,
+          ),
+        )
+    );
+
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
+    Future.delayed(Duration(milliseconds: 100),() async {
+      String base64Image = base64Encode(imageBytes);
+      LogUtil.d(base64Image);
+      await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
+    });
   }
 
   nextOperOld() async {

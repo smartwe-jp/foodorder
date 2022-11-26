@@ -46,6 +46,7 @@ dependencies:
   path_provider: ^2.0.11
   crypto: ^3.0.2
   assets_audio_player: 3.0.4
+  widget_to_image: ^2.0.0
   paycube:
     path: ./lib/plugins/paycube
   flutter_plugin_msprinter:
@@ -102,5 +103,10 @@ flutter:
   #       - asset: fonts/TrajanPro_Bold.ttf
   #         weight: 700
   #
+  fonts:
+    - family: KoruriLight
+      fonts:
+        - asset: assets/fonts/Work_Sans/Koruri-Light.ttf
+
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages

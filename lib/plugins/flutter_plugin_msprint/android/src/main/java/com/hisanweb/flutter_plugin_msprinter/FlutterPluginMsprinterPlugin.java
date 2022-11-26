@@ -232,6 +232,31 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
 
         break;
+      case "sendPrintImg":
+        String imgdata = call.argument("operdata");
+        String cutMode = call.argument("cutMode");
+        String topshopInfo = call.argument("shopInfo");
+        String isTop = call.argument("isTop");
+
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40001","无法获得usb权限",null);
+          return;
+        }else{
+          if(topshopInfo.equals("kanran")){
+            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,kanran,isTop);
+          }else if(topshopInfo.equals("rijindoujin")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,rijindoujin,isTop);
+          }else if(topshopInfo.equals("sanfeng")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,sanfeng,isTop);
+          }
+
+
+
+          result.success("success");
+        }
+
+
+        break;
       case "getPrintStatus":
         int iDriverCheck = usbDriverCheck();
         if (iDriverCheck == -1) {
