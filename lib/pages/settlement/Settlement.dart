@@ -136,7 +136,7 @@ class _SettlementPageState extends State<SettlementPage> {
       this._totalPrice = widget.arguments['totalPrice'];
     }
     this._isAllowPos = widget.arguments['isAllowPos'];
-    this._pos_ip = widget.arguments['posIp'];print(_pos_ip);
+    this._pos_ip = widget.arguments['posIp'];
     this._pos_port = widget.arguments['posPort'];
     this._payment_method_num = widget.arguments['paymentMethod'];
 
@@ -883,12 +883,17 @@ class _SettlementPageState extends State<SettlementPage> {
     int categoryshowNum = 0;
     for(var i=0; i<categoryVos.length; i++){
       int linNum = 0;
-      var lineVosList = categoryVos[i]["lineVos"];print(lineVosList);
+      var lineVosList = categoryVos[i]["lineVos"];
       int linVoNum = lineVosList.length;
 
       for(var m=0; m<lineVosList.length; m++){
         var lineItem = lineVosList[m];
         var optionVoList = lineItem["optionVos"];
+        // 计算菜品标题长度
+        var menuLength = lineItem["menuName"].length;
+        var menuLine = menuLength / 12;
+        var menuRowNum = menuLine.ceil();
+        //print("menuRowNum====${menuRowNum}");
 
         categoryMenus.add(
           Directionality(
@@ -901,13 +906,17 @@ class _SettlementPageState extends State<SettlementPage> {
                   children: [
                     Directionality(
                         textDirection: TextDirection.ltr,
-                        child: Text("${lineItem["menuName"]}",
-                            style: TextStyle(
-                              fontSize: 28,
-                              //fontWeight: FontWeight.w100,
-                              fontFamily: 'KoruriLight',
-                              color: ColorsUtil.hexToColor("#000000"),))),
-                    Expanded(child: Container()),
+                        child: Expanded(
+                          child: Text("${lineItem["menuName"]}",
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 28,
+                                //fontWeight: FontWeight.w100,
+                                fontFamily: 'KoruriLight',
+                                color: ColorsUtil.hexToColor("#000000"),)),
+                        )
+                    ),
+                    //Expanded(child: Container()),
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Text("${lineItem["menuQty"]}",
@@ -925,6 +934,13 @@ class _SettlementPageState extends State<SettlementPage> {
         if(optionVoList.length >0){
           for(var n=0; n<optionVoList.length; n++){
             var optionVos = optionVoList[n];
+            // 计算菜品标题长度
+            var groupNameLength = optionVos["groupName"].length;
+            var optionNameLength = optionVos["optionName"].length;
+            var optionLine = (groupNameLength + optionNameLength) / 12;
+            var optionRowNum = optionLine.ceil();
+            //print("optionRowNum====${optionRowNum}");
+
             categoryMenus.add(
               Directionality(
                   textDirection: TextDirection.ltr,
@@ -936,13 +952,15 @@ class _SettlementPageState extends State<SettlementPage> {
                       children: [
                         Directionality(
                             textDirection: TextDirection.ltr,
-                            child: Text("　${optionVos["groupName"]}",
-                                style: TextStyle(
-                                  fontSize: 28,
-                                  //fontWeight: FontWeight.w100,
-                                  fontFamily: 'KoruriLight',
-                                  color: ColorsUtil.hexToColor("#000000"),))),
-                        Expanded(child: Container()),
+                            child: Expanded(
+                              child: Text("　${optionVos["groupName"]}",
+                                  style: TextStyle(
+                                    fontSize: 28,
+                                    //fontWeight: FontWeight.w100,
+                                    fontFamily: 'KoruriLight',
+                                    color: ColorsUtil.hexToColor("#000000"),)),
+                            )
+                        ),
                         Directionality(
                             textDirection: TextDirection.ltr,
                             child: Text("${optionVos["optionName"]}",
@@ -955,11 +973,11 @@ class _SettlementPageState extends State<SettlementPage> {
                     ),
                   )),
             );
-            menuNum++;
+            menuNum += optionRowNum;
             }
-          menuNum++;
+          menuNum += menuRowNum;
         }else{
-          menuNum++;
+          menuNum += menuRowNum;
         }
 
         //分割线
@@ -982,7 +1000,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     }
-    print("总行数${menuNum}");
+    //print("总行数${menuNum}");
     var totalHight = menuNum*60+lineHight;
 
     ByteData byteData = await WidgetToImage.widgetToImage(
@@ -2410,7 +2428,7 @@ class _SettlementPageState extends State<SettlementPage> {
     _getPaymentPosData();
     // 监听wifi模块发送的数据
     this._socket.listen((List<int> event) {
-      print("监听返回打印");
+      //print("监听返回打印");
       //print(event);
       print("\n\r================================\n\r");
       LogUtil.d(event);
@@ -2419,7 +2437,7 @@ class _SettlementPageState extends State<SettlementPage> {
         event.fillRange(266, 289, 32);
       var zhuanhuan = Uint8List.fromList(event);
       var eventString = Utf8Codec().decode(zhuanhuan);
-      print(Utf8Codec().decode(zhuanhuan));
+      //print(Utf8Codec().decode(zhuanhuan));
 
       String FirstString = eventString.substring(0, 1);
       String SecondString = eventString.substring(1, 3);
@@ -2429,12 +2447,12 @@ class _SettlementPageState extends State<SettlementPage> {
 
       //机器端取消返回
       if(FirstString == "3" && SecondString == "11" && resultString =="L11"){
-        print("取消");
+        //print("取消");
         CancelOrder();
       }
       //支付成功 打印，返回首页
       if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
-        print("支付成功");
+        //print("支付成功");
         CreditCardPayReport(eventString);
       }
 
@@ -2550,7 +2568,6 @@ class _SettlementPageState extends State<SettlementPage> {
                       });
 
                       _doToPay();
-                      //print("onSubmitted 点击了键盘的确定按钮，输出的信息是：${value}");
                     },
 
                     /// 扫码密码
