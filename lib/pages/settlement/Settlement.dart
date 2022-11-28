@@ -896,40 +896,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //print("menuRowNum====${menuRowNum}");
 
         categoryMenus.add(
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 3),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(
-                          child: Text("${lineItem["menuName"]}",
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 28,
-                                //fontWeight: FontWeight.w100,
-                                fontFamily: 'KoruriLight',
-                                color: ColorsUtil.hexToColor("#000000"),)),
-                        )
-                    ),
-                    //Expanded(child: Container()),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Text("${lineItem["menuQty"]}",
-                            style: TextStyle(
-                                fontSize: 28,
-                              fontWeight: FontWeight.w200,
-                              fontFamily: 'KoruriLight',
-                                color: ColorsUtil.hexToColor("#000000"),
-                                //fontWeight: FontWeight.w600
-                            ))),
-                  ],
-                ),
-              )),
+            _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}",28.0,FontWeight.w100,"${lineItem["menuQty"]}",28.0,FontWeight.w200),
         );
         if(optionVoList.length >0){
           for(var n=0; n<optionVoList.length; n++){
@@ -942,36 +909,7 @@ class _SettlementPageState extends State<SettlementPage> {
             //print("optionRowNum====${optionRowNum}");
 
             categoryMenus.add(
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Container(
-                    margin: EdgeInsets.only(bottom: 3),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Expanded(
-                              child: Text("　${optionVos["groupName"]}",
-                                  style: TextStyle(
-                                    fontSize: 28,
-                                    //fontWeight: FontWeight.w100,
-                                    fontFamily: 'KoruriLight',
-                                    color: ColorsUtil.hexToColor("#000000"),)),
-                            )
-                        ),
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Text("${optionVos["optionName"]}",
-                                style: TextStyle(
-                                    fontSize: 28,
-                                    //fontWeight: FontWeight.w100,
-                                    fontFamily: 'KoruriLight',
-                                    color: ColorsUtil.hexToColor("#000000")))),
-                      ],
-                    ),
-                  )),
+              _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.normal),
             );
             menuNum += optionRowNum;
             }
@@ -983,15 +921,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //分割线
         if(_machineMode == "1"){
           categoryMenus.add(
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child:Container(
-                  margin: EdgeInsets.only(top: 3,bottom: 3),
-                  height: 0.5,
-                  color:ColorsUtil.hexToColor("#000000"),
-                  width: 375,
-                )
-            ),
+            _publicSplitLine(),
           );
         }
 
@@ -1039,34 +969,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
     //电话
     categoryMenus.add(
-      Container(
-        alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("電話 ${printData["telephone"]}",
-                style: TextStyle(
-                  fontSize: 24,
-                  //fontWeight: FontWeight.w100,
-                  fontFamily: 'KoruriLight',
-                  color: ColorsUtil.hexToColor("#000000")
-                ))),
-      ),
+      _publicOneColumnTxt("電話 ${printData["telephone"]}",24.0,FontWeight.normal)
     );
     //地址
     categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["shopAddress"]}",
-                style: TextStyle(
-                    fontSize: 24,
-                    //fontWeight: FontWeight.w100,
-                    fontFamily: 'KoruriLight',
-                    color: ColorsUtil.hexToColor("#000000")
-                ))),
-      ),
+        _publicOneColumnTxt("${printData["shopAddress"]}",24.0,FontWeight.normal)
     );
 //领収书标题
     categoryMenus.add(
@@ -1077,8 +984,8 @@ class _SettlementPageState extends State<SettlementPage> {
             child: Text("領 収 書",
                 style: TextStyle(
                   fontSize: 50,
-                  fontFamily: 'KoruriLight',
-                  fontWeight: FontWeight.w500,
+                  fontFamily: 'KoruriLightNew',
+                  fontWeight: FontWeight.w300,
                   color: ColorsUtil.hexToColor("#000000"),))),
       ),
     );
@@ -1098,7 +1005,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         style: TextStyle(
                           fontSize: 26,
                           //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
+                          fontFamily: 'KoruriLightNew',
                           color: ColorsUtil.hexToColor("#000000"),))),
                 Expanded(child: Container()),
 
@@ -1109,16 +1016,16 @@ class _SettlementPageState extends State<SettlementPage> {
                           text: "￥",//GString.getToString(this._checkLanguage, "show_price_front"),
                           style: TextStyle(
                             fontSize: 26,
-                            fontFamily: 'KoruriLight',
+                            fontFamily: 'KoruriLightNew',
                             color: ColorsUtil.hexToColor("#000000"),
                           ),
                           children: [
                             TextSpan(
-                              text: "${printData["payPrice"]} ",
+                              text: "${printData["payPrice"]}",
                               style: TextStyle(
                                 fontSize: 28,
                                 fontWeight: FontWeight.w600,
-                                fontFamily: 'KoruriLight',
+                                fontFamily: 'KoruriLightNew',
                                 color: ColorsUtil.hexToColor("#000000"),
                               ),
                             ),
@@ -1130,367 +1037,58 @@ class _SettlementPageState extends State<SettlementPage> {
           )),
     );
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child:Container(
-            margin: EdgeInsets.only(top: 3,bottom: 3),
-            height: 0.5,
-            color:ColorsUtil.hexToColor("#000000"),
-            width: 375,
-          )
-      ),
+      _publicSplitLine(),
     );
     //税拔金额
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("税抜金額",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["excludingTaxStr"]} ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("税抜金額",26.0,FontWeight.w100,"￥${printData["excludingTaxStr"]}",26.0,FontWeight.w200,),
     );
     //消费税
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("消費税",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["taxStr"]} ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("消費税",26.0,FontWeight.w100,"￥${printData["taxStr"]}",26.0,FontWeight.w200,),
     );
     //10%
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("対象10%",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] != "外") ? "￥${printData["payPrice"]} ":"￥0 ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("対象10%",26.0,FontWeight.w100,(printData["line7"] != "外") ? "￥${printData["payPrice"]}":"￥0",26.0,FontWeight.w200,),
     );
     //内消费税
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("　内消費税",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] != "外") ? "￥${printData["taxStr"]} " :"￥0 ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("　内消費税",26.0,FontWeight.w100,(printData["line7"] != "外") ? "￥${printData["taxStr"]}" :"￥0",26.0,FontWeight.w200,),
     );
     //8%
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("対象8%",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] == "外") ? "￥${printData["payPrice"]} ":"￥0 ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("対象8%",26.0,FontWeight.w100,(printData["line7"] == "外") ? "￥${printData["payPrice"]}" :"￥0",26.0,FontWeight.w200,),
     );
     //内消费税
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("　内消費税",
-                        style: TextStyle(
-                          fontSize: 26,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text((printData["line7"] == "外") ? "￥${printData["taxStr"]} " :"￥0 ",
-                        style: TextStyle(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt("　内消費税",26.0,FontWeight.w100,(printData["line7"] == "外") ? "￥${printData["taxStr"]}" :"￥0",26.0,FontWeight.w200,),
     );
 
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child:Container(
-            margin: EdgeInsets.only(top: 3,bottom: 3),
-            height: 0.5,
-            color:ColorsUtil.hexToColor("#000000"),
-            width: 375,
-          )
-      ),
+      _publicSplitLine(),
     );
     categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("${printData["payMethod"]}",
-                        style: TextStyle(
-                          fontSize: 24,
-                          //fontWeight: FontWeight.w100,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("￥${printData["payPrice"]} ",
-                        style: TextStyle(
-                          fontSize: 24,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'KoruriLight',
-                          color: ColorsUtil.hexToColor("#000000"),
-                          //fontWeight: FontWeight.w600
-                        ))),
-              ],
-            ),
-          )),
+      _publicTwoColumnsTxt(printData["payMethod"],24.0,FontWeight.w100,"￥${printData["payPrice"]}",24.0,FontWeight.w200,),
     );
     if(printData["memberNo"] != null && printData["memberNo"] != ""){
       lineZeng = 110;
       categoryMenus.add(
-        Directionality(
-            textDirection: TextDirection.ltr,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("カード番号",
-                          style: TextStyle(
-                            fontSize: 24,
-                            //fontWeight: FontWeight.w100,
-                            fontFamily: 'KoruriLight',
-                            color: ColorsUtil.hexToColor("#000000"),))),
-                  Expanded(child: Container()),
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("${printData["memberNo"]} ",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'KoruriLight',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w600
-                          ))),
-                ],
-              ),
-            )),
+        _publicTwoColumnsTxt("カード番号",24.0,FontWeight.w100,printData["memberNo"],24.0,FontWeight.w200,),
       );
       categoryMenus.add(
-        Directionality(
-            textDirection: TextDirection.ltr,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("日期",
-                          style: TextStyle(
-                            fontSize: 24,
-                            //fontWeight: FontWeight.w100,
-                            fontFamily: 'KoruriLight',
-                            color: ColorsUtil.hexToColor("#000000"),))),
-                  Expanded(child: Container()),
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("${printData["payDate"]} ",
-                          style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'KoruriLight',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w600
-                          ))),
-                ],
-              ),
-            )),
+          _publicTwoColumnsTxt("日期",24.0,FontWeight.w100,printData["payDate"],24.0,FontWeight.w200,),
       );
       categoryMenus.add(
-        Directionality(
-            textDirection: TextDirection.ltr,
-            child:Container(
-              margin: EdgeInsets.only(top: 3,bottom: 3),
-              height: 0.5,
-              color:ColorsUtil.hexToColor("#000000"),
-              width: 375,
-            )
-        ),
+          _publicSplitLine()
       );
     }
     //お明細は上記のとおりです。
     categoryMenus.add(
-      Container(
-        alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("お明細は上記のとおりです。",
-                style: TextStyle(
-                    fontSize: 24,
-                    //fontWeight: FontWeight.w100,
-                    fontFamily: 'KoruriLight',
-                    color: ColorsUtil.hexToColor("#000000")
-                ))),
-      ),
+      _publicOneColumnTxt("お明細は上記のとおりです。",24.0,FontWeight.normal)
     );
     //订单日期
     categoryMenus.add(
-      Container(
-        alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["orderDate"]}",
-                style: TextStyle(
-                    fontSize: 24,
-                    //fontWeight: FontWeight.w100,
-                    fontFamily: 'KoruriLight',
-                    color: ColorsUtil.hexToColor("#000000")
-                ))),
-      ),
+      _publicOneColumnTxt(printData["orderDate"],24.0,FontWeight.w100)
     );
 
     var totalHight = lineZeng+lineHight;
@@ -1517,6 +1115,106 @@ class _SettlementPageState extends State<SettlementPage> {
       //LogUtil.d(base64Image);
       await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
     });
+  }
+
+  //单列文字
+  _publicOneColumnTxt(txtContext,txtFontSize,txtFontWeight){
+    return Container(
+      alignment: Alignment.centerLeft,
+      margin: EdgeInsets.only(bottom: 3),
+      child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Text("${txtContext}",
+              style: TextStyle(
+                  fontSize: txtFontSize,
+                  fontWeight: txtFontWeight,
+                  fontFamily: 'KoruriLightNew',
+                  color: ColorsUtil.hexToColor("#000000")
+              ))),
+    );
+  }
+  //两列文字
+  _publicTwoColumnsTxt(leftTxtContext,leftTxtFontSize,leftTxtFontWeight,rightTxtContext,rightTxtFontSize,rightTxtFontWeight){
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("${leftTxtContext}",
+                      style: TextStyle(
+                        fontSize: leftTxtFontSize,
+                        fontWeight: leftTxtFontWeight,
+                        fontFamily: 'KoruriLightNew',
+                        color: ColorsUtil.hexToColor("#000000"),))),
+              Expanded(child: Container()),
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("${rightTxtContext} ",
+                      style: TextStyle(
+                        fontSize: rightTxtFontSize,
+                        fontWeight: rightTxtFontWeight,
+                        fontFamily: 'KoruriLightNew',
+                        color: ColorsUtil.hexToColor("#000000"),
+                        //fontWeight: FontWeight.w
+                        // 600
+                      ))),
+            ],
+          ),
+        ));
+  }
+  //商品双列
+  _publicGoodsTwoColumnsTxt(leftTxtContext,leftTxtFontSize,leftTxtFontWeight,rightTxtContext,rightTxtFontSize,rightTxtFontWeight){
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                    child: Text("${leftTxtContext}",
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: leftTxtFontSize,
+                          fontWeight: leftTxtFontWeight,
+                          fontFamily: 'KoruriLightNew',
+                          color: ColorsUtil.hexToColor("#000000"),)),
+                  )
+              ),
+              //Expanded(child: Container()),
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("${rightTxtContext}",
+                      style: TextStyle(
+                        fontSize: rightTxtFontSize,
+                        fontWeight: rightTxtFontWeight,
+                        fontFamily: 'KoruriLightNew',
+                        color: ColorsUtil.hexToColor("#000000"),
+                        //fontWeight: FontWeight.w600
+                      ))),
+            ],
+          ),
+        ));
+  }
+  //分割线
+  _publicSplitLine(){
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child:Container(
+          margin: EdgeInsets.only(top: 3,bottom: 3),
+          height: 0.5,
+          color:ColorsUtil.hexToColor("#000000"),
+          width: 375,
+        )
+    );
   }
 
   nextOperOld() async {
@@ -2437,7 +2135,7 @@ class _SettlementPageState extends State<SettlementPage> {
         event.fillRange(266, 289, 32);
       var zhuanhuan = Uint8List.fromList(event);
       var eventString = Utf8Codec().decode(zhuanhuan);
-      //print(Utf8Codec().decode(zhuanhuan));
+      print(Utf8Codec().decode(zhuanhuan));
 
       String FirstString = eventString.substring(0, 1);
       String SecondString = eventString.substring(1, 3);
@@ -2446,14 +2144,16 @@ class _SettlementPageState extends State<SettlementPage> {
       //LogUtil.d(utf8.decode(event));
 
       //机器端取消返回
-      if(FirstString == "3" && SecondString == "11" && resultString =="L11"){
+      /*if(FirstString == "3" && SecondString == "11" && resultString =="L11"){
         //print("取消");
         CancelOrder();
-      }
-      //支付成功 打印，返回首页
+      }*/
+      //支付成功 打印，返回首页 除了成功都取消
       if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
         //print("支付成功");
         CreditCardPayReport(eventString);
+      }else{
+        CancelOrder();
       }
 
 

@@ -107,6 +107,12 @@ flutter:
     - family: KoruriLight
       fonts:
         - asset: assets/fonts/Work_Sans/Koruri-Light.ttf
+    - family: KoruriLightNew
+      fonts:
+        - asset: assets/fonts/Work_Sans/Koruri-Light-new.ttf
+    - family: MPLUSRounded1c
+      fonts:
+        - asset: assets/fonts/Work_Sans/MPLUSRounded1c-Light.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
