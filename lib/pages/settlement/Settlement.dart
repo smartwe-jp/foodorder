@@ -754,7 +754,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
           } else {
             //错误后重新调用一次
-            //print("错误重新调用一次");
             doPrintOrderMenu(printType);
             //EasyLoading.dismiss();
 
@@ -901,7 +900,6 @@ class _SettlementPageState extends State<SettlementPage> {
         var menuLength = lineItem["menuName"].length;
         var menuLine = menuLength / 13;
         var menuRowNum = menuLine.ceil();
-        //print("menuRowNum====${menuRowNum}");
 
         categoryMenus.add(
             _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}",28.0,FontWeight.w100,"${lineItem["menuQty"]}",28.0,FontWeight.w100),
@@ -914,7 +912,6 @@ class _SettlementPageState extends State<SettlementPage> {
             var optionNameLength = optionVos["optionName"].length;
             var optionLine = (groupNameLength + optionNameLength) / 13;
             var optionRowNum = optionLine.ceil();
-            //print("optionRowNum====${optionRowNum}");
 
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.w100),
@@ -2193,7 +2190,7 @@ class _SettlementPageState extends State<SettlementPage> {
         event.fillRange(266, 289, 32);
       var zhuanhuan = Uint8List.fromList(event);
       var eventString = Utf8Codec().decode(zhuanhuan);
-      print(Utf8Codec().decode(zhuanhuan));
+      //print(Utf8Codec().decode(zhuanhuan));
 
       String FirstString = eventString.substring(0, 1);
       String SecondString = eventString.substring(1, 3);
@@ -2208,7 +2205,6 @@ class _SettlementPageState extends State<SettlementPage> {
       }*/
       //支付成功 打印，返回首页 除了成功都取消
       if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
-        //print("支付成功");
         CreditCardPayReport(eventString);
       }else{
         CancelOrder();
