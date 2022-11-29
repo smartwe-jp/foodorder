@@ -866,11 +866,13 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //打印甘蘭
   _tpPrintnew(printData,printType) async {
-    var categoryVos = printData["categoryVos"];
+    var categoryVos = printData["categoryVos"];LogUtil.d(printData);
 
     List<Widget> categoryMenus = [];
     var lineHight = 75;
     var menuNum = 0;
+    var optionNum = 0;
+    var addRowHight = 0;
 
     categoryMenus.add(
       Container(
@@ -900,11 +902,12 @@ class _SettlementPageState extends State<SettlementPage> {
         var menuLength = lineItem["menuName"].length;
         var menuLine = menuLength / 13;
         var menuRowNum = menuLine.ceil();
+        optionNum = 0;
 
         categoryMenus.add(
             _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}",28.0,FontWeight.w100,"${lineItem["menuQty"]}",28.0,FontWeight.w100),
         );
-        if(optionVoList.length >0){
+        if(optionVoList != null && optionVoList.length >0){
           for(var n=0; n<optionVoList.length; n++){
             var optionVos = optionVoList[n];
             // 计算菜品标题长度
@@ -916,15 +919,20 @@ class _SettlementPageState extends State<SettlementPage> {
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.w100),
             );
+            addRowHight += 50;
             menuNum += optionRowNum;
+            optionNum++;
             }
+          addRowHight += 48;
           menuNum += menuRowNum;
         }else{
+          addRowHight += 53;
           menuNum += menuRowNum;
         }
 
         //分割线
         if(_machineMode == "1"){
+          addRowHight += 6;
           categoryMenus.add(
             _publicSplitLine(),
           );
@@ -936,10 +944,21 @@ class _SettlementPageState extends State<SettlementPage> {
 
     }
     print("总行数${menuNum}");
-    var totalHight = menuNum*56+lineHight;
+    var totalHight = addRowHight+lineHight;
     if(menuNum == 1){
       totalHight +=15;
     }
+    /*var totalHight = menuNum*56+lineHight;
+    if(menuNum == 1){
+      totalHight +=15;
+    }
+    print(optionNum);
+    if(optionNum >0){
+      totalHight -= optionNum*20;
+    }*/
+    /*if(menuNum >= 20 && menuNum <=30 ){
+      totalHight -=30;
+    }*/
 
     ByteData byteData = await WidgetToImage.widgetToImage(
         Container(
@@ -1622,7 +1641,8 @@ class _SettlementPageState extends State<SettlementPage> {
     if(_machineMode == "1"){
       Navigator.pushNamed(context, '/home');
     }else{
-      Navigator.pushNamed(context, '/checkOutPage');
+      Navigator.pushNamed(context, '/transitPage');
+      //Navigator.pushNamed(context, '/checkOutPage');
     }
   }
 

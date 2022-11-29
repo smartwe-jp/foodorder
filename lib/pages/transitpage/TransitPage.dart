@@ -95,7 +95,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());//print(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];

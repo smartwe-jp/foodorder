@@ -122,7 +122,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                 setState(() {
                                   _payment_method_num = "1";
                                 });
-                                Navigator.pop(pcontext);
+                                //Navigator.pop(pcontext);
                                 widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
                               },
@@ -178,7 +178,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                 setState(() {
                                   _payment_method_num = "2";
                                 });
-                                Navigator.pop(pcontext);
+                                //Navigator.pop(pcontext);
                                 widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
                               },
@@ -276,7 +276,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   _isAllowPos = "1";
                                   _payment_method_num = "3";
                                 });
-                                Navigator.pop(pcontext);
+                                //Navigator.pop(pcontext);
                                 widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
                               },
@@ -330,7 +330,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   _isAllowPos = "1";
                                   _payment_method_num = "4";
                                 });
-                                Navigator.pop(pcontext);
+                                //Navigator.pop(pcontext);
                                 widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
                               },
