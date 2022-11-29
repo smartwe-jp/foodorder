@@ -8,6 +8,7 @@ import 'dart:ui';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/rendering.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -470,7 +471,7 @@ class _SettlementPageState extends State<SettlementPage> {
             _isReport = false;
             _scanCode = true;
           });
-          doPrintOrderMenu();
+          doPrintOrderMenu("1");
 
 
         } else {
@@ -588,7 +589,7 @@ class _SettlementPageState extends State<SettlementPage> {
             _isReport = false;
             _scanCode = true;
           });
-          doPrintOrderMenu();
+          doPrintOrderMenu("1");
         }
       });
 
@@ -671,13 +672,16 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //去打印小票
-  doPrintOrderMenu() async {
+  doPrintOrderMenu(printType) async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
 
       if(_ticketData != null){
 
-        await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
+        //新接口
+        _tpPrintnew(_ticketData,printType);
+        //应对旧接口
+        //await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
         if(_machineMode == "1"){
           eventBus.fire(new clearCartEvent('支付成功...'));
@@ -714,7 +718,11 @@ class _SettlementPageState extends State<SettlementPage> {
           var response = json.decode(val.toString());
           //LogUtil.d(response);
           if (response['code'] == 200) {
-            _tpPrintnew(response['data']);
+            //printType 1 打印菜+领収书 2 只打印菜
+
+            _tpPrintnew(response['data'],printType);
+
+
             //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
             sleep(Duration(milliseconds: 500));
@@ -747,7 +755,7 @@ class _SettlementPageState extends State<SettlementPage> {
           } else {
             //错误后重新调用一次
             //print("错误重新调用一次");
-            doPrintOrderMenu();
+            doPrintOrderMenu(printType);
             //EasyLoading.dismiss();
 
           }
@@ -838,7 +846,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                   onPressed: () async {
                                     //widget.confirmCallback('确定');
                                     Navigator.pop(context);
-                                    doPrintOrderMenu();
+                                    doPrintOrderMenu(printType);
                                   },
                                 ),
                               )
@@ -858,11 +866,11 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //打印甘蘭
-  _tpPrintnew(printData) async {
+  _tpPrintnew(printData,printType) async {
     var categoryVos = printData["categoryVos"];
 
     List<Widget> categoryMenus = [];
-    var lineHight = 60;
+    var lineHight = 75;
     var menuNum = 0;
 
     categoryMenus.add(
@@ -891,12 +899,12 @@ class _SettlementPageState extends State<SettlementPage> {
         var optionVoList = lineItem["optionVos"];
         // 计算菜品标题长度
         var menuLength = lineItem["menuName"].length;
-        var menuLine = menuLength / 12;
+        var menuLine = menuLength / 13;
         var menuRowNum = menuLine.ceil();
         //print("menuRowNum====${menuRowNum}");
 
         categoryMenus.add(
-            _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}",28.0,FontWeight.w100,"${lineItem["menuQty"]}",28.0,FontWeight.normal),
+            _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}",28.0,FontWeight.w100,"${lineItem["menuQty"]}",28.0,FontWeight.w100),
         );
         if(optionVoList.length >0){
           for(var n=0; n<optionVoList.length; n++){
@@ -904,12 +912,12 @@ class _SettlementPageState extends State<SettlementPage> {
             // 计算菜品标题长度
             var groupNameLength = optionVos["groupName"].length;
             var optionNameLength = optionVos["optionName"].length;
-            var optionLine = (groupNameLength + optionNameLength) / 12;
+            var optionLine = (groupNameLength + optionNameLength) / 13;
             var optionRowNum = optionLine.ceil();
             //print("optionRowNum====${optionRowNum}");
 
             categoryMenus.add(
-              _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.normal),
+              _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.w100),
             );
             menuNum += optionRowNum;
             }
@@ -930,8 +938,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     }
-    //print("总行数${menuNum}");
-    var totalHight = menuNum*60+lineHight;
+    print("总行数${menuNum}");
+    var totalHight = menuNum*56+lineHight;
+    if(menuNum == 1){
+      totalHight +=15;
+    }
 
     ByteData byteData = await WidgetToImage.widgetToImage(
         Container(
@@ -954,8 +965,13 @@ class _SettlementPageState extends State<SettlementPage> {
     Future.delayed(Duration(milliseconds: 100),() async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      await FlutterPluginMsprinter.sendPrintImg(base64Image,"1",_shopInfo,"0");
-      _tpPrintReceipt(printData);
+      if(printType == "1"){
+        await FlutterPluginMsprinter.sendPrintImg(base64Image,"1",_shopInfo,"0");
+        _tpPrintReceipt(printData);
+      }else{
+        await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"0");
+      }
+
     });
 
 
@@ -964,7 +980,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _tpPrintReceipt(printData) async {
 
     List<Widget> categoryMenus = [];
-    var lineHight = 620;
+    var lineHight = 630;
     var lineZeng = 20;
 
     //电话
@@ -975,6 +991,26 @@ class _SettlementPageState extends State<SettlementPage> {
     categoryMenus.add(
         _publicOneColumnTxt("${printData["shopAddress"]}",24.0,FontWeight.w200)
     );
+    //订单日期
+    /*categoryMenus.add(
+        _publicOneColumnTxt(printData["orderDate"],25.0,FontWeight.w200)
+    );*/
+    categoryMenus.add(
+      Container(
+        alignment: Alignment.centerLeft,
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["orderDate"]}",
+                style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.w100,
+                    fontFamily: 'NotoSansJP',
+                    color: ColorsUtil.hexToColor("#000000")
+                ))),
+      )
+    );
+
 //领収书标题
     categoryMenus.add(
       Container(
@@ -1069,15 +1105,15 @@ class _SettlementPageState extends State<SettlementPage> {
       _publicSplitLine(),
     );
     categoryMenus.add(
-      _publicTwoColumnsTxt(printData["payMethod"],24.0,FontWeight.w200,"${printData["payPrice"]}",24.0,FontWeight.w200,true),
+      _publicTwoColumnsTxt(printData["payMethod"],26.0,FontWeight.w200,"${printData["payPrice"]}",26.0,FontWeight.w200,true),
     );
     if(printData["memberNo"] != null && printData["memberNo"] != ""){
       lineZeng = 110;
       categoryMenus.add(
-        _publicTwoColumnsTxt("カード番号",24.0,FontWeight.w200,printData["memberNo"],24.0,FontWeight.w100,false),
+        _publicTwoColumnsTxt("カード番号",26.0,FontWeight.w200,printData["memberNo"],26.0,FontWeight.w100,false),
       );
       categoryMenus.add(
-          _publicTwoColumnsTxt("日期",24.0,FontWeight.w200,printData["payDate"],24.0,FontWeight.w100,false),
+          _publicTwoColumnsTxt("日期",26.0,FontWeight.w200,printData["payDate"],26.0,FontWeight.w100,false),
       );
       categoryMenus.add(
           _publicSplitLine()
@@ -1085,12 +1121,9 @@ class _SettlementPageState extends State<SettlementPage> {
     }
     //お明細は上記のとおりです。
     categoryMenus.add(
-      _publicOneColumnTxt("お明細は上記のとおりです。",24.0,FontWeight.w200)
+      _publicOneColumnTxt("お明細は上記のとおりです。",26.0,FontWeight.w200)
     );
-    //订单日期
-    categoryMenus.add(
-      _publicOneColumnTxt(printData["orderDate"],24.0,FontWeight.w200)
-    );
+
 
     var totalHight = lineZeng+lineHight;
 
@@ -1234,7 +1267,7 @@ class _SettlementPageState extends State<SettlementPage> {
     return Directionality(
         textDirection: TextDirection.ltr,
         child:Container(
-          margin: EdgeInsets.only(top: 3,bottom: 3),
+          margin: EdgeInsets.only(top: 5,bottom: 5),
           height: 0.5,
           color:ColorsUtil.hexToColor("#000000"),
           width: 375,
@@ -2216,7 +2249,7 @@ class _SettlementPageState extends State<SettlementPage> {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu();
+        doPrintOrderMenu("1");
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
@@ -3267,175 +3300,191 @@ class _SettlementPageState extends State<SettlementPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    InkWell(
-                      onTap: (){
-                        try {
-                          //Navigator.pop(context);
-                          _showBackEasyLoading();
-                          CancelOrder();
-                        } catch (_) {}
-                      },
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: ScreenAdapter.width(270),
-                        height: ScreenAdapter.height(140),
-                        //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
-                        decoration: BoxDecoration(
+                    Container(
+                      width: ScreenAdapter.width(440),
+                      alignment: Alignment.centerRight,
+                      child: InkWell(
+                        onTap: (){
+                          try {
+                            //Navigator.pop(context);
+                            _showBackEasyLoading();
+                            CancelOrder();
+                          } catch (_) {}
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: ScreenAdapter.width(270),
+                          height: ScreenAdapter.height(140),
+                          //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
+                          decoration: BoxDecoration(
 
-                          color: ColorsUtil.hexToColor("#FFFFFF"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((5.0)),
-                        ),
-                        child: Text(
-                          GString.getToString(this._checkLanguage, "settlement_back"),
-                          style: TextStyle(
-                              color: ColorsUtil.hexToColor("#000000"),
-                              fontWeight: FontWeight.w500,
-                              fontSize: ScreenAdapter.fontSize(34.0)),
+                            color: ColorsUtil.hexToColor("#FFFFFF"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((5.0)),
+                          ),
+                          child: Text(
+                            GString.getToString(this._checkLanguage, "settlement_back"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#000000"),
+                                fontWeight: FontWeight.w500,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
                         ),
                       ),
                     ),
-                    SizedBox(width: ScreenAdapter.width(180)),
+                    SizedBox(width: ScreenAdapter.width(80)),
                     _showPrintButton == true ?
-                    _is_allow_receipt == "1" ? InkWell(
-                      onTap: (){
-                        if(_allowClick == true){
-                          setState(() {
-                            _allowClick = false;
-                          });
+                    _is_allow_receipt == "1" ? Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(540),
+                      alignment: Alignment.centerLeft,
+                      child: InkWell(
+                        onTap: (){
+                          if(_allowClick == true){
+                            setState(() {
+                              _allowClick = false;
+                            });
 
-                          _showEasyLoading();
+                            _showEasyLoading();
 
-                          //Endtoubi();
-                          doPrintOrderMenu();
-                        }
+                            //Endtoubi();
+                            doPrintOrderMenu("1");
+                          }
 
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        width: ScreenAdapter.width(270),
-                        height: ScreenAdapter.height(140),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(270),
+                          height: ScreenAdapter.height(140),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
 
-                          gradient: LinearGradient(
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight,
-                            colors: [
-                              ColorsUtil.hexToColor("#C47829"),
-                              ColorsUtil.hexToColor("#854610"),
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                ColorsUtil.hexToColor("#C47829"),
+                                ColorsUtil.hexToColor("#854610"),
+                              ],
+                            ),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((5.0)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                  )),
                             ],
                           ),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((5.0)),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(32),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                )),
-                          ],
                         ),
                       ),
                     ):
-                    Column(
-                      children: [
-                        InkWell(
-                          onTap: (){
-                            if(_allowClick == true){
-                              setState(() {
-                                _allowClick = false;
-                              });
+                    Container(
+                      width: ScreenAdapter.width(540),
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: (){
+                              if(_allowClick == true){
+                                setState(() {
+                                  _allowClick = false;
+                                });
 
-                              _showEasyLoading();
+                                _showEasyLoading();
 
-                              //Endtoubi();
-                              doPrintOrderMenu();
-                            }
+                                //Endtoubi();
+                                doPrintOrderMenu("1");
+                              }
 
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                            width: ScreenAdapter.width(270),
-                            height: ScreenAdapter.height(100),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#148DE8"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((5.0)),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(32),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                    )),
-                                Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_yes"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(20),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                    )),
-                              ],
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: ScreenAdapter.height(8)),
-                        InkWell(
-                          onTap: (){
-                            if(_allowClick == true){
-                              setState(() {
-                                _allowClick = false;
-                                _is_query_receipt = "2";
-                              });
-
-                              _showEasyLoading();
-
-                              //Endtoubi();
-                              doPrintOrderMenu();
-                            }
-
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                            width: ScreenAdapter.width(270),
-                            height: ScreenAdapter.height(100),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#67c23a"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((5.0)),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(32),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                    )),
-                                Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_no"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(20),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                    )),
-                              ],
+                            },
+                            child: Container(
+                              //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                              width: ScreenAdapter.width(220),
+                              height: ScreenAdapter.height(140),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: ColorsUtil.hexToColor("#148DE8"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((5.0)),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                      )),
+                                  Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_yes"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(20),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                      )),
+                                ],
+                              ),
                             ),
                           ),
-                        ),
-                      ],
+                          SizedBox(width: ScreenAdapter.width(30)),
+                          InkWell(
+                            onTap: (){
+                              if(_allowClick == true){
+                                setState(() {
+                                  _allowClick = false;
+                                  _is_query_receipt = "2";
+                                });
+
+                                _showEasyLoading();
+
+                                //Endtoubi();
+                                doPrintOrderMenu("2");
+                              }
+
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(left: ScreenAdapter.width(10)),
+                              width: ScreenAdapter.width(220),
+                              height: ScreenAdapter.height(140),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: ColorsUtil.hexToColor("#67c23a"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((5.0)),
+                              ),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(GString.getToString(this._checkLanguage, "settlement_confirmButton"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                      )),
+                                  Text(GString.getToString(this._checkLanguage, "settlement_confirmButton_no"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(20),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
                     ) : Container(
                       margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                      width: ScreenAdapter.width(270),
+                      width: ScreenAdapter.width(540),
                       height: ScreenAdapter.height(100),
                     ),
                   ],
