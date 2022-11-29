@@ -104,15 +104,21 @@ flutter:
   #         weight: 700
   #
   fonts:
-    - family: KoruriLight
-      fonts:
-        - asset: assets/fonts/Work_Sans/Koruri-Light.ttf
     - family: KoruriLightNew
       fonts:
         - asset: assets/fonts/Work_Sans/Koruri-Light-new.ttf
-    - family: MPLUSRounded1c
+    - family: NotoSansJP
       fonts:
-        - asset: assets/fonts/Work_Sans/MPLUSRounded1c-Light.ttf
+        - asset: assets/fonts/Work_Sans/NotoSansJP-Thin.otf
+        - asset: assets/fonts/Work_Sans/NotoSansJP-Light.otf
+        - asset: assets/fonts/Work_Sans/NotoSansJP-Regular.otf
+    - family: UbuntuMonoRegular
+      fonts:
+        - asset: assets/fonts/Work_Sans/UbuntuMono-Regular.ttf
+    - family: ZenKakuGothicAntique
+      fonts:
+        - asset: assets/fonts/Work_Sans/ZenKakuGothicAntique-Light.ttf
+        - asset: assets/fonts/Work_Sans/ZenKakuGothicAntique-Regular.ttf
 
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
