@@ -73,6 +73,8 @@ class GString{
         "select_payment_dining_title":"店内または持ち帰りをお選びください",
         "select_payment_type_title":"支払い方法をお選びください",
 
+        "payment_success_title":"支払完了いたしました",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -142,6 +144,8 @@ class GString{
         "select_payment_dining_title":"请选择堂食还是打包",
         "select_payment_type_title":"请选择支付方式",
 
+        "payment_success_title":"支付成功!",
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -210,6 +214,8 @@ class GString{
 
         "select_payment_dining_title":"Please choose Eat in or Take out",
         "select_payment_type_title":"Please choose your payment method",
+
+        "payment_success_title":"Payment succeeded.",
       };
     }
 

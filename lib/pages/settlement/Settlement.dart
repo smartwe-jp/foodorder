@@ -678,8 +678,16 @@ class _SettlementPageState extends State<SettlementPage> {
 
       if(_ticketData != null){
 
-        //新接口
-        _tpPrintnew(_ticketData,printType);
+        //新接口 券卖机1时候，可选择是否打印领収书，菜单必打  精算机2，不打菜单，可选领収书
+        if(_machineMode == "1"){
+          _tpPrintnew(_ticketData,printType);
+        }else if(_machineMode == "2"){
+          //1打印领収书 2不打印，直接返回
+          if(printType == "1"){
+            _tpPrintReceipt(_ticketData);
+          }
+        }
+
         //应对旧接口
         //await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
@@ -719,8 +727,15 @@ class _SettlementPageState extends State<SettlementPage> {
           //LogUtil.d(response);
           if (response['code'] == 200) {
             //printType 1 打印菜+领収书 2 只打印菜
+            if(_machineMode == "1"){
+              _tpPrintnew(response['data'],printType);
+            }else if(_machineMode == "2"){
+              //1打印领収书 2不打印，直接返回
+              if(printType == "1"){
+                _tpPrintReceipt(response['data']);
+              }
+            }
 
-            _tpPrintnew(response['data'],printType);
 
 
             //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
@@ -919,14 +934,14 @@ class _SettlementPageState extends State<SettlementPage> {
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt("　${optionVos["groupName"]}",28.0,FontWeight.w100,"${optionVos["optionName"]}",28.0,FontWeight.w100),
             );
-            addRowHight += 50;
+            addRowHight += 50*optionRowNum;
             menuNum += optionRowNum;
             optionNum++;
             }
-          addRowHight += 48;
+          addRowHight += 48*menuRowNum;
           menuNum += menuRowNum;
         }else{
-          addRowHight += 53;
+          addRowHight += 53*menuRowNum;
           menuNum += menuRowNum;
         }
 
@@ -1641,8 +1656,8 @@ class _SettlementPageState extends State<SettlementPage> {
     if(_machineMode == "1"){
       Navigator.pushNamed(context, '/home');
     }else{
-      Navigator.pushNamed(context, '/transitPage');
-      //Navigator.pushNamed(context, '/checkOutPage');
+      //Navigator.pushNamed(context, '/transitPage');
+      Navigator.pushNamed(context, '/checkOutPage');
     }
   }
 
@@ -1968,6 +1983,39 @@ class _SettlementPageState extends State<SettlementPage> {
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
               child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
+  _showSuccessEasyLoading(){
+    var _showTag;
+
+      _showTag = Text(GString.getToString(this._checkLanguage, "payment_success_title"),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(25),
+            fontWeight: FontWeight.w600,
+            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+          ));
+
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            Container(
+              //width: ScreenAdapter.width(400),
+              margin: EdgeInsets.only(top: 60),
+              height: ScreenAdapter.height(200),
+              child: Image.asset(GImage.getImageString("imgpublic", "paymentSuccess"),fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -3460,7 +3508,11 @@ class _SettlementPageState extends State<SettlementPage> {
                                   _is_query_receipt = "2";
                                 });
 
-                                _showEasyLoading();
+                                if(_machineMode == "1"){
+                                  _showEasyLoading();
+                                }else{
+                                  _showSuccessEasyLoading();
+                                }
 
                                 //Endtoubi();
                                 doPrintOrderMenu("2");

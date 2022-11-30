@@ -40,7 +40,7 @@ class GImage{
         "xianjin":"assets/images/public/xianjin.jpg",
         "eatin":"assets/images/public/eatin.png",
         "takeout":"assets/images/public/takeout.png",
-        "jingsuantag":"assets/images/public/jingsuantag.jpg",
+        "jingsuantag":"assets/images/public/jingsuantag.png",
         "error_public":"assets/images/public/error_public.jpg",
         "payment_cash":"assets/images/public/payment_cash.png",
         "payment_qr":"assets/images/public/payment_qr.png",
@@ -62,6 +62,8 @@ class GImage{
         "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
         "settlement_top_lead_card_EN":"assets/images/public/settlement_top_lead_card_EN.png",
         "settlement_top_lead_nfc_EN":"assets/images/public/settlement_top_lead_nfc_EN.png",
+
+        "paymentSuccess":"assets/images/public/paymentSuccess.jpg",
 
       };
     }
