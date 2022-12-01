@@ -598,6 +598,25 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
+  _doScanCodeTimeOutLastQuery(){
+    var formData = {
+      "orderId": this._orderId,
+    };
+    request('webBootLinePayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+
+      if (response['code'] == 200 && response['data'] == true) {
+        setState(() {
+          _isReport = false;
+          _scanCode = true;
+        });
+        doPrintOrderMenu("1");
+      }else{
+        _showScanCodeTimeOutDialog();
+      }
+    });
+  }
+
 
   //扫码超时请求20次后依然失败，弹出dialog
   _showScanCodeTimeOutDialog(){
@@ -1933,7 +1952,8 @@ class _SettlementPageState extends State<SettlementPage> {
             InkWell(
               onLongPress: (){
                 ScanCodeConfirmTimer?.cancel();
-                _showScanCodeTimeOutDialog();
+                _doScanCodeTimeOutLastQuery();
+
               },
               child: Container(
                 //width: ScreenAdapter.width(400),
@@ -2456,34 +2476,52 @@ class _SettlementPageState extends State<SettlementPage> {
                       ],
                     ),
                   if(_payment_method_num == "3")
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(GImage.getImageString("imgpublic", "settlement_top_card"),width: ScreenAdapter.width(40),fit: BoxFit.fitWidth,),
-                        SizedBox(width: ScreenAdapter.width(20),),
-                        Text(GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                          style: TextStyle(
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
-                              fontSize: ScreenAdapter.fontSize(34.0)),
-                        ),
-                      ],
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: (){
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(GImage.getImageString("imgpublic", "settlement_top_card"),width: ScreenAdapter.width(40),fit: BoxFit.fitWidth,),
+                          SizedBox(width: ScreenAdapter.width(20),),
+                          Text(GString.getToString(this._checkLanguage, "settlement_top_title_card"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
                     ),
                   if(_payment_method_num == "4")
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Image.asset(GImage.getImageString("imgpublic", "settlement_top_nfc"),width: ScreenAdapter.width(40),fit: BoxFit.fitWidth,),
-                        SizedBox(width: ScreenAdapter.width(20),),
-                        Text(GString.getToString(this._checkLanguage, "settlement_top_title_nfc"),
-                          style: TextStyle(
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
-                              fontSize: ScreenAdapter.fontSize(34.0)),
-                        ),
-                      ],
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: (){
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(GImage.getImageString("imgpublic", "settlement_top_nfc"),width: ScreenAdapter.width(40),fit: BoxFit.fitWidth,),
+                          SizedBox(width: ScreenAdapter.width(20),),
+                          Text(GString.getToString(this._checkLanguage, "settlement_top_title_nfc"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
                     ),
 
 

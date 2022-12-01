@@ -86,8 +86,10 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
       _is_allow_pos = systemSettingInfo['isAllowPos'];
 
-      _pos_ip = posSettingInfo['posIp'];
-      _pos_port = posSettingInfo['posPort'];
+      if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
+        _pos_ip = posSettingInfo['posIp'];
+        _pos_port = posSettingInfo['posPort'];
+      }
     });
   }
 

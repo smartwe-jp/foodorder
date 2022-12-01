@@ -361,7 +361,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
 
     //判断是否第一次打开
-    getIsFirstOpen();
+    //getIsFirstOpen();
+    _getSmartweSystemSettingInfo();
   }
 
 
@@ -428,6 +429,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
     //}
 
+    //判断是否第一次打开
+    sleep(Duration(milliseconds: 500));
+    getIsFirstOpen();
 
   }
 
@@ -441,8 +445,8 @@ class _MyHomePageState extends State<MyHomePage> {
     _getPrintPaperSize();
     sleep(Duration(milliseconds: 200));
     _getIsAllowReceiptInfo();*/
-    _getSmartweSystemSettingInfo();
-    sleep(Duration(milliseconds: 500));
+    //_getSmartweSystemSettingInfo();
+    //sleep(Duration(milliseconds: 500));
     EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();
