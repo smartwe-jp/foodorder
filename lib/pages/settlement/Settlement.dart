@@ -900,7 +900,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //打印甘蘭
   _tpPrintnew(printData,printType) async {
-    var categoryVos = printData["categoryVos"];LogUtil.d(printData);
+    var categoryVos = printData["categoryVos"];
 
     List<Widget> categoryMenus = [];
     var lineHight = 75;
@@ -977,7 +977,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
     }
-    print("总行数${menuNum}");
+    //print("总行数${menuNum}");
     var totalHight = addRowHight+lineHight;
     if(menuNum == 1){
       totalHight +=15;
@@ -2271,9 +2271,9 @@ class _SettlementPageState extends State<SettlementPage> {
     this._socket.listen((List<int> event) {
       //print("监听返回打印");
       //print(event);
-      print("\n\r================================\n\r");
-      LogUtil.d(event);
-      print("\n\r================================\n\r");
+      //print("\n\r================================\n\r");
+      //LogUtil.d(event);
+      //print("\n\r================================\n\r");
       if(event.length > 40)
         event.fillRange(266, 289, 32);
       var zhuanhuan = Uint8List.fromList(event);
