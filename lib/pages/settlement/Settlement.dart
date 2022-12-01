@@ -604,7 +604,6 @@ class _SettlementPageState extends State<SettlementPage> {
     };
     request('webBootLinePayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
       if (response['code'] == 200 && response['data'] == true) {
         setState(() {
           _isReport = false;

@@ -21,6 +21,7 @@ import 'package:foodorder/services/HttpService.dart';
 
 import 'package:foodorder/config/color.dart';
 import 'package:foodorder/widget/LoadState.dart';
+import 'package:widget_to_image/widget_to_image.dart';
 
 class AppointmentPage extends StatefulWidget {
   AppointmentPage({Key key}) : super(key: key);
@@ -414,9 +415,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
     };
 
     request('webBootReserve', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200  && response['data'] != null) {
-        doPrintReserve(json.encode(response['data']));
+        doPrintReserve(response['data']);
         //showToast("预约排队成功");
         Navigator.pop(context);
       }else{
@@ -430,8 +431,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
   doPrintReserve(reserveInfo) async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
-      await FlutterPluginMsprinter.sendPrintReserve(reserveInfo,_shopInfo);
-
+      //await FlutterPluginMsprinter.sendPrintReserve(reserveInfo,_shopInfo);
+      _tpPrintReserve(reserveInfo);
     }else{
       EasyLoading.dismiss();
 
@@ -531,6 +532,66 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
 
 
+  }
+
+  _tpPrintReserve(printData) async {
+    List<Widget> categoryMenus = [];
+    var lineHight = 250;
+
+    //时间
+    categoryMenus.add(
+        Container(
+          alignment: Alignment.centerLeft,
+          margin: EdgeInsets.only(bottom: 3),
+          child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: Text(printData["reserveTime"],
+                  style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.w100,
+                      fontFamily: 'NotoSansJP',
+                      color: ColorsUtil.hexToColor("#000000")
+                  ))),
+        )
+    );
+
+//领収书标题
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["tableType"]}${printData["reserveNo"]}",
+                style: TextStyle(
+                  fontSize: 90,
+                  fontFamily: 'NotoSansJP',
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor("#000000"),))),
+      ),
+    );
+
+    ByteData byteData = await WidgetToImage.widgetToImage(
+        Container(
+          width: 380,
+          height: lineHight.toDouble(),
+          color: Colors.white,
+          //alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: categoryMenus,
+          ),
+        )
+    );
+
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
+    Future.delayed(Duration(milliseconds: 100),() async {
+      String base64Image = base64Encode(imageBytes);
+      //LogUtil.d(base64Image);
+      await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
+    });
   }
 
   @override
