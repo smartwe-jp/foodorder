@@ -9,6 +9,10 @@ public class BootCompleteReceiver extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
         if(Intent.ACTION_BOOT_COMPLETED.equals(intent.getAction())){
+            try {
+                Thread.sleep(1000); //暂停，每一秒输出一次
+            }catch (InterruptedException e) {
+            }
             Intent thisIntent = new Intent(context, MainActivity.class);
             thisIntent.setAction("android.intent.action.MAIN");
             thisIntent.addCategory("android.intent.category.LAUNCHER");

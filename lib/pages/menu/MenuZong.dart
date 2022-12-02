@@ -198,17 +198,60 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                   height: ScreenAdapter.height(1585),
                   width: ScreenAdapter.width(75),
                   padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
-                  child: showLeftCategoryMenu(),
+                  child: Column(
+                    children: [
+                      Container(
+                        child: InkWell(
+                          enableFeedback: false,
+                          onTap: () {
+                            controller.removeAllFromCart();
+                            Navigator.pushNamed(context, '/home');
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(bottom: ScreenAdapter.height(15)),
+                            width: ScreenAdapter.width(75),
+                            height: ScreenAdapter.height(95),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#A61C1C"),
+
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Container(
+                                    width: ScreenAdapter.width(30),
+                                    child: Text(
+                                      GString.getToString(this._checkLanguage, "top_back_button"),
+                                      style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(26),
+                                          color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        height: ScreenAdapter.height(1465),
+                        child: showLeftCategoryMenu(),
+                      ),
+                    ],
+                  )
                 ),
-                Expanded(
-                  child: Container(
-                    height: ScreenAdapter.height(1585),
-                    width: ScreenAdapter.width(1005),
-                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                    //padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                    child: showMiddleMenuList(),
-                  ),
-                )
+                Expanded(child: Container(
+                  height: ScreenAdapter.height(1585),
+                  width: ScreenAdapter.width(1005),
+                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                  //padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                  child: showMiddleMenuList(),
+                )),
               ],
             ),
           ),
@@ -507,7 +550,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     List MenuColor = ["#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3"];
     var menuIndex = 0;
     //言语
-    categoryMenus.add(Container(
+    /*categoryMenus.add(Container(
       child: InkWell(
         enableFeedback: false,
         onTap: () {
@@ -544,7 +587,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           ),
         ),
       ),
-    ),);
+    ),);*/
     int _categoryNum = 1;
 
     for (var item in topMenu) {
@@ -618,10 +661,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     return Container(
       //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
       width: ScreenAdapter.width(75),
-      height: ScreenAdapter.height(1585),
+      height: ScreenAdapter.height(1465),
       color: ColorsUtil.hexToColor("#F0DFB3"),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        scrollDirection: Axis.vertical,
+        //crossAxisAlignment: CrossAxisAlignment.start,
         children: categoryMenus,
       ),
     );

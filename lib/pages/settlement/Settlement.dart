@@ -902,11 +902,24 @@ class _SettlementPageState extends State<SettlementPage> {
     var categoryVos = printData["categoryVos"];
 
     List<Widget> categoryMenus = [];
-    var lineHight = 75;
+    var lineHight = 145;
     var menuNum = 0;
     var optionNum = 0;
     var addRowHight = 0;
 
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["numberTip"]}",
+                style: TextStyle(
+                  fontSize: 40,
+                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor("#000000"),))),
+      ),
+    );
     categoryMenus.add(
       Container(
         margin: EdgeInsets.only(bottom: 3),
@@ -1059,6 +1072,24 @@ class _SettlementPageState extends State<SettlementPage> {
                 ))),
       )
     );
+    if(_machineMode == "1"){
+      lineHight += 25;
+      categoryMenus.add(
+          Container(
+            alignment: Alignment.centerLeft,
+            margin: EdgeInsets.only(bottom: 3),
+            child: Directionality(
+                textDirection: TextDirection.ltr,
+                child: Text("${printData["numberTips"]}",
+                    style: TextStyle(
+                        fontSize: 24,
+                        fontWeight: FontWeight.w100,
+                        fontFamily: 'NotoSansJP',
+                        color: ColorsUtil.hexToColor("#000000")
+                    ))),
+          )
+      );
+    }
 
 //领収书标题
     categoryMenus.add(
