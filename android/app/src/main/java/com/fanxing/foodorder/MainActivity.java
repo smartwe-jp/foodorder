@@ -21,12 +21,12 @@ import io.flutter.embedding.engine.FlutterEngine;
 public class MainActivity extends FlutterActivity {
     private Context mContext;
 
-    private ScheduledExecutorService threadPool = null;
-    private int betweenTime = 59;//间隔59秒执行一次
-    private int delayTime = 50;//线程池开启5秒后执行
-    private String time = "06:00";//重启时间一
-    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.CHINA);
-    String dateStr = "";//获取的时间
+    //private ScheduledExecutorService threadPool = null;
+    //private int betweenTime = 59;//间隔59秒执行一次
+    //private int delayTime = 50;//线程池开启5秒后执行
+    //private String time = "06:00";//重启时间一
+    //SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.CHINA);
+    //String dateStr = "";//获取的时间
    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -40,8 +40,8 @@ public class MainActivity extends FlutterActivity {
 
         }*/
 
-       threadPool = Executors.newScheduledThreadPool(3);
-       executeShutDown();
+       //threadPool = Executors.newScheduledThreadPool(3);
+       //executeShutDown();
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MainActivity extends FlutterActivity {
         flutterEngine.getPlugins().add(new MyPlatformViewPlugin());
     }
 
-    public void executeShutDown() {
+    /*public void executeShutDown() {
         Log.d("重启executeShutDown", "=executeShutDownexecuteShutDownexecuteShutDown");
         threadPool.scheduleAtFixedRate(new Runnable() {
             @Override
@@ -63,15 +63,15 @@ public class MainActivity extends FlutterActivity {
                     //重启广播
                     Intent intent1 = new Intent("com.sed.ctrl.ps.REQUEST_REBOOT");//重启
                     sendBroadcast(intent1);
-                    /*try {
+                    *//*try {
                         Runtime.getRuntime().exec(rebootArray);
                         exec("reboot");
                     } catch (IOException io) {
                         io.printStackTrace();
-                    }*/
+                    }*//*
                 }
             }
         }, delayTime, betweenTime, TimeUnit.SECONDS);
-    }
+    }*/
 
 }
