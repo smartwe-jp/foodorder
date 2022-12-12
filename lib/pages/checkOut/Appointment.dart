@@ -124,52 +124,51 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Container(
-                          alignment: Alignment.center,
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(85),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
-                          decoration: BoxDecoration(
+                        InkWell(
+                          onTap: (){
+                            Navigator.pop(context);
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(85),
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
+                            decoration: BoxDecoration(
 
-                            color: ColorsUtil.hexToColor("#A61C1C"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: TextButton(
+                              color: ColorsUtil.hexToColor("#A61C1C"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
                             child: Text(
                               "取消",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
                             ),
-                            onPressed: () async {
-                              Navigator.pop(context);
-                            },
                           ),
                         ),
                         SizedBox(width: ScreenAdapter.width(120),),
-                        Container(
-                          alignment: Alignment.center,
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(85),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
-                          decoration: BoxDecoration(
+                        InkWell(
+                          onTap: (){
+                            doReserve();
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(85),
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
+                            decoration: BoxDecoration(
 
-                            color: ColorsUtil.hexToColor("#A61C1C"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: TextButton(
+                              color: ColorsUtil.hexToColor("#A61C1C"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
                             child: Text(
                               "確定",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
                             ),
-                            onPressed: () async {
-                              doReserve();
-
-                            },
                           ),
                         ),
                       ],

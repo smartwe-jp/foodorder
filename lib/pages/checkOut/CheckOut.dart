@@ -550,27 +550,27 @@ print(systemSettingInfo);
                             thickness: 1.0,
                             color: Colors.black12,
                           ),*/
-                          Container(
-                            alignment: Alignment.center,
-                            width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(85),
-                            margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
-                            decoration: BoxDecoration(
+                          InkWell(
+                            onTap: (){
+                              Navigator.pop(context);
+                            },
+                            child: Container(
+                              alignment: Alignment.center,
+                              width: ScreenAdapter.width(180),
+                              height: ScreenAdapter.height(85),
+                              margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
+                              decoration: BoxDecoration(
 
-                              color: ColorsUtil.hexToColor("#A61C1C"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            child: TextButton(
+                                color: ColorsUtil.hexToColor("#A61C1C"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((16.0)),
+                              ),
                               child: Text(
                                 "${GString.getToString(this._checkLanguage,"settlement_change_method")}",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
-                              onPressed: () async {
-                                Navigator.pop(context);
-                              },
                             ),
                           ),
                           /*Container(
