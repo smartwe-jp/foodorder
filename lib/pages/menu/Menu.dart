@@ -3654,7 +3654,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
           optionSons.add(Container(
-            width: ScreenAdapter.width(145),
+            width: ScreenAdapter.width(165),
             padding: EdgeInsets.only(
                 left: ScreenAdapter.width(5),
                 top: ScreenAdapter.height(5),
@@ -3669,7 +3669,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(130),
+                      width: ScreenAdapter.width(165),
                       height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
                       decoration: (optionVolistSon['checked'] == true)
