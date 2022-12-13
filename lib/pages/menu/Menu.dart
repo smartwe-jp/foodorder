@@ -251,9 +251,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
       if (response['code'] == 200) {
         //1、保存店铺信息
-        var shopData = response['data'];
+        /*var shopData = response['data'];
         var ShopInfo = {
-          //"shopCode": shopData["shopCode"],
           "machineCode": shopData["machineCode"],
           "languages": shopData["languages"],
           "shopName": shopData["shopName"],
@@ -262,17 +261,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           "shopTelephone": shopData["shopTelephone"],
           "businessTime": shopData["businessTime"],
         };
-        Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
-
-        //保存支付页面顶部图标
-        /*setState(() {
-          //_shopCode = shopData["shopCode"];
-          _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
-          _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
-          _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-          //_showIsPos = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-          _showIsPos = true;
-        });*/
+        Storage.setString("GanlanshopInfo", json.encode(ShopInfo));*/
 
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
@@ -567,7 +556,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         if (item['showType'] == "featured") {
           return _showCategoryOne(showItem[classTag]);
         } else if (item['showType'] == "table") {
-          return _showCategoryTwo(showItem[classTag]);
+          //return _showCategoryTwo(showItem[classTag]);
+          return _showCategoryEight(showItem[classTag]);
         } else if (item['showType'] == "block") {
           return _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
@@ -578,6 +568,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           return _showCategorySix(showItem[classTag]);
         } else if (item['showType'] == "three_column") {
           return _showCategorySeven(showItem[classTag]);
+        } else if (item['showType'] == "mix_column") { //混合模式
+          return _showCategoryEight(showItem[classTag]);
         }
       }
     }
@@ -2963,6 +2955,869 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     );
   }
 
+  //第八个分类 混合排列，第一行一大两小，其余三个一行每页三列一行  饮品
+  _showCategoryEight(showItemList) {
+    if (showItemList.length > 0) {
+      if(showItemList.length >=3){
+        var _leftItem = showItemList[0];
+        var _rightTop = showItemList[1];
+        var _rightBottom = showItemList[2];
+        var _newItemList = showItemList.sublist(3);
+
+        return Container(
+          child: ListView(
+            scrollDirection: Axis.vertical,
+            physics: new AlwaysScrollableScrollPhysics(),
+            children: [
+              Row(
+                children: [
+                  Stack(
+                    children: [
+                      Container(
+                        height: ScreenAdapter.height(810),
+                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
+                        child: InkWell(
+                            enableFeedback: false,
+                            onTap: () async {
+
+                              if (_leftItem['qtyBounds'] == 0) {
+                                return;
+                              } else if (_leftItem['qtyBounds'] > 0) {
+                                //请求限定接口
+                                var checkResult = _checkQtyBoundsCount(_leftItem['menuCode'], "");
+                                if (checkResult == false) {
+                                  return;
+                                }
+                              }
+                              //如果option 存在，则弹出option
+                              if(_leftItem['optionGroupVoList']?.length > 0){
+                                _publicShowOneItemWidget(_leftItem);
+                              }else{
+
+                                var cartItem = {
+                                  "menuCode": _leftItem['menuCode'],
+                                  "mainTitle": _leftItem['mainTitle'],
+                                  "image": _leftItem['homeImage'],
+                                  "currentPrice": _leftItem['currentPrice'],
+                                  "optionGroupVoList": "",
+                                  "optionVoListMsg": "",
+                                  "goodsNum": 1
+                                };
+                                publicAddCartMenu(cartItem, true).then((val) {
+
+                                  _publicShowAddCartNew();
+
+                                  //更改显示购物车价格
+                                  getCartPriceTotal();
+                                });
+                              }
+
+                            },
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: <Widget>[
+                                publicShowMenuImage(_leftItem['homeImage'], 630.0, 710.0),
+                                SizedBox(
+                                  height: ScreenAdapter.height(10),
+                                ),
+                                Container(
+                                  width: ScreenAdapter.width(630),
+                                  //height: ScreenAdapter.height(315),
+                                  padding: EdgeInsets.only(
+                                      left: ScreenAdapter.width(10),
+                                      right: ScreenAdapter.width(10)),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Expanded(
+                                        child: publicShowMenuTitle(
+                                            _leftItem['mainTitle'],
+                                            GFontSize.menuTwoListTitle,
+                                            Gcolor.mainTitleColor),
+                                      ),
+                                      Container(
+                                        //width: ScreenAdapter.width(125),
+                                        //height: ScreenAdapter.height(315),
+                                        alignment: Alignment.centerRight,
+                                        padding: EdgeInsets.only(
+                                            left: ScreenAdapter.width(5),
+                                            right: ScreenAdapter.width(0)),
+                                        child: publicShowMenuPrice(
+                                            _leftItem['currentPrice'],
+                                            GFontSize.menuTwopriceLift,
+                                            Gcolor.mainTitleColor,
+                                            GFontSize.menuTwoprice,
+                                            Gcolor.priceColor,
+                                            GFontSize.menuTwopriceRight,
+                                            Gcolor.mainTitleColor),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                                Container(
+                                  child: publicShowMenuSubtitle(_leftItem["subtitle"]),
+                                ),
+                              ],
+                            )
+                        ),
+                      ),
+                      //绝对定位 盖章
+                      publicShowMenuSellOut(_leftItem['qtyBounds']),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Container(
+                        height: ScreenAdapter.height(400),
+                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                        child: InkWell(
+                            enableFeedback: false,
+                            onTap: () async {
+
+                              if (_rightTop['qtyBounds'] == 0) {
+                                return;
+                              } else if (_rightTop['qtyBounds'] > 0) {
+                                //请求限定接口
+                                var checkResult = _checkQtyBoundsCount(_rightTop['menuCode'], "");
+                                if (checkResult == false) {
+                                  return;
+                                }
+                              }
+
+                              if(_rightTop['optionGroupVoList']?.length > 0){
+                                _publicShowOneItemWidget(_rightTop);
+                              }else{
+                                var cartItem = {
+                                  "menuCode": _rightTop['menuCode'],
+                                  "mainTitle": _rightTop['mainTitle'],
+                                  "image": _rightTop['homeImage'],
+                                  "currentPrice": _rightTop['currentPrice'],
+                                  "optionGroupVoList": "",
+                                  "optionVoListMsg": "",
+                                  "goodsNum": 1
+                                };
+                                publicAddCartMenu(cartItem, true).then((val) {
+
+                                  _publicShowAddCartNew();
+
+                                  //更改显示购物车价格
+                                  getCartPriceTotal();
+                                });
+                              }
+
+
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        publicShowMenuImage(_rightTop['homeImage'], 430.0, 300.0),
+                                        SizedBox(
+                                          height: ScreenAdapter.height(10),
+                                        ),
+                                        Container(
+                                          width: ScreenAdapter.width(430),
+                                          //height: ScreenAdapter.height(315),
+                                          padding: EdgeInsets.only(
+                                              left: ScreenAdapter.width(10),
+                                              right: ScreenAdapter.width(10)),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Expanded(
+                                                  child: publicShowMenuTitle(
+                                                  _rightTop['mainTitle'],
+                                                  GFontSize.menuTwoListTitle,
+                                                  Gcolor.mainTitleColor)
+                                              ),
+                                              Container(
+                                                //width: ScreenAdapter.width(125),
+                                                //height: ScreenAdapter.height(315),
+                                                alignment: Alignment.centerRight,
+                                                padding: EdgeInsets.only(
+                                                    left: ScreenAdapter.width(5),
+                                                    right: ScreenAdapter.width(0)),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    //价格展示
+                                                    publicShowMenuPrice(
+                                                        _rightTop['currentPrice'],
+                                                        GFontSize.menuTwopriceLift,
+                                                        Gcolor.mainTitleColor,
+                                                        GFontSize.menuTwoprice,
+                                                        Gcolor.priceColor,
+                                                        GFontSize.menuTwopriceRight,
+                                                        Gcolor.mainTitleColor),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+
+                                        Container(
+                                          //padding: EdgeInsets.only(
+                                          //left: ScreenAdapter.width(15),
+                                          //top: ScreenAdapter.height(20),
+                                          //right: ScreenAdapter.width(15)
+                                          //),
+                                          child: publicShowMenuSubtitle(_rightTop["subtitle"]),
+                                        ),
+                                      ],
+                                    )),
+                                //绝对定位 盖章
+                                publicShowMenuSellOut(_rightTop['qtyBounds']),
+                              ],
+                            )),
+                      ),
+                      Container(
+                        height: ScreenAdapter.height(400),
+                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                        child: InkWell(
+                            enableFeedback: false,
+                            onTap: () async {
+
+                              if (_rightBottom['qtyBounds'] == 0) {
+                                return;
+                              } else if (_rightBottom['qtyBounds'] > 0) {
+                                //请求限定接口
+                                var checkResult = _checkQtyBoundsCount(_rightBottom['menuCode'], "");
+                                if (checkResult == false) {
+                                  return;
+                                }
+                              }
+
+                              if(_rightBottom['optionGroupVoList']?.length > 0){
+                              _publicShowOneItemWidget(_rightBottom);
+                              }else{
+                                var cartItem = {
+                                  "menuCode": _rightBottom['menuCode'],
+                                  "mainTitle": _rightBottom['mainTitle'],
+                                  "image": _rightBottom['homeImage'],
+                                  "currentPrice": _rightBottom['currentPrice'],
+                                  "optionGroupVoList": "",
+                                  "optionVoListMsg": "",
+                                  "goodsNum": 1
+                                };
+                                publicAddCartMenu(cartItem, true).then((val) {
+
+                                  _publicShowAddCartNew();
+
+                                  //更改显示购物车价格
+                                  getCartPriceTotal();
+                                });
+                              }
+
+                            },
+                            child: Stack(
+                              children: [
+                                Container(
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: <Widget>[
+                                        publicShowMenuImage(_rightBottom['homeImage'], 430.0, 300.0),
+                                        SizedBox(
+                                          height: ScreenAdapter.height(10),
+                                        ),
+                                        Container(
+                                          width: ScreenAdapter.width(430),
+                                          //height: ScreenAdapter.height(315),
+                                          padding: EdgeInsets.only(
+                                              left: ScreenAdapter.width(10),
+                                              right: ScreenAdapter.width(10)),
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.start,
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Expanded(
+                                                  child: publicShowMenuTitle(
+                                                      _rightBottom['mainTitle'],
+                                                      GFontSize.menuTwoListTitle,
+                                                      Gcolor.mainTitleColor)
+                                              ),
+                                              Container(
+                                                //width: ScreenAdapter.width(125),
+                                                //height: ScreenAdapter.height(315),
+                                                alignment: Alignment.centerRight,
+                                                padding: EdgeInsets.only(
+                                                    left: ScreenAdapter.width(5),
+                                                    right: ScreenAdapter.width(0)),
+                                                child: Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                                  children: [
+                                                    //价格展示
+                                                    publicShowMenuPrice(
+                                                        _rightBottom['currentPrice'],
+                                                        GFontSize.menuTwopriceLift,
+                                                        Gcolor.mainTitleColor,
+                                                        GFontSize.menuTwoprice,
+                                                        Gcolor.priceColor,
+                                                        GFontSize.menuTwopriceRight,
+                                                        Gcolor.mainTitleColor),
+                                                  ],
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        Container(
+                                          //padding: EdgeInsets.only(
+                                          //left: ScreenAdapter.width(15),
+                                          //top: ScreenAdapter.height(20),
+                                          //right: ScreenAdapter.width(15)
+                                          //),
+                                          child: publicShowMenuSubtitle(_rightBottom["subtitle"]),
+                                        ),
+                                      ],
+                                    )),
+                                //绝对定位 盖章
+                                publicShowMenuSellOut(_rightBottom['qtyBounds']),
+                              ],
+                            )),
+                      ),
+                    ],
+                  )
+                ],
+              ),
+              showCategoryEightItemList(_newItemList)
+            ],
+          ),
+        );
+      }else{
+        return Container(
+          child: showCategoryEightItemList(showItemList),
+        );
+      }
+
+    } else {
+      return Container(
+        height: 0,
+      );
+    }
+  }
+
+  showCategoryEightItemList(items) {
+    return Padding(
+      padding: EdgeInsets.only(
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      child: GridView.builder(
+        physics: new NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
+        addAutomaticKeepAlives:false,
+        //addRepaintBoundaries:false,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisSpacing: ScreenAdapter.height(10),
+            crossAxisCount: 3,
+            childAspectRatio: 0.64),
+        itemBuilder: (BuildContext context, int index) {
+          return showCategoryEightItemOne(items[index]);
+        },
+        itemCount: items.length,
+      ),
+    );
+  }
+
+  showCategoryEightItemOne(item) {
+    Offset temp;
+    return Container(
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
+      child: InkWell(
+          enableFeedback: false,
+          /*onPanDown: (details) {
+            temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
+
+          },*/
+          onTap: () async {
+
+            if (item['qtyBounds'] == 0) {
+              return;
+            } else if (item['qtyBounds'] > 0) {
+              //请求限定接口
+              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
+              if (checkResult == false) {
+                return;
+              }
+            }
+
+            var cartItem = {
+              "menuCode": item['menuCode'],
+              "mainTitle": item['mainTitle'],
+              "image": item['homeImage'],
+              "currentPrice": item['currentPrice'],
+              "optionGroupVoList": "",
+              "optionVoListMsg": "",
+              "goodsNum": 1
+            };
+            publicAddCartMenu(cartItem, true).then((val) {
+
+              _publicShowAddCartNew();
+
+              //更改显示购物车价格
+              getCartPriceTotal();
+            });
+          },
+          child: Material(
+            child: Stack(
+              children: [
+                Container(
+                  //height: ScreenAdapter.height(280),
+                    color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        publicShowMenuImage(item['homeImage'], 350.0, 440.0),
+                        SizedBox(
+                          height: ScreenAdapter.height(10),
+                        ),
+                        Container(
+                          //width: ScreenAdapter.width(20),
+                          //height: ScreenAdapter.height(315),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: publicShowMenuTitle(
+                                    item['mainTitle'],
+                                    GFontSize.menuTwoListTitle,
+                                    Gcolor.mainTitleColor),
+                              ),
+                              Container(
+                                //width: ScreenAdapter.width(125),
+                                //height: ScreenAdapter.height(315),
+                                alignment: Alignment.centerRight,
+                                padding: EdgeInsets.only(
+                                    left: ScreenAdapter.width(5),
+                                    right: ScreenAdapter.width(0)),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    //价格展示
+                                    publicShowMenuPrice(
+                                        item['currentPrice'],
+                                        GFontSize.menuTwopriceLift,
+                                        Gcolor.mainTitleColor,
+                                        GFontSize.menuTwoprice,
+                                        Gcolor.priceColor,
+                                        GFontSize.menuTwopriceRight,
+                                        Gcolor.mainTitleColor),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        SizedBox(
+                          height: ScreenAdapter.height(10),
+                        ),
+                        Container(
+                          //padding: EdgeInsets.only(
+                          //left: ScreenAdapter.width(15),
+                          //top: ScreenAdapter.height(20),
+                          //right: ScreenAdapter.width(15)
+                          //),
+                          child: publicShowMenuSubtitle(item["subtitle"]),
+                        ),
+                      ],
+                    )),
+                //绝对定位 盖章
+                publicShowMenuSellOut(item['qtyBounds']),
+              ],
+            ),
+          )),
+    );
+  }
+
+  //展示某带option商品
+  _publicShowOneItemWidget(item){
+    var subtitle = "";
+    if (item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(900),
+            height: ScreenAdapter.height(1000),
+            child: SimpleDialog(
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                  child: StatefulBuilder(
+                    builder: (BuildContext context, menuindex) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Container(
+                            padding: EdgeInsets.only(
+                              //top: ScreenAdapter.height(5),
+                              bottom: ScreenAdapter.height(10),
+                            ),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: <Widget>[
+                                publicShowMenuImage(item['homeImage'], 250.0, 250.0),
+                                (item['optionGroupVoList']?.length > 0)
+                                    ? Expanded(
+                                  child: publicShowOneItemOptionGroupWidget(
+                                      item['menuCode'], menuindex),
+                                )
+                                    : Container(
+                                  height: 0,
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          Divider(
+                            height: 1,
+                            color: Color.fromRGBO(227, 227, 227, 1),
+                          ),
+                          //标题价格
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(child: publicShowMenuTitle(
+                                  item['mainTitle'],
+                                  GFontSize.cartListTitleCount,
+                                  Gcolor.mainTitleColor),),
+                              //价格展示 item['currentPrice']
+                              Container(
+                                padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                                width: ScreenAdapter.width(260),
+                                alignment: Alignment.bottomRight,
+                                child: publicShowMenuPrice(
+                                    _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                                    GFontSize.menuTwopriceLift,
+                                    Gcolor.mainTitleColor,
+                                    GFontSize.mainPrice,
+                                    Gcolor.priceColor,
+                                    GFontSize.menuTwopriceRight,
+                                    Gcolor.mainTitleColor),
+                              ),
+
+                              //确认按钮
+                              InkWell(
+                                enableFeedback: false,
+                                onTap: () {
+
+                                  //判断选择后option是否与optiongroup相等
+                                  var currentPrice = item['currentPrice'];
+                                  var optionCodeList = "";
+                                  var optionTitle = "";
+                                  if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                                    if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                                      showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
+                                      Navigator.pop(context);
+                                      return;
+                                    }
+
+                                    for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
+                                      //if (optionItem['currentPrice'] != 0) {
+                                      currentPrice += optionItem['currentPrice'];
+                                      //}
+                                      optionCodeList += (optionCodeList != "")
+                                          ? "," + optionItem['optionCode']
+                                          : optionItem['optionCode'];
+                                      optionTitle += (optionTitle != "")
+                                          ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
+                                          : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                                    }
+                                  }
+
+                                  var cartItem = {
+                                    "menuCode": item['menuCode'],
+                                    "mainTitle": item['mainTitle'],
+                                    "image": item['homeImage'],
+                                    "currentPrice": currentPrice,
+                                    "optionGroupVoList": optionCodeList,
+                                    "optionVoListMsg": optionTitle,
+                                    "goodsNum": 1,
+                                  };
+                                  publicAddCartMenu(cartItem, false).then((val) {
+
+                                    _publicShowAddCartNew();
+                                    _changeInitialOption(item['menuCode'], menuindex);
+                                    //更改显示购物车价格
+                                    getCartPriceTotal();
+
+                                  });
+                                  Navigator.pop(context);
+                                },
+                                child: Container(
+                                  margin:
+                                  EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                  width: ScreenAdapter.width(200),
+                                  height: ScreenAdapter.height(75),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: ColorsUtil.hexToColor("#078E42"),
+                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                  ),
+                                  child: Text(
+                                      GString.getToString(
+                                          this._checkLanguage, "add_option_cart"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(30),
+                                        fontWeight: FontWeight.w500,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.optionBtnColor),
+                                      )),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                )
+              ],
+            ),
+          );
+        });
+  }
+
+  //获取带option的widget
+  publicShowOneItemOptionGroupWidget(menuCode, menuindex) {
+    return Container(
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(10),
+          right: ScreenAdapter.width(3),
+          top: ScreenAdapter.height(5),
+          bottom: ScreenAdapter.height(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: _getOneItemOptionWidget(menuCode, menuindex),
+      ),
+    );
+  }
+  //获取option widget
+  _getOneItemOptionWidget(menuCode, setFirstState) {
+    var optionGroupVoList = _menuOption[menuCode];
+    List<Widget> options = []; //先建一个数组用于存放循环生成的widget
+    if (optionGroupVoList != null &&
+        optionGroupVoList.length > 0 &&
+        optionGroupVoList != "") {
+      for (var i = 0; i < optionGroupVoList.length; i++) {
+        if(i >= _optionGroupMaxNum) break;
+        List<Widget> optionSons = [];
+        var optionVoList = optionGroupVoList[i]['optionVoList'];
+        options.add(Container(
+          padding: EdgeInsets.only(
+              top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+          child: Row(
+            children: [
+              Text(
+                optionGroupVoList[i]['groupName'],
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(24.0),
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                ),
+              ),
+            ],
+          ),
+        ));
+
+        for (var j = 0; j < optionVoList.length; j++) {
+          if(j >= _optionMaxNum) break;
+          var optionVolistSon = optionVoList[j];
+          var buttonColor =[];
+          if (optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != "") {
+            buttonColor = optionVolistSon['buttonColorValue'].split(',');
+          }
+          optionSons.add(Container(
+            width: ScreenAdapter.width(145),
+            padding: EdgeInsets.only(
+                left: ScreenAdapter.width(5),
+                top: ScreenAdapter.height(5),
+                right: ScreenAdapter.width(5),
+                bottom: ScreenAdapter.height(5)),
+            child: InkWell(
+              //enableFeedback: false,
+              onTap: () {
+                _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
+                    optionVolistSon["optionCode"], setFirstState);
+              },
+              child: Stack(
+                children: [
+                  Container(
+                      width: ScreenAdapter.width(130),
+                      height: ScreenAdapter.height(60),
+                      alignment: Alignment.center,
+                      decoration: (optionVolistSon['checked'] == true)
+                          ? BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            ColorsUtil.hexToColor("#C47829"),
+                            ColorsUtil.hexToColor("#854610"),
+                          ],
+                        ),
+                        //设置阴影
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(2, 3),
+                              blurRadius: 3.0,
+                              spreadRadius: 0),
+                        ],
+                      )
+                          : (buttonColor.length>0) ? BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            ColorsUtil.hexToColor(buttonColor[0]),
+                            ColorsUtil.hexToColor(buttonColor[1]),
+                          ],
+                        ),
+                        //设置阴影
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(2, 3),
+                              blurRadius: 3.0,
+                              spreadRadius: 0),
+                        ],
+                      ): BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        gradient: LinearGradient(
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight,
+                          colors: [
+                            ColorsUtil.hexToColor("#E9CE9B"),
+                            ColorsUtil.hexToColor("#CEA062"),
+                          ],
+                        ),
+                        //设置阴影
+                        boxShadow: [
+                          BoxShadow(
+                              color: Colors.black26,
+                              offset: Offset(2, 3),
+                              blurRadius: 3.0,
+                              spreadRadius: 0),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          (optionVolistSon['homeImage'] != "" &&
+                              optionVolistSon['homeImage'] != null)
+                              ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                              width: ScreenAdapter.width(20),
+                              height: ScreenAdapter.height(30),
+                              color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              fit: BoxFit.fitHeight)
+                              : Container(
+                            width: 0,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(4),
+                          ),
+                          Text(optionVolistSon['mainTitle'],
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontSize: ScreenAdapter.fontSize(24.0),
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              )),
+                        ],
+                      )),
+                  //绝对定位 盖章
+                  (optionVolistSon['currentPrice'] != 0)
+                      ? Positioned(
+                    right: ScreenAdapter.width(0),
+                    top: ScreenAdapter.height(0),
+                    child: Container(
+                        width: ScreenAdapter.width(60),
+                        height: ScreenAdapter.height(60),
+                        //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        padding: EdgeInsets.only(
+                          //top:ScreenAdapter.height(2),
+                            left: ScreenAdapter.width(35)),
+                        // alignment: Alignment.topRight,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.all(Radius.circular(2.0)),
+                          image: DecorationImage(
+                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
+                            fit: BoxFit.fill,
+                          ),
+                        ),
+                        child: Container(
+                          alignment: Alignment.topRight,
+                          // 旋转
+                          transform: Matrix4.rotationZ(0.85),
+                          child: Text(
+                              "${optionVolistSon['currentPrice'].toString()}",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(18),
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.optionBtnColor),
+                              )),
+                        )),
+                  )
+                      : Container(
+                    height: 0,
+                  ),
+
+                ],
+              ),
+            ),
+          ));
+
+        }
+
+        options.add(Container(
+          child: Wrap(
+            spacing: ScreenAdapter.width(5), // set spacing here
+            runSpacing: ScreenAdapter.height(10),
+            alignment: WrapAlignment.start,
+            children: optionSons,
+          ),
+        ));
+        /*options.add(Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: optionSons,
+        ));*/
+      }
+    }
+
+    return options;
+  }
 
   //购物车
   bool _handleScrollNotification(ScrollNotification notification) {
