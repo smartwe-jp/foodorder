@@ -125,7 +125,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     getCartPriceTotal();
 
 
-    //_getDiningTypeInfo();
     EasyLoading.dismiss();
   }
 
@@ -272,20 +271,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         _machineCode = machineCode;
       });
 
-      //_getDiningTypeInfo();
       _getSystemSettingInfo();
     }
-  }
-
-  //获取就餐类型信息
-  _getDiningTypeInfo() async {
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-    if (DiningTypeInfo != "") {
-      setState(() {
-        _dining_type = DiningTypeInfo;
-      });
-    }
-    _getBookingBootMenu();
   }
 
   _getSystemSettingInfo() async {
@@ -791,7 +778,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   }
 
   void _checkMemory(){
-    var Image_Maxnum = 200;
+    var Image_Maxnum = 100;
     var maxSize = 55 << 20;
 
     ImageCache _imageCache = PaintingBinding.instance.imageCache;
