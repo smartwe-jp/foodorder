@@ -20,11 +20,13 @@ class TransitPage extends StatefulWidget {
 class _TransitPageState extends State<TransitPage> {
   String _machineCode = "";
   var _machineMode = "1";//1 券卖机  2 精算机
+  var _isCashState = true;
 
   @override
   void initState() {
     super.initState();
-    _getMachineInfo();
+    _getIsShowCashInfo();
+
   }
 
   @override
@@ -32,6 +34,16 @@ class _TransitPageState extends State<TransitPage> {
     // TODO: implement dispose
 
     super.dispose();
+  }
+
+  _getIsShowCashInfo() async {
+    Map systemSettingInfo = await HomeServices.getIsShowCash();
+
+    setState(() {
+      _isCashState = systemSettingInfo['isCash'];
+    });
+
+    _getMachineInfo();
   }
 
   _getMachineInfo() async {
@@ -105,7 +117,7 @@ class _TransitPageState extends State<TransitPage> {
         var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
         var _showCreditCard = shopData["linePayChannelMap"]["CreditCard"] != null ? shopData["linePayChannelMap"]["CreditCard"] :false;
         var machineActivateData = {
-          "showCash":_showCash,
+          "showCash":(_isCashState == true) ? _showCash :false,
           "showWechat":_showWechat,
           "showAlipay":_showAlipay,
           "showPayPay":_showPayPay,

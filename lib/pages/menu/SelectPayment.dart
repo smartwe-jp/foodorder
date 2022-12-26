@@ -11,6 +11,8 @@ import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/services/formatMoney.dart';
 
+import '../../services/EventBus.dart';
+
 class SelectPaymentPage extends StatefulWidget {
   Map arguments;
   SelectPaymentPage(
@@ -78,6 +80,17 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showCreditCard = widget.showCreditCard;
     _showCash = widget.showCash;
 
+    //监听是否展示现金的广播
+    eventBus.on<setShowCashEvent>().listen((event) {
+     updateCashShow();
+    });
+
+  }
+
+  updateCashShow(){
+    setState(() {
+      _showCash = false;
+    });
   }
 
   @override
@@ -168,9 +181,6 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   ],
                                 ),
                               ),
-                            ),
-                            SizedBox(
-                              width: ScreenAdapter.width(15),
                             ),
                             if(_showAlipay == true || _showWechat == true || _showPayPay == true)
                             InkWell(
@@ -321,9 +331,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                 ),
                               ),
                             ),
-                            SizedBox(
-                              width: ScreenAdapter.width(15),
-                            ),
+
                             InkWell(
                               onTap: (){
                                 setState(() {

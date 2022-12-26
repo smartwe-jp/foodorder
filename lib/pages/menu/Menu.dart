@@ -128,6 +128,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     //_getDiningTypeInfo();
     EasyLoading.dismiss();
+
+    //监听是否展示现金的广播
+    eventBus.on<setShowCashEvent>().listen((event) {
+      _listenGetMachineActivateInfo();
+    });
+
   }
 
   @override
@@ -238,6 +244,27 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       this._showCreditCard = systemSettingInfo['showCreditCard'];
     });
     _getBookingBootMenu();
+  }
+
+  _listenGetMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+    var machineActivateData = {
+      "showCash":false,
+      "showWechat":systemSettingInfo['showWechat'],
+      "showAlipay":systemSettingInfo['showAlipay'],
+      "showPayPay":systemSettingInfo['showPayPay'],
+      "showCreditCard":systemSettingInfo['showCreditCard'],
+    };
+    Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+    if(mounted){
+      setState(() {
+        this._showCash = false;
+        this._showWechat = systemSettingInfo['showWechat'];
+        this._showAlipay = systemSettingInfo['showAlipay'];
+        this._showPayPay = systemSettingInfo['showPayPay'];
+        this._showCreditCard = systemSettingInfo['showCreditCard'];
+      });
+    }
   }
 
   //获取菜单
@@ -556,8 +583,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         if (item['showType'] == "featured") {
           return _showCategoryOne(showItem[classTag]);
         } else if (item['showType'] == "table") {
-          //return _showCategoryTwo(showItem[classTag]);
-          return _showCategoryEight(showItem[classTag]);
+          return _showCategoryTwo(showItem[classTag]);
+          //return _showCategoryEight(showItem[classTag]);
         } else if (item['showType'] == "block") {
           return _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
@@ -568,7 +595,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           return _showCategorySix(showItem[classTag]);
         } else if (item['showType'] == "three_column") {
           return _showCategorySeven(showItem[classTag]);
-        } else if (item['showType'] == "mix_column") { //混合模式
+        } else if (item['showType'] == "mixed_column") { //混合模式
           return _showCategoryEight(showItem[classTag]);
         }
       }
@@ -4175,8 +4202,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
-          print("postip-${_pos_ip}");
-          print("_payment_method_num${_payment_method_num}");
+
           Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
@@ -4220,8 +4246,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             showCreditCard:this._showCreditCard,
             shopCartTotalPrice:_shopCartTotalPrice,
             onConfrimClick: (String isAllowPos, String payment_method_num) {
-                print(isAllowPos);
-                print(payment_method_num);
+
                 setState(() {
                   _isAllowPos = isAllowPos;
                   _payment_method_num = payment_method_num;

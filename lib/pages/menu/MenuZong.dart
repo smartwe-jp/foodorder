@@ -126,6 +126,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
 
     EasyLoading.dismiss();
+
+    //监听是否展示现金的广播
+    eventBus.on<setShowCashEvent>().listen((event) {
+      _listenGetMachineActivateInfo();
+    });
   }
 
   @override
@@ -209,7 +214,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           child: Container(
                             margin: EdgeInsets.only(bottom: ScreenAdapter.height(15)),
                             width: ScreenAdapter.width(75),
-                            height: ScreenAdapter.height(95),
+                            height: ScreenAdapter.height(125),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
                               color: ColorsUtil.hexToColor("#A61C1C"),
@@ -238,7 +243,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         ),
                       ),
                       Container(
-                        height: ScreenAdapter.height(1465),
+                        height: ScreenAdapter.height(1405),
                         child: showLeftCategoryMenu(),
                       ),
                     ],
@@ -295,6 +300,28 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       this._showCreditCard = systemSettingInfo['showCreditCard'];
     });
     _getBookingBootMenu();
+  }
+
+  _listenGetMachineActivateInfo() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+    var machineActivateData = {
+      "showCash":false,
+      "showWechat":systemSettingInfo['showWechat'],
+      "showAlipay":systemSettingInfo['showAlipay'],
+      "showPayPay":systemSettingInfo['showPayPay'],
+      "showCreditCard":systemSettingInfo['showCreditCard'],
+    };
+    Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+    if(mounted){
+      setState(() {
+        this._showCash = false;
+        this._showWechat = systemSettingInfo['showWechat'];
+        this._showAlipay = systemSettingInfo['showAlipay'];
+        this._showPayPay = systemSettingInfo['showPayPay'];
+        this._showCreditCard = systemSettingInfo['showCreditCard'];
+      });
+    }
+
   }
 
   //获取菜单
@@ -665,8 +692,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         if (item['showType'] == "featured") {
           return _showCategoryOne(showItem[classTag]);
         } else if (item['showType'] == "table") {
-          //return _showCategoryTwo(showItem[classTag]);
-          return _showCategoryEight(showItem[classTag]);
+          return _showCategoryTwo(showItem[classTag]);
+          //return _showCategoryEight(showItem[classTag]);
         } else if (item['showType'] == "block") {
           return _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") {
@@ -677,7 +704,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           return _showCategorySix(showItem[classTag]);
         } else if (item['showType'] == "three_column") {
           return _showCategorySeven(showItem[classTag]);
-        } else if (item['showType'] == "mix_column") { //混合模式
+        } else if (item['showType'] == "mixed_column") { //混合模式
           return _showCategoryEight(showItem[classTag]);
         }
       }
@@ -4403,8 +4430,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               showCreditCard:this._showCreditCard,
               shopCartTotalPrice:_shopCartTotalPrice,
               onConfrimClick: (String isAllowPos, String payment_method_num) {
-                print(isAllowPos);
-                print(payment_method_num);
+
                 setState(() {
                   _isAllowPos = isAllowPos;
                   _payment_method_num = payment_method_num;

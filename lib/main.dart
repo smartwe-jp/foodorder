@@ -93,6 +93,11 @@ class _MyHomePageState extends State<MyHomePage> {
   Timer stopChecktimer;
   Timer closetimer;
 
+  //60秒内未接收现金机正确通知，则进行下一步操作
+  Timer showCashTimer;
+  int seconds = 30;
+  var _isCashState = true;
+
   var _allowStatus;
   var _stopStatus;
   var _closeStatus;
@@ -121,6 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
     allowtimer?.cancel();
     stopChecktimer?.cancel();
     closetimer?.cancel();
+    showCashTimer?.cancel();
     super.dispose();
   }
 
@@ -146,7 +152,28 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
+//倒计时
+  _countDownTimer() {
+    showCashTimer?.cancel();
+    showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+      //if(mounted) {
+        setState(() {
+          this.seconds--;
+        });
+     // }
 
+      if (this.seconds == 0) {
+        //如果60秒未接收返回正确通知，则进行下一步操作
+        setState(() {
+          _isCashState = false;
+        });
+        _getSmartweSystemSettingInfo();
+
+        showCashTimer?.cancel(); //清除定时器
+
+      }
+    });
+  }
 
   //打开现金机
   OpenPayCube() async {
@@ -187,6 +214,8 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       maskType: EasyLoadingMaskType.black,
     );
+    //倒计时，一定时间不开启现金机则继续执行下一步
+    _countDownTimer();
     String checkStatus = await Paycube.CheckPayCubeStatus;
 
     //如果检测现金机打开错误，则重新打开一下
@@ -195,10 +224,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //print("机器未打开lib未null，重新打开并连接了");
     }else{
       await Paycube.setReceiveEvent;
-      //print("机器已打开，并setreceive");
     }
+
     Starttoubi();
-    //await Paycube.endTrade;
   }
 
   //现金机开始 打开现金机，准备开始投币
@@ -257,6 +285,11 @@ class _MyHomePageState extends State<MyHomePage> {
       //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
+        setState(() {
+          seconds = 30;
+        });
+        _countDownTimer();
+
         stopPaycube();
         allowt.cancel();
 
@@ -323,6 +356,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
+        //倒计时，一定时间不开启现金机则继续执行下一步
+        setState(() {
+          seconds = 30;
+        });
+        _countDownTimer();
         closePaycube();
         stopcheck.cancel();
 
@@ -345,6 +383,11 @@ class _MyHomePageState extends State<MyHomePage> {
       _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess" ) {
+        setState(() {
+          showCashTimer?.cancel();
+          seconds = 30;
+        });
+
         //现金机打开一次后，判断是否第一次打开
         prohibitOneCash();
 
@@ -366,39 +409,6 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
 
-  //获取就餐类型信息
-  _getDiningTypeInfo() async {
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-    if (DiningTypeInfo == "" || null==DiningTypeInfo) {
-
-      Storage.setString('diningType', "1");//1 堂食  2 外袋  0 两种都可
-
-    }
-  }
-
-  //获取菜单方向
-  _getMenuDirection() async {
-    var menuDirectionInfo = await HomeServices.getMenuDirectionInfo();
-    if (menuDirectionInfo == "" || null==menuDirectionInfo) {
-      Storage.setString('menuDirection', "1");//1 默认顶部横向  2 左侧纵向
-    }
-  }
-
-  //获取打印纸
-  _getPrintPaperSize() async {
-    var PrintPaperSizeInfo = await HomeServices.getPrintPaperSizeInfo();
-    if (PrintPaperSizeInfo == "" || null==PrintPaperSizeInfo) {
-      Storage.setString('printPaperSize', "1");//1 默认58mm  2 宽纸80mm
-    }
-  }
-
-  //获取菜单方向
-  _getIsAllowReceiptInfo() async {
-    var menuDirectionInfo = await HomeServices.getIsAllowReceiptInfo();
-    if (menuDirectionInfo == "" || null==menuDirectionInfo) {
-      Storage.setString('isAllowReceipt', "1");//1 默认顶部横向  2 左侧纵向
-    }
-  }
 
 //获取机器信息
   _getShopInfo() async {
@@ -429,6 +439,10 @@ class _MyHomePageState extends State<MyHomePage> {
       Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
     //}
 
+    var cashShowData = {
+      "isCash": _isCashState,
+    };
+    Storage.setString('isCashState', json.encode(cashShowData));
     //判断是否第一次打开
     sleep(Duration(milliseconds: 500));
     getIsFirstOpen();
@@ -438,22 +452,12 @@ class _MyHomePageState extends State<MyHomePage> {
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
 
-    /*_getDiningTypeInfo();
-    sleep(Duration(milliseconds: 200));
-    _getMenuDirection();
-    sleep(Duration(milliseconds: 200));
-    _getPrintPaperSize();
-    sleep(Duration(milliseconds: 200));
-    _getIsAllowReceiptInfo();*/
-    //_getSmartweSystemSettingInfo();
-    //sleep(Duration(milliseconds: 500));
     EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
       _getShopInfo();
 
-      //loaddata();
     }else{
       _goActivation();
     }
@@ -475,22 +479,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   }
 
-  //把机器码保存到本地
-  /*sendActivationCode() async {
 
-    if (this._activation_code == null ||
-        this._activation_code.length <= 0) {
-      showToast('请输入正确激活码');
-    } else {
-
-
-      //保存机器信息
-      Storage.setString('machineInfo', _activation_code);
-      Storage.setBool('homeOpen', true);
-
-      _goMain();
-    }
-  }*/
 
   @override
   Widget build(BuildContext context) {

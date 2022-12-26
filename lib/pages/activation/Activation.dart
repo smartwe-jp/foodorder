@@ -30,9 +30,12 @@ class _ActivationPageState extends State<ActivationPage> {
   var _showAlipay = true;
   var _showPayPay = true;
 
+  var _isCashState = true;
+
   @override
   void initState() {
     super.initState();
+
 
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));

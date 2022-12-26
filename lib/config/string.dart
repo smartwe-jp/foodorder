@@ -5,7 +5,8 @@ class GString{
     var languagePack;
     if (languageCode == 'JP') {
       languagePack = {
-        "top_back_button":"言語",
+        //"top_back_button":"言語",
+        "top_back_button":"ホーム",
 
         "show_price_front":"税込",
         "settlement_button":"お会計",
@@ -78,7 +79,8 @@ class GString{
       };
     }else if(languageCode == 'CH'){
       languagePack = {
-        "top_back_button":"言語",
+        //"top_back_button":"言語",
+        "top_back_button":"首页",
 
         "show_price_front":"含税",
         "settlement_button":"结算",
@@ -149,7 +151,8 @@ class GString{
       };
     }else if(languageCode == 'EN'){
       languagePack = {
-        "top_back_button":"言語",
+        //"top_back_button":"言語",
+        "top_back_button":"Home",
 
         "show_price_front":"Tax-In",
         "settlement_button":"Check out",

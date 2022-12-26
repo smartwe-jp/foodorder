@@ -128,4 +128,16 @@ class HomeServices{
     return attendanceCode;
   }
 
+  //多参数设置
+  static getIsShowCash() async{
+    Map showCashInfo;
+    try {
+      Map showCashData = json.decode(await Storage.getString('isCashState'));
+      showCashInfo = showCashData;
+    } catch (e) {
+      showCashInfo = {};
+    }
+    return showCashInfo;
+  }
+
 }

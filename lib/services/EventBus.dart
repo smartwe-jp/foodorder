@@ -29,3 +29,11 @@ class setAttendanceCodeEvent{
   }
 }
 
+//刷脸激活码广播
+class setShowCashEvent{
+  String str;
+  setShowCashEvent(String str){
+    this.str=str;
+  }
+}
+
