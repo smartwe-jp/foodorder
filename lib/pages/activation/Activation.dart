@@ -80,7 +80,7 @@ class _ActivationPageState extends State<ActivationPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Container(
-              width: ScreenAdapter.width(450.0),
+              width: ScreenAdapter.width(550.0),
               padding:
                   EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
               child: Column(
@@ -161,6 +161,44 @@ class _ActivationPageState extends State<ActivationPage> {
                           ),
                           Text(
                             "日進斗金フライドチキン",
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(30.0),
+                                color: ColorsUtil.hexToColor("#000000"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    onTap: (){
+                      setState(() {
+                        _checkedShop = "ichixianjia";
+                      });
+                    },
+                    child: Container(
+                      padding: EdgeInsets.all(5),
+                      margin: EdgeInsets.only(top: 3),
+                      height: ScreenAdapter.height(95),
+                      decoration: (_checkedShop == "ichixianjia")
+                          ? BoxDecoration(
+                        //color: Colors.transparent, // 背景色
+                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
+                        borderRadius: BorderRadius.circular((5)), // 圆角
+                      )
+                          : BoxDecoration(
+                          color: Colors.transparent
+
+                      ),
+                      child: Row(
+                        children: [
+                          Image.asset(
+                            GImage.getImageString("ichixianjia", "logo"),
+                            width: ScreenAdapter.width(80),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          Text(
+                            "壱賢家",
                             style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(30.0),
                                 color: ColorsUtil.hexToColor("#000000"),

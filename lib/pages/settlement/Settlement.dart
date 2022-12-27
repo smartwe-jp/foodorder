@@ -125,8 +125,6 @@ class _SettlementPageState extends State<SettlementPage> {
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer showCashTimer;
   int seconds = 30;
-  var _isCashState = true;
-
 
   @override
   void initState() {
@@ -210,9 +208,6 @@ class _SettlementPageState extends State<SettlementPage> {
       //}
       if (this.seconds == 0) {
         //如果60秒未接收返回正确通知，则进行下一步操作
-        setState(() {
-          _isCashState = false;
-        });
         eventBus.fire(new setShowCashEvent('支付成功...'));
         showCashTimer?.cancel(); //清除定时器
         if(stepState == "1"){
@@ -224,6 +219,8 @@ class _SettlementPageState extends State<SettlementPage> {
       }
     });
   }
+
+
 
   //购物车
 

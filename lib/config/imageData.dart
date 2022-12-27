@@ -18,6 +18,12 @@ class GImage{
         "logo":"assets/images/rijindoujin/logo.png",
 
       };
+    }else if (shopInfo == 'ichixianjia') {
+      imagePack = {
+        "home":"assets/images/ichixianjia/home.jpg",
+        "logo":"assets/images/ichixianjia/logo.png",
+
+      };
     }else if (shopInfo == 'imgpublic') {
       imagePack = {
         "backbutton_top":"assets/images/public/backbutton_top.png",
