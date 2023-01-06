@@ -75,6 +75,8 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
   public static Drawable rijindoujin;
   public static Drawable rijindoujineighty;
   public static Drawable ichixianjiaeighty;
+  public static Drawable gongcha;
+  public static Drawable gongchaeighty;
 
   private final String TAG = "PrintDemoUsb";
   private static final String ACTION_USB_PERMISSION = "com.usb.sample.USB_PERMISSION";
@@ -99,6 +101,8 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
     rijindoujineighty= ContextCompat.getDrawable(mContext,R.drawable.rijindoujineighty);
     ichixianjia= ContextCompat.getDrawable(mContext,R.drawable.ichixianjia);
     ichixianjiaeighty= ContextCompat.getDrawable(mContext,R.drawable.ichixianjiaeighty);
+    gongcha= ContextCompat.getDrawable(mContext,R.drawable.gongcha);
+    gongchaeighty= ContextCompat.getDrawable(mContext,R.drawable.gongchaeighty);
   }
 
   @Override
@@ -224,6 +228,30 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
                 }
               }else{
                 print.execute_printRreceipt_eighty(mUsbDriver,oh,ichixianjiaeighty);
+              }
+            }
+          }else if(shopInfo.equals("gongcha")){
+            if(printPaperSize.equals("1")){
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print(mUsbDriver,oh,gongcha,1);
+                  print.execute_printRreceipt(mUsbDriver,oh,gongcha);
+                }else{
+                  print.execute_print(mUsbDriver,oh,gongcha,0);
+                }
+              }else{
+                print.execute_printRreceipt(mUsbDriver,oh,gongcha);
+              }
+            }else{
+              if(machineMode.equals("1")){
+                if(isQueryReceipt.equals("1")){
+                  print.execute_print_eighty(mUsbDriver,oh,gongchaeighty,1);
+                  print.execute_printRreceipt_eighty(mUsbDriver,oh,gongchaeighty);
+                }else{
+                  print.execute_print_eighty(mUsbDriver,oh,gongchaeighty,0);
+                }
+              }else{
+                print.execute_printRreceipt_eighty(mUsbDriver,oh,gongchaeighty);
               }
             }
           }

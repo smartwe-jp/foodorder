@@ -1458,32 +1458,31 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           ],
                         )),
                     //绝对定位 盖章
-                    (optionVolistSon['currentPrice'] > 0)
+                    (optionVolistSon['currentPrice'] != 0)
                         ? Positioned(
                             right: ScreenAdapter.width(0),
                             top: ScreenAdapter.height(0),
                             child: Container(
-                                width: ScreenAdapter.width(50),
-                                height: ScreenAdapter.height(50),
+                                width: ScreenAdapter.width(60),
+                                height: ScreenAdapter.height(60),
                                 padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(20)),
+                                    left: ScreenAdapter.width(30)),
                                 //alignment: Alignment.topCenter,
                                 decoration: BoxDecoration(
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                   image: DecorationImage(
-
-                                    image: AssetImage(
-                                        GImage.getImageString("imgpublic", "price_tag")),
+                                    image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
+                                    //image: AssetImage(GImage.getImageString("imgpublic", "price_tag")),
                                     fit: BoxFit.fill,
                                   ),
                                 ),
                                 child: Container(
                                   // 旋转
-                                  transform: Matrix4.rotationZ(0.8),
+                                  transform: Matrix4.rotationZ(0.80),
                                   child: Text(
                                       "${optionVolistSon['currentPrice'].toString()}",
                                       style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(13),
+                                        fontSize: ScreenAdapter.fontSize(18),
                                         color: ColorsUtil.hexToColor(
                                             Gcolor.optionBtnColor),
                                       )),

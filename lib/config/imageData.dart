@@ -24,6 +24,12 @@ class GImage{
         "logo":"assets/images/ichixianjia/logo.png",
 
       };
+    }else if (shopInfo == 'gongcha') {
+      imagePack = {
+        "home":"assets/images/gongcha/home.png",
+        "logo":"assets/images/gongcha/logo.png",
+
+      };
     }else if (shopInfo == 'imgpublic') {
       imagePack = {
         "backbutton_top":"assets/images/public/backbutton_top.png",

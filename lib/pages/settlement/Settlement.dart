@@ -644,7 +644,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    var printStatus = await FlutterPluginMsprinter.getPrintStatus();print("dayinzhuangtai${printStatus}");
     if(printStatus == "0" || printStatus == "8"){
 
       if(_ticketData != null){
