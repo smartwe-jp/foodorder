@@ -2,6 +2,7 @@
 import 'dart:async';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
 import 'dart:convert';
@@ -184,11 +185,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             alignment: Alignment.bottomLeft,
             decoration: BoxDecoration(
               color: ColorsUtil.hexToColor("#000000"),
-              image: new DecorationImage(
+              /*image: new DecorationImage(
                 alignment: Alignment.centerRight,
                 fit: BoxFit.fitHeight,
                 image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
-              ),
+              ),*/
             ),
             child: showTopCategoryMenu(),
           ),
@@ -433,6 +434,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42","#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#078E42"];
     var menuIndex = 0;
     for (var item in topMenu) {
+      if(menuIndex >6) menuIndex = 0;
+      /*var categoryNameLength = item['categoryName'].length;
+      if(categoryNameLength >4){
+
+      }*/
+
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
@@ -444,7 +451,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             children: [
               Container(
                 margin: EdgeInsets.only(right: ScreenAdapter.width(6)),
-                width: ScreenAdapter.width(162),
+                padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
+                width: ScreenAdapter.width(165),
                 height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
                 decoration: (classTag == item['categoryCode']) ? BoxDecoration(
                   //设置边框
@@ -453,7 +461,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
                   //设置圆角
                   //borderRadius: new BorderRadius.circular((15.0)),
-                  borderRadius: BorderRadius.vertical(top: Radius.circular(15)),
+                  borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
                   //设置阴影
                   //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
                 ) : BoxDecoration(
@@ -462,17 +470,23 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 ),
                 child: Center(
                   //加上Center让文字居中
-                  child: Text(
-                    item['categoryName'],
-                    style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(GFontSize.categoryTitle32),
-                        /*color: classTag == item['categoryCode']
-                      ? ColorsUtil.hexToColor(Gcolor.categoryTitleSelected)
-                      : ColorsUtil.hexToColor(Gcolor.categoryTitle),*/
-                        color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                        fontWeight: FontWeight.w600),
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: ScreenAdapter.width(20),
+                      maxWidth: ScreenAdapter.width(165),
+                      minHeight: ScreenAdapter.height(30),
+                      maxHeight: ScreenAdapter.height(65),
+                    ),
+                    child: AutoSizeText(
+                      item['categoryName'],
+                      style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(30),
+                          color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                          fontWeight: FontWeight.w600
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
                 ),
               ),
@@ -505,16 +519,18 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       crossAxisAlignment: CrossAxisAlignment.end,
       //mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
-        Container(
-          width: ScreenAdapter.width(860),
-          child: ListView(
-          scrollDirection: Axis.horizontal,
-          children: [
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: categoryMenus,
-            )
-          ],
+        Expanded(
+          child: Container(
+            width: ScreenAdapter.width(900),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: categoryMenus,
+                )
+              ],
+            ),
           ),
         ),
         Container(
@@ -527,7 +543,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             },
             child: Container(
               padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-              margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
               width: ScreenAdapter.width(110),
               height: ScreenAdapter.height(60),
               //alignment: Alignment.center,
@@ -550,7 +566,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             ),
           ),
         ),
-        Expanded(
+        /*Expanded(
             child: InkWell(
               enableFeedback: false,
           onLongPress: (){
@@ -560,18 +576,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
           },
           child: Container(
-            //width: ScreenAdapter.width(180),
             height: ScreenAdapter.height(85),
             margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-            //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
             alignment: Alignment.center,
-            decoration: BoxDecoration(
-              //color: Colors.red,
-            ),
             child: Text(""),//设置
           ),
         )
-        ),
+        ),*/
       ],
     );
   }
@@ -629,9 +640,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Container(
       width: ScreenAdapter.width(imgWidth),
       height: ScreenAdapter.height(imgHeight),
+      decoration: new BoxDecoration(
+        color: ColorsUtil.hexToColor("#FFFFFF"),
+      ),
       child: CachedNetworkImage(
         imageUrl: imgPath,
-        fit: BoxFit.cover,
+        fit: BoxFit.fitHeight,
         width: ScreenAdapter.width(imgWidth),
         height: ScreenAdapter.height(imgHeight),
         memCacheWidth: imgWidth.toInt(),
@@ -641,7 +655,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           decoration: BoxDecoration(
             image: DecorationImage(
                 image: imageProvider,
-                fit: BoxFit.cover,
+                fit: BoxFit.fitHeight,
                 colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
             ),
           ),
@@ -656,7 +670,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           ),
         ),
         errorWidget: (context, url, error) => Image.network(
-          imgPath,fit: BoxFit.cover,
+          imgPath,fit: BoxFit.fitHeight,
           width: ScreenAdapter.width(imgWidth),
           height: ScreenAdapter.height(imgHeight)
         ),
@@ -818,7 +832,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           attr[i]['optionVoList'][j]["checked"] = false;
           if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
             attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
-
           }
         }
       }
@@ -1979,22 +1992,27 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               }
             }
 
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
+            //如果option 存在，则弹出option
+            if(item['optionGroupVoList']?.length > 0){
+              _publicShowOneItemWidget(item);
+            }else{
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice": item['currentPrice'],
+                "optionGroupVoList": "",
+                "optionVoListMsg": "",
+                "goodsNum": 1
+              };
+              publicAddCartMenu(cartItem, true).then((val) {
 
-              _publicShowAddCartNew();
+                _publicShowAddCartNew();
 
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
+                //更改显示购物车价格
+                getCartPriceTotal();
+              });
+            }
           },
           child: Material(
             child: Stack(
@@ -2348,11 +2366,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
           enableFeedback: false,
-          /*onTapDown: (details) {
-            temp = new Offset(
-                details.globalPosition.dx, details.globalPosition.dy);
-
-          },*/
           onTap: () async {
 
             if (item['qtyBounds'] == 0) {
@@ -2364,22 +2377,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 return;
               }
             }
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
+            //如果option 存在，则弹出option
+            if(item['optionGroupVoList']?.length > 0){
+              _publicShowOneItemWidget(item);
+            }else{
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice": item['currentPrice'],
+                "optionGroupVoList": "",
+                "optionVoListMsg": "",
+                "goodsNum": 1
+              };
+              publicAddCartMenu(cartItem, true).then((val) {
 
-              //_publicShowAddCart(temp,item['homeImage']);
-              _publicShowAddCartNew();
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
+                //_publicShowAddCart(temp,item['homeImage']);
+                _publicShowAddCartNew();
+                //更改显示购物车价格
+                getCartPriceTotal();
+              });
+            }
+
           },
           child: Material(
             child: Stack(
@@ -2721,11 +2740,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
           enableFeedback: false,
-          /*onPanDown: (details) {
-            temp = new Offset(
-                details.globalPosition.dx, details.globalPosition.dy);
-
-          },*/
           onTap: () async {
 
             if (item['qtyBounds'] == 0) {
@@ -2738,22 +2752,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               }
             }
 
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
+            //如果option 存在，则弹出option
+            if(item['optionGroupVoList']?.length > 0){
+              _publicShowOneItemWidget(item);
+            }else{
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice": item['currentPrice'],
+                "optionGroupVoList": "",
+                "optionVoListMsg": "",
+                "goodsNum": 1
+              };
+              publicAddCartMenu(cartItem, true).then((val) {
 
-              _publicShowAddCartNew();
+                _publicShowAddCartNew();
 
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
+                //更改显示购物车价格
+                getCartPriceTotal();
+              });
+            }
+
           },
           child: Material(
             child: Stack(
@@ -2872,10 +2892,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
       child: InkWell(
           enableFeedback: false,
-          /*onPanDown: (details) {
-            temp = new Offset(details.globalPosition.dx, details.globalPosition.dy);
-
-          },*/
           onTap: () async {
 
             if (item['qtyBounds'] == 0) {
@@ -2888,22 +2904,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               }
             }
 
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
+            //如果option 存在，则弹出option
+            if(item['optionGroupVoList']?.length > 0){
+              _publicShowOneItemWidget(item);
+            }else{
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice": item['currentPrice'],
+                "optionGroupVoList": "",
+                "optionVoListMsg": "",
+                "goodsNum": 1
+              };
+              publicAddCartMenu(cartItem, true).then((val) {
 
-              _publicShowAddCartNew();
+                _publicShowAddCartNew();
 
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
+                //更改显示购物车价格
+                getCartPriceTotal();
+              });
+            }
+
           },
           child: Material(
             child: Stack(
@@ -3380,22 +3402,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               }
             }
 
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
+            //如果option 存在，则弹出option
+            if(item['optionGroupVoList']?.length > 0){
+              _publicShowOneItemWidget(item);
+            }else{
+              var cartItem = {
+                "menuCode": item['menuCode'],
+                "mainTitle": item['mainTitle'],
+                "image": item['homeImage'],
+                "currentPrice": item['currentPrice'],
+                "optionGroupVoList": "",
+                "optionVoListMsg": "",
+                "goodsNum": 1
+              };
+              publicAddCartMenu(cartItem, true).then((val) {
 
-              _publicShowAddCartNew();
+                _publicShowAddCartNew();
 
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
+                //更改显示购物车价格
+                getCartPriceTotal();
+              });
+            }
+
           },
           child: Material(
             child: Stack(
@@ -3485,12 +3513,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         context: context,
         builder: (BuildContext context) {
           return Container(
-            width: ScreenAdapter.width(900),
+            width: ScreenAdapter.width(1050),
             height: ScreenAdapter.height(1000),
             child: SimpleDialog(
               children: <Widget>[
                 Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                  width: ScreenAdapter.width(1050),
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
                   child: StatefulBuilder(
                     builder: (BuildContext context, menuindex) {
                       return Column(
@@ -3596,8 +3625,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   Navigator.pop(context);
                                 },
                                 child: Container(
-                                  margin:
-                                  EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                  margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10)),
                                   width: ScreenAdapter.width(200),
                                   height: ScreenAdapter.height(75),
                                   alignment: Alignment.center,
@@ -3633,7 +3661,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   publicShowOneItemOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(10),
+          left: ScreenAdapter.width(5),
           right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
@@ -3680,7 +3708,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
           optionSons.add(Container(
-            width: ScreenAdapter.width(165),
+            width: ScreenAdapter.width(180),
             padding: EdgeInsets.only(
                 left: ScreenAdapter.width(5),
                 top: ScreenAdapter.height(5),
@@ -3695,7 +3723,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               child: Stack(
                 children: [
                   Container(
-                      width: ScreenAdapter.width(165),
+                      width: ScreenAdapter.width(170),
                       height: ScreenAdapter.height(60),
                       alignment: Alignment.center,
                       decoration: (optionVolistSon['checked'] == true)
@@ -3772,16 +3800,44 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           SizedBox(
                             width: ScreenAdapter.width(4),
                           ),
-                          Text(optionVolistSon['mainTitle'],
+                          /*Text(optionVolistSon['mainTitle'],
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
                                 fontSize: ScreenAdapter.fontSize(24.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                              )),
+                              )),*/
+                          Expanded(
+                            child: Container(
+                              width: ScreenAdapter.width(140),
+                              height: ScreenAdapter.height(60),
+                              alignment: Alignment.center,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: ScreenAdapter.width(20),
+                                  maxWidth: ScreenAdapter.width(140),
+                                  minHeight: ScreenAdapter.height(30),
+                                  maxHeight: ScreenAdapter.height(60),
+                                ),
+                                child: AutoSizeText(
+                                    optionVolistSon['mainTitle'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenAdapter.fontSize(24.0),
+                                      color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                    ),
+                                    softWrap: true,
+                                    //minFontSize: 10,
+                                    //maxFontSize: 12,
+                                    maxLines: 2, textAlign: TextAlign.center
+                                ),
+                              ),
+                            ),
+                          )
                         ],
-                      )),
+                      )
+                  ),
                   //绝对定位 盖章
                   (optionVolistSon['currentPrice'] != 0)
                       ? Positioned(
@@ -3828,17 +3884,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
         options.add(Container(
           child: Wrap(
-            spacing: ScreenAdapter.width(5), // set spacing here
+            spacing: ScreenAdapter.width(2), // set spacing here
             runSpacing: ScreenAdapter.height(10),
             alignment: WrapAlignment.start,
             children: optionSons,
           ),
         ));
-        /*options.add(Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: optionSons,
-        ));*/
+
       }
     }
 
@@ -3948,50 +4000,58 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           children: [
 
                             SizedBox(height: ScreenAdapter.height(25)),
-                            Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.white12,
-                                  border: Border(
-                                    bottom: BorderSide(color: Colors.black, width: 1.5),
-                                    //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                  )),
-                              child: RichText(
-                                text: TextSpan(
-                                    text: "¥",
-                                    //GString.getToString(this._checkLanguage, "show_price_front"),
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(GFontSize
-                                          .menusettlementBottomPriceLeft),
-                                      fontWeight: FontWeight.w600,
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.mainTitleColor),
-                                    ),
-                                    children: [
-                                      TextSpan(
-                                        text: formatMoney(_shopCartTotalPrice.toString()),
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(
-                                              GFontSize
-                                                  .menusettlementBottomPrice),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.priceColor),
-                                        ),
+                            InkWell(
+                                onLongPress: (){
+                                  if(int.parse(_shopCartTotalPrice) >0){
+                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                                  }
+
+                                },
+                              child:Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white12,
+                                    border: Border(
+                                      bottom: BorderSide(color: Colors.black, width: 1.5),
+                                      //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                    )),
+                                child: RichText(
+                                  text: TextSpan(
+                                      text: "¥",
+                                      //GString.getToString(this._checkLanguage, "show_price_front"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(GFontSize
+                                            .menusettlementBottomPriceLeft),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor),
                                       ),
-                                      TextSpan(
-                                        text:
-                                            "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(
-                                              GFontSize
-                                                  .menusettlementBottomPriceRight),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor),
+                                      children: [
+                                        TextSpan(
+                                          text: formatMoney(_shopCartTotalPrice.toString()),
+                                          style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(
+                                                GFontSize
+                                                    .menusettlementBottomPrice),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.priceColor),
+                                          ),
                                         ),
-                                      ),
-                                    ]),
-                              ),
+                                        TextSpan(
+                                          text:
+                                          "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                          style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(
+                                                GFontSize
+                                                    .menusettlementBottomPriceRight),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                          ),
+                                        ),
+                                      ]),
+                                ),
+                              )
                             ),
 
 

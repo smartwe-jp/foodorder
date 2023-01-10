@@ -165,6 +165,9 @@ class _SettlementPageState extends State<SettlementPage> {
   @override
   void dispose() {
     // TODO: implement dispose
+    if(this._socketState){
+      this._socket.close();
+    }
     allowtimer?.cancel();
     timer?.cancel();
     stoptimer?.cancel();
@@ -644,7 +647,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();print("dayinzhuangtai${printStatus}");
+    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
 
       if(_ticketData != null){
@@ -1629,6 +1632,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页 model0 券卖机 `1精算机
+  // 如果是刷卡则需要pos机返回成功在发送请求取消订单
   CancelOrder(){
 
     var formData = {
@@ -1636,14 +1640,12 @@ class _SettlementPageState extends State<SettlementPage> {
       "orderId": this._orderId,
       "model": (_machineMode == "1")? "0":"1",
     };
-    //不用查看返回
     request('webBootCancelV1', method: 'POST', parameters: formData);
 
-    setState(() {
-      _isCancel = true;
-    });
-
     if(_payment_method_num == "1" || _payment_method_num == "0"){
+      setState(() {
+        _isCancel = true;
+      });
       //已投钱
       if(int.parse(_getPutMoney) >0){
         setState(() {
@@ -1905,43 +1907,44 @@ class _SettlementPageState extends State<SettlementPage> {
       this._pos_ip,
       int.parse(this._pos_port),
       timeout: Duration(seconds: 5),
-    ).then((Socket socket) {print("连接成功了么");
+    ).then((Socket socket) {//print("连接成功了么");
     this._socket = socket;
     //获得pos数据并发送
     _getPaymentPosData();
     // 监听wifi模块发送的数据
     this._socket.listen((List<int> event) {
-      //print("监听返回打印");
-      //print(event);
-      //print("\n\r================================\n\r");
-      //LogUtil.d(event);
-      //print("\n\r================================\n\r");
       if(event.length > 40)
         event.fillRange(266, 289, 32);
       var zhuanhuan = Uint8List.fromList(event);
       var eventString = Utf8Codec().decode(zhuanhuan);
       //print(Utf8Codec().decode(zhuanhuan));
-
+      //print("event=====${eventString}=====");
       String FirstString = eventString.substring(0, 1);
       String SecondString = eventString.substring(1, 3);
+      String transaction_type = eventString.substring(3, 6);
       String resultString = eventString.substring(10, 13);
       String resultMPFSString = eventString.substring(13, 16);
-      //LogUtil.d(utf8.decode(event));
-
-      //机器端取消返回
-      /*if(FirstString == "3" && SecondString == "11" && resultString =="L11"){
-        //print("取消");
-        CancelOrder();
-      }*/
+      //print(transaction_type);
       //支付成功 打印，返回首页 除了成功都取消
-      if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
-        CreditCardPayReport(eventString);
+      if(transaction_type == "900"){
+        //print("resultStringresultString==${resultString}");
+        //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
+
+        if(FirstString == "3" && SecondString == "11" && resultString =="000"){
+          CancelOrder();
+        }
       }else{
-        CancelOrder();
+        //print("queryBackqueryBackqueryBack====${resultString}");
+        //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
+        if(FirstString == "3" && SecondString == "11" && resultString =="000" && resultMPFSString =="000"){
+          CreditCardPayReport(eventString);
+        }else{
+          if(resultString != "L11"){
+            CancelOrder();
+          }
+
+        }
       }
-
-
-
 
     });
     setState(() {
@@ -1960,6 +1963,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //获得pos数据并发送
     //_getPaymentPosData();
   }
+
 
   //刷卡机nfc支付汇报
   CreditCardPayReport(eventString){
@@ -1985,23 +1989,28 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
   _getPaymentPosData(){
-    //var _queryString =       "2101500001       00509                  000000120221114093225";
-    //var _queryString = "2101500001       00509437520456035794944000010020221121142129                                                                       10                                                                                                                                                                                                                                                                                                                                                                                                                               ";
-    //this._socket.write(_queryString);
-    /*for(var i=0;i<71;i++){
-      _queryString += " ";
-    }
-    _queryString += "10";
-    for(var i=0;i<415;i++){
-      _queryString += " ";
-    }*/
-
     var formData = {
       "machineCode": _machineCode,
       "orderId": this._orderId,
     };
 
     request("webBootCreditCard", method: 'POST', parameters: formData).then((val) async {
+      var response = json.decode(val.toString());
+      if (response['code'] == 200) {
+        //var _queryString =       "2101500001       00509                  000000120221114093225";
+        this._socket.write(response['data']);
+
+      }
+    });
+  }
+
+  _getPaymentCancelPosData(){
+    var formData = {
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+    };
+
+    request("webBootCreditCardCancel", method: 'POST', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
@@ -2559,7 +2568,7 @@ class _SettlementPageState extends State<SettlementPage> {
                   ],
                 ),
               ),
-            if(_payment_method_num == "2")
+            if(_payment_method_num == "2" || _payment_method_num == "3" || _payment_method_num == "4")
               Container(
                 //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                 height: ScreenAdapter.height(200),
@@ -2572,7 +2581,15 @@ class _SettlementPageState extends State<SettlementPage> {
                       onTap: (){
                         try {
                           //Navigator.pop(context);
-                          CancelOrder();
+                          if(_payment_method_num == "3" || _payment_method_num == "4"){
+                            _showBackEasyLoading();
+                            _getPaymentCancelPosData();
+                          }else{
+                            CancelOrder();
+                          }
+
+
+
                         } catch (_) {}
                       },
                       child: Container(

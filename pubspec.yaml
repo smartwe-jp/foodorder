@@ -47,6 +47,7 @@ dependencies:
   crypto: ^3.0.2
   assets_audio_player: 3.0.4
   widget_to_image: ^2.0.0
+  auto_size_text: ^3.0.0
   paycube:
     path: ./lib/plugins/paycube
   flutter_plugin_msprinter:

@@ -618,9 +618,9 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               //Divider(height: 1.5,indent: 10.0,endIndent:10,color: ColorsUtil.hexToColor("#979797")),
             Container(
               //padding: EdgeInsets.only(),
-              //margin: EdgeInsets.only(top: ScreenAdapter.height(4),right: ScreenAdapter.width(6)),
+              margin: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
               width: ScreenAdapter.width(75), //(classTag == item['categoryCode']) ? ScreenAdapter.width(102) : ScreenAdapter.width(72),
-              height: ScreenAdapter.height(190),
+              //height: ScreenAdapter.height(190),
               decoration: (classTag == item['categoryCode']) ? BoxDecoration(
                 //设置边框
                 //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
@@ -647,7 +647,10 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             fontSize: ScreenAdapter.fontSize(28),
                             //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                             color: ColorsUtil.hexToColor("#282828"),
-                            fontWeight: FontWeight.w600),
+                            fontWeight: FontWeight.w600,
+                        ),
+                        //maxLines: 2,
+                        //overflow: TextOverflow.ellipsis,
                       ):RotatedBox(quarterTurns: 1,child: Text(
                         item['categoryName'],
                         style: TextStyle(
@@ -655,6 +658,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                             color: ColorsUtil.hexToColor("#282828"),
                             fontWeight: FontWeight.w600),
+                        //maxLines: 2,
+                        //overflow: TextOverflow.ellipsis,
                       ),),
                     ),
                   ],
@@ -3564,7 +3569,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(item['homeImage'], 350.0, 440.0),
+                        publicShowMenuImage(item['homeImage'], 350.0, 410.0),
                         SizedBox(
                           height: ScreenAdapter.height(10),
                         ),

@@ -24,6 +24,7 @@ const servicePath = {
   'webBootLinePayConfirm': base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
 
   'webBootCreditCard': base_url + 'pad/web/boot/creditCard', //请求刷卡返回的字符串
+  'webBootCreditCardCancel': base_url + 'pad/web/boot/creditCard/back', //请求刷卡取消的字符串
 
 
   'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
