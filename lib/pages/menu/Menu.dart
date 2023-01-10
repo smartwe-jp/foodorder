@@ -1024,9 +1024,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   width: 0,
                                 ),
                           SizedBox(
-                            width: ScreenAdapter.width(10),
+                            width: ScreenAdapter.width(5),
                           ),
-                          Text(
+                          /*Text(
                             optionVolistSon['mainTitle'],
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1036,7 +1036,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                               //color: ColorsUtil.hexToColor(Gcolor.optionBtnColor),
                             ),
-                          ),
+                          ),*/
+                          Container(
+                            //width: ScreenAdapter.width(210),
+                            height: ScreenAdapter.height(60),
+                            alignment: Alignment.center,
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                minWidth: ScreenAdapter.width(20),
+                                maxWidth: ScreenAdapter.width(180),
+                                minHeight: ScreenAdapter.height(30),
+                                maxHeight: ScreenAdapter.height(60),
+                              ),
+                              child: AutoSizeText(
+                                  optionVolistSon['mainTitle'],
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: ScreenAdapter.fontSize(28.0),
+                                    color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                  ),
+                                  maxLines: 2, textAlign: TextAlign.center
+                              ),
+                            ),
+                          )
                         ],
                       )),
                   //绝对定位 盖章
@@ -1234,7 +1256,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             SizedBox(
                               width: ScreenAdapter.width(2),
                             ),
-                            LimitedBox(
+                            /*LimitedBox(
                                 maxWidth: ScreenAdapter.width(130),
                                 child: Text(optionVolistSon['mainTitle'],
                                     textAlign: TextAlign.center,
@@ -1245,7 +1267,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                       fontSize: ScreenAdapter.fontSize(21.0),
                                       color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                                     ))
-                            ),
+                            ),*/
+                            Container(
+                              //width: ScreenAdapter.width(210),
+                              height: ScreenAdapter.height(50),
+                              alignment: Alignment.center,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: ScreenAdapter.width(20),
+                                  maxWidth: ScreenAdapter.width(130),
+                                  minHeight: ScreenAdapter.height(24),
+                                  maxHeight: ScreenAdapter.height(48),
+                                ),
+                                child: AutoSizeText(
+                                    optionVolistSon['mainTitle'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: ScreenAdapter.fontSize(28.0),
+                                      color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                    ),
+                                    maxLines: 2, textAlign: TextAlign.center
+                                ),
+                              ),
+                            )
                           ],
                         )),
                     //绝对定位 盖章
@@ -1455,9 +1499,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     width: 0,
                                   ),
                             SizedBox(
-                              width: ScreenAdapter.width(6),
+                              width: ScreenAdapter.width(3),
                             ),
-                        LimitedBox(
+                        /*LimitedBox(
                           maxWidth: ScreenAdapter.width(185),
                           child: Text("${optionVolistSon['mainTitle']}",
                               maxLines: 1,
@@ -1467,7 +1511,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 fontWeight: FontWeight.w500,
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                               )),
-                        ),
+                        ),*/
+                            Container(
+                              //width: ScreenAdapter.width(210),
+                              height: ScreenAdapter.height(60),
+                              alignment: Alignment.center,
+                              child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: ScreenAdapter.width(20),
+                                  maxWidth: ScreenAdapter.width(165),
+                                  minHeight: ScreenAdapter.height(26),
+                                  maxHeight: ScreenAdapter.height(52),
+                                ),
+                                child: AutoSizeText(
+                                    optionVolistSon['mainTitle'],
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: ScreenAdapter.fontSize(28.0),
+                                      color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                    ),
+                                    maxLines: 2, textAlign: TextAlign.center
+                                ),
+                              ),
+                            )
                           ],
                         )),
                     //绝对定位 盖章
@@ -3849,7 +3915,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(35)),
+                            left: ScreenAdapter.width(25)),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(2.0)),
@@ -3861,11 +3927,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         child: Container(
                           alignment: Alignment.topRight,
                           // 旋转
-                          transform: Matrix4.rotationZ(0.85),
+                          transform: Matrix4.rotationZ(0.70),
                           child: Text(
                               "${optionVolistSon['currentPrice'].toString()}",
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(18),
+                                fontSize: ScreenAdapter.fontSize(17),
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
