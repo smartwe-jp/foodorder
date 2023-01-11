@@ -454,6 +454,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                 width: ScreenAdapter.width(165),
                 height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
+                alignment: Alignment.center,
                 decoration: (classTag == item['categoryCode']) ? BoxDecoration(
                   //设置边框
                   //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
@@ -486,6 +487,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
                     ),
                   ),
                 ),
