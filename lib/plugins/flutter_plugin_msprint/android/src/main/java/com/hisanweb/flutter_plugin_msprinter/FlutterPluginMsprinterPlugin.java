@@ -277,9 +277,13 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
           if(reserveshopInfo.equals("kanran")){
             print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
           }else if(reserveshopInfo.equals("sanfeng")){//sanfeng
-            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,sanfeng);
           }else if(reserveshopInfo.equals("rijindoujin")){//sanfeng
-            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,kanran);
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,rijindoujin);
+          }else if(reserveshopInfo.equals("ichixianjia")){//sanfeng
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,ichixianjia);
+          }else if(reserveshopInfo.equals("gongcha")){//sanfeng
+            print.execute_reserve_printRreceipt(mUsbDriver,ohreserveItem,gongcha);
           }
 
 
@@ -304,6 +308,10 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
             print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,rijindoujin,isTop);
           }else if(topshopInfo.equals("sanfeng")){//sanfeng
             print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,sanfeng,isTop);
+          }else if(topshopInfo.equals("ichixianjia")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,ichixianjia,isTop);
+          }else if(topshopInfo.equals("gongcha")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,gongcha,isTop);
           }
 
 
