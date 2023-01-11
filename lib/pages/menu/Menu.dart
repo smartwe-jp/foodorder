@@ -1044,7 +1044,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
                                 minWidth: ScreenAdapter.width(20),
-                                maxWidth: ScreenAdapter.width(180),
+                                maxWidth: ScreenAdapter.width(170),
                                 minHeight: ScreenAdapter.height(30),
                                 maxHeight: ScreenAdapter.height(60),
                               ),
@@ -1275,7 +1275,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
                                   minWidth: ScreenAdapter.width(20),
-                                  maxWidth: ScreenAdapter.width(130),
+                                  maxWidth: ScreenAdapter.width(125),
                                   minHeight: ScreenAdapter.height(24),
                                   maxHeight: ScreenAdapter.height(48),
                                 ),
@@ -1519,7 +1519,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               child: ConstrainedBox(
                                 constraints: BoxConstraints(
                                   minWidth: ScreenAdapter.width(20),
-                                  maxWidth: ScreenAdapter.width(165),
+                                  maxWidth: ScreenAdapter.width(160),
                                   minHeight: ScreenAdapter.height(26),
                                   maxHeight: ScreenAdapter.height(52),
                                 ),
@@ -4339,7 +4339,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "isAllowPos":_isAllowPos,
                 "posIp":_pos_ip,
                 "posPort":_pos_port,
-                "paymentMethod":_payment_method_num
+                "paymentMethod":_payment_method_num,
+                "showWechat":this._showWechat,
+                "showAlipay":this._showAlipay,
+                "showPayPay":this._showPayPay,
               });
 
         }else{

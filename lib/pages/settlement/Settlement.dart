@@ -141,6 +141,10 @@ class _SettlementPageState extends State<SettlementPage> {
     this._pos_port = widget.arguments['posPort'];
     this._payment_method_num = widget.arguments['paymentMethod'];
 
+    this._showWechat = widget.arguments['showWechat'];
+    this._showAlipay = widget.arguments['showAlipay'];
+    this._showPayPay = widget.arguments['showPayPay'];
+
     _getSystemSettingInfo();
 
 
@@ -2180,7 +2184,65 @@ class _SettlementPageState extends State<SettlementPage> {
             if(_payment_method_num == "2")
               Container(
                 //height: ScreenAdapter.height(940),
-                child: Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_qr"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
+                child: Stack(
+                  children: [
+                    Image.asset(GImage.getImageString("imgpublic", "settlement_top_lead_qr"),width: ScreenAdapter.width(1080),fit: BoxFit.fitWidth,),
+                    Positioned(
+                        right: ScreenAdapter.width(50),
+                        top: ScreenAdapter.height(250),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if(_showAlipay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(210),
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "settlement_alipay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showWechat == true)
+                                  Container(
+                                    height: ScreenAdapter.height(210),
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "settlement_wechat"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+
+                              ],
+                            ),
+                            SizedBox(height: ScreenAdapter.height(15),),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if(_showPayPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(210),
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "settlement_paypay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                              ],
+                            ),
+                          ],
+                        )
+                    )
+                  ],
+                ),
               ),
             if(_payment_method_num == "3")
               Container(
