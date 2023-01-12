@@ -1947,23 +1947,18 @@ class _SettlementPageState extends State<SettlementPage> {
           //print("resultStringresultString==${resultString}");
           //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
 
-          if (FirstString == "3" &&
-              SecondString == "11" &&
-              resultString == "000") {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000") {
             CancelOrder();
           }
         } else {
           //print("queryBackqueryBackqueryBack====${resultString}");
           //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
-          if (FirstString == "3" &&
-              SecondString == "11" &&
-              resultString == "000" &&
-              resultMPFSString == "000") {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {
             CreditCardPayReport(eventString);
           } else {
-            if (resultString != "L11") {
+
               CancelOrder();
-            }
+
           }
         }
       });
