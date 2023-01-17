@@ -29,11 +29,15 @@ import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/formatMoney.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
+import 'package:image/image.dart' hide Image;
 import 'package:paycube/paycube.dart';
 import 'package:foodorder/services/Storage.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 import 'package:foodorder/services/logUtil.dart';
+
+import 'package:esc_pos_printer/esc_pos_printer.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 
 //import 'SettlementCashPage.dart';
 //import 'SettlementQrCodePage.dart';
@@ -950,8 +954,7 @@ class _SettlementPageState extends State<SettlementPage> {
       ),
     ));
 
-    List<int> imageBytes = byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100), () async {
@@ -965,7 +968,153 @@ class _SettlementPageState extends State<SettlementPage> {
         await FlutterPluginMsprinter.sendPrintImg(
             base64Image, "0", _shopInfo, "0");
       }
+
+      //新调试网络打印机
+      //_wifiPrintData(printData);
+
     });
+  }
+
+  _wifiPrintData(printData) async {
+    var categoryVos = printData["categoryVos"];
+    List<Widget> categoryMenus = [];
+    var lineHight = 145;
+    var menuNum = 0;
+    var optionNum = 0;
+    var addRowHight = 0;
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["numberTip"]}",
+                style: TextStyle(
+                  fontSize: 40,
+                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor("#000000"),
+                ))),
+      ),
+    );
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["serialNumber"]}",
+                style: TextStyle(
+                  fontSize: 50,
+                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor("#000000"),
+                ))),
+      ),
+    );
+    int categoryNum = categoryVos.length;
+    int categoryshowNum = 0;
+    for (var i = 0; i < categoryVos.length; i++) {
+      int linNum = 0;
+      var lineVosList = categoryVos[i]["lineVos"];
+      int linVoNum = lineVosList.length;
+      for (var m = 0; m < lineVosList.length; m++) {
+        var lineItem = lineVosList[m];
+        var optionVoList = lineItem["optionVos"];
+        // 计算菜品标题长度
+        var menuLength = lineItem["menuName"].length;
+        var menuLine = menuLength / 13;
+        var menuRowNum = menuLine.ceil();
+        optionNum = 0;
+        categoryMenus.add(
+          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 30.0,
+              FontWeight.w600, "${lineItem["menuQty"]}", 30.0, FontWeight.w600),
+        );
+        if (optionVoList != null && optionVoList.length > 0) {
+          for (var n = 0; n < optionVoList.length; n++) {
+            var optionVos = optionVoList[n];
+            // 计算菜品标题长度
+            var groupNameLength = optionVos["groupName"].length;
+            var optionNameLength = optionVos["optionName"].length;
+            var optionLine = (groupNameLength + optionNameLength) / 13;
+            var optionRowNum = optionLine.ceil();
+            categoryMenus.add(
+              _publicGoodsTwoColumnsTxt(
+                  "　${optionVos["groupName"]}",
+                  30.0,
+                  FontWeight.w600,
+                  "${optionVos["optionName"]}",
+                  30.0,
+                  FontWeight.w600),
+            );
+            addRowHight += 50 * optionRowNum;
+            menuNum += optionRowNum;
+            optionNum++;
+          }
+          addRowHight += 48 * menuRowNum;
+          menuNum += menuRowNum;
+        } else {
+          addRowHight += 53 * menuRowNum;
+          menuNum += menuRowNum;
+        }
+        //分割线
+        if (_machineMode == "1") {
+          addRowHight += 6;
+          categoryMenus.add(
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child: Container(
+                  margin: EdgeInsets.only(top: 5, bottom: 5),
+                  height: 2.5,
+                  color: ColorsUtil.hexToColor("#000000"),
+                  width: 550,
+                )),
+          );
+        }
+      }
+    }
+    //print("总行数${menuNum}");
+    var totalHight = addRowHight + lineHight;
+    if (menuNum == 1) {
+      totalHight += 15;
+    }
+    ByteData byteDataWifi = await WidgetToImage.widgetToImage(Container(
+      width: 550,
+      height: totalHight.toDouble(),
+      padding: EdgeInsets.only(left: 0.5, right: 0.5),
+      color: Colors.white,
+      alignment: Alignment.topCenter,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: categoryMenus,
+      ),
+    ));
+    List<int> wifiimageBytes = byteDataWifi.buffer.asUint8List(byteDataWifi.offsetInBytes, byteDataWifi.lengthInBytes);
+    _xinyePrintMenuNew(decodeImage(wifiimageBytes));
+  }
+  _xinyePrintMenuNew(printData) async {
+    const PaperSize paper = PaperSize.mm80;
+    final profile = await CapabilityProfile.load();
+    final printer = NetworkPrinter(paper, profile);
+    final PosPrintResult res = await printer.connect("192.168.11.100", port: 9100);
+    //final PosPrintResult res = await printer.connect(_kitchenPointIp, port: 9100);
+    print("wifidayinji====${res}");
+    if (res == PosPrintResult.success) {
+      // DEMO RECEIPT
+      await printDemoReceiptNew(printer,printData);
+      // TEST PRINT
+      // await testReceipt(printer);
+      printer.disconnect();
+    }else{
+      showToast(res.msg);
+      sleep(Duration(milliseconds: 5000));
+    }
+  }
+  Future<void> printDemoReceiptNew(NetworkPrinter printer,printData) async {
+    print(printData);
+    printer.image(printData);
+    printer.feed(1);
+    printer.cut();
+    //});
   }
 
   _tpPrintReceipt(printData) async {
