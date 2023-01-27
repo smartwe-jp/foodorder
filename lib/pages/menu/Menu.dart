@@ -453,7 +453,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               margin: EdgeInsets.only(right: ScreenAdapter.width(6)),
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
               width: ScreenAdapter.width(165),
-              height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
+              //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
+              height: ScreenAdapter.height(65),
               alignment: Alignment.center,
               decoration: (classTag == item['categoryCode']) ? BoxDecoration(
                 //设置边框
@@ -462,7 +463,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
                 //设置圆角
                 //borderRadius: new BorderRadius.circular((15.0)),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(10)),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
                 //设置阴影
                 //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
               ) : BoxDecoration(
