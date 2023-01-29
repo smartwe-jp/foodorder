@@ -39,7 +39,7 @@ Future<void> main() async {
     });
 
     //隐藏状态栏导航栏
-    SystemChrome.setEnabledSystemUIMode (SystemUiMode.manual, overlays: []);
+    SystemChrome.setEnabledSystemUIMode (SystemUiMode.immersive, overlays: []);
 
 
   }, (error, stackTrace) {
