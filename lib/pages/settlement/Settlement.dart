@@ -970,7 +970,7 @@ class _SettlementPageState extends State<SettlementPage> {
       }
 
       //新调试网络打印机
-      //_wifiPrintData(printData);
+      _wifiPrintData(printData);
 
     });
   }

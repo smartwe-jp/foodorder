@@ -1017,10 +1017,10 @@ class _SettingPageState extends State<SettingPage> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  getLastOrderTotalShow(),
+                  /*getLastOrderTotalShow(),
                   SizedBox(
                     height: ScreenAdapter.height(20),
-                  ),
+                  ),*/
                   getCashListShow(),
                   SizedBox(
                     height: ScreenAdapter.height(20),
