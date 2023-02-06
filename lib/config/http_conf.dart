@@ -26,6 +26,8 @@ const servicePath = {
   'webBootCreditCard': base_url + 'pad/web/boot/creditCard', //请求刷卡返回的字符串
   'webBootCreditCardCancel': base_url + 'pad/web/boot/creditCard/back', //请求刷卡取消的字符串
 
+  'webBootLogUpload': base_url + 'pad/web/boot/log/upload', //上传现金机日志文件
+
 
   'oldrecognitionSearch': oa_base_url + 'oa/face/recognition/old/search', //刷脸 转base64后上传
 

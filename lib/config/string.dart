@@ -44,7 +44,6 @@ class GString{
         "settlement_confirmButton":"支払確定",
         "settlement_confirmButton_yes":"領収書発行",
         "settlement_confirmButton_no":"領収書不発行",
-        "settlement_continueMoney":"请继续投币",
         "settlement_orderPrice":"お支払い金額",
         "settlement_putMoney":"お預り    ",
         "settlement_outMoney":"お釣り    ",
@@ -52,7 +51,6 @@ class GString{
         "settlement_print_tag":"しばらくお待ちください",
         "settlement_print_loading_tag":"少々お待ちください",
         "settlement_noprint_tag":"しばらくお待ちください",
-        "settlement_change_method":"はい",
         "settlement_nopayment_error":"        支払いが失敗しました。  \r\n 他の支払い方法をお選ぶください。",
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
         "settlement_scancodenochange_error":"済みません、他の支払い方法を選んでください。",
@@ -63,7 +61,7 @@ class GString{
         "tag_print_button_no":"印刷しない",
 
         "show_server_error":"しばらく経ってから、やり直してください",
-        "show_put_money_error":"続けてコインを入れてください",
+        //"show_put_money_error":"続けてコインを入れてください",
         "show_please_select_error":"メニューをお選びください",
 
         "settlement_top_title_cash":"現金",
@@ -117,7 +115,6 @@ class GString{
         "settlement_confirmButton":"确定支付",
         "settlement_confirmButton_yes":"要发票",
         "settlement_confirmButton_no":"不要发票",
-        "settlement_continueMoney":"请继续投币",
         "settlement_orderPrice":"订单金额",
         "settlement_putMoney":"已投币    ",
         "settlement_outMoney":"找零    ",
@@ -125,7 +122,6 @@ class GString{
         "settlement_print_tag":"请等待小票打印",
         "settlement_print_loading_tag":"处理中，请稍候……",
         "settlement_noprint_tag":"请稍候~",
-        "settlement_change_method":"确定",
         "settlement_nopayment_error":"支付失败，请选择其他方式支付",
         "settlement_scancodenoopen_error":"请选择现金支付。",
         "settlement_scancodenochange_error":"暂不支持该支付，请选择其他方式。",
@@ -135,7 +131,7 @@ class GString{
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
         "show_server_error":"服务器错误请稍后重试",
-        "show_put_money_error":"请继续投币",
+        //"show_put_money_error":"请继续投币",
         "show_please_select_error":"请选择",
 
         "settlement_top_title_cash":"现金",
@@ -189,7 +185,6 @@ class GString{
         "settlement_confirmButton":"Comfirm payment",
         "settlement_confirmButton_yes":"Have a receipt",
         "settlement_confirmButton_no":"No receipt",
-        "settlement_continueMoney":"请继续投币",
         "settlement_orderPrice":"Tatol amount",
         "settlement_putMoney":"Amount paid",
         "settlement_outMoney":"Change due",
@@ -197,7 +192,6 @@ class GString{
         "settlement_print_tag":"Please take your receipt.",
         "settlement_print_loading_tag":"Processing, please wait",
         "settlement_noprint_tag":"Please wait a moment.",
-        "settlement_change_method":"Yes",
         "settlement_nopayment_error":"Payment failed, please choose another payment method.",
         "settlement_scancodenoopen_error":"Please select cash payment.",
         "settlement_scancodenochange_error":"Please choose another method。",
@@ -207,7 +201,7 @@ class GString{
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
         "show_server_error":"System error. Please contact our staff.",
-        "show_put_money_error":"请继续投币",
+        //"show_put_money_error":"请继续投币",
         "show_please_select_error":"Please complete your order.",
 
         "settlement_top_title_cash":"Cash",
@@ -219,6 +213,76 @@ class GString{
         "select_payment_type_title":"Please choose your payment method",
 
         "payment_success_title":"Payment succeeded.",
+      };
+    }else if(languageCode == 'KO'){
+      languagePack = {
+        //"top_back_button":"言語",
+        "top_back_button":"首页",
+
+        "show_price_front":"含税",
+        "settlement_button":"结算",
+        "cancle_button":"全部取消",
+        "tag_title":"温馨提示",
+        "tag_content":"您确定要清空购物车?",
+        "tag_button_yes":"确定",
+        "tag_button_no":"取消",
+        "tag_checkOut":"请扫码",
+
+        "menu_dingtype_eatin":"堂食",
+        "menu_dingtype_takeout":"打包",
+        "menu_dingtype_title":"欢迎光临",
+        "menu_dingtype_title_tag":"请选择堂食或者打包",
+        "menu_dingtype_eatin_tag":"堂食请点击此处",
+        "menu_dingtype_takeout_tag":"打包请点击此处",
+
+        "cart_tag":"请选择菜品",
+
+        "add_option_cart":"确 认",
+        "settlement_total_price":"合计",
+        "settlement_small_ticket_tag":"确认领取小票",
+        //"settlement_payment_method":"可以使用以下支付方法。",
+        "settlement_payment_method":"请直接投入现金或扫码。",
+        "settlement_payment_method_only_cash":"请直接投入现金。",
+        "settlement_payment_method_cash":"Cash",
+        "settlement_payment_method_paypay":"PayPay",
+        "settlement_payment_method_wechat":"WeChat Pay",
+        "settlement_payment_method_alipay":"Alipay",
+        "settlement_payment_method_study_cash":"现金",
+        "settlement_payment_method_study_qr":"扫码支付",
+        "settlement_payment_method_title":"支付方法指南",
+        "settlement_back":"返回",
+        "settlement_confirmButton":"确定支付",
+        "settlement_confirmButton_yes":"要发票",
+        "settlement_confirmButton_no":"不要发票",
+        "settlement_orderPrice":"订单金额",
+        "settlement_putMoney":"已投币    ",
+        "settlement_outMoney":"找零    ",
+        "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
+        "settlement_print_tag":"请等待小票打印",
+        "settlement_print_loading_tag":"处理中，请稍候……",
+        "settlement_noprint_tag":"请稍候~",
+        "settlement_nopayment_error":"支付失败，请选择其他方式支付",
+        "settlement_scancodenoopen_error":"请选择现金支付。",
+        "settlement_scancodenochange_error":"暂不支持该支付，请选择其他方式。",
+
+        "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
+        "tag_print_content_paper_error":"打印故障，请联系工作人员",
+        "tag_print_button_yes":"已处理",
+        "tag_print_button_no":"不打印",
+        "show_server_error":"服务器错误请稍后重试",
+        //"show_put_money_error":"请继续投币",
+        "show_please_select_error":"请选择",
+
+        "settlement_top_title_cash":"现金",
+        "settlement_top_title_qr":"扫码支付",
+        "settlement_top_title_card":"信用卡",
+        "settlement_top_title_nfc":"NFC支付",
+
+        "select_payment_dining_title":"请选择堂食还是打包",
+        "select_payment_type_title":"请选择支付方式",
+
+        "payment_success_title":"支付成功!",
+
       };
     }
 

@@ -345,6 +345,40 @@ var systemSettingData = {
                       ),
                     ),
                   ),
+                  SizedBox(width:ScreenAdapter.width(35)),
+                  InkWell(
+                    onTap: () {
+                      if(_dining_type =="1" || _dining_type =="2"){
+                        var mealType = (_dining_type == "2") ? true: false;
+                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
+
+                      }else{
+                        _showSelectMealTypeDialog("KO", _menu_direction);
+                      }
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(217),
+                      height: ScreenAdapter.height(90),
+                      decoration: BoxDecoration(
+                        //color: Color(0x11111111),
+                        image: DecorationImage(
+                          //alignment: Alignment.topCenter,
+                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                            fit: BoxFit.fill),
+                      ),
+                      child: Center(
+                        //加上Center让文字居中
+                        child: Text(
+                          '韓国語',
+                          style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(36.0),
+                              color: ColorsUtil.hexToColor("#F9F9F9"),
+                              fontWeight: FontWeight.w600),
+                        ),
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

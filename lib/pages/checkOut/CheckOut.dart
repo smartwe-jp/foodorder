@@ -566,7 +566,7 @@ print(systemSettingInfo);
                                 borderRadius: new BorderRadius.circular((16.0)),
                               ),
                               child: Text(
-                                "${GString.getToString(this._checkLanguage,"settlement_change_method")}",
+                                "${GString.getToString(this._checkLanguage,"tag_button_yes")}",
                                 style: TextStyle(
                                     color: Colors.white,
                                     fontSize: ScreenAdapter.fontSize(32.0)),

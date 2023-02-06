@@ -509,7 +509,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             child: TextButton(
                               child: Text(
                                 GString.getToString(this._checkLanguage,
-                                    "settlement_change_method"),
+                                    "tag_button_yes"),
                                 style: TextStyle(
                                     color: Colors.lightBlue,
                                     fontSize: ScreenAdapter.fontSize(32.0)),
@@ -637,7 +637,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             child: TextButton(
                               child: Text(
                                 GString.getToString(this._checkLanguage,
-                                    "settlement_change_method"),
+                                    "tag_button_yes"),
                                 style: TextStyle(
                                     color: Colors.lightBlue,
                                     fontSize: ScreenAdapter.fontSize(32.0)),
@@ -1606,16 +1606,15 @@ class _SettlementPageState extends State<SettlementPage> {
           if (_isPrint == false) {
             startOutPutMoney(_giveChangeMoney);
           }
-        } else if (int.parse(this._getPutMoney) ==
-            int.parse(this._totalPrice)) {
+        } else if (int.parse(this._getPutMoney) == int.parse(this._totalPrice)) {
           if (_isPrint == false) {
             //已经结束入金，处理取引终了
             payCubeCloseTransaction();
           }
-        } else {
+        }/* else {
           showToast(
               GString.getToString(this._checkLanguage, "show_put_money_error"));
-        }
+        }*/
 
         stopt.cancel();
       } else {
