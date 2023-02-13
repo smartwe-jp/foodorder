@@ -125,6 +125,8 @@ class _TransitPageState extends State<TransitPage> {
         };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
 
+        Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
+
       }
       if(_machineMode == "2"){
         _goCheckOut();

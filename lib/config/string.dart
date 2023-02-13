@@ -217,19 +217,19 @@ class GString{
     }else if(languageCode == 'KO'){
       languagePack = {
         //"top_back_button":"言語",
-        "top_back_button":"首页",
+        "top_back_button":"첫 페이지",//首页
 
-        "show_price_front":"含税",
+        "show_price_front":"세금 포함",//含税
         "settlement_button":"结算",
         "cancle_button":"全部取消",
         "tag_title":"温馨提示",
         "tag_content":"您确定要清空购物车?",
         "tag_button_yes":"确定",
         "tag_button_no":"取消",
-        "tag_checkOut":"请扫码",
+        "tag_checkOut":"스캔해 주세요",//请扫码
 
-        "menu_dingtype_eatin":"堂食",
-        "menu_dingtype_takeout":"打包",
+        "menu_dingtype_eatin":"당식",//堂食
+        "menu_dingtype_takeout":"외대",//打包
         "menu_dingtype_title":"欢迎光临",
         "menu_dingtype_title_tag":"请选择堂食或者打包",
         "menu_dingtype_eatin_tag":"堂食请点击此处",

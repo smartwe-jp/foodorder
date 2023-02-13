@@ -140,4 +140,16 @@ class HomeServices{
     return showCashInfo;
   }
 
+  //多语言
+  static getMachineLanguages() async{
+    var machineLanguages;
+    try {
+      var machineLanguagesData = json.decode(await Storage.getString('smartwe_machineLanguages'));
+      machineLanguages = machineLanguagesData;
+    } catch (e) {
+      machineLanguages = ["JP"];
+    }
+    return machineLanguages;
+  }
+
 }

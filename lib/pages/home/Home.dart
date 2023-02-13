@@ -40,6 +40,11 @@ class _HomePageState extends State<HomePage> {
   var _machineMode = "1";//1 券卖机  2 精算机
   var _dining_type = "0"; //就餐类型选择 1店内 2外卖 3全可以
 
+  var _machineLanguages_JP = false;
+  var _machineLanguages_CH = false;
+  var _machineLanguages_EN = false;
+  var _machineLanguages_KO = false;
+
   @override
   void initState() {
     super.initState();
@@ -47,8 +52,7 @@ class _HomePageState extends State<HomePage> {
     //先获取店铺信息已获取路径用
     _getShopInfo();
 
-    //系统配置
-    _getSystemSettingInfo();
+
 
 
     //监听增加打开现金机的广播
@@ -165,6 +169,9 @@ class _HomePageState extends State<HomePage> {
     }else{
       Storage.setString('shopInfo', "kanran");
     }
+
+    //系统配置
+    _getSystemSettingInfo();
   }
 
   _getSystemSettingInfo() async {
@@ -188,7 +195,34 @@ var systemSettingData = {
       _dining_type = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
     });
 
+    _getmenchineLanguages();
 
+  }
+
+  _getmenchineLanguages() async {
+    var languageJP = false;
+    var languageCH = false;
+    var languageEN = false;
+    var languageKO = false;
+    var menchineLanguagesData = await HomeServices.getMachineLanguages();
+    for (var item in menchineLanguagesData) {
+      if(item == "JP"){
+        languageJP = true;
+      }else if(item == "CH"){
+        languageCH = true;
+      }else if(item == "EN"){
+        languageEN = true;
+      }else if(item == "KO"){
+        languageKO = true;
+      }
+    }
+
+    setState(() {
+      _machineLanguages_JP = languageJP;
+      _machineLanguages_CH = languageCH;
+      _machineLanguages_EN = languageEN;
+      _machineLanguages_KO = languageKO;
+    });
 
   }
 
@@ -240,6 +274,7 @@ var systemSettingData = {
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
+                  if(_machineLanguages_JP == true)
                   InkWell(
                     onTap: () {
                       //_clearCartList();
@@ -257,6 +292,7 @@ var systemSettingData = {
                     child: Container(
                       width: ScreenAdapter.width(217),
                       height: ScreenAdapter.height(90),
+                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
                       decoration: BoxDecoration(
                         //color: Color(0x11111111),
                         image: DecorationImage(
@@ -276,7 +312,8 @@ var systemSettingData = {
                       ),
                     ),
                   ),
-                  SizedBox(width:ScreenAdapter.width(35)),
+                  //SizedBox(width:ScreenAdapter.width(35)),
+                  if(_machineLanguages_CH == true)
                   InkWell(
                     onTap: () {
 
@@ -292,6 +329,7 @@ var systemSettingData = {
                     child: Container(
                       width: ScreenAdapter.width(217),
                       height: ScreenAdapter.height(90),
+                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
                       decoration: BoxDecoration(
                         //color: Color(0x11111111),
                         image: DecorationImage(
@@ -311,7 +349,8 @@ var systemSettingData = {
                       ),
                     ),
                   ),
-                  SizedBox(width:ScreenAdapter.width(35)),
+                  //SizedBox(width:ScreenAdapter.width(35)),
+                  if(_machineLanguages_EN == true)
                   InkWell(
                     onTap: () {
                       if(_dining_type =="1" || _dining_type =="2"){
@@ -326,6 +365,7 @@ var systemSettingData = {
                     child: Container(
                       width: ScreenAdapter.width(217),
                       height: ScreenAdapter.height(90),
+                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
                       decoration: BoxDecoration(
                         //color: Color(0x11111111),
                         image: DecorationImage(
@@ -345,7 +385,8 @@ var systemSettingData = {
                       ),
                     ),
                   ),
-                  SizedBox(width:ScreenAdapter.width(35)),
+                  //SizedBox(width:ScreenAdapter.width(35)),
+                  if(_machineLanguages_KO == true)
                   InkWell(
                     onTap: () {
                       if(_dining_type =="1" || _dining_type =="2"){

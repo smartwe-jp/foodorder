@@ -76,6 +76,11 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _orderId = "";
   var _totlaPrice = "0";
 
+  var _machineLanguages_JP = false;
+  var _machineLanguages_CH = false;
+  var _machineLanguages_EN = false;
+  var _machineLanguages_KO = false;
+
   @override
   void initState() {
     super.initState();
@@ -225,6 +230,34 @@ class _CheckOutPageState extends State<CheckOutPage> {
       _isAllowPos = SystemSettingInfo['isAllowPos'];
     });
 
+    _getmenchineLanguages();
+
+  }
+
+  _getmenchineLanguages() async {
+    var languageJP = false;
+    var languageCH = false;
+    var languageEN = false;
+    var languageKO = false;
+    var menchineLanguagesData = await HomeServices.getMachineLanguages();
+    for (var item in menchineLanguagesData) {
+      if(item == "JP"){
+        languageJP = true;
+      }else if(item == "CH"){
+        languageCH = true;
+      }else if(item == "EN"){
+        languageEN = true;
+      }else if(item == "KO"){
+        languageKO = true;
+      }
+    }
+
+    setState(() {
+      _machineLanguages_JP = languageJP;
+      _machineLanguages_CH = languageCH;
+      _machineLanguages_EN = languageEN;
+      _machineLanguages_KO = languageKO;
+    });
 
     _getMachineActivateInfo();
   }
@@ -663,6 +696,7 @@ print(systemSettingInfo);
                           mainAxisAlignment: MainAxisAlignment.center,
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
+                            if(_machineLanguages_JP == true)
                             InkWell(
                               onTap: () {
                                 setState(() {
@@ -674,7 +708,7 @@ print(systemSettingInfo);
                               child: Container(
                                 width: ScreenAdapter.width(217),
                                 height: ScreenAdapter.height(90),
-                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(40),),
                                 decoration: BoxDecoration(
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
@@ -694,7 +728,8 @@ print(systemSettingInfo);
                                 ),
                               ),
                             ),
-                            SizedBox(width:ScreenAdapter.width(35)),
+                            //SizedBox(width:ScreenAdapter.width(35)),
+                            if(_machineLanguages_CH == true)
                             InkWell(
                               onTap: () {
 
@@ -706,7 +741,7 @@ print(systemSettingInfo);
                               child: Container(
                                 width: ScreenAdapter.width(217),
                                 height: ScreenAdapter.height(90),
-                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                margin: EdgeInsets.only(right: ScreenAdapter.width(40),),
                                 decoration: BoxDecoration(
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
@@ -726,7 +761,8 @@ print(systemSettingInfo);
                                 ),
                               ),
                             ),
-                            SizedBox(width:ScreenAdapter.width(35)),
+                            //SizedBox(width:ScreenAdapter.width(35)),
+                            if(_machineLanguages_EN == true)
                             InkWell(
                               onTap: () {
                                 setState(() {
@@ -738,7 +774,7 @@ print(systemSettingInfo);
                               child: Container(
                                 width: ScreenAdapter.width(217),
                                 height: ScreenAdapter.height(90),
-                                margin: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),),
+                                margin: EdgeInsets.only(right: ScreenAdapter.width(40),),
                                 decoration: BoxDecoration(
                                   //color: Color(0x11111111),
                                   image: DecorationImage(
@@ -758,6 +794,38 @@ print(systemSettingInfo);
                                 ),
                               ),
                             ),
+                            if(_machineLanguages_KO == true)
+                              InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    _checkLanguage = "KO";
+                                  });
+                                  _showScanCodeDialog();
+
+                                },
+                                child: Container(
+                                  width: ScreenAdapter.width(217),
+                                  height: ScreenAdapter.height(90),
+                                  //margin: EdgeInsets.only(right: ScreenAdapter.width(40),),
+                                  decoration: BoxDecoration(
+                                    //color: Color(0x11111111),
+                                    image: DecorationImage(
+                                      //alignment: Alignment.topCenter,
+                                        image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                        fit: BoxFit.fill),
+                                  ),
+                                  child: Center(
+                                    //加上Center让文字居中
+                                    child: Text(
+                                      '韓国語',
+                                      style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(36.0),
+                                          color: ColorsUtil.hexToColor("#F9F9F9"),
+                                          fontWeight: FontWeight.w600),
+                                    ),
+                                  ),
+                                ),
+                              ),
                           ],
                         ),
                       ),
