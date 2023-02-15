@@ -78,7 +78,7 @@ class _AttendancePageState extends State<AttendancePage> {
             });
 
           }else{
-            showDialogErrorUser("認証ができません");
+            showDialogErrorUser("認証ができません-${response['data']['message']}");
           }
 
         });
