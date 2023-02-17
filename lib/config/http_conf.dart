@@ -10,12 +10,14 @@ const servicePath = {
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
   'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
-  'webBootToPayV2': base_url + 'pad/web/boot/v2/toPay', //支付提交请求地址 新 增加交易失败退出扫码情况
-  'webBootToReport': base_url + 'pad/web/boot/report', //现金支付提交请求地址
+  'webBootToPayv2': base_url + 'pad/web/boot/toPay/v2', //支付提交请求地址
+  'webBootPosPayReport': base_url + 'pad/web/boot/pos/pay/report', //支付提交请求地址
+  //'webBootToPayV2': base_url + 'pad/web/boot/v2/toPay', //支付提交请求地址 新 增加交易失败退出扫码情况
+  //'webBootToReport': base_url + 'pad/web/boot/report', //现金支付提交请求地址
   'webBootToReportV1': base_url + 'pad/web/boot/v1/report', //现金支付提交请求地址
   //'webBootToPrint': base_url + 'pad/web/boot/print', //打印小票请求地址
-  'webBootToPrintV2': base_url + 'pad/web/boot/v2/print', //打印小票请求地址 58mm
-  'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
+  //'webBootToPrintV2': base_url + 'pad/web/boot/v2/print', //打印小票请求地址 58mm
+  //'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
   'webBootToPrintV4': base_url + 'pad/web/boot/v4/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址

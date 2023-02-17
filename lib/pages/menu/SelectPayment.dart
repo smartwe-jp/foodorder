@@ -223,6 +223,17 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
+                                        if(_showPayPay == true)
+                                          Container(
+                                            height: ScreenAdapter.height(210),
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                            child: Image.asset(GImage.getImageString("imgpublic", "settlement_paypay"),
+                                              width: ScreenAdapter.width(90),
+                                              //height: ScreenAdapter.height(100),
+                                              //color: Colors.lightGreen,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
                                         if(_showAlipay == true)
                                         Container(
                                           height: ScreenAdapter.height(210),
@@ -245,17 +256,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                               fit: BoxFit.fitWidth,
                                             ),
                                           ),
-                                        if(_showPayPay == true)
-                                          Container(
-                                            height: ScreenAdapter.height(210),
-                                            padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                            child: Image.asset(GImage.getImageString("imgpublic", "settlement_paypay"),
-                                              width: ScreenAdapter.width(90),
-                                              //height: ScreenAdapter.height(100),
-                                              //color: Colors.lightGreen,
-                                              fit: BoxFit.fitWidth,
-                                            ),
-                                          ),
+
                                       ],
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(10),),

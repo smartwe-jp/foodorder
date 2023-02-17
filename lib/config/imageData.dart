@@ -74,9 +74,9 @@ class GImage{
         "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
         "settlement_top_lead_card_EN":"assets/images/public/settlement_top_lead_card_EN.png",
         "settlement_top_lead_nfc_EN":"assets/images/public/settlement_top_lead_nfc_EN.png",
-        "settlement_top_lead_cash_KO":"assets/images/public/settlement_top_lead_cash_EN.png",
-        "settlement_top_lead_card_KO":"assets/images/public/settlement_top_lead_card_EN.png",
-        "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_EN.png",
+        "settlement_top_lead_cash_KO":"assets/images/public/settlement_top_lead_cash_KO.png",
+        "settlement_top_lead_card_KO":"assets/images/public/settlement_top_lead_card_KO.png",
+        "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
 
         "paymentSuccess":"assets/images/public/paymentSuccess.jpg",
 

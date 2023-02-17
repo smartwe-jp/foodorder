@@ -126,9 +126,10 @@ class _SettlementPageState extends State<SettlementPage> {
   Socket _socket; //socket对象
   bool _socketState = false; //连接状态
   var _isAllowPos = "0";
-  var _pos_ip = "192.168.11.180";
-  var _pos_port = "9999";
+  var _pos_ip = "";
+  var _pos_port = "";
   var _payment_method_num = "0"; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
+  var _posResultReportData = {};
 
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer showCashTimer;
@@ -163,9 +164,15 @@ class _SettlementPageState extends State<SettlementPage> {
       //打开现金机
       _countDownTimer("1");
       Starttoubi();
+    } else if (_payment_method_num == "2") {
+      //检测是否需要连接socket
+      checkpayconnectSocker();
     } else if (_payment_method_num == "3" || _payment_method_num == "4") {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
-      payconnectSocker();
+      if(this._pos_ip != "" && this._pos_port != ""){
+        payconnectSocker();
+      }
+      //payconnectSocker();
     }
   }
 
@@ -225,6 +232,20 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
+  checkpayconnectSocker() async {
+    Map systemSettingInfo = await HomeServices.getMachineActivateData();
+    var showCreditCard = systemSettingInfo['showCreditCard'];
+    if(showCreditCard == true){
+      Map posSettingInfo = await HomeServices.getPosSettingInfo();
+      setState(() {
+        _pos_ip = posSettingInfo['posIp'];
+        _pos_port = posSettingInfo['posPort'];
+      });
+      if(_pos_ip != "" && _pos_port != ""){
+        payconnectSocker();
+      }
+    }
+  }
   //购物车
 
   _showShoppingCart() {
@@ -398,7 +419,7 @@ class _SettlementPageState extends State<SettlementPage> {
     if (_payment_method_num != "2") return;
 
     if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
-      _showScanCodeNoOpenDialog(1);
+      _showScanCodeNoOpenDialog(1,"");
       return;
     }
 
@@ -406,17 +427,17 @@ class _SettlementPageState extends State<SettlementPage> {
     var _regExpAlipay = r"^(?:2[5-9]|30)\d{14,22}$";
     if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == true &&
         _showWechat == false) {
-      _showScanCodeNoOpenDialog(2);
+      _showScanCodeNoOpenDialog(2,"");
       return;
     } else if (RegExp(_regExpAlipay).hasMatch(_scanQrCode) == true &&
         _showAlipay == false) {
-      _showScanCodeNoOpenDialog(2);
+      _showScanCodeNoOpenDialog(2,"");
       return;
     } else {
       if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == false &&
           RegExp(_regExpAlipay).hasMatch(_scanQrCode) == false &&
           _showPayPay == false) {
-        _showScanCodeNoOpenDialog(2);
+        _showScanCodeNoOpenDialog(2,"");
         return;
       }
     }
@@ -429,7 +450,47 @@ class _SettlementPageState extends State<SettlementPage> {
         "machineCode": _machineCode,
         "orderId": this._orderId,
       };
-      request('webBootToPay', method: 'POST', parameters: formData).then((val) {
+      request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+        LogUtil.d(response);
+        if (response['code'] == 200 && response['data'].isNotEmpty) {
+          var resultData = response['data'];
+          if(resultData["requestInfo"] != ""){
+            if(resultData["exceptionMessage"] == ""){
+              _posResultReportData = response['data'];
+              //判断不为空则POS机
+              this._socket.write(resultData["requestInfo"]);
+            }else{
+              _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
+            }
+          }else{
+            if(resultData["result"] == true){
+              setState(() {
+                _isReport = false;
+                _scanCode = true;
+              });
+              doPrintOrderMenu("1");
+            }else{
+              _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
+            }
+          }
+
+        } else {
+          //扫码后超时，再继续请求后台，1秒一次 20次
+          _doScanCodeTimeOut();
+        }
+          /*if (response['code'] == 200 && response['data'] == true) {
+          setState(() {
+            _isReport = false;
+            _scanCode = true;
+          });
+          doPrintOrderMenu("1");
+        } else {
+          //扫码后超时，再继续请求后台，1秒一次 20次
+          _doScanCodeTimeOut();
+        }*/
+      });
+      /*request('webBootToPay', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
 
         if (response['code'] == 200 && response['data'] == true) {
@@ -442,12 +503,12 @@ class _SettlementPageState extends State<SettlementPage> {
           //扫码后超时，再继续请求后台，1秒一次 20次
           _doScanCodeTimeOut();
         }
-      });
+      });*/
     }
   }
 
   //三种扫码支付都未开通，弹出dialog
-  _showScanCodeNoOpenDialog(checknum) {
+  _showScanCodeNoOpenDialog(checknum, showContent) {
     EasyLoading.dismiss();
     setState(() {
       _scanQrCodeController.text = "";
@@ -463,6 +524,8 @@ class _SettlementPageState extends State<SettlementPage> {
     } else if (checknum == 2) {
       show_dialog_content = GString.getToString(
           this._checkLanguage, "settlement_scancodenochange_error");
+    } else if (checknum == 3) {
+      show_dialog_content = showContent;
     }
     //支付状态
     showDialog(
@@ -2073,15 +2136,25 @@ class _SettlementPageState extends State<SettlementPage> {
       int.parse(this._pos_port),
       timeout: Duration(seconds: 5),
     ).then((Socket socket) {
-      //print("连接成功了么");
+      print("连接成功了么");
       this._socket = socket;
       //获得pos数据并发送
-      _getPaymentPosData();
+      if (_payment_method_num == "3" || _payment_method_num == "4") {
+        _getPaymentPosData();
+      }
       // 监听wifi模块发送的数据
       this._socket.listen((List<int> event) {
-        if (event.length > 40) event.fillRange(266, 289, 32);
+        LogUtil.d(event);
+        //if (event.length > 40) event.fillRange(266, 289, 32);
+        for(var i=0; i< event.length; i++){
+          if(event[i] >127){
+            event[i] = 32;
+            //print(i);
+          }
+        }
         var zhuanhuan = Uint8List.fromList(event);
         var eventString = Utf8Codec().decode(zhuanhuan);
+        LogUtil.d(eventString);
         //print(Utf8Codec().decode(zhuanhuan));
         //print("event=====${eventString}=====");
         String FirstString = eventString.substring(0, 1);
@@ -2095,18 +2168,26 @@ class _SettlementPageState extends State<SettlementPage> {
           //print("resultStringresultString==${resultString}");
           //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
 
-          if (FirstString == "3" && SecondString == "11" && resultString == "000") {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
             CancelOrder();
           }
         } else {
-          //print("queryBackqueryBackqueryBack====${resultString}");
-          //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
+          print("queryBackqueryBackqueryBack====${FirstString}");
+          print("queryBackqueryBackqueryBack====${SecondString}");
+          print("queryBackqueryBackqueryBack====${resultString}");
+          print("resultMPFSStringresultMPFSString==${resultMPFSString}");
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {
+            print("1111111111");
             CreditCardPayReport(eventString);
-          } else {
-
+          } else {print("222222222222222");
+            if(resultString.trim() != ""){
+              /*if(resultString == "L11" || resultString == "L10"){
+                CancelOrder();
+              }*/
+              if(resultString != "000" ||resultMPFSString != "000"){print("333333333");
               CancelOrder();
-
+              }
+            }
           }
         }
       });
@@ -2118,6 +2199,7 @@ class _SettlementPageState extends State<SettlementPage> {
         _socketState = false;
       });
       print("Unable to connect: $e");
+      _showScanCodeNoOpenDialog(3,"Unable to connect: $e");
     });
 
     //获得pos数据并发送
@@ -2127,7 +2209,19 @@ class _SettlementPageState extends State<SettlementPage> {
   //刷卡机nfc支付汇报
   CreditCardPayReport(eventString) {
     _showEasyLoading();
-    var formData = {
+    _posResultReportData["result"] = true;
+    _posResultReportData["paymentInfo"] = eventString;LogUtil.d("huibaohhhhhh===${_posResultReportData}");
+    request('webBootPosPayReport', method: 'POST', parameters: _posResultReportData).then((val) {
+      var response = json.decode(val.toString());
+
+      if (response['code'] == 200 && response['data'] == true) {
+        doPrintOrderMenu("1");
+      } else {
+        //扫码后超时，再继续请求后台，1秒一次 20次
+        //_doScanCodeTimeOut();
+      }
+    });
+    /*var formData = {
       "auth_code": "0000000088888888",
       "machineCode": _machineCode,
       "orderId": this._orderId,
@@ -2143,11 +2237,39 @@ class _SettlementPageState extends State<SettlementPage> {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
       }
-    });
+    });*/
   }
 
   _getPaymentPosData() {
     var formData = {
+      "auth_code": "0000000088888888",
+      "machineCode": _machineCode,
+      "orderId": this._orderId,
+    };
+    request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      LogUtil.d(response);
+      if (response['code'] == 200 && response['data'].isNotEmpty) {
+        var resultData = response['data'];
+        if(resultData["requestInfo"] != ""){
+          if(resultData["exceptionMessage"] == ""){
+            _posResultReportData = response['data'];
+            //判断不为空则POS机
+            this._socket.write(resultData["requestInfo"]);
+          }else{
+            _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
+          }
+        }else{
+          _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
+        }
+
+      } else {
+        _showScanCodeNoOpenDialog(3,GString.getToString(this._checkLanguage, "settlement_scancodenochange_error"));
+      }
+
+    });
+
+   /* var formData = {
       "machineCode": _machineCode,
       "orderId": this._orderId,
     };
@@ -2159,7 +2281,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket.write(response['data']);
       }
-    });
+    });*/
   }
 
   _getPaymentCancelPosData() {
@@ -2170,7 +2292,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     request("webBootCreditCardCancel", method: 'POST', parameters: formData)
         .then((val) async {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket.write(response['data']);
@@ -2392,6 +2514,23 @@ class _SettlementPageState extends State<SettlementPage> {
                               runSpacing: ScreenAdapter.height(5),
                               alignment: WrapAlignment.center,
                               children: [
+                                if (_showPayPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(130),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        top: ScreenAdapter.height(10),
+                                        right: ScreenAdapter.width(10),
+                                        bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(
+                                      GImage.getImageString(
+                                          "imgpublic", "settlement_paypay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
                                 if (_showAlipay == true)
                                   Container(
                                     height: ScreenAdapter.height(130),
@@ -2426,23 +2565,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
-                                if (_showPayPay == true)
-                                  Container(
-                                    height: ScreenAdapter.height(130),
-                                    padding: EdgeInsets.only(
-                                        left: ScreenAdapter.width(10),
-                                        top: ScreenAdapter.height(10),
-                                        right: ScreenAdapter.width(10),
-                                        bottom: ScreenAdapter.height(10)),
-                                    child: Image.asset(
-                                      GImage.getImageString(
-                                          "imgpublic", "settlement_paypay"),
-                                      width: ScreenAdapter.width(100),
-                                      //height: ScreenAdapter.height(100),
-                                      //color: Colors.lightGreen,
-                                      fit: BoxFit.fitWidth,
-                                    ),
-                                  ),
+
                               ]),
                         ))
                   ],
@@ -2932,7 +3055,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           //Navigator.pop(context);
                           if (_payment_method_num == "3" ||
                               _payment_method_num == "4") {
-                            _showBackEasyLoading();
+                            _showBackEasyLoading();print("qingqiushuju");
                             _getPaymentCancelPosData();
                           } else {
                             CancelOrder();

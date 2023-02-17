@@ -104,11 +104,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
   //顶部展示支付类型
-  var _showWechat = true;
-  var _showAlipay = true;
-  var _showPayPay = true;
-  var _showCreditCard = true;
-  var _showCash = true;
+  var _showWechat = false;
+  var _showAlipay = false;
+  var _showPayPay = false;
+  var _showCreditCard = false;
+  var _showCash = false;
 
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 5;

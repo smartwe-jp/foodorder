@@ -107,7 +107,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
+      var response = json.decode(val.toString());print(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -115,7 +115,7 @@ class _TransitPageState extends State<TransitPage> {
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
         var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-        var _showCreditCard = shopData["linePayChannelMap"]["CreditCard"] != null ? shopData["linePayChannelMap"]["CreditCard"] :false;
+        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
         var machineActivateData = {
           "showCash":(_isCashState == true) ? _showCash :false,
           "showWechat":_showWechat,
