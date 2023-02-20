@@ -112,9 +112,15 @@ class _SettlementPageState extends State<SettlementPage> {
   var _isCancel = false; //新增加  取消默认为false
 
   //顶部展示支付类型
-  var _showWechat = true;
-  var _showAlipay = true;
-  var _showPayPay = true;
+  var _showWechat = false;
+  var _showAlipay = false;
+  var _showPayPay = false;
+  var _showCreditCard = false;
+
+  var _showauPay = false;
+  var _showdPay = false;
+  var _showrPay = false;
+  var _showmPay = false;
 
   //后台返回是否可以使用pos刷卡机，如果后台可以使用，并且券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   var _showIsPos = true;
@@ -126,6 +132,9 @@ class _SettlementPageState extends State<SettlementPage> {
   Socket _socket; //socket对象
   bool _socketState = false; //连接状态
   var _isAllowPos = "0";
+  var _isAllowWlanPrint = "0";
+  var _wlan_print_ip = "";
+  var _wlan_print_port = "";
   var _pos_ip = "";
   var _pos_port = "";
   var _payment_method_num = "0"; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
@@ -153,6 +162,12 @@ class _SettlementPageState extends State<SettlementPage> {
     this._showWechat = widget.arguments['showWechat'];
     this._showAlipay = widget.arguments['showAlipay'];
     this._showPayPay = widget.arguments['showPayPay'];
+    this._showCreditCard = widget.arguments['showCreditCard'];
+
+    this._showauPay = widget.arguments['showauPay'];
+    this._showdPay = widget.arguments['showdPay'];
+    this._showrPay = widget.arguments['showrPay'];
+    this._showmPay = widget.arguments['showmPay'];
 
     _getSystemSettingInfo();
 
@@ -205,7 +220,16 @@ class _SettlementPageState extends State<SettlementPage> {
     setState(() {
       _print_paper_size = systemSettingInfo['printPaperSize'];
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
+      _isAllowWlanPrint = systemSettingInfo['isAllowWlanPrint'];
     });
+    if(systemSettingInfo['isAllowWlanPrint'] == "1"){
+      Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
+      if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
+        _wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'];
+        _wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'];
+      }
+    }
+
     //获取纸大小后在获取数据
     //_getPrintTicketData();
   }
@@ -1033,7 +1057,10 @@ class _SettlementPageState extends State<SettlementPage> {
       }
 
       //新调试网络打印机
-      _wifiPrintData(printData);
+      if(_isAllowWlanPrint == "1" && _wlan_print_ip != "" && _wlan_print_port != ""){
+        _wifiPrintData(printData);
+      }
+
 
     });
   }
@@ -1158,7 +1185,7 @@ class _SettlementPageState extends State<SettlementPage> {
     const PaperSize paper = PaperSize.mm80;
     final profile = await CapabilityProfile.load();
     final printer = NetworkPrinter(paper, profile);
-    final PosPrintResult res = await printer.connect("192.168.11.100", port: 9100);
+    final PosPrintResult res = await printer.connect(_wlan_print_ip, port: int.parse(_wlan_print_port));
     //final PosPrintResult res = await printer.connect(_kitchenPointIp, port: 9100);
     print("wifidayinji====${res}");
     if (res == PosPrintResult.success) {
@@ -2046,14 +2073,20 @@ class _SettlementPageState extends State<SettlementPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _showTag,
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "printticketloading"),
-                  fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
             ),
+
           ],
         ),
       ),
@@ -2082,14 +2115,20 @@ class _SettlementPageState extends State<SettlementPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _showTag,
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "paymentSuccess"),
-                  fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "paymentSuccess"),
+                    fit: BoxFit.fitHeight),
+              ),
             ),
+
           ],
         ),
       ),
@@ -2115,12 +2154,18 @@ class _SettlementPageState extends State<SettlementPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _showTag,
-            Container(
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "printticketloading"),
-                  fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
             ),
           ],
         ),
@@ -2172,19 +2217,14 @@ class _SettlementPageState extends State<SettlementPage> {
             CancelOrder();
           }
         } else {
-          print("queryBackqueryBackqueryBack====${FirstString}");
-          print("queryBackqueryBackqueryBack====${SecondString}");
-          print("queryBackqueryBackqueryBack====${resultString}");
-          print("resultMPFSStringresultMPFSString==${resultMPFSString}");
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {
-            print("1111111111");
             CreditCardPayReport(eventString);
-          } else {print("222222222222222");
+          } else {
             if(resultString.trim() != ""){
               /*if(resultString == "L11" || resultString == "L10"){
                 CancelOrder();
               }*/
-              if(resultString != "000" ||resultMPFSString != "000"){print("333333333");
+              if(resultString != "000" ||resultMPFSString != "000"){
               CancelOrder();
               }
             }
@@ -2559,6 +2599,74 @@ class _SettlementPageState extends State<SettlementPage> {
                                     child: Image.asset(
                                       GImage.getImageString(
                                           "imgpublic", "settlement_wechat"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if (_showCreditCard == true && _showauPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(130),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        top: ScreenAdapter.height(10),
+                                        right: ScreenAdapter.width(10),
+                                        bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(
+                                      GImage.getImageString(
+                                          "imgpublic", "settlement_aupay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if (_showCreditCard == true && _showdPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(130),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        top: ScreenAdapter.height(10),
+                                        right: ScreenAdapter.width(10),
+                                        bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(
+                                      GImage.getImageString(
+                                          "imgpublic", "settlement_dpay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if (_showCreditCard == true && _showrPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(130),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        top: ScreenAdapter.height(10),
+                                        right: ScreenAdapter.width(10),
+                                        bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(
+                                      GImage.getImageString(
+                                          "imgpublic", "settlement_rpay"),
+                                      width: ScreenAdapter.width(100),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if (_showCreditCard == true && _showmPay == true)
+                                  Container(
+                                    height: ScreenAdapter.height(130),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        top: ScreenAdapter.height(10),
+                                        right: ScreenAdapter.width(10),
+                                        bottom: ScreenAdapter.height(10)),
+                                    child: Image.asset(
+                                      GImage.getImageString(
+                                          "imgpublic", "settlement_mpay"),
                                       width: ScreenAdapter.width(100),
                                       //height: ScreenAdapter.height(100),
                                       //color: Colors.lightGreen,
@@ -3055,7 +3163,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           //Navigator.pop(context);
                           if (_payment_method_num == "3" ||
                               _payment_method_num == "4") {
-                            _showBackEasyLoading();print("qingqiushuju");
+                            _showBackEasyLoading();
                             _getPaymentCancelPosData();
                           } else {
                             CancelOrder();

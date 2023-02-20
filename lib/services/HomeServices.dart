@@ -104,6 +104,18 @@ class HomeServices{
     return posSettingInfo;
   }
 
+  //wlan print机多参数设置
+  static getWlanPrintSettingInfo() async{
+    Map printSettingInfo;
+    try {
+      Map printSettingData = json.decode(await Storage.getString('smartwe_wlanPrintSetting'));
+      printSettingInfo = printSettingData;
+    } catch (e) {
+      printSettingInfo = {};
+    }
+    return printSettingInfo;
+  }
+
   //是否展示微信支付宝等
   static getMachineActivateData() async{
     Map machineActivateInfo;

@@ -51,6 +51,11 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _pos_ip = "";
   var _pos_port = "";
 
+  //券卖机设置里面也设置开启并设置好ip，则展示图标及请求wlan print的相关数据
+  var _is_allow_wlanPrint = "0";//0 不开启  1 开启
+  var _wlan_print_ip = "";
+  var _wlan_print_port = "9100";
+
   //监听页面销毁的事件
   dispose() {
     eventBus.fire(new setAttendanceCodeEvent('支付成功...'));
@@ -64,9 +69,6 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     this._shopInfo = widget.arguments['shopInfo'];
     EasyLoading.dismiss();
 
-    //_getDiningTypeInfo();
-    //_getMenuDirection();
-    //_getPrintPaperSize();
     _getSystemSettingInfo();
 
 
@@ -75,6 +77,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
 
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
@@ -85,49 +88,17 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _isReservation = systemSettingInfo['isReservation'];
       _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
       _is_allow_pos = systemSettingInfo['isAllowPos'];
+      _is_allow_wlanPrint = systemSettingInfo['isAllowWlanPrint'];
 
       if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
         _pos_ip = posSettingInfo['posIp'];
         _pos_port = posSettingInfo['posPort'];
       }
+      if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
+        _wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'];
+        _wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'];
+      }
     });
-  }
-
-  //获取就餐类型信息
-  _getDiningTypeInfo() async {
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-    if (DiningTypeInfo != "") {
-      setState(() {
-        _dining_type = DiningTypeInfo;
-
-      });
-    }else{
-      Storage.setString('diningType', "1");//1 堂食  2 外袋  0 两种都可
-    }
-  }
-
-  //获取菜单方向
-  _getMenuDirection() async {
-    var menuDirectionInfo = await HomeServices.getMenuDirectionInfo();
-    if (menuDirectionInfo != "") {
-      setState(() {
-        _menu_direction = menuDirectionInfo;
-      });
-    }else{
-      Storage.setString('menuDirection', "1");//1 默认顶部横向  2 左侧纵向
-    }
-  }
-
-  //获取菜单方向
-  _getPrintPaperSize() async {
-    var printPaperSizeInfo = await HomeServices.getPrintPaperSizeInfo();
-    if (printPaperSizeInfo != "") {
-      setState(() {
-        _print_paper_size = printPaperSizeInfo;
-      });
-    }else{
-      Storage.setString('printPaperSize', "1");//1 默认58mm  2 宽纸80mm
-    }
   }
 
 
@@ -513,6 +484,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -666,6 +638,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -825,6 +798,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -986,6 +960,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1141,6 +1116,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1296,6 +1272,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":checkedType, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1451,6 +1428,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":checkedType,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1632,6 +1610,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":checkedType,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
 
@@ -1680,6 +1659,233 @@ print(posSettingData);
 
                 });
                 checkIsAllowPos("1");
+              }
+
+            },
+          );
+        });
+  }
+
+  //设置是否开启pos刷卡
+  setIsAllowWlanPrint() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("Wlan打印机設定",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkIsAllowWlanPrint("0");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("OFF",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_wlanPrint == "0")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    //if(_pos_ip == ""){
+                    _showWlanPrintSettingDialog();
+
+                    //}
+                    /*else{
+                      checkIsAllowPos("1");
+                    }*/
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(190),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#409eff"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            //お持ち帰り
+                            child: Text("ON",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                          (_wlan_print_ip != "" && _wlan_print_port != "") ? Row(
+                            children: [
+                              Text(
+                                  "ip:${_wlan_print_ip}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22),
+                                  )
+                              ),
+                              Text(
+                                  "端口:${_wlan_print_port}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(22),
+                                  )
+                              )
+                            ],
+                          ) : Container(height: 0,)
+                        ],
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_wlanPrint == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(45),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkIsAllowWlanPrint(checkedType) async {
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":checkedType,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+
+    var wlanPrintSettingData;
+    if(checkedType == "1"){
+      wlanPrintSettingData = {
+        "wlanPrintIp":_wlan_print_ip, //ip
+        "wlanPrintPort":_wlan_print_port,//port
+      };
+    }else{
+      wlanPrintSettingData = {
+        "wlanPrintIp":"", //ip
+        "wlanPrintPort":"",//port
+      };
+      setState(() {
+        _wlan_print_ip = "";
+        _wlan_print_port = "";
+      });
+    }
+    print(wlanPrintSettingData);
+    Storage.setString('smartwe_wlanPrintSetting', json.encode(wlanPrintSettingData));
+
+    //Storage.setString('isAllowReceipt', checkedType);//1 必须  2 不必须
+    setState(() {
+      _is_allow_wlanPrint = checkedType;
+    });
+
+  }
+
+  //预约弹出框
+  _showWlanPrintSettingDialog() async {
+    await showDialog(
+        context: context,
+        barrierDismissible: true, //表示点击灰色背景的时候是否消失弹出框
+        builder: (BuildContext context) {
+          return SetPosIpPage(
+            posIp: _wlan_print_ip,
+            posPort: _wlan_print_port,
+            onConfrimClick: (String printIp, String printPort) {
+              print(printIp);
+              print(printPort);
+              if(printIp != ""){
+                setState(() {
+                  _wlan_print_ip = printIp;
+                  _wlan_print_port = printPort;
+
+                });
+                checkIsAllowWlanPrint("1");
               }
 
             },
@@ -1791,12 +1997,13 @@ print(posSettingData);
                   ),
                   setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向
-                  setPrintPaperSize(),//打印纸大小
+                  //setPrintPaperSize(),//打印纸大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   setMachineMode(), //设置机器类型
                   setIsReservation(),  //是否开启预约服务
 		              setIsAllowAttendance(),//是否开启签到
                   setIsAllowPos(),//是否开启pos机刷卡
+                  setIsAllowWlanPrint(),//是否开启网络打印机
                 ],
               ),
             ),

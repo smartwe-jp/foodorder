@@ -110,6 +110,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _showCreditCard = false;
   var _showCash = false;
 
+  var _showauPay = false;
+  var _showdPay = false;
+  var _showrPay = false;
+  var _showmPay = false;
+
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 5;
 
@@ -243,6 +248,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       this._showAlipay = systemSettingInfo['showAlipay'];
       this._showPayPay = systemSettingInfo['showPayPay'];
       this._showCreditCard = systemSettingInfo['showCreditCard'];
+
+      _showauPay = systemSettingInfo['au_Pay'];
+      _showdPay = systemSettingInfo['d_Pay'];
+      _showrPay = systemSettingInfo['R_Pay'];
+      _showmPay = systemSettingInfo['m_Pay'];
     });
     _getBookingBootMenu();
   }
@@ -255,6 +265,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       "showAlipay":systemSettingInfo['showAlipay'],
       "showPayPay":systemSettingInfo['showPayPay'],
       "showCreditCard":systemSettingInfo['showCreditCard'],
+      "au_Pay":systemSettingInfo['au_Pay'],
+      "d_Pay":systemSettingInfo['d_Pay'],
+      "R_Pay":systemSettingInfo['R_Pay'],
+      "m_Pay":systemSettingInfo['m_Pay'],
     };
     Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
     if(mounted){
@@ -264,6 +278,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         this._showAlipay = systemSettingInfo['showAlipay'];
         this._showPayPay = systemSettingInfo['showPayPay'];
         this._showCreditCard = systemSettingInfo['showCreditCard'];
+
+        _showauPay = systemSettingInfo['au_Pay'];
+        _showdPay = systemSettingInfo['d_Pay'];
+        _showrPay = systemSettingInfo['R_Pay'];
+        _showmPay = systemSettingInfo['m_Pay'];
       });
     }
   }
@@ -4369,6 +4388,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "showWechat":this._showWechat,
                 "showAlipay":this._showAlipay,
                 "showPayPay":this._showPayPay,
+                "showCreditCard":_showCreditCard,
+                "showauPay":this._showauPay,
+                "showdPay":this._showdPay,
+                "showrPay":this._showrPay,
+                "showmPay":this._showmPay,
               });
 
         }else{
@@ -4397,6 +4421,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               showWechat:this._showWechat,
               showAlipay:this._showAlipay,
               showPayPay:this._showPayPay,
+              showauPay:this._showauPay,
+              showdPay:this._showdPay,
+              showrPay:this._showrPay,
+              showmPay:this._showmPay,
               showCreditCard:this._showCreditCard,
               shopCartTotalPrice:_shopCartTotalPrice,
               onConfrimClick: (String isAllowPos, String payment_method_num) {

@@ -107,7 +107,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());//print(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -116,16 +116,25 @@ class _TransitPageState extends State<TransitPage> {
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
         var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
         var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
+        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
+        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
+        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
+        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
         var machineActivateData = {
           "showCash":(_isCashState == true) ? _showCash :false,
           "showWechat":_showWechat,
           "showAlipay":_showAlipay,
           "showPayPay":_showPayPay,
           "showCreditCard":_showCreditCard,
+          "au_Pay":_auPay,
+          "d_Pay":_dPay,
+          "R_Pay":_rPay,
+          "m_Pay":_mPay,
         };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
 
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
+        //Storage.setString('smartwe_machineLanguages', json.encode(["JP","EN","KO"]));
 
       }
       if(_machineMode == "2"){
