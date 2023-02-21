@@ -332,6 +332,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             //配置顶部菜单默认项
             if (i == 0) classTag = categoryVoList['categoryCode'];
             showItem[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
+            /*for (var i=0;i< showItem[categoryVoList['categoryCode']].length;i++) {
+              showItem[categoryVoList['categoryCode']][i]["qtyBounds"] = 0;
+            }*/
 
             //该分类下有option，先初始化页面数据
             if (categoryVoList['menuVoList']?.length > 0) {
@@ -799,7 +802,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         right: ScreenAdapter.width(10),
         top: ScreenAdapter.height(20),
         child: Image.asset(
-          GImage.getImageString(_shopInfo, "shouqing_png"),
+          GImage.getImageString("imgpublic", "shouqing_png"),
           width: ScreenAdapter.width(100),
           fit: BoxFit.fitWidth,
         ),
@@ -3212,7 +3215,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       publicShowMenuSellOut(_leftItem['qtyBounds']),
                     ],
                   ),
-                  Column(
+                  Expanded(
+                      child: Column(
                     children: [
                       Container(
                         height: ScreenAdapter.height(405),
@@ -3456,6 +3460,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             )),
                       ),
                     ],
+                  )
                   )
                 ],
               ),

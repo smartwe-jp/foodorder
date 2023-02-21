@@ -35,6 +35,7 @@ class GImage{
         "backbutton_top":"assets/images/public/backbutton_top.png",
         "checked_green":"assets/images/public/checked_green.png",
         "delOne":"assets/images/public/delOne.png",
+        "shouqing_png":"assets/images/public/shouqing.png",
         "home_button":"assets/images/public/home_button.png",
         "qiandaobutton":"assets/images/public/qiandaobutton.png",
         "menu_up":"assets/images/public/menu_up.png",
