@@ -817,7 +817,7 @@ print(systemSettingInfo);
                                   child: Center(
                                     //加上Center让文字居中
                                     child: Text(
-                                      '韓国語',
+                                      '한국말',
                                       style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(36.0),
                                           color: ColorsUtil.hexToColor("#F9F9F9"),
