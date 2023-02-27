@@ -2291,8 +2291,8 @@ class _SettlementPageState extends State<SettlementPage> {
       LogUtil.d(response);
       if (response['code'] == 200 && response['data'].isNotEmpty) {
         var resultData = response['data'];
-        if(resultData["requestInfo"] != ""){
-          if(resultData["exceptionMessage"] == ""){
+        if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){
+          if(resultData["exceptionMessage"] != null && resultData["exceptionMessage"] == ""){
             _posResultReportData = response['data'];
             //判断不为空则POS机
             this._socket.write(resultData["requestInfo"]);
@@ -2332,7 +2332,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     request("webBootCreditCardCancel", method: 'POST', parameters: formData)
         .then((val) async {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket.write(response['data']);
