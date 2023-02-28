@@ -116,7 +116,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _showmPay = false;
 
   var _optionMaxNum = 12;
-  var _optionGroupMaxNum = 5;
+  var _optionGroupMaxNum = 10;
 
 
   @override
