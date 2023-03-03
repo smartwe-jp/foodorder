@@ -846,7 +846,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         top: ScreenAdapter.height(20),
         child: Image.asset(
           GImage.getImageString("imgpublic", "shouqing_png"),
-          width: ScreenAdapter.width(100),
+          width: ScreenAdapter.width(120),
           fit: BoxFit.fitWidth,
         ),
       );

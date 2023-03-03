@@ -1048,12 +1048,13 @@ class _SettlementPageState extends State<SettlementPage> {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
       if (printType == "1") {
-        await FlutterPluginMsprinter.sendPrintImg(
-            base64Image, "1", _shopInfo, "0");
+        //if(_isAllowWlanPrint != "1"){
+          await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "0");
+        //}
+
         _tpPrintReceipt(printData);
       } else {
-        await FlutterPluginMsprinter.sendPrintImg(
-            base64Image, "0", _shopInfo, "0");
+        await FlutterPluginMsprinter.sendPrintImg(base64Image, "0", _shopInfo, "0");
       }
 
       //新调试网络打印机
