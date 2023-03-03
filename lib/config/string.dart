@@ -74,6 +74,8 @@ class GString{
 
         "payment_success_title":"支払完了いたしました",
 
+        "show_storage_num_error":"この料理の在庫が不足しています",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -144,6 +146,8 @@ class GString{
 
         "payment_success_title":"支付成功!",
 
+        "show_storage_num_error":"此菜品库存数量不足",
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -213,6 +217,8 @@ class GString{
         "select_payment_type_title":"Please choose your payment method",
 
         "payment_success_title":"Payment succeeded.",
+
+        "show_storage_num_error":"Out of stock",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -282,6 +288,8 @@ class GString{
         "select_payment_type_title":"지불 방식을 선택하십시오",
 
         "payment_success_title":"결제 성공",
+
+        "show_storage_num_error":"재고 부족",
 
       };
     }

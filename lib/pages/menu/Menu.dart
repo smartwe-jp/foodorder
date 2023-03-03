@@ -55,9 +55,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   bool get wantKeepAlive =>true;
 
-  var _alignmentY = -1.0;
-
-
   Storage storageService = Storage();
 
   ItemServices itemServices = ItemServices();
@@ -431,7 +428,53 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
   //限量商品请求接口
-  _checkQtyBoundsCount(menuCode, optionCode) {
+  _checkQtyBoundsCount(item, optionCode) {
+    var checkResult;
+    var formData = {
+      "machineCode": _machineCode,
+      "menuCode": item['menuCode'],
+      "optionCode": ""
+    };
+    request('webStockBooking', method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+      if (response['code'] == 200 && response["data"] == true) {
+        //如果option 存在，则弹出option
+        if(item['optionGroupVoList']?.length > 0){
+          _publicShowOneItemWidget(item);
+        }else{
+          _publicAddCart(item);
+        }
+      } else {
+        var showString = GString.getToString(
+            this._checkLanguage,
+            "show_storage_num_error");
+        showToast("${showString}");
+        checkResult = false;
+      }
+    });
+  }
+
+  _publicAddCart(item){
+    var cartItem = {
+      "menuCode": item['menuCode'],
+      "mainTitle": item['mainTitle'],
+      "image": item['homeImage'],
+      "currentPrice": item['currentPrice'],
+      "optionGroupVoList": "",
+      "optionVoListMsg": "",
+      "goodsNum": 1
+    };
+    publicAddCartMenu(cartItem, true).then((val) {
+
+      _publicShowAddCartNew();
+
+      //更改显示购物车价格
+      getCartPriceTotal();
+    });
+  }
+
+  _checkQtyBoundsCountOld(menuCode, optionCode) {
     var checkResult;
     var formData = {
       "machineCode": _machineCode,
@@ -2071,33 +2114,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
+              _checkQtyBoundsCount(item, "");
+              /*var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
               if (checkResult == false) {
                 return;
+              }*/
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
 
-            //如果option 存在，则弹出option
-            if(item['optionGroupVoList']?.length > 0){
-              _publicShowOneItemWidget(item);
-            }else{
-              var cartItem = {
-                "menuCode": item['menuCode'],
-                "mainTitle": item['mainTitle'],
-                "image": item['homeImage'],
-                "currentPrice": item['currentPrice'],
-                "optionGroupVoList": "",
-                "optionVoListMsg": "",
-                "goodsNum": 1
-              };
-              publicAddCartMenu(cartItem, true).then((val) {
 
-                _publicShowAddCartNew();
-
-                //更改显示购物车价格
-                getCartPriceTotal();
-              });
-            }
           },
           child: Material(
             child: Stack(
@@ -2462,32 +2493,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
+              _checkQtyBoundsCount(item, "");
+              /*var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
               if (checkResult == false) {
                 return;
+              }*/
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
-            //如果option 存在，则弹出option
-            if(item['optionGroupVoList']?.length > 0){
-              _publicShowOneItemWidget(item);
-            }else{
-              var cartItem = {
-                "menuCode": item['menuCode'],
-                "mainTitle": item['mainTitle'],
-                "image": item['homeImage'],
-                "currentPrice": item['currentPrice'],
-                "optionGroupVoList": "",
-                "optionVoListMsg": "",
-                "goodsNum": 1
-              };
-              publicAddCartMenu(cartItem, true).then((val) {
 
-                //_publicShowAddCart(temp,item['homeImage']);
-                _publicShowAddCartNew();
-                //更改显示购物车价格
-                getCartPriceTotal();
-              });
-            }
 
           },
           child: Material(
@@ -2837,33 +2856,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
+              _checkQtyBoundsCount(item, "");
+              /*var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
               if (checkResult == false) {
                 return;
+              }*/
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
 
-            //如果option 存在，则弹出option
-            if(item['optionGroupVoList']?.length > 0){
-              _publicShowOneItemWidget(item);
-            }else{
-              var cartItem = {
-                "menuCode": item['menuCode'],
-                "mainTitle": item['mainTitle'],
-                "image": item['homeImage'],
-                "currentPrice": item['currentPrice'],
-                "optionGroupVoList": "",
-                "optionVoListMsg": "",
-                "goodsNum": 1
-              };
-              publicAddCartMenu(cartItem, true).then((val) {
 
-                _publicShowAddCartNew();
-
-                //更改显示购物车价格
-                getCartPriceTotal();
-              });
-            }
 
           },
           child: Material(
@@ -2986,33 +2993,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
+              _checkQtyBoundsCount(item, "");
+              /*var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
               if (checkResult == false) {
                 return;
+              }*/
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
 
-            //如果option 存在，则弹出option
-            if(item['optionGroupVoList']?.length > 0){
-              _publicShowOneItemWidget(item);
-            }else{
-              var cartItem = {
-                "menuCode": item['menuCode'],
-                "mainTitle": item['mainTitle'],
-                "image": item['homeImage'],
-                "currentPrice": item['currentPrice'],
-                "optionGroupVoList": "",
-                "optionVoListMsg": "",
-                "goodsNum": 1
-              };
-              publicAddCartMenu(cartItem, true).then((val) {
 
-                _publicShowAddCartNew();
-
-                //更改显示购物车价格
-                getCartPriceTotal();
-              });
-            }
 
           },
           child: Material(
@@ -3119,33 +3114,21 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 return;
                               } else if (_leftItem['qtyBounds'] > 0) {
                                 //请求限定接口
-                                var checkResult = _checkQtyBoundsCount(_leftItem['menuCode'], "");
+                                _checkQtyBoundsCount(_leftItem, "");
+                                /*var checkResult = _checkQtyBoundsCount(_leftItem['menuCode'], "");
                                 if (checkResult == false) {
                                   return;
+                                }*/
+                              }else{
+                                //如果option 存在，则弹出option
+                                if(_leftItem['optionGroupVoList']?.length > 0){
+                                  _publicShowOneItemWidget(_leftItem);
+                                }else{
+
+                                  _publicAddCart(_leftItem);
                                 }
                               }
-                              //如果option 存在，则弹出option
-                              if(_leftItem['optionGroupVoList']?.length > 0){
-                                _publicShowOneItemWidget(_leftItem);
-                              }else{
 
-                                var cartItem = {
-                                  "menuCode": _leftItem['menuCode'],
-                                  "mainTitle": _leftItem['mainTitle'],
-                                  "image": _leftItem['homeImage'],
-                                  "currentPrice": _leftItem['currentPrice'],
-                                  "optionGroupVoList": "",
-                                  "optionVoListMsg": "",
-                                  "goodsNum": 1
-                                };
-                                publicAddCartMenu(cartItem, true).then((val) {
-
-                                  _publicShowAddCartNew();
-
-                                  //更改显示购物车价格
-                                  getCartPriceTotal();
-                                });
-                              }
 
                             },
                             child: Column(
@@ -3231,32 +3214,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 return;
                               } else if (_rightTop['qtyBounds'] > 0) {
                                 //请求限定接口
-                                var checkResult = _checkQtyBoundsCount(_rightTop['menuCode'], "");
+                                _checkQtyBoundsCount(_rightTop, "");
+                                /*var checkResult = _checkQtyBoundsCount(_rightTop['menuCode'], "");
                                 if (checkResult == false) {
                                   return;
+                                }*/
+                              }else{
+                                if(_rightTop['optionGroupVoList']?.length > 0){
+                                  _publicShowOneItemWidget(_rightTop);
+                                }else{
+                                  _publicAddCart(_rightTop);
                                 }
                               }
 
-                              if(_rightTop['optionGroupVoList']?.length > 0){
-                                _publicShowOneItemWidget(_rightTop);
-                              }else{
-                                var cartItem = {
-                                  "menuCode": _rightTop['menuCode'],
-                                  "mainTitle": _rightTop['mainTitle'],
-                                  "image": _rightTop['homeImage'],
-                                  "currentPrice": _rightTop['currentPrice'],
-                                  "optionGroupVoList": "",
-                                  "optionVoListMsg": "",
-                                  "goodsNum": 1
-                                };
-                                publicAddCartMenu(cartItem, true).then((val) {
 
-                                  _publicShowAddCartNew();
-
-                                  //更改显示购物车价格
-                                  getCartPriceTotal();
-                                });
-                              }
 
 
                             },
@@ -3352,32 +3323,20 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 return;
                               } else if (_rightBottom['qtyBounds'] > 0) {
                                 //请求限定接口
-                                var checkResult = _checkQtyBoundsCount(_rightBottom['menuCode'], "");
+                                _checkQtyBoundsCount(_rightBottom, "");
+                                /*var checkResult = _checkQtyBoundsCount(_rightBottom['menuCode'], "");
                                 if (checkResult == false) {
                                   return;
+                                }*/
+                              }else{
+                                if(_rightBottom['optionGroupVoList']?.length > 0){
+                                  _publicShowOneItemWidget(_rightBottom);
+                                }else{
+                                  _publicAddCart(_rightBottom);
                                 }
                               }
 
-                              if(_rightBottom['optionGroupVoList']?.length > 0){
-                                _publicShowOneItemWidget(_rightBottom);
-                              }else{
-                                var cartItem = {
-                                  "menuCode": _rightBottom['menuCode'],
-                                  "mainTitle": _rightBottom['mainTitle'],
-                                  "image": _rightBottom['homeImage'],
-                                  "currentPrice": _rightBottom['currentPrice'],
-                                  "optionGroupVoList": "",
-                                  "optionVoListMsg": "",
-                                  "goodsNum": 1
-                                };
-                                publicAddCartMenu(cartItem, true).then((val) {
 
-                                  _publicShowAddCartNew();
-
-                                  //更改显示购物车价格
-                                  getCartPriceTotal();
-                                });
-                              }
 
                             },
                             child: Stack(
@@ -3519,33 +3478,18 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
-              if (checkResult == false) {
-                return;
+              _checkQtyBoundsCount(item, "");
+
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
 
-            //如果option 存在，则弹出option
-            if(item['optionGroupVoList']?.length > 0){
-              _publicShowOneItemWidget(item);
-            }else{
-              var cartItem = {
-                "menuCode": item['menuCode'],
-                "mainTitle": item['mainTitle'],
-                "image": item['homeImage'],
-                "currentPrice": item['currentPrice'],
-                "optionGroupVoList": "",
-                "optionVoListMsg": "",
-                "goodsNum": 1
-              };
-              publicAddCartMenu(cartItem, true).then((val) {
 
-                _publicShowAddCartNew();
-
-                //更改显示购物车价格
-                getCartPriceTotal();
-              });
-            }
 
           },
           child: Material(
@@ -4014,13 +3958,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   }
 
   //购物车
-  bool _handleScrollNotification(ScrollNotification notification) {
-    final ScrollMetrics metrics = notification.metrics;
-    setState(() {
-      _alignmentY = -1 + (metrics.pixels / metrics.maxScrollExtent) * 2;
-    });
-    return true;
-  }
 
   getItemTotal(List items) {
     int sum = 0;
