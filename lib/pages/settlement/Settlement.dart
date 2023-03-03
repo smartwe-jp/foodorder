@@ -1068,7 +1068,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _wifiPrintData(printData) async {
     var categoryVos = printData["categoryVos"];
     List<Widget> categoryMenus = [];
-    var lineHight = 300;
+    var lineHight = 280;
     var menuNum = 0;
     var optionNum = 0;
     var addRowHight = 0;
@@ -1115,8 +1115,8 @@ class _SettlementPageState extends State<SettlementPage> {
         var menuRowNum = menuLine.ceil();
         optionNum = 0;
         categoryMenus.add(
-          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 45.0,
-              FontWeight.w500, "${lineItem["menuQty"]}", 45.0, FontWeight.w600),
+          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 40.0,
+              FontWeight.w500, "${lineItem["menuQty"]}", 40.0, FontWeight.w600),
         );
         if (optionVoList != null && optionVoList.length > 0) {
           for (var n = 0; n < optionVoList.length; n++) {
@@ -1129,13 +1129,13 @@ class _SettlementPageState extends State<SettlementPage> {
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt(
                   "　${optionVos["groupName"]}",
-                  45.0,
+                  40.0,
                   FontWeight.w500,
                   "${optionVos["optionName"]}",
-                  45.0,
+                  40.0,
                   FontWeight.w500),
             );
-            addRowHight += 65 * optionRowNum;
+            addRowHight += 60 * optionRowNum;
             menuNum += optionRowNum;
             optionNum++;
           }
