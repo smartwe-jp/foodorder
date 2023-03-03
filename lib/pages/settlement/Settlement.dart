@@ -1068,7 +1068,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _wifiPrintData(printData) async {
     var categoryVos = printData["categoryVos"];
     List<Widget> categoryMenus = [];
-    var lineHight = 145;
+    var lineHight = 300;
     var menuNum = 0;
     var optionNum = 0;
     var addRowHight = 0;
@@ -1079,9 +1079,9 @@ class _SettlementPageState extends State<SettlementPage> {
             textDirection: TextDirection.ltr,
             child: Text("${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: 40,
+                  fontSize: 50,
                   //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -1115,8 +1115,8 @@ class _SettlementPageState extends State<SettlementPage> {
         var menuRowNum = menuLine.ceil();
         optionNum = 0;
         categoryMenus.add(
-          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 30.0,
-              FontWeight.w600, "${lineItem["menuQty"]}", 30.0, FontWeight.w600),
+          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 45.0,
+              FontWeight.w500, "${lineItem["menuQty"]}", 45.0, FontWeight.w600),
         );
         if (optionVoList != null && optionVoList.length > 0) {
           for (var n = 0; n < optionVoList.length; n++) {
@@ -1129,20 +1129,20 @@ class _SettlementPageState extends State<SettlementPage> {
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt(
                   "　${optionVos["groupName"]}",
-                  30.0,
-                  FontWeight.w600,
+                  45.0,
+                  FontWeight.w500,
                   "${optionVos["optionName"]}",
-                  30.0,
-                  FontWeight.w600),
+                  45.0,
+                  FontWeight.w500),
             );
-            addRowHight += 50 * optionRowNum;
+            addRowHight += 65 * optionRowNum;
             menuNum += optionRowNum;
             optionNum++;
           }
-          addRowHight += 48 * menuRowNum;
+          addRowHight += 63 * menuRowNum;
           menuNum += menuRowNum;
         } else {
-          addRowHight += 53 * menuRowNum;
+          addRowHight += 68 * menuRowNum;
           menuNum += menuRowNum;
         }
         //分割线
@@ -1164,7 +1164,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //print("总行数${menuNum}");
     var totalHight = addRowHight + lineHight;
     if (menuNum == 1) {
-      totalHight += 15;
+      totalHight += 25;
     }
     ByteData byteDataWifi = await WidgetToImage.widgetToImage(Container(
       width: 550,
