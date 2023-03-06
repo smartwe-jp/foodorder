@@ -476,7 +476,7 @@ class _SettlementPageState extends State<SettlementPage> {
       };
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
-        LogUtil.d(response);
+        //LogUtil.d(response);
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
           if(resultData["requestInfo"] != ""){
