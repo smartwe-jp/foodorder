@@ -3,6 +3,8 @@ import 'dart:ffi';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:esc_pos_printer/esc_pos_printer.dart';
+import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
@@ -23,6 +25,7 @@ import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../services/showToast.dart';
 import 'SetPosIp.dart';
 
 class SystemSettingPage extends StatefulWidget {
@@ -1818,6 +1821,41 @@ print(posSettingData);
                     ],
                   ),
                 ),
+                if(_wlan_print_ip != "" && _wlan_print_port != "")
+                InkWell(
+                  onTap: () {
+                    _printTest();
+                  },
+                  child: Stack(
+                    children: [
+                      Column(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(190),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#409eff"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            //お持ち帰り
+                            child: Text("测试打印",
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                        ],
+                      ),
+
+                    ],
+                  ),
+                ),
 
               ],
             ),
@@ -1891,6 +1929,37 @@ print(posSettingData);
             },
           );
         });
+  }
+
+  _printTest() async {
+    const PaperSize paper = PaperSize.mm80;
+    final profile = await CapabilityProfile.load();
+    final printer = NetworkPrinter(paper, profile);
+    final PosPrintResult res = await printer.connect(_wlan_print_ip, port: int.parse(_wlan_print_port));
+    //final PosPrintResult res = await printer.connect(_kitchenPointIp, port: 9100);
+    if (res == PosPrintResult.success) {
+      // DEMO RECEIPT
+      await testReceipt(printer);
+      // TEST PRINT
+      // await testReceipt(printer);
+      printer.disconnect();
+    }else{
+      showToast(res.msg);
+      sleep(Duration(milliseconds: 5000));
+    }
+  }
+  testReceipt(NetworkPrinter printer) {
+    printer.text(
+        'Regular: aA bB cC dD eE fF gG hH iI jJ kK lL mM nN oO pP qQ rR sS tT uU vV wW xX yY zZ');
+    printer.text('Special 1: àÀ èÈ éÉ ûÛ üÜ çÇ ôÔ',
+        styles: PosStyles(codeTable: 'CP1252'));
+    printer.text('Special 2: blåbærgrød',
+        styles: PosStyles(codeTable: 'CP1252'));
+
+    printer.text('Bold text', styles: PosStyles(bold: true));
+
+    printer.feed(2);
+    printer.cut();
   }
 
   @override
