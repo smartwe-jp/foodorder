@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:foodorder/routers/router.dart';
 import 'package:foodorder/services/HomeServices.dart';
@@ -50,6 +51,9 @@ Future<void> main() async {
 
 class MyApp extends StatelessWidget {
   // This widget is the root of your application.
+  final easyload = EasyLoading.init();
+  final ftoast = FToastBuilder();
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -68,7 +72,12 @@ class MyApp extends StatelessWidget {
           home: child,
           initialRoute: '/',
           onGenerateRoute:onGenerateRoute,
-          builder: EasyLoading.init(),
+          //builder: EasyLoading.init(),
+          builder:(context, child) {
+            child = easyload(context, child);
+            child = ftoast(context, child);
+            return child;
+          }
         );
       },
       child: MyHomePage(),

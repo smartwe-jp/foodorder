@@ -503,31 +503,9 @@ class _SettlementPageState extends State<SettlementPage> {
           //扫码后超时，再继续请求后台，1秒一次 20次
           _doScanCodeTimeOut();
         }
-          /*if (response['code'] == 200 && response['data'] == true) {
-          setState(() {
-            _isReport = false;
-            _scanCode = true;
-          });
-          doPrintOrderMenu("1");
-        } else {
-          //扫码后超时，再继续请求后台，1秒一次 20次
-          _doScanCodeTimeOut();
-        }*/
-      });
-      /*request('webBootToPay', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
 
-        if (response['code'] == 200 && response['data'] == true) {
-          setState(() {
-            _isReport = false;
-            _scanCode = true;
-          });
-          doPrintOrderMenu("1");
-        } else {
-          //扫码后超时，再继续请求后台，1秒一次 20次
-          _doScanCodeTimeOut();
-        }
-      });*/
+      });
+
     }
   }
 
@@ -2243,8 +2221,6 @@ class _SettlementPageState extends State<SettlementPage> {
       _showScanCodeNoOpenDialog(3,"Unable to connect: $e");
     });
 
-    //获得pos数据并发送
-    //_getPaymentPosData();
   }
 
   //刷卡机nfc支付汇报
@@ -2262,23 +2238,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //_doScanCodeTimeOut();
       }
     });
-    /*var formData = {
-      "auth_code": "0000000088888888",
-      "machineCode": _machineCode,
-      "orderId": this._orderId,
-      "payType": "CreditCard",
-      "paymentInfo": eventString,
-    };
-    request('webBootToPay', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
 
-      if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
-      } else {
-        //扫码后超时，再继续请求后台，1秒一次 20次
-        //_doScanCodeTimeOut();
-      }
-    });*/
   }
 
   _getPaymentPosData() {
@@ -2310,19 +2270,6 @@ class _SettlementPageState extends State<SettlementPage> {
 
     });
 
-   /* var formData = {
-      "machineCode": _machineCode,
-      "orderId": this._orderId,
-    };
-
-    request("webBootCreditCard", method: 'POST', parameters: formData)
-        .then((val) async {
-      var response = json.decode(val.toString());
-      if (response['code'] == 200) {
-        //var _queryString =       "2101500001       00509                  000000120221114093225";
-        this._socket.write(response['data']);
-      }
-    });*/
   }
 
   _getPaymentCancelPosData() {
