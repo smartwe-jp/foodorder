@@ -12,10 +12,12 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:foodorder/routers/router.dart';
+import 'package:foodorder/services/GetxStorage.dart';
 import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:paycube/paycube.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -28,6 +30,7 @@ Future<void> main() async {
 
     WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp();
+    await GetStorage.init();
 
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -424,6 +427,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var shopInfo = await HomeServices.getShopInfo();
     if (""==shopInfo|| null ==shopInfo) {
       Storage.setString('shopInfo', "kanran");
+      GetxStorage.setData('shopInfo', "kanran");
     }
     _goMain();
   }
@@ -447,12 +451,14 @@ class _MyHomePageState extends State<MyHomePage> {
 
       };
       Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
     //}
 
     var cashShowData = {
       "isCash": _isCashState,
     };
     Storage.setString('isCashState', json.encode(cashShowData));
+    GetxStorage.setData('isCashState', json.encode(cashShowData));
     //判断是否第一次打开
     sleep(Duration(milliseconds: 500));
     getIsFirstOpen();

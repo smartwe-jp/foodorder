@@ -42,6 +42,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
 import 'SelectPayment.dart';
 
 class MenuPage extends StatefulWidget {
@@ -271,6 +272,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       "m_Pay":systemSettingInfo['m_Pay'],
     };
     Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+    GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
     if(mounted){
       setState(() {
         this._showCash = false;

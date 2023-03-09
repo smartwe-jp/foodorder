@@ -23,6 +23,8 @@ import 'package:foodorder/config/color.dart';
 import 'package:foodorder/widget/LoadState.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
+
 class AppointmentPage extends StatefulWidget {
   AppointmentPage({Key key}) : super(key: key);
 
@@ -193,6 +195,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
       });
     }else{
       Storage.setString('shopInfo', "kanran");
+      GetxStorage.setData('shopInfo', "kanran");
     }
 
     _getMachineInfo();

@@ -1,11 +1,12 @@
 
 import 'package:foodorder/services/Storage.dart';
 import 'dart:convert';
-
+import 'package:foodorder/services/GetxStorage.dart';
 class HomeServices{
 
   static getOpenFirstState() async{
       var homeOpen = await Storage.getBool('homeOpen');
+      GetxStorage.setBool('machineInfo', homeOpen);
       if(homeOpen == true){
         return true;
       }
@@ -16,6 +17,7 @@ class HomeServices{
     String machineinfo;
     try {
       String machineInfoData = await Storage.getString('machineInfo');
+      GetxStorage.setData('machineInfo', machineInfoData);
       machineinfo = machineInfoData;
     } catch (e) {
       machineinfo = "";
@@ -26,6 +28,7 @@ class HomeServices{
     String shopinfo;
     try {
       String shopInfoData = await Storage.getString('shopInfo');
+      GetxStorage.setData('shopInfo', shopInfoData);
       shopinfo = shopInfoData;
     } catch (e) {
       shopinfo = "";
@@ -37,6 +40,7 @@ class HomeServices{
     String diningTypeInfo;
     try {
       String diningTypeData = await Storage.getString('diningType');
+      GetxStorage.setData('diningType', diningTypeData);
       diningTypeInfo = diningTypeData;
     } catch (e) {
       diningTypeInfo = "";
@@ -49,6 +53,7 @@ class HomeServices{
     String menuDirectionInfo;
     try {
       String menuDirectionData = await Storage.getString('menuDirection');
+      GetxStorage.setData('menuDirection', menuDirectionData);
       menuDirectionInfo = menuDirectionData;
     } catch (e) {
       menuDirectionInfo = "";
@@ -61,6 +66,7 @@ class HomeServices{
     String printPaperSizeInfo;
     try {
       String printPaperSizeData = await Storage.getString('printPaperSize');
+      GetxStorage.setData('printPaperSize', printPaperSizeData);
       printPaperSizeInfo = printPaperSizeData;
     } catch (e) {
       printPaperSizeInfo = "";
@@ -73,6 +79,7 @@ class HomeServices{
     String isAllowReceiptInfo;
     try {
       String isAllowReceiptData = await Storage.getString('isAllowReceipt');
+      GetxStorage.setData('isAllowReceipt', isAllowReceiptData);
       isAllowReceiptInfo = isAllowReceiptData;
     } catch (e) {
       isAllowReceiptInfo = "";
@@ -85,6 +92,7 @@ class HomeServices{
     Map systemSettingInfo;
     try {
       Map systemSettingData = json.decode(await Storage.getString('smartwe_systemSetting'));
+      GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
       systemSettingInfo = systemSettingData;
     } catch (e) {
       systemSettingInfo = {};
@@ -97,6 +105,7 @@ class HomeServices{
     Map posSettingInfo;
     try {
       Map posSettingData = json.decode(await Storage.getString('smartwe_posSetting'));
+      GetxStorage.setData('smartwe_posSetting', json.encode(posSettingData));
       posSettingInfo = posSettingData;
     } catch (e) {
       posSettingInfo = {};
@@ -109,6 +118,7 @@ class HomeServices{
     Map printSettingInfo;
     try {
       Map printSettingData = json.decode(await Storage.getString('smartwe_wlanPrintSetting'));
+      GetxStorage.setData('smartwe_wlanPrintSetting', json.encode(printSettingData));
       printSettingInfo = printSettingData;
     } catch (e) {
       printSettingInfo = {};
@@ -121,6 +131,7 @@ class HomeServices{
     Map machineActivateInfo;
     try {
       Map machineActivateData = json.decode(await Storage.getString('smartwe_machineActivateData'));
+      GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
       machineActivateInfo = machineActivateData;
     } catch (e) {
       machineActivateInfo = {};
@@ -133,6 +144,7 @@ class HomeServices{
     String attendanceCode;
     try {
       String attendanceCodeData = await Storage.getString('machineAttendanceCode');
+      GetxStorage.setData('machineAttendanceCode', attendanceCodeData);
       attendanceCode = attendanceCodeData;
     } catch (e) {
       attendanceCode = "";
@@ -145,6 +157,7 @@ class HomeServices{
     Map showCashInfo;
     try {
       Map showCashData = json.decode(await Storage.getString('isCashState'));
+      GetxStorage.setData('isCashState', json.encode(showCashData));
       showCashInfo = showCashData;
     } catch (e) {
       showCashInfo = {};
@@ -157,6 +170,7 @@ class HomeServices{
     var machineLanguages;
     try {
       var machineLanguagesData = json.decode(await Storage.getString('smartwe_machineLanguages'));
+      GetxStorage.setData('smartwe_machineLanguages', json.encode(machineLanguagesData));
       machineLanguages = machineLanguagesData;
     } catch (e) {
       machineLanguages = ["JP"];

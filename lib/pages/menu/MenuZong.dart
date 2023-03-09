@@ -40,6 +40,7 @@ import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
 import 'SelectPayment.dart';
 
 class MenuZongPage extends StatefulWidget {
@@ -326,6 +327,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       "m_Pay":systemSettingInfo['m_Pay'],
     };
     Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
+    GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
     if(mounted){
       setState(() {
         this._showCash = false;
@@ -366,6 +368,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           "businessTime": shopData["businessTime"],
         };
         Storage.setString("GanlanshopInfo", json.encode(ShopInfo));
+        GetxStorage.setData("GanlanshopInfo", json.encode(ShopInfo));
 
         //保存支付页面顶部图标
         /*setState(() {

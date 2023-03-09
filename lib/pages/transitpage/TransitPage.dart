@@ -9,7 +9,8 @@ import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
 import 'package:foodorder/services/HomeServices.dart';
 
-import '../../services/HttpService.dart';
+import 'package:foodorder/services/GetxStorage.dart';
+import 'package:foodorder/services/HttpService.dart';
 
 class TransitPage extends StatefulWidget {
   TransitPage({Key key}) : super(key: key);
@@ -60,39 +61,7 @@ class _TransitPageState extends State<TransitPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();//print(systemSettingInfo);
-    /*if (systemSettingInfo.isEmpty) {
-      var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
-      var systemSettingData = {
-        "diningType":(DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1", //1堂食 2外带
-        "menuDirection":"1",//1顶部横向 2左侧竖
-        "printPaperSize":"1",//1 58mm 2 80mm
-        "isAllowReceipt":"1",//1必须打印小票 2不必须
-        "machineMode":"1",//1券卖机 2精算机
-        "isReservation":"0",//0关闭 1开启
-      };
-      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
-      systemSettingInfo = systemSettingData;
-    }
-    if(null == systemSettingInfo["machineMode"]){
-      var systemSettingData = {
-        "diningType": systemSettingInfo["diningType"], //1堂食 2外带
-        "menuDirection": systemSettingInfo["menuDirection"],//1顶部横向 2左侧竖
-        "printPaperSize": systemSettingInfo["printPaperSize"],//1 58mm 2 80mm
-        "isAllowReceipt": systemSettingInfo["isAllowReceipt"],//1必须打印小票 2不必须
-        "machineMode":"1",//1券卖机 2精算机
-        "isReservation":"0",//0关闭 1开启
-      };
-      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
 
-      setState(() {
-        _machineMode = "1";
-      });
-
-    }else{
-      setState(() {
-        _machineMode = systemSettingInfo['machineMode'];
-      });
-    }*/
     setState(() {
       _machineMode = systemSettingInfo['machineMode'];
     });
@@ -134,7 +103,9 @@ class _TransitPageState extends State<TransitPage> {
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
 
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
-        //Storage.setString('smartwe_machineLanguages', json.encode(["JP","EN","KO"]));
+        GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
+        GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
+
 
       }
       if(_machineMode == "2"){

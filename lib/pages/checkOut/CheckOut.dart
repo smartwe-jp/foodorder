@@ -24,6 +24,7 @@ import 'package:foodorder/services/HttpService.dart';
 import 'package:foodorder/config/color.dart';
 import 'package:foodorder/pages/checkOut/Appointment.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
 import '../menu/SelectPayment.dart';
 
 class CheckOutPage extends StatefulWidget {
@@ -118,6 +119,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       });
     }else{
       Storage.setString('shopInfo', "kanran");
+      GetxStorage.setData('shopInfo', "kanran");
     }
 
     _getMachineInfo();
@@ -212,19 +214,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   _getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();print(SystemSettingInfo);
-    /*var DiningTypeInfo = await HomeServices.getDiningTypeInfo();
 
-    var systemSettingData = {
-      "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
-      "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
-      "printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
-      "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
-      "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
-      "machineMode":(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null) ? SystemSettingInfo["machineMode"] :"1",//1 普通点餐券卖机  2 精算机（结账机）
-      "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
-    */
     setState(() {
       _isReservation = SystemSettingInfo["isReservation"];
       _isAllowPos = SystemSettingInfo['isAllowPos'];

@@ -14,6 +14,8 @@ import 'package:foodorder/services/EventBus.dart';
 
 import 'package:foodorder/services/HttpService.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
+
 class setAttendanceCodePage extends StatefulWidget {
   Map arguments;
   setAttendanceCodePage({Key key, this.arguments}) : super(key: key);
@@ -75,6 +77,7 @@ class _setAttendanceCodePageState extends State<setAttendanceCodePage> {
         if (response['code'] == 200 && response['data'] == true) {
           //保存机器信息
           Storage.setString('machineAttendanceCode', _attendance_code);
+          GetxStorage.setData('machineAttendanceCode', _attendance_code);
 
           _goMain();
         } else {

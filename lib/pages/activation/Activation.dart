@@ -12,6 +12,8 @@ import 'package:foodorder/services/Storage.dart';
 
 import 'package:foodorder/services/HttpService.dart';
 
+import 'package:foodorder/services/GetxStorage.dart';
+
 class ActivationPage extends StatefulWidget {
   ActivationPage({Key key}) : super(key: key);
 
@@ -65,6 +67,10 @@ class _ActivationPageState extends State<ActivationPage> {
       Storage.setString('machineInfo', _activation_code);
       Storage.setString('shopInfo', _checkedShop);
       Storage.setBool('homeOpen', true);
+
+      GetxStorage.setData('machineInfo', _activation_code);
+      GetxStorage.setData('shopInfo', _checkedShop);
+      GetxStorage.setData('homeOpen', true);
 
       _goMain();
 
