@@ -60,6 +60,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _wlan_print_ip = "";
   var _wlan_print_port = "9100";
 
+  var _billButtonList = [];
   //监听页面销毁的事件
   dispose() {
     eventBus.fire(new setAttendanceCodeEvent('支付成功...'));
@@ -82,7 +83,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-
+    var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _menu_direction = systemSettingInfo['menuDirection'];
@@ -101,6 +102,9 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
         _wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'];
         _wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'];
+      }
+      if(billButtonList != null && billButtonList.length>0){
+        _billButtonList = billButtonList;
       }
     });
   }
@@ -2073,8 +2077,8 @@ print(posSettingData);
                   setMenuDirection(),//菜单方向
                   //setPrintPaperSize(),//打印纸大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
-                  setMachineMode(), //设置机器类型
-                  setIsReservation(),  //是否开启预约服务
+                  (_billButtonList != null && _billButtonList.length>0) ? setMachineMode() : Container(height: 0,), //设置机器类型
+                  (_billButtonList != null && _billButtonList.length>0) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
 		              setIsAllowAttendance(),//是否开启签到
                   setIsAllowPos(),//是否开启pos机刷卡
                   setIsAllowWlanPrint(),//是否开启网络打印机

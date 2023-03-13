@@ -32,6 +32,7 @@ class SelectPaymentPage extends StatefulWidget {
         this.showmPay,
         this.showCreditCard,
         this.shopCartTotalPrice,
+        this.tableNum,
         this.onConfrimClick,
         this.onCancelClick
       }) : super(key: key);
@@ -50,6 +51,7 @@ class SelectPaymentPage extends StatefulWidget {
   final bool showmPay;
   final bool showCreditCard;
   final String shopCartTotalPrice;
+  final String tableNum;
   final Function(String, String) onConfrimClick;
   final Function(String) onCancelClick;
 
@@ -64,6 +66,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用;
   String _payment_method_num = "0"; //支付类型选择 1现金 2扫码 3pos 4nfc
   String _shopCartTotalPrice="0"; //合计总价
+  String _tableNum = "";
 
   var _showWechat = false;
   var _showAlipay = false;
@@ -95,6 +98,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showmPay = widget.showmPay;
     _showCreditCard = widget.showCreditCard;
     _showCash = widget.showCash;
+    _tableNum = widget.tableNum;
 
     //监听是否展示现金的广播
     eventBus.on<setShowCashEvent>().listen((event) {
@@ -521,6 +525,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
                       Text(
+                        "${_tableNum}",
+                        style: TextStyle(
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                            fontWeight: FontWeight.w600,
+                            fontSize: ScreenAdapter.fontSize(40.0)),
+                      ),
+                      Text(
                         GString.getToString(this._checkLanguage, "settlement_total_price"),
                         style: TextStyle(
                             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -539,8 +550,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               text: "¥",
                               //GString.getToString(this._checkLanguage, "show_price_front"),
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(GFontSize
-                                    .menusettlementBottomPriceLeft),
+                                fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceLeft),
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               ),

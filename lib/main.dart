@@ -74,6 +74,7 @@ class MyApp extends StatelessWidget {
           ),
           home: child,
           initialRoute: '/',
+          checkerboardRasterCacheImages: true,
           onGenerateRoute:onGenerateRoute,
           //builder: EasyLoading.init(),
           builder:(context, child) {
@@ -179,7 +180,8 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           _isCashState = false;
         });
-        _getSmartweSystemSettingInfo();
+        //_getSmartweSystemSettingInfo();
+        getIsFirstOpen();
 
         showCashTimer?.cancel(); //清除定时器
 
@@ -415,9 +417,15 @@ class _MyHomePageState extends State<MyHomePage> {
   prohibitOneCash() async {
     var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
 
+    //_getSmartweSystemSettingInfo();
+    var cashShowData = {
+      "isCash": _isCashState,
+    };
+    Storage.setString('isCashState', json.encode(cashShowData));
+    GetxStorage.setData('isCashState', json.encode(cashShowData));
     //判断是否第一次打开
-    //getIsFirstOpen();
-    _getSmartweSystemSettingInfo();
+    sleep(Duration(milliseconds: 300));
+    getIsFirstOpen();
   }
 
 
@@ -432,7 +440,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _goMain();
   }
 
-  _getSmartweSystemSettingInfo() async {
+  /*_getSmartweSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     //print(SystemSettingInfo.isEmpty);
 
@@ -463,7 +471,7 @@ class _MyHomePageState extends State<MyHomePage> {
     sleep(Duration(milliseconds: 500));
     getIsFirstOpen();
 
-  }
+  }*/
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {

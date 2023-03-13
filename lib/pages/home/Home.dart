@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/imageData.dart';
 import 'package:foodorder/services/HomeServices.dart';
@@ -16,7 +18,7 @@ import 'package:paycube/paycube.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/controller/homePageController.dart';
 import 'package:foodorder/services/Storage.dart';
-
+import 'package:foodorder/services/showImage.dart';
 import 'package:foodorder/services/GetxStorage.dart';
 import 'SelectDiningMethod.dart';
 
@@ -45,6 +47,8 @@ class _HomePageState extends State<HomePage> {
   var _machineLanguages_CH = false;
   var _machineLanguages_EN = false;
   var _machineLanguages_KO = false;
+
+  var _homeList = [];
 
   @override
   void initState() {
@@ -172,8 +176,20 @@ class _HomePageState extends State<HomePage> {
       GetxStorage.setData('shopInfo', "kanran");
     }
 
-    //系统配置
+    //首页图片
+    _getHomeImageList();
+  }
+
+  _getHomeImageList() async {
+    var homeimageList = await HomeServices.getSmartweHomeImagesData();
+    print(homeimageList);
+
+    setState(() {
+      _homeList = homeimageList;
+    });
+
     _getSystemSettingInfo();
+
   }
 
   _getSystemSettingInfo() async {
@@ -243,176 +259,363 @@ class _HomePageState extends State<HomePage> {
   }
 
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion(
           value: SystemUiOverlayStyle.light,
-          child: Container(
-            //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-            width: ScreenAdapter.getScreenWidth(),
-            height: ScreenAdapter.getScreenHeight(),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(GImage.getImageString(_shopInfo, "home")),
-                fit: BoxFit.fill,
+          child: Stack(
+            children: [
+              /*Container(
+                //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
+                width: ScreenAdapter.getScreenWidth(),
+                height: ScreenAdapter.getScreenHeight(),
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage(GImage.getImageString(_shopInfo, "home")),
+                    fit: BoxFit.fill,
+                  ),
+                ),
+                child: Container(
+                  padding: EdgeInsets.only(top:ScreenAdapter.height(1250),bottom: ScreenAdapter.height(50)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      if(_machineLanguages_JP == true)
+                        InkWell(
+                          onTap: () {
+                            //_clearCartList();
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
+
+                            }else{
+                              _showSelectMealTypeDialog("JP", _menu_direction);
+                            }
+
+
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '日本語',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ),
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_CH == true)
+                        InkWell(
+                          onTap: () {
+
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
+
+                            }else{
+                              _showSelectMealTypeDialog("CH", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '中文',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ),
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_EN == true)
+                        InkWell(
+                          onTap: () {
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
+
+                            }else{
+                              _showSelectMealTypeDialog("EN", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                'English',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ),
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_KO == true)
+                        InkWell(
+                          onTap: () {
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
+
+                            }else{
+                              _showSelectMealTypeDialog("KO", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '한국말',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+              ),*/
+              Container(
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Swiper(
+                  //itemHeight: 200,
+                  itemBuilder: (BuildContext context,int index){
+                    // 配置图片地址
+                    return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                  },
+                  // 配置图片数量
+                  itemCount: _homeList.length,
+                  // 底部分页器
+                  //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                  // 左右箭头
+                  //control: new SwiperControl(),
+                  // 无限循环
+                  loop: (_homeList.length >1) ?true :false,
+                  duration: 1000,
+                  autoplayDelay:12000,
+                  // 自动轮播
+                  autoplay: (_homeList.length >1) ?true :false,
+                ),
               ),
-            ),
-            child: Container(
-              padding: EdgeInsets.only(top:ScreenAdapter.height(1250),bottom: ScreenAdapter.height(50)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  if(_machineLanguages_JP == true)
-                  InkWell(
-                    onTap: () {
-                      //_clearCartList();
-                      if(_dining_type =="1" || _dining_type =="2"){
-                        var mealType = (_dining_type == "2") ? true: false;
-                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
+              Positioned(
+                top: ScreenAdapter.height(1450),
+                child: Container(
+                  width: ScreenAdapter.width(1080),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      if(_machineLanguages_JP == true)
+                        InkWell(
+                          onTap: () {
+                            //_clearCartList();
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
 
-                      }else{
-                        _showSelectMealTypeDialog("JP", _menu_direction);
-                      }
+                            }else{
+                              _showSelectMealTypeDialog("JP", _menu_direction);
+                            }
 
 
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(217),
-                      height: ScreenAdapter.height(90),
-                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                      decoration: BoxDecoration(
-                        //color: Color(0x11111111),
-                        image: DecorationImage(
-                            //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                            fit: BoxFit.fill),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '日本語',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(36.0),
-                              color: ColorsUtil.hexToColor("#F9F9F9"),
-                              fontWeight: FontWeight.w600),
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '日本語',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  //SizedBox(width:ScreenAdapter.width(35)),
-                  if(_machineLanguages_CH == true)
-                  InkWell(
-                    onTap: () {
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_CH == true)
+                        InkWell(
+                          onTap: () {
 
-                      if(_dining_type =="1" || _dining_type =="2"){
-                        var mealType = (_dining_type == "2") ? true: false;
-                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
 
-                      }else{
-                        _showSelectMealTypeDialog("CH", _menu_direction);
-                      }
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(217),
-                      height: ScreenAdapter.height(90),
-                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                      decoration: BoxDecoration(
-                        //color: Color(0x11111111),
-                        image: DecorationImage(
-                            //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                            fit: BoxFit.fill),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '中文',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(36.0),
-                              color: ColorsUtil.hexToColor("#F9F9F9"),
-                              fontWeight: FontWeight.w600),
+                            }else{
+                              _showSelectMealTypeDialog("CH", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '中文',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  //SizedBox(width:ScreenAdapter.width(35)),
-                  if(_machineLanguages_EN == true)
-                  InkWell(
-                    onTap: () {
-                      if(_dining_type =="1" || _dining_type =="2"){
-                        var mealType = (_dining_type == "2") ? true: false;
-                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_EN == true)
+                        InkWell(
+                          onTap: () {
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
 
-                      }else{
-                        _showSelectMealTypeDialog("EN", _menu_direction);
-                      }
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(217),
-                      height: ScreenAdapter.height(90),
-                      margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                      decoration: BoxDecoration(
-                        //color: Color(0x11111111),
-                        image: DecorationImage(
-                            //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                            fit: BoxFit.fill),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          'English',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(36.0),
-                              color: ColorsUtil.hexToColor("#F9F9F9"),
-                              fontWeight: FontWeight.w600),
+                            }else{
+                              _showSelectMealTypeDialog("EN", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                'English',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  //SizedBox(width:ScreenAdapter.width(35)),
-                  if(_machineLanguages_KO == true)
-                  InkWell(
-                    onTap: () {
-                      if(_dining_type =="1" || _dining_type =="2"){
-                        var mealType = (_dining_type == "2") ? true: false;
-                        var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                        Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
+                      //SizedBox(width:ScreenAdapter.width(35)),
+                      if(_machineLanguages_KO == true)
+                        InkWell(
+                          onTap: () {
+                            if(_dining_type =="1" || _dining_type =="2"){
+                              var mealType = (_dining_type == "2") ? true: false;
+                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
 
-                      }else{
-                        _showSelectMealTypeDialog("KO", _menu_direction);
-                      }
-                    },
-                    child: Container(
-                      width: ScreenAdapter.width(217),
-                      height: ScreenAdapter.height(90),
-                      decoration: BoxDecoration(
-                        //color: Color(0x11111111),
-                        image: DecorationImage(
-                          //alignment: Alignment.topCenter,
-                            image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                            fit: BoxFit.fill),
-                      ),
-                      child: Center(
-                        //加上Center让文字居中
-                        child: Text(
-                          '한국말',
-                          style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(36.0),
-                              color: ColorsUtil.hexToColor("#F9F9F9"),
-                              fontWeight: FontWeight.w600),
+                            }else{
+                              _showSelectMealTypeDialog("KO", _menu_direction);
+                            }
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(217),
+                            height: ScreenAdapter.height(90),
+                            decoration: BoxDecoration(
+                              //color: Color(0x11111111),
+                              image: DecorationImage(
+                                //alignment: Alignment.topCenter,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
+                                  fit: BoxFit.fill),
+                            ),
+                            child: Center(
+                              //加上Center让文字居中
+                              child: Text(
+                                '한국말',
+                                style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(36.0),
+                                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                                    fontWeight: FontWeight.w600),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
+                    ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              )
+
+            ],
           ),
           ),
     );

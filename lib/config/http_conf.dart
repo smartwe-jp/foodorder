@@ -1,5 +1,5 @@
-const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
 
 //const oa_base_url = "https://testoa.gutingjun.com/api/";  //刷脸测试环境地址
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
@@ -37,9 +37,11 @@ const servicePath = {
 
   //点餐机激活
   'webBootActivate': base_url + 'pad/web/boot/activate', //点餐机激活
+  'webBootActivatev2': base_url + 'pad/web/boot/activate/v2', //点餐机激活
 
   //精算机使用接口
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
+  'webBootCalculate': base_url + 'pad/web/boot/calculate', //扫桌号二维码下单
   'checkOutOrderDetails': base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
 
   'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队

@@ -152,7 +152,7 @@ class _SettlementPageState extends State<SettlementPage> {
     this._shopInfo = widget.arguments['shopInfo'];
     this._machineCode = widget.arguments['machineCode'];
     this._orderId = widget.arguments['orderId'];
-    this._machineMode = widget.arguments['machineMode'];
+    //this._machineMode = widget.arguments['machineMode'];
     this._totalPrice = widget.arguments['totalPrice'];
     this._isAllowPos = widget.arguments['isAllowPos'];
     this._pos_ip = widget.arguments['posIp'];
@@ -221,6 +221,8 @@ class _SettlementPageState extends State<SettlementPage> {
       _print_paper_size = systemSettingInfo['printPaperSize'];
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _isAllowWlanPrint = systemSettingInfo['isAllowWlanPrint'];
+      //新版精算模式也可点外带
+      _machineMode = systemSettingInfo['machineMode'];
     });
     if(systemSettingInfo['isAllowWlanPrint'] == "1"){
       Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
@@ -1734,6 +1736,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //Navigator.pop(context);
     Navigator.pop(context);
     //Navigator.pushNamed(context, '/transitPage');
+    //Navigator.of(context).pop();
     if (_machineMode == "1") {
       Navigator.pushNamed(context, '/home');
     } else {
@@ -1753,12 +1756,6 @@ class _SettlementPageState extends State<SettlementPage> {
     }*/
   }
 
-  gotonewSettingPage() {
-    EasyLoading.dismiss();
-    Navigator.pop(context);
-    Navigator.pushNamed(context, '/settingPage',
-        arguments: {"machineCode": this._machineCode, "shopInfo": _shopInfo});
-  }
 
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00

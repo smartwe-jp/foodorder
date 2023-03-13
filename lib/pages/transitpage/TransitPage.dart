@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/services/ScreenAdapter.dart';
+import 'package:foodorder/services/logUtil.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:foodorder/services/Storage.dart';
 import 'package:foodorder/services/HomeServices.dart';
@@ -22,6 +23,7 @@ class _TransitPageState extends State<TransitPage> {
   String _machineCode = "";
   var _machineMode = "1";//1 券卖机  2 精算机
   var _isCashState = true;
+  var _machineBill = [];
 
   @override
   void initState() {
@@ -54,8 +56,8 @@ class _TransitPageState extends State<TransitPage> {
         _machineCode = machineCode;
       });
 
-      //_getDiningTypeInfo();
-      _getSystemSettingInfo();
+      //_getSystemSettingInfo();
+      _getMachineActivate();
     }
   }
 
@@ -71,12 +73,14 @@ class _TransitPageState extends State<TransitPage> {
 
   }
 
+
+
   _getMachineActivate(){
     var formData = {
       "machineCode": _machineCode,
     };
-    request('webBootActivate', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
+    request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
+      var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -101,19 +105,69 @@ class _TransitPageState extends State<TransitPage> {
           "m_Pay":_mPay,
         };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
-
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
+
+        Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+        Storage.setString('smartwe_checkOut_takeout', json.encode(shopData["takeout"]));
+        Storage.setString('smartwe_checkOut_bill', json.encode(shopData["bill"]));
+        Storage.setString('smartwe_checkOut_lineUp', json.encode(shopData["lineUp"]));
+
         GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
         GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
-
+        setState(() {
+          _machineBill = shopData["bill"];
+        });
       }
-      if(_machineMode == "2"){
+      /*if(_machineMode == "2"){
+        _goCheckOut();
+      }else{
+        _goMain();
+      }*/
+      _getSmartweSystemSettingInfo();
+    });
+  }
+
+  _getSmartweSystemSettingInfo() async {
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+
+    var checkmachineMode = "1";
+    if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
+      if(_machineBill.length==0){
+        checkmachineMode = "1";
+      }else{
+        checkmachineMode = "2";
+      }
+    }
+    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();//showToast("main====:::::${DiningTypeInfo}");
+    var systemSettingData = {
+      "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
+      "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
+      "printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
+      "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
+      //"machineMode":(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null) ? SystemSettingInfo["machineMode"] :"1",//1 普通点餐券卖机  2 精算机（结账机）
+      "machineMode":checkmachineMode,
+      "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
+      "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
+      "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
+      "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
+
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+    //}
+
+    /*setState(() {
+      _machineMode = checkmachineMode;
+    });*/
+
+    //判断是否第一次打开
+    sleep(Duration(milliseconds: 500));
+    if(checkmachineMode == "2"){
         _goCheckOut();
       }else{
         _goMain();
       }
-    });
   }
 
   void _goMain() async {

@@ -178,4 +178,56 @@ class HomeServices{
     return machineLanguages;
   }
 
+  //首图
+  static getSmartweHomeImagesData() async{
+    var smartweHomeImagesInfo;
+    try {
+      var homeImageData = json.decode(await Storage.getString('smartwe_homeImages'));
+      GetxStorage.setData('smartwe_homeImages', json.encode(homeImageData));
+      smartweHomeImagesInfo = homeImageData;
+    } catch (e) {
+      smartweHomeImagesInfo = [];
+    }
+    return smartweHomeImagesInfo;
+  }
+
+  //精算 外带按钮
+  static getSmartweCheckOutTakeoutData() async{
+    var smartweTakeoutInfo;
+    try {
+      var takeoutData = json.decode(await Storage.getString('smartwe_checkOut_takeout'));
+      GetxStorage.setData('smartwe_checkOut_takeout', json.encode(takeoutData));
+      smartweTakeoutInfo = takeoutData;
+    } catch (e) {
+      smartweTakeoutInfo = [];
+    }
+    return smartweTakeoutInfo;
+  }
+
+  //精算 按钮
+  static getSmartweCheckOutBillData() async{
+    var smartweBillInfo;
+    try {
+      var billData = json.decode(await Storage.getString('smartwe_checkOut_bill'));
+      GetxStorage.setData('smartwe_checkOut_bill', json.encode(billData));
+      smartweBillInfo = billData;
+    } catch (e) {
+      smartweBillInfo = [];
+    }
+    return smartweBillInfo;
+  }
+
+  //精算 按钮
+  static getSmartweCheckOutLineUpData() async{
+    var smartweLineUpInfo;
+    try {
+      var lineUpData = json.decode(await Storage.getString('smartwe_checkOut_lineUp'));
+      GetxStorage.setData('smartwe_checkOut_lineUp', json.encode(lineUpData));
+      smartweLineUpInfo = lineUpData;
+    } catch (e) {
+      smartweLineUpInfo = {};
+    }
+    return smartweLineUpInfo;
+  }
+
 }
