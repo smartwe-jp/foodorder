@@ -118,6 +118,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 10;
 
+  //如果下单时候报错，则查看是否因为库存不足
+  var _menuLackMap = {};
+
 
   @override
   void initState() {
@@ -398,8 +401,25 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
   //限量商品请求接口
-  _checkQtyBoundsCount(item, optionCode) {
-    var checkResult;
+  _checkQtyBoundsCount(item, optionCode) async {
+
+    var result = await controller.getCartItemNum(item['menuCode']);
+    //print("限定+=====${result}");
+    if(result>=item['qtyBounds']){
+      var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+      showToast("${showString}");
+      return;
+    }else{
+      //如果option 存在，则弹出option
+      if(item['optionGroupVoList']?.length > 0){
+        _publicShowOneItemWidget(item);
+      }else{
+        _publicAddCart(item);
+      }
+    }
+
+
+    /*var checkResult;
     var formData = {
       "machineCode": _machineCode,
       "menuCode": item['menuCode'],
@@ -422,7 +442,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         showToast("${showString}");
         checkResult = false;
       }
-    });
+    });*/
   }
 
   _publicAddCart(item){
@@ -4197,6 +4217,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   }
 
   Widget generateCartList(BuildContext context, ShopItemModel d) {
+    var tipColor = (_menuLackMap.containsKey(d.menuCode) == true) ? "#ff0000":Gcolor.mainTitleColor;
     return Padding(
       padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
       child: Container(
@@ -4241,14 +4262,15 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             fontSize:
                             ScreenAdapter.fontSize(GFontSize.cartListTitle),
                             fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                            color: ColorsUtil.hexToColor(tipColor)
+                        ),
                         children: [
                           d.goodsNum>1?TextSpan(
                             text: " X${d.goodsNum}",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(
                                   GFontSize.cartListTitleCount),
-                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                              color: ColorsUtil.hexToColor(tipColor),
                             ),
                           ):TextSpan(
                             text: "",
@@ -4265,7 +4287,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                    color: ColorsUtil.hexToColor(tipColor)),
               ),
             ),
           ],
@@ -4346,7 +4368,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
@@ -4355,7 +4377,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 "checkLanguage": this._checkLanguage,
                 "shopInfo":_shopInfo,
                 "machineCode": this._machineCode,
-                "orderId" : response['data'],
+                "orderId" : response['data']["orderId"],
                 "totalPrice" : orderTotlaPrice.toString(),
                 "machineMode":"1",
                 "isAllowPos":_isAllowPos,
@@ -4373,10 +4395,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               });
 
         }else{
-          showToast(response['msg']);
-          sleep(Duration(milliseconds: 2000));
+          _getBookingBootMenu();
+          setState(() {
+            _menuLackMap = response['data']["menuLackMap"];
+          });
+          showToast(response['data']["message"]);
+          //sleep(Duration(milliseconds: 2000));
           //Navigator.pushNamed(context, '/home');
-          Navigator.of(context).pop();
+          //Navigator.of(context).pop();
         }
       });
     }
@@ -4405,6 +4431,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
               showmPay:this._showmPay,
               showCreditCard:this._showCreditCard,
               shopCartTotalPrice:_shopCartTotalPrice,
+              tableNum: "",
               onConfrimClick: (String isAllowPos, String payment_method_num) {
 
                 setState(() {

@@ -1181,7 +1181,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
   Future<void> printDemoReceiptNew(NetworkPrinter printer,printData) async {
-    print(printData);
+    //print(printData);
     printer.image(printData);
     printer.feed(1);
     printer.cut();

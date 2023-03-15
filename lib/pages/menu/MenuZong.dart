@@ -460,8 +460,22 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
 
   //限量商品请求接口
-  _checkQtyBoundsCount(item, optionCode) {
-    var checkResult;
+  _checkQtyBoundsCount(item, optionCode) async {
+    var result = await controller.getCartItemNum(item['menuCode']);
+    //print("限定+=====${result}");
+    if(result>=item['qtyBounds']){
+      var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+      showToast("${showString}");
+      return;
+    }else{
+      //如果option 存在，则弹出option
+      if(item['optionGroupVoList']?.length > 0){
+        _publicShowOneItemWidget(item);
+      }else{
+        _publicAddCart(item);
+      }
+    }
+    /*var checkResult;
     var formData = {
       "machineCode": _machineCode,
       "menuCode": item['menuCode'],
@@ -484,7 +498,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         showToast("${showString}");
         checkResult = false;
       }
-    });
+    });*/
   }
 
   _publicAddCart(item){
@@ -4486,6 +4500,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               showdPay:this._showdPay,
               showrPay:this._showrPay,
               showmPay:this._showmPay,
+              tableNum: "",
               showCreditCard:this._showCreditCard,
               shopCartTotalPrice:_shopCartTotalPrice,
               onConfrimClick: (String isAllowPos, String payment_method_num) {

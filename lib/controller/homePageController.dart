@@ -49,6 +49,17 @@ class HomePageController extends GetxController {
     return result[0];
   }
 
+  getCartItemNum(menuCode) async {
+    var result;
+    result = await itemServices.getCartItemNumber(menuCode);
+    if(result[0]["totalGoodsNum"] == null){
+      return 0;
+    }else{
+      return result[0]["totalGoodsNum"];
+    }
+
+  }
+
 
   Future addToCart(item, {bool checkItem = false}) async {
     isLoading = true;

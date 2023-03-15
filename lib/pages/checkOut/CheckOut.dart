@@ -260,7 +260,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   _getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();print(SystemSettingInfo);
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();//print(SystemSettingInfo);
 
     setState(() {
       _menu_direction = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
@@ -431,9 +431,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
       var formData = {
         "orderKey": _tableCode
-      };print(formData);
+      };
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());print(response);
+        var response = json.decode(val.toString());
         EasyLoading.dismiss();
 
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {

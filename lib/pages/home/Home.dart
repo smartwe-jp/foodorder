@@ -182,7 +182,7 @@ class _HomePageState extends State<HomePage> {
 
   _getHomeImageList() async {
     var homeimageList = await HomeServices.getSmartweHomeImagesData();
-    print(homeimageList);
+    //print(homeimageList);
 
     setState(() {
       _homeList = homeimageList;
