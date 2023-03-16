@@ -634,6 +634,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           //return _showCategoryNine(showItem[classTag]);
         } else if (item['showType'] == "mixed_two_column") { //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
           return _showCategoryNine(showItem[classTag]);
+        }else{
+          return _showCategoryTwo(showItem[classTag]);
         }
       }
     }
