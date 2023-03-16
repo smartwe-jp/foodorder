@@ -76,6 +76,10 @@ class GString{
 
         "show_storage_num_error":"この料理の在庫が不足しています",
 
+        "show_del_cart_item_tag":"商品を削除しますか?",
+        "show_del_cart_item_yes":"削除します",
+        "show_del_cart_item_no":"削除しない",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -148,6 +152,9 @@ class GString{
 
         "show_storage_num_error":"此菜品库存数量不足",
 
+        "show_del_cart_item_tag":"是否要删除商品？",
+        "show_del_cart_item_yes":"删除",
+        "show_del_cart_item_no":"不删除",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -219,6 +226,10 @@ class GString{
         "payment_success_title":"Payment succeeded.",
 
         "show_storage_num_error":"Out of stock",
+
+        "show_del_cart_item_tag":"remove item？",
+        "show_del_cart_item_yes":"Yes",
+        "show_del_cart_item_no":"No",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -290,6 +301,10 @@ class GString{
         "payment_success_title":"결제 성공",
 
         "show_storage_num_error":"재고 부족",
+
+        "show_del_cart_item_tag":"상품을 삭제하시겠습니까?",
+        "show_del_cart_item_yes":"삭제합니다",
+        "show_del_cart_item_no":"삭제하지 않음",
 
       };
     }

@@ -162,7 +162,7 @@ class _TransitPageState extends State<TransitPage> {
     });*/
 
     //判断是否第一次打开
-    sleep(Duration(milliseconds: 500));
+    sleep(Duration(milliseconds: 200));
     if(checkmachineMode == "2"){
         _goCheckOut();
       }else{

@@ -1860,14 +1860,14 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页 model0 券卖机 `1精算机
-  // 如果是刷卡则需要pos机返回成功在发送请求取消订单
+  // 如果是刷卡则需要pos机返回成功在发送请求取消订单 取消动作移前并精算不需要取消
   CancelOrder() {
-    var formData = {
+    /*var formData = {
       "machineCode": _machineCode,
       "orderId": this._orderId,
       "model": (_machineMode == "1") ? "0" : "1",
     };
-    request('webBootCancelV1', method: 'POST', parameters: formData);
+    request('webBootCancelV1', method: 'POST', parameters: formData);*/
 
     if (_payment_method_num == "1" || _payment_method_num == "0") {
       setState(() {

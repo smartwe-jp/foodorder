@@ -318,7 +318,7 @@ class _ActivationPageState extends State<ActivationPage> {
                 },
                 onSubmitted: (value) {
                   setState(() {
-                    this._activation_code = value;
+                    this._activation_code = value.toUpperCase();
                   });
 
                   //sendActivationCode();

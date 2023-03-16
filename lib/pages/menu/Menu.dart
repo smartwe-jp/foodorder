@@ -120,6 +120,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //如果下单时候报错，则查看是否因为库存不足
   var _menuLackMap = {};
+  var _doSubmitOrderId = "";
+
 
 
   @override
@@ -4174,7 +4176,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   /*if(_isAllowPos == "0"){
                                   _doSubmitOrder();
                                 }else{*/
-                                  _showSelectMealTypeAndPaymentMethodDialog();
+                                  _doSubmitOrder();
+                                  //_showSelectMealTypeAndPaymentMethodDialog();
                                   //}
 
 
@@ -4220,77 +4223,80 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     var tipColor = (_menuLackMap.containsKey(d.menuCode) == true) ? "#ff0000":Gcolor.mainTitleColor;
     return Padding(
       padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
-      child: Container(
-        decoration: BoxDecoration(
-            color: Colors.white12,
-            border: Border(
-              bottom: BorderSide(color: Colors.grey, width: 1.0),
-              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-            )),
-        //height: ScreenAdapter.height(80),
-        child: Row(
-          children: <Widget>[
-            InkResponse(
-              onTap: () {
-                Get.find<HomePageController>().removeFromCart(d.id ?? 0);
-                //print("Item removed from cart successfully");
-                //删除商品声音
-                deleteItemSound();
-                controller.getCardList();
-                //更改显示购物车价格
-                getCartPriceTotal();
-              },
-              child: Container(
+      child: InkWell(
+        highlightColor: Colors.transparent, // 透明色
+        splashColor: Colors.transparent, // 透明色
+        onTap: (){
+          showDialogTag(d.id);
+          /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
+          //print("Item removed from cart successfully");
+          //删除商品声音
+          deleteItemSound();
+          controller.getCardList();
+          //更改显示购物车价格
+          getCartPriceTotal();*/
+        },
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white12,
+              border: Border(
+                bottom: BorderSide(color: Colors.grey, width: 1.0),
+                top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+              )),
+          //height: ScreenAdapter.height(80),
+          child: Row(
+            children: <Widget>[
+              Container(
                 width: ScreenAdapter.width(40),
                 child: Image.asset(GImage.getImageString("imgpublic", "delOne"),
                     width: ScreenAdapter.width(30),
                     //height: ScreenAdapter.height(44),
                     fit: BoxFit.fill),
               ),
-            ),
-            Expanded(
-                child: Container(
-                  padding: EdgeInsets.only(
-                      left: ScreenAdapter.width(5),
-                      top: ScreenAdapter.height(8),
-                      bottom: ScreenAdapter.height(8)),
-                  //width: ScreenAdapter.width(495),
-                  child: RichText(
-                    text: TextSpan(
-                        text: d.mainTitle,
-                        style: TextStyle(
-                            fontSize:
-                            ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor(tipColor)
-                        ),
-                        children: [
-                          d.goodsNum>1?TextSpan(
-                            text: " X${d.goodsNum}",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.cartListTitleCount),
-                              color: ColorsUtil.hexToColor(tipColor),
-                            ),
-                          ):TextSpan(
-                            text: "",
+              Expanded(
+                  child: Container(
+                    padding: EdgeInsets.only(
+                        left: ScreenAdapter.width(5),
+                        top: ScreenAdapter.height(8),
+                        bottom: ScreenAdapter.height(8)),
+                    //width: ScreenAdapter.width(495),
+                    child: RichText(
+                      text: TextSpan(
+                          text: d.mainTitle,
+                          style: TextStyle(
+                              fontSize:
+                              ScreenAdapter.fontSize(GFontSize.cartListTitle),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(tipColor)
                           ),
+                          children: [
+                            d.goodsNum>1?TextSpan(
+                              text: " X${d.goodsNum}",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(
+                                    GFontSize.cartListTitleCount),
+                                color: ColorsUtil.hexToColor(tipColor),
+                              ),
+                            ):TextSpan(
+                              text: "",
+                            ),
 
-                        ]),
-                  ),
-                )),
-            Container(
-              width: ScreenAdapter.width(120),
-              alignment: Alignment.centerRight,
-              child: Text(
-                formatMoney(d.currentPrice.toString()),
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(tipColor)),
+                          ]),
+                    ),
+                  )),
+              Container(
+                width: ScreenAdapter.width(120),
+                alignment: Alignment.centerRight,
+                child: Text(
+                  formatMoney(d.currentPrice.toString()),
+                  style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(tipColor)),
+                ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -4372,27 +4378,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
-          Navigator.pushNamed(context, '/settlement',
-              arguments: {
-                "checkLanguage": this._checkLanguage,
-                "shopInfo":_shopInfo,
-                "machineCode": this._machineCode,
-                "orderId" : response['data']["orderId"],
-                "totalPrice" : orderTotlaPrice.toString(),
-                "machineMode":"1",
-                "isAllowPos":_isAllowPos,
-                "posIp":_pos_ip,
-                "posPort":_pos_port,
-                "paymentMethod":_payment_method_num,
-                "showWechat":this._showWechat,
-                "showAlipay":this._showAlipay,
-                "showPayPay":this._showPayPay,
-                "showCreditCard":_showCreditCard,
-                "showauPay":this._showauPay,
-                "showdPay":this._showdPay,
-                "showrPay":this._showrPay,
-                "showmPay":this._showmPay,
-              });
+          setState(() {
+            _doSubmitOrderId = response['data']["orderId"];
+          });
+          _showSelectMealTypeAndPaymentMethodDialog();
+
 
         }else{
           _getBookingBootMenu();
@@ -4441,17 +4431,52 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 if(_payment_method_num == "3" || _payment_method_num == "4"){
                   _getPosSettingInfo();
                 }else{
-                  _doSubmitOrder();
+                  //_doSubmitOrder();
+                  gotoSettlement();
                 }
 
               },
               onCancelClick: (String isBack){
                 if(isBack == "back"){
-
+                  CancelOrder();
                 }
               }
           );
         });
+  }
+
+  gotoSettlement() {
+    Navigator.pushNamed(context, '/settlement',
+        arguments: {
+          "checkLanguage": this._checkLanguage,
+          "shopInfo":_shopInfo,
+          "machineCode": this._machineCode,
+          "orderId" : _doSubmitOrderId,
+          "totalPrice" : _shopCartTotalPrice,
+          "machineMode":"1",
+          "isAllowPos":_isAllowPos,
+          "posIp":_pos_ip,
+          "posPort":_pos_port,
+          "paymentMethod":_payment_method_num,
+          "showWechat":this._showWechat,
+          "showAlipay":this._showAlipay,
+          "showPayPay":this._showPayPay,
+          "showCreditCard":_showCreditCard,
+          "showauPay":this._showauPay,
+          "showdPay":this._showdPay,
+          "showrPay":this._showrPay,
+          "showmPay":this._showmPay,
+        });
+  }
+
+  CancelOrder() {
+    var formData = {
+      "machineCode": _machineCode,
+      "orderId": _doSubmitOrderId,
+      "model": "0",
+    };
+    request('webBootCancelV1', method: 'POST', parameters: formData);
+
   }
 
   _getPosSettingInfo() async {
@@ -4460,19 +4485,104 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       _pos_ip = posSettingInfo['posIp'];
       _pos_port = posSettingInfo['posPort'];
     });
-    _doSubmitOrder();
+    gotoSettlement();
   }
 
 
   //清空购物车弹出提示、
-  showDialogTag() {
-    AppTool().showCenterTipsAlter(
-        context,
-        _clearCartList,
-        GString.getToString(this._checkLanguage, "tag_title"),
-        GString.getToString(this._checkLanguage, "tag_content"),
-        GString.getToString(this._checkLanguage, "tag_button_yes"),
-        GString.getToString(this._checkLanguage, "tag_button_no"));
+  showDialogTag(menuId) {
+
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(GString.getToString(this._checkLanguage, "show_del_cart_item_tag"),
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "show_del_cart_item_no"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                            //垂直分割线
+                            SizedBox(
+                              width: 1,
+                              height: 40,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.black12),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 70.0),
+                              child: TextButton(
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "show_del_cart_item_yes"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () async {
+                                  //widget.confirmCallback('确定');
+                                  Get.find<HomePageController>().removeFromCart(menuId ?? 0);
+                                  //print("Item removed from cart successfully");
+                                  //删除商品声音
+                                  deleteItemSound();
+                                  controller.getCardList();
+                                  //更改显示购物车价格
+                                  getCartPriceTotal();
+
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
   }
 
   void _clearCartList(value) async {
