@@ -371,22 +371,25 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     ),
                   ),
                   Container(
-                    width: ScreenAdapter.width(650),
+                    width: ScreenAdapter.width(750),
                     height: ScreenAdapter.height(580),
                     padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(28),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                            )),
+                        Container(
+                          margin: EdgeInsets.only(bottom: ScreenAdapter.height(20)),
+                          child: Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(28),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                              )),
+                        ),
                         //SizedBox(height: ScreenAdapter.height(10),),
                         Container(
                           //width: ScreenAdapter.width(280),
-                            height: ScreenAdapter.height(480),
+                            height: ScreenAdapter.height(430),
                             child: Image.asset(GImage.getImageString("imgpublic", "jingsuantag"),fit: BoxFit.fitHeight,height: ScreenAdapter.height(480),)),
                       ],
                     ),

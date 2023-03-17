@@ -80,6 +80,8 @@ class GString{
         "show_del_cart_item_yes":"削除します",
         "show_del_cart_item_no":"削除しない",
 
+        "show_product_restrictions":"%%份限定",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -155,6 +157,8 @@ class GString{
         "show_del_cart_item_tag":"是否要删除商品？",
         "show_del_cart_item_yes":"删除",
         "show_del_cart_item_no":"不删除",
+
+        "show_product_restrictions":"%%份限定",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -230,6 +234,8 @@ class GString{
         "show_del_cart_item_tag":"remove item？",
         "show_del_cart_item_yes":"Yes",
         "show_del_cart_item_no":"No",
+
+        "show_product_restrictions":"LIMIT %%",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -305,6 +311,8 @@ class GString{
         "show_del_cart_item_tag":"상품을 삭제하시겠습니까?",
         "show_del_cart_item_yes":"삭제합니다",
         "show_del_cart_item_no":"삭제하지 않음",
+
+        "show_product_restrictions":"%%개한정판매",
 
       };
     }

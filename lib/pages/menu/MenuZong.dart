@@ -871,7 +871,35 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           fit: BoxFit.fitWidth,
         ),
       );
-    } else {
+    } else if(bounds > 0){
+      var showString = GString.getToString(this._checkLanguage, "show_product_restrictions").replaceAll('%%', bounds.toString());
+      return Positioned(
+        right: ScreenAdapter.width(10),
+        top: ScreenAdapter.height(10),
+        child: Container(
+          //width: ScreenAdapter.width(230),
+          height: ScreenAdapter.height(55),
+          padding: EdgeInsets.only(left:ScreenAdapter.width(5),top:ScreenAdapter.height(5),right:ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+          decoration: BoxDecoration(
+            color: ColorsUtil.hexToColor("#A61C1C"),
+            //borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            border: Border.all(
+              color: ColorsUtil.hexToColor("#A61C1C"),
+              width: 1,
+            ),
+          ),
+          child: Container(
+            alignment: Alignment.center,
+            child: Text(
+                "${showString}",
+                style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(24),
+                    color: ColorsUtil.hexToColor("#FFFFFF"))
+            ),
+          ),
+        ),
+      );
+    }  else {
       return Container(
         height: 0,
       );
