@@ -4057,6 +4057,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     controller.getCardList();
     var total = await controller.getCartAllPrice();
+    if(total != null)
     setState(() {
       _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
     });

@@ -81,7 +81,7 @@ class GString{
         "show_del_cart_item_no":"削除しない",
 
         "show_product_restrictions":"%%份限定",
-
+        "show_check_tableno":"お席番号：",
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -159,6 +159,7 @@ class GString{
         "show_del_cart_item_no":"不删除",
 
         "show_product_restrictions":"%%份限定",
+        "show_check_tableno":"桌号：",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -236,6 +237,7 @@ class GString{
         "show_del_cart_item_no":"No",
 
         "show_product_restrictions":"LIMIT %%",
+        "show_check_tableno":"Table No.",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -313,6 +315,7 @@ class GString{
         "show_del_cart_item_no":"삭제하지 않음",
 
         "show_product_restrictions":"%%개한정판매",
+        "show_check_tableno":"좌석 번호",
 
       };
     }

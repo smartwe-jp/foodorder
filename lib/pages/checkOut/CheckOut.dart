@@ -338,7 +338,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                       children: <Widget>[
                         Expanded(
                             child: TextField(
-                              keyboardType: TextInputType.number,
+                              keyboardType: TextInputType.text,
                               autofocus: true,
                               showCursor: false, // 显示光标
                               //readOnly: true,
@@ -426,26 +426,32 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   _doNextPay(){
+    var _orderkey = _tableCode;
     if(_tableCode !=""){
       _showOrderEasyLoading();
-
+    if(_tableCode.contains('?p=') == true){print("这里提取了");
+      _orderkey = _tableCode.substring(_tableCode.length-21);print(_orderkey);
+    }
       //自定义声音
       //playQRScannerSound();
 
       var formData = {
-        "orderKey": _tableCode
-      };
+        "orderKey": _orderkey
+      };print(formData);
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
+        var response = json.decode(val.toString());print(response);
         EasyLoading.dismiss();
 
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          setState(() {
-            _orderId = response["data"]["orderId"].toString();
-            _totlaPrice = response["data"]["totalPrice"].toString();
-            _tableNum = response["data"]["tableNum"].toString();
-          });
-          _showSelectMealTypeAndPaymentMethodDialog();
+          if(response["data"]["totalPrice"] >0){
+            setState(() {
+              _orderId = response["data"]["orderId"].toString();
+              _totlaPrice = response["data"]["totalPrice"].toString();
+              _tableNum = response["data"]["tableNum"].toString();
+            });
+            _showSelectMealTypeAndPaymentMethodDialog();
+          }
+
           /*Navigator.pushNamed(context, '/settlement',
               arguments: {
                 "checkLanguage": this._checkLanguage,
