@@ -142,7 +142,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer showCashTimer;
-  int seconds = 30;
+  int seconds = 60;
 
   @override
   void initState() {
@@ -1554,7 +1554,7 @@ class _SettlementPageState extends State<SettlementPage> {
       if (_stopStatus == "StopSuccess") {
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
           timer?.cancel();
         });
         //如果投币金额大于待支付总金额
@@ -1602,7 +1602,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 60;
         });
 
         getPutInMoney();
@@ -1665,7 +1665,7 @@ class _SettlementPageState extends State<SettlementPage> {
       if (_stopStatus == "StopSuccess") {
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
           timer?.cancel();
         });
         if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
@@ -1712,7 +1712,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
         });
         //如果取消不汇报，则出金后直接关闭 ？？？？？？
         _getPayCubeOutMoney();
@@ -1771,7 +1771,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
           _currencyString = currencyString;
         });
 
@@ -1810,7 +1810,7 @@ class _SettlementPageState extends State<SettlementPage> {
       if (_stopStatus == "StopSuccess") {
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
         });
         //print("扫码成功结束");
         payCubeCloseTransaction();
@@ -1842,7 +1842,7 @@ class _SettlementPageState extends State<SettlementPage> {
       if (_endStatus == "EndSuccess") {
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
         });
         //关闭机器后的跳转
         if (_isPrint == true) {
@@ -1909,7 +1909,7 @@ class _SettlementPageState extends State<SettlementPage> {
       if (putcurrencyString.trim().length > 0) {
         showCashTimer?.cancel();
         setState(() {
-          seconds = 30;
+          seconds = 180;
           _getPutMoneyCurrency = putcurrencyString;
         });
         //汇报入金币种
