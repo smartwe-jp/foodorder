@@ -230,4 +230,16 @@ class HomeServices{
     return smartweLineUpInfo;
   }
 
+  //精算配置
+  static getSmartweMachineSettingData() async{
+    var machineSettingInfo;
+    try {
+      var machineSettingData = json.decode(await Storage.getString('machineSettingData'));
+      machineSettingInfo = machineSettingData;
+    } catch (e) {
+      machineSettingInfo = {};
+    }
+    return machineSettingInfo;
+  }
+
 }

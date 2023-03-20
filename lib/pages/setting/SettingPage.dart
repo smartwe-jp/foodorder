@@ -81,9 +81,12 @@ class _SettingPageState extends State<SettingPage> {
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     if(systemSettingInfo['isAllowAttendance'] !="" && systemSettingInfo['isAllowAttendance'] !=null) {
-      setState(() {
-        _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
-      });
+      if(mounted){
+        setState(() {
+          _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
+        });
+      }
+
       if (_is_allow_attendance == "1") {
         _getAttendanceCode();
       }

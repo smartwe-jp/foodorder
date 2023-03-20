@@ -524,7 +524,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if(_tableNum != null || _tableNum != "")
+                      if(_tableNum != null && _tableNum != "")
                       Text(
                         "${GString.getToString(this._checkLanguage, "show_check_tableno")}${_tableNum}",
                         style: TextStyle(

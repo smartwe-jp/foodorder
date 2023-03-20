@@ -80,6 +80,7 @@ class GImage{
         "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
 
         "paymentSuccess":"assets/images/public/paymentSuccess.jpg",
+        "checkOut_checked":"assets/images/public/checkOut_checked.png",
 
       };
     }

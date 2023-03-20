@@ -765,17 +765,26 @@ class _SettlementPageState extends State<SettlementPage> {
         request(queryUrl, method: 'POST', parameters: formData)
             .then((val) async {
           var response = json.decode(val.toString());
-          //LogUtil.d(response);
+          LogUtil.d(response);
           if (response['code'] == 200) {
             //printType 1 打印菜+领収书 2 只打印菜
-            if (_machineMode == "1") {
+          //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
+            if(response['data']["orderType"] == 1){
+              _tpPrintnew(response['data'], printType);
+            }else{
+              if (printType == "1") {
+                _tpPrintReceipt(response['data']);
+              }
+
+            }
+            /*if (_machineMode == "1") {
               _tpPrintnew(response['data'], printType);
             } else if (_machineMode == "2") {
               //1打印领収书 2不打印，直接返回
               if (printType == "1") {
                 _tpPrintReceipt(response['data']);
               }
-            }
+            }*/
 
             //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
 
@@ -1404,8 +1413,7 @@ class _SettlementPageState extends State<SettlementPage> {
     Future.delayed(Duration(milliseconds: 100), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      await FlutterPluginMsprinter.sendPrintImg(
-          base64Image, "0", _shopInfo, "1");
+      await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "1");
     });
   }
 

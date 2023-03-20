@@ -23,7 +23,7 @@ class _TransitPageState extends State<TransitPage> {
   String _machineCode = "";
   var _machineMode = "1";//1 券卖机  2 精算机
   var _isCashState = true;
-  var _machineBill = [];
+  var _actuarial = false;
 
   @override
   void initState() {
@@ -80,7 +80,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//LogUtil.d(response);
+      var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -108,15 +108,24 @@ class _TransitPageState extends State<TransitPage> {
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
         Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-        Storage.setString('smartwe_checkOut_takeout', json.encode(shopData["takeout"]));
-        Storage.setString('smartwe_checkOut_bill', json.encode(shopData["bill"]));
-        Storage.setString('smartwe_checkOut_lineUp', json.encode(shopData["lineUp"]));
+        //Storage.setString('smartwe_checkOut_takeout', json.encode(shopData["takeout"]));
+        //Storage.setString('smartwe_checkOut_bill', json.encode(shopData["bill"]));
+        //Storage.setString('smartwe_checkOut_lineUp', json.encode(shopData["lineUp"]));
 
         GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
         GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
+        GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
+
+        var machineSettingBool = {
+          'machineLineup':shopData["lineup"],
+          'machineActuarial':shopData["actuarial"],
+        };
+
+        Storage.setString('machineSettingData', json.encode(machineSettingBool));
+        GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
 
         setState(() {
-          _machineBill = shopData["bill"];
+          _actuarial = shopData["actuarial"];
         });
       }
       /*if(_machineMode == "2"){
@@ -133,10 +142,10 @@ class _TransitPageState extends State<TransitPage> {
 
     var checkmachineMode = "1";
     if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
-      if(_machineBill.length==0){
-        checkmachineMode = "1";
-      }else{
+      if(_actuarial==true){
         checkmachineMode = "2";
+      }else{
+        checkmachineMode = "1";
       }
     }
     var DiningTypeInfo = await HomeServices.getDiningTypeInfo();//showToast("main====:::::${DiningTypeInfo}");
