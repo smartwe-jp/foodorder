@@ -79,7 +79,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
                           children: <Widget>[
-                            if(_takeOut == true)
+
                             InkWell(
                               onTap: (){
                                 //Navigator.pop(mcontext);
@@ -127,6 +127,7 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                               ),
                             ),
 
+                            if(_takeOut == true)
                             InkWell(
                               onTap: (){
                                 //Navigator.pop(mcontext);
