@@ -885,7 +885,12 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 _checkLanguage = item["value"];
               });
               //_showScanCodeDialog();
-              _showPaymentMethodDialog();
+              if(_takeOut == true){
+                _showPaymentMethodDialog();
+              }else{
+                _showScanCodeDialog();
+              }
+
             },
             child: Container(
               width: ScreenAdapter.width(217),
