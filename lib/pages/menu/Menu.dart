@@ -716,7 +716,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //公共设置标签 subTitle
   publicShowMenuSubtitle(subtitleList) {
     //标签循环相关
-    if (subtitleList.length > 0) {
+    if (subtitleList != null && subtitleList.length > 0) {
       var labelSubtitleLength = subtitleList.length;
       List<Widget> labels = []; //先建一个数组用于存放循环生成的widget
       //Widget labelContent;
@@ -1899,7 +1899,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     Offset temp;
 
     var subtitle = "";
-    if (item["subtitle"]?.length > 0) {
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -2264,7 +2264,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   showCategoryFiveItemOne(item, index) {
     Offset temp;
     var subtitle = "";
-    if (item["subtitle"].length > 0) {
+    if (item["subtitle"]!= null && item["subtitle"].length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -3659,7 +3659,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //展示某带option商品
   _publicShowOneItemWidget(item){
     var subtitle = "";
-    if (item["subtitle"]?.length > 0) {
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -4405,7 +4405,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-        LogUtil.d(response);
+        //LogUtil.d(response);
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 

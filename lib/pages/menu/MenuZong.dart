@@ -833,7 +833,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   //公共设置标签 subTitle
   publicShowMenuSubtitle(subtitleList) {
     //标签循环相关
-    if (subtitleList.length > 0) {
+    if (subtitleList != null && subtitleList.length > 0) {
       var labelSubtitleLength = subtitleList.length;
       List<Widget> labels = []; //先建一个数组用于存放循环生成的widget
       //Widget labelContent;
@@ -2028,7 +2028,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     Offset temp;
 
     var subtitle = "";
-    if (item["subtitle"]?.length > 0) {
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -2395,7 +2395,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   showCategoryFiveItemOne(item, index) {
     Offset temp;
     var subtitle = "";
-    if (item["subtitle"].length > 0) {
+    if (item["subtitle"] != null && item["subtitle"].length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }
@@ -3720,7 +3720,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   //展示某带option商品
   _publicShowOneItemWidget(item){
     var subtitle = "";
-    if (item["subtitle"]?.length > 0) {
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
       for (var i = 0; i < item["subtitle"].length; i++) {
         subtitle += item["subtitle"][i];
       }

@@ -1271,7 +1271,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 ),
               ),
               Positioned(
-                top: ScreenAdapter.height(1200),
+                top: ScreenAdapter.height(1400),
                 child: Container(
                   width: ScreenAdapter.width(1080),
                   child: Column(
