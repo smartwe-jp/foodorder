@@ -33,6 +33,10 @@ class ItemServices {
     return await sqlService.updateToCartNum(data);
   }
 
+  Future reduceToCartNum(data) async {
+    return await sqlService.reduceToCartNum(data);
+  }
+
   Future getCartList() async {
     return await sqlService.getCartList();
   }

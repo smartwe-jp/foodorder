@@ -346,12 +346,13 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   //扫码，弹出dialog
   _showScanCodeDialog(){
-    //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+
     //支付状态
     showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,
         builder: (BuildContext context) {
+          //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
           return Container(
             width: ScreenAdapter.width(950),
             child: SimpleDialog(
@@ -366,6 +367,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 children: <Widget>[
                   Container(
                     height: 0,
+                    padding: EdgeInsets.only(left: 20),
                     child: Row(
                       children: <Widget>[
                         Expanded(
@@ -381,20 +383,26 @@ class _CheckOutPageState extends State<CheckOutPage> {
                                 border: InputBorder.none,
                                 isDense: true,
                               ),
-                              style: TextStyle(fontSize: ScreenAdapter.fontSize(1.0)),
-                              obscureText: false,
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
                               onChanged: (value) {
                                 //print(value);
+                                if(value.length==1){
+                                  _showOrderEasyLoading();
+                                }
 
                               },
                               onSubmitted: (value){
-
+                                Navigator.pop(context);
                                 setState(() {
                                   this._tableCode = value;
                                 });
-                                _doNextPay();
 
-                                Navigator.pop(context);
+                                Future.delayed(Duration(milliseconds: 300), () {
+                                  _doNextPay();
+                                });
+
+
+
                               },
 
                               /// 扫码密码
@@ -501,7 +509,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   _doNextPay(){
     var _orderkey = _tableCode;
     if(_tableCode !=""){
-      _showOrderEasyLoading();
+      //_showOrderEasyLoading();
     if(_tableCode.contains('?p=') == true){
       _orderkey = _tableCode.substring(_tableCode.length-21);
     }
@@ -547,9 +555,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
           });
 
           _showDialogError(response['msg']);
-          //showToast(response['msg']);
-          //sleep(Duration(milliseconds: 2000));
-          //Navigator.pop(context);
         }
       });
     }
@@ -642,11 +647,16 @@ class _CheckOutPageState extends State<CheckOutPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: (){
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+              ),
             ),
           ],
         ),
@@ -685,11 +695,16 @@ class _CheckOutPageState extends State<CheckOutPage> {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              Container(
-                                //width: ScreenAdapter.width(400),
-                                //margin: EdgeInsets.only(top: 60),
-                                height: ScreenAdapter.height(75),
-                                child: Image.asset(GImage.getImageString("imgpublic", "error_public"),fit: BoxFit.fitHeight),
+                              InkWell(
+                                onLongPress: (){
+                                  EasyLoading.dismiss();
+                                },
+                                child: Container(
+                                  //width: ScreenAdapter.width(400),
+                                  //margin: EdgeInsets.only(top: 60),
+                                  height: ScreenAdapter.height(75),
+                                  child: Image.asset(GImage.getImageString("imgpublic", "error_public"),fit: BoxFit.fitHeight),
+                                ),
                               ),
                               Expanded(
                                   child: Container(
@@ -1006,6 +1021,34 @@ class _CheckOutPageState extends State<CheckOutPage> {
           value: SystemUiOverlayStyle.light,
           child: Stack(
             children: [
+              Column(
+                children: [
+
+                  Container(
+                    width: MediaQuery.of(context).size.width,
+                    height: MediaQuery.of(context).size.height,
+                    child: Swiper(
+                      //itemHeight: 200,
+                      itemBuilder: (BuildContext context,int index){
+                        // 配置图片地址
+                        return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                      },
+                      // 配置图片数量
+                      itemCount: _homeList.length,
+                      // 底部分页器
+                      //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                      // 左右箭头
+                      //control: new SwiperControl(),
+                      // 无限循环
+                      loop: (_homeList.length >1) ?true :false,
+                      duration: 1000,
+                      autoplayDelay:12000,
+                      // 自动轮播
+                      autoplay: (_homeList.length >1) ?true :false,
+                    ),
+                  ),
+                ],
+              ),
               /*Container(
                 //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
                 width: ScreenAdapter.getScreenWidth(),
@@ -1222,29 +1265,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 ),
               ),*/
 
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Swiper(
-                  //itemHeight: 200,
-                  itemBuilder: (BuildContext context,int index){
-                    // 配置图片地址
-                    return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
-                  },
-                  // 配置图片数量
-                  itemCount: _homeList.length,
-                  // 底部分页器
-                  //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                  // 左右箭头
-                  //control: new SwiperControl(),
-                  // 无限循环
-                  loop: (_homeList.length >1) ?true :false,
-                  duration: 1000,
-                  autoplayDelay:12000,
-                  // 自动轮播
-                  autoplay: (_homeList.length >1) ?true :false,
-                ),
-              ),
+
               Positioned(
                 right: ScreenAdapter.width(0),
                 top: ScreenAdapter.height(20),

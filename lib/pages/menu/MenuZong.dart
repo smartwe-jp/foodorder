@@ -512,9 +512,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       "mainTitle": item['mainTitle'],
       "image": item['homeImage'],
       "currentPrice": item['currentPrice'],
+      "unitPrice": item['currentPrice'],
       "optionGroupVoList": "",
       "optionVoListMsg": "",
-      "goodsNum": 1
+      "goodsNum": 1,
+      "qtyBounds": item['qtyBounds']
     };
     publicAddCartMenu(cartItem, true).then((val) {
 
@@ -912,6 +914,27 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     var result;
     try {
       result = await controller.addToCart(cartItem, checkItem: checkItem);
+      controller.getCardList();
+
+
+    } catch (e) {
+      print(e);
+      result = 0;
+    }
+    return result;
+  }
+
+  //公共购物车加减
+  publicChangeCartMenuCount(cartItem, changeType) async {
+
+    var result;
+    try {
+      if(changeType == 'add'){
+        result = await controller.addToCart(cartItem, checkItem: true);
+      }else{
+        result = await controller.reduceToCart(cartItem);
+      }
+
       controller.getCardList();
 
 
@@ -1803,7 +1826,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                   "currentPrice": currentPrice,
                                   "optionGroupVoList": optionCodeList,
                                   "optionVoListMsg": optionTitle,
-                                  "goodsNum": 1
+                                  "goodsNum": 1,
+                                  "qtyBounds": itemsFirst['qtyBounds']
                                 };
                                 publicAddCartMenu(cartItem, false).then((val) {
                                   //_publicShowAddCart(temp,itemsFirst['homeImage']);
@@ -2180,7 +2204,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             "currentPrice": currentPrice,
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
-                            "goodsNum": 1
+                            "goodsNum": 1,
+                            "qtyBounds": item['qtyBounds']
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
@@ -2533,7 +2558,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             "currentPrice": currentPrice,
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
-                            "goodsNum": 1
+                            "goodsNum": 1,
+                            "qtyBounds": item['qtyBounds']
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
@@ -2777,7 +2803,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               "currentPrice": item['currentPrice'],
               "optionGroupVoList": "",
               "optionVoListMsg": "",
-              "goodsNum": 1
+              "goodsNum": 1,
+              "qtyBounds": item['qtyBounds']
             };
             publicAddCartMenu(cartItem, true).then((val) {
 
@@ -3831,6 +3858,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       "optionGroupVoList": optionCodeList,
                                       "optionVoListMsg": optionTitle,
                                       "goodsNum": 1,
+                                      "qtyBounds": item['qtyBounds']
                                     };
                                     publicAddCartMenu(cartItem, false).then((val) {
 
@@ -4140,7 +4168,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                 width: ScreenAdapter.width(1080),
                 height: ScreenAdapter.height(340),
                 padding: EdgeInsets.only(
-                    left: ScreenAdapter.width(20),
+                    left: ScreenAdapter.width(5),
                     top: ScreenAdapter.height(20),
                     right: ScreenAdapter.width(20),
                     bottom: ScreenAdapter.height(10)),
@@ -4160,7 +4188,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       child: SingleChildScrollView(
                                         physics: ClampingScrollPhysics(),
                                         child: Container(
-                                          width: ScreenAdapter.width(690),
+                                          width: ScreenAdapter.width(730),
                                           height: ScreenAdapter.height(300),
                                           color:
                                           ColorsUtil.hexToColor(Gcolor.cartListColor),
@@ -4184,7 +4212,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                                   );
                                                 },
                                               ),
-
                                             ],
                                           ),
                                         ),
@@ -4201,79 +4228,59 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
 
+                              SizedBox(height: ScreenAdapter.height(25)),
                               InkWell(
-                                enableFeedback: false,
-                                onLongPress: (){
-                                  if(int.parse(_shopCartTotalPrice) >0){
-                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
-                                  }
-
-                                },
-                                child: Container(
-                                  height: ScreenAdapter.height(15),
-                                  width: ScreenAdapter.width(100),
-                                  //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    //color: Colors.red,
-                                  ),
-                                  child: Text(""),//设置
-                                ),
-                              ),
-                              SizedBox(height: ScreenAdapter.height(10)),
-                              Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white12,
-                                    border: Border(
-                                      bottom: BorderSide(color: Colors.black, width: 1.5),
-                                      //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                    )),
-                                child: InkWell(
-                                  enableFeedback: false,
                                   onLongPress: (){
-                                    if(int.parse(_shopCartTotalPrice) >0){
-                                      Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
-                                    }
+                                    //if(int.parse(_shopCartTotalPrice) >0){
+                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                                    //}
 
                                   },
-                                  child: RichText(
-                                    text: TextSpan(
-                                        text: "¥",
-                                        //GString.getToString(this._checkLanguage, "show_price_front"),
-                                        style: TextStyle(
-                                          fontSize: ScreenAdapter.fontSize(GFontSize
-                                              .menusettlementBottomPriceLeft),
-                                          fontWeight: FontWeight.w600,
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor),
-                                        ),
-                                        children: [
-                                          TextSpan(
-                                            text: formatMoney(_shopCartTotalPrice.toString()),
-                                            style: TextStyle(
-                                              fontSize: ScreenAdapter.fontSize(
-                                                  GFontSize
-                                                      .menusettlementBottomPrice),
-                                              fontWeight: FontWeight.w600,
-                                              color: ColorsUtil.hexToColor(
-                                                  Gcolor.priceColor),
-                                            ),
+                                  child:Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white12,
+                                        border: Border(
+                                          bottom: BorderSide(color: Colors.black, width: 1.5),
+                                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                        )),
+                                    child: RichText(
+                                      text: TextSpan(
+                                          text: "¥",
+                                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                                          style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(GFontSize
+                                                .menusettlementBottomPriceLeft),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
                                           ),
-                                          TextSpan(
-                                            text:
-                                            "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
-                                            style: TextStyle(
-                                              fontSize: ScreenAdapter.fontSize(
-                                                  GFontSize
-                                                      .menusettlementBottomPriceRight),
-                                              fontWeight: FontWeight.w600,
-                                              color: ColorsUtil.hexToColor(
-                                                  Gcolor.mainTitleColor),
+                                          children: [
+                                            TextSpan(
+                                              text: formatMoney(_shopCartTotalPrice.toString()),
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize
+                                                        .menusettlementBottomPrice),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.priceColor),
+                                              ),
                                             ),
-                                          ),
-                                        ]),
-                                  ),
-                                ),
+                                            TextSpan(
+                                              text:
+                                              "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize
+                                                        .menusettlementBottomPriceRight),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor),
+                                              ),
+                                            ),
+                                          ]),
+                                    ),
+                                  )
                               ),
 
 
@@ -4297,8 +4304,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
                                 },
                                 child: Container(
-                                  width: ScreenAdapter.width(319),
-                                  height: ScreenAdapter.height(117),
+                                  width: ScreenAdapter.width(300),
+                                  height: ScreenAdapter.height(115),
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
 
@@ -4336,80 +4343,201 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     var tipColor = (_menuLackMap.containsKey(d.menuCode) == true) ? "#ff0000":Gcolor.mainTitleColor;
     return Padding(
       padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
-      child: InkWell(
-        highlightColor: Colors.transparent, // 透明色
-        splashColor: Colors.transparent, // 透明色
-        onTap: (){
-          showDialogTag(d.id);
-          /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
-          //print("Item removed from cart successfully");
-          //删除商品声音
-          deleteItemSound();
-          controller.getCardList();
-          //更改显示购物车价格
-          getCartPriceTotal();*/
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white12,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 1.0),
-                top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-              )),
-          //height: ScreenAdapter.height(80),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: ScreenAdapter.width(40),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white12,
+            border: Border(
+              bottom: BorderSide(color: Colors.grey, width: 1.0),
+              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+            )),
+        //height: ScreenAdapter.height(80),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            /*Container(
+                width: ScreenAdapter.width(30),
                 child: Image.asset(GImage.getImageString("imgpublic", "delOne"),
-                    width: ScreenAdapter.width(30),
+                    width: ScreenAdapter.width(20),
                     //height: ScreenAdapter.height(44),
                     fit: BoxFit.fill),
-              ),
-              Expanded(
+              ),*/
+            Expanded(
+                child: InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    showDialogTag(d.id);
+                    /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
+                  //print("Item removed from cart successfully");
+                  //删除商品声音
+                  deleteItemSound();
+                  controller.getCardList();
+                  //更改显示购物车价格
+                  getCartPriceTotal();*/
+                  },
                   child: Container(
                     padding: EdgeInsets.only(
                         left: ScreenAdapter.width(5),
                         top: ScreenAdapter.height(8),
                         bottom: ScreenAdapter.height(8)),
                     //width: ScreenAdapter.width(495),
-                    child: RichText(
-                      text: TextSpan(
-                          text: d.mainTitle,
-                          style: TextStyle(
-                              fontSize:
-                              ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(tipColor)
-                          ),
-                          children: [
-                            d.goodsNum>1?TextSpan(
-                              text: " X${d.goodsNum}",
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              text: d.mainTitle,
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.cartListTitleCount),
-                                color: ColorsUtil.hexToColor(tipColor),
+                                  fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(tipColor)
                               ),
-                            ):TextSpan(
-                              text: "",
-                            ),
+                              children: [
+                                d.goodsNum>1?TextSpan(
+                                  text: " X${d.goodsNum}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(
+                                        GFontSize.cartListTitleCount),
+                                    color: ColorsUtil.hexToColor(tipColor),
+                                  ),
+                                ):TextSpan(
+                                  text: "",
+                                ),
 
-                          ]),
+                              ]),
+                        ),
+                        (d.optionVoListMsg != "")? Text(
+                          "${d.optionVoListMsg}",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.cartListTitleTag),
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        )
+                            : Text(""),
+                      ],
                     ),
-                  )),
-              Container(
-                width: ScreenAdapter.width(120),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  formatMoney(d.currentPrice.toString()),
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(tipColor)),
-                ),
+                  ),
+                )
+            ),
+            Container(
+              width: ScreenAdapter.width(105),
+              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              alignment: Alignment.centerRight,
+              child: Text(
+                formatMoney(d.currentPrice.toString()),
+                style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor(tipColor)),
               ),
-            ],
-          ),
+            ),
+            Container(
+              width: ScreenAdapter.width(200),
+              height: ScreenAdapter.height(60.0),
+              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              alignment: Alignment.centerRight,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(width: 1.0,color: Colors.black)
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  //减号
+                  //CoustomIconButton(icon: Icons.remove,isAdd: false),
+                  InkWell(
+                    onTap: (){
+                      var cartItem = {
+                        "menuCode": d.menuCode,
+                        "unitPrice": d.unitPrice,
+                        "goodsNum": 1,
+                      };
+                      if(d.goodsNum <=1){
+                        showDialogTag(d.id);
+                      }else{
+                        publicChangeCartMenuCount(cartItem,"reduce").then((val) {
+
+                          //更改显示购物车价格
+                          getCartPriceTotal();
+                        });
+                      }
+
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(50.0),
+                      child:Icon(
+                        Icons.remove,
+                        size: 38,
+                        color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                      ),
+                    ),
+                  ),
+                  //输入框
+                  Container(
+                    width: ScreenAdapter.width(85.0),
+                    height: ScreenAdapter.height(45.0),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(width: 1,color: Colors.black12),
+                          right: BorderSide(width: 1,color: Colors.black12),
+                        )
+                    ),
+                    child: Text(
+                      "${d.goodsNum}",
+                      style: TextStyle(
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(tipColor)
+                      ),
+                    ),
+                  ),
+                  //加号
+                  //CoustomIconButton(icon: Icons.add,isAdd: true),
+                  InkWell(
+                    onTap: (){
+                      /*if(_totalCount >=_maxtotalCount){
+                          //showToast("msg");
+                          return;
+                        }
+                        setState(() {
+                          _totalCount++;
+                        });
+                        _postextraPerson();*/
+                      if(d.qtyBounds >0){
+                        if(d.goodsNum>=d.qtyBounds){
+                          var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+                          showToast("${showString}");
+                          return;
+                        }
+                      }
+
+                      var cartItem = {
+                        "menuCode": d.menuCode,
+                        "unitPrice": d.unitPrice,
+                        "goodsNum": 1,
+                      };
+                      publicChangeCartMenuCount(cartItem,"add").then((val) {
+
+                        //更改显示购物车价格
+                        getCartPriceTotal();
+                      });
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(50.0),
+                      child:Icon(
+                        Icons.add,
+                        size: 38,
+                        color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );

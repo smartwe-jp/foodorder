@@ -70,7 +70,7 @@ class MyApp extends StatelessWidget {
           //主题
           theme: ThemeData(
             primaryColor: Gcolor.primaryColor,
-            //fontFamily: 'MeiryoUI',
+            //fontFamily: 'smartwebW1',
           ),
           home: child,
           initialRoute: '/',

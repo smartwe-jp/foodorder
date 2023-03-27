@@ -140,6 +140,8 @@ class _SettlementPageState extends State<SettlementPage> {
   var _payment_method_num = "0"; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
   var _posResultReportData = {};
 
+  var _printLogoImage = "";
+
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer showCashTimer;
   int seconds = 60;
@@ -234,6 +236,17 @@ class _SettlementPageState extends State<SettlementPage> {
 
     //获取纸大小后在获取数据
     //_getPrintTicketData();
+
+    _getPrintLogoImageData();
+  }
+
+  _getPrintLogoImageData() async {
+    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+    if(logoImageInfo != "" && logoImageInfo != null){
+      setState(() {
+        _printLogoImage = logoImageInfo;
+      });
+    }
   }
 
 //倒计时
@@ -263,12 +276,16 @@ class _SettlementPageState extends State<SettlementPage> {
     var showCreditCard = systemSettingInfo['showCreditCard'];
     if(showCreditCard == true){
       Map posSettingInfo = await HomeServices.getPosSettingInfo();
-      setState(() {
-        _pos_ip = posSettingInfo['posIp'];
-        _pos_port = posSettingInfo['posPort'];
-      });
-      if(_pos_ip != "" && _pos_port != ""){
-        payconnectSocker();
+
+      if(posSettingInfo.isNotEmpty){
+        setState(() {
+          _pos_ip = posSettingInfo['posIp'];
+          _pos_port = posSettingInfo['posPort'];
+        });
+        if(_pos_ip != "" && _pos_port != ""){
+          payconnectSocker();
+        }
+
       }
     }
   }
@@ -1406,14 +1423,14 @@ class _SettlementPageState extends State<SettlementPage> {
       ),
     ));
 
-    List<int> imageBytes = byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "1");
+      //await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "1");
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", _shopInfo, "1",_printLogoImage);
     });
   }
 

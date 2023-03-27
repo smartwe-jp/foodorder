@@ -81,6 +81,20 @@ class HomePageController extends GetxController {
     return result;
   }
 
+  Future reduceToCart(item) async {
+    isLoading = true;
+    update();
+    var result;
+    var checkResult = await itemServices.getCartItemNumber(item['menuCode']);
+    if(checkResult[0]["totalGoodsNum"]>1){
+      result = await itemServices.reduceToCartNum(item);
+    }
+
+    isLoading = false;
+    update();
+    return result;
+  }
+
   removeFromCart(int Id) async {
     itemServices.removeFromCart(Id);
     int index = cartItems.indexWhere((element) => element.id == Id);

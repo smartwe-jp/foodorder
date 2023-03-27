@@ -46,6 +46,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   var _selectTableType = "A";
   var _selectManyPeople = 1;
   var _checkLanguage = "JP";
+  var _printLogoImage = "";
 
   @override
   void initState() {
@@ -198,6 +199,16 @@ class _AppointmentPageState extends State<AppointmentPage> {
       GetxStorage.setData('shopInfo', "kanran");
     }
 
+    _getPrintLogoImageData();
+
+  }
+  _getPrintLogoImageData() async {
+    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+    if(logoImageInfo != "" && logoImageInfo != null){
+      setState(() {
+        _printLogoImage = logoImageInfo;
+      });
+    }
     _getMachineInfo();
   }
 
@@ -592,7 +603,8 @@ class _AppointmentPageState extends State<AppointmentPage> {
     Future.delayed(Duration(milliseconds: 100),() async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
+      //await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", _shopInfo, "1",_printLogoImage);
     });
   }
 

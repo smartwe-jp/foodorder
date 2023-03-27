@@ -191,6 +191,19 @@ class HomeServices{
     return smartweHomeImagesInfo;
   }
 
+  //首图
+  static getSmartweLogoImagesData() async{
+    var smartweLogoImagesInfo;
+    try {
+      var logoImageData = await Storage.getString('smartwe_logoImage');
+      //GetxStorage.setData('smartwe_logoImage', logoImageData);
+      smartweLogoImagesInfo = logoImageData;
+    } catch (e) {
+      smartweLogoImagesInfo = "";
+    }
+    return smartweLogoImagesInfo;
+  }
+
   //精算 外带按钮
   static getSmartweCheckOutTakeoutData() async{
     var smartweTakeoutInfo;

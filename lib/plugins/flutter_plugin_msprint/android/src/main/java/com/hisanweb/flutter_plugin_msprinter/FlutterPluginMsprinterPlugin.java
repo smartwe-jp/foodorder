@@ -321,6 +321,36 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
 
         break;
+      case "sendPrintImgNew":
+        String printimgdata = call.argument("operdata");
+        String printcutMode = call.argument("cutMode");
+        String printtopshopInfo = call.argument("shopInfo");
+        String printisTop = call.argument("isTop");
+        String printtopImage = call.argument("topImage");
+
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40001","无法获得usb权限",null);
+          return;
+        }else{
+          if(printtopshopInfo.equals("kanran")){
+            print.execute_reserve_printImgNew(mUsbDriver,printimgdata,printcutMode,kanran,printisTop,printtopImage);
+          }else if(printtopshopInfo.equals("rijindoujin")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,rijindoujin,printisTop);
+          }else if(printtopshopInfo.equals("sanfeng")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,sanfeng,printisTop);
+          }else if(printtopshopInfo.equals("ichixianjia")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,ichixianjia,printisTop);
+          }else if(printtopshopInfo.equals("gongcha")){//sanfeng
+            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,gongcha,printisTop);
+          }
+
+
+
+          result.success("success");
+        }
+
+
+        break;
       case "getPrintStatus":
         int iDriverCheck = usbDriverCheck();
         if (iDriverCheck == -1) {

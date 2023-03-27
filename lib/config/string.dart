@@ -18,16 +18,16 @@ class GString{
         "tag_checkOut":"QRコードをスキャンしてください",
 
         "menu_dingtype_eatin":"店内",
-        "menu_dingtype_takeout":"お持ち帰り",
+        "menu_dingtype_takeout":"テイクアウト",
         "menu_dingtype_title":"いらっしゃいませ",
-        "menu_dingtype_title_tag":"店内またはお持ち帰りをお選びください",
+        "menu_dingtype_title_tag":"店内またはテイクアウトをお選びください",
         "menu_dingtype_eatin_tag":"店内でお召し上がりのお客様はこちら",
-        "menu_dingtype_takeout_tag":"お持ち帰りのお客様はこちら",
+        "menu_dingtype_takeout_tag":"テイクアウトのお客様はこちら",
 
 
         "cart_tag":"メニューをお選びください",
 
-        "add_option_cart":"確認",
+        "add_option_cart":"確  認",
         "settlement_total_price":"合計",
         "settlement_small_ticket_tag":"領収書が必要ですのでこちらをご注文ください",
         //"settlement_payment_method":"以下のお支払い方法をご利用いただけます。",
@@ -77,13 +77,13 @@ class GString{
         "show_storage_num_error":"この料理の在庫が不足しています",
 
         "show_del_cart_item_tag":"商品を削除しますか?",
-        "show_del_cart_item_yes":"削除します",
-        "show_del_cart_item_no":"削除しない",
+        "show_del_cart_item_yes":"はい",
+        "show_del_cart_item_no":"いいえ",
 
         "show_product_restrictions":"%%份限定",
         "show_check_tableno":"お席番号：",
 
-        "select_checkOut_tip_title":"店内またはお持ち帰りをお選びください",
+        "select_checkOut_tip_title":"店内またはテイクアウトをお選びください",
         "select_checkOut_tip_selected":"                店内      \r\n（お食事後のお会計）",
       };
     }else if(languageCode == 'CH'){
@@ -109,7 +109,7 @@ class GString{
 
         "cart_tag":"请选择菜品",
 
-        "add_option_cart":"确 认",
+        "add_option_cart":"确  认",
         "settlement_total_price":"合计",
         "settlement_small_ticket_tag":"确认领取小票",
         //"settlement_payment_method":"可以使用以下支付方法。",

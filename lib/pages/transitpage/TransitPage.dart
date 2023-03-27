@@ -80,7 +80,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());//LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -108,6 +108,7 @@ class _TransitPageState extends State<TransitPage> {
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
         Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+        Storage.setString('smartwe_logoImage', shopData["logoImage"]);
         //Storage.setString('smartwe_checkOut_takeout', json.encode(shopData["takeout"]));
         //Storage.setString('smartwe_checkOut_bill', json.encode(shopData["bill"]));
         //Storage.setString('smartwe_checkOut_lineUp', json.encode(shopData["lineUp"]));
@@ -115,6 +116,7 @@ class _TransitPageState extends State<TransitPage> {
         GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
         GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
         GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
+        GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
 
         var machineSettingBool = {
           'machineLineup':shopData["lineup"],

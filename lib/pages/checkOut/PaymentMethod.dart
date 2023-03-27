@@ -161,8 +161,8 @@ class _PaymentMethodPageState extends State<PaymentMethodPage> {
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),
                                     Text(
-                                      "お持ち帰り",
-                                      //GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
+                                      //"テイクアウト",
+                                      GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,

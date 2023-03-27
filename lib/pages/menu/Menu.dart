@@ -453,9 +453,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       "mainTitle": item['mainTitle'],
       "image": item['homeImage'],
       "currentPrice": item['currentPrice'],
+      "unitPrice": item['currentPrice'],
       "optionGroupVoList": "",
       "optionVoListMsg": "",
-      "goodsNum": 1
+      "goodsNum": 1,
+      "qtyBounds": item['qtyBounds']
     };
     publicAddCartMenu(cartItem, true).then((val) {
 
@@ -795,6 +797,27 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     var result;
     try {
       result = await controller.addToCart(cartItem, checkItem: checkItem);
+      controller.getCardList();
+
+
+    } catch (e) {
+      print(e);
+      result = 0;
+    }
+    return result;
+  }
+
+  //公共购物车加减
+  publicChangeCartMenuCount(cartItem, changeType) async {
+
+    var result;
+    try {
+      if(changeType == 'add'){
+        result = await controller.addToCart(cartItem, checkItem: true);
+      }else{
+        result = await controller.reduceToCart(cartItem);
+      }
+
       controller.getCardList();
 
 
@@ -1680,7 +1703,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 "currentPrice": currentPrice,
                                 "optionGroupVoList": optionCodeList,
                                 "optionVoListMsg": optionTitle,
-                                "goodsNum": 1
+                                "goodsNum": 1,
+                                "qtyBounds": itemsFirst['qtyBounds']
                               };
                               publicAddCartMenu(cartItem, false).then((val) {
                                 //_publicShowAddCart(temp,itemsFirst['homeImage']);
@@ -2051,7 +2075,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             "currentPrice": currentPrice,
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
-                            "goodsNum": 1
+                            "goodsNum": 1,
+                            "qtyBounds": item['qtyBounds']
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
@@ -2403,7 +2428,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                             "currentPrice": currentPrice,
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
-                            "goodsNum": 1
+                            "goodsNum": 1,
+                            "qtyBounds": item['qtyBounds']
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
@@ -3666,6 +3692,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     }
     showDialog(
         context: context,
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         builder: (BuildContext context) {
           return RepaintBoundary(
             child: UnconstrainedBox(
@@ -3675,8 +3702,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Dialog(
                   insetPadding: EdgeInsets.zero,
                   child: Container(
-                    width: ScreenAdapter.width(1070),
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
+                    width: ScreenAdapter.width(1060),
+                    //padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
                     child: StatefulBuilder(
                       builder: (BuildContext context, menuindex) {
                         return Column(
@@ -3684,10 +3711,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Container(
-                              padding: EdgeInsets.only(
-                                //top: ScreenAdapter.height(5),
-                                bottom: ScreenAdapter.height(10),
-                              ),
+                              padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -3734,7 +3758,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 ),
 
                                 //确认按钮
-                                InkWell(
+                                /*InkWell(
                                   enableFeedback: false,
                                   onTap: () {
 
@@ -3800,8 +3824,115 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                               Gcolor.optionBtnColor),
                                         )),
                                   ),
-                                ),
+                                ),*/
                               ],
+                            ),
+                            SizedBox(height: ScreenAdapter.height(20),),
+                            Container(
+                              //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
+                              height: ScreenAdapter.height(200),
+                              color: ColorsUtil.hexToColor("#DCDCDC"),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  InkWell(
+                                    onTap: (){
+                                      try {
+                                        Navigator.pop(context);
+                                      } catch (_) {}
+                                    },
+                                    child: Container(
+                                      alignment: Alignment.center,
+                                      width: ScreenAdapter.width(240),
+                                      height: ScreenAdapter.height(120),
+                                      margin: EdgeInsets.only(left: ScreenAdapter.width(100)),
+                                      decoration: BoxDecoration(
+
+                                        color: ColorsUtil.hexToColor("#FFFFFF"),
+                                        //设置圆角
+                                        borderRadius: new BorderRadius.circular((5.0)),
+                                      ),
+                                      child: Text(
+                                        GString.getToString(this._checkLanguage, "settlement_back"),
+                                        style: TextStyle(
+                                            color: ColorsUtil.hexToColor("#000000"),
+                                            fontWeight: FontWeight.w500,
+                                            fontSize: ScreenAdapter.fontSize(34.0)),
+                                      ),
+                                    ),
+                                  ),
+//确认按钮
+                                  InkWell(
+                                    enableFeedback: false,
+                                    onTap: () {
+
+                                      //判断选择后option是否与optiongroup相等
+                                      var currentPrice = item['currentPrice'];
+                                      var optionCodeList = "";
+                                      var optionTitle = "";
+                                      if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                                        if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                                          showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
+                                          Navigator.pop(context);
+                                          return;
+                                        }
+
+                                        for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
+                                          //if (optionItem['currentPrice'] != 0) {
+                                          currentPrice += optionItem['currentPrice'];
+                                          //}
+                                          optionCodeList += (optionCodeList != "")
+                                              ? "," + optionItem['optionCode']
+                                              : optionItem['optionCode'];
+                                          optionTitle += (optionTitle != "")
+                                              ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
+                                              : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                                        }
+                                      }
+
+                                      var cartItem = {
+                                        "menuCode": item['menuCode'],
+                                        "mainTitle": item['mainTitle'],
+                                        "image": item['homeImage'],
+                                        "currentPrice": currentPrice,
+                                        "optionGroupVoList": optionCodeList,
+                                        "optionVoListMsg": optionTitle,
+                                        "goodsNum": 1,
+                                        "qtyBounds": item['qtyBounds']
+                                      };
+                                      publicAddCartMenu(cartItem, false).then((val) {
+
+                                        _publicShowAddCartNew();
+                                        _changeInitialOption(item['menuCode'], menuindex);
+                                        //更改显示购物车价格
+                                        getCartPriceTotal();
+
+                                      });
+                                      //Navigator.pop(context);
+                                    },
+                                    child: Container(
+                                      margin:EdgeInsets.only(right: ScreenAdapter.width(100)),
+                                      alignment: Alignment.center,
+                                      width: ScreenAdapter.width(240),
+                                      height: ScreenAdapter.height(120),
+                                      decoration: BoxDecoration(
+                                        color: ColorsUtil.hexToColor("#078E42"),
+                                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                      ),
+                                      child: Text(
+                                          GString.getToString(
+                                              this._checkLanguage, "add_option_cart"),
+                                          style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(30),
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.optionBtnColor),
+                                          )),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         );
@@ -4079,7 +4210,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 width: ScreenAdapter.width(1080),
                 height: ScreenAdapter.height(340),
                 padding: EdgeInsets.only(
-                    left: ScreenAdapter.width(20),
+                    left: ScreenAdapter.width(5),
                     top: ScreenAdapter.height(20),
                     right: ScreenAdapter.width(20),
                     bottom: ScreenAdapter.height(10)),
@@ -4099,7 +4230,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                       child: SingleChildScrollView(
                                         physics: ClampingScrollPhysics(),
                                         child: Container(
-                                          width: ScreenAdapter.width(690),
+                                          width: ScreenAdapter.width(730),
                                           height: ScreenAdapter.height(300),
                                           color:
                                           ColorsUtil.hexToColor(Gcolor.cartListColor),
@@ -4215,8 +4346,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                                 },
                                 child: Container(
-                                  width: ScreenAdapter.width(319),
-                                  height: ScreenAdapter.height(117),
+                                  width: ScreenAdapter.width(300),
+                                  height: ScreenAdapter.height(115),
                                   alignment: Alignment.center,
                                   decoration: BoxDecoration(
 
@@ -4254,80 +4385,201 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     var tipColor = (_menuLackMap.containsKey(d.menuCode) == true) ? "#ff0000":Gcolor.mainTitleColor;
     return Padding(
       padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(2),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(2)),
-      child: InkWell(
-        highlightColor: Colors.transparent, // 透明色
-        splashColor: Colors.transparent, // 透明色
-        onTap: (){
-          showDialogTag(d.id);
-          /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
-          //print("Item removed from cart successfully");
-          //删除商品声音
-          deleteItemSound();
-          controller.getCardList();
-          //更改显示购物车价格
-          getCartPriceTotal();*/
-        },
-        child: Container(
-          decoration: BoxDecoration(
-              color: Colors.white12,
-              border: Border(
-                bottom: BorderSide(color: Colors.grey, width: 1.0),
-                top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-              )),
-          //height: ScreenAdapter.height(80),
-          child: Row(
-            children: <Widget>[
-              Container(
-                width: ScreenAdapter.width(40),
+      child: Container(
+        decoration: BoxDecoration(
+            color: Colors.white12,
+            border: Border(
+              bottom: BorderSide(color: Colors.grey, width: 1.0),
+              top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+            )),
+        //height: ScreenAdapter.height(80),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: <Widget>[
+            /*Container(
+                width: ScreenAdapter.width(30),
                 child: Image.asset(GImage.getImageString("imgpublic", "delOne"),
-                    width: ScreenAdapter.width(30),
+                    width: ScreenAdapter.width(20),
                     //height: ScreenAdapter.height(44),
                     fit: BoxFit.fill),
-              ),
-              Expanded(
+              ),*/
+            Expanded(
+                child: InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    showDialogTag(d.id);
+                    /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
+                  //print("Item removed from cart successfully");
+                  //删除商品声音
+                  deleteItemSound();
+                  controller.getCardList();
+                  //更改显示购物车价格
+                  getCartPriceTotal();*/
+                  },
                   child: Container(
                     padding: EdgeInsets.only(
                         left: ScreenAdapter.width(5),
                         top: ScreenAdapter.height(8),
                         bottom: ScreenAdapter.height(8)),
                     //width: ScreenAdapter.width(495),
-                    child: RichText(
-                      text: TextSpan(
-                          text: d.mainTitle,
-                          style: TextStyle(
-                              fontSize:
-                              ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(tipColor)
-                          ),
-                          children: [
-                            d.goodsNum>1?TextSpan(
-                              text: " X${d.goodsNum}",
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        RichText(
+                          text: TextSpan(
+                              text: d.mainTitle,
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.cartListTitleCount),
-                                color: ColorsUtil.hexToColor(tipColor),
+                                  fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(tipColor)
                               ),
-                            ):TextSpan(
-                              text: "",
-                            ),
+                              children: [
+                                d.goodsNum>1?TextSpan(
+                                  text: " X${d.goodsNum}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(
+                                        GFontSize.cartListTitleCount),
+                                    color: ColorsUtil.hexToColor(tipColor),
+                                  ),
+                                ):TextSpan(
+                                  text: "",
+                                ),
 
-                          ]),
+                              ]),
+                        ),
+                        (d.optionVoListMsg != "")? Text(
+                          "${d.optionVoListMsg}",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.cartListTitleTag),
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        )
+                            : Text(""),
+                      ],
                     ),
-                  )),
-              Container(
-                width: ScreenAdapter.width(120),
-                alignment: Alignment.centerRight,
-                child: Text(
-                  formatMoney(d.currentPrice.toString()),
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(tipColor)),
-                ),
+                  ),
+                )
+            ),
+            Container(
+              width: ScreenAdapter.width(105),
+              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              alignment: Alignment.centerRight,
+              child: Text(
+                formatMoney(d.currentPrice.toString()),
+                style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor(tipColor)),
               ),
-            ],
-          ),
+            ),
+            Container(
+              width: ScreenAdapter.width(200),
+              height: ScreenAdapter.height(60.0),
+              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              alignment: Alignment.centerRight,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(4),
+                  border: Border.all(width: 1.0,color: Colors.black)
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  //减号
+                  //CoustomIconButton(icon: Icons.remove,isAdd: false),
+                  InkWell(
+                    onTap: (){
+                      var cartItem = {
+                        "menuCode": d.menuCode,
+                        "unitPrice": d.unitPrice,
+                        "goodsNum": 1,
+                      };
+                      if(d.goodsNum <=1){
+                        showDialogTag(d.id);
+                      }else{
+                        publicChangeCartMenuCount(cartItem,"reduce").then((val) {
+
+                          //更改显示购物车价格
+                          getCartPriceTotal();
+                        });
+                      }
+
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(50.0),
+                      child:Icon(
+                        Icons.remove,
+                        size: 38,
+                        color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                      ),
+                    ),
+                  ),
+                  //输入框
+                  Container(
+                    width: ScreenAdapter.width(85.0),
+                    height: ScreenAdapter.height(45.0),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
+                        border: Border(
+                          left: BorderSide(width: 1,color: Colors.black12),
+                          right: BorderSide(width: 1,color: Colors.black12),
+                        )
+                    ),
+                    child: Text(
+                      "${d.goodsNum}",
+                      style: TextStyle(
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w500,
+                          color: ColorsUtil.hexToColor(tipColor)
+                      ),
+                    ),
+                  ),
+                  //加号
+                  //CoustomIconButton(icon: Icons.add,isAdd: true),
+                  InkWell(
+                    onTap: (){
+                      /*if(_totalCount >=_maxtotalCount){
+                          //showToast("msg");
+                          return;
+                        }
+                        setState(() {
+                          _totalCount++;
+                        });
+                        _postextraPerson();*/
+                      if(d.qtyBounds >0){
+                        if(d.goodsNum>=d.qtyBounds){
+                          var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+                          showToast("${showString}");
+                          return;
+                        }
+                      }
+
+                      var cartItem = {
+                        "menuCode": d.menuCode,
+                        "unitPrice": d.unitPrice,
+                        "goodsNum": 1,
+                      };
+                      publicChangeCartMenuCount(cartItem,"add").then((val) {
+
+                        //更改显示购物车价格
+                        getCartPriceTotal();
+                      });
+                    },
+                    child: Container(
+                      width: ScreenAdapter.width(50.0),
+                      child:Icon(
+                        Icons.add,
+                        size: 38,
+                        color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
@@ -4561,7 +4813,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 70.0),
+                              padding: const EdgeInsets.only(left: 120.0),
                               child: TextButton(
                                 child: Text(
                                   GString.getToString(this._checkLanguage, "show_del_cart_item_no"),
@@ -4583,7 +4835,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(right: 70.0),
+                              padding: const EdgeInsets.only(right: 120.0),
                               child: TextButton(
                                 child: Text(
                                   GString.getToString(this._checkLanguage, "show_del_cart_item_yes"),

@@ -10,7 +10,7 @@ class SQLService {
     try {
       // Get a location using getDatabasesPath
       var databasesPath = await getDatabasesPath();
-      String path = join(databasesPath, 'shopping.db');
+      String path = join(databasesPath, 'smartweshopping.db');
 
       // open the database
       db = await openDatabase(
@@ -37,6 +37,8 @@ class SQLService {
           "mainTitle TEXT,"
           "image Text,"
           "currentPrice INTEGER,"
+          "unitPrice INTEGER,"
+          "qtyBounds INTEGER,"
           "optionGroupVoList TEXT,"
           "optionVoListMsg TEXT,"
           "goodsNum INTEGER)";
@@ -76,14 +78,19 @@ class SQLService {
   Future addToCart(data) async {
     await this.db?.transaction((txn) async {
       var qry =
-          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,optionGroupVoList,optionVoListMsg,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]})';
+          'INSERT INTO cart_list(menuCode, mainTitle, image, currentPrice,unitPrice,qtyBounds,optionGroupVoList,optionVoListMsg,goodsNum) VALUES("${data["menuCode"]}", "${data["mainTitle"]}","${data["image"]}", ${data["currentPrice"]},${data["unitPrice"]},${data["qtyBounds"]},"${data["optionGroupVoList"]}","${data["optionVoListMsg"]}",${data["goodsNum"]})';
       int id1 = await txn.rawInsert(qry);
       return id1;
     });
   }
 
   Future updateToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["currentPrice"]} where menuCode = '${data["menuCode"]}'";
+    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
+    return await this.db?.rawUpdate(query);
+  }
+
+  Future reduceToCartNum(data) async {
+    var query = "UPDATE cart_list SET goodsNum=goodsNum-${data["goodsNum"]},currentPrice=currentPrice-${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
     return await this.db?.rawUpdate(query);
   }
 
