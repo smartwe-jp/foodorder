@@ -507,6 +507,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   }
 
   _publicAddCart(item){
+
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
@@ -520,7 +521,9 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     };
     publicAddCartMenu(cartItem, true).then((val) {
 
-      _publicShowAddCartNew();
+      if(val != false){
+        _publicShowAddCartNew();
+      }
 
       //更改显示购物车价格
       getCartPriceTotal();
@@ -910,8 +913,16 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   //公共加入购物车
   publicAddCartMenu(cartItem, checkItem) async {
+    if(cartItem['qtyBounds'] >0){
+      var checkresult = await controller.getCartItemNum(cartItem['menuCode']);
+      if(checkresult>=cartItem['qtyBounds']){
+        var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+        showToast("${showString}");
+        return false;
+      }
+    }
 
-    var result;
+    var result = false;
     try {
       result = await controller.addToCart(cartItem, checkItem: checkItem);
       controller.getCardList();
@@ -919,7 +930,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
     } catch (e) {
       print(e);
-      result = 0;
+      result = false;
     }
     return result;
   }
@@ -930,7 +941,19 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     var result;
     try {
       if(changeType == 'add'){
-        result = await controller.addToCart(cartItem, checkItem: true);
+        if(cartItem['qtyBounds'] >0){
+          var checkresult = await controller.getCartItemNum(cartItem['menuCode']);
+          if(checkresult>=cartItem['qtyBounds']){
+            var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
+            showToast("${showString}");
+            return;
+          }else{
+            result = await controller.addToCartNum(cartItem);
+          }
+        }else if(cartItem['qtyBounds'] <0){
+          result = await controller.addToCartNum(cartItem);
+        }
+
       }else{
         result = await controller.reduceToCart(cartItem);
       }
@@ -1827,11 +1850,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                   "optionGroupVoList": optionCodeList,
                                   "optionVoListMsg": optionTitle,
                                   "goodsNum": 1,
-                                  "qtyBounds": itemsFirst['qtyBounds']
+                                  "qtyBounds": itemsFirst['qtyBounds'],
+                                  "unitPrice":currentPrice
                                 };
                                 publicAddCartMenu(cartItem, false).then((val) {
                                   //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                  _publicShowAddCartNew();
+                                  if(val != false){
+                                    _publicShowAddCartNew();
+                                  }
 
                                   _changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
                                   //更改显示购物车价格
@@ -2205,11 +2231,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
                             "goodsNum": 1,
-                            "qtyBounds": item['qtyBounds']
+                            "qtyBounds": item['qtyBounds'],
+                            "unitPrice":currentPrice
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
-                            _publicShowAddCartNew();
+                            if(val != false){
+                              _publicShowAddCartNew();
+                            }
                             _changeInitialOption(item['menuCode'], menuindex);
                             //更改显示购物车价格
                             getCartPriceTotal();
@@ -2559,11 +2588,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             "optionGroupVoList": optionCodeList,
                             "optionVoListMsg": optionTitle,
                             "goodsNum": 1,
-                            "qtyBounds": item['qtyBounds']
+                            "qtyBounds": item['qtyBounds'],
+                            "unitPrice":currentPrice
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
 
-                            _publicShowAddCartNew();
+                            if(val != false){
+                              _publicShowAddCartNew();
+                            }
 
                             if (item['optionGroupVoList']?.length > 0) {
                               _changeInitialOption(item['menuCode'], menuFiveindex);
@@ -2804,12 +2836,15 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               "optionGroupVoList": "",
               "optionVoListMsg": "",
               "goodsNum": 1,
-              "qtyBounds": item['qtyBounds']
+              "qtyBounds": item['qtyBounds'],
+              "unitPrice":item['currentPrice'],
             };
             publicAddCartMenu(cartItem, true).then((val) {
 
               //_publicShowAddCart(temp,item['homeImage']);
-              _publicShowAddCartNew();
+              if(val != false){
+                _publicShowAddCartNew();
+              }
 
               //更改显示购物车价格
               getCartPriceTotal();
@@ -3802,10 +3837,15 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.cartListTitleCount,
-                                    Gcolor.mainTitleColor),),
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                    child: publicShowMenuTitle(
+                                        item['mainTitle'],
+                                        GFontSize.cartListTitleCount,
+                                        Gcolor.mainTitleColor),
+                                  ),
+                                ),
                                 //价格展示 item['currentPrice']
                                 Container(
                                   padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
@@ -3858,11 +3898,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       "optionGroupVoList": optionCodeList,
                                       "optionVoListMsg": optionTitle,
                                       "goodsNum": 1,
-                                      "qtyBounds": item['qtyBounds']
+                                      "qtyBounds": item['qtyBounds'],
+                                      "unitPrice":currentPrice
                                     };
                                     publicAddCartMenu(cartItem, false).then((val) {
 
-                                      _publicShowAddCartNew();
+                                      if(val != false){
+                                        _publicShowAddCartNew();
+                                      }
                                       _changeInitialOption(item['menuCode'], menuindex);
                                       //更改显示购物车价格
                                       getCartPriceTotal();
@@ -4231,9 +4274,9 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               SizedBox(height: ScreenAdapter.height(25)),
                               InkWell(
                                   onLongPress: (){
-                                    //if(int.parse(_shopCartTotalPrice) >0){
+                                    if(int.parse(_shopCartTotalPrice) >0){
                                     Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
-                                    //}
+                                    }
 
                                   },
                                   child:Container(
@@ -4384,7 +4427,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        RichText(
+                        Text(d.mainTitle,
+                          style: TextStyle(
+                              fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(tipColor)
+                          ),
+                        ),
+                        /*RichText(
                           text: TextSpan(
                               text: d.mainTitle,
                               style: TextStyle(
@@ -4405,7 +4455,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 ),
 
                               ]),
-                        ),
+                        ),*/
                         (d.optionVoListMsg != "")? Text(
                           "${d.optionVoListMsg}",
                           style: TextStyle(
@@ -4450,9 +4500,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                   InkWell(
                     onTap: (){
                       var cartItem = {
+                        "cartId": d.id,
                         "menuCode": d.menuCode,
                         "unitPrice": d.unitPrice,
                         "goodsNum": 1,
+                        "qtyBounds":d.qtyBounds
                       };
                       if(d.goodsNum <=1){
                         showDialogTag(d.id);
@@ -4506,18 +4558,20 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           _totalCount++;
                         });
                         _postextraPerson();*/
-                      if(d.qtyBounds >0){
+                      /*if(d.qtyBounds >0){
                         if(d.goodsNum>=d.qtyBounds){
                           var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
                           showToast("${showString}");
                           return;
                         }
-                      }
+                      }*/
 
                       var cartItem = {
+                        "cartId": d.id,
                         "menuCode": d.menuCode,
                         "unitPrice": d.unitPrice,
                         "goodsNum": 1,
+                        "qtyBounds":d.qtyBounds
                       };
                       publicChangeCartMenuCount(cartItem,"add").then((val) {
 

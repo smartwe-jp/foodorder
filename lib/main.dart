@@ -108,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer showCashTimer;
-  int seconds = 30;
+  int seconds = 60;
   var _isCashState = true;
 
   var _allowStatus;
@@ -300,7 +300,7 @@ class _MyHomePageState extends State<MyHomePage> {
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
         setState(() {
-          seconds = 30;
+          seconds = 60;
         });
         _countDownTimer();
 
@@ -372,7 +372,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_stopStatus == "StopSuccess") {
         //倒计时，一定时间不开启现金机则继续执行下一步
         setState(() {
-          seconds = 30;
+          seconds = 60;
         });
         _countDownTimer();
         closePaycube();
@@ -399,7 +399,7 @@ class _MyHomePageState extends State<MyHomePage> {
       if (_closeStatus == "EndSuccess" ) {
         setState(() {
           showCashTimer?.cancel();
-          seconds = 30;
+          seconds = 60;
         });
 
         //现金机打开一次后，判断是否第一次打开

@@ -81,12 +81,24 @@ class HomePageController extends GetxController {
     return result;
   }
 
+  Future addToCartNum(item) async {
+    isLoading = true;
+    update();
+    var result;
+    result = await itemServices.addToCartNum(item);
+
+
+    isLoading = false;
+    update();
+    return result;
+  }
+
   Future reduceToCart(item) async {
     isLoading = true;
     update();
     var result;
-    var checkResult = await itemServices.getCartItemNumber(item['menuCode']);
-    if(checkResult[0]["totalGoodsNum"]>1){
+    var checkResult = await itemServices.getCartItemNumberByID(item['cartId']);
+    if(checkResult[0]["goodsNum"]>1){
       result = await itemServices.reduceToCartNum(item);
     }
 
