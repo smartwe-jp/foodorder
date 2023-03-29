@@ -4121,7 +4121,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(60),
+                        width: ScreenAdapter.width(65),
                         height: ScreenAdapter.height(60),
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
@@ -4142,7 +4142,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           child: Text(
                               "${optionVolistSon['currentPrice'].toString()}",
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(18),
+                                fontSize: ScreenAdapter.fontSize(17),
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
@@ -4824,7 +4824,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Padding(
-                              padding: const EdgeInsets.only(left: 70.0),
+                              padding: const EdgeInsets.only(left: 120.0),
                               child: TextButton(
                                 child: Text(
                                   GString.getToString(this._checkLanguage, "show_del_cart_item_no"),
@@ -4846,7 +4846,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               ),
                             ),
                             Padding(
-                              padding: const EdgeInsets.only(right: 70.0),
+                              padding: const EdgeInsets.only(right: 120.0),
                               child: TextButton(
                                 child: Text(
                                   GString.getToString(this._checkLanguage, "show_del_cart_item_yes"),

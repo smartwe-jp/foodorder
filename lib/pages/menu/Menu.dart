@@ -3725,7 +3725,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     }
     showDialog(
         context: context,
-        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
+        //barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         builder: (BuildContext context) {
           return RepaintBoundary(
             child: UnconstrainedBox(
@@ -3863,9 +3863,80 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                         )),
                                   ),
                                 ),*/
+                                InkWell(
+                                  enableFeedback: false,
+                                  onTap: () {
+
+                                    //判断选择后option是否与optiongroup相等
+                                    var currentPrice = item['currentPrice'];
+                                    var optionCodeList = "";
+                                    var optionTitle = "";
+                                    if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                                      if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                                        showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
+                                        Navigator.pop(context);
+                                        return;
+                                      }
+
+                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
+                                        //if (optionItem['currentPrice'] != 0) {
+                                        currentPrice += optionItem['currentPrice'];
+                                        //}
+                                        optionCodeList += (optionCodeList != "")
+                                            ? "," + optionItem['optionCode']
+                                            : optionItem['optionCode'];
+                                        optionTitle += (optionTitle != "")
+                                            ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
+                                            : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                                      }
+                                    }
+
+                                    var cartItem = {
+                                      "menuCode": item['menuCode'],
+                                      "mainTitle": item['mainTitle'],
+                                      "image": item['homeImage'],
+                                      "currentPrice": currentPrice,
+                                      "optionGroupVoList": optionCodeList,
+                                      "optionVoListMsg": optionTitle,
+                                      "goodsNum": 1,
+                                      "qtyBounds": item['qtyBounds'],
+                                      "unitPrice":currentPrice
+                                    };
+                                    publicAddCartMenu(cartItem, false).then((val) {
+                                      print(val);
+                                      if(val != false){
+                                        _publicShowAddCartNew();
+                                      }
+                                      _changeInitialOption(item['menuCode'], menuindex);
+                                      //更改显示购物车价格
+                                      getCartPriceTotal();
+
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(15),),
+                                    width: ScreenAdapter.width(200),
+                                    height: ScreenAdapter.height(75),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: ColorsUtil.hexToColor("#078E42"),
+                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    ),
+                                    child: Text(
+                                        GString.getToString(
+                                            this._checkLanguage, "add_option_cart"),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(30),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.optionBtnColor),
+                                        )),
+                                  ),
+                                ),
                               ],
                             ),
-                            SizedBox(height: ScreenAdapter.height(20),),
+                            /*SizedBox(height: ScreenAdapter.height(20),),
                             Container(
                               //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                               height: ScreenAdapter.height(200),
@@ -3974,7 +4045,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                   ),
                                 ],
                               ),
-                            ),
+                            ),*/
                           ],
                         );
                       },
