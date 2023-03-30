@@ -312,7 +312,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         if(myList.length == 0 || null == myList || "" == myList){
           showToast("少々お待ちください");
           sleep(Duration(milliseconds: 2000));
-          //Navigator.pushNamed(context, '/home');
           Navigator.of(context).pop();
         }
 
@@ -393,7 +392,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       } else {
         showToast(response['msg']);
         sleep(Duration(milliseconds: 2000));
-        //Navigator.pushNamed(context, '/home');
         Navigator.of(context).pop();
       }
     });
@@ -406,7 +404,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   _checkQtyBoundsCount(item, optionCode) async {
 
     var result = await controller.getCartItemNum(item['menuCode']);
-    //print("限定+=====${result}");
+
     if(result>=item['qtyBounds']){
       var showString = GString.getToString(this._checkLanguage,"show_storage_num_error");
       showToast("${showString}");
@@ -420,31 +418,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       }
     }
 
-
-    /*var checkResult;
-    var formData = {
-      "machineCode": _machineCode,
-      "menuCode": item['menuCode'],
-      "optionCode": ""
-    };print(formData);
-    request('webStockBooking', method: 'POST', parameters: formData)
-        .then((val) {
-      var response = json.decode(val.toString());print(response);
-      if (response['code'] == 200 && response["data"] == true) {
-        //如果option 存在，则弹出option
-        if(item['optionGroupVoList']?.length > 0){
-          _publicShowOneItemWidget(item);
-        }else{
-          _publicAddCart(item);
-        }
-      } else {
-        var showString = GString.getToString(
-            this._checkLanguage,
-            "show_storage_num_error");
-        showToast("${showString}");
-        checkResult = false;
-      }
-    });*/
   }
 
   _publicAddCart(item) async {
@@ -581,8 +554,10 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             enableFeedback: false,
             onTap: () {
               controller.removeAllFromCart();
-              //Navigator.pushNamed(context, '/home');
-              Navigator.of(context).pop();
+              Future.delayed(Duration(milliseconds: 200),() async {
+                Navigator.of(context).pop();
+              });
+
             },
             child: Container(
               padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
@@ -4522,13 +4497,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   splashColor: Colors.transparent, // 透明色
                   onTap: (){
                     showDialogTag(d.id);
-                    /*Get.find<HomePageController>().removeFromCart(d.id ?? 0);
-                  //print("Item removed from cart successfully");
-                  //删除商品声音
-                  deleteItemSound();
-                  controller.getCardList();
-                  //更改显示购物车价格
-                  getCartPriceTotal();*/
                   },
                   child: Container(
                     padding: EdgeInsets.only(
@@ -4598,7 +4566,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             Container(
               width: ScreenAdapter.width(200),
               height: ScreenAdapter.height(60.0),
-              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              margin: EdgeInsets.only(right: ScreenAdapter.width(5)),
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
@@ -4630,11 +4598,23 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
                     },
                     child: Container(
-                      width: ScreenAdapter.width(50.0),
-                      child:Icon(
-                        Icons.remove,
-                        size: 38,
-                        color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+
+                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
+                      height: ScreenAdapter.height(50.0),
+                      alignment: Alignment.center,//上下左右都居中
+                      decoration: BoxDecoration(
+                          //color: Colors.white,
+                          border: Border(//外层已经有边框了所以这里只设置右边的边框
+                              right:BorderSide(width: 1.0,color: Colors.black12)
+                          )
+                      ),
+                      child: Text(
+                        "－",
+                        style: TextStyle(
+                            fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                            fontWeight: FontWeight.w600,
+                            color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -4692,11 +4672,17 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       });
                     },
                     child: Container(
-                      width: ScreenAdapter.width(50.0),
-                      child:Icon(
-                        Icons.add,
-                        size: 38,
-                        color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
+                      height: ScreenAdapter.height(50.0),
+                      alignment: Alignment.center,//上下左右都居中
+
+                      child: Text(
+                        "＋",
+                        style: TextStyle(
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w600,
+                          color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -4797,9 +4783,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             _menuLackMap = response['data']["menuLackMap"];
           });
           showToast(response['data']["message"]);
-          //sleep(Duration(milliseconds: 2000));
-          //Navigator.pushNamed(context, '/home');
-          //Navigator.of(context).pop();
         }
       });
     }
@@ -4838,7 +4821,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 if(_payment_method_num == "3" || _payment_method_num == "4"){
                   _getPosSettingInfo();
                 }else{
-                  //_doSubmitOrder();
                   gotoSettlement();
                 }
 
@@ -4992,11 +4974,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         });
   }
 
-  void _clearCartList(value) async {
-    Get.find<HomePageController>().removeAllFromCart();
-
-    controller.getCardList();
-  }
 
   @override
   Widget build(BuildContext context) {

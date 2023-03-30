@@ -4434,28 +4434,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               color: ColorsUtil.hexToColor(tipColor)
                           ),
                         ),
-                        /*RichText(
-                          text: TextSpan(
-                              text: d.mainTitle,
-                              style: TextStyle(
-                                  fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(tipColor)
-                              ),
-                              children: [
-                                d.goodsNum>1?TextSpan(
-                                  text: " X${d.goodsNum}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(
-                                        GFontSize.cartListTitleCount),
-                                    color: ColorsUtil.hexToColor(tipColor),
-                                  ),
-                                ):TextSpan(
-                                  text: "",
-                                ),
-
-                              ]),
-                        ),*/
                         (d.optionVoListMsg != "")? Text(
                           "${d.optionVoListMsg}",
                           style: TextStyle(
@@ -4486,7 +4464,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             Container(
               width: ScreenAdapter.width(200),
               height: ScreenAdapter.height(60.0),
-              padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+              margin: EdgeInsets.only(right: ScreenAdapter.width(5)),
               alignment: Alignment.centerRight,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(4),
@@ -4518,11 +4496,23 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
                     },
                     child: Container(
-                      width: ScreenAdapter.width(50.0),
-                      child:Icon(
-                        Icons.remove,
-                        size: 38,
-                        color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+
+                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
+                      height: ScreenAdapter.height(50.0),
+                      alignment: Alignment.center,//上下左右都居中
+                      decoration: BoxDecoration(
+                        //color: Colors.white,
+                          border: Border(//外层已经有边框了所以这里只设置右边的边框
+                              right:BorderSide(width: 1.0,color: Colors.black12)
+                          )
+                      ),
+                      child: Text(
+                        "－",
+                        style: TextStyle(
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w600,
+                          color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                        ),
                       ),
                     ),
                   ),
@@ -4580,11 +4570,17 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       });
                     },
                     child: Container(
-                      width: ScreenAdapter.width(50.0),
-                      child:Icon(
-                        Icons.add,
-                        size: 38,
-                        color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                      width: ScreenAdapter.width(55.0),//是正方形的所以宽和高都是45
+                      height: ScreenAdapter.height(50.0),
+                      alignment: Alignment.center,//上下左右都居中
+
+                      child: Text(
+                        "＋",
+                        style: TextStyle(
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w600,
+                          color: (d.goodsNum==d.qtyBounds)?Colors.black12:Colors.black,
+                        ),
                       ),
                     ),
                   ),
