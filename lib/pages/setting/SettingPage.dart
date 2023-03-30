@@ -3,6 +3,7 @@ import 'dart:ffi';
 import 'dart:io';
 import 'dart:math';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -696,33 +697,34 @@ class _SettingPageState extends State<SettingPage> {
             ),
             Container(
               //width: ScreenAdapter.width(140),
-              height: ScreenAdapter.height(25),
+              height: ScreenAdapter.height(50),
               margin: EdgeInsets.only(
                   left: ScreenAdapter.width(5),
                   top: ScreenAdapter.height(16),
                   right: ScreenAdapter.width(5)),
               alignment: Alignment.center,
-              child: RichText(
-                text: TextSpan(
-                    text: _detail['total'].toString(),
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(22),
-                      fontWeight: FontWeight.w500,
-                      color: ColorsUtil.hexToColor("#000000"),
+               child: Center(
+                  //加上Center让文字居中
+                  child: ConstrainedBox(
+                    constraints: BoxConstraints(
+                      minWidth: ScreenAdapter.width(20),
+                      maxWidth: ScreenAdapter.width(165),
+                      minHeight: ScreenAdapter.height(20),
+                      maxHeight: ScreenAdapter.height(35),
                     ),
-                    children: [
-                      TextSpan(
-                        text: "円",
-                        style: TextStyle(
-                          fontSize:
-                          ScreenAdapter.fontSize(18),
-                          fontWeight: FontWeight.w500,
-                          color: ColorsUtil.hexToColor(
-                              "#000000"),
-                        ),
+                    child: AutoSizeText(
+                      "${_detail['total'].toString()}",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(22),
+                        fontWeight: FontWeight.w400,
+                        color: ColorsUtil.hexToColor("#000000"),
                       ),
-                    ]),
-              ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                )
             ),
           ],
         ),
@@ -736,7 +738,7 @@ class _SettingPageState extends State<SettingPage> {
                 bottom: ScreenAdapter.height(15)),
             child: Column(
               children: [
-                Text("一週間売上報告",
+                Text("一週間売上報告(円)",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(22),
                       fontWeight: FontWeight.w600,
@@ -744,7 +746,7 @@ class _SettingPageState extends State<SettingPage> {
                     )),
                 Container(
                   //width: ScreenAdapter.width(570),
-                  height: ScreenAdapter.height(110),
+                  height: ScreenAdapter.height(130),
                   margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
                   //padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                   decoration: BoxDecoration(
@@ -1020,10 +1022,10 @@ class _SettingPageState extends State<SettingPage> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  /*getLastOrderTotalShow(),
+                  getLastOrderTotalShow(),
                   SizedBox(
                     height: ScreenAdapter.height(20),
-                  ),*/
+                  ),
                   getCashListShow(),
                   SizedBox(
                     height: ScreenAdapter.height(20),
