@@ -4613,7 +4613,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         style: TextStyle(
                             fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                             fontWeight: FontWeight.w600,
-                            color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                            color: Colors.black,
                         ),
                       ),
                     ),

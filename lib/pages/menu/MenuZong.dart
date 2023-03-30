@@ -4511,7 +4511,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         style: TextStyle(
                           fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                           fontWeight: FontWeight.w600,
-                          color: d.goodsNum ==1 ? Colors.black12 : Colors.black,
+                          color: Colors.black,
                         ),
                       ),
                     ),
