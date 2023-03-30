@@ -180,7 +180,6 @@ class _MyHomePageState extends State<MyHomePage> {
         setState(() {
           _isCashState = false;
         });
-        //_getSmartweSystemSettingInfo();
         getIsFirstOpen();
 
         showCashTimer?.cancel(); //清除定时器
@@ -294,7 +293,8 @@ class _MyHomePageState extends State<MyHomePage> {
       connectCount++;
       if(connectCount > 50){
         //退出关闭
-        exit(0);
+        //exit(0);
+        getIsFirstOpen();
       }
       //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消
@@ -417,7 +417,6 @@ class _MyHomePageState extends State<MyHomePage> {
   prohibitOneCash() async {
     var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
 
-    //_getSmartweSystemSettingInfo();
     var cashShowData = {
       "isCash": _isCashState,
     };
@@ -439,39 +438,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     _goMain();
   }
-
-  /*_getSmartweSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-    //print(SystemSettingInfo.isEmpty);
-
-    //if (SystemSettingInfo.isEmpty) {
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();//showToast("main====:::::${DiningTypeInfo}");
-      var systemSettingData = {
-        "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
-        "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
-        "printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
-        "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
-        "machineMode":(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null) ? SystemSettingInfo["machineMode"] :"1",//1 普通点餐券卖机  2 精算机（结账机）
-        "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
-        "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
-        "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
-        "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
-
-      };
-      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-    //}
-
-    var cashShowData = {
-      "isCash": _isCashState,
-    };
-    Storage.setString('isCashState', json.encode(cashShowData));
-    GetxStorage.setData('isCashState', json.encode(cashShowData));
-    //判断是否第一次打开
-    sleep(Duration(milliseconds: 500));
-    getIsFirstOpen();
-
-  }*/
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
