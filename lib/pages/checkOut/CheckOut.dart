@@ -885,10 +885,10 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   _showLanguagesButton() {
     var languagesButton = [
-      {"name":"日本語","value":"JP"},
-      {"name":"中文","value":"CH"},
-      {"name":"English","value":"EN"},
-      {"name":"한국말","value":"KO"},
+      {"name":"お会計","value":"JP"},
+      {"name":"结账","value":"CH"},
+      {"name":"Bill","value":"EN"},
+      {"name":"계산하다","value":"KO"},
     ];
     if(languagesButton.length >0){
       List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
