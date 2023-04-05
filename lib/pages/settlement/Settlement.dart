@@ -769,7 +769,11 @@ class _SettlementPageState extends State<SettlementPage> {
           gotonewMyhome();
         }
       } else {
-        var formData = {"orderId": this._orderId, "payAmount": _getPutMoney};
+        var formData = {
+          "orderId": this._orderId,
+          "payAmount": _getPutMoney,
+          "machineCode":_machineCode
+        };
         var queryUrl;
         /*if(_print_paper_size == "1"){
           queryUrl = "webBootToPrintV2";
@@ -777,7 +781,8 @@ class _SettlementPageState extends State<SettlementPage> {
           queryUrl = "webBootToPrintV3";
         }*/
 
-        queryUrl = "webBootToPrintV4";
+        //queryUrl = "webBootToPrintV4";
+        queryUrl = "webBootToPrintV5";
 
         request(queryUrl, method: 'POST', parameters: formData)
             .then((val) async {
