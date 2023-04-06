@@ -2580,7 +2580,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
-                                if (_showCreditCard == true && _showauPay == true)
+                                if (_showCreditCard == true && _isAllowPos =="1" && _showauPay == true)
                                   Container(
                                     height: ScreenAdapter.height(130),
                                     padding: EdgeInsets.only(
@@ -2597,7 +2597,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
-                                if (_showCreditCard == true && _showdPay == true)
+                                if (_showCreditCard == true && _isAllowPos =="1" && _showdPay == true)
                                   Container(
                                     height: ScreenAdapter.height(130),
                                     padding: EdgeInsets.only(
@@ -2614,7 +2614,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
-                                if (_showCreditCard == true && _showrPay == true)
+                                if (_showCreditCard == true && _isAllowPos =="1" && _showrPay == true)
                                   Container(
                                     height: ScreenAdapter.height(130),
                                     padding: EdgeInsets.only(
@@ -2631,7 +2631,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                       fit: BoxFit.fitWidth,
                                     ),
                                   ),
-                                if (_showCreditCard == true && _showmPay == true)
+                                if (_showCreditCard == true && _isAllowPos =="1" && _showmPay == true)
                                   Container(
                                     height: ScreenAdapter.height(130),
                                     padding: EdgeInsets.only(

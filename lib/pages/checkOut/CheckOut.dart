@@ -76,11 +76,11 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _payment_method_num = "0"; //支付类型选择
 
   //顶部展示支付类型
-  var _showWechat = true;
-  var _showAlipay = true;
-  var _showPayPay = true;
-  var _showCreditCard = true;
-  var _showCash = true;
+  var _showWechat = false;
+  var _showAlipay = false;
+  var _showPayPay = false;
+  var _showCreditCard = false;
+  var _showCash = false;
 
   var _showauPay = false;
   var _showdPay = false;
@@ -507,7 +507,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   _doNextPay(){
-    var _orderkey = _tableCode;
+    var _orderkey = _tableCode;//print(_orderkey);
     if(_tableCode !=""){
       //_showOrderEasyLoading();
     if(_tableCode.contains('?p=') == true){
@@ -522,7 +522,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-
+        //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           if(response["data"]["totalPrice"] >0){
             setState(() {
@@ -531,6 +531,13 @@ class _CheckOutPageState extends State<CheckOutPage> {
               _tableNum = response["data"]["tableNum"].toString();
             });
             _showSelectMealTypeAndPaymentMethodDialog();
+          }else{
+            setState(() {
+              _scanQrCodeController.text = "";
+              _tableCode = "";
+            });
+
+            //_showDialogError(response['msg']);
           }
 
           /*Navigator.pushNamed(context, '/settlement',
@@ -633,7 +640,15 @@ class _CheckOutPageState extends State<CheckOutPage> {
           "isAllowPos":_isAllowPos,
           "posIp":_pos_ip,
           "posPort":_pos_port,
-          "paymentMethod":_payment_method_num
+          "paymentMethod":_payment_method_num,
+          "showWechat":this._showWechat,
+          "showAlipay":this._showAlipay,
+          "showPayPay":this._showPayPay,
+          "showCreditCard":_showCreditCard,
+          "showauPay":this._showauPay,
+          "showdPay":this._showdPay,
+          "showrPay":this._showrPay,
+          "showmPay":this._showmPay,
         });
   }
 
