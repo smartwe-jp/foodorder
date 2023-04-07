@@ -80,7 +80,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//LogUtil.d(response);
+      var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -150,9 +150,8 @@ class _TransitPageState extends State<TransitPage> {
         checkmachineMode = "1";
       }
     }
-    var DiningTypeInfo = await HomeServices.getDiningTypeInfo();//showToast("main====:::::${DiningTypeInfo}");
     var systemSettingData = {
-      "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :((DiningTypeInfo !="" && DiningTypeInfo!=null) ? DiningTypeInfo : "1"), //1堂食 2外带
+      "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1", //1堂食 2外带
       "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
       "printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
       "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
@@ -162,6 +161,7 @@ class _TransitPageState extends State<TransitPage> {
       "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
       "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
       "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
+      "isAllowWlanPrintTwo":(SystemSettingInfo["isAllowWlanPrintTwo"] !="" && SystemSettingInfo["isAllowWlanPrintTwo"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwo"] :"0",//0 不开打印机 1开打印机
 
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm

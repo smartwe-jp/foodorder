@@ -18,7 +18,6 @@ class SelectPaymentPage extends StatefulWidget {
   SelectPaymentPage(
       {Key key,
       this.checkLanguage,
-        this.shopInfo,
         //this.mealType,
         this.isAllowPos,
         this.payment_method_num,
@@ -37,7 +36,6 @@ class SelectPaymentPage extends StatefulWidget {
         this.onCancelClick
       }) : super(key: key);
   final String checkLanguage;
-  final String shopInfo;
   //final bool mealType;
   final String isAllowPos;
   final String payment_method_num;
@@ -61,7 +59,6 @@ class SelectPaymentPage extends StatefulWidget {
 
 class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _checkLanguage = "JP";
-  String _shopInfo = "kanran";
   bool _mealType = false;
   String _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用;
   String _payment_method_num = "0"; //支付类型选择 1现金 2扫码 3pos 4nfc
@@ -83,7 +80,6 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     // TODO: implement initState
     super.initState();
     _checkLanguage = widget.checkLanguage;
-    _shopInfo = widget.shopInfo;
     //_mealType = widget.mealType;
     _isAllowPos = widget.isAllowPos;
     _payment_method_num = widget.payment_method_num;

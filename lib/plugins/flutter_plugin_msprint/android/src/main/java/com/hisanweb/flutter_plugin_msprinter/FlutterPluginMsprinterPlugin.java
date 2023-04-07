@@ -295,24 +295,14 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
       case "sendPrintImg":
         String imgdata = call.argument("operdata");
         String cutMode = call.argument("cutMode");
-        String topshopInfo = call.argument("shopInfo");
         String isTop = call.argument("isTop");
 
         if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
           result.error("40001","无法获得usb权限",null);
           return;
         }else{
-          if(topshopInfo.equals("kanran")){
-            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,kanran,isTop);
-          }else if(topshopInfo.equals("rijindoujin")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,rijindoujin,isTop);
-          }else if(topshopInfo.equals("sanfeng")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,sanfeng,isTop);
-          }else if(topshopInfo.equals("ichixianjia")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,ichixianjia,isTop);
-          }else if(topshopInfo.equals("gongcha")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,gongcha,isTop);
-          }
+          print.execute_reserve_printImg(mUsbDriver,imgdata,cutMode,isTop);
+
 
 
 
@@ -324,7 +314,6 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
       case "sendPrintImgNew":
         String printimgdata = call.argument("operdata");
         String printcutMode = call.argument("cutMode");
-        String printtopshopInfo = call.argument("shopInfo");
         String printisTop = call.argument("isTop");
         String printtopImage = call.argument("topImage");
 
@@ -332,19 +321,7 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
           result.error("40001","无法获得usb权限",null);
           return;
         }else{
-          if(printtopshopInfo.equals("kanran")){
-            print.execute_reserve_printImgNew(mUsbDriver,printimgdata,printcutMode,kanran,printisTop,printtopImage);
-          }else if(printtopshopInfo.equals("rijindoujin")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,rijindoujin,printisTop);
-          }else if(printtopshopInfo.equals("sanfeng")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,sanfeng,printisTop);
-          }else if(printtopshopInfo.equals("ichixianjia")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,ichixianjia,printisTop);
-          }else if(printtopshopInfo.equals("gongcha")){//sanfeng
-            print.execute_reserve_printImg(mUsbDriver,printimgdata,printcutMode,gongcha,printisTop);
-          }
-
-
+          print.execute_reserve_printImgNew(mUsbDriver,printimgdata,printcutMode,printisTop,printtopImage);
 
           result.success("success");
         }
@@ -396,16 +373,6 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
         mUsbDriver.write(PrintCmd.PrintSelfcheck());
 
         result.success("success "+strdataeighty);
-        break;
-      case "setPrintPaperSizePrintTest":
-        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
-          result.error("40002","无法获得usb权限",null);
-          return;
-        }
-
-        mUsbDriver.write(PrintCmd.PrintSelfcheck());
-
-        result.success("success ");
         break;
       case "getPlatformVersion":
         result.success("Android " + Build.VERSION.RELEASE);

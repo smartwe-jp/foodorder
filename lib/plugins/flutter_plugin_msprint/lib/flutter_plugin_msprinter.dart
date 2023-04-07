@@ -39,18 +39,14 @@ class FlutterPluginMsprinter {
     return printStatus;
   }
 
-  static Future<String> setPrintPaperSizePrintTest() async {
-    final String printStatus = await _channel.invokeMethod('setPrintPaperSizePrintTest');
-    return printStatus;
-  }
   static Future<String> sendPrintImg(printdata,cutMode,shopInfo,isTop) async {
     Map<String, String> map = {'operdata': printdata,"cutMode":cutMode,'shopInfo':shopInfo,'isTop':isTop};
     final String printStatus = await _channel.invokeMethod('sendPrintImg',map);
     return printStatus;
   }
 
-  static Future<String> sendPrintImgNew(printdata,cutMode,shopInfo,isTop,topImage) async {
-    Map<String, String> map = {'operdata': printdata,"cutMode":cutMode,'shopInfo':shopInfo,'isTop':isTop,'topImage':topImage};
+  static Future<String> sendPrintImgNew(printdata,cutMode,isTop,topImage) async {
+    Map<String, String> map = {'operdata': printdata,"cutMode":cutMode,'isTop':isTop,'topImage':topImage};
     final String printStatus = await _channel.invokeMethod('sendPrintImgNew',map);
     return printStatus;
   }

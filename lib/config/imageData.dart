@@ -2,7 +2,7 @@ class GImage{
   static String getImageString(String shopInfo, String stringTag) {
     // 图片data包
     var imagePack;
-    if (shopInfo == 'kanran') {
+    /*if (shopInfo == 'kanran') {
       imagePack = {
         "home":"assets/images/kanran/home.png",
         "logo":"assets/images/kanran/logo.png",
@@ -30,7 +30,8 @@ class GImage{
         "logo":"assets/images/gongcha/logo.png",
 
       };
-    }else if (shopInfo == 'imgpublic') {
+    }else */
+    if (shopInfo == 'imgpublic') {
       imagePack = {
         "backbutton_top":"assets/images/public/backbutton_top.png",
         "checked_green":"assets/images/public/checked_green.png",

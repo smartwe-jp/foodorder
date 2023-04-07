@@ -34,7 +34,6 @@ class AppointmentPage extends StatefulWidget {
 class _AppointmentPageState extends State<AppointmentPage> {
 
   String _machineCode = "";
-  var _shopInfo = "kanran";
 
   //预约页面默认值
   var _tableTypeList = [
@@ -52,8 +51,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
   void initState() {
     super.initState();
     EasyLoading.dismiss();
-    //先获取店铺信息已获取路径用
-    _getShopInfo();
+    _getPrintLogoImageData();
 
   }
 
@@ -143,7 +141,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
                             child: Text(
-                              "取消",
+                                "${GString.getToString(this._checkLanguage,"tag_button_no")}",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
@@ -167,7 +165,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
                             child: Text(
-                              "確定",
+                              "${GString.getToString(this._checkLanguage,"tag_button_yes")}",
                               style: TextStyle(
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
@@ -187,21 +185,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
 
 
-  //获取机器信息
-  _getShopInfo() async {
-    var shopInfo = await HomeServices.getShopInfo();
-    if (shopInfo != "") {
-      setState(() {
-        _shopInfo = shopInfo;
-      });
-    }else{
-      Storage.setString('shopInfo', "kanran");
-      GetxStorage.setData('shopInfo', "kanran");
-    }
-
-    _getPrintLogoImageData();
-
-  }
   _getPrintLogoImageData() async {
     String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
     if(logoImageInfo != "" && logoImageInfo != null){
@@ -226,30 +209,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
     }
   }
 
-
-  _showOrderEasyLoading(){
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-
-  }
 
   //选择桌类型
   publicShowTableTypeList(){
@@ -444,7 +403,6 @@ class _AppointmentPageState extends State<AppointmentPage> {
   doPrintReserve(reserveInfo) async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if(printStatus == "0" || printStatus == "8"){
-      //await FlutterPluginMsprinter.sendPrintReserve(reserveInfo,_shopInfo);
       _tpPrintReserve(reserveInfo);
     }else{
       EasyLoading.dismiss();
@@ -599,12 +557,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100),() async {
       String base64Image = base64Encode(imageBytes);
-      //LogUtil.d(base64Image);
-      //await FlutterPluginMsprinter.sendPrintImg(base64Image,"0",_shopInfo,"1");
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", _shopInfo, "1",_printLogoImage);
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "1",_printLogoImage);
     });
   }
 

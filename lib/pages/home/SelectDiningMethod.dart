@@ -17,14 +17,12 @@ class SelectDiningMethodPage extends StatefulWidget {
       {Key key,
       this.checkLanguage,
       this.dining_type,
-      this.shopInfo,
       this.menu_direction,
         //this.mealType,
       this.onConfrimClick
       }) : super(key: key);
   final String checkLanguage;
   final String dining_type;
-  final String shopInfo;
   final String menu_direction;
   //final bool mealType;
   final Function(bool, String, String) onConfrimClick;
@@ -37,7 +35,6 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
   String _checkLanguage = "JP";
   String _dining_type = "1"; //1 堂食  2 外袋  3两种都可以支付
   String _dining_type_num = "0"; //就餐类型选择
-  String _shopInfo = "kanran";
   bool _mealType = false;
   String _menu_direction = "1";
 
@@ -48,7 +45,6 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
     super.initState();
     _checkLanguage = widget.checkLanguage;
     _dining_type = widget.dining_type;
-    _shopInfo = widget.shopInfo;
     _menu_direction = widget.menu_direction;
     //_mealType = widget.mealType;
 

@@ -72,9 +72,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   //默认语言包选择
   var _checkLanguage = "JP";
 
-  var _shopInfo = "kanran";
-
-
   //购物车抛物线
 
   String _machineCode = "";
@@ -132,15 +129,12 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     fToast.init(context);
 
     this._checkLanguage = widget.arguments['checkLanguage'];
-    this._shopInfo = widget.arguments['shopInfo'];
     _mealType = widget.arguments["mealType"];
     _getMachineInfo();
 
 
     getCartPriceTotal();
 
-
-    //_getDiningTypeInfo();
     EasyLoading.dismiss();
 
     //监听是否展示现金的广播
@@ -4361,7 +4355,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               InkWell(
                                   onLongPress: (){
                                     if(int.parse(_shopCartTotalPrice) >0){
-                                      Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                                      Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
                                     }
 
                                   },
@@ -4797,7 +4791,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
           return SelectPaymentPage(
               checkLanguage: _checkLanguage,
-              shopInfo:_shopInfo,
               //mealType:_mealType,
               isAllowPos:_isAllowPos,
               payment_method_num:_payment_method_num,
@@ -4838,7 +4831,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     Navigator.pushNamed(context, '/settlement',
         arguments: {
           "checkLanguage": this._checkLanguage,
-          "shopInfo":_shopInfo,
           "machineCode": this._machineCode,
           "orderId" : _doSubmitOrderId,
           "totalPrice" : _shopCartTotalPrice,

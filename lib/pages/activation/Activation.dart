@@ -26,13 +26,7 @@ class _ActivationPageState extends State<ActivationPage> {
   FocusNode _activationCodeFocusNode = FocusNode();
 
   var _activation_code; //激活码
-  var _checkedShop = null;
 
-  var _showWechat = true;
-  var _showAlipay = true;
-  var _showPayPay = true;
-
-  var _isCashState = true;
 
   @override
   void initState() {
@@ -60,16 +54,12 @@ class _ActivationPageState extends State<ActivationPage> {
   sendActivationCode() async {
     if (this._activation_code == null || this._activation_code.length != 18) {
       showToast('请输入正确激活码');
-    }else if(this._checkedShop == null){
-      showToast('请选择该机器所在商家');
-    } else {
+    }else {
       //保存机器信息
       Storage.setString('machineInfo', _activation_code);
-      Storage.setString('shopInfo', _checkedShop);
       Storage.setBool('homeOpen', true);
 
       GetxStorage.setData('machineInfo', _activation_code);
-      GetxStorage.setData('shopInfo', _checkedShop);
       GetxStorage.setData('homeOpen', true);
 
       _goMain();
@@ -85,215 +75,6 @@ class _ActivationPageState extends State<ActivationPage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            Container(
-              width: ScreenAdapter.width(550.0),
-              padding:
-                  EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    "请选择所在店铺",
-                    style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(32.0),
-                        color: ColorsUtil.hexToColor("#0000"),
-                        fontWeight: FontWeight.w600),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        _checkedShop = "kanran";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 3),
-                      height: ScreenAdapter.height(95),
-                      decoration: (_checkedShop == "kanran")
-                          ? BoxDecoration(
-                          //color: Colors.transparent, // 背景色
-                          border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
-                          borderRadius: BorderRadius.circular((5)), // 圆角
-                      )
-                          : BoxDecoration(
-                          color: Colors.transparent
-
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            GImage.getImageString("kanran", "logo"),
-                            width: ScreenAdapter.width(80),
-                            fit: BoxFit.fitWidth,
-                          ),
-                          Text(
-                            "甘蘭",
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30.0),
-                                color: ColorsUtil.hexToColor("#000000"),
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        _checkedShop = "rijindoujin";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 3),
-                      height: ScreenAdapter.height(95),
-                      decoration: (_checkedShop == "rijindoujin")
-                          ? BoxDecoration(
-                        //color: Colors.transparent, // 背景色
-                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
-                        borderRadius: BorderRadius.circular((5)), // 圆角
-                      )
-                          : BoxDecoration(
-                          color: Colors.transparent
-
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            GImage.getImageString("rijindoujin", "logo"),
-                            width: ScreenAdapter.width(80),
-                            fit: BoxFit.fitWidth,
-                          ),
-                          Text(
-                            "日進斗金フライドチキン",
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30.0),
-                                color: ColorsUtil.hexToColor("#000000"),
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        _checkedShop = "ichixianjia";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 3),
-                      height: ScreenAdapter.height(95),
-                      decoration: (_checkedShop == "ichixianjia")
-                          ? BoxDecoration(
-                        //color: Colors.transparent, // 背景色
-                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
-                        borderRadius: BorderRadius.circular((5)), // 圆角
-                      )
-                          : BoxDecoration(
-                          color: Colors.transparent
-
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            GImage.getImageString("ichixianjia", "logo"),
-                            width: ScreenAdapter.width(80),
-                            fit: BoxFit.fitWidth,
-                          ),
-                          Text(
-                            "壱賢家",
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30.0),
-                                color: ColorsUtil.hexToColor("#000000"),
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        _checkedShop = "gongcha";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      margin: EdgeInsets.only(top: 3),
-                      height: ScreenAdapter.height(95),
-                      decoration: (_checkedShop == "gongcha")
-                          ? BoxDecoration(
-                        //color: Colors.transparent, // 背景色
-                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
-                        borderRadius: BorderRadius.circular((5)), // 圆角
-                      )
-                          : BoxDecoration(
-                          color: Colors.transparent
-
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            GImage.getImageString("gongcha", "logo"),
-                            width: ScreenAdapter.width(80),
-                            fit: BoxFit.fitWidth,
-                          ),
-                          Text(
-                            "贡 茶",
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30.0),
-                                color: ColorsUtil.hexToColor("#000000"),
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  InkWell(
-                    onTap: (){
-                      setState(() {
-                        _checkedShop = "sanfeng";
-                      });
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(5),
-                      height: ScreenAdapter.height(95),
-                      decoration: (_checkedShop == "sanfeng")
-                          ? BoxDecoration(
-                        //color: Colors.transparent, // 背景色
-                        border: new Border.all(color: Color(0xFFFF0000), width: 2),// border
-                        borderRadius: BorderRadius.circular((5)), // 圆角
-                      )
-                          : BoxDecoration(
-                          color: Colors.transparent
-
-                      ),
-                      child: Row(
-                        children: [
-                          Image.asset(
-                            GImage.getImageString("sanfeng", "logo"),
-                            width: ScreenAdapter.width(80),
-                            fit: BoxFit.fitWidth,
-                            color: Colors.black,
-                          ),
-                          Text(
-                            "三豊麺",
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(30.0),
-                                color: ColorsUtil.hexToColor("#000000"),
-                                fontWeight: FontWeight.w600),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            SizedBox(height: ScreenAdapter.height(80),),
             Container(
               width: ScreenAdapter.width(450.0),
               padding:

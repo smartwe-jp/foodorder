@@ -427,18 +427,6 @@ class _MyHomePageState extends State<MyHomePage> {
     getIsFirstOpen();
   }
 
-
-
-//获取机器信息
-  _getShopInfo() async {
-    var shopInfo = await HomeServices.getShopInfo();
-    if (""==shopInfo|| null ==shopInfo) {
-      Storage.setString('shopInfo', "kanran");
-      GetxStorage.setData('shopInfo', "kanran");
-    }
-    _goMain();
-  }
-
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
 
@@ -446,7 +434,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
-      _getShopInfo();
+      _goMain();
 
     }else{
       _goActivation();
@@ -479,55 +467,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            /*Text("请输入激活码",
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(32.0))),*/
-            /*Container(
-              width: ScreenAdapter.width(250.0),
-              padding: EdgeInsets.only(left: 10.0, right: 10, top: 0, bottom: 10),
-              child: TextField(
-                //keyboardType: TextInputType.text,
-                autofocus: true,
-                showCursor: true, // 显示光标
-                //readOnly: true,
-                controller: _activationCodeController,
-                focusNode: _activationCodeFocusNode,
-                decoration: InputDecoration(
-                  hintText: "请输入激活码",
-                  //border: InputBorder.none,
-                  isDense: true,
-                ),
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
-                obscureText: false,
-                onChanged: (value) {
-                  //print(value);
-                },
-                onSubmitted: (value){//print(value);
-                //showToast(value);
-                  setState(() {
-                    this._activation_code = value;
-                  });
 
-                  sendActivationCode();
-
-                },
-
-                /// 扫码密码
-              ),),
-            Divider(
-              thickness: 1.0,
-              color: Colors.black12,
-            ),
-            TextButton(
-              child: Text(
-                "确定激活",
-                style: TextStyle(
-                    color: Colors.lightBlue,
-                    fontSize: ScreenAdapter.fontSize(32.0)),
-              ),
-              onPressed: () async {
-                sendActivationCode();
-              },
-            ),*/
           ],
         ),
       ),

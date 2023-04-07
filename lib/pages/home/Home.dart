@@ -38,7 +38,6 @@ class _HomePageState extends State<HomePage> {
 
   var _stopStatus;
   var _closeStatus;
-  var _shopInfo = "kanran";
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
   var _machineMode = "1";//1 券卖机  2 精算机
   var _dining_type = "0"; //就餐类型选择 1店内 2外卖 3全可以
@@ -54,10 +53,8 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     EasyLoading.dismiss();
-    //先获取店铺信息已获取路径用
-    _getShopInfo();
-
-
+    //首页图片
+    _getHomeImageList();
 
 
     //监听增加打开现金机的广播
@@ -164,22 +161,6 @@ class _HomePageState extends State<HomePage> {
   }
 
 
-  //获取机器信息
-  _getShopInfo() async {
-    var shopInfo = await HomeServices.getShopInfo();
-    if (shopInfo != "") {
-      setState(() {
-        _shopInfo = shopInfo;
-      });
-    }else{
-      Storage.setString('shopInfo', "kanran");
-      GetxStorage.setData('shopInfo', "kanran");
-    }
-
-    //首页图片
-    _getHomeImageList();
-  }
-
   _getHomeImageList() async {
     var homeimageList = await HomeServices.getSmartweHomeImagesData();
     //print(homeimageList);
@@ -243,7 +224,6 @@ class _HomePageState extends State<HomePage> {
           return SelectDiningMethodPage(
             checkLanguage: checkedLanguage,
             dining_type: _dining_type,
-            shopInfo:_shopInfo,
             menu_direction:_menu_direction,
             onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
               print(mealType);
@@ -251,7 +231,7 @@ class _HomePageState extends State<HomePage> {
               print(menuDirection);
 
               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": checkedLanguage,"shopInfo":_shopInfo,"mealType":mealType});
+              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": checkedLanguage,"mealType":mealType});
 
             },
           );
@@ -267,172 +247,6 @@ class _HomePageState extends State<HomePage> {
           value: SystemUiOverlayStyle.light,
           child: Stack(
             children: [
-              /*Container(
-                //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-                width: ScreenAdapter.getScreenWidth(),
-                height: ScreenAdapter.getScreenHeight(),
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage(GImage.getImageString(_shopInfo, "home")),
-                    fit: BoxFit.fill,
-                  ),
-                ),
-                child: Container(
-                  padding: EdgeInsets.only(top:ScreenAdapter.height(1250),bottom: ScreenAdapter.height(50)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if(_machineLanguages_JP == true)
-                        InkWell(
-                          onTap: () {
-                            //_clearCartList();
-                            if(_dining_type =="1" || _dining_type =="2"){
-                              var mealType = (_dining_type == "2") ? true: false;
-                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
-
-                            }else{
-                              _showSelectMealTypeDialog("JP", _menu_direction);
-                            }
-
-
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '日本語',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(_machineLanguages_CH == true)
-                        InkWell(
-                          onTap: () {
-
-                            if(_dining_type =="1" || _dining_type =="2"){
-                              var mealType = (_dining_type == "2") ? true: false;
-                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
-
-                            }else{
-                              _showSelectMealTypeDialog("CH", _menu_direction);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '中文',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(_machineLanguages_EN == true)
-                        InkWell(
-                          onTap: () {
-                            if(_dining_type =="1" || _dining_type =="2"){
-                              var mealType = (_dining_type == "2") ? true: false;
-                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
-
-                            }else{
-                              _showSelectMealTypeDialog("EN", _menu_direction);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                'English',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(_machineLanguages_KO == true)
-                        InkWell(
-                          onTap: () {
-                            if(_dining_type =="1" || _dining_type =="2"){
-                              var mealType = (_dining_type == "2") ? true: false;
-                              var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
-
-                            }else{
-                              _showSelectMealTypeDialog("KO", _menu_direction);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '한국말',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                    ],
-                  ),
-                ),
-              ),*/
               Container(
                 width: MediaQuery.of(context).size.width,
                 height: MediaQuery.of(context).size.height,
@@ -471,7 +285,7 @@ class _HomePageState extends State<HomePage> {
                             if(_dining_type =="1" || _dining_type =="2"){
                               var mealType = (_dining_type == "2") ? true: false;
                               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","shopInfo":_shopInfo,"mealType":mealType});
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "JP","mealType":mealType});
 
                             }else{
                               _showSelectMealTypeDialog("JP", _menu_direction);
@@ -510,7 +324,7 @@ class _HomePageState extends State<HomePage> {
                             if(_dining_type =="1" || _dining_type =="2"){
                               var mealType = (_dining_type == "2") ? true: false;
                               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","shopInfo":_shopInfo,"mealType":mealType});
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "CH","mealType":mealType});
 
                             }else{
                               _showSelectMealTypeDialog("CH", _menu_direction);
@@ -546,7 +360,7 @@ class _HomePageState extends State<HomePage> {
                             if(_dining_type =="1" || _dining_type =="2"){
                               var mealType = (_dining_type == "2") ? true: false;
                               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","shopInfo":_shopInfo,"mealType":mealType});
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "EN","mealType":mealType});
 
                             }else{
                               _showSelectMealTypeDialog("EN", _menu_direction);
@@ -582,7 +396,7 @@ class _HomePageState extends State<HomePage> {
                             if(_dining_type =="1" || _dining_type =="2"){
                               var mealType = (_dining_type == "2") ? true: false;
                               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","shopInfo":_shopInfo,"mealType":mealType});
+                              Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "KO","mealType":mealType});
 
                             }else{
                               _showSelectMealTypeDialog("KO", _menu_direction);

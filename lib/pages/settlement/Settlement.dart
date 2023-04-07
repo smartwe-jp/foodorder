@@ -39,6 +39,8 @@ import 'package:foodorder/services/logUtil.dart';
 import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 
+import 'package:foodorder/services/queue_util.dart';
+
 //import 'SettlementCashPage.dart';
 //import 'SettlementQrCodePage.dart';
 
@@ -63,9 +65,6 @@ class _SettlementPageState extends State<SettlementPage> {
   //默认语言包选择
   var _checkLanguage = "JP";
 
-  var _shopInfo = "kanran";
-
-  var _print_paper_size = "1"; //1 默认58mm  2 宽纸80mm
   var _is_query_receipt = "1"; //1 要领収书  2 不要领収书
   var _is_allow_receipt = "1"; //1 必须打印  2 不必须
 
@@ -105,9 +104,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   var _allowClick = true;
 
-  var _isReport = true;
   var _ticketData = null;
-  var _scanCode = false;
   var _isReportOutMoney = false; //新处理 默认不汇报出金信息  先汇报入金信息在汇报出金信息
   var _isCancel = false; //新增加  取消默认为false
 
@@ -132,9 +129,10 @@ class _SettlementPageState extends State<SettlementPage> {
   Socket _socket; //socket对象
   bool _socketState = false; //连接状态
   var _isAllowPos = "0";
-  var _isAllowWlanPrint = "0";
   var _wlan_print_ip = "";
   var _wlan_print_port = "";
+  var _wlan_print_ip_two = "";
+  var _wlan_print_port_two = "";
   var _pos_ip = "";
   var _pos_port = "";
   var _payment_method_num = "0"; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
@@ -151,7 +149,6 @@ class _SettlementPageState extends State<SettlementPage> {
     super.initState();
 
     this._checkLanguage = widget.arguments['checkLanguage'];
-    this._shopInfo = widget.arguments['shopInfo'];
     this._machineCode = widget.arguments['machineCode'];
     this._orderId = widget.arguments['orderId'];
     //this._machineMode = widget.arguments['machineMode'];
@@ -220,9 +217,7 @@ class _SettlementPageState extends State<SettlementPage> {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     setState(() {
-      _print_paper_size = systemSettingInfo['printPaperSize'];
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
-      _isAllowWlanPrint = systemSettingInfo['isAllowWlanPrint'];
       //新版精算模式也可点外带
       _machineMode = systemSettingInfo['machineMode'];
     });
@@ -231,6 +226,14 @@ class _SettlementPageState extends State<SettlementPage> {
       if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
         _wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'];
         _wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'];
+      }
+    }
+
+    if(systemSettingInfo['isAllowWlanPrintTwo'] == "1"){
+      Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
+      if(wlanPrintSettingTwoInfo['wlanPrintIp'] !=null && wlanPrintSettingTwoInfo['wlanPrintIp'] !="" && wlanPrintSettingTwoInfo['wlanPrintPort'] !=null && wlanPrintSettingTwoInfo['wlanPrintPort'] !=""){
+        _wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintIp'];
+        _wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintPort'];
       }
     }
 
@@ -508,10 +511,6 @@ class _SettlementPageState extends State<SettlementPage> {
             }
           }else{
             if(resultData["result"] == true){
-              setState(() {
-                _isReport = false;
-                _scanCode = true;
-              });
               doPrintOrderMenu("1");
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
@@ -635,10 +634,6 @@ class _SettlementPageState extends State<SettlementPage> {
         if (response['code'] == 200 && response['data'] == true) {
           //退出关闭
           ConfirmTimer?.cancel();
-          setState(() {
-            _isReport = false;
-            _scanCode = true;
-          });
           doPrintOrderMenu("1");
         }
       });
@@ -653,10 +648,6 @@ class _SettlementPageState extends State<SettlementPage> {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
-        setState(() {
-          _isReport = false;
-          _scanCode = true;
-        });
         doPrintOrderMenu("1");
       } else {
         _showScanCodeTimeOutDialog();
@@ -755,9 +746,6 @@ class _SettlementPageState extends State<SettlementPage> {
           }
         }
 
-        //应对旧接口
-        //await FlutterPluginMsprinter.sendPrint(_ticketData,_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
-
         if (_machineMode == "1") {
           eventBus.fire(new clearCartEvent('支付成功...'));
         }
@@ -775,12 +763,6 @@ class _SettlementPageState extends State<SettlementPage> {
           "machineCode":_machineCode
         };
         var queryUrl;
-        /*if(_print_paper_size == "1"){
-          queryUrl = "webBootToPrintV2";
-        }else{
-          queryUrl = "webBootToPrintV3";
-        }*/
-
         //queryUrl = "webBootToPrintV4";
         queryUrl = "webBootToPrintV5";
 
@@ -797,31 +779,26 @@ class _SettlementPageState extends State<SettlementPage> {
               if (printType == "1") {
                 _tpPrintReceipt(response['data']);
               }
-
             }
-            /*if (_machineMode == "1") {
-              _tpPrintnew(response['data'], printType);
-            } else if (_machineMode == "2") {
-              //1打印领収书 2不打印，直接返回
-              if (printType == "1") {
-                _tpPrintReceipt(response['data']);
+
+            if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){print("123456");
+              _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"]);
+            }
+
+            Future.delayed(Duration(milliseconds: 500),() async {
+              if (_machineMode == "1") {
+                eventBus.fire(new clearCartEvent('支付成功...'));
               }
-            }*/
 
-            //await FlutterPluginMsprinter.sendPrint(json.encode(response['data']),_shopInfo,_print_paper_size,_is_query_receipt,_machineMode);
+              //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+              if (_payment_method_num == "1") {
+                nextOper();
+              } else {
+                gotonewMyhome();
+              }
 
-            sleep(Duration(milliseconds: 500));
+            });
 
-            if (_machineMode == "1") {
-              eventBus.fire(new clearCartEvent('支付成功...'));
-            }
-
-            //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-            if (_payment_method_num == "1") {
-              nextOper();
-            } else {
-              gotonewMyhome();
-            }
           } else {
             //错误后重新调用一次
             doPrintOrderMenu(printType);
@@ -1054,131 +1031,245 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
       if (printType == "1") {
-        //if(_isAllowWlanPrint != "1"){
-          await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "0");
-        //}
-
+        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
         _tpPrintReceipt(printData);
       } else {
-        await FlutterPluginMsprinter.sendPrintImg(base64Image, "0", _shopInfo, "0");
+        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
       }
-
-      //新调试网络打印机
-      if(_isAllowWlanPrint == "1" && _wlan_print_ip != "" && _wlan_print_port != ""){
-        _wifiPrintData(printData);
-      }
-
 
     });
   }
 
-  _wifiPrintData(printData) async {
-    var categoryVos = printData["categoryVos"];
+  _wifiNetworkPrintData(serialNumber,extendPrintVo){
+    var printData = [];
+    extendPrintVo.forEach((k,v){
+      printData = [];
+      if(v.length>0){
+        for(var i=0; i<v.length; i++){
+          v[i]["checked"] = false;
+          //判断是否有需要打印的数据
+          if(v[i]["print"] == true){
+            printData.add(v[i]);
+          }
+        }
+        QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
+          return wifiNetPrintnew(serialNumber,k,printData);
+        });
+      }
+    });
+
+  }
+
+  wifiNetPrintnew(serialNumber,printType,printData) async {
+    //如果整理的数据打印机不是10或11就返回
+    if(printType != "10" && printType != "11"){
+      return;
+    }
+    //判断是否有打印机ip
+    Map printerIpInfo = {"printer_ip":"","printer_port":"",};
+    if(printType == "10"){
+      if(_wlan_print_ip != null && _wlan_print_ip != "" && _wlan_print_port != null && _wlan_print_port != ""){
+        printerIpInfo = {"printer_ip":_wlan_print_ip,"printer_port":_wlan_print_port,};
+      }else{
+        return;
+      }
+    }else if(printType == "11"){
+      if(_wlan_print_ip_two != null && _wlan_print_ip_two != "" && _wlan_print_port_two != null && _wlan_print_port_two != ""){
+        printerIpInfo = {"printer_ip":_wlan_print_ip_two,"printer_port":_wlan_print_port_two,};
+      }else{
+        return;
+      }
+    }else{
+      return;
+    }
+
+
+    var imageWidget = organizeData(serialNumber,printData);
+    ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
+
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+
+    const PaperSize paper = PaperSize.mm80;
+    final profile = await CapabilityProfile.load();
+    final printer = NetworkPrinter(paper, profile);
+    final PosPrintResult res = await printer.connect(printerIpInfo["printer_ip"], port: int.parse(printerIpInfo["printer_port"]));
+
+    if (res == PosPrintResult.success) {
+      Future.delayed(Duration(milliseconds: 300),() async {
+        //网络打印机
+
+        printer.image(decodeImage(imageBytes));
+        printer.feed(1);
+        printer.cut();
+        printer.disconnect();
+      });
+
+    }else{
+      showToast(res.msg);
+      sleep(Duration(milliseconds: 5000));
+    }
+  }
+
+  organizeData(serialNumber,printData) {
+    var categoryVos = printData;
     List<Widget> categoryMenus = [];
-    var lineHight = 280;
+    var lineHight = 150;
     var menuNum = 0;
     var optionNum = 0;
-    var addRowHight = 0;
+    int addRowHight = 0;
+
     categoryMenus.add(
       Container(
-        margin: EdgeInsets.only(bottom: 3),
+        margin: EdgeInsets.only(bottom: 5),
         child: Directionality(
             textDirection: TextDirection.ltr,
-            child: Text("${printData["numberTip"]}",
-                style: TextStyle(
-                  fontSize: 50,
-                  //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w500,
-                  color: ColorsUtil.hexToColor("#000000"),
-                ))),
+            child:
+            RichText(
+              text: TextSpan(
+                  text: "",//${printData["takeOut"]}
+                  style: TextStyle(
+                    fontSize: 50,
+                    fontFamily: 'JetBrainsMonoRegular',
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  ),
+                  children: [
+                    TextSpan(
+                      text: "${serialNumber.toString()}",
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontFamily: 'JetBrainsMonoRegular',
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
+                  ]),
+            )
+        ),
       ),
     );
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
+
+    for(var i=0; i<categoryVos.length; i++){
+      var lineVos = categoryVos[i];
+      var optionVoList = categoryVos[i]["optionVoListMsgList"] ?? [];
+
+      // 计算菜品标题长度
+      var mainTitleLength = lineVos["mainTitle"].length;
+      var mainTitleLine = mainTitleLength / 14;
+      int mainTitleRowNum = mainTitleLine.ceil();
+      optionNum = 0;
+
+      categoryMenus.add(
+        Directionality(
             textDirection: TextDirection.ltr,
-            child: Text("${printData["serialNumber"]}",
-                style: TextStyle(
-                  fontSize: 50,
-                  //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor("#000000"),
-                ))),
-      ),
-    );
-    int categoryNum = categoryVos.length;
-    int categoryshowNum = 0;
-    for (var i = 0; i < categoryVos.length; i++) {
-      int linNum = 0;
-      var lineVosList = categoryVos[i]["lineVos"];
-      int linVoNum = lineVosList.length;
-      for (var m = 0; m < lineVosList.length; m++) {
-        var lineItem = lineVosList[m];
-        var optionVoList = lineItem["optionVos"];
-        // 计算菜品标题长度
-        var menuLength = lineItem["menuName"].length;
-        var menuLine = menuLength / 13;
-        var menuRowNum = menuLine.ceil();
-        optionNum = 0;
-        categoryMenus.add(
-          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 40.0,
-              FontWeight.w500, "${lineItem["menuQty"]}", 40.0, FontWeight.w600),
-        );
-        if (optionVoList != null && optionVoList.length > 0) {
-          for (var n = 0; n < optionVoList.length; n++) {
-            var optionVos = optionVoList[n];
-            // 计算菜品标题长度
-            var groupNameLength = optionVos["groupName"].length;
-            var optionNameLength = optionVos["optionName"].length;
-            var optionLine = (groupNameLength + optionNameLength) / 13;
-            var optionRowNum = optionLine.ceil();
-            categoryMenus.add(
-              _publicGoodsTwoColumnsTxt(
-                  "　${optionVos["groupName"]}",
-                  40.0,
-                  FontWeight.w500,
-                  "${optionVos["optionName"]}",
-                  40.0,
-                  FontWeight.w500),
-            );
-            addRowHight += 60 * optionRowNum;
-            menuNum += optionRowNum;
-            optionNum++;
-          }
-          addRowHight += 63 * menuRowNum;
-          menuNum += menuRowNum;
-        } else {
-          addRowHight += 68 * menuRowNum;
-          menuNum += menuRowNum;
-        }
-        //分割线
-        if (_machineMode == "1") {
-          addRowHight += 6;
+            child: Container(
+              margin: EdgeInsets.only(bottom: 3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                        child: Text("${lineVos["mainTitle"]}",
+                            style: TextStyle(
+                              fontSize: 40,
+                              fontFamily: 'JetBrainsMonoRegular',
+                              color: ColorsUtil.hexToColor("#000000"),)),
+                      )
+                  ),
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text("${lineVos["qty"]}",
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontFamily: 'JetBrainsMonoRegular',
+                            color: ColorsUtil.hexToColor("#000000"),
+                            //fontWeight: FontWeight.w600
+                          )
+                      )
+                  ),
+                ],
+              ),
+            )),
+      );
+
+      if(optionVoList != null && optionVoList.length >0){
+        for(var m=0; m<optionVoList.length; m++){
+          var optionVos = optionVoList[m];
+
+          // 计算菜品标题长度
+          var groupNameLength = optionVos[0].length;
+          var optionNameLength = optionVos[1].length;
+          var optionLine = (groupNameLength + optionNameLength) / 12;
+          int optionRowNum = optionLine.ceil();
+
           categoryMenus.add(
             Directionality(
                 textDirection: TextDirection.ltr,
                 child: Container(
-                  margin: EdgeInsets.only(top: 5, bottom: 5),
-                  height: 2.5,
-                  color: ColorsUtil.hexToColor("#000000"),
-                  width: 550,
+                  margin: EdgeInsets.only(bottom: 3),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.end,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Expanded(
+                            child: Text("　${optionVos[0]}",
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontFamily: 'JetBrainsMonoRegular',
+                                  color: ColorsUtil.hexToColor("#000000"),)),
+                          )
+                      ),
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Text("${optionVos[1]}",
+                              style: TextStyle(
+                                  fontSize: 40,
+                                  fontFamily: 'JetBrainsMonoRegular',
+                                  color: ColorsUtil.hexToColor("#000000")))),
+                    ],
+                  ),
                 )),
           );
+          addRowHight += 63*optionRowNum;
+          menuNum += optionRowNum;
+          optionNum++;
         }
+        addRowHight += 60*mainTitleRowNum;
+        menuNum += mainTitleRowNum;
+      }else{
+        addRowHight += 65*mainTitleRowNum;
+        menuNum += mainTitleRowNum;
       }
+
+      addRowHight += 6;
+      categoryMenus.add(
+        Directionality(
+            textDirection: TextDirection.ltr,
+            child:Container(
+              margin: EdgeInsets.only(top: 5,bottom: 5),
+              height: 2.5,
+              color:ColorsUtil.hexToColor("#000000"),
+              width: 550,
+            )
+        ),
+      );
     }
-    //print("总行数${menuNum}");
-    var totalHight = addRowHight + lineHight;
-    if (menuNum == 1) {
-      totalHight += 25;
+
+    var totalHight = addRowHight+lineHight;
+    if(menuNum == 1){
+      totalHight +=15;
     }
-    ByteData byteDataWifi = await WidgetToImage.widgetToImage(Container(
+
+    return Container(
       width: 550,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
@@ -1189,35 +1280,11 @@ class _SettlementPageState extends State<SettlementPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: categoryMenus,
       ),
-    ));
-    List<int> wifiimageBytes = byteDataWifi.buffer.asUint8List(byteDataWifi.offsetInBytes, byteDataWifi.lengthInBytes);
-    _xinyePrintMenuNew(decodeImage(wifiimageBytes));
+    );
+
+
   }
-  _xinyePrintMenuNew(printData) async {
-    const PaperSize paper = PaperSize.mm80;
-    final profile = await CapabilityProfile.load();
-    final printer = NetworkPrinter(paper, profile);
-    final PosPrintResult res = await printer.connect(_wlan_print_ip, port: int.parse(_wlan_print_port));
-    //final PosPrintResult res = await printer.connect(_kitchenPointIp, port: 9100);
-    print("wifidayinji====${res}");
-    if (res == PosPrintResult.success) {
-      // DEMO RECEIPT
-      await printDemoReceiptNew(printer,printData);
-      // TEST PRINT
-      // await testReceipt(printer);
-      printer.disconnect();
-    }else{
-      showToast(res.msg);
-      sleep(Duration(milliseconds: 5000));
-    }
-  }
-  Future<void> printDemoReceiptNew(NetworkPrinter printer,printData) async {
-    //print(printData);
-    printer.image(printData);
-    printer.feed(1);
-    printer.cut();
-    //});
-  }
+
 
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
@@ -1411,8 +1478,7 @@ class _SettlementPageState extends State<SettlementPage> {
       categoryMenus.add(_publicSplitLine());
     }
     //お明細は上記のとおりです。
-    categoryMenus
-        .add(_publicOneColumnTxt("お明細は上記のとおりです。", 26.0, FontWeight.w200));
+    categoryMenus.add(_publicOneColumnTxt("お明細は上記のとおりです。", 26.0, FontWeight.w200));
 
     var totalHight = lineZeng + lineHight;
 
@@ -1430,12 +1496,10 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    //final result = await ImageGallerySaver.saveImage(imageBytes, quality: 100);
     Future.delayed(Duration(milliseconds: 100), () async {
       String base64Image = base64Encode(imageBytes);
-      //LogUtil.d(base64Image);
-      //await FlutterPluginMsprinter.sendPrintImg(base64Image, "1", _shopInfo, "1");
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", _shopInfo, "1",_printLogoImage);
+
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
     });
   }
 
@@ -1596,13 +1660,8 @@ class _SettlementPageState extends State<SettlementPage> {
           //找零
           startOutPutMoney(_giveChangeMoney);
         } else {
-          /*if(_isReport == true){
-            //汇报，关闭现金机
-            reportOutMoney();
-          }else{*/
           //已经结束入金，处理取引终了
           payCubeCloseTransaction();
-          //}
         }
 
         stopt.cancel();
@@ -1780,7 +1839,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //Navigator.pop(context);
     Navigator.of(context).pop();
     /*if(_machineMode == "1"){
-      Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage,"shopInfo":_shopInfo});
+      Navigator.pushNamed(context, '/menuPage', arguments: {"checkLanguage": this._checkLanguage});
     }else{
       Navigator.pushNamed(context, '/checkOutPage');
     }*/
@@ -2276,7 +2335,6 @@ class _SettlementPageState extends State<SettlementPage> {
     };
     request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-      //LogUtil.d(response);
       if (response['code'] == 200 && response['data'].isNotEmpty) {
         var resultData = response['data'];
         if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){

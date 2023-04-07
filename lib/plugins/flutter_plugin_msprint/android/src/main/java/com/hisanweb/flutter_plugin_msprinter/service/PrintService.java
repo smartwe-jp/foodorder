@@ -501,13 +501,8 @@ public class PrintService  {
 
     }
 
-    public void execute_reserve_printImg(UsbDriver mUsbDriver,String content,String cutMode,Drawable sed,String isTop){
+    public void execute_reserve_printImg(UsbDriver mUsbDriver,String content,String cutMode,String isTop){
         int width,heigh;
-
-        if(isTop.equals("1")){
-            mUsbDriver.write(PrintCmd.SetAlignment(1));
-            printbmp(mUsbDriver,sed);
-        }
 
         byte[] bytes = Base64.decode(content, Base64.DEFAULT);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -533,7 +528,7 @@ public class PrintService  {
 
     }
 
-    public void execute_reserve_printImgNew(UsbDriver mUsbDriver,String content,String cutMode,Drawable sed,String isTop,String topImage){
+    public void execute_reserve_printImgNew(UsbDriver mUsbDriver,String content,String cutMode,String isTop,String topImage){
         int width,heigh;
 
         if(isTop.equals("1")){

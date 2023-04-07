@@ -42,7 +42,6 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   String _machineCode = "";
   var progressValue = 0.0;
 
-  var _shopInfo = "kanran";
   var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
   var _print_paper_size = "1";//1 默认58mm  2 宽纸80mm
@@ -76,7 +75,6 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   void initState() {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
-    this._shopInfo = widget.arguments['shopInfo'];
     EasyLoading.dismiss();
 
     _getSystemSettingInfo();
@@ -506,6 +504,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -661,6 +660,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -821,6 +821,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -983,6 +984,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1139,6 +1141,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1295,6 +1298,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1451,6 +1455,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":checkedType,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1633,6 +1638,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":checkedType,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1894,6 +1900,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":checkedType,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));

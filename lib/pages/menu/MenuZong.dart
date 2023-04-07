@@ -75,7 +75,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   //默认语言包选择
   var _checkLanguage = "JP";
 
-  var _shopInfo = "kanran";
 
 
   //购物车抛物线
@@ -134,15 +133,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     fToast.init(context);
 
     this._checkLanguage = widget.arguments['checkLanguage'];
-    this._shopInfo = widget.arguments['shopInfo'];
     _mealType = widget.arguments["mealType"];
     _getMachineInfo();
 
 
     getCartPriceTotal();
 
-
-    //_getDiningTypeInfo();
     EasyLoading.dismiss();
 
     //监听是否展示现金的广播
@@ -190,23 +186,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       }, //错误按钮点击过后进行重新加载
       successWidget: Column(
         children: [
-          //顶部导航
-          /*Container(
-            width: ScreenAdapter.getScreenWidth(),
-            height: ScreenAdapter.height(40),
-            padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
-            alignment: Alignment.bottomLeft,
-            decoration: BoxDecoration(
-              color: ColorsUtil.hexToColor("#000000"),
-              image: new DecorationImage(
-                alignment: Alignment.centerRight,
-                fit: BoxFit.fitHeight,
-                image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
-              ),
-            ),
-            child: showTopCategoryMenu(),
-          ),*/
-
           Container(
             height: ScreenAdapter.height(1585),
             //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
@@ -580,7 +559,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               enableFeedback: false,
           onLongPress: (){
             if(int.parse(_shopCartTotalPrice) >0){
-              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
             }
 
           },
@@ -4275,7 +4254,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               InkWell(
                                   onLongPress: (){
                                     if(int.parse(_shopCartTotalPrice) >0){
-                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
                                     }
 
                                   },
@@ -4697,7 +4676,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
           return SelectPaymentPage(
               checkLanguage: _checkLanguage,
-              shopInfo:_shopInfo,
               //mealType:_mealType,
               isAllowPos:_isAllowPos,
               payment_method_num:_payment_method_num,
@@ -4739,7 +4717,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     Navigator.pushNamed(context, '/settlement',
         arguments: {
           "checkLanguage": this._checkLanguage,
-          "shopInfo":_shopInfo,
           "machineCode": this._machineCode,
           "orderId" : _doSubmitOrderId,
           "totalPrice" : _shopCartTotalPrice,

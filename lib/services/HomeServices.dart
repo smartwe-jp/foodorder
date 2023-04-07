@@ -24,29 +24,6 @@ class HomeServices{
     }
     return machineinfo;
   }
-  static getShopInfo() async{
-    String shopinfo;
-    try {
-      String shopInfoData = await Storage.getString('shopInfo');
-      GetxStorage.setData('shopInfo', shopInfoData);
-      shopinfo = shopInfoData;
-    } catch (e) {
-      shopinfo = "";
-    }
-    return shopinfo;
-  }
-
-  static getDiningTypeInfo() async{
-    String diningTypeInfo;
-    try {
-      String diningTypeData = await Storage.getString('diningType');
-      GetxStorage.setData('diningType', diningTypeData);
-      diningTypeInfo = diningTypeData;
-    } catch (e) {
-      diningTypeInfo = "";
-    }
-    return diningTypeInfo;
-  }
 
   //菜单方向
   static getMenuDirectionInfo() async{

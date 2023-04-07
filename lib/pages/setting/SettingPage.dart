@@ -45,7 +45,6 @@ class _SettingPageState extends State<SettingPage> {
   var _local_version; //本appversion
   var progressValue = 0.0;
 
-  var _shopInfo = "kanran";
   var _attendanceCode ="";
   var _is_allow_attendance = "0";//0 不开启  1 开启
 
@@ -60,7 +59,6 @@ class _SettingPageState extends State<SettingPage> {
     // TODO: implement initState
     this._machineCode = widget.arguments['machineCode'];
     //this._shopCode = widget.arguments['shopCode'];
-    this._shopInfo = widget.arguments['shopInfo'];
     EasyLoading.dismiss();
     //查看机器零钱状态
     _getPaycubeChangeState();
@@ -960,7 +958,7 @@ class _SettingPageState extends State<SettingPage> {
                         ),
                         InkWell(
                           onTap: () {
-                            Navigator.pushNamed(context, '/systemSettingPage', arguments: {"machineCode": this._machineCode,"shopInfo":_shopInfo});
+                            Navigator.pushNamed(context, '/systemSettingPage', arguments: {"machineCode": this._machineCode});
 
                           },
                           child: Container(
