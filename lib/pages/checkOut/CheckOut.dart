@@ -300,7 +300,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
                 ),*/
                 children: <Widget>[
-                  Container(
+                  /*Container(
                     height: 0,
                     padding: EdgeInsets.only(left: 20),
                     child: Row(
@@ -345,7 +345,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                         ),
                       ],
                     ),
-                  ),
+                  ),*/
                   Container(
                     width: ScreenAdapter.width(1050),
                     height: ScreenAdapter.height(1170),
@@ -411,30 +411,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     ),
                   )
 
-                  /*Container(
-                    width: ScreenAdapter.width(650),
-
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          child: Text(GString.getToString(this._checkLanguage, "tag_checkOut"),
-                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
-                          alignment: Alignment(0, 0),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(
-                          thickness: 1.0,
-                          color: Colors.black12,
-                        ),
-
-                      ],
-                    ),
-                  ),*/
                 ]
             ),
           );
@@ -717,9 +693,15 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
   //展示外带按钮
   _showTakeoutButton() {
-    if(_takeoutButtonList.length >0){
+      var languagesButton = [
+        {"name":"テイクアウト","value":"JP"},
+        {"name":"外卖","value":"CH"},
+        {"name":"Takeout","value":"EN"},
+        {"name":"테이크아웃","value":"KO"},
+      ];
+
       List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in _takeoutButtonList) {
+      for (var item in languagesButton) {
         takeoutMenus.add(InkWell(
           onTap: () {
             var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
@@ -752,69 +734,17 @@ class _CheckOutPageState extends State<CheckOutPage> {
       return Container(
         width: ScreenAdapter.width(1080),
         height: ScreenAdapter.height(120),
+        margin: EdgeInsets.only(bottom: ScreenAdapter.height(200)),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.end,
           children: takeoutMenus,
         ),
       );
-    }else{
-      return Container(height: 0,);
-    }
+
 
   }
 
-  //展示结算按钮
-  _showBillButton() {
-    if(_billButtonList.length >0){
-      List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in _billButtonList) {
-        billMenus.add(InkWell(
-          onTap: () {
-            setState(() {
-              _checkLanguage = item["value"];
-            });
-            _showScanCodeDialog();
-
-          },
-          child: Container(
-            width: ScreenAdapter.width(217),
-            height: ScreenAdapter.height(90),
-            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                //alignment: Alignment.topCenter,
-                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                  fit: BoxFit.fill),
-            ),
-            child: Center(
-              //加上Center让文字居中
-              child: Text(
-                "${item["name"]}",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(36.0),
-                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ));
-
-      }
-      return Container(
-        width: ScreenAdapter.width(1080),
-        height: ScreenAdapter.height(120),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: billMenus,
-        ),
-      );
-    }else{
-      return Container(height: 0,);
-    }
-
-  }
 
   _showLanguagesButton() {
     var languagesButton = [
@@ -833,12 +763,12 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 _checkLanguage = item["value"];
               });
               //_showScanCodeDialog();
-              if(_takeOut == true){
+              /*if(_takeOut == true){
                 _showPaymentMethodDialog();
-              }else{
+              }else{*/
                 //_showScanCodeDialog();
                 Navigator.pushNamed(context, "/scanCodePage",arguments: {"checkLanguage": _checkLanguage});
-              }
+              //}
 
             },
             child: Container(
@@ -1019,8 +949,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisSize: MainAxisSize.min,
                     children: <Widget>[
-                        //_showTakeoutButton(),
-                        //SizedBox(height: ScreenAdapter.height(60),),
+                      if(_takeOut == true)
+                      _showTakeoutButton(),
+                      //SizedBox(height: ScreenAdapter.height(360),),
                         //_showBillButton(),
                       _showLanguagesButton(),
                       SizedBox(height: ScreenAdapter.height(60),),

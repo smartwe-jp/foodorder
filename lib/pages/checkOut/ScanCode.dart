@@ -330,7 +330,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
   }
 
   _doNextPay(){
-    var _orderkey = _tableCode;print(_orderkey);
+    var _orderkey = _tableCode;
     if(_tableCode !=""){
       //_showOrderEasyLoading();
     if(_tableCode.contains('?p=') == true){
@@ -359,7 +359,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
               _scanQrCodeController.text = "";
               _tableCode = "";
             });
-
+            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
           }
 
         }else{
@@ -675,7 +675,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                             width: ScreenAdapter.width(20),
                           ),
                           Text(
-                            GString.getToString(this._checkLanguage, "settlement_payment_method_study_qr"),
+                            GString.getToString(this._checkLanguage, "checkoutScanTitle"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
@@ -691,9 +691,8 @@ class _ScanCodePageState extends State<ScanCodePage> {
                   child: Container(
                     //height: ScreenAdapter.height(940),
                     child: Image.asset(
-                      GImage.getImageString("imgpublic",
-                          "jingsuantag"),
-                      width: ScreenAdapter.width(1060),
+                      GImage.getImageString("imgpublic","jingsuantag"),
+                      width: ScreenAdapter.width(1070),
                       fit: BoxFit.fitWidth,
                     ),
                   )

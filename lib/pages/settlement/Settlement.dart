@@ -781,7 +781,7 @@ class _SettlementPageState extends State<SettlementPage> {
               }
             }
 
-            if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){print("123456");
+            if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){
               _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"]);
             }
 
@@ -2588,8 +2588,8 @@ class _SettlementPageState extends State<SettlementPage> {
                       onLongPress: () {
                         try {
                           //Navigator.pop(context);
-                          //CancelOrder();
-                          showCancelConfirm();
+                          CancelOrder();
+                          //showCancelConfirm();
                         } catch (_) {}
                       },
                       child: Row(
@@ -2622,8 +2622,8 @@ class _SettlementPageState extends State<SettlementPage> {
                       onLongPress: () {
                         try {
                           //Navigator.pop(context);
-                          //CancelOrder();
-                          showCancelConfirm();
+                          CancelOrder();
+                          //showCancelConfirm();
                         } catch (_) {}
                       },
                       child: Row(
@@ -3038,25 +3038,26 @@ class _SettlementPageState extends State<SettlementPage> {
                 height: ScreenAdapter.height(200),
                 color: ColorsUtil.hexToColor("#DCDCDC"),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Container(
                       width: ScreenAdapter.width(440),
-                      alignment: Alignment.centerRight,
+                      alignment: Alignment.bottomLeft,
+                      padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
                       child: InkWell(
                         onTap: () {
                           try {
                             //Navigator.pop(context);
                             //_showBackEasyLoading();
-                            //CancelOrder();
-                            showCancelConfirm();
+                            CancelOrder();
+                            //showCancelConfirm();
                           } catch (_) {}
                         },
                         child: Container(
                           alignment: Alignment.center,
-                          width: ScreenAdapter.width(270),
-                          height: ScreenAdapter.height(140),
+                          width: ScreenAdapter.width(180),
+                          height: ScreenAdapter.height(80),
                           //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
                           decoration: BoxDecoration(
                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -3066,7 +3067,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           child: Text(
                             GString.getToString(this._checkLanguage, "settlement_back"),
                             style: TextStyle(
-                                color: ColorsUtil.hexToColor("#000000"),
+                                color: ColorsUtil.hexToColor("#2D2D2D"),
                                 fontWeight: FontWeight.w500,
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
@@ -3290,15 +3291,15 @@ class _SettlementPageState extends State<SettlementPage> {
                     InkWell(
                       onTap: () {
                         try {
-                          showCancelConfirm();
-                          //Navigator.pop(context);
+                          //showCancelConfirm();
+                          Navigator.pop(context);
 
                         } catch (_) {}
                       },
                       child: Container(
                         alignment: Alignment.center,
-                        width: ScreenAdapter.width(270),
-                        height: ScreenAdapter.height(140),
+                        width: ScreenAdapter.width(180),
+                        height: ScreenAdapter.height(80),
                         //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
                         decoration: BoxDecoration(
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -3308,7 +3309,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         child: Text(
                           GString.getToString(this._checkLanguage, "settlement_back"),
                           style: TextStyle(
-                              color: ColorsUtil.hexToColor("#000000"),
+                              color: ColorsUtil.hexToColor("#2D2D2D"),
                               fontWeight: FontWeight.w500,
                               fontSize: ScreenAdapter.fontSize(34.0)),
                         ),
