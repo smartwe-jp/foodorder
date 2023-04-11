@@ -4651,7 +4651,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           setState(() {
             _doSubmitOrderId = response['data']["orderId"];
           });
-          _showSelectMealTypeAndPaymentMethodDialog();
+
+          //只有现金，并且其余都为false的时候，直接跳转支付
+          if(_showCash == true &&
+              _isAllowPos == "0" &&
+              _showAlipay == false &&
+              _showWechat == false &&
+              _showPayPay == false &&
+              _showCreditCard == false &&
+              _showauPay == false &&
+              _showdPay == false &&
+              _showrPay == false &&
+              _showmPay == false
+          ){
+            setState(() {
+              _payment_method_num = "1";
+            });
+            gotoSettlement();
+          }else{
+            _showSelectMealTypeAndPaymentMethodDialog();
+          }
 
 
         }else{

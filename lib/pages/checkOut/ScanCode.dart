@@ -31,23 +31,18 @@ import 'package:foodorder/services/showImage.dart';
 import '../menu/SelectPayment.dart';
 import 'PaymentMethod.dart';
 
-class CheckOutPage extends StatefulWidget {
-  CheckOutPage({Key key}) : super(key: key);
+class ScanCodePage extends StatefulWidget {
+  Map arguments;
+  ScanCodePage({Key key, this.arguments}) : super(key: key);
 
-  _CheckOutPageState createState() => _CheckOutPageState();
+  _ScanCodePageState createState() => _ScanCodePageState();
 }
 
-class _CheckOutPageState extends State<CheckOutPage> {
+class _ScanCodePageState extends State<ScanCodePage> {
 
   TextEditingController _scanQrCodeController = new TextEditingController();
   FocusNode _scanQrCodeFocusNode = FocusNode();
 
-  Timer checkTimer;
-  Timer stopChecktimer;
-  Timer closetimer;
-
-  var _stopStatus;
-  var _closeStatus;
   String _machineCode = "";
   String _tableCode = "";
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
@@ -57,16 +52,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _actuarial = false;
   var _lineup = false;
   var _takeOut = false; //是否允许外带
-
-  //预约页面默认值
-  var _tableTypeList = [
-    {"optionVal":"A","optionTable":"任意"},
-    {"optionVal":"C","optionTable":"カウンタ"},
-    {"optionVal":"T","optionTable":"テーブル"},
-    {"optionVal":"P","optionTable":"個室"},
-  ];
-  var _selectTableType = "A";
-  var _selectManyPeople = 1;
 
   var _isAllowPos = "0"; //1 使用信用卡刷卡  0 不可使用
   var _pos_ip = "";
@@ -90,15 +75,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
   var _totlaPrice = "0";
   var _tableNum = "0";
 
-  var _machineLanguages_JP = false;
-  var _machineLanguages_CH = false;
-  var _machineLanguages_EN = false;
-  var _machineLanguages_KO = false;
 
-  var _homeList = [];
   var _takeoutButtonList = [];
   var _billButtonList = [];
-  var _lineUpButtonList = {};
 
   var _machineLanguagesList = [];
 
@@ -107,99 +86,18 @@ class _CheckOutPageState extends State<CheckOutPage> {
     super.initState();
     EasyLoading.dismiss();
 
+    _checkLanguage = widget.arguments['checkLanguage'];
+
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
     _getMachineInfo();
-
-
-    //监听增加打开现金机的广播
-    eventBus.on<PayCubeEvent>().listen((event) {
-      CheckPayCube();
-    });
 
   }
 
   @override
   void dispose() {
     // TODO: implement dispose
-    checkTimer?.cancel();
-    stopChecktimer?.cancel();
-    closetimer?.cancel();
-    eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
-  }
-
-  //打开现金机
-  OpenPayCube() async {
-    String checkStatus = await Paycube.CheckPayCubeStatus;
-
-    //如果检测现金机打开错误，则重新打开一下
-    if(checkStatus == "openError"){
-      String openStatus = await Paycube.openPayCube;
-      //print("机器未打开lib未null，重新打开并连接了");
-    }else{
-      await Paycube.setReceiveEvent;
-      //print("机器已打开，并setreceive");
-    }
-
-    //await Paycube.endTrade;
-  }
-
-  //检测现金机状态
-  CheckPayCube() async {
-    String machineStatus = await Paycube.getPayCubeMachineStatus;
-
-    checkTimer?.cancel();
-    checkTimer = Timer.periodic(Duration(milliseconds: 600), (Timer checktimer) async {
-      String machineStatus = await Paycube.getPayCubeMachineStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      //待機中(入金不可)正常
-      if (machineStatus == "30--10--10--10") {
-        checktimer.cancel();
-      }else{
-        stopPaycube();
-        checktimer.cancel();
-      }
-    });
-
-  }
-
-  stopPaycube() async {
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
-    stopChecktimer?.cancel();
-    stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
-      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
-      //await Paycube.setReceiveEvent;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_stopStatus == "StopSuccess") {
-        closePaycube();
-        stopcheck.cancel();
-
-      }else if(_stopStatus == "Error-A0--02"){
-        //处理中
-        await Paycube.endPayCube;
-      }else{
-        await Paycube.endPayCube;
-      }
-    });
-  }
-
-  closePaycube() async {
-    //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;
-    closetimer?.cancel();
-    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
-      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_closeStatus == "EndSuccess" || _closeStatus == "Error-A0--02") {
-        closecheck.cancel();
-      }else{
-
-        await Paycube.endTrade;
-      }
-    });
   }
 
 //获取机器信息
@@ -212,16 +110,6 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
     }
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-
-    _getHomeImageList();
-  }
-
-  _getHomeImageList() async {
-    List homeimageList = await HomeServices.getSmartweHomeImagesData();
-
-    setState(() {
-      _homeList = homeimageList;
-    });
 
     _getSmartweMachineSettingData();
   }
@@ -442,7 +330,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
   }
 
   _doNextPay(){
-    var _orderkey = _tableCode;//print(_orderkey);
+    var _orderkey = _tableCode;print(_orderkey);
     if(_tableCode !=""){
       //_showOrderEasyLoading();
     if(_tableCode.contains('?p=') == true){
@@ -460,7 +348,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
         //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           if(response["data"]["totalPrice"] >0){
-            setState(() {
+            setState((){
               _orderId = response["data"]["orderId"].toString();
               _totlaPrice = response["data"]["totalPrice"].toString();
               _tableNum = response["data"]["tableNum"].toString();
@@ -487,7 +375,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
     }
   }
 
-  //选择食用方式和支付方式
+  //选择支付方式
   _showSelectMealTypeAndPaymentMethodDialog() async {
 
     await showDialog(
@@ -704,333 +592,156 @@ class _CheckOutPageState extends State<CheckOutPage> {
           });
   }
 
-  //预约弹出框
-  _showMakeAnAppointmentDialog() async {
-    await showDialog(
-        context: context,
-        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
-        builder: (BuildContext context) {
-          return AppointmentPage();
-        });
-  }
-
-
-  //展示外带按钮
-  _showTakeoutButton() {
-    if(_takeoutButtonList.length >0){
-      List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in _takeoutButtonList) {
-        takeoutMenus.add(InkWell(
-          onTap: () {
-            var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-            Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": "${item["value"]}","mealType":true});
-          },
-          child: Container(
-            width: ScreenAdapter.width(217),
-            height: ScreenAdapter.height(90),
-            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                //alignment: Alignment.topCenter,
-                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                  fit: BoxFit.fill),
-            ),
-            child: Center(
-              //加上Center让文字居中
-              child: Text(
-                '${item["name"]}',
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(36.0),
-                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ));
-
-      }
-      return Container(
-        width: ScreenAdapter.width(1080),
-        height: ScreenAdapter.height(120),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: takeoutMenus,
-        ),
-      );
-    }else{
-      return Container(height: 0,);
-    }
-
-  }
-
-  //展示结算按钮
-  _showBillButton() {
-    if(_billButtonList.length >0){
-      List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in _billButtonList) {
-        billMenus.add(InkWell(
-          onTap: () {
-            setState(() {
-              _checkLanguage = item["value"];
-            });
-            _showScanCodeDialog();
-
-          },
-          child: Container(
-            width: ScreenAdapter.width(217),
-            height: ScreenAdapter.height(90),
-            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                //alignment: Alignment.topCenter,
-                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                  fit: BoxFit.fill),
-            ),
-            child: Center(
-              //加上Center让文字居中
-              child: Text(
-                "${item["name"]}",
-                style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(36.0),
-                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ));
-
-      }
-      return Container(
-        width: ScreenAdapter.width(1080),
-        height: ScreenAdapter.height(120),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: billMenus,
-        ),
-      );
-    }else{
-      return Container(height: 0,);
-    }
-
-  }
-
-  _showLanguagesButton() {
-    var languagesButton = [
-      {"name":"お会計","value":"JP"},
-      {"name":"结账","value":"CH"},
-      {"name":"Bill","value":"EN"},
-      {"name":"계산하다","value":"KO"},
-    ];
-    if(languagesButton.length >0){
-      List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in languagesButton) {
-        if(_machineLanguagesList.contains(item["value"]) == true){
-          billMenus.add(InkWell(
-            onTap: () {
-              setState(() {
-                _checkLanguage = item["value"];
-              });
-              //_showScanCodeDialog();
-              if(_takeOut == true){
-                _showPaymentMethodDialog();
-              }else{
-                //_showScanCodeDialog();
-                Navigator.pushNamed(context, "/scanCodePage",arguments: {"checkLanguage": _checkLanguage});
-              }
-
-            },
-            child: Container(
-              width: ScreenAdapter.width(217),
-              height: ScreenAdapter.height(90),
-              margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  //alignment: Alignment.topCenter,
-                    image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                    fit: BoxFit.fill),
-              ),
-              child: Center(
-                //加上Center让文字居中
-                child: Text(
-                  "${item["name"]}",
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(36.0),
-                      color: ColorsUtil.hexToColor("#F9F9F9"),
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ));
-        }
-
-      }
-      return Container(
-        width: ScreenAdapter.width(1080),
-        height: ScreenAdapter.height(120),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: billMenus,
-        ),
-      );
-    }else{
-      return Container(height: 0,);
-    }
-
-  }
-
-  //选择外卖或精算
-  _showPaymentMethodDialog() async {
-    var dialogContext = context;
-    await showDialog(
-        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
-        context: dialogContext,
-        builder: (BuildContext context) {
-
-          return PaymentMethodPage(
-            checkLanguage: _checkLanguage,
-            takeOut:_takeOut,
-            onConfrimClick: (String paymentMethodChecked) {
-              //"2" 外卖跳转 "1" 精算
-              if(paymentMethodChecked == "2"){
-                var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
-                Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": _checkLanguage,"mealType":true});
-              }else{
-                //_showScanCodeDialog();
-                Navigator.pushNamed(context, "/scanCodePage",arguments: {"checkLanguage": _checkLanguage});
-              }
-
-            },
-          );
-        });
-  }
-
-  //展示预约排号按钮
-  _showLineUpButton() {
-    return Container(
-      width: ScreenAdapter.width(1080),
-      height: ScreenAdapter.height(120),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          InkWell(
-            onTap: () {
-              //显示预约弹出框
-              _showOrderEasyLoading();
-              _showMakeAnAppointmentDialog();
-
-            },
-            child: Container(
-              width: ScreenAdapter.width(460),
-              height: ScreenAdapter.height(100),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-
-                color: ColorsUtil.hexToColor("#4876FF"),
-                //设置圆角
-                borderRadius: new BorderRadius.circular((16.0)),
-              ),
-              child: Text("番号札発行 / Booking",
-                  style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(36),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(
-                        Gcolor.settlementBtnColor),
-                  )),
-            ),
-          )
-        ],
-      ),
-    );
-
-  }
-
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: AnnotatedRegion(
           value: SystemUiOverlayStyle.light,
-          child: Stack(
+          child: Column(
             children: [
-              Column(
-                children: [
+              Container(
+                height: 0,
+                padding: EdgeInsets.only(left: 20),
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                        child: TextField(
+                          keyboardType: TextInputType.text,
+                          autofocus: true,
+                          showCursor: false, // 显示光标
+                          //readOnly: true,
+                          controller: _scanQrCodeController,
+                          focusNode: _scanQrCodeFocusNode,
+                          decoration: InputDecoration(
+                            hintText: "请扫码",
+                            border: InputBorder.none,
+                            isDense: true,
+                          ),
+                          style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
+                          onChanged: (value) {
+                            //print(value);
+                            if(value.length==1){
+                              _showOrderEasyLoading();
+                            }
 
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Swiper(
-                      //itemHeight: 200,
-                      itemBuilder: (BuildContext context,int index){
-                        // 配置图片地址
-                        return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
-                      },
-                      // 配置图片数量
-                      itemCount: _homeList.length,
-                      // 底部分页器
-                      //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                      // 左右箭头
-                      //control: new SwiperControl(),
-                      // 无限循环
-                      loop: (_homeList.length >1) ?true :false,
-                      duration: 1000,
-                      autoplayDelay:12000,
-                      // 自动轮播
-                      autoplay: (_homeList.length >1) ?true :false,
-                    ),
-                  ),
-                ],
-              ),
+                          },
+                          onSubmitted: (value){
+                            setState(() {
+                              this._tableCode = value;
+                            });
 
-              Positioned(
-                right: ScreenAdapter.width(0),
-                top: ScreenAdapter.height(20),
-                child: InkWell(
-                  onTap: (){
-                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
-                  },
-                  child: Container(
-                    height: ScreenAdapter.height(150),
-                    width: ScreenAdapter.width(200),
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(top:ScreenAdapter.height(20),left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),bottom: ScreenAdapter.height(20)),
-                    child: Center(
-                      //加上Center让文字居中
-                      child: Text(
-                        "",
-                        style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(48.0),
-                            color: ColorsUtil.hexToColor("#F9F9F9"),
-                            fontWeight: FontWeight.w600),
-                      ),
+                            Future.delayed(Duration(milliseconds: 300), () {
+                              _doNextPay();
+                            });
+
+
+
+                          },
+
+                          /// 扫码密码
+                        )
                     ),
-                  ),
+                  ],
                 ),
               ),
-              Positioned(
-                top: ScreenAdapter.height(1400),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                        //_showTakeoutButton(),
-                        //SizedBox(height: ScreenAdapter.height(60),),
-                        //_showBillButton(),
-                      _showLanguagesButton(),
-                      SizedBox(height: ScreenAdapter.height(60),),
-                      //是否展示预定排号
-                      if(_lineup == true && _isReservation == "1")
-                      _showLineUpButton(),
+              Container(
+                width: ScreenAdapter.getScreenWidth(),
+                height: ScreenAdapter.height(95),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      ColorsUtil.hexToColor("#C47829"),
+                      ColorsUtil.hexToColor("#854610"),
                     ],
                   ),
                 ),
-              )
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_qr"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage, "settlement_payment_method_study_qr"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+
+                  ],
+                ),
+              ),
+              Expanded(
+                  child: Container(
+                    //height: ScreenAdapter.height(940),
+                    child: Image.asset(
+                      GImage.getImageString("imgpublic",
+                          "jingsuantag"),
+                      width: ScreenAdapter.width(1060),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  )
+              ),
+              Container(
+                //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
+                height: ScreenAdapter.height(200),
+                color: ColorsUtil.hexToColor("#DCDCDC"),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        try {
+                          //showCancelConfirm();
+                          Navigator.pop(context);
+
+                        } catch (_) {}
+                      },
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: ScreenAdapter.width(270),
+                        height: ScreenAdapter.height(140),
+                        //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((5.0)),
+                        ),
+                        child: Text(
+                          GString.getToString(this._checkLanguage, "settlement_back"),
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor("#000000"),
+                              fontWeight: FontWeight.w500,
+                              fontSize: ScreenAdapter.fontSize(34.0)),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: ScreenAdapter.width(180)),
+                    Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(270),
+                      height: ScreenAdapter.height(100),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
           ),

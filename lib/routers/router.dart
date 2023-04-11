@@ -13,6 +13,8 @@ import 'package:foodorder/pages/transitpage/TransitPage.dart';
 
 import 'package:foodorder/pages/checkOut/CheckOut.dart';
 
+import '../pages/checkOut/ScanCode.dart';
+
 //配置路由
 final routes = {
   '/home': (context) => HomePage(),
@@ -26,6 +28,7 @@ final routes = {
   '/transitPage': (context) => TransitPage(), //中转页面
   '/checkOutPage': (context) => CheckOutPage(), //精算机页面
 
+  '/scanCodePage': (context,{arguments}) => ScanCodePage(arguments:arguments), //精算扫码页面
 
   '/attendance': (context,{arguments}) => AttendancePage(arguments:arguments),//打卡
   '/setAttendanceCode': (context,{arguments}) => setAttendanceCodePage(arguments:arguments),//打卡

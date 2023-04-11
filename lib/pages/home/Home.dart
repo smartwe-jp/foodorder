@@ -36,6 +36,8 @@ class _HomePageState extends State<HomePage> {
   Timer stopChecktimer;
   Timer closetimer;
 
+  String _machineCode = "";
+
   var _stopStatus;
   var _closeStatus;
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
@@ -53,6 +55,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     EasyLoading.dismiss();
+    _getMachineInfo();
     //首页图片
     _getHomeImageList();
 
@@ -78,6 +81,19 @@ class _HomePageState extends State<HomePage> {
     closetimer?.cancel();
     eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
+  }
+
+  //获取机器信息
+  _getMachineInfo() async {
+    var machineCode = await HomeServices.getMachineInfo();
+    if (machineCode != "") {
+      setState(() {
+        _machineCode = machineCode;
+      });
+
+    }
+    //首页图片
+    _getHomeImageList();
   }
 
   //打开现金机
@@ -268,6 +284,31 @@ class _HomePageState extends State<HomePage> {
                   autoplayDelay:12000,
                   // 自动轮播
                   autoplay: (_homeList.length >1) ?true :false,
+                ),
+              ),
+              Positioned(
+                right: ScreenAdapter.width(0),
+                top: ScreenAdapter.height(20),
+                child: InkWell(
+                  onTap: (){
+                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+                  },
+                  child: Container(
+                    height: ScreenAdapter.height(150),
+                    width: ScreenAdapter.width(200),
+                    alignment: Alignment.centerRight,
+                    padding: EdgeInsets.only(top:ScreenAdapter.height(20),left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),bottom: ScreenAdapter.height(20)),
+                    child: Center(
+                      //加上Center让文字居中
+                      child: Text(
+                        "",
+                        style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(48.0),
+                            color: ColorsUtil.hexToColor("#F9F9F9"),
+                            fontWeight: FontWeight.w600),
+                      ),
+                    ),
+                  ),
                 ),
               ),
               Positioned(

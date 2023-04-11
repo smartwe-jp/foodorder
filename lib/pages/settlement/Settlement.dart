@@ -1950,6 +1950,100 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页 model0 券卖机 `1精算机
   // 如果是刷卡则需要pos机返回成功在发送请求取消订单 取消动作移前并精算不需要取消
+  showCancelConfirm(){
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                ),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(GString.getToString(this._checkLanguage, "show_del_cart_item_tag"),
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 120.0),
+                              child: TextButton(
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "tag_button_no"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () {
+                                  Navigator.pop(context);
+                                },
+                              ),
+                            ),
+                            //垂直分割线
+                            SizedBox(
+                              width: 1,
+                              height: 40,
+                              child: DecoratedBox(
+                                decoration: BoxDecoration(color: Colors.black12),
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(right: 120.0),
+                              child: TextButton(
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "tag_button_yes"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+
+                                  _showBackEasyLoading();
+                                  if (_payment_method_num == "3" ||
+                                      _payment_method_num == "4") {
+
+                                    _getPaymentCancelPosData();
+                                  } else {
+                                    CancelOrder();
+                                  }
+
+                                },
+                              ),
+                            )
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ]
+            ),
+          );
+        });
+  }
   CancelOrder() {
     /*var formData = {
       "machineCode": _machineCode,
@@ -2366,6 +2460,7 @@ class _SettlementPageState extends State<SettlementPage> {
     request("webBootCreditCardCancel", method: 'POST', parameters: formData)
         .then((val) async {
       var response = json.decode(val.toString());
+      EasyLoading.dismiss();
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket.write(response['data']);
@@ -2493,7 +2588,8 @@ class _SettlementPageState extends State<SettlementPage> {
                       onLongPress: () {
                         try {
                           //Navigator.pop(context);
-                          CancelOrder();
+                          //CancelOrder();
+                          showCancelConfirm();
                         } catch (_) {}
                       },
                       child: Row(
@@ -2526,7 +2622,8 @@ class _SettlementPageState extends State<SettlementPage> {
                       onLongPress: () {
                         try {
                           //Navigator.pop(context);
-                          CancelOrder();
+                          //CancelOrder();
+                          showCancelConfirm();
                         } catch (_) {}
                       },
                       child: Row(
@@ -2951,8 +3048,9 @@ class _SettlementPageState extends State<SettlementPage> {
                         onTap: () {
                           try {
                             //Navigator.pop(context);
-                            _showBackEasyLoading();
-                            CancelOrder();
+                            //_showBackEasyLoading();
+                            //CancelOrder();
+                            showCancelConfirm();
                           } catch (_) {}
                         },
                         child: Container(
@@ -2966,8 +3064,7 @@ class _SettlementPageState extends State<SettlementPage> {
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
                           child: Text(
-                            GString.getToString(
-                                this._checkLanguage, "settlement_back"),
+                            GString.getToString(this._checkLanguage, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
@@ -3193,14 +3290,9 @@ class _SettlementPageState extends State<SettlementPage> {
                     InkWell(
                       onTap: () {
                         try {
+                          showCancelConfirm();
                           //Navigator.pop(context);
-                          if (_payment_method_num == "3" ||
-                              _payment_method_num == "4") {
-                            _showBackEasyLoading();
-                            _getPaymentCancelPosData();
-                          } else {
-                            CancelOrder();
-                          }
+
                         } catch (_) {}
                       },
                       child: Container(
@@ -3214,7 +3306,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           borderRadius: new BorderRadius.circular((5.0)),
                         ),
                         child: Text(
-                          "戻る",
+                          GString.getToString(this._checkLanguage, "settlement_back"),
                           style: TextStyle(
                               color: ColorsUtil.hexToColor("#000000"),
                               fontWeight: FontWeight.w500,
