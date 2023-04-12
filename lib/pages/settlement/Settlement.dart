@@ -1691,7 +1691,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         setState(() {
-          seconds = 60;
+          seconds = 120;
         });
 
         getPutInMoney();
@@ -1721,12 +1721,15 @@ class _SettlementPageState extends State<SettlementPage> {
 
           _scanQrCodeFocusNode.unfocus();
         });
-        if (int.parse(result) >=
-            int.parse(this._totalPrice, onError: (source) => -1)) {
+        if (int.parse(result) >=int.parse(this._totalPrice, onError: (source) => -1)) {
           setState(() {
-            _showPrintButton = true;
-            var outMoney =
-                int.parse(result) - int.parse(this._totalPrice); //找零金额
+            if(_isCancel == false){
+              _showPrintButton = true;
+            }else{
+              _showPrintButton = false;
+            }
+
+            var outMoney = int.parse(result) - int.parse(this._totalPrice); //找零金额
             _showOutMoney = outMoney.toString(); //找零金额
           });
         } else {
@@ -2061,6 +2064,7 @@ class _SettlementPageState extends State<SettlementPage> {
         setState(() {
           _isPrint = false;
           _totalPrice = "0";
+          _showPrintButton = false;
         });
 
         //如果现金机投币大于0后取消，则直接关机出金
@@ -2070,6 +2074,7 @@ class _SettlementPageState extends State<SettlementPage> {
           _isPrint = false;
           _totalPrice = "0";
           _getPutMoney = "0";
+          _showPrintButton = false;
         });
         //如果现金机投币大于0后取消，则直接关机出金
         Endtoubi();
@@ -3049,7 +3054,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         onTap: () {
                           try {
                             //Navigator.pop(context);
-                            //_showBackEasyLoading();
+                            _showBackEasyLoading();
                             CancelOrder();
                             //showCancelConfirm();
                           } catch (_) {}
@@ -3076,198 +3081,200 @@ class _SettlementPageState extends State<SettlementPage> {
                     ),
                     SizedBox(width: ScreenAdapter.width(80)),
                     _showPrintButton == true
-                        ? _is_allow_receipt == "1"
-                            ? Container(
-                                margin: EdgeInsets.only(
-                                    left: ScreenAdapter.width(20)),
-                                width: ScreenAdapter.width(540),
-                                alignment: Alignment.centerLeft,
-                                child: InkWell(
-                                  onTap: () {
-                                    if (_allowClick == true) {
-                                      setState(() {
-                                        _allowClick = false;
-                                      });
+                        ? (
+                        _is_allow_receipt == "1"
+                        ? Container(
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(540),
+                      alignment: Alignment.centerLeft,
+                      child: InkWell(
+                        onTap: () {
+                          if (_allowClick == true) {
+                            setState(() {
+                              _allowClick = false;
+                            });
 
-                                      _showEasyLoading();
+                            _showEasyLoading();
 
-                                      doPrintOrderMenu("1");
-                                    }
-                                  },
-                                  child: Container(
-                                    margin: EdgeInsets.only(
-                                        left: ScreenAdapter.width(20)),
-                                    width: ScreenAdapter.width(270),
-                                    height: ScreenAdapter.height(140),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      gradient: LinearGradient(
-                                        begin: Alignment.centerLeft,
-                                        end: Alignment.centerRight,
-                                        colors: [
-                                          ColorsUtil.hexToColor("#C47829"),
-                                          ColorsUtil.hexToColor("#854610"),
-                                        ],
-                                      ),
-                                      //设置圆角
-                                      borderRadius:
-                                          new BorderRadius.circular((5.0)),
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                            GString.getToString(
-                                                this._checkLanguage,
-                                                "settlement_confirmButton"),
-                                            style: TextStyle(
-                                              fontSize:
-                                                  ScreenAdapter.fontSize(32),
-                                              fontWeight: FontWeight.w600,
-                                              color: ColorsUtil.hexToColor(
-                                                  Gcolor.settlementBtnColor),
-                                            )),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              )
-                            : Container(
-                                width: ScreenAdapter.width(540),
-                                margin: EdgeInsets.only(
-                                    left: ScreenAdapter.width(20)),
-                                alignment: Alignment.centerLeft,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    InkWell(
-                                      onTap: () {
-                                        if (_allowClick == true) {
-                                          setState(() {
-                                            _allowClick = false;
-                                          });
+                            doPrintOrderMenu("1");
+                          }
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(20)),
+                          width: ScreenAdapter.width(270),
+                          height: ScreenAdapter.height(140),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            gradient: LinearGradient(
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                              colors: [
+                                ColorsUtil.hexToColor("#C47829"),
+                                ColorsUtil.hexToColor("#854610"),
+                              ],
+                            ),
+                            //设置圆角
+                            borderRadius:
+                            new BorderRadius.circular((5.0)),
+                          ),
+                          child: Column(
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  GString.getToString(
+                                      this._checkLanguage,
+                                      "settlement_confirmButton"),
+                                  style: TextStyle(
+                                    fontSize:
+                                    ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.settlementBtnColor),
+                                  )),
+                            ],
+                          ),
+                        ),
+                      ),
+                    )
+                        : Container(
+                      width: ScreenAdapter.width(540),
+                      margin: EdgeInsets.only(
+                          left: ScreenAdapter.width(20)),
+                      alignment: Alignment.centerLeft,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              if (_allowClick == true) {
+                                setState(() {
+                                  _allowClick = false;
+                                });
 
-                                          _showEasyLoading();
+                                _showEasyLoading();
 
-                                          doPrintOrderMenu("1");
-                                        }
-                                      },
-                                      child: Container(
-                                        //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                                        width: ScreenAdapter.width(220),
-                                        height: ScreenAdapter.height(140),
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          color:
-                                              ColorsUtil.hexToColor("#148DE8"),
-                                          //设置圆角
-                                          borderRadius:
-                                              new BorderRadius.circular((5.0)),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                                GString.getToString(
-                                                    this._checkLanguage,
-                                                    "settlement_confirmButton"),
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          32),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(
-                                                      Gcolor
-                                                          .settlementBtnColor),
-                                                )),
-                                            Text(
-                                                GString.getToString(
-                                                    this._checkLanguage,
-                                                    "settlement_confirmButton_yes"),
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          20),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(
-                                                      Gcolor
-                                                          .settlementBtnColor),
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(width: ScreenAdapter.width(30)),
-                                    InkWell(
-                                      onTap: () {
-                                        if (_allowClick == true) {
-                                          setState(() {
-                                            _allowClick = false;
-                                            _is_query_receipt = "2";
-                                          });
+                                doPrintOrderMenu("1");
+                              }
+                            },
+                            child: Container(
+                              //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                              width: ScreenAdapter.width(220),
+                              height: ScreenAdapter.height(140),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color:
+                                ColorsUtil.hexToColor("#148DE8"),
+                                //设置圆角
+                                borderRadius:
+                                new BorderRadius.circular((5.0)),
+                              ),
+                              child: Column(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                  Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton_yes"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            20),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: ScreenAdapter.width(30)),
+                          InkWell(
+                            onTap: () {
+                              if (_allowClick == true) {
+                                setState(() {
+                                  _allowClick = false;
+                                  _is_query_receipt = "2";
+                                });
 
-                                          if (_machineMode == "1") {
-                                            _showEasyLoading();
-                                          } else {
-                                            _showSuccessEasyLoading();
-                                          }
+                                if (_machineMode == "1") {
+                                  _showEasyLoading();
+                                } else {
+                                  _showSuccessEasyLoading();
+                                }
 
-                                          doPrintOrderMenu("2");
-                                        }
-                                      },
-                                      child: Container(
-                                        margin: EdgeInsets.only(
-                                            left: ScreenAdapter.width(10)),
-                                        width: ScreenAdapter.width(220),
-                                        height: ScreenAdapter.height(140),
-                                        alignment: Alignment.center,
-                                        decoration: BoxDecoration(
-                                          color:
-                                              ColorsUtil.hexToColor("#67c23a"),
-                                          //设置圆角
-                                          borderRadius:
-                                              new BorderRadius.circular((5.0)),
-                                        ),
-                                        child: Column(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.center,
-                                          children: [
-                                            Text(
-                                                GString.getToString(
-                                                    this._checkLanguage,
-                                                    "settlement_confirmButton"),
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          32),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(
-                                                      Gcolor
-                                                          .settlementBtnColor),
-                                                )),
-                                            Text(
-                                                GString.getToString(
-                                                    this._checkLanguage,
-                                                    "settlement_confirmButton_no"),
-                                                style: TextStyle(
-                                                  fontSize:
-                                                      ScreenAdapter.fontSize(
-                                                          20),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(
-                                                      Gcolor
-                                                          .settlementBtnColor),
-                                                )),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              )
+                                doPrintOrderMenu("2");
+                              }
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10)),
+                              width: ScreenAdapter.width(220),
+                              height: ScreenAdapter.height(140),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color:
+                                ColorsUtil.hexToColor("#67c23a"),
+                                //设置圆角
+                                borderRadius:
+                                new BorderRadius.circular((5.0)),
+                              ),
+                              child: Column(
+                                mainAxisAlignment:
+                                MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                  Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton_no"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            20),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                    )
                         : Container(
                             margin:
                                 EdgeInsets.only(left: ScreenAdapter.width(20)),
