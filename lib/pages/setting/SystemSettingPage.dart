@@ -27,6 +27,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:foodorder/services/GetxStorage.dart';
 import 'package:foodorder/services/showToast.dart';
+import 'SetPassword.dart';
 import 'SetPosIp.dart';
 
 class SystemSettingPage extends StatefulWidget {
@@ -2249,6 +2250,15 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     printer.cut();
   }
 
+  showSettingPassword() async {
+    await showDialog(
+        context: context,
+        barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
+        builder: (BuildContext context) {
+      return SetPasswordPage();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -2306,29 +2316,58 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                           )),
                     ),
                   ),
-                  InkWell(
-                    onTap: () {
-                      showDownloadingAlert();
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)),
-                      width: ScreenAdapter.width(180),
-                      height: ScreenAdapter.height(65),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: ColorsUtil.hexToColor("#409eff"),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
+                  Row(
+                    children: [
+                      InkWell(
+                        onTap: () {
+                          showSettingPassword();
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)),
+                          width: ScreenAdapter.width(180),
+                          height: ScreenAdapter.height(65),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: ColorsUtil.hexToColor("#409eff"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
+                          ),
+                          child: Text("パスワード",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(24),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )),
+                        ),
                       ),
-                      child: Text("アップデート",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(24),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )),
-                    ),
+                      SizedBox(width: 30,),
+                      InkWell(
+                        onTap: () {
+                          showDownloadingAlert();
+                        },
+                        child: Container(
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)),
+                          width: ScreenAdapter.width(180),
+                          height: ScreenAdapter.height(65),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: ColorsUtil.hexToColor("#409eff"),
+                            //设置圆角
+                            borderRadius: new BorderRadius.circular((16.0)),
+                          ),
+                          child: Text("アップデート",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(24),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )),
+                        ),
+                      ),
+                    ],
                   ),
 
                 ],

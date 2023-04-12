@@ -244,4 +244,15 @@ class HomeServices{
     return machineSettingInfo;
   }
 
+  static getMachineSettingManagePasswordInfo() async{
+    String passwordinfo;
+    try {
+      String machineInfoData = await GetxStorage.getString('machineSettingManagePassword');
+      passwordinfo = machineInfoData;
+    } catch (e) {
+      passwordinfo = "";
+    }
+    return passwordinfo;
+  }
+
 }

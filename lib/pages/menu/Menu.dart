@@ -4355,7 +4355,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               InkWell(
                                   onLongPress: (){
                                     if(int.parse(_shopCartTotalPrice) >0){
-                                      Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+                                      Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
                                     }
 
                                   },

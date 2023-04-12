@@ -920,7 +920,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
                 top: ScreenAdapter.height(20),
                 child: InkWell(
                   onTap: (){
-                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+                    Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
                   },
                   child: Container(
                     height: ScreenAdapter.height(150),

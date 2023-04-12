@@ -559,7 +559,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               enableFeedback: false,
           onLongPress: (){
             if(int.parse(_shopCartTotalPrice) >0){
-              Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+              Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
             }
 
           },
@@ -4254,7 +4254,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               InkWell(
                                   onLongPress: (){
                                     if(int.parse(_shopCartTotalPrice) >0){
-                                    Navigator.pushNamed(context, '/settingPage', arguments: {"machineCode": this._machineCode});
+                                    Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
                                     }
 
                                   },

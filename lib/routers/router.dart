@@ -14,6 +14,7 @@ import 'package:foodorder/pages/transitpage/TransitPage.dart';
 import 'package:foodorder/pages/checkOut/CheckOut.dart';
 
 import '../pages/checkOut/ScanCode.dart';
+import '../pages/setting/MiddlewareSettingPage.dart';
 
 //配置路由
 final routes = {
@@ -23,6 +24,7 @@ final routes = {
   '/menuZongPage': (context,{arguments}) => MenuZongPage(arguments:arguments), //菜单纵向
   "/settlement": (context,{arguments}) => SettlementPage(arguments:arguments), //结算页面
   "/settingPage": (context,{arguments}) => SettingPage(arguments:arguments), //设置页面
+  "/middlewareSettingPage": (context,{arguments}) => MiddlewareSettingPage(arguments:arguments), //中转进入设置页面
   "/systemSettingPage": (context,{arguments}) => SystemSettingPage(arguments:arguments), //系统设置
 
   '/transitPage': (context) => TransitPage(), //中转页面
