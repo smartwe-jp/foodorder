@@ -108,6 +108,10 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                           },
                           // do something with the input numbers
                           onSubmit: () {
+                            if(_myPassWordController.text.length <4){
+                              showToast("正しいパスワードを入力してください");
+                              return;
+                            }
                             if(_myPassWordController.text.length >4){
                               showToast("パスワード最大4ビット");
                               _myPassWordController.text = _myPassWordController.text.substring(0, 3);
