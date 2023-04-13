@@ -2353,7 +2353,7 @@ class _SettlementPageState extends State<SettlementPage> {
       }
       // 监听wifi模块发送的数据
       this._socket.listen((List<int> event) {
-        LogUtil.d(event);
+        //LogUtil.d(event);
         //if (event.length > 40) event.fillRange(266, 289, 32);
         for(var i=0; i< event.length; i++){
           if(event[i] >127){
@@ -2363,7 +2363,7 @@ class _SettlementPageState extends State<SettlementPage> {
         }
         var zhuanhuan = Uint8List.fromList(event);
         var eventString = Utf8Codec().decode(zhuanhuan);
-        LogUtil.d(eventString);
+        //LogUtil.d(eventString);
         //print(Utf8Codec().decode(zhuanhuan));
         //print("event=====${eventString}=====");
         String FirstString = eventString.substring(0, 1);
@@ -2371,7 +2371,7 @@ class _SettlementPageState extends State<SettlementPage> {
         String transaction_type = eventString.substring(3, 6);
         String resultString = eventString.substring(10, 13);
         String resultMPFSString = eventString.substring(13, 16);
-        //print(transaction_type);
+        //print("transaction_type==${transaction_type}");
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
           //print("resultStringresultString==${resultString}");
@@ -3299,7 +3299,14 @@ class _SettlementPageState extends State<SettlementPage> {
                       onTap: () {
                         try {
                           //showCancelConfirm();
-                          Navigator.pop(context);
+                          EasyLoading.dismiss();
+                          if (_payment_method_num == "3" ||
+                              _payment_method_num == "4") {
+                            _getPaymentCancelPosData();
+                          } else {
+                            Navigator.pop(context);
+                          }
+
 
                         } catch (_) {}
                       },
