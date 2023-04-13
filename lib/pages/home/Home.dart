@@ -57,7 +57,7 @@ class _HomePageState extends State<HomePage> {
     EasyLoading.dismiss();
     _getMachineInfo();
     //首页图片
-    _getHomeImageList();
+    //_getHomeImageList();
 
 
     //监听增加打开现金机的广播

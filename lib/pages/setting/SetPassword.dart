@@ -118,6 +118,7 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                               return;
                             }
 
+                            Storage.setString('machineSettingManagePassword', _myPassWordController.text);
                             GetxStorage.setData('machineSettingManagePassword', _myPassWordController.text);
                             showToast("設定に成功しました");
 

@@ -447,7 +447,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
               _scanQrCodeController.text = "";
               _tableCode = "";
             });
-
+            FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
           }
 
         }else{
@@ -458,6 +458,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           });
 
           _showDialogError(response['msg']);
+          FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
         }
       });
     }
@@ -491,7 +492,11 @@ class _CheckOutPageState extends State<CheckOutPage> {
               setState(() {
                 _isAllowPos = isAllowPos;
                 _payment_method_num = payment_method_num;
+                _checkLanguage = "JP";
+                _scanQrCodeController.text = "";
+                _tableCode = "";
               });
+
               if(_payment_method_num == "3" || _payment_method_num == "4"){
                 _getPosSettingInfo();
               }else{
@@ -505,9 +510,13 @@ class _CheckOutPageState extends State<CheckOutPage> {
                   _scanQrCodeController.text = "";
                   _tableCode = "";
                 });
+
               }
+              FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
             }
           );
+        }).then((_){
+          FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
         });
   }
 
@@ -888,7 +897,51 @@ class _CheckOutPageState extends State<CheckOutPage> {
             children: [
               Column(
                 children: [
+                  Container(
+                    height: 0,
+                    padding: EdgeInsets.only(left: 20),
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                            child: TextField(
+                              keyboardType: TextInputType.text,
+                              autofocus: true,
+                              showCursor: true, // 显示光标
+                              //readOnly: true,
+                              controller: _scanQrCodeController,
+                              focusNode: _scanQrCodeFocusNode,
+                              decoration: InputDecoration(
+                                hintText: "请扫码",
+                                border: InputBorder.none,
+                                isDense: true,
+                              ),
+                              style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
+                              onChanged: (value) {
+                                //print(value);
+                                if(value.length==1){
+                                  _showOrderEasyLoading();
+                                }
 
+                              },
+                              onSubmitted: (value){
+                                setState(() {
+                                  this._tableCode = value;
+                                });
+
+                                Future.delayed(Duration(milliseconds: 300), () {
+                                  _doNextPay();
+                                });
+
+
+
+                              },
+
+                              /// 扫码密码
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
                   Container(
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.height,

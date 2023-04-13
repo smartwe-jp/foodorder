@@ -370,6 +370,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
           });
 
           _showDialogError(response['msg']);
+          FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
         }
       });
     }
@@ -403,7 +404,10 @@ class _ScanCodePageState extends State<ScanCodePage> {
               setState(() {
                 _isAllowPos = isAllowPos;
                 _payment_method_num = payment_method_num;
+                _scanQrCodeController.text = "";
+                _tableCode = "";
               });
+
               if(_payment_method_num == "3" || _payment_method_num == "4"){
                 _getPosSettingInfo();
               }else{
@@ -417,9 +421,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
                   _scanQrCodeController.text = "";
                   _tableCode = "";
                 });
+
               }
+              FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
             }
           );
+        }).then((_){
+          FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
         });
   }
 

@@ -103,7 +103,7 @@ class _TransitPageState extends State<TransitPage> {
           "d_Pay":_dPay,
           "R_Pay":_rPay,
           "m_Pay":_mPay,
-        };
+        };//print(machineActivateData);
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
@@ -168,6 +168,11 @@ class _TransitPageState extends State<TransitPage> {
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
     //}
 
+    var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
+    if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
+      Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
+      GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
+    }
     /*setState(() {
       _machineMode = checkmachineMode;
     });*/
