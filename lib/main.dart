@@ -423,8 +423,9 @@ class _MyHomePageState extends State<MyHomePage> {
     Storage.setString('isCashState', json.encode(cashShowData));
     GetxStorage.setData('isCashState', json.encode(cashShowData));
     //判断是否第一次打开
-    sleep(Duration(milliseconds: 300));
-    getIsFirstOpen();
+    Future.delayed(Duration(milliseconds: 300), () {
+      getIsFirstOpen();
+    });
   }
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
@@ -443,7 +444,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _goMain() async {
 
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 300), () {
       Navigator.of(context).pushReplacementNamed('/transitPage');
     });
 
@@ -451,7 +452,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _goActivation() async {
 
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 300), () {
       Navigator.of(context).pushReplacementNamed('/activation');
     });
 

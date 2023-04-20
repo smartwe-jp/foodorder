@@ -242,9 +242,7 @@ class _HomePageState extends State<HomePage> {
             dining_type: _dining_type,
             menu_direction:_menu_direction,
             onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
-              print(mealType);
-              print(dining_type_num);
-              print(menuDirection);
+
 
               var jumpUrl = (_menu_direction == "1") ? "/menuPage" :"/menuZongPage";
               Navigator.pushNamed(context, jumpUrl,arguments: {"checkLanguage": checkedLanguage,"mealType":mealType});

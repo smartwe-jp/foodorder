@@ -45,7 +45,7 @@ class _ActivationPageState extends State<ActivationPage> {
   }
 
   void _goMain() async {
-    Future.delayed(Duration.zero, () {
+    Future.delayed(Duration(milliseconds: 300), () {
       Navigator.of(context).pushReplacementNamed('/transitPage');
     });
   }
@@ -99,7 +99,7 @@ class _ActivationPageState extends State<ActivationPage> {
                 },
                 onSubmitted: (value) {
                   setState(() {
-                    this._activation_code = value.toUpperCase();
+                    this._activation_code = value;
                   });
 
                   //sendActivationCode();
