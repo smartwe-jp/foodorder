@@ -1700,7 +1700,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
       child: Column(
         children: [
-          Text("チキンプリンター",
+          Text("キッチンプリンター",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
