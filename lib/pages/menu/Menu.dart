@@ -4328,10 +4328,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                                   }
                                                   return ListView(
                                                     shrinkWrap: true,
-                                                    children: controller.cartItems
-                                                        .map(
-                                                            (d) => generateCartList(context, d))
-                                                        .toList(),
+                                                    children: controller.cartItems.map((d) => generateCartList(context, d)).toList(),
                                                   );
                                                 },
                                               ),

@@ -53,7 +53,7 @@ class SQLService {
 
   Future getCartList() async {
     try {
-      var list = await db?.rawQuery('SELECT * FROM cart_list', []);
+      var list = await db?.rawQuery('SELECT * FROM cart_list ORDER BY id DESC', []);
       return list ?? [];
     } catch (e) {
       return Future.error(e);
@@ -90,8 +90,14 @@ class SQLService {
   }
 
   Future updateToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
-    return await this.db?.rawUpdate(query);
+    await this.db?.transaction((txn) async {
+      var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
+      int id2 = await txn.rawUpdate(query);
+      return id2;
+    });
+    //var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
+
+    //return await this.db?.rawUpdate(query);
   }
 
   Future addToCartNum(data) async {
