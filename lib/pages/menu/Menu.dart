@@ -678,7 +678,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return Text(
       mainTitle,
       overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
-      maxLines: 1,
+      maxLines: 2,
       style: TextStyle(
           fontSize: ScreenAdapter.fontSize(mainTitleFontSize),
           fontWeight: FontWeight.w600,
@@ -1774,7 +1774,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.77),
+            childAspectRatio: 0.76),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryTwoItemOne(items[index]);
         },
@@ -1822,25 +1822,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0),
 
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
+
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(70),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        /*SizedBox(
+                          height: ScreenAdapter.height(8),
+                        ),*/
+                        Container(
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -1866,13 +1870,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(8),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -2502,7 +2499,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 2,
-            childAspectRatio: 0.84),
+            childAspectRatio: 0.82),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySixItemOne(items[index]);
         },
@@ -2548,25 +2545,26 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 530.0, imgHeight: 530.0),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(8),
-                        ),
+
                         Container(
-                          //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          height: ScreenAdapter.height(68),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(2)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -2592,13 +2590,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(8),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -2635,7 +2626,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.66),
+            childAspectRatio: 0.64),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySevenItemOne(items[index]);
         },
@@ -2681,25 +2672,28 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
+               
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(70),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -2725,13 +2719,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -2764,7 +2751,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       Stack(
                         children: [
                           Container(
-                            height: ScreenAdapter.height(820),
+                            height: ScreenAdapter.height(835),
                             color: ColorsUtil.hexToColor("#FFFFFF"),
                             margin: EdgeInsets.only(
                                 left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -2803,25 +2790,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                       ),
                                       child: publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 710.0, imgHeight: 710.0),
                                     ),
-                                    SizedBox(
-                                      height: ScreenAdapter.height(7),
-                                    ),
+
                                     Container(
                                       width: ScreenAdapter.width(710),
-                                      //height: ScreenAdapter.height(55),
+                                      height: ScreenAdapter.height(68),
+                                      margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                                       padding: EdgeInsets.only(
                                           left: ScreenAdapter.width(10),
                                           right: ScreenAdapter.width(10)),
+                                      child: publicShowMenuTitle(
+                                          _leftItem['mainTitle'],
+                                          GFontSize.menuTwoListTitle,
+                                          Gcolor.mainTitleColor),
+                                    ),
+
+                                    Container(
+                                      width: ScreenAdapter.width(710),
+                                      margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                                       child: Row(
                                         mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.end,
                                         children: [
-                                          Expanded(
-                                            child: publicShowMenuTitle(
-                                                _leftItem['mainTitle'],
-                                                GFontSize.menuTwoListTitle,
-                                                Gcolor.mainTitleColor),
-                                          ),
+                                          Expanded(child: publicShowMenuSubtitle(_leftItem["subtitle"])),
                                           Container(
                                             //width: ScreenAdapter.width(125),
                                             //height: ScreenAdapter.height(315),
@@ -2841,13 +2832,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                         ],
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: ScreenAdapter.height(8),
-                                    ),
-                                    Container(
-                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                                      child: publicShowMenuSubtitle(_leftItem["subtitle"]),
-                                    ),
                                   ],
                                 )
                             ),
@@ -2860,7 +2844,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                           child: Column(
                             children: [
                               Container(
-                                height: ScreenAdapter.height(405),
+                                height: ScreenAdapter.height(415),
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 margin: EdgeInsets.only(
                                     left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -2903,28 +2887,30 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                                       ),
                                                     ),
                                                   ),
-                                                  child:publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 350.0, imgHeight: 310.0),
+                                                  child:publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 350.0, imgHeight: 300.0),
                                                 ),
 
-                                                SizedBox(
-                                                  height: ScreenAdapter.height(5),
-                                                ),
+
                                                 Container(
                                                   width: ScreenAdapter.width(350),
-                                                  //height: ScreenAdapter.height(315),
+                                                  height: ScreenAdapter.height(65),
+                                                  margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                                                   padding: EdgeInsets.only(
                                                       left: ScreenAdapter.width(10),
                                                       right: ScreenAdapter.width(10)),
+                                                  child: publicShowMenuTitle(
+                                                      _rightTop['mainTitle'],
+                                                      GFontSize.menuTwoListTitle,
+                                                      Gcolor.mainTitleColor),
+                                                ),
+                                                Container(
+                                                  margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                                                  padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
                                                     children: [
-                                                      Expanded(
-                                                          child: publicShowMenuTitle(
-                                                              _rightTop['mainTitle'],
-                                                              GFontSize.menuTwoListTitle,
-                                                              Gcolor.mainTitleColor)
-                                                      ),
+                                                      Expanded(child: publicShowMenuSubtitle(_rightTop["subtitle"])),
                                                       Container(
                                                         //width: ScreenAdapter.width(125),
                                                         //height: ScreenAdapter.height(315),
@@ -2951,13 +2937,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                                     ],
                                                   ),
                                                 ),
-                                                SizedBox(
-                                                  height: ScreenAdapter.height(8),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                                                  child: publicShowMenuSubtitle(_rightTop["subtitle"]),
-                                                ),
                                               ],
                                             )),
                                         //绝对定位 盖章
@@ -2966,7 +2945,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                     )),
                               ),
                               Container(
-                                height: ScreenAdapter.height(405),
+                                height: ScreenAdapter.height(415),
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 margin: EdgeInsets.only(
                                     left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -3008,28 +2987,31 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                                         ),
                                                       ),
                                                     ),
-                                                    child:publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 350.0, imgHeight: 310.0)
+                                                    child:publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 350.0, imgHeight: 300.0)
                                                 ),
 
-                                                SizedBox(
-                                                  height: ScreenAdapter.height(5),
-                                                ),
+
                                                 Container(
                                                   width: ScreenAdapter.width(350),
-                                                  //height: ScreenAdapter.height(315),
+                                                  height: ScreenAdapter.height(65),
+                                                  margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                                                   padding: EdgeInsets.only(
                                                       left: ScreenAdapter.width(10),
                                                       right: ScreenAdapter.width(10)),
+                                                  child: publicShowMenuTitle(
+                                                      _rightBottom['mainTitle'],
+                                                      GFontSize.menuTwoListTitle,
+                                                      Gcolor.mainTitleColor),
+                                                ),
+                                                Container(
+                                                  width: ScreenAdapter.width(350),
+                                                  margin: EdgeInsets.only(top:ScreenAdapter.height(3)),
+                                                  padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                                                   child: Row(
                                                     mainAxisAlignment: MainAxisAlignment.start,
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
                                                     children: [
-                                                      Expanded(
-                                                          child: publicShowMenuTitle(
-                                                              _rightBottom['mainTitle'],
-                                                              GFontSize.menuTwoListTitle,
-                                                              Gcolor.mainTitleColor)
-                                                      ),
+                                                      Expanded(child: publicShowMenuSubtitle(_rightBottom["subtitle"])),
                                                       Container(
                                                         //width: ScreenAdapter.width(125),
                                                         //height: ScreenAdapter.height(315),
@@ -3055,13 +3037,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                                       ),
                                                     ],
                                                   ),
-                                                ),
-                                                SizedBox(
-                                                  height: ScreenAdapter.height(8),
-                                                ),
-                                                Container(
-                                                  padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                                                  child: publicShowMenuSubtitle(_rightBottom["subtitle"]),
                                                 ),
                                               ],
                                             )),
@@ -3105,7 +3080,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.77),
+            childAspectRatio: 0.75),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryEightItemOne(items[index]);
         },
@@ -3152,25 +3127,29 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 350.0),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(7),
-                        ),
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(68),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        SizedBox(
+                          height: ScreenAdapter.height(8),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -3196,13 +3175,6 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(8),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
