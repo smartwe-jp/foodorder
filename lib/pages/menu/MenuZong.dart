@@ -58,9 +58,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   bool get wantKeepAlive =>true;
 
-  var _alignmentY = -1.0;
-
-
   Storage storageService = Storage();
 
   FToast fToast;
@@ -459,30 +456,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         _publicAddCart(item);
       }
     }
-    /*var checkResult;
-    var formData = {
-      "machineCode": _machineCode,
-      "menuCode": item['menuCode'],
-      "optionCode": ""
-    };print(formData);
-    request('webStockBooking', method: 'POST', parameters: formData)
-        .then((val) {
-      var response = json.decode(val.toString());print(response);
-      if (response['code'] == 200 && response["data"] == true) {
-        //如果option 存在，则弹出option
-        if(item['optionGroupVoList']?.length > 0){
-          _publicShowOneItemWidget(item);
-        }else{
-          _publicAddCart(item);
-        }
-      } else {
-        var showString = GString.getToString(
-            this._checkLanguage,
-            "show_storage_num_error");
-        showToast("${showString}");
-        checkResult = false;
-      }
-    });*/
   }
 
   _publicAddCart(item){
@@ -509,120 +482,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     });
   }
 
-  //顶部分类导航
-  showTopCategoryMenu() {
-
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
-      //mainAxisAlignment: MainAxisAlignment.spaceAround,
-      children: [
-        Container(
-          width: ScreenAdapter.width(860),
-
-        ),
-        Container(
-          //alignment: Alignment.centerRight,
-          child: InkWell(
-            enableFeedback: false,
-            onTap: () {
-              controller.removeAllFromCart();
-              //Navigator.pushNamed(context, '/home');
-              Navigator.of(context).pop();
-            },
-            child: Container(
-              padding: EdgeInsets.only(right: ScreenAdapter.width(15)),
-              margin: EdgeInsets.only(left: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
-              width: ScreenAdapter.width(110),
-              height: ScreenAdapter.height(55),
-              alignment: Alignment.centerRight,
-              decoration: BoxDecoration(
-                image: new DecorationImage(
-                  fit: BoxFit.fitWidth,
-                  image: AssetImage(GImage.getImageString("imgpublic", "backbutton_top")),
-                ),
-              ),
-              child: Center(
-                //加上Center让文字居中
-                child: Text(
-                  GString.getToString(this._checkLanguage, "top_back_button"),
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(26),
-                      color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-            child: InkWell(
-              enableFeedback: false,
-          onLongPress: (){
-            if(int.parse(_shopCartTotalPrice) >0){
-              Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
-            }
-
-          },
-          child: Container(
-            //width: ScreenAdapter.width(180),
-            height: ScreenAdapter.height(85),
-            margin: EdgeInsets.only(top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-            //spadding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              //color: Colors.red,
-            ),
-            child: Text(""),//设置
-          ),
-        )
-        ),
-      ],
-    );
-  }
-
+  //左侧分类导航
   showLeftCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
     List MenuColor = ["#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3","#F0DFB3"];
     var menuIndex = 0;
-    //言语
-    /*categoryMenus.add(Container(
-      child: InkWell(
-        enableFeedback: false,
-        onTap: () {
-          controller.removeAllFromCart();
-          Navigator.pushNamed(context, '/home');
-        },
-        child: Container(
-          margin: EdgeInsets.only(bottom: ScreenAdapter.height(15)),
-          width: ScreenAdapter.width(75),
-          height: ScreenAdapter.height(95),
-          alignment: Alignment.center,
-          decoration: BoxDecoration(
-            color: ColorsUtil.hexToColor("#A61C1C"),
 
-          ),
-          child: Center(
-            //加上Center让文字居中
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  width: ScreenAdapter.width(30),
-                  child: Text(
-                    GString.getToString(this._checkLanguage, "top_back_button"),
-                    style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(26),
-                        color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                        fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    ),);*/
     int _categoryNum = 1;
 
     for (var item in topMenu) {
@@ -806,7 +671,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     return Text(
       mainTitle,
       overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
-      maxLines: 1,
+      maxLines: 2,
       style: TextStyle(
           fontSize: ScreenAdapter.fontSize(mainTitleFontSize),
           fontWeight: FontWeight.w600,
@@ -818,24 +683,23 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   publicShowMenuSubtitle(subtitleList) {
     //标签循环相关
     if (subtitleList != null && subtitleList.length > 0) {
-      var labelSubtitleLength = subtitleList.length;
-      List<Widget> labels = []; //先建一个数组用于存放循环生成的widget
-      //Widget labelContent;
-      for (var i = 0; i < labelSubtitleLength; i++) {
-        labels.add(Container(
-          child: Text(subtitleList[i],
-            style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
-                color: ColorsUtil.hexToColor("#000000")),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ));
+      var subtitle ="";
+      if (subtitleList != null && subtitleList?.length > 0) {
+        for (var i = 0; i < subtitleList.length; i++) {
+          subtitle += subtitleList[i];
+        }
       }
-      return Wrap(
-          spacing: ScreenAdapter.width(5), // set spacing here
-          runSpacing: ScreenAdapter.height(10),
-          children: labels);
+      return Container(
+        padding: EdgeInsets.only(left:ScreenAdapter.width(5),top:ScreenAdapter.height(5),right:ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+
+        child: Text(subtitle,
+          style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
+              color: ColorsUtil.hexToColor("#000000")),
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
+      );
     } else {
       return Container(
         height: 0,
@@ -974,15 +838,17 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   _changeInitialOption(menuCode, setMenuState) {
     var attr = _menuOption[menuCode];
     var initMenuOption = _noChangeinitialmenuOption[menuCode];
-    for (var i = 0; i < attr.length; i++) {
-      for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
-        var check = initMenuOption.any((e) => e ==attr[i]['optionVoList'][j]["optionCode"]);
-         if(true == check){
-           attr[i]['optionVoList'][j]["checked"] = true;
-         }else{
-           attr[i]['optionVoList'][j]["checked"] = false;
-         }
+    if(attr != null){
+      for (var i = 0; i < attr.length; i++) {
+        for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
+          var check = initMenuOption.any((e) => e ==attr[i]['optionVoList'][j]["optionCode"]);
+          if(true == check){
+            attr[i]['optionVoList'][j]["checked"] = true;
+          }else{
+            attr[i]['optionVoList'][j]["checked"] = false;
+          }
 
+        }
       }
     }
 
@@ -1908,7 +1774,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
               mainAxisSpacing: ScreenAdapter.height(10),
               crossAxisCount: 3,
-              childAspectRatio: 0.76),
+              childAspectRatio: 0.72),
           itemBuilder: (BuildContext context, int index) {
             return showCategoryTwoItemOne(items[index]);
           },
@@ -1920,6 +1786,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   showCategoryTwoItemOne(item) {
     Offset temp;
+    var subtitle = "";
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
@@ -1958,25 +1830,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0),
 
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(5),
+
+                        Container(
+                          height: ScreenAdapter.height(68),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
                         ),
                         Container(
-                          //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),
-                              right: ScreenAdapter.width(5)),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -2002,13 +1875,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(5),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -2295,6 +2161,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   showCategoryFourItemOne(item) {
     Offset temp;
+    var subtitle = "";
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
 
     return Container(
       padding: EdgeInsets.only(
@@ -2358,7 +2230,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         ),
                         Container(
                           padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
+                          child: publicShowMenuSubtitle(item['subtitle']),
                         ),
                         Container(
                           padding: EdgeInsets.only(
@@ -2641,7 +2513,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 2,
-            childAspectRatio: 0.77),
+            childAspectRatio: 0.76),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySixItemOne(items[index]);
         },
@@ -2652,6 +2524,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   showCategorySixItemOne(item) {
     Offset temp;
+    var subtitle = "";
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
@@ -2684,25 +2562,28 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
+
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(68),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                          ),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -2728,17 +2609,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
-                        Container(
-                          //padding: EdgeInsets.only(
-                          //left: ScreenAdapter.width(15),
-                          //top: ScreenAdapter.height(20),
-                          //right: ScreenAdapter.width(15)
-                          //),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -2775,7 +2645,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.62),
+            childAspectRatio: 0.595),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySevenItemOne(items[index]);
         },
@@ -2786,6 +2656,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   showCategorySevenItemOne(item) {
     Offset temp;
+    var subtitle = "";
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
@@ -2840,25 +2716,31 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
+
                         Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(68),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(
+                          left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -2885,17 +2767,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                             ],
                           ),
                         ),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
-                        Container(
-                          //padding: EdgeInsets.only(
-                          //left: ScreenAdapter.width(15),
-                          //top: ScreenAdapter.height(20),
-                          //right: ScreenAdapter.width(15)
-                          //),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
-                        ),
                       ],
                     )),
                 //绝对定位 盖章
@@ -2917,283 +2788,273 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         var _newItemList = showItemList.sublist(3);
 
         return Container(
-          child: ListView(
+          child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             physics: new AlwaysScrollableScrollPhysics(),
-            children: [
-              Row(
-                children: [
-                  Stack(
-                    children: [
-                      Container(
-                        height: ScreenAdapter.height(810),
-                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
-                        child: InkWell(
-                            enableFeedback: false,
-                            onTap: () async {
-                              if (_leftItem['qtyBounds'] == 0) {
-                                return;
-                              } else if (_leftItem['qtyBounds'] > 0) {
-                                //请求限定接口
-                                _checkQtyBoundsCount(_leftItem, "");
-                              }else{
-                                //如果option 存在，则弹出option
-                                if(_leftItem['optionGroupVoList']?.length > 0){
-                                  _publicShowOneItemWidget(_leftItem);
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Stack(
+                      children: [
+                        Container(
+                          height: ScreenAdapter.height(830),
+                          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
+                          child: InkWell(
+                              enableFeedback: false,
+                              onTap: () async {
+                                if (_leftItem['qtyBounds'] == 0) {
+                                  return;
+                                } else if (_leftItem['qtyBounds'] > 0) {
+                                  //请求限定接口
+                                  _checkQtyBoundsCount(_leftItem, "");
                                 }else{
+                                  //如果option 存在，则弹出option
+                                  if(_leftItem['optionGroupVoList']?.length > 0){
+                                    _publicShowOneItemWidget(_leftItem);
+                                  }else{
 
-                                  _publicAddCart(_leftItem);
+                                    _publicAddCart(_leftItem);
+                                  }
                                 }
-                              }
 
-                            },
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0),
-                                SizedBox(
-                                  height: ScreenAdapter.height(10),
-                                ),
-                                Container(
-                                  width: ScreenAdapter.width(580),
-                                  //height: ScreenAdapter.height(315),
-                                  padding: EdgeInsets.only(
-                                      left: ScreenAdapter.width(10),
-                                      right: ScreenAdapter.width(10)),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Expanded(
-                                        child: publicShowMenuTitle(
-                                            _leftItem['mainTitle'],
-                                            GFontSize.menuTwoListTitle,
-                                            Gcolor.mainTitleColor),
-                                      ),
-                                      Container(
-                                        //width: ScreenAdapter.width(125),
-                                        //height: ScreenAdapter.height(315),
-                                        alignment: Alignment.centerRight,
-                                        padding: EdgeInsets.only(
-                                            left: ScreenAdapter.width(5),
-                                            right: ScreenAdapter.width(0)),
-                                        child: publicShowMenuPrice(
-                                            _leftItem['currentPrice'],
-                                            GFontSize.menuTwopriceLift,
-                                            Gcolor.mainTitleColor,
-                                            GFontSize.menuTwoprice,
-                                            Gcolor.priceColor,
-                                            GFontSize.menuTwopriceRight,
-                                            Gcolor.mainTitleColor),
-                                      ),
-                                    ],
+                              },
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: <Widget>[
+                                  publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0),
+                                  Container(
+                                    width: ScreenAdapter.width(580),
+                                    height: ScreenAdapter.height(68),
+                                    margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                                    padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10),
+                                        right: ScreenAdapter.width(10)),
+                                    child: publicShowMenuTitle(
+                                        _leftItem['mainTitle'],
+                                        GFontSize.menuTwoListTitle,
+                                        Gcolor.mainTitleColor),
                                   ),
-                                ),
 
-                                Container(
-                                  child: publicShowMenuSubtitle(_leftItem["subtitle"]),
-                                ),
-                              ],
-                            )
+                                  Container(
+                                    width: ScreenAdapter.width(580),
+                                    //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        Expanded(child: publicShowMenuSubtitle(_leftItem["subtitle"])),
+                                        Container(
+                                          //width: ScreenAdapter.width(125),
+                                          //height: ScreenAdapter.height(315),
+                                          alignment: Alignment.centerRight,
+                                          padding: EdgeInsets.only(
+                                              left: ScreenAdapter.width(5),
+                                              right: ScreenAdapter.width(0)),
+                                          child: publicShowMenuPrice(
+                                              _leftItem['currentPrice'],
+                                              GFontSize.menuTwopriceLift,
+                                              Gcolor.mainTitleColor,
+                                              GFontSize.menuTwoprice,
+                                              Gcolor.priceColor,
+                                              GFontSize.menuTwopriceRight,
+                                              Gcolor.mainTitleColor),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              )
+                          ),
                         ),
-                      ),
-                      //绝对定位 盖章
-                      publicShowMenuSellOut(_leftItem['qtyBounds']),
-                    ],
-                  ),
-                  Column(
-                    children: [
-                      Container(
-                        height: ScreenAdapter.height(400),
-                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
-                        child: InkWell(
-                            enableFeedback: false,
-                            onTap: () async {
-                              if (_rightTop['qtyBounds'] == 0) {
-                                return;
-                              } else if (_rightTop['qtyBounds'] > 0) {
-                                //请求限定接口
-                                _checkQtyBoundsCount(_rightTop, "");
+                        //绝对定位 盖章
+                        publicShowMenuSellOut(_leftItem['qtyBounds']),
+                      ],
+                    ),
+                    Expanded(child: Column(
+                      children: [
+                        Container(
+                          height: ScreenAdapter.height(410),
+                          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                          child: InkWell(
+                              enableFeedback: false,
+                              onTap: () async {
+                                if (_rightTop['qtyBounds'] == 0) {
+                                  return;
+                                } else if (_rightTop['qtyBounds'] > 0) {
+                                  //请求限定接口
+                                  _checkQtyBoundsCount(_rightTop, "");
 
-                              }else{
-                                if(_rightTop['optionGroupVoList']?.length > 0){
-                                  _publicShowOneItemWidget(_rightTop);
                                 }else{
-                                  _publicAddCart(_rightTop);
+                                  if(_rightTop['optionGroupVoList']?.length > 0){
+                                    _publicShowOneItemWidget(_rightTop);
+                                  }else{
+                                    _publicAddCart(_rightTop);
+                                  }
                                 }
-                              }
 
 
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 300.0),
-                                        SizedBox(
-                                          height: ScreenAdapter.height(10),
-                                        ),
-                                        Container(
-                                          width: ScreenAdapter.width(400),
-                                          //height: ScreenAdapter.height(315),
-                                          padding: EdgeInsets.only(
-                                              left: ScreenAdapter.width(10),
-                                              right: ScreenAdapter.width(10)),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Expanded(
-                                                  child: publicShowMenuTitle(
-                                                      _rightTop['mainTitle'],
-                                                      GFontSize.menuTwoListTitle,
-                                                      Gcolor.mainTitleColor)
-                                              ),
-                                              Container(
-                                                //width: ScreenAdapter.width(125),
-                                                //height: ScreenAdapter.height(315),
-                                                alignment: Alignment.centerRight,
-                                                padding: EdgeInsets.only(
-                                                    left: ScreenAdapter.width(5),
-                                                    right: ScreenAdapter.width(0)),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                  children: [
-                                                    //价格展示
-                                                    publicShowMenuPrice(
-                                                        _rightTop['currentPrice'],
-                                                        GFontSize.menuTwopriceLift,
-                                                        Gcolor.mainTitleColor,
-                                                        GFontSize.menuTwoprice,
-                                                        Gcolor.priceColor,
-                                                        GFontSize.menuTwopriceRight,
-                                                        Gcolor.mainTitleColor),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                              },
+                              child: Stack(
+                                children: [
+                                  Container(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+
+                                          Container(
+                                            width: ScreenAdapter.width(400),
+                                            height: ScreenAdapter.height(68),
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(10),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuTitle(
+                                                _rightTop['mainTitle'],
+                                                GFontSize.menuTwoListTitle,
+                                                Gcolor.mainTitleColor),
                                           ),
-                                        ),
 
-                                        Container(
-                                          //padding: EdgeInsets.only(
-                                          //left: ScreenAdapter.width(15),
-                                          //top: ScreenAdapter.height(20),
-                                          //right: ScreenAdapter.width(15)
-                                          //),
-                                          child: publicShowMenuSubtitle(_rightTop["subtitle"]),
-                                        ),
-                                      ],
-                                    )),
-                                //绝对定位 盖章
-                                publicShowMenuSellOut(_rightTop['qtyBounds']),
-                              ],
-                            )),
-                      ),
-                      Container(
-                        height: ScreenAdapter.height(400),
-                        color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
-                        child: InkWell(
-                            enableFeedback: false,
-                            onTap: () async {
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(5),
+                                                right: ScreenAdapter.width(0)),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Expanded(child: publicShowMenuSubtitle(_rightTop["subtitle"])),
+                                                Container(
+                                                  //width: ScreenAdapter.width(125),
+                                                  //height: ScreenAdapter.height(315),
+                                                  alignment: Alignment.centerRight,
+                                                  padding: EdgeInsets.only(
+                                                      left: ScreenAdapter.width(5),
+                                                      right: ScreenAdapter.width(0)),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                                    children: [
+                                                      //价格展示
+                                                      publicShowMenuPrice(
+                                                          _rightTop['currentPrice'],
+                                                          GFontSize.menuTwopriceLift,
+                                                          Gcolor.mainTitleColor,
+                                                          GFontSize.menuTwoprice,
+                                                          Gcolor.priceColor,
+                                                          GFontSize.menuTwopriceRight,
+                                                          Gcolor.mainTitleColor),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  //绝对定位 盖章
+                                  publicShowMenuSellOut(_rightTop['qtyBounds']),
+                                ],
+                              )),
+                        ),
+                        Container(
+                          height: ScreenAdapter.height(410),
+                          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                          child: InkWell(
+                              enableFeedback: false,
+                              onTap: () async {
 
-                              if (_rightBottom['qtyBounds'] == 0) {
-                                return;
-                              } else if (_rightBottom['qtyBounds'] > 0) {
-                                //请求限定接口
-                                _checkQtyBoundsCount(_rightBottom, "");
+                                if (_rightBottom['qtyBounds'] == 0) {
+                                  return;
+                                } else if (_rightBottom['qtyBounds'] > 0) {
+                                  //请求限定接口
+                                  _checkQtyBoundsCount(_rightBottom, "");
 
-                              }else{
-                                if(_rightBottom['optionGroupVoList']?.length > 0){
-                                  _publicShowOneItemWidget(_rightBottom);
                                 }else{
-                                  _publicAddCart(_rightBottom);
+                                  if(_rightBottom['optionGroupVoList']?.length > 0){
+                                    _publicShowOneItemWidget(_rightBottom);
+                                  }else{
+                                    _publicAddCart(_rightBottom);
+                                  }
                                 }
-                              }
 
-                            },
-                            child: Stack(
-                              children: [
-                                Container(
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 300.0),
-                                        SizedBox(
-                                          height: ScreenAdapter.height(10),
-                                        ),
-                                        Container(
-                                          width: ScreenAdapter.width(400),
-                                          //height: ScreenAdapter.height(315),
-                                          padding: EdgeInsets.only(
-                                              left: ScreenAdapter.width(10),
-                                              right: ScreenAdapter.width(10)),
-                                          child: Row(
-                                            mainAxisAlignment: MainAxisAlignment.start,
-                                            crossAxisAlignment: CrossAxisAlignment.end,
-                                            children: [
-                                              Expanded(
-                                                  child: publicShowMenuTitle(
-                                                      _rightBottom['mainTitle'],
-                                                      GFontSize.menuTwoListTitle,
-                                                      Gcolor.mainTitleColor)
-                                              ),
-                                              Container(
-                                                //width: ScreenAdapter.width(125),
-                                                //height: ScreenAdapter.height(315),
-                                                alignment: Alignment.centerRight,
-                                                padding: EdgeInsets.only(
-                                                    left: ScreenAdapter.width(5),
-                                                    right: ScreenAdapter.width(0)),
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.end,
-                                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                                  children: [
-                                                    //价格展示
-                                                    publicShowMenuPrice(
-                                                        _rightBottom['currentPrice'],
-                                                        GFontSize.menuTwopriceLift,
-                                                        Gcolor.mainTitleColor,
-                                                        GFontSize.menuTwoprice,
-                                                        Gcolor.priceColor,
-                                                        GFontSize.menuTwopriceRight,
-                                                        Gcolor.mainTitleColor),
-                                                  ],
-                                                ),
-                                              ),
-                                            ],
+                              },
+                              child: Stack(
+                                children: [
+                                  Container(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+                                          Container(
+                                            width: ScreenAdapter.width(400),
+                                            height: ScreenAdapter.height(68),
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(10),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuTitle(
+                                                _rightBottom['mainTitle'],
+                                                GFontSize.menuTwoListTitle,
+                                                Gcolor.mainTitleColor),
                                           ),
-                                        ),
-                                        Container(
-                                          //padding: EdgeInsets.only(
-                                          //left: ScreenAdapter.width(15),
-                                          //top: ScreenAdapter.height(20),
-                                          //right: ScreenAdapter.width(15)
-                                          //),
-                                          child: publicShowMenuSubtitle(_rightBottom["subtitle"]),
-                                        ),
-                                      ],
-                                    )),
-                                //绝对定位 盖章
-                                publicShowMenuSellOut(_rightBottom['qtyBounds']),
-                              ],
-                            )),
-                      ),
-                    ],
-                  )
-                ],
-              ),
-              showCategoryEightItemList(_newItemList)
-            ],
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(10),
+                                                right: ScreenAdapter.width(10)
+                                            ),
+                                            child: Row(
+                                              mainAxisAlignment: MainAxisAlignment.start,
+                                              crossAxisAlignment: CrossAxisAlignment.end,
+                                              children: [
+                                                Expanded(child: publicShowMenuSubtitle(_rightBottom["subtitle"])),
+                                                Container(
+                                                  //width: ScreenAdapter.width(125),
+                                                  //height: ScreenAdapter.height(315),
+                                                  alignment: Alignment.centerRight,
+                                                  padding: EdgeInsets.only(
+                                                      left: ScreenAdapter.width(5),
+                                                      right: ScreenAdapter.width(0)),
+                                                  child: Row(
+                                                    mainAxisAlignment: MainAxisAlignment.end,
+                                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                                    children: [
+                                                      //价格展示
+                                                      publicShowMenuPrice(
+                                                          _rightBottom['currentPrice'],
+                                                          GFontSize.menuTwopriceLift,
+                                                          Gcolor.mainTitleColor,
+                                                          GFontSize.menuTwoprice,
+                                                          Gcolor.priceColor,
+                                                          GFontSize.menuTwopriceRight,
+                                                          Gcolor.mainTitleColor),
+                                                    ],
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ],
+                                      )),
+                                  //绝对定位 盖章
+                                  publicShowMenuSellOut(_rightBottom['qtyBounds']),
+                                ],
+                              )),
+                        ),
+                      ],
+                    ))
+                  ],
+                ),
+                showCategoryEightItemList(_newItemList)
+              ],
+            ),
           ),
         );
       }else{
@@ -3221,7 +3082,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.73),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryEightItemOne(items[index]);
         },
@@ -3267,25 +3128,29 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(68),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
-                          child: Row(
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(
+                          left: ScreenAdapter.width(15),
+                          right: ScreenAdapter.width(15)
+                          ),
+                          child:Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -3311,17 +3176,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(10),
-                        ),
-                        Container(
-                          //padding: EdgeInsets.only(
-                          //left: ScreenAdapter.width(15),
-                          //top: ScreenAdapter.height(20),
-                          //right: ScreenAdapter.width(15)
-                          //),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
@@ -3354,7 +3208,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     Stack(
                       children: [
                         Container(
-                          height: ScreenAdapter.height(810),
+                          height: ScreenAdapter.height(830),
                           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
                           margin: EdgeInsets.only(
                               left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
@@ -3381,25 +3235,28 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0),
-                                  SizedBox(
-                                    height: ScreenAdapter.height(10),
-                                  ),
                                   Container(
                                     width: ScreenAdapter.width(580),
-                                    //height: ScreenAdapter.height(315),
+                                    height: ScreenAdapter.height(68),
+                                    margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                                     padding: EdgeInsets.only(
                                         left: ScreenAdapter.width(10),
                                         right: ScreenAdapter.width(10)),
+                                    child: publicShowMenuTitle(
+                                        _leftItem['mainTitle'],
+                                        GFontSize.menuTwoListTitle,
+                                        Gcolor.mainTitleColor),
+                                  ),
+
+                                  Container(
+                                    width: ScreenAdapter.width(580),
+                                    //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                                     child: Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                                       crossAxisAlignment: CrossAxisAlignment.end,
                                       children: [
-                                        Expanded(
-                                          child: publicShowMenuTitle(
-                                              _leftItem['mainTitle'],
-                                              GFontSize.menuTwoListTitle,
-                                              Gcolor.mainTitleColor),
-                                        ),
+                                        Expanded(child: publicShowMenuSubtitle(_leftItem["subtitle"])),
                                         Container(
                                           //width: ScreenAdapter.width(125),
                                           //height: ScreenAdapter.height(315),
@@ -3419,10 +3276,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       ],
                                     ),
                                   ),
-
-                                  Container(
-                                    child: publicShowMenuSubtitle(_leftItem["subtitle"]),
-                                  ),
                                 ],
                               )
                           ),
@@ -3431,10 +3284,10 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         publicShowMenuSellOut(_leftItem['qtyBounds']),
                       ],
                     ),
-                    Column(
+                    Expanded(child: Column(
                       children: [
                         Container(
-                          height: ScreenAdapter.height(400),
+                          height: ScreenAdapter.height(410),
                           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
                           margin: EdgeInsets.only(
                               left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -3463,26 +3316,29 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 300.0),
-                                          SizedBox(
-                                            height: ScreenAdapter.height(10),
-                                          ),
+                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+
                                           Container(
                                             width: ScreenAdapter.width(400),
-                                            //height: ScreenAdapter.height(315),
+                                            height: ScreenAdapter.height(68),
                                             padding: EdgeInsets.only(
                                                 left: ScreenAdapter.width(10),
                                                 right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuTitle(
+                                                _rightTop['mainTitle'],
+                                                GFontSize.menuTwoListTitle,
+                                                Gcolor.mainTitleColor),
+                                          ),
+
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(5),
+                                                right: ScreenAdapter.width(0)),
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
-                                                Expanded(
-                                                    child: publicShowMenuTitle(
-                                                        _rightTop['mainTitle'],
-                                                        GFontSize.menuTwoListTitle,
-                                                        Gcolor.mainTitleColor)
-                                                ),
+                                                Expanded(child: publicShowMenuSubtitle(_rightTop["subtitle"])),
                                                 Container(
                                                   //width: ScreenAdapter.width(125),
                                                   //height: ScreenAdapter.height(315),
@@ -3509,15 +3365,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                               ],
                                             ),
                                           ),
-
-                                          Container(
-                                            //padding: EdgeInsets.only(
-                                            //left: ScreenAdapter.width(15),
-                                            //top: ScreenAdapter.height(20),
-                                            //right: ScreenAdapter.width(15)
-                                            //),
-                                            child: publicShowMenuSubtitle(_rightTop["subtitle"]),
-                                          ),
                                         ],
                                       )),
                                   //绝对定位 盖章
@@ -3526,7 +3373,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               )),
                         ),
                         Container(
-                          height: ScreenAdapter.height(400),
+                          height: ScreenAdapter.height(410),
                           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
                           margin: EdgeInsets.only(
                               left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -3555,26 +3402,28 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 300.0),
-                                          SizedBox(
-                                            height: ScreenAdapter.height(10),
-                                          ),
+                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
                                           Container(
                                             width: ScreenAdapter.width(400),
-                                            //height: ScreenAdapter.height(315),
+                                            height: ScreenAdapter.height(68),
                                             padding: EdgeInsets.only(
                                                 left: ScreenAdapter.width(10),
                                                 right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuTitle(
+                                                _rightBottom['mainTitle'],
+                                                GFontSize.menuTwoListTitle,
+                                                Gcolor.mainTitleColor),
+                                          ),
+                                          Container(
+                                            padding: EdgeInsets.only(
+                                                left: ScreenAdapter.width(10),
+                                                right: ScreenAdapter.width(10)
+                                            ),
                                             child: Row(
                                               mainAxisAlignment: MainAxisAlignment.start,
                                               crossAxisAlignment: CrossAxisAlignment.end,
                                               children: [
-                                                Expanded(
-                                                    child: publicShowMenuTitle(
-                                                        _rightBottom['mainTitle'],
-                                                        GFontSize.menuTwoListTitle,
-                                                        Gcolor.mainTitleColor)
-                                                ),
+                                                Expanded(child: publicShowMenuSubtitle(_rightBottom["subtitle"])),
                                                 Container(
                                                   //width: ScreenAdapter.width(125),
                                                   //height: ScreenAdapter.height(315),
@@ -3601,14 +3450,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                               ],
                                             ),
                                           ),
-                                          Container(
-                                            //padding: EdgeInsets.only(
-                                            //left: ScreenAdapter.width(15),
-                                            //top: ScreenAdapter.height(20),
-                                            //right: ScreenAdapter.width(15)
-                                            //),
-                                            child: publicShowMenuSubtitle(_rightBottom["subtitle"]),
-                                          ),
                                         ],
                                       )),
                                   //绝对定位 盖章
@@ -3617,7 +3458,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               )),
                         ),
                       ],
-                    )
+                    ))
                   ],
                 ),
                 showCategoryNineItemList(_newItemList)
@@ -3649,7 +3490,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(5),
             crossAxisCount: 2,
-            childAspectRatio: 0.77),
+            childAspectRatio: 0.76),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryNineItemOne(items[index]);
         },
@@ -3696,25 +3537,25 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-                        SizedBox(
-                          height: ScreenAdapter.height(7),
-                        ),
+
                         Container(
                           //width: ScreenAdapter.width(20),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(68),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
+                          child: publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
                           child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Expanded(
-                                child: publicShowMenuTitle(
-                                    item['mainTitle'],
-                                    GFontSize.menuTwoListTitle,
-                                    Gcolor.mainTitleColor),
-                              ),
+                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
                               Container(
                                 //width: ScreenAdapter.width(125),
                                 //height: ScreenAdapter.height(315),
@@ -3740,13 +3581,6 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               ),
                             ],
                           ),
-                        ),
-                        SizedBox(
-                          height: ScreenAdapter.height(8),
-                        ),
-                        Container(
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: publicShowMenuSubtitle(item["subtitle"]),
                         ),
                       ],
                     )),
