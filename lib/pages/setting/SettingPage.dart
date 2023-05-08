@@ -920,7 +920,7 @@ class _SettingPageState extends State<SettingPage> {
                           ),
                         ),
 
-                        if(_is_allow_attendance == "1")
+                        /*if(_is_allow_attendance == "1")
                           InkWell(
                           onTap: () {
                             if(_attendanceCode !="" && _attendanceCode != null){
@@ -955,7 +955,7 @@ class _SettingPageState extends State<SettingPage> {
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )),
                           ),
-                        ),
+                        ),*/
                         InkWell(
                           onTap: () {
                             Navigator.pushNamed(context, '/systemSettingPage', arguments: {"machineCode": this._machineCode});

@@ -2396,7 +2396,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   (_actuarial == true) ? setMachineMode() : Container(height: 0,), //设置机器类型
                   (_lineup == true) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
-		              setIsAllowAttendance(),//是否开启签到
+		              //setIsAllowAttendance(),//是否开启签到
                   setIsAllowPos(),//是否开启pos机刷卡
                   setIsAllowWlanPrint(),//是否开启网络打印机
                   setIsAllowWlanPrintTwo(),//第二台打印机
