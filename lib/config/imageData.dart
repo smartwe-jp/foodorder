@@ -83,6 +83,13 @@ class GImage{
         "paymentSuccess":"assets/images/public/paymentSuccess.jpg",
         "checkOut_checked":"assets/images/public/checkOut_checked.png",
 
+        "settlement_edy":"assets/images/public/settlement_edy.png",
+        "settlement_id":"assets/images/public/settlement_id.png",
+        "settlement_nanaco":"assets/images/public/settlement_nanaco.png",
+        "settlement_waon":"assets/images/public/settlement_waon.png",
+        "settlement_quicpay":"assets/images/public/settlement_quicpay.png",
+        "settlement_jiaotongxi":"assets/images/public/settlement_jiaotongxi.jpg",
+
       };
     }
 

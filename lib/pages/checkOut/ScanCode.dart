@@ -71,6 +71,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
   var _showrPay = false;
   var _showmPay = false;
 
+  var _showPosEdy = false;
+  var _showPosiD = false;
+  var _showPosIC = false;
+  var _showPosQUICPay = false;
+  var _showPosWAON = false;
+  var _showPosnanaco = false;
+
   var _orderId = "";
   var _totlaPrice = "0";
   var _tableNum = "0";
@@ -163,6 +170,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
       _showdPay = systemSettingInfo['d_Pay'];
       _showrPay = systemSettingInfo['R_Pay'];
       _showmPay = systemSettingInfo['m_Pay'];
+
+      _showPosEdy = systemSettingInfo['pos_Edy'];
+      _showPosiD = systemSettingInfo['pos_iD'];
+      _showPosIC = systemSettingInfo['pos_IC'];
+      _showPosQUICPay = systemSettingInfo['pos_QUICPay'];
+      _showPosWAON = systemSettingInfo['pos_WAON'];
+      _showPosnanaco = systemSettingInfo['pos_nanaco'];
     });
   }
 
@@ -398,6 +412,12 @@ class _ScanCodePageState extends State<ScanCodePage> {
             showrPay:this._showrPay,
             showmPay:this._showmPay,
             showCreditCard:this._showCreditCard,
+            showPosEdy:this._showPosEdy,
+            showPosiD:this._showPosiD,
+            showPosIC:this._showPosIC,
+            showPosQUICPay:this._showPosQUICPay,
+            showPosWAON:this._showPosWAON,
+            showPosnanaco:this._showPosnanaco,
             shopCartTotalPrice:_totlaPrice,
             tableNum: _tableNum,
             onConfrimClick: (String isAllowPos, String payment_method_num) {
@@ -408,11 +428,18 @@ class _ScanCodePageState extends State<ScanCodePage> {
                 _tableCode = "";
               });
 
-              if(_payment_method_num == "3" || _payment_method_num == "4"){
+              var paymentMethod = ["3","4","5","6","7","8","9","10"];
+              if (paymentMethod.contains(_payment_method_num) == true) {
                 _getPosSettingInfo();
               }else{
                 _goToSettlement();
               }
+
+              /*if(_payment_method_num == "3" || _payment_method_num == "4"){
+                _getPosSettingInfo();
+              }else{
+                _goToSettlement();
+              }*/
 
             },
             onCancelClick: (String isBack){
@@ -463,6 +490,12 @@ class _ScanCodePageState extends State<ScanCodePage> {
           "showdPay":this._showdPay,
           "showrPay":this._showrPay,
           "showmPay":this._showmPay,
+          "showPosEdy":this._showPosEdy,
+          "showPosiD":this._showPosiD,
+          "showPosIC":this._showPosIC,
+          "showPosQUICPay":this._showPosQUICPay,
+          "showPosWAON":this._showPosWAON,
+          "showPosnanaco":this._showPosnanaco,
         });
   }
 

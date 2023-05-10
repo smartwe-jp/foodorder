@@ -119,6 +119,13 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showrPay = false;
   var _showmPay = false;
 
+  var _showPosEdy = false;
+  var _showPosiD = false;
+  var _showPosIC = false;
+  var _showPosQUICPay = false;
+  var _showPosWAON = false;
+  var _showPosnanaco = false;
+
   //后台返回是否可以使用pos刷卡机，如果后台可以使用，并且券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   var _showIsPos = true;
 
@@ -167,6 +174,12 @@ class _SettlementPageState extends State<SettlementPage> {
     this._showdPay = widget.arguments['showdPay'];
     this._showrPay = widget.arguments['showrPay'];
     this._showmPay = widget.arguments['showmPay'];
+    this._showPosEdy = widget.arguments['showPosEdy'];
+    this._showPosiD = widget.arguments['showPosiD'];
+    this._showPosIC = widget.arguments['showPosIC'];
+    this._showPosQUICPay = widget.arguments['showPosQUICPay'];
+    this._showPosWAON = widget.arguments['showPosWAON'];
+    this._showPosnanaco = widget.arguments['showPosnanaco'];
 
     _getSystemSettingInfo();
 
@@ -181,7 +194,15 @@ class _SettlementPageState extends State<SettlementPage> {
     } else if (_payment_method_num == "2") {
       //检测是否需要连接socket
       checkpayconnectSocker();
-    } else if (_payment_method_num == "3" || _payment_method_num == "4") {
+    } else if (_payment_method_num == "3" ||
+        _payment_method_num == "4" ||
+        _payment_method_num == "5" ||
+        _payment_method_num == "6" ||
+        _payment_method_num == "7" ||
+        _payment_method_num == "8" ||
+        _payment_method_num == "9" ||
+        _payment_method_num == "10"
+    ) {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
       if(this._pos_ip != "" && this._pos_port != ""){
         payconnectSocker();
@@ -495,9 +516,10 @@ class _SettlementPageState extends State<SettlementPage> {
         "auth_code": this._scanQrCode,
         "machineCode": _machineCode,
         "orderId": this._orderId,
-      };
+        "payType":"",
+      };//print(formData);
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
+        var response = json.decode(val.toString());//print(response);
         //LogUtil.d(response);
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
@@ -769,7 +791,7 @@ class _SettlementPageState extends State<SettlementPage> {
         request(queryUrl, method: 'POST', parameters: formData)
             .then((val) async {
           var response = json.decode(val.toString());
-          //LogUtil.d(response);
+          LogUtil.d(response);
           if (response['code'] == 200) {
             //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -1477,6 +1499,18 @@ class _SettlementPageState extends State<SettlementPage> {
       );
       categoryMenus.add(_publicSplitLine());
     }
+    if (printData["serialNo"] != null && printData["serialNo"] != "") {
+      lineZeng = 110;
+      categoryMenus.add(
+        _publicTwoColumnsTxt("カード取引通番", 26.0, FontWeight.w200,
+            printData["serialNo"], 26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(
+        _publicTwoColumnsTxt("取引日時", 26.0, FontWeight.w200, printData["payDate"],
+            26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(_publicSplitLine());
+    }
     //お明細は上記のとおりです。
     categoryMenus.add(_publicOneColumnTxt("お明細は上記のとおりです。", 26.0, FontWeight.w200));
 
@@ -2026,13 +2060,20 @@ class _SettlementPageState extends State<SettlementPage> {
                                   Navigator.pop(context);
 
                                   _showBackEasyLoading();
-                                  if (_payment_method_num == "3" ||
+                                  var paymentMethod = ["3","4","5","6","7","8","9","10"];
+                                  if (paymentMethod.contains(_payment_method_num) == true) {
+                                    _getPaymentCancelPosData();
+                                  }else{
+                                    CancelOrder();
+                                  }
+
+                                  /*if (_payment_method_num == "3" ||
                                       _payment_method_num == "4") {
 
                                     _getPaymentCancelPosData();
                                   } else {
                                     CancelOrder();
-                                  }
+                                  }*/
 
                                 },
                               ),
@@ -2348,9 +2389,13 @@ class _SettlementPageState extends State<SettlementPage> {
       print("连接成功了么");
       this._socket = socket;
       //获得pos数据并发送
-      if (_payment_method_num == "3" || _payment_method_num == "4") {
+      var paymentMethod = ["3","4","5","6","7","8","9","10"];
+      if (paymentMethod.contains(_payment_method_num) == true) {
         _getPaymentPosData();
       }
+      /*if (_payment_method_num == "3" || _payment_method_num == "4") {
+        _getPaymentPosData();
+      }*/
       // 监听wifi模块发送的数据
       this._socket.listen((List<int> event) {
         //LogUtil.d(event);
@@ -2382,7 +2427,14 @@ class _SettlementPageState extends State<SettlementPage> {
           }
         } else {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {
-            CreditCardPayReport(eventString);
+            var thincaCloud = ["5","6","7","8","9","10"];
+            if (thincaCloud.contains(_payment_method_num) == true) {
+              String reportString = eventString.substring(0, 169);
+              CreditCardPayReport(reportString);
+            }else{
+              CreditCardPayReport(eventString);
+            }
+
           } else {
             if(resultString.trim() != ""){
               /*if(resultString == "L11" || resultString == "L10"){
@@ -2414,7 +2466,7 @@ class _SettlementPageState extends State<SettlementPage> {
     _posResultReportData["result"] = true;
     _posResultReportData["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport', method: 'POST', parameters: _posResultReportData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
         doPrintOrderMenu("1");
@@ -2427,13 +2479,30 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
   _getPaymentPosData() {
+    var payTypeData = {
+      //"3":"CreditCard",
+      //"4":"CreditCard",
+      "5":"Edy",
+      "6":"iD",
+      "7":"nanaco",
+      "8":"WAON",
+      "9":"QUICPay",
+      "10":"IC",
+    };
+    var thincaCloud = ["5","6","7","8","9","10"];
+    var _payType = "";
+    if (thincaCloud.contains(_payment_method_num) == true) {
+      _payType = payTypeData[_payment_method_num];
+    }
+
     var formData = {
       "auth_code": "0000000088888888",
       "machineCode": _machineCode,
       "orderId": this._orderId,
-    };
+      "payType":_payType,
+    };//print("_getPaymentPosData===${formData}");
     request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());//print(response);
       if (response['code'] == 200 && response['data'].isNotEmpty) {
         var resultData = response['data'];
         if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){
@@ -2655,6 +2724,210 @@ class _SettlementPageState extends State<SettlementPage> {
                         ],
                       ),
                     ),
+                  if (_payment_method_num == "5")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_edy"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_payment_method_num == "6")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_iD"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_payment_method_num == "7")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_nanaco"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_payment_method_num == "8")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_WAON"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_payment_method_num == "9")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_QUICPay"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
+                  if (_payment_method_num == "10")
+                    InkWell(
+                      enableFeedback: false,
+                      onLongPress: () {
+                        try {
+                          //Navigator.pop(context);
+                          CancelOrder();
+                          //showCancelConfirm();
+                        } catch (_) {}
+                      },
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Image.asset(
+                            GImage.getImageString(
+                                "imgpublic", "settlement_top_nfc"),
+                            width: ScreenAdapter.width(40),
+                            fit: BoxFit.fitWidth,
+                          ),
+                          SizedBox(
+                            width: ScreenAdapter.width(20),
+                          ),
+                          Text(
+                            GString.getToString(this._checkLanguage,
+                                "settlement_top_title_IC"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(34.0)),
+                          ),
+                        ],
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -2825,6 +3098,16 @@ class _SettlementPageState extends State<SettlementPage> {
                 ),
               ),
             if (_payment_method_num == "4")
+              Container(
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1080),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "5" || _payment_method_num == "6"|| _payment_method_num == "7"|| _payment_method_num == "8"|| _payment_method_num == "9"|| _payment_method_num == "10")
               Container(
                 //height: ScreenAdapter.height(940),
                 child: Image.asset(
@@ -3286,7 +3569,13 @@ class _SettlementPageState extends State<SettlementPage> {
               ),
             if (_payment_method_num == "2" ||
                 _payment_method_num == "3" ||
-                _payment_method_num == "4")
+                _payment_method_num == "4" ||
+                _payment_method_num == "5" ||
+                _payment_method_num == "6" ||
+                _payment_method_num == "7" ||
+                _payment_method_num == "8" ||
+                _payment_method_num == "9" ||
+                _payment_method_num == "10")
               Container(
                 //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                 height: ScreenAdapter.height(200),
@@ -3300,12 +3589,18 @@ class _SettlementPageState extends State<SettlementPage> {
                         try {
                           //showCancelConfirm();
                           EasyLoading.dismiss();
-                          if (_payment_method_num == "3" ||
+                          var paymentMethod = ["3","4","5","6","7","8","9","10"];
+                          if (paymentMethod.contains(_payment_method_num) == true) {
+                            _getPaymentCancelPosData();
+                          }else{
+                            Navigator.pop(context);
+                          }
+                          /*if (_payment_method_num == "3" ||
                               _payment_method_num == "4") {
                             _getPaymentCancelPosData();
                           } else {
                             Navigator.pop(context);
-                          }
+                          }*/
 
 
                         } catch (_) {}

@@ -80,7 +80,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());//LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -93,6 +93,13 @@ class _TransitPageState extends State<TransitPage> {
         var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
         var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
         var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
+
+        var _posEdy = shopData["linePayChannelMap"]["Edy"] != null ? shopData["linePayChannelMap"]["Edy"] :false;
+        var _posiD = shopData["linePayChannelMap"]["iD"] != null ? shopData["linePayChannelMap"]["iD"] :false;
+        var _posIC = shopData["linePayChannelMap"]["IC"] != null ? shopData["linePayChannelMap"]["IC"] :false;
+        var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null ? shopData["linePayChannelMap"]["QUICPay"] :false;
+        var _posWAON = shopData["linePayChannelMap"]["WAON"] != null ? shopData["linePayChannelMap"]["WAON"] :false;
+        var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null ? shopData["linePayChannelMap"]["nanaco"] :false;
         var machineActivateData = {
           "showCash":(_isCashState == true) ? _showCash :false,
           "showWechat":_showWechat,
@@ -103,6 +110,12 @@ class _TransitPageState extends State<TransitPage> {
           "d_Pay":_dPay,
           "R_Pay":_rPay,
           "m_Pay":_mPay,
+          "pos_Edy":_posEdy,
+          "pos_iD":_posiD,
+          "pos_IC":_posIC,
+          "pos_QUICPay":_posQUICPay,
+          "pos_WAON":_posWAON,
+          "pos_nanaco":_posnanaco,
         };//print(machineActivateData);
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));

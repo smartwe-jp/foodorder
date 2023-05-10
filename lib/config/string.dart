@@ -69,6 +69,13 @@ class GString{
         "settlement_top_title_card":"クレジットカード",
         "settlement_top_title_nfc":"タッチ決済",
 
+        "settlement_top_title_edy":"楽天Edy",
+        "settlement_top_title_iD":"iD",
+        "settlement_top_title_IC":"IC",
+        "settlement_top_title_QUICPay":"QUICPay",
+        "settlement_top_title_WAON":"WAON",
+        "settlement_top_title_nanaco":"nanaco",
+
         "select_payment_dining_title":"店内または持ち帰りをお選びください",
         "select_payment_type_title":"支払い方法をお選びください",
 
@@ -151,6 +158,13 @@ class GString{
         "settlement_top_title_card":"信用卡",
         "settlement_top_title_nfc":"NFC支付",
 
+        "settlement_top_title_edy":"楽天Edy",
+        "settlement_top_title_iD":"iD",
+        "settlement_top_title_IC":"IC",
+        "settlement_top_title_QUICPay":"QUICPay",
+        "settlement_top_title_WAON":"WAON",
+        "settlement_top_title_nanaco":"nanaco",
+
         "select_payment_dining_title":"请选择堂食还是打包",
         "select_payment_type_title":"请选择支付方式",
 
@@ -232,6 +246,13 @@ class GString{
         "settlement_top_title_card":"Credit card",
         "settlement_top_title_nfc":"Tap to pay",
 
+        "settlement_top_title_edy":"楽天Edy",
+        "settlement_top_title_iD":"iD",
+        "settlement_top_title_IC":"IC",
+        "settlement_top_title_QUICPay":"QUICPay",
+        "settlement_top_title_WAON":"WAON",
+        "settlement_top_title_nanaco":"nanaco",
+
         "select_payment_dining_title":"Please choose Eat in or Take out",
         "select_payment_type_title":"Please choose your payment method",
 
@@ -312,6 +333,13 @@ class GString{
         "settlement_top_title_qr":"스캔 코드 결제",
         "settlement_top_title_card":"신용카드",
         "settlement_top_title_nfc":"NFC지블",
+
+        "settlement_top_title_edy":"楽天Edy",
+        "settlement_top_title_iD":"iD",
+        "settlement_top_title_IC":"IC",
+        "settlement_top_title_QUICPay":"QUICPay",
+        "settlement_top_title_WAON":"WAON",
+        "settlement_top_title_nanaco":"nanaco",
 
         "select_payment_dining_title":"매장 내 식사 또는 테이크아웃을 선택하세요.",
         "select_payment_type_title":"지불 방식을 선택하십시오",
