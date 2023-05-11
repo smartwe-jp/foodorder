@@ -791,7 +791,7 @@ class _SettlementPageState extends State<SettlementPage> {
         request(queryUrl, method: 'POST', parameters: formData)
             .then((val) async {
           var response = json.decode(val.toString());
-          LogUtil.d(response);
+          //LogUtil.d(response);
           if (response['code'] == 200) {
             //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
