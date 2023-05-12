@@ -205,7 +205,7 @@ class _SettingPageState extends State<SettingPage> {
                             left: ScreenAdapter.width(5),
                             right: ScreenAdapter.width(5)),
                         alignment: Alignment.center,
-                        child: Text("買上",
+                        child: Text("現金",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
