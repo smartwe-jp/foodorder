@@ -38,18 +38,6 @@ class HomeServices{
     return menuDirectionInfo;
   }
 
-  //小票纸大小
-  static getPrintPaperSizeInfo() async{
-    String printPaperSizeInfo;
-    try {
-      String printPaperSizeData = await Storage.getString('printPaperSize');
-      GetxStorage.setData('printPaperSize', printPaperSizeData);
-      printPaperSizeInfo = printPaperSizeData;
-    } catch (e) {
-      printPaperSizeInfo = "";
-    }
-    return printPaperSizeInfo;
-  }
 
   //是否必须打印领収书
   static getIsAllowReceiptInfo() async{

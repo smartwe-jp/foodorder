@@ -67,6 +67,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   var _is_query_receipt = "1"; //1 要领収书  2 不要领収书
   var _is_allow_receipt = "1"; //1 必须打印  2 不必须
+  var _print_paper_txt_size = "1";//1普通　2大　3特大
 
   var _orderId;
   var _scanQrCode = "";
@@ -239,6 +240,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     setState(() {
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
+      _print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
       //新版精算模式也可点外带
       _machineMode = systemSettingInfo['machineMode'];
     });
@@ -938,6 +940,18 @@ class _SettlementPageState extends State<SettlementPage> {
   //打印甘蘭
   _tpPrintnew(printData, printType) async {
     var categoryVos = printData["categoryVos"];
+    var print_menu_txt_size = 28.0;
+    var wrapNum = 13;
+    if(_print_paper_txt_size == "1"){
+      print_menu_txt_size = 28.0;
+      wrapNum = 13;
+    }else if(_print_paper_txt_size == "2"){
+      print_menu_txt_size = 33.0;
+      wrapNum = 9;
+    }else if(_print_paper_txt_size == "3"){
+      print_menu_txt_size = 40.0;
+      wrapNum = 7;
+    }
 
     List<Widget> categoryMenus = [];
     var lineHight = 145;
@@ -952,9 +966,9 @@ class _SettlementPageState extends State<SettlementPage> {
             textDirection: TextDirection.ltr,
             child: Text("${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: 40,
+                  fontSize: 32,
                   //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w500,
+                  fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -966,9 +980,9 @@ class _SettlementPageState extends State<SettlementPage> {
             textDirection: TextDirection.ltr,
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
-                  fontSize: 50,
+                  fontSize: 32,
                   //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w600,
+                  fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -986,13 +1000,13 @@ class _SettlementPageState extends State<SettlementPage> {
         var optionVoList = lineItem["optionVos"];
         // 计算菜品标题长度
         var menuLength = lineItem["menuName"].length;
-        var menuLine = menuLength / 13;
+        var menuLine = menuLength / wrapNum;
         var menuRowNum = menuLine.ceil();
         optionNum = 0;
 
         categoryMenus.add(
-          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", 28.0,
-              FontWeight.w100, "${lineItem["menuQty"]}", 28.0, FontWeight.w100),
+          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", print_menu_txt_size,
+              FontWeight.w100, "${lineItem["menuQty"]}", print_menu_txt_size, FontWeight.w100),
         );
         if (optionVoList != null && optionVoList.length > 0) {
           for (var n = 0; n < optionVoList.length; n++) {
@@ -1000,16 +1014,16 @@ class _SettlementPageState extends State<SettlementPage> {
             // 计算菜品标题长度
             var groupNameLength = optionVos["groupName"].length;
             var optionNameLength = optionVos["optionName"].length;
-            var optionLine = (groupNameLength + optionNameLength) / 13;
+            var optionLine = (groupNameLength + optionNameLength) / wrapNum;
             var optionRowNum = optionLine.ceil();
 
             categoryMenus.add(
               _publicGoodsTwoColumnsTxt(
                   "　${optionVos["groupName"]}",
-                  28.0,
+                  print_menu_txt_size,
                   FontWeight.w100,
                   "${optionVos["optionName"]}",
-                  28.0,
+                  print_menu_txt_size,
                   FontWeight.w100),
             );
             addRowHight += 50 * optionRowNum;

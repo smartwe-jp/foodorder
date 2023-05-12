@@ -46,6 +46,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _dining_type = "1"; //1 堂食  2 外袋  0 两种都可
   var _menu_direction = "1";//1 默认顶部横向  2 左侧纵向
   var _print_paper_size = "1";//1 默认58mm  2 宽纸80mm
+  var _print_paper_txt_size = "1";//1 普通　2大　3特大
   var _is_allow_receipt = "1";//1 必须打印  2 不必须打印
   var _machine_mode = "1";//1 普通点餐券卖机  2 精算机（结账机）
   var _isReservation = "0";// 0 不开启  1开启
@@ -93,7 +94,9 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     setState(() {
       _dining_type = systemSettingInfo['diningType'];
       _menu_direction = systemSettingInfo['menuDirection'];
-      _print_paper_size = systemSettingInfo['printPaperSize'];
+     // _print_paper_size = systemSettingInfo['printPaperSize'];
+      _print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
+
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _machine_mode = systemSettingInfo['machineMode'];
       _isReservation = systemSettingInfo['isReservation'];
@@ -498,7 +501,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":checkedType, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -654,7 +657,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":checkedType,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -815,7 +818,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":checkedType,//1 58mm 2 80mm
+      //"printPaperSize":checkedType,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -830,6 +833,217 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       setState(() {
         _print_paper_size = checkedType;
       });
+    //}
+  }
+
+  //设置打印纸大小
+  setPrintPaperTxtSize() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("レシート字体設置",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkPrintPaperTxtSize("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("普通",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_print_paper_txt_size == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkPrintPaperTxtSize("2");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("大",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_print_paper_txt_size == "2")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkPrintPaperTxtSize("3");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("特大",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_print_paper_txt_size == "3")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkPrintPaperTxtSize(checkedType) async {
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      //"printPaperSize":checkedType,//1 58mm 2 80mm
+      "printPaperTxtSize":checkedType,//1 普通　2大　3特大
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+
+    setState(() {
+      _print_paper_txt_size = checkedType;
+    });
     //}
   }
 
@@ -978,7 +1192,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":checkedType,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1135,7 +1349,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":checkedType,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1292,7 +1506,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":checkedType, //是否开启预约服务
@@ -1449,7 +1663,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1632,7 +1846,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1894,7 +2108,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2157,7 +2371,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
     var systemSettingData = {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
-      "printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2393,6 +2607,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                   setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向
                   //setPrintPaperSize(),//打印纸大小
+                  setPrintPaperTxtSize(),//打印菜单文字大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   (_actuarial == true) ? setMachineMode() : Container(height: 0,), //设置机器类型
                   (_lineup == true) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
