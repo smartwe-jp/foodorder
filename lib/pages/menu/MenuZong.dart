@@ -149,6 +149,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     eventBus.on<setShowCashEvent>().listen((event) {
       _listenGetMachineActivateInfo();
     });
+
+    //监听清除购物车的广播
+    eventBus.on<clearCartEvent>().listen((event) {
+      _clearCartList();
+    });
   }
 
   @override
@@ -4740,10 +4745,10 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         });
   }
 
-  void _clearCartList(value) async {
+  _clearCartList() async {
     Get.find<HomePageController>().removeAllFromCart();
-
     controller.getCardList();
+    getCartPriceTotal();
   }
 
   @override

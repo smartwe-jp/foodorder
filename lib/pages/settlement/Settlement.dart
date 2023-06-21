@@ -41,9 +41,6 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 
 import 'package:foodorder/services/queue_util.dart';
 
-//import 'SettlementCashPage.dart';
-//import 'SettlementQrCodePage.dart';
-
 class SettlementPage extends StatefulWidget {
   Map arguments;
 
@@ -68,6 +65,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _is_query_receipt = "1"; //1 要领収书  2 不要领収书
   var _is_allow_receipt = "1"; //1 必须打印  2 不必须
   var _print_paper_txt_size = "1";//1普通　2大　3特大
+  var _is_back_home = "0"; //0 返回home  1 返回菜单
 
   var _orderId;
   var _scanQrCode = "";
@@ -241,6 +239,7 @@ class _SettlementPageState extends State<SettlementPage> {
     setState(() {
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
+      _is_back_home = systemSettingInfo['isAllowBackHome'];
       //新版精算模式也可点外带
       _machineMode = systemSettingInfo['machineMode'];
     });
@@ -260,8 +259,6 @@ class _SettlementPageState extends State<SettlementPage> {
       }
     }
 
-    //获取纸大小后在获取数据
-    //_getPrintTicketData();
 
     _getPrintLogoImageData();
   }
@@ -759,78 +756,55 @@ class _SettlementPageState extends State<SettlementPage> {
   doPrintOrderMenu(printType) async {
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if (printStatus == "0" || printStatus == "8") {
-      if (_ticketData != null) {
-        //新接口 券卖机1时候，可选择是否打印领収书，菜单必打  精算机2，不打菜单，可选领収书
-        if (_machineMode == "1") {
-          _tpPrintnew(_ticketData, printType);
-        } else if (_machineMode == "2") {
-          //1打印领収书 2不打印，直接返回
-          if (printType == "1") {
-            _tpPrintReceipt(_ticketData);
-          }
-        }
+      var formData = {
+        "orderId": this._orderId,
+        "payAmount": _getPutMoney,
+        "machineCode":_machineCode
+      };
+      var queryUrl;
+      //queryUrl = "webBootToPrintV4";
+      queryUrl = "webBootToPrintV5";
 
-        if (_machineMode == "1") {
-          eventBus.fire(new clearCartEvent('支付成功...'));
-        }
-
-        //只有现金机时候才执行 先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-        if (_payment_method_num == "1") {
-          nextOper();
-        } else {
-          gotonewMyhome();
-        }
-      } else {
-        var formData = {
-          "orderId": this._orderId,
-          "payAmount": _getPutMoney,
-          "machineCode":_machineCode
-        };
-        var queryUrl;
-        //queryUrl = "webBootToPrintV4";
-        queryUrl = "webBootToPrintV5";
-
-        request(queryUrl, method: 'POST', parameters: formData)
-            .then((val) async {
-          var response = json.decode(val.toString());
-          //LogUtil.d(response);
-          if (response['code'] == 200) {
-            //printType 1 打印菜+领収书 2 只打印菜
+      request(queryUrl, method: 'POST', parameters: formData)
+          .then((val) async {
+        var response = json.decode(val.toString());
+        //LogUtil.d(response);
+        if (response['code'] == 200) {
+          //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
-            if(response['data']["orderType"] == 1){
-              _tpPrintnew(response['data'], printType);
-            }else{
-              if (printType == "1") {
-                _tpPrintReceipt(response['data']);
-              }
+          if(response['data']["orderType"] == 1){
+            _tpPrintnew(response['data'], printType);
+          }else{
+            if (printType == "1") {
+              _tpPrintReceipt(response['data']);
             }
-
-            if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){
-              _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"]);
-            }
-
-            Future.delayed(Duration(milliseconds: 500),() async {
-              if (_machineMode == "1") {
-                eventBus.fire(new clearCartEvent('支付成功...'));
-              }
-
-              //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-              if (_payment_method_num == "1") {
-                nextOper();
-              } else {
-                gotonewMyhome();
-              }
-
-            });
-
-          } else {
-            //错误后重新调用一次
-            doPrintOrderMenu(printType);
-            //EasyLoading.dismiss();
-
           }
-        });
-      }
+
+          if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){
+          _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"],response['data']["takeOut"]);
+          }
+
+          Future.delayed(Duration(milliseconds: 500),() async {
+            if (_machineMode == "1") {
+              eventBus.fire(new clearCartEvent('支付成功...'));
+            }
+
+            //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+            if (_payment_method_num == "1") {
+              nextOper();
+            } else {
+              gotonewMyhome();
+            }
+
+          });
+
+        } else {
+          //错误后重新调用一次
+          doPrintOrderMenu(printType);
+          //EasyLoading.dismiss();
+
+        }
+      });
     } else {
       EasyLoading.dismiss();
 
@@ -1015,17 +989,44 @@ class _SettlementPageState extends State<SettlementPage> {
             var groupNameLength = optionVos["groupName"].length;
             var optionNameLength = optionVos["optionName"].length;
             var optionLine = (groupNameLength + optionNameLength) / wrapNum;
-            var optionRowNum = optionLine.ceil();
 
-            categoryMenus.add(
-              _publicGoodsTwoColumnsTxt(
-                  "　${optionVos["groupName"]}",
-                  print_menu_txt_size,
-                  FontWeight.w100,
-                  "${optionVos["optionName"]}",
-                  print_menu_txt_size,
-                  FontWeight.w100),
-            );
+
+            //判断option 是否换行数量
+            var lineOptionTxtNum = (wrapNum-1)/2;
+            if(groupNameLength >lineOptionTxtNum || optionNameLength>lineOptionTxtNum){
+              var newLineNum = 0.0;
+              if(groupNameLength >wrapNum){
+                newLineNum += groupNameLength / wrapNum;
+              }
+              if(optionNameLength >wrapNum){
+                newLineNum += optionNameLength / wrapNum;
+              }
+              optionLine += newLineNum;
+              //换行显示option
+              categoryMenus.add(
+                _publicGoodsNewLineOptionTxt(
+                    "　${optionVos["groupName"]}",
+                    print_menu_txt_size,
+                    FontWeight.w100,
+                    "${optionVos["optionName"]}",
+                    print_menu_txt_size,
+                    FontWeight.w100),
+              );
+            }else{
+              optionLine = (groupNameLength + optionNameLength) / wrapNum;
+              //不换行
+              categoryMenus.add(
+                _publicGoodsOptionTwoColumnsTxt(
+                    "　${optionVos["groupName"]}",
+                    print_menu_txt_size,
+                    FontWeight.w100,
+                    "${optionVos["optionName"]}",
+                    print_menu_txt_size,
+                    FontWeight.w100),
+              );
+            }
+
+            var optionRowNum = optionLine.ceil();
             addRowHight += 50 * optionRowNum;
             menuNum += optionRowNum;
             optionNum++;
@@ -1080,7 +1081,7 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
-  _wifiNetworkPrintData(serialNumber,extendPrintVo){
+  _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut){
     var printData = [];
     extendPrintVo.forEach((k,v){
       printData = [];
@@ -1093,18 +1094,19 @@ class _SettlementPageState extends State<SettlementPage> {
           }
         }
         QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-          return wifiNetPrintnew(serialNumber,k,printData);
+          return wifiNetPrintnew(serialNumber,k,printData,takeOut);
         });
       }
     });
 
   }
 
-  wifiNetPrintnew(serialNumber,printType,printData) async {
+  wifiNetPrintnew(serialNumber,printType,printData,takeOut) async {
     //如果整理的数据打印机不是10或11就返回
     if(printType != "10" && printType != "11"){
       return;
     }
+
     //判断是否有打印机ip
     Map printerIpInfo = {"printer_ip":"","printer_port":"",};
     if(printType == "10"){
@@ -1124,7 +1126,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
 
-    var imageWidget = organizeData(serialNumber,printData);
+    var imageWidget = organizeData(serialNumber,printData,takeOut);
     ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
@@ -1151,7 +1153,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
-  organizeData(serialNumber,printData) {
+  organizeData(serialNumber,printData,takeOut) {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 150;
@@ -1167,7 +1169,7 @@ class _SettlementPageState extends State<SettlementPage> {
             child:
             RichText(
               text: TextSpan(
-                  text: "",//${printData["takeOut"]}
+                  text: "${takeOut}",//${printData["takeOut"]}
                   style: TextStyle(
                     fontSize: 50,
                     fontFamily: 'JetBrainsMonoRegular',
@@ -1243,38 +1245,98 @@ class _SettlementPageState extends State<SettlementPage> {
           var groupNameLength = optionVos[0].length;
           var optionNameLength = optionVos[1].length;
           var optionLine = (groupNameLength + optionNameLength) / 12;
+
+
+          if(groupNameLength >6 || optionNameLength>6){
+            var newLineNum = 0.0;
+            if(groupNameLength >6){
+              newLineNum += groupNameLength / 6;
+            }
+            if(optionNameLength >6){
+              newLineNum += optionNameLength / 6;
+            }
+            optionLine += newLineNum;
+
+            categoryMenus.add(
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 3),
+                    child: Column(
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: Expanded(
+                                  child: Text("　${optionVos[0]}",
+                                      style: TextStyle(
+                                        fontSize: 40,
+                                        fontFamily: 'JetBrainsMonoRegular',
+                                        color: ColorsUtil.hexToColor("#000000"),)),
+                                )
+                            ),
+                          ],
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: Expanded(
+                                  child: Container(
+                                    alignment: Alignment.centerRight,
+                                    child: Text("${optionVos[1]}",
+                                        style: TextStyle(
+                                            fontSize: 40,
+                                            fontFamily: 'JetBrainsMonoRegular',
+                                            color: ColorsUtil.hexToColor("#000000"))),
+                                  ),
+                                )),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )),
+            );
+          }else{
+            categoryMenus.add(
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    margin: EdgeInsets.only(bottom: 3),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Expanded(
+                              child: Text("　${optionVos[0]}",
+                                  style: TextStyle(
+                                    fontSize: 40,
+                                    fontFamily: 'JetBrainsMonoRegular',
+                                    color: ColorsUtil.hexToColor("#000000"),)),
+                            )
+                        ),
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Text("${optionVos[1]}",
+                                style: TextStyle(
+                                    fontSize: 40,
+                                    fontFamily: 'JetBrainsMonoRegular',
+                                    color: ColorsUtil.hexToColor("#000000")))),
+                      ],
+                    ),
+                  )),
+            );
+          }
+
           int optionRowNum = optionLine.ceil();
 
-          categoryMenus.add(
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child: Container(
-                  margin: EdgeInsets.only(bottom: 3),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(
-                            child: Text("　${optionVos[0]}",
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontFamily: 'JetBrainsMonoRegular',
-                                  color: ColorsUtil.hexToColor("#000000"),)),
-                          )
-                      ),
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Text("${optionVos[1]}",
-                              style: TextStyle(
-                                  fontSize: 40,
-                                  fontFamily: 'JetBrainsMonoRegular',
-                                  color: ColorsUtil.hexToColor("#000000")))),
-                    ],
-                  ),
-                )),
-          );
           addRowHight += 63*optionRowNum;
           menuNum += optionRowNum;
           optionNum++;
@@ -1668,6 +1730,99 @@ class _SettlementPageState extends State<SettlementPage> {
         ));
   }
 
+  _publicGoodsOptionTwoColumnsTxt(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
+      rightTxtContext, rightTxtFontSize, rightTxtFontWeight) {
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("${leftTxtContext}",
+                      softWrap: true,
+                      style: TextStyle(
+                        fontSize: leftTxtFontSize,
+                        fontWeight: leftTxtFontWeight,
+                        fontFamily: 'ZenKakuGothicAntique',
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ))),
+              //Expanded(child: Container()),
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                    child: Container(
+                      alignment: Alignment.centerRight,
+                      child: Text("${rightTxtContext}",
+                          style: TextStyle(
+                            fontSize: rightTxtFontSize,
+                            fontWeight: rightTxtFontWeight,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                            //fontWeight: FontWeight.w600
+                          )),
+                    ),
+                  )),
+            ],
+          ),
+        ));
+  }
+  _publicGoodsNewLineOptionTxt(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
+      rightTxtContext, rightTxtFontSize, rightTxtFontWeight) {
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Column(
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                          child:Text("${leftTxtContext}",
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: leftTxtFontSize,
+                            fontWeight: leftTxtFontWeight,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ))
+                      )
+                      ),
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                        child: Container(
+                          alignment: Alignment.centerRight,
+                          child: Text("    ${rightTxtContext}",
+                              style: TextStyle(
+                                fontSize: rightTxtFontSize,
+                                fontWeight: rightTxtFontWeight,
+                                fontFamily: 'ZenKakuGothicAntique',
+                                color: ColorsUtil.hexToColor("#000000"),
+                                //fontWeight: FontWeight.w600
+                              )),
+                        ),
+                      )),
+                ],
+              ),
+            ],
+          ),
+        ));
+  }
+
   //分割线
   _publicSplitLine() {
     return Directionality(
@@ -1885,6 +2040,30 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
+  gotonewBack() {
+    Get.find<HomePageController>().removeAllFromCart();
+
+    print(_is_back_home);
+    EasyLoading.dismiss();
+    //Navigator.pop(context);
+    Navigator.pop(context);
+    //Navigator.pushNamed(context, '/transitPage');
+    //Navigator.of(context).pop();
+    if (_machineMode == "1") {
+      if(_is_back_home == "0"){
+        Navigator.pushNamed(context, '/home');
+      }else{
+        eventBus.fire(new clearCartEvent('支付成功...'));
+
+        Navigator.of(context).pop();
+      }
+
+    } else {
+      //精算页面
+      Navigator.pushNamed(context, '/checkOutPage');
+    }
+  }
+
   gotonewMenuPage() {
     EasyLoading.dismiss();
     //Navigator.pop(context);
@@ -1986,7 +2165,7 @@ class _SettlementPageState extends State<SettlementPage> {
         });
         //关闭机器后的跳转
         if (_isPrint == true) {
-          gotonewMyhome();
+          gotonewBack();
         } else {
           gotonewMenuPage();
         }

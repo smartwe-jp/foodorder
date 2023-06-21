@@ -148,6 +148,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       _listenGetMachineActivateInfo();
     });
 
+    //监听清除购物车的广播
+    eventBus.on<clearCartEvent>().listen((event) {
+      _clearCartList();
+    });
+
   }
 
   @override
@@ -4544,8 +4549,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
     return options;
   }
 
-  //购物车
+  _clearCartList() {
+    Get.find<HomePageController>().removeAllFromCart();
+    controller.getCardList();
+    getCartPriceTotal();
+  }
 
+  //购物车
   getItemTotal(List items) {
     int sum = 0;
     items.forEach((e) {

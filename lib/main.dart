@@ -415,7 +415,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //禁用一元入金和出金
   prohibitOneCash() async {
-    var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+    //var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
 
     var cashShowData = {
       "isCash": _isCashState,

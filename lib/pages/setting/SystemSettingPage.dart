@@ -27,6 +27,7 @@ import 'package:permission_handler/permission_handler.dart';
 
 import 'package:foodorder/services/GetxStorage.dart';
 import 'package:foodorder/services/showToast.dart';
+import '../../plugins/paycube/lib/paycube.dart';
 import 'SetPassword.dart';
 import 'SetPosIp.dart';
 
@@ -51,6 +52,9 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _machine_mode = "1";//1 普通点餐券卖机  2 精算机（结账机）
   var _isReservation = "0";// 0 不开启  1开启
   var _is_allow_attendance = "0";//0 不开启  1 开启
+  var _is_allow_settlementhome = "0";//0 不开启  1 开启
+  var _is_allow_oneyen = "0";//0 禁用  1 允许
+  var _is_allow_backhome = "0";//0 返回  1 返回菜单
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   var _is_allow_pos = "0";//0 不开启  1 开启
   var _pos_ip = "";
@@ -101,6 +105,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _machine_mode = systemSettingInfo['machineMode'];
       _isReservation = systemSettingInfo['isReservation'];
       _is_allow_attendance = systemSettingInfo['isAllowAttendance'];
+      _is_allow_oneyen = systemSettingInfo['isAllowOneYen'];
+      _is_allow_backhome = systemSettingInfo['isAllowBackHome'];
       _is_allow_pos = systemSettingInfo['isAllowPos'];
       _is_allow_wlanPrint = systemSettingInfo['isAllowWlanPrint'];
       _is_allow_wlanPrint_Two = systemSettingInfo['isAllowWlanPrintTwo'];
@@ -506,6 +512,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -662,6 +670,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -823,6 +833,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -1034,6 +1046,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -1197,6 +1211,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -1354,6 +1370,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":checkedType,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -1511,6 +1529,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":checkedType, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -1851,6 +1871,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":checkedType,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -2113,6 +2135,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":checkedType,//0不开启 1开启
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
@@ -2376,6 +2400,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
       "isAllowWlanPrintTwo":checkedType,//0不开启 1开启
@@ -2471,6 +2497,330 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
         builder: (BuildContext context) {
       return SetPasswordPage();
     });
+  }
+
+  //设置是否允许使用一元
+  setIsAllowOneYen() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("お釣り1円",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkIsAllowOneYen("0");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("不使用",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_oneyen == "0")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkIsAllowOneYen("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("使用",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_oneyen == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkIsAllowOneYen(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":checkedType,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+
+    if(checkedType == "0"){
+      var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+    }else{
+      var allowOneCashStatus =  await Paycube.allowOneCash;
+    }
+
+    setState(() {
+      _is_allow_oneyen = checkedType;
+    });
+
+  }
+
+  //设置是否允许使用一元
+  setIsAllowSettlementHome() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("都度topページに",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    checkIsAllowBackHome("0");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("戻る",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_backhome == "0")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    checkIsAllowBackHome("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("戻らない",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (_is_allow_backhome == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  checkIsAllowBackHome(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":_dining_type, //1堂食 2外带
+      "menuDirection":_menu_direction,//1顶部横向 2左侧竖
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
+      "machineMode":_machine_mode,//1普通券卖机 2 精算机
+      "isReservation":_isReservation, //是否开启预约服务
+      "isAllowAttendance":_is_allow_attendance,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":checkedType,//0返回home 1返回到菜单
+      "isAllowPos":_is_allow_pos,//0不开启 1开启
+      "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+
+    setState(() {
+      _is_allow_backhome = checkedType;
+    });
+
   }
 
   @override
@@ -2615,6 +2965,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                   setIsAllowPos(),//是否开启pos机刷卡
                   setIsAllowWlanPrint(),//是否开启网络打印机
                   setIsAllowWlanPrintTwo(),//第二台打印机
+                  setIsAllowOneYen(),//是否允许一元
+                  setIsAllowSettlementHome(),//是否结算完后回到首页
                 ],
               ),
             ),

@@ -13,6 +13,8 @@ import 'package:foodorder/services/HomeServices.dart';
 import 'package:foodorder/services/GetxStorage.dart';
 import 'package:foodorder/services/HttpService.dart';
 
+import '../../plugins/paycube/lib/paycube.dart';
+
 class TransitPage extends StatefulWidget {
   TransitPage({Key key}) : super(key: key);
 
@@ -173,6 +175,8 @@ class _TransitPageState extends State<TransitPage> {
       "machineMode":checkmachineMode,
       "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
       "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
+      "isAllowOneYen":(SystemSettingInfo["isAllowOneYen"] !="" && SystemSettingInfo["isAllowOneYen"]!=null) ? SystemSettingInfo["isAllowOneYen"] :"0",//0禁用1元 1不禁用
+      "isAllowBackHome":(SystemSettingInfo["isAllowBackHome"] !="" && SystemSettingInfo["isAllowBackHome"]!=null) ? SystemSettingInfo["isAllowBackHome"] :"0",//0回到首页，1回到菜单页
       "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
       "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
       "isAllowWlanPrintTwo":(SystemSettingInfo["isAllowWlanPrintTwo"] !="" && SystemSettingInfo["isAllowWlanPrintTwo"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwo"] :"0",//0 不开打印机 1开打印机
@@ -186,6 +190,11 @@ class _TransitPageState extends State<TransitPage> {
     if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
       Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
       GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
+    }
+
+    //这里判断是否禁用1元
+    if(systemSettingData["isAllowOneYen"] == "0"){
+      var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
     }
     /*setState(() {
       _machineMode = checkmachineMode;

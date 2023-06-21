@@ -138,4 +138,11 @@ class Paycube {
     return prohibitOneCashString;
   }
 
+  //允许一块入金和出金
+  static Future<String> get allowOneCash async {
+    Map<String, Object> map = {'operEvent': 'allowOneCash'};
+    final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
+    return prohibitOneCashString;
+  }
+
 }
