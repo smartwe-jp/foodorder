@@ -1001,7 +1001,7 @@ class _SettlementPageState extends State<SettlementPage> {
               if(optionNameLength >wrapNum){
                 newLineNum += optionNameLength / wrapNum;
               }
-              optionLine += newLineNum;
+              //optionLine += newLineNum;
               //换行显示option
               categoryMenus.add(
                 _publicGoodsNewLineOptionTxt(
@@ -1250,12 +1250,12 @@ class _SettlementPageState extends State<SettlementPage> {
           if(groupNameLength >6 || optionNameLength>6){
             var newLineNum = 0.0;
             if(groupNameLength >6){
-              newLineNum += groupNameLength / 6;
+              newLineNum += groupNameLength / 12;
             }
             if(optionNameLength >6){
-              newLineNum += optionNameLength / 6;
+              newLineNum += optionNameLength / 12;
             }
-            optionLine += newLineNum;
+            //optionLine += newLineNum;
 
             categoryMenus.add(
               Directionality(
