@@ -117,6 +117,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   var _showPosQUICPay = false;
   var _showPosWAON = false;
   var _showPosnanaco = false;
+  var _showOpenPayment = false;
 
   var _optionMaxNum = 12;
   var _optionGroupMaxNum = 10;
@@ -5128,6 +5129,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 setState(() {
                   _isAllowPos = isAllowPos;
                   _payment_method_num = payment_method_num;
+                  _showOpenPayment = true;
                 });
                 var paymentMethod = ["3","4","5","6","7","8","9","10"];
                 if (paymentMethod.contains(_payment_method_num) == true) {
@@ -5177,6 +5179,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           "showPosQUICPay":this._showPosQUICPay,
           "showPosWAON":this._showPosWAON,
           "showPosnanaco":this._showPosnanaco,
+          "showOpenPayment":_showOpenPayment
         });
   }
 

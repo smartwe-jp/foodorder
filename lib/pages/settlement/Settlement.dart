@@ -118,6 +118,9 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showrPay = false;
   var _showmPay = false;
 
+  //用于控制返回是否多关闭页面
+  var _showOpenPayment = false;
+
   var _showPosEdy = false;
   var _showPosiD = false;
   var _showPosIC = false;
@@ -179,6 +182,7 @@ class _SettlementPageState extends State<SettlementPage> {
     this._showPosQUICPay = widget.arguments['showPosQUICPay'];
     this._showPosWAON = widget.arguments['showPosWAON'];
     this._showPosnanaco = widget.arguments['showPosnanaco'];
+    this._showOpenPayment = widget.arguments['showOpenPayment'];
 
     _getSystemSettingInfo();
 
@@ -2055,7 +2059,11 @@ class _SettlementPageState extends State<SettlementPage> {
       }else{
         eventBus.fire(new clearCartEvent('支付成功...'));
 
-        Navigator.of(context).pop();
+        //有弹窗选择支付才在关闭一个
+        if(_showOpenPayment == true){
+          Navigator.of(context).pop();
+        }
+
       }
 
     } else {
