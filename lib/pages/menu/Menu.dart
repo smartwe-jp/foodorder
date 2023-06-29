@@ -5131,12 +5131,14 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   _payment_method_num = payment_method_num;
                   _showOpenPayment = true;
                 });
-                var paymentMethod = ["3","4","5","6","7","8","9","10"];
+                //230629点击弹出支付方式后，需要重新请求下后台获得orderid
+                postNewOrderId();
+                /*var paymentMethod = ["3","4","5","6","7","8","9","10"];
                 if (paymentMethod.contains(_payment_method_num) == true) {
                   _getPosSettingInfo();
                 }else{
                   gotoSettlement();
-                }
+                }*/
                 /*if(_payment_method_num == "3" || _payment_method_num == "4"){
                   _getPosSettingInfo();
                 }else{
@@ -5152,6 +5154,38 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           );
         });
   }
+
+  postNewOrderId() {
+
+    var formData = {
+      "orderId": _doSubmitOrderId,
+    };print(formData);
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+     
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
+        setState(() {
+          _doSubmitOrderId = response['data']["orderId"];
+        });
+
+        var paymentMethod = ["3","4","5","6","7","8","9","10"];
+        if (paymentMethod.contains(_payment_method_num) == true) {
+          _getPosSettingInfo();
+        }else{
+          gotoSettlement();
+        }
+      }else{
+
+        showToast(response['data']["message"]);
+      }
+    });
+
+
+  }
+
+
 
   gotoSettlement() {
     Navigator.pushNamed(context, '/settlement',

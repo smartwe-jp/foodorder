@@ -47,4 +47,5 @@ const servicePath = {
   'checkOutOrderDetails': base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
 
   'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队
+  'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
 };
