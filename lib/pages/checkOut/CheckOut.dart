@@ -443,9 +443,9 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
       var formData = {
         "orderKey": _orderkey
-      };
+      };print(formData);
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
+        var response = json.decode(val.toString());print(response);
         EasyLoading.dismiss();
         //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
@@ -928,7 +928,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
           value: SystemUiOverlayStyle.light,
           child: Stack(
             children: [
-              Column(
+              ListView(
                 children: [
                   Container(
                     height: 0,
