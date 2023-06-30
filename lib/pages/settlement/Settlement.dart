@@ -1683,7 +1683,7 @@ class _SettlementPageState extends State<SettlementPage> {
     ));
     //注文番号
     categoryMenus.add(_publicOneColumnTxtNew(
-        "${printData["order"]}", 26.0, FontWeight.w300));
+        "注文番号:${printData["order"]}", 26.0, FontWeight.w300));
     /*categoryMenus.add(
       Container(
         margin: EdgeInsets.only(bottom: 3),
@@ -1798,7 +1798,7 @@ class _SettlementPageState extends State<SettlementPage> {
                   Directionality(
                       textDirection: TextDirection.ltr,
                       child: Container(
-                        width: ScreenAdapter.width(80),
+                        width: ScreenAdapter.width(88),
                         alignment: Alignment.centerRight,
                         child: Text("￥${lineVosList["price"]}",
                           style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
@@ -3069,9 +3069,6 @@ class _SettlementPageState extends State<SettlementPage> {
       if (paymentMethod.contains(_payment_method_num) == true) {
         _getPaymentPosData();
       }
-      /*if (_payment_method_num == "3" || _payment_method_num == "4") {
-        _getPaymentPosData();
-      }*/
       // 监听wifi模块发送的数据
       this._socket.listen((List<int> event) {
         //LogUtil.d(event);
