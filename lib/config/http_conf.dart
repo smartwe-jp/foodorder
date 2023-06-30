@@ -21,6 +21,7 @@ const servicePath = {
   //'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
   //'webBootToPrintV4': base_url + 'pad/web/boot/v4/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV5': base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
+  'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态

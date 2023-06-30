@@ -29,6 +29,7 @@ import 'package:foodorder/services/ScreenAdapter.dart';
 import 'package:foodorder/services/formatMoney.dart';
 import 'package:foodorder/services/showToast.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:image/image.dart' hide Image;
 import 'package:paycube/paycube.dart';
 import 'package:foodorder/services/Storage.dart';
@@ -767,12 +768,14 @@ class _SettlementPageState extends State<SettlementPage> {
       };
       var queryUrl;
       //queryUrl = "webBootToPrintV4";
-      queryUrl = "webBootToPrintV5";
+      //queryUrl = "webBootToPrintV5";
+      queryUrl = "webBootToPrintV6"; //23新修改小票
+
 
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -785,7 +788,7 @@ class _SettlementPageState extends State<SettlementPage> {
           }
 
           if(response['data']["extendPrintVo"] != null && response['data']["extendPrintVo"].isNotEmpty){
-          _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"],response['data']["takeOut"]);
+          _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["extendPrintVo"],response['data']["takeOut"],response['data']["orderTime"]);
           }
 
           Future.delayed(Duration(milliseconds: 500),() async {
@@ -1058,7 +1061,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
     ByteData byteData = await WidgetToImage.widgetToImage(Container(
-      width: 380,
+      width: 385,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
       color: Colors.white,
@@ -1085,7 +1088,7 @@ class _SettlementPageState extends State<SettlementPage> {
     });
   }
 
-  _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut){
+  _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
     var printData = [];
     extendPrintVo.forEach((k,v){
       printData = [];
@@ -1098,14 +1101,14 @@ class _SettlementPageState extends State<SettlementPage> {
           }
         }
         QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-          return wifiNetPrintnew(serialNumber,k,printData,takeOut);
+          return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
         });
       }
     });
 
   }
 
-  wifiNetPrintnew(serialNumber,printType,printData,takeOut) async {
+  wifiNetPrintnew(serialNumber,printType,printData,takeOut,orderTime) async {
     //如果整理的数据打印机不是10或11就返回
     if(printType != "10" && printType != "11"){
       return;
@@ -1130,7 +1133,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
 
-    var imageWidget = organizeData(serialNumber,printData,takeOut);
+    var imageWidget = organizeData(serialNumber,printData,takeOut,orderTime);
     ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
@@ -1157,13 +1160,15 @@ class _SettlementPageState extends State<SettlementPage> {
     }
   }
 
-  organizeData(serialNumber,printData,takeOut) {
+  organizeData(serialNumber,printData,takeOut,orderTime) {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
-    var lineHight = 150;
+    var lineHight = 180;
     var menuNum = 0;
     var optionNum = 0;
     int addRowHight = 0;
+
+
 
     categoryMenus.add(
       Container(
@@ -1173,7 +1178,7 @@ class _SettlementPageState extends State<SettlementPage> {
             child:
             RichText(
               text: TextSpan(
-                  text: "${takeOut}",//${printData["takeOut"]}
+                  text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
                   style: TextStyle(
                     fontSize: 50,
                     fontFamily: 'JetBrainsMonoRegular',
@@ -1202,7 +1207,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
       // 计算菜品标题长度
       var mainTitleLength = lineVos["mainTitle"].length;
-      var mainTitleLine = mainTitleLength / 14;
+      var mainTitleLine = mainTitleLength / 10;
       int mainTitleRowNum = mainTitleLine.ceil();
       optionNum = 0;
 
@@ -1366,6 +1371,26 @@ class _SettlementPageState extends State<SettlementPage> {
       );
     }
 
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 5),
+        alignment: Alignment.centerRight,
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child:
+            Text(
+              "${orderTime}",//${printData["takeOut"]}
+              style: TextStyle(
+                fontSize: 45,
+                fontFamily: 'JetBrainsMonoRegular',
+                fontWeight: FontWeight.w500,
+                color: ColorsUtil.hexToColor("#000000"),
+              ),
+            )
+        ),
+      ),
+    );
+
     var totalHight = addRowHight+lineHight;
     if(menuNum == 1){
       totalHight +=15;
@@ -1388,7 +1413,7 @@ class _SettlementPageState extends State<SettlementPage> {
   }
 
 
-  _tpPrintReceipt(printData) async {
+  _tpPrintReceiptold(printData) async {
     List<Widget> categoryMenus = [];
     var lineHight = 660;
     var lineZeng = 20;
@@ -1616,6 +1641,391 @@ class _SettlementPageState extends State<SettlementPage> {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
     });
   }
+  _tpPrintReceipt(printData) async {
+    List<Widget> categoryMenus = [];
+    var menuVos = printData["details"];
+    var lineHight = 620;
+    var lineZeng = 100;
+    var addRowHight = 0;
+
+    //店铺标题
+    /*categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text("${printData["shopName"]}",
+              style: GoogleFonts.zenKakuGothicAntique(fontSize: 34,fontWeight: FontWeight.w400,color: Colors.black87),
+
+            )),
+      ),
+    );*/
+
+    //日期 地址 电话
+    //地址
+    categoryMenus.add(_publicOneColumnTxtNew(
+        "${printData["address"]}", 26.0, FontWeight.w300));
+
+    categoryMenus.add(SizedBox(height: 5,));
+    //登录番号
+    if(printData["ntaNo"] != null && printData["ntaNo"] != "")
+    categoryMenus.add(_publicOneColumnTxtNew(
+        "登録番号 ${printData["ntaNo"]}", 26.0, FontWeight.w300));
+    categoryMenus.add(SizedBox(height: 5,));
+    categoryMenus.add(Container(
+      alignment: Alignment.centerLeft,
+      margin: EdgeInsets.only(bottom: 3),
+      child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Text("${printData["orderDate"]}",
+            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+          )),
+    ));
+    //注文番号
+    categoryMenus.add(_publicOneColumnTxtNew(
+        "${printData["order"]}", 26.0, FontWeight.w300));
+    /*categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          textDirection: TextDirection.ltr,
+          children: [
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child: Container(
+                  width: ScreenAdapter.width(160),
+                  child: Expanded(
+                    child: Text("${printData["orderDate"]}",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'NotoSansJP',
+                            color: ColorsUtil.hexToColor("#000000"))),
+                  ),
+                )),
+            Expanded(child: Column(
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("${printData["shopAddress"]}",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'NotoSansJP',
+                            color: ColorsUtil.hexToColor("#000000")))),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Text("登録番号 T12356757656",
+                        style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'NotoSansJP',
+                            color: ColorsUtil.hexToColor("#000000")))),
+              ],
+            )),
+          ],
+        ),
+      ),
+    );*/
+    //领収书标题
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Container(
+              padding: EdgeInsets.only(top: ScreenAdapter.height(5.0),bottom: ScreenAdapter.height(5.0),left:ScreenAdapter.width(20.0),right:ScreenAdapter.width(20.0)),
+              decoration: BoxDecoration(
+                border: Border(
+                  top: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                  left: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                  bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                  right: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                ),
+              ),
+              child: Text("領 収 書",
+                style: GoogleFonts.zenKakuGothicAntique(fontSize: 50,color: Colors.black,),
+
+              ),
+            )),
+      ),
+    );
+
+
+    int categoryNum = menuVos.length;
+    int linNum = 0;
+    for (var i = 0; i < menuVos.length; i++) {
+
+      var lineVosList = menuVos[i];
+
+      // 计算菜品标题长度
+      var groupNameLength = lineVosList["menuName"].length;
+      var menuLine = groupNameLength / 10;
+      var menuRowNum = menuLine.ceil();
+      linNum+=menuRowNum;
+      var takeoutTag = (printData["takeOut"] == true) ? " *":"";
+      categoryMenus.add(
+        Directionality(
+            textDirection: TextDirection.ltr,
+            child: Container(
+              margin: EdgeInsets.only(bottom: 3),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                        child: Text("${lineVosList["menuName"]}${takeoutTag}",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                      )
+                  ),
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Container(
+                        width: ScreenAdapter.width(30),
+                        alignment: Alignment.centerRight,
+                        child: Text("${lineVosList["menuQty"]}",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                      )
+                  ),
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Container(
+                        width: ScreenAdapter.width(80),
+                        alignment: Alignment.centerRight,
+                        child: Text("￥${lineVosList["price"]}",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                      )
+                  ),
+                ],
+              ),
+            )),
+      );
+
+    }
+    //print("总行数${menuNum}");
+    addRowHight += 30 * linNum;
+
+    categoryMenus.add(SizedBox(height: 10,));
+//合计
+    categoryMenus.add(
+      Directionality(
+          textDirection: TextDirection.ltr,
+          child: Container(
+            margin: EdgeInsets.only(bottom: 3),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Expanded(
+                      child: Text("合計",
+                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 28,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                      ),
+                    )
+                ),
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Container(
+                      width: ScreenAdapter.width(120),
+                      alignment: Alignment.centerRight,
+                      child: Text("￥${printData["price"]}",
+                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                      ),
+                    )
+                ),
+              ],
+            ),
+          )),
+    );
+
+    categoryMenus.add(
+      _publicSplitLine(),
+    );
+
+    //8%
+    categoryMenus.add(
+      _publicTwoColumnsTxtNew(
+          "8%対象",
+          24.0,
+          FontWeight.w100,
+          (printData["takeOut"] == true) ? "${printData["price"]}" : "0",
+          24.0,
+          FontWeight.w100,
+          true),
+    );
+    //内消费税
+    categoryMenus.add(
+      _publicTwoColumnsTxtNew(
+          "　  (内    消費税额",
+          24.0,
+          FontWeight.w100,
+          (printData["takeOut"] == true) ? "${printData["tax"]})" : "0)",
+          24.0,
+          FontWeight.w100,
+          true),
+    );
+
+    //10%
+    categoryMenus.add(
+      _publicTwoColumnsTxtNew(
+          "10%対象",
+          24.0,
+          FontWeight.w100,
+          (printData["takeOut"] == false) ? "${printData["price"]}" : "0",
+          24.0,
+          FontWeight.w100,
+          true),
+    );
+    //内消费税
+    categoryMenus.add(
+      _publicTwoColumnsTxtNew(
+          "　  (内    消費税额",
+          24.0,
+          FontWeight.w100,
+          (printData["takeOut"] == false) ? "${printData["tax"]})" : "0)",
+          24.0,
+          FontWeight.w100,
+          true),
+    );
+
+
+    categoryMenus.add(
+      _publicSplitLine(),
+    );
+    if(printData["payMethod"] != "現金支払"){
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(printData["payMethod"], 26.0, FontWeight.w200,
+            "${printData["payPrice"]}", 26.0, FontWeight.w200, true),
+      );
+    }
+
+    if (printData["memberNo"] != null && printData["memberNo"] != "") {
+      lineZeng = 110;
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew("カード番号", 26.0, FontWeight.w200,
+            printData["memberNo"], 26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew("日期", 26.0, FontWeight.w200, printData["payDate"],
+            26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(_publicSplitLine());
+    }
+    if (printData["serialNo"] != null && printData["serialNo"] != "") {
+      lineZeng = 110;
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew("カード取引通番", 26.0, FontWeight.w200,
+            printData["serialNo"], 26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew("取引日時", 26.0, FontWeight.w200, printData["payDate"],
+            26.0, FontWeight.w100, false),
+      );
+      categoryMenus.add(_publicSplitLine());
+    }
+
+    //轻减税率对象
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(bottom: 3),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          textDirection: TextDirection.ltr,
+          children: [
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child: Expanded(
+                  child: Container(
+                    width: ScreenAdapter.width(180),
+                    child: Text("*軽減税率対象",
+                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                    ),
+                  ),
+                )
+            ),
+            Expanded(child: Column(
+              children: [
+                if(printData["payMethod"] == "現金支払")
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("お預り",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                        Text("￥${printData["payPrice"]}",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                      ],
+                    )),
+                if(printData["change"] !=null && int.parse(printData["change"]) >=0)
+                Directionality(
+                    textDirection: TextDirection.ltr,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("お釣",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                        Text("￥${printData["change"]}",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                        ),
+                      ],
+                    )),
+              ],
+            )),
+          ],
+        ),
+      ),
+    );
+
+    //お明細は上記のとおりです。
+    categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w300));
+
+    var totalHight = lineZeng + lineHight+addRowHight;
+
+    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+      width: 385,
+      padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
+      height: totalHight.toDouble(),
+      color: Colors.white,
+      //alignment: Alignment.topCenter,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: TextDirection.rtl,
+        children: categoryMenus,
+      ),
+    ));
+
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    Future.delayed(Duration(milliseconds: 100), () async {
+      String base64Image = base64Encode(imageBytes);
+
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
+    });
+  }
 
   //单列文字
   _publicOneColumnTxt(txtContext, txtFontSize, txtFontWeight) {
@@ -1630,6 +2040,18 @@ class _SettlementPageState extends State<SettlementPage> {
                   fontWeight: txtFontWeight,
                   fontFamily: 'ZenKakuGothicAntique',
                   color: ColorsUtil.hexToColor("#000000")))),
+    );
+  }
+  _publicOneColumnTxtNew(txtContext, txtFontSize, txtFontWeight) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      margin: EdgeInsets.only(bottom: 3),
+      child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Text("${txtContext}",
+            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+          )),
     );
   }
 
@@ -1690,6 +2112,59 @@ class _SettlementPageState extends State<SettlementPage> {
                             //fontWeight: FontWeight.w
                             // 600
                           ))),
+            ],
+          ),
+        ));
+  }
+
+  _publicTwoColumnsTxtNew(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
+      rightTxtContext, rightTxtFontSize, rightTxtFontWeight, isMoney) {
+
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                    child: Text("${leftTxtContext}",
+                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                    ),
+                  )),
+              (isMoney == true)
+                  ? Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    width: ScreenAdapter.width(120),
+                    alignment: Alignment.centerRight,
+                    child: RichText(
+                      text: TextSpan(
+                          text: "￥",
+                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                          children: [
+                            TextSpan(
+                              text: "${rightTxtContext}",
+                              style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                            ),
+                          ]),
+                    ),
+                  ))
+                  : Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    width: ScreenAdapter.width(120),
+                    alignment: Alignment.centerRight,
+                    child: Text("${rightTxtContext}",
+                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                    ),
+                  )),
             ],
           ),
         ));

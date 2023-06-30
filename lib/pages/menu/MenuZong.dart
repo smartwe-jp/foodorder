@@ -1079,21 +1079,30 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           right: ScreenAdapter.width(0),
                           top: ScreenAdapter.height(0),
                           child: Container(
-                              width: ScreenAdapter.width(70),
-                              height: ScreenAdapter.height(60),
-				alignment: Alignment.centerRight,
+                              //width: ScreenAdapter.width(70),
+                              height: ScreenAdapter.height(24),
+				alignment: Alignment.center,
                               padding: EdgeInsets.only(
-                                  top: ScreenAdapter.height(2),
-                                  left: ScreenAdapter.width(32)),
+                                  //top: ScreenAdapter.height(2),
+                                  left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)
+                              ),
                               decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                                image: DecorationImage(
+                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                                /*image: DecorationImage(
                                   image:
                                   (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                                   fit: BoxFit.fill,
-                                ),
+                                ),*/
                               ),
-                              child: Container(
+                              child: Text(
+                                  (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(16),
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.optionBtnColor),
+                                  ))/*Container(
                                 alignment: Alignment.topCenter,
                                 // 旋转
                                 transform: Matrix4.rotationZ(0.7),
@@ -1104,7 +1113,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                       color: ColorsUtil.hexToColor(
                                           Gcolor.optionBtnColor),
                                     )),
-                              )),
+                              )*/),
                         )
                       : Container(
                           height: 0,
@@ -1303,22 +1312,32 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(60),
-                        height: ScreenAdapter.height(50),
-                        alignment: Alignment.centerRight,
+                        //width: ScreenAdapter.width(60),
+                        height: ScreenAdapter.height(24),
+                        alignment: Alignment.center,
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(27)),
+                            left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                        ),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          image: DecorationImage(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          /*image: DecorationImage(
                             image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))
+                      /*Container(
                           alignment: Alignment.topCenter,
                           // 旋转
                           transform: Matrix4.rotationZ(0.7),
@@ -1329,7 +1348,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -1532,27 +1551,36 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         ],
                       )),
                   //绝对定位 盖章
-                  (optionVolistSon['currentPrice'] > 0)
+                  (optionVolistSon['currentPrice'] != 0)
                       ? Positioned(
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(50),
-                        height: ScreenAdapter.height(50),
-			alignment: Alignment.centerRight,
+                        //width: ScreenAdapter.width(50),
+                        height: ScreenAdapter.height(24),
+			                  alignment: Alignment.center,
                         padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(20)),
+                            left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10),
+                        ),
                         //alignment: Alignment.topCenter,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          image: DecorationImage(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          /*image: DecorationImage(
 
                             image: AssetImage(
                                 GImage.getImageString("imgpublic", "price_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))/*Container(
                           // 旋转
                           transform: Matrix4.rotationZ(0.8),
                           child: Text(
@@ -1562,7 +1590,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -3962,21 +3990,32 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(65),
-                        height: ScreenAdapter.height(60),
+                        //width: ScreenAdapter.width(65),
+                        height: ScreenAdapter.height(24),
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        alignment: Alignment.center,
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(35)),
+                            left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                        ),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                          image: DecorationImage(
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          /*image: DecorationImage(
                             image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))
+                      /*Container(
                           alignment: Alignment.topRight,
                           // 旋转
                           transform: Matrix4.rotationZ(0.85),
@@ -3987,7 +4026,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -4579,12 +4618,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                   _payment_method_num = payment_method_num;
                   _showOpenPayment = true;
                 });
-                var paymentMethod = ["3","4","5","6","7","8","9","10"];
+                //230629点击弹出支付方式后，需要重新请求下后台获得orderid
+                postNewOrderId();
+                /*var paymentMethod = ["3","4","5","6","7","8","9","10"];
                 if (paymentMethod.contains(_payment_method_num) == true) {
                   _getPosSettingInfo();
                 }else{
                   gotoSettlement();
-                }
+                }*/
 
                 /*if(_payment_method_num == "3" || _payment_method_num == "4"){
                   _getPosSettingInfo();
@@ -4601,6 +4642,36 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               }
           );
         });
+  }
+
+  postNewOrderId() {
+
+    var formData = {
+      "orderId": _doSubmitOrderId,
+    };
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
+        setState(() {
+          _doSubmitOrderId = response['data']["orderId"];
+        });
+
+        var paymentMethod = ["3","4","5","6","7","8","9","10"];
+        if (paymentMethod.contains(_payment_method_num) == true) {
+          _getPosSettingInfo();
+        }else{
+          gotoSettlement();
+        }
+      }else{
+
+        showToast(response['data']["message"]);
+      }
+    });
+
+
   }
 
   gotoSettlement() {

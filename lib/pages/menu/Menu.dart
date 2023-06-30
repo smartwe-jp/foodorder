@@ -1084,21 +1084,31 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                   right: ScreenAdapter.width(0),
                   top: ScreenAdapter.height(0),
                   child: Container(
-                      width: ScreenAdapter.width(60),
-                      height: ScreenAdapter.height(60),
-                      alignment: Alignment.centerRight,
+                      //width: ScreenAdapter.width(60),
+                      height: ScreenAdapter.height(24),
+                      alignment: Alignment.center,
                       padding: EdgeInsets.only(
-                          top: ScreenAdapter.height(2),
-                          left: ScreenAdapter.width(28)),
+                          //top: ScreenAdapter.height(2),
+                          left: ScreenAdapter.width(10),
+                        right: ScreenAdapter.width(10)
+                      ),
                       decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        image: DecorationImage(
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                       /* image: DecorationImage(
                           image:
                           (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                           fit: BoxFit.fill,
-                        ),
+                        ),*/
                       ),
-                      child: Container(
+                      child: Text(
+                          (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(16),
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.optionBtnColor),
+                          )),
+                    /*Container(
                         alignment: Alignment.topCenter,
                         // 旋转
                         transform: Matrix4.rotationZ(0.75),
@@ -1109,7 +1119,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                               color: ColorsUtil.hexToColor(
                                   Gcolor.optionBtnColor),
                             )),
-                      )),
+                      )*/
+                  ),
                 )
                     : Container(
                   height: 0,
@@ -1307,22 +1318,32 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(50),
-                        height: ScreenAdapter.height(50),
-                        alignment: Alignment.centerRight,
+                        //width: ScreenAdapter.width(50),
+                        height: ScreenAdapter.height(24),
+                        alignment: Alignment.center,
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(23)),
+                            left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                        ),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          image: DecorationImage(
-                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          /*image: DecorationImage(
+                            //image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))
+                      /*Container(
                           alignment: Alignment.topCenter,
                           // 旋转
                           transform: Matrix4.rotationZ(0.74),
@@ -1333,7 +1354,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -1540,21 +1561,30 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(60),
-                        height: ScreenAdapter.height(60),
-                        alignment: Alignment.centerRight,
+                        //width: ScreenAdapter.width(60),
+                        height: ScreenAdapter.height(24),
+                        alignment: Alignment.center,
                         padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(28)),
+                            left: ScreenAdapter.width(10),
+                          right: ScreenAdapter.width(10)
+                        ),
                         //alignment: Alignment.topCenter,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                          image: DecorationImage(
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          /*image: DecorationImage(
                             image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             //image: AssetImage(GImage.getImageString("imgpublic", "price_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))/*Container(
                           alignment: Alignment.topCenter,
                           // 旋转
                           transform: Matrix4.rotationZ(0.75),
@@ -1565,7 +1595,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -4496,22 +4526,31 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        width: ScreenAdapter.width(55),
-                        height: ScreenAdapter.height(60),
-                        alignment: Alignment.centerRight,
+                        //width: ScreenAdapter.width(46),
+                        height: ScreenAdapter.height(24),
+                        alignment: Alignment.center,
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(24)),
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)
+                        ),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(2.0)),
-                          image: DecorationImage(
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          /*image: DecorationImage(
                             image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                             fit: BoxFit.fill,
-                          ),
+                          ),*/
                         ),
-                        child: Container(
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))/*Container(
                           alignment: Alignment.topRight,
                           // 旋转
                           transform: Matrix4.rotationZ(0.78),
@@ -4522,7 +4561,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                                 color: ColorsUtil.hexToColor(
                                     Gcolor.optionBtnColor),
                               )),
-                        )),
+                        )*/),
                   )
                       : Container(
                     height: 0,
@@ -5159,11 +5198,11 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
     var formData = {
       "orderId": _doSubmitOrderId,
-    };print(formData);
+    };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
-     
+
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
         setState(() {
