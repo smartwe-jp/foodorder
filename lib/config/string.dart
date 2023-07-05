@@ -93,6 +93,9 @@ class GString{
         "select_checkOut_tip_title":"店内またはテイクアウトをお選びください",
         "select_checkOut_tip_selected":"                店内      \r\n（お食事後のお会計）",
         "checkoutScanTitle":"お会計",
+
+        "menu_option_more_multipleState":"最大%%つまで",
+        "menu_option_less_smallest":"%%をお選びください",
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -181,6 +184,9 @@ class GString{
         "select_checkOut_tip_title":"请选择结账或者外卖",
         "select_checkOut_tip_selected":"结账",
         "checkoutScanTitle":"结账",
+
+        "menu_option_more_multipleState":"最多%%个",
+        "menu_option_less_smallest":"请选择%%",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -269,6 +275,9 @@ class GString{
         "select_checkOut_tip_title":"Choose in-store or takeout",
         "select_checkOut_tip_selected":"Check out",
         "checkoutScanTitle":"Bill",
+
+        "menu_option_more_multipleState":"Up to %% maximum",
+        "menu_option_less_smallest":"Please select %%",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -357,6 +366,9 @@ class GString{
         "select_checkOut_tip_title":"매장 내 또는 포장 주문하시겠어요",
         "select_checkOut_tip_selected":"체크아웃",
         "checkoutScanTitle":"계산하다",
+
+        "menu_option_more_multipleState":"최대 %%개까지",
+        "menu_option_less_smallest":"%% 선택해주세요",
       };
     }
 

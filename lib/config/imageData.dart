@@ -90,6 +90,8 @@ class GImage{
         "settlement_quicpay":"assets/images/public/settlement_quicpay.png",
         "settlement_jiaotongxi":"assets/images/public/settlement_jiaotongxi.jpg",
 
+
+        "menu_option_check":"assets/images/public/menu_option_check.png",
       };
     }
 

@@ -626,6 +626,9 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         } else if (item['showType'] == "mixed_column") { //混合模式
           return _showCategoryEight(showItem[classTag]);
           //return _showCategoryNine(showItem[classTag]);
+        } else if (item['showType'] == "mixed_column_v1") { //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
+          return _showCategoryEight(showItem[classTag],popupType: "v1");
+          //return _showCategoryNine(showItem[classTag]);
         } else if (item['showType'] == "mixed_two_column") { //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
           return _showCategoryNine(showItem[classTag]);
         }else{
@@ -862,16 +865,111 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     _getSelectedAttrValue(menuCode, attr, setMenuState);
   }
 
+  _changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {
+    //playQRScannerSound();
+
+    var attr = _menuOption[menuCode];//LogUtil.d(attr);
+    for (var i = 0; i < attr.length; i++) {
+      if (attr[i]["groupCode"] == groupCode) {
+        //如果是多选，那么需要判断该组option数量是否超过最大值
+        if(int.parse(attr[i]["multipleState"]) >1){
+          var current_option_checked = 0;
+          var current_incloud_option_checked = 0;
+          for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+            if(attr[i]['optionVoList'][n]["checked"] == true && attr[i]['optionVoList'][n]["optionCode"] != optionCode){
+              current_option_checked++;
+            }
+            /*if((attr[i]['optionVoList'][n]["checked"] == true && attr[i]['optionVoList'][n]["optionCode"] != optionCode )
+                || (attr[i]['optionVoList'][n]["optionCode"] == optionCode && attr[i]['optionVoList'][n]["checked"] == false)
+            ){
+print("加1了");
+              current_incloud_option_checked++;
+            }*/
+          }
+
+          if(current_option_checked >=int.parse(attr[i]["multipleState"])){
+            var showTag = GString.getToString(this._checkLanguage, "menu_option_more_multipleState");
+            showToast("${showTag.replaceAll("%%", attr[i]["multipleState"])}");
+            //showToast("该组选项不能超过${attr[i]["multipleState"]}个");
+            break;
+          }
+
+          /*if(current_incloud_option_checked < int.parse(attr[i]["smallest"])){
+            showToast("该组选项不能小于${attr[i]["smallest"]}个");
+            break;
+          }*/
+
+        }
+        for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
+        if(attr[i]["multipleState"] == "1"){
+          attr[i]['optionVoList'][j]["checked"] = false;
+          if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
+            attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
+          }
+        }else{
+          if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
+            attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
+          }
+        }
+
+        }
+      }
+    }
+    setMenuState(() {
+      _menuOption[menuCode] = attr;
+    });
+
+    _getSelectedAttrValuev1(menuCode, attr, setMenuState);
+  }
+
+  //获取选中的值
+  _getSelectedAttrValuev1(menuCode, optionGroupList, setMenuState) {
+
+    var _list = optionGroupList;
+    List tempArr = [];
+    var selectPrice = 0;
+    for (var i = 0; i < _list.length; i++) {
+      for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
+        if (_list[i]['optionVoList'][j]['checked'] == true) {
+          var selectMapItem = {
+            "groupCode": _list[i]["groupCode"],
+            "groupTitle": _list[i]["groupName"],
+            "optionCode": _list[i]['optionVoList'][j]["optionCode"],
+            "mainTitle": _list[i]['optionVoList'][j]["mainTitle"],
+            "currentPrice": _list[i]['optionVoList'][j]["currentPrice"],
+          };
+          tempArr.add(selectMapItem);
+
+
+          selectPrice +=_list[i]['optionVoList'][j]["currentPrice"];
+
+
+        }
+      }
+    }
+
+    if (tempArr.length > 0) {
+      setMenuState(() {
+        _selectedMenuOptionList[menuCode] = tempArr;
+        _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
+      });
+      tempArr = [];
+    }
+  }
+
   //初始化默认option选项
   _changeInitialOption(menuCode, setMenuState) {
     var attr = _menuOption[menuCode];
     var initMenuOption = _noChangeinitialmenuOption[menuCode];
+    var _addOptionPrice = 0;
+
     if(attr != null){
       for (var i = 0; i < attr.length; i++) {
         for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
           var check = initMenuOption.any((e) => e ==attr[i]['optionVoList'][j]["optionCode"]);
           if(true == check){
             attr[i]['optionVoList'][j]["checked"] = true;
+            _addOptionPrice += attr[i]['optionVoList'][j]["currentPrice"];
           }else{
             attr[i]['optionVoList'][j]["checked"] = false;
           }
@@ -883,7 +981,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     setMenuState(() {
       _menuOption[menuCode] = attr;
       _selectedMenuOptionList[menuCode] = _initialMenuOption[menuCode];
-      _addselectedMenuOptionChangePrice[menuCode] = 0;
+      _addselectedMenuOptionChangePrice[menuCode] = _addOptionPrice;
     });
   }
 
@@ -937,14 +1035,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
         child: Row(
           children: [
-            Text(
-              optionGroupVoList[i]['groupName'],
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(19.0),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-              ),
-            ),
+            RichText(
+              text: TextSpan(
+                  text: "${optionGroupVoList[i]['groupName']}",
+                  //GString.getToString(this._checkLanguage, "show_price_front"),
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(24.0),
+                    fontWeight: FontWeight.w500,
+                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                  ),
+                  children: [
+                    TextSpan(
+                      text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(18.0),
+                        fontWeight: FontWeight.w200,
+                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                      ),
+                    ),
+                  ]),
+            )
           ],
         ),
       ));
@@ -965,7 +1075,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             child: InkWell(
               //enableFeedback: true,
               onTap: () {
-                _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
+                _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
               child: Stack(
@@ -1165,14 +1275,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
           child: Row(
             children: [
-              Text(
-                optionGroupVoList[i]['groupName'],
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(18.0),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                ),
-              ),
+              RichText(
+                text: TextSpan(
+                    text: "${optionGroupVoList[i]['groupName']}",
+                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24.0),
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18.0),
+                          fontWeight: FontWeight.w200,
+                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              )
             ],
           ),
         ));
@@ -1196,7 +1318,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             child: InkWell(
               //enableFeedback: false,
               onTap: () {
-                _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
+                _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
               child: Stack(
@@ -1409,14 +1531,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
           child: Row(
             children: [
-              Text(
-                optionGroupVoList[i]['groupName'],
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(18.0),
-                    fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                ),
-              ),
+              RichText(
+                text: TextSpan(
+                    text: "${optionGroupVoList[i]['groupName']}",
+                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24.0),
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18.0),
+                          fontWeight: FontWeight.w200,
+                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              )
             ],
           ),
         ));
@@ -1440,7 +1574,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             child: InkWell(
               //enableFeedback: false,
               onTap: () {
-                _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
+                _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
               child: Stack(
@@ -1728,20 +1862,66 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               onTap: () {
 
                                 //判断选择后option是否与optiongroup相等
-                                if (_selectedMenuOptionList[itemsFirst['menuCode']].length <_selectedMenuOptionCheckedNum[itemsFirst['menuCode']]) {
+                                /*if (_selectedMenuOptionList[itemsFirst['menuCode']].length <_selectedMenuOptionCheckedNum[itemsFirst['menuCode']]) {
                                   showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                                   return;
-                                }
+                                }*/
                                 var currentPrice = itemsFirst['currentPrice'];
                                 var optionCodeList = "";
                                 var optionTitle = "";
-                                for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {
+
+                                //--------------检测option单选还是多选是否满足
+                                var attr = _menuOption[itemsFirst['menuCode']];//LogUtil.d(attr);
+                                var nexOrder = true;
+                                for (var i = 0; i < attr.length; i++) {
+                                  //如果是多选，那么需要判断该组option数量是否超过最大值
+                                  if(int.parse(attr[i]["smallest"]) >0){
+                                    var current_option_checked = 0;
+                                    for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                      if(attr[i]['optionVoList'][n]["checked"] == true){
+                                        current_option_checked++;
+                                      }
+                                    }
+                                    if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                      nexOrder = false;
+                                      var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                      showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                      break;
+                                    }
+                                  }
+
+                                }
+                                if(nexOrder == false) return;
+                                //--------------end
+                                var checkoptionGroupList = {};
+                                for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {LogUtil.d(optionItem);
+                                currentPrice += optionItem['currentPrice'];
+
+                                optionCodeList += (optionCodeList != "")
+                                    ? "," + optionItem['optionCode']
+                                    : optionItem['optionCode'];
+                                var groupKey = optionItem['groupCode'];
+                                //整理新数组
+                                checkoptionGroupList[groupKey] = {
+                                  "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                  "groupTitle":optionItem['groupTitle']
+                                };
+                                }
+
+                                checkoptionGroupList.forEach((key, value) {
+                                  optionTitle += (optionTitle != "")
+                                      ? "," + value['groupTitle']+":"+value['optionTitles']
+                                      : value['groupTitle']+":"+value['optionTitles'];
+                                });
+
+
+                                /*for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {
                                   //if (optionItem['currentPrice'] != 0) {
                                   currentPrice += optionItem['currentPrice'];
                                   //}
                                   optionCodeList += (optionCodeList != "") ? "," + optionItem['optionCode'] : optionItem['optionCode'];
                                   optionTitle += (optionTitle != "") ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle'] : optionItem['groupTitle']+":"+optionItem['mainTitle'];
-                                }
+                                }*/
 
                                 var cartItem = {
                                   "menuCode": itemsFirst['menuCode'],
@@ -2105,7 +2285,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           var optionCodeList = "";
                           var optionTitle = "";
                           if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
-                            if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                            /*if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
                               showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
@@ -2121,7 +2301,52 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               optionTitle += (optionTitle != "")
                                   ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
                                   : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                            }*/
+
+                            //--------------检测option单选还是多选是否满足
+                            var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                            var nexOrder = true;
+                            for (var i = 0; i < attr.length; i++) {
+                              //如果是多选，那么需要判断该组option数量是否超过最大值
+                              if(int.parse(attr[i]["smallest"]) >0){
+                                var current_option_checked = 0;
+                                for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                  if(attr[i]['optionVoList'][n]["checked"] == true){
+                                    current_option_checked++;
+                                  }
+                                }
+                                if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                  nexOrder = false;
+                                  var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  break;
+                                }
+                              }
+
                             }
+                            if(nexOrder == false) return;
+                            //--------------end
+                            var checkoptionGroupList = {};
+                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                            currentPrice += optionItem['currentPrice'];
+
+                            optionCodeList += (optionCodeList != "")
+                                ? "," + optionItem['optionCode']
+                                : optionItem['optionCode'];
+                            var groupKey = optionItem['groupCode'];
+                            //整理新数组
+                            checkoptionGroupList[groupKey] = {
+                              "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                              "groupTitle":optionItem['groupTitle']
+                            };
+                            }
+
+                            checkoptionGroupList.forEach((key, value) {
+                              optionTitle += (optionTitle != "")
+                                  ? "," + value['groupTitle']+":"+value['optionTitles']
+                                  : value['groupTitle']+":"+value['optionTitles'];
+                            });
+
                           }
 
                           var cartItem = {
@@ -2473,7 +2698,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                           var optionTitle = "";
                           var currentPrice = item['currentPrice'];
                           if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
-                            if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                            /*if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
                               showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                               return;
                             }
@@ -2484,7 +2709,52 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                               //}
                               optionCodeList += (optionCodeList != "") ? "," + optionItem['optionCode'] : optionItem['optionCode'];
                               optionTitle += (optionTitle != "") ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle'] : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                            }*/
+
+                            //--------------检测option单选还是多选是否满足
+                            var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                            var nexOrder = true;
+                            for (var i = 0; i < attr.length; i++) {
+                              //如果是多选，那么需要判断该组option数量是否超过最大值
+                              if(int.parse(attr[i]["smallest"]) >0){
+                                var current_option_checked = 0;
+                                for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                  if(attr[i]['optionVoList'][n]["checked"] == true){
+                                    current_option_checked++;
+                                  }
+                                }
+                                if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                  nexOrder = false;
+                                  var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  break;
+                                }
+                              }
+
                             }
+                            if(nexOrder == false) return;
+                            //--------------end
+                            var checkoptionGroupList = {};
+                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                            currentPrice += optionItem['currentPrice'];
+
+                            optionCodeList += (optionCodeList != "")
+                                ? "," + optionItem['optionCode']
+                                : optionItem['optionCode'];
+                            var groupKey = optionItem['groupCode'];
+                            //整理新数组
+                            checkoptionGroupList[groupKey] = {
+                              "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                              "groupTitle":optionItem['groupTitle']
+                            };
+                            }
+
+                            checkoptionGroupList.forEach((key, value) {
+                              optionTitle += (optionTitle != "")
+                                  ? "," + value['groupTitle']+":"+value['optionTitles']
+                                  : value['groupTitle']+":"+value['optionTitles'];
+                            });
+
                           }
 
                           var cartItem = {
@@ -2733,33 +3003,16 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              var checkResult = _checkQtyBoundsCount(item['menuCode'], "");
-              if (checkResult == false) {
-                return;
+              _checkQtyBoundsCount(item, "");
+            }else{
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                _publicShowOneItemWidget(item);
+              }else{
+                _publicAddCart(item);
               }
             }
 
-            var cartItem = {
-              "menuCode": item['menuCode'],
-              "mainTitle": item['mainTitle'],
-              "image": item['homeImage'],
-              "currentPrice": item['currentPrice'],
-              "optionGroupVoList": "",
-              "optionVoListMsg": "",
-              "goodsNum": 1,
-              "qtyBounds": item['qtyBounds'],
-              "unitPrice":item['currentPrice'],
-            };
-            publicAddCartMenu(cartItem, true).then((val) {
-
-              //_publicShowAddCart(temp,item['homeImage']);
-              if(val != false){
-                _publicShowAddCartNew();
-              }
-
-              //更改显示购物车价格
-              getCartPriceTotal();
-            });
           },
           child: Material(
             child: Stack(
@@ -2835,7 +3088,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
 
   //第八个分类 混合排列，第一行一大两小，其余三个一行每页三列一行  饮品
-  _showCategoryEight(showItemList) {
+  _showCategoryEight(showItemList,{popupType:"old"}) {
     if (showItemList.length > 0) {
       if(showItemList.length >=3){
         var _leftItem = showItemList[0];
@@ -2870,7 +3123,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 }else{
                                   //如果option 存在，则弹出option
                                   if(_leftItem['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_leftItem);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_leftItem);
+                                    }else{
+                                      _publicShowOneItemWidget(_leftItem);
+                                    }
                                   }else{
 
                                     _publicAddCart(_leftItem);
@@ -2949,7 +3206,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
                                 }else{
                                   if(_rightTop['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_rightTop);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_rightTop);
+                                    }else{
+                                      _publicShowOneItemWidget(_rightTop);
+                                    }
                                   }else{
                                     _publicAddCart(_rightTop);
                                   }
@@ -3036,7 +3297,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
                                 }else{
                                   if(_rightBottom['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_rightBottom);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_rightBottom);
+                                    }else{
+                                      _publicShowOneItemWidget(_rightBottom);
+                                    }
                                   }else{
                                     _publicAddCart(_rightBottom);
                                   }
@@ -3108,14 +3373,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     ))
                   ],
                 ),
-                showCategoryEightItemList(_newItemList)
+                showCategoryEightItemList(_newItemList,popupType:popupType)
               ],
             ),
           ),
         );
       }else{
         return Container(
-          child: showCategoryEightItemList(showItemList),
+          child: showCategoryEightItemList(showItemList,popupType:popupType),
         );
       }
 
@@ -3126,7 +3391,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
     }
   }
 
-  showCategoryEightItemList(items) {
+  showCategoryEightItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -3140,14 +3405,14 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             crossAxisCount: 3,
             childAspectRatio: 0.73),
         itemBuilder: (BuildContext context, int index) {
-          return showCategoryEightItemOne(items[index]);
+          return showCategoryEightItemOne(items[index],popupType:popupType);
         },
         itemCount: items.length,
       ),
     );
   }
 
-  showCategoryEightItemOne(item) {
+  showCategoryEightItemOne(item,{popupType:"old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -3165,7 +3430,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             }else{
               //如果option 存在，则弹出option
               if(item['optionGroupVoList']?.length > 0){
-                _publicShowOneItemWidget(item);
+                if(popupType == "v1"){
+                  _publicShowOneItemWidgetv1(item);
+                }else{
+                  _publicShowOneItemWidget(item);
+                }
               }else{
                 _publicAddCart(item);
               }
@@ -3740,13 +4009,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                     var optionCodeList = "";
                                     var optionTitle = "";
                                     if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
-                                      if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                                      /*if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
                                         showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
                                         Navigator.pop(context);
                                         return;
-                                      }
+                                      }*/
 
-                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
+                                      /*for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                                         //if (optionItem['currentPrice'] != 0) {
                                         currentPrice += optionItem['currentPrice'];
                                         //}
@@ -3756,7 +4025,52 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                         optionTitle += (optionTitle != "")
                                             ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
                                             : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                                      }*/
+
+                                      //--------------检测option单选还是多选是否满足
+                                      var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                                      var nexOrder = true;
+                                      for (var i = 0; i < attr.length; i++) {
+                                        //如果是多选，那么需要判断该组option数量是否超过最大值
+                                        if(int.parse(attr[i]["smallest"]) >0){
+                                          var current_option_checked = 0;
+                                          for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                            if(attr[i]['optionVoList'][n]["checked"] == true){
+                                              current_option_checked++;
+                                            }
+                                          }
+                                          if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                            nexOrder = false;
+                                            var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                            showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                            break;
+                                          }
+                                        }
+
                                       }
+                                      if(nexOrder == false) return;
+                                      //--------------end
+                                      var checkoptionGroupList = {};
+                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                      currentPrice += optionItem['currentPrice'];
+
+                                      optionCodeList += (optionCodeList != "")
+                                          ? "," + optionItem['optionCode']
+                                          : optionItem['optionCode'];
+                                      var groupKey = optionItem['groupCode'];
+                                      //整理新数组
+                                      checkoptionGroupList[groupKey] = {
+                                        "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                        "groupTitle":optionItem['groupTitle']
+                                      };
+                                      }
+
+                                      checkoptionGroupList.forEach((key, value) {
+                                        optionTitle += (optionTitle != "")
+                                            ? "," + value['groupTitle']+":"+value['optionTitles']
+                                            : value['groupTitle']+":"+value['optionTitles'];
+                                      });
+
                                     }
 
                                     var cartItem = {
@@ -3815,6 +4129,213 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           );
         });
   }
+  _publicShowOneItemWidgetv1(item){
+    var subtitle = "";
+    if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
+      for (var i = 0; i < item["subtitle"].length; i++) {
+        subtitle += item["subtitle"][i];
+      }
+    }
+    showDialog(
+        context: context,
+        //barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
+        builder: (BuildContext context) {
+          return RepaintBoundary(
+            child: UnconstrainedBox(
+              child: Container(
+                width: ScreenAdapter.width(1060),
+                //height: ScreenAdapter.height(1000),
+                child: Dialog(
+                  insetPadding: EdgeInsets.zero,
+                  child: Container(
+                    // width: ScreenAdapter.width(1060),
+                    width: ScreenAdapter.width(1060),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                    child: StatefulBuilder(
+                      builder: (BuildContext context, menuindex) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Container(
+                              padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: <Widget>[
+                                  //publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 250.0, imgHeight: 250.0),
+                                  (item['optionGroupVoList']?.length > 0)
+                                      ? Expanded(
+                                    child: publicShowOneItemOptionGroupWidgetv1(
+                                        item['menuCode'], menuindex),
+                                  )
+                                      : Container(
+                                    height: 0,
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                            Divider(
+                              height: 1,
+                              color: Color.fromRGBO(227, 227, 227, 1),
+                            ),
+                            //标题价格
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: Container(
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                    child: publicShowMenuTitle(
+                                        item['mainTitle'],
+                                        GFontSize.cartListTitleCount,
+                                        Gcolor.mainTitleColor),
+                                  ),
+                                ),
+                                //价格展示 item['currentPrice']
+                                Container(
+                                  padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                                  width: ScreenAdapter.width(260),
+                                  alignment: Alignment.bottomRight,
+                                  child: publicShowMenuPrice(
+                                      _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                                      GFontSize.menuTwopriceLift,
+                                      Gcolor.mainTitleColor,
+                                      GFontSize.mainPrice,
+                                      Gcolor.priceColor,
+                                      GFontSize.menuTwopriceRight,
+                                      Gcolor.mainTitleColor),
+                                ),
+
+                                //确认按钮
+                                InkWell(
+                                  enableFeedback: false,
+                                  onTap: () {
+
+                                    //判断选择后option是否与optiongroup相等
+                                    var currentPrice = item['currentPrice'];
+                                    var optionCodeList = "";
+                                    var optionTitle = "";
+                                    if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
+                                      /*if (_selectedMenuOptionList[item['menuCode']].length < _selectedMenuOptionCheckedNum[item['menuCode']]) {
+                                        showToast(GString.getToString(this._checkLanguage, "show_please_select_error"));
+                                        return;
+                                      }*/
+
+                                      //--------------检测option单选还是多选是否满足
+                                      var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                                      var nexOrder = true;
+                                      for (var i = 0; i < attr.length; i++) {
+                                        //如果是多选，那么需要判断该组option数量是否超过最大值
+                                        if(int.parse(attr[i]["smallest"]) >0){
+                                          var current_option_checked = 0;
+                                          for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                            if(attr[i]['optionVoList'][n]["checked"] == true){
+                                              current_option_checked++;
+                                            }
+                                          }
+                                          if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                            nexOrder = false;
+                                            var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                            showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                            break;
+                                          }
+                                        }
+
+                                      }
+                                      if(nexOrder == false) return;
+                                      //--------------end
+                                      var checkoptionGroupList = {};
+                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                      currentPrice += optionItem['currentPrice'];
+
+                                      optionCodeList += (optionCodeList != "")
+                                          ? "," + optionItem['optionCode']
+                                          : optionItem['optionCode'];
+                                      var groupKey = optionItem['groupCode'];
+                                      //整理新数组
+                                      checkoptionGroupList[groupKey] = {
+                                        "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                        "groupTitle":optionItem['groupTitle']
+                                      };
+                                      }
+
+                                      checkoptionGroupList.forEach((key, value) {
+                                        optionTitle += (optionTitle != "")
+                                            ? "," + value['groupTitle']+":"+value['optionTitles']
+                                            : value['groupTitle']+":"+value['optionTitles'];
+                                      });
+
+                                      /*for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                        currentPrice += optionItem['currentPrice'];
+
+                                        optionCodeList += (optionCodeList != "")
+                                            ? "," + optionItem['optionCode']
+                                            : optionItem['optionCode'];
+                                        optionTitle += (optionTitle != "")
+                                            ? "," + optionItem['groupTitle']+":"+optionItem['mainTitle']
+                                            : optionItem['groupTitle']+":"+optionItem['mainTitle'];
+                                      }*/
+                                    }
+
+                                    var cartItem = {
+                                      "menuCode": item['menuCode'],
+                                      "mainTitle": item['mainTitle'],
+                                      "image": item['homeImage'],
+                                      "currentPrice": currentPrice,
+                                      "optionGroupVoList": optionCodeList,
+                                      "optionVoListMsg": optionTitle,
+                                      "goodsNum": 1,
+                                      "qtyBounds": item['qtyBounds'],
+                                      "unitPrice":currentPrice
+                                    };
+                                    publicAddCartMenu(cartItem, false).then((val) {
+
+                                      if(val != false){
+                                        _publicShowAddCartNew();
+                                      }
+                                      _changeInitialOption(item['menuCode'], menuindex);
+                                      //更改显示购物车价格
+                                      getCartPriceTotal();
+
+                                    });
+                                    Navigator.pop(context);
+                                  },
+                                  child: Container(
+                                    margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(15),),
+                                    width: ScreenAdapter.width(200),
+                                    height: ScreenAdapter.height(75),
+                                    alignment: Alignment.center,
+                                    decoration: BoxDecoration(
+                                      color: ColorsUtil.hexToColor("#078E42"),
+                                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                    ),
+                                    child: Text(
+                                        GString.getToString(
+                                            this._checkLanguage, "add_option_cart"),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(30),
+                                          fontWeight: FontWeight.w500,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.optionBtnColor),
+                                        )),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          );
+        });
+  }
 
   //获取带option的widget
   publicShowOneItemOptionGroupWidget(menuCode, menuindex) {
@@ -3828,6 +4349,20 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
         children: _getOneItemOptionWidget(menuCode, menuindex),
+      ),
+    );
+  }
+  publicShowOneItemOptionGroupWidgetv1(menuCode, menuindex) {
+    return Container(
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(5),
+          right: ScreenAdapter.width(3),
+          top: ScreenAdapter.height(5),
+          bottom: ScreenAdapter.height(10)),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: _getOneItemOptionWidgetv1(menuCode, menuindex),
       ),
     );
   }
@@ -3847,14 +4382,26 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
               top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
           child: Row(
             children: [
-              Text(
-                optionGroupVoList[i]['groupName'],
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(24.0),
-                  fontWeight: FontWeight.w500,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                ),
-              ),
+              RichText(
+                text: TextSpan(
+                    text: "${optionGroupVoList[i]['groupName']}",
+                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24.0),
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18.0),
+                          fontWeight: FontWeight.w200,
+                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              )
             ],
           ),
         ));
@@ -3876,7 +4423,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
             child: InkWell(
               //enableFeedback: false,
               onTap: () {
-                _changeOption(menuCode, optionGroupVoList[i]["groupCode"],
+                _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
               child: Stack(
@@ -4042,6 +4589,217 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         options.add(Container(
           child: Wrap(
             spacing: ScreenAdapter.width(5), // set spacing here
+            runSpacing: ScreenAdapter.height(10),
+            alignment: WrapAlignment.start,
+            children: optionSons,
+          ),
+        ));
+
+      }
+    }
+
+    return options;
+  }
+  _getOneItemOptionWidgetv1(menuCode, setFirstState) {
+    var optionGroupVoList = _menuOption[menuCode];
+    List<Widget> options = []; //先建一个数组用于存放循环生成的widget
+    if (optionGroupVoList != null &&
+        optionGroupVoList.length > 0 &&
+        optionGroupVoList != "") {
+      for (var i = 0; i < optionGroupVoList.length; i++) {
+        if(i >= _optionGroupMaxNum) break;
+        List<Widget> optionSons = [];
+        var optionVoList = optionGroupVoList[i]['optionVoList'];
+        options.add(Container(
+          padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+          child: Row(
+            children: [
+              RichText(
+                text: TextSpan(
+                    text: "${optionGroupVoList[i]['groupName']}",
+                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24.0),
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18.0),
+                          fontWeight: FontWeight.w200,
+                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              )
+            ],
+          ),
+        ));
+
+        for (var j = 0; j < optionVoList.length; j++) {
+          if(j >= _optionMaxNum) break;
+          var optionVolistSon = optionVoList[j];
+          var buttonColor =[];
+          if (optionVolistSon['buttonColorValue'] != null && optionVolistSon['buttonColorValue'] != "") {
+            buttonColor = optionVolistSon['buttonColorValue'].split(',');
+          }
+          optionSons.add(Container(
+            width: ScreenAdapter.width(190),
+            padding: EdgeInsets.only(
+                left: ScreenAdapter.width(5),
+                top: ScreenAdapter.height(5),
+                right: ScreenAdapter.width(5),
+                bottom: ScreenAdapter.height(5)),
+            child: InkWell(
+              //enableFeedback: false,
+              onTap: () {
+                _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
+                    optionVolistSon["optionCode"], setFirstState);
+              },
+              child: Stack(
+                children: [
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //color: ColorsUtil.hexToColor("#FFFFFF"),
+                      border: Border.all(
+                        color: ColorsUtil.hexToColor("#c9c9c9"),
+                        width: 1,
+                      ),
+                      boxShadow: [
+                        BoxShadow(
+                            color: ColorsUtil.hexToColor("#F9F9F9"),
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ),
+                    child: Column(
+                      children: [
+                        (optionVolistSon['homeImage'] != "" &&
+                            optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(140),
+                            //color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight)
+                            : Container(
+                          width: 0,
+                        ),
+                        Container(
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(60),
+                            alignment: Alignment.center,
+
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                    minWidth: ScreenAdapter.width(20),
+                                    maxWidth: ScreenAdapter.width(180),
+                                    minHeight: ScreenAdapter.height(30),
+                                    maxHeight: ScreenAdapter.height(60),
+                                  ),
+                                  child: AutoSizeText(
+                                      optionVolistSon['mainTitle'],
+                                      style: TextStyle(
+                                        fontWeight: FontWeight.w500,
+                                        fontSize: ScreenAdapter.fontSize(24.0),
+                                        color: ColorsUtil.hexToColor("#914F14"),
+                                      ),
+                                      softWrap: true,
+                                      //minFontSize: 10,
+                                      //maxFontSize: 12,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      textAlign: TextAlign.center
+                                  ),
+                                ),
+                              ],
+                            )
+                        ),
+                      ],
+                    ),
+                  ),
+                  (optionVolistSon['currentPrice'] != 0)
+                      ? Positioned(
+                    right: ScreenAdapter.width(0),
+                    top: ScreenAdapter.height(0),
+                    child: Container(
+                      //width: ScreenAdapter.width(46),
+                        height: ScreenAdapter.height(24),
+                        alignment: Alignment.center,
+                        //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        padding: EdgeInsets.only(
+                          //top:ScreenAdapter.height(2),
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)
+                        ),
+                        // alignment: Alignment.topRight,
+                        decoration: BoxDecoration(
+                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          /*image: DecorationImage(
+                                image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
+                                fit: BoxFit.fill,
+                              ),*/
+                        ),
+                        child: Text(
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(16),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.optionBtnColor),
+                            ))/*Container(
+                              alignment: Alignment.topRight,
+                              // 旋转
+                              transform: Matrix4.rotationZ(0.78),
+                              child: Text(
+                                  "${optionVolistSon['currentPrice'].toString()}",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(14),
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.optionBtnColor),
+                                  )),
+                            )*/),
+                  )
+                      : Container(
+                    height: 0,
+                  ),
+                  (optionVolistSon['checked'] == true)
+                      ? Positioned(
+                    right: ScreenAdapter.width(0),
+                    top: ScreenAdapter.height(50),
+                    child: Container(
+                        width: ScreenAdapter.width(180),
+                        height: ScreenAdapter.height(150),
+                        alignment: Alignment.center,
+
+                        child: Image.asset(
+                          GImage.getImageString("imgpublic", "menu_option_check"),
+                          width: ScreenAdapter.width(90),
+                          fit: BoxFit.fitWidth,
+                          color: Colors.green,
+                        )
+                    ),
+                  )
+                      : Container(
+                    height: 0,
+                  ),
+                ],
+              ),
+            ),
+          ));
+
+        }
+
+        options.add(Container(
+          child: Wrap(
+            spacing: ScreenAdapter.width(10), // set spacing here
             runSpacing: ScreenAdapter.height(10),
             alignment: WrapAlignment.start,
             children: optionSons,

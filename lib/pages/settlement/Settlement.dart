@@ -765,17 +765,18 @@ class _SettlementPageState extends State<SettlementPage> {
         "orderId": this._orderId,
         "payAmount": _getPutMoney,
         "machineCode":_machineCode
-      };
+      };print(formData);
       var queryUrl;
       //queryUrl = "webBootToPrintV4";
       //queryUrl = "webBootToPrintV5";
-      queryUrl = "webBootToPrintV6"; //23新修改小票
+      //queryUrl = "webBootToPrintV6"; //23新修改小票
+      queryUrl = "webBootToPrintV7"; //230704新修改小票
 
 
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -920,18 +921,22 @@ class _SettlementPageState extends State<SettlementPage> {
 
   //打印甘蘭
   _tpPrintnew(printData, printType) async {
-    var categoryVos = printData["categoryVos"];
+    var categoryVos = printData["printInfoListStruct"];
     var print_menu_txt_size = 28.0;
     var wrapNum = 13;
+    var oneRowHeight = 47;
     if(_print_paper_txt_size == "1"){
       print_menu_txt_size = 28.0;
       wrapNum = 13;
+      oneRowHeight = 47;
     }else if(_print_paper_txt_size == "2"){
       print_menu_txt_size = 33.0;
       wrapNum = 9;
+      oneRowHeight = 52;
     }else if(_print_paper_txt_size == "3"){
       print_menu_txt_size = 40.0;
       wrapNum = 7;
+      oneRowHeight = 57;
     }
 
     List<Widget> categoryMenus = [];
@@ -971,87 +976,182 @@ class _SettlementPageState extends State<SettlementPage> {
 
     int categoryNum = categoryVos.length;
     int categoryshowNum = 0;
-    for (var i = 0; i < categoryVos.length; i++) {
-      int linNum = 0;
-      var lineVosList = categoryVos[i]["lineVos"];
-      int linVoNum = lineVosList.length;
 
-      for (var m = 0; m < lineVosList.length; m++) {
-        var lineItem = lineVosList[m];
-        var optionVoList = lineItem["optionVos"];
-        // 计算菜品标题长度
-        var menuLength = lineItem["menuName"].length;
-        var menuLine = menuLength / wrapNum;
-        var menuRowNum = menuLine.ceil();
-        optionNum = 0;
+    for (var m = 0; m < categoryVos.length; m++) {
+      var lineItem = categoryVos[m];
+      var optionVoList = lineItem["optionVoListMsgMap"];
+      // 计算菜品标题长度
+      var menuLength = lineItem["mainTitle"].length;
+      var menuLine = menuLength / wrapNum;
+      var menuRowNum = menuLine.ceil();
+      optionNum = 0;
 
-        categoryMenus.add(
-          _publicGoodsTwoColumnsTxt("${lineItem["menuName"]}", print_menu_txt_size,
-              FontWeight.w100, "${lineItem["menuQty"]}", print_menu_txt_size, FontWeight.w100),
-        );
-        if (optionVoList != null && optionVoList.length > 0) {
-          for (var n = 0; n < optionVoList.length; n++) {
-            var optionVos = optionVoList[n];
-            // 计算菜品标题长度
-            var groupNameLength = optionVos["groupName"].length;
-            var optionNameLength = optionVos["optionName"].length;
-            var optionLine = (groupNameLength + optionNameLength) / wrapNum;
+      categoryMenus.add(
+        _publicGoodsTwoColumnsTxt("${lineItem["mainTitle"]}", print_menu_txt_size,
+            FontWeight.w200, "${lineItem["qty"]}", print_menu_txt_size, FontWeight.w200),
+      );
+      if (optionVoList != null && optionVoList.isNotEmpty) {
+        optionVoList.forEach((key, value) {
+          // 计算菜品标题长度
+          var groupNameLength = key.length;
+          var optionNameLength = value[0].length;
+          var optionLine = (groupNameLength + optionNameLength) / wrapNum;
+          var countLine = optionLine.ceil();
 
+          var lineOptionTxtNum = (wrapNum-1)/2;
 
-            //判断option 是否换行数量
-            var lineOptionTxtNum = (wrapNum-1)/2;
-            if(groupNameLength >lineOptionTxtNum || optionNameLength>lineOptionTxtNum){
-              var newLineNum = 0.0;
-              if(groupNameLength >wrapNum){
-                newLineNum += groupNameLength / wrapNum;
-              }
-              if(optionNameLength >wrapNum){
-                newLineNum += optionNameLength / wrapNum;
-              }
-              //optionLine += newLineNum;
-              //换行显示option
-              categoryMenus.add(
-                _publicGoodsNewLineOptionTxt(
-                    "　${optionVos["groupName"]}",
-                    print_menu_txt_size,
-                    FontWeight.w100,
-                    "${optionVos["optionName"]}",
-                    print_menu_txt_size,
-                    FontWeight.w100),
-              );
-            }else{
-              optionLine = (groupNameLength + optionNameLength) / wrapNum;
-              //不换行
-              categoryMenus.add(
-                _publicGoodsOptionTwoColumnsTxt(
-                    "　${optionVos["groupName"]}",
-                    print_menu_txt_size,
-                    FontWeight.w100,
-                    "${optionVos["optionName"]}",
-                    print_menu_txt_size,
-                    FontWeight.w100),
+          //处理option 开始-----------
+        if(groupNameLength >lineOptionTxtNum || optionNameLength>lineOptionTxtNum){
+          var newLineNum = 0.0;
+          if(groupNameLength >wrapNum){
+            newLineNum += groupNameLength / wrapNum;
+          }
+          if(optionNameLength >wrapNum){
+            newLineNum += optionNameLength / wrapNum;
+          }
+          countLine += newLineNum.ceil();
+          optionLine += newLineNum;
+
+          categoryMenus.add(Column(
+            textDirection: TextDirection.rtl,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                          child:Text("    ${key}",
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: print_menu_txt_size,
+                                fontWeight: FontWeight.w100,
+                                fontFamily: 'ZenKakuGothicAntique',
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ))
+                      )
+                  ),
+
+                ],
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Expanded(
+                        child: Text("${value[0]}",
+                            softWrap: true,
+                            style: TextStyle(
+                              fontSize: print_menu_txt_size,
+                              fontWeight: FontWeight.w100,
+                              fontFamily: 'ZenKakuGothicAntique',
+                              color: ColorsUtil.hexToColor("#000000"),
+                            )),
+                      )),
+                ],
+              ),
+            ],
+          ));
+        }else{
+          categoryMenus.add(Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                      child:Text("    ${key}",
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: print_menu_txt_size,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ))
+                  )
+              ),
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Expanded(
+                    child: Text("${value[0]}",
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: print_menu_txt_size,
+                          fontWeight: FontWeight.w100,
+                          fontFamily: 'ZenKakuGothicAntique',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        )),
+                  )),
+            ],
+          ));
+        }
+
+        var newOptionSonLine = 0.0;
+          if(value.length>1){
+            List<Widget> optionSons = [];
+            for (var j = 1; j < value.length; j++) {
+              print(value[j]);
+              newOptionSonLine += optionNameLength / wrapNum;
+              var oneOptionlength = optionNameLength / wrapNum;
+              countLine += oneOptionlength.ceil();
+
+              optionSons.add(
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Expanded(child: Text("  ${value[j]}",
+                          textDirection: TextDirection.ltr,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: print_menu_txt_size,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                            //fontWeight: FontWeight.w600
+                          ))),
+                    ],
+                  )
               );
             }
 
-            var optionRowNum = optionLine.ceil();
-            addRowHight += 50 * optionRowNum;
-            menuNum += optionRowNum;
-            optionNum++;
+            categoryMenus.add(Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.end,
+              textDirection: TextDirection.rtl,
+              children: optionSons,
+            ));
           }
-          addRowHight += 48 * menuRowNum;
-          menuNum += menuRowNum;
-        } else {
-          addRowHight += 53 * menuRowNum;
-          menuNum += menuRowNum;
-        }
 
-        //分割线
-        if (_machineMode == "1") {
-          addRowHight += 6;
-          categoryMenus.add(
-            _publicSplitLine(),
-          );
-        }
+
+        //处理option结束-----------
+
+          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+          //addRowHight += 52 * optionRowNum;
+          addRowHight += oneRowHeight*countLine;
+          menuNum += optionRowNum;
+          optionNum++;
+        });
+
+        addRowHight += oneRowHeight * menuRowNum;
+        menuNum += menuRowNum;
+      } else {
+        addRowHight += oneRowHeight * menuRowNum;
+        menuNum += menuRowNum;
+      }
+
+      //分割线
+      if (_machineMode == "1") {
+        addRowHight += 6;
+        categoryMenus.add(
+          _publicSplitLine(),
+        );
       }
     }
     //print("总行数${menuNum}");
@@ -1069,6 +1169,7 @@ class _SettlementPageState extends State<SettlementPage> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.center,
+        textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
     ));
@@ -2297,6 +2398,63 @@ class _SettlementPageState extends State<SettlementPage> {
                       )),
                 ],
               ),
+            ],
+          ),
+        ));
+  }
+
+  _publicGoodsNewLineOptionMoreTxt(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
+      rightTxtContext, rightTxtFontSize, rightTxtFontWeight) {
+    //var rightList = json.decode(rightTxtContext);
+    print("进入整理了");
+    //print(rightTxtContext[0]);
+    List<Widget> optionSons = [];
+    for (var j = 0; j < rightTxtContext.length; j++) {
+      print(rightTxtContext[j]);
+      optionSons.add(
+          Container(
+            alignment: Alignment.centerRight,
+            child: Text("    ${rightTxtContext[j]}",
+                style: TextStyle(
+                  fontSize: rightTxtFontSize,
+                  fontWeight: rightTxtFontWeight,
+                  fontFamily: 'ZenKakuGothicAntique',
+                  color: ColorsUtil.hexToColor("#000000"),
+                  //fontWeight: FontWeight.w600
+                )),
+          )
+      );
+    }
+
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                      child:Text("${leftTxtContext}",
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: leftTxtFontSize,
+                            fontWeight: leftTxtFontWeight,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ))
+                  )
+              ),
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Column(
+                    textDirection: TextDirection.rtl,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: optionSons,
+                  )),
             ],
           ),
         ));

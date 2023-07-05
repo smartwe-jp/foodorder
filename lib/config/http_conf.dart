@@ -1,5 +1,5 @@
-const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
 
 //const oa_base_url = "https://testoa.gutingjun.com/api/";  //刷脸测试环境地址
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
@@ -21,7 +21,8 @@ const servicePath = {
   //'webBootToPrintV3': base_url + 'pad/web/boot/v3/print', //打印小票请求地址 80mm
   //'webBootToPrintV4': base_url + 'pad/web/boot/v4/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV5': base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
-  'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
+  'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
+  'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
