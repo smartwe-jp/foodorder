@@ -53,6 +53,10 @@ class ItemServices {
     return await sqlService.getCartItemNum(menuCode);
   }
 
+  Future getCartTotalNumber() async {
+    return await sqlService.getCartTotalNum();
+  }
+
   Future getCartItemNumberByID(cartId) async {
     return await sqlService.getCartItemNumberByID(cartId);
   }

@@ -488,6 +488,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
 
           return SelectPaymentPage(
             checkLanguage: _checkLanguage,
+              menuCount: 0,
             //mealType:_mealType,
             isAllowPos:_isAllowPos,
             payment_method_num:_payment_method_num,

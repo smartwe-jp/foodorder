@@ -18,6 +18,7 @@ class SelectPaymentPage extends StatefulWidget {
   SelectPaymentPage(
       {Key key,
       this.checkLanguage,
+        this.menuCount,
         //this.mealType,
         this.isAllowPos,
         this.payment_method_num,
@@ -45,6 +46,7 @@ class SelectPaymentPage extends StatefulWidget {
   //final bool mealType;
   final String isAllowPos;
   final String payment_method_num;
+  final int menuCount;
   final bool showCash;
   final bool showWechat;
   final bool showAlipay;
@@ -76,6 +78,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _payment_method_num = "0"; //支付类型选择 1现金 2扫码 3pos 4nfc
   String _shopCartTotalPrice="0"; //合计总价
   String _tableNum = "";
+  int _menuCount =0;
 
   var _showWechat = false;
   var _showAlipay = false;
@@ -121,6 +124,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showPosQUICPay = widget.showPosQUICPay;
     _showPosWAON = widget.showPosWAON;
     _showPosnanaco = widget.showPosnanaco;
+    _menuCount = widget.menuCount;
 
     //监听是否展示现金的广播
     eventBus.on<setShowCashEvent>().listen((event) {
@@ -868,21 +872,34 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
-                      if(_tableNum != null && _tableNum != "")
-                      Text(
-                        "${GString.getToString(this._checkLanguage, "show_check_tableno")}${_tableNum}",
-                        style: TextStyle(
-                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                            fontWeight: FontWeight.w600,
-                            fontSize: ScreenAdapter.fontSize(40.0)),
+                      Row(
+                        children: [
+                          if(_tableNum != null && _tableNum != "")
+                            Text(
+                              "${GString.getToString(this._checkLanguage, "show_check_tableno")}${_tableNum}    ",
+                              style: TextStyle(
+                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ScreenAdapter.fontSize(40.0)),
+                            ),
+                          Text(
+                            GString.getToString(this._checkLanguage, "settlement_total_price"),
+                            style: TextStyle(
+                                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(40.0)),
+                          ),
+                          if(_menuCount != null && _menuCount >0)
+                            Text(
+                              "    ${_menuCount.toString()}${GString.getToString(this._checkLanguage, "show_selectPay_point")}",
+                              style: TextStyle(
+                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: ScreenAdapter.fontSize(40.0)),
+                            ),
+                        ],
                       ),
-                      Text(
-                        GString.getToString(this._checkLanguage, "settlement_total_price"),
-                        style: TextStyle(
-                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                            fontWeight: FontWeight.w600,
-                            fontSize: ScreenAdapter.fontSize(40.0)),
-                      ),
+
                       Container(
                         decoration: BoxDecoration(
                             color: Colors.white12,

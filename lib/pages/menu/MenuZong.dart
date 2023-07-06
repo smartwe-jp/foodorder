@@ -89,6 +89,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
 
   var _shopCartTotalPrice = "0";
+  var _showCartTotalGoodsNum = 0;
   var cartnum = 6;
 
   //就餐类型
@@ -4822,6 +4823,11 @@ print("加1了");
         _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
       });
 
+    var totalNum = await controller.getCartTotalNum();
+    setState(() {
+      _showCartTotalGoodsNum = totalNum;
+    });
+
     //return sum.toString();
   }
 
@@ -5339,6 +5345,7 @@ print("加1了");
 
           return SelectPaymentPage(
               checkLanguage: _checkLanguage,
+              menuCount: _showCartTotalGoodsNum,
               //mealType:_mealType,
               isAllowPos:_isAllowPos,
               payment_method_num:_payment_method_num,

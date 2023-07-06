@@ -400,6 +400,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
 
           return SelectPaymentPage(
             checkLanguage: _checkLanguage,
+            menuCount: 0,
             //mealType:_mealType,
             isAllowPos:_isAllowPos,
             payment_method_num:_payment_method_num,

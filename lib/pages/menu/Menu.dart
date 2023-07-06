@@ -87,6 +87,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
 
   var _shopCartTotalPrice = "0";
+  var _showCartTotalGoodsNum = 0;
   var cartnum = 6;
 
   //就餐类型
@@ -5043,7 +5044,7 @@ print("加1了");
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
                                     minWidth: ScreenAdapter.width(20),
-                                    maxWidth: ScreenAdapter.width(180),
+                                    maxWidth: ScreenAdapter.width(170),
                                     minHeight: ScreenAdapter.height(30),
                                     maxHeight: ScreenAdapter.height(60),
                                   ),
@@ -5179,6 +5180,12 @@ print("加1了");
     setState(() {
       _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
     });
+
+    var totalNum = await controller.getCartTotalNum();
+    setState(() {
+      _showCartTotalGoodsNum = totalNum;
+    });
+
 
     //return sum.toString();
   }
@@ -5709,6 +5716,7 @@ print("加1了");
 
           return SelectPaymentPage(
               checkLanguage: _checkLanguage,
+              menuCount: _showCartTotalGoodsNum,
               //mealType:_mealType,
               isAllowPos:_isAllowPos,
               payment_method_num:_payment_method_num,

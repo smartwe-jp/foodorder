@@ -96,6 +96,7 @@ class GString{
 
         "menu_option_more_multipleState":"最大%%つまで",
         "menu_option_less_smallest":"%%をお選びください",
+        "show_selectPay_point":"点",
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -187,6 +188,7 @@ class GString{
 
         "menu_option_more_multipleState":"最多%%个",
         "menu_option_less_smallest":"请选择%%",
+        "show_selectPay_point":"份",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -278,6 +280,7 @@ class GString{
 
         "menu_option_more_multipleState":"Up to %% maximum",
         "menu_option_less_smallest":"Please select %%",
+        "show_selectPay_point":"dishes",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -369,6 +372,7 @@ class GString{
 
         "menu_option_more_multipleState":"최대 %%개까지",
         "menu_option_less_smallest":"%% 선택해주세요",
+        "show_selectPay_point":"점",
       };
     }
 
