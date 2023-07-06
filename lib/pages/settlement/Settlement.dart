@@ -781,6 +781,9 @@ class _SettlementPageState extends State<SettlementPage> {
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1){
             _tpPrintnew(response['data'], printType);
+            if(printType == "1"){
+              _tpPrintReceipt(response['data']);
+            }
           }else{
             if (printType == "1") {
               _tpPrintReceipt(response['data']);
@@ -1075,17 +1078,17 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    Future.delayed(Duration(milliseconds: 100), () async {
+    //Future.delayed(Duration(milliseconds: 100), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      if (printType == "1") {
+      //if (printType == "1") {
         await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
-        _tpPrintReceipt(printData);
-      } else {
-        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
-      }
+        //_tpPrintReceipt(printData);
+      //} else {
+        //await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
+      //}
 
-    });
+    //});
   }
 
   _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
@@ -2020,7 +2023,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    Future.delayed(Duration(milliseconds: 100), () async {
+    Future.delayed(Duration(milliseconds: 200), () async {
       String base64Image = base64Encode(imageBytes);
 
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
