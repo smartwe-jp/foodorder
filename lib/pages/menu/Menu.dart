@@ -868,7 +868,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
   _changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {
     //playQRScannerSound();
 
-    var attr = _menuOption[menuCode];//LogUtil.d(attr);
+    var attr = _menuOption[menuCode];
     for (var i = 0; i < attr.length; i++) {
       if (attr[i]["groupCode"] == groupCode) {
         //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -1868,7 +1868,7 @@ print("加1了");
                               var optionCodeList = "";
                               var optionTitle = "";
                               //--------------检测option单选还是多选是否满足
-                              var attr = _menuOption[itemsFirst['menuCode']];//LogUtil.d(attr);
+                              var attr = _menuOption[itemsFirst['menuCode']];
                               var nexOrder = true;
                               for (var i = 0; i < attr.length; i++) {
                                 //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -1891,7 +1891,7 @@ print("加1了");
                               if(nexOrder == false) return;
                               //--------------end
                               var checkoptionGroupList = {};
-                              for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {LogUtil.d(optionItem);
+                              for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {
                               currentPrice += optionItem['currentPrice'];
 
                               optionCodeList += (optionCodeList != "")
@@ -2293,7 +2293,7 @@ print("加1了");
                             }*/
 
                             //--------------检测option单选还是多选是否满足
-                            var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                            var attr = _menuOption[item['menuCode']];
                             var nexOrder = true;
                             for (var i = 0; i < attr.length; i++) {
                               //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -2316,7 +2316,7 @@ print("加1了");
                             if(nexOrder == false) return;
                             //--------------end
                             var checkoptionGroupList = {};
-                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                             currentPrice += optionItem['currentPrice'];
 
                             optionCodeList += (optionCodeList != "")
@@ -2694,7 +2694,7 @@ print("加1了");
                             }*/
 
                             //--------------检测option单选还是多选是否满足
-                            var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                            var attr = _menuOption[item['menuCode']];
                             var nexOrder = true;
                             for (var i = 0; i < attr.length; i++) {
                               //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -2717,7 +2717,7 @@ print("加1了");
                             if(nexOrder == false) return;
                             //--------------end
                             var checkoptionGroupList = {};
-                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                            for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                             currentPrice += optionItem['currentPrice'];
 
                             optionCodeList += (optionCodeList != "")
@@ -4143,7 +4143,7 @@ print("加1了");
                                       }*/
 
                                       //--------------检测option单选还是多选是否满足
-                                      var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                                      var attr = _menuOption[item['menuCode']];
                                       var nexOrder = true;
                                       for (var i = 0; i < attr.length; i++) {
                                         //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -4166,7 +4166,7 @@ print("加1了");
                                       if(nexOrder == false) return;
                                       //--------------end
                                       var checkoptionGroupList = {};
-                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                                       currentPrice += optionItem['currentPrice'];
 
                                       optionCodeList += (optionCodeList != "")
@@ -4460,7 +4460,7 @@ print("加1了");
                                       }*/
 
                                       //--------------检测option单选还是多选是否满足
-                                      var attr = _menuOption[item['menuCode']];//LogUtil.d(attr);
+                                      var attr = _menuOption[item['menuCode']];
                                       var nexOrder = true;
                                       for (var i = 0; i < attr.length; i++) {
                                           //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -4483,7 +4483,7 @@ print("加1了");
                                       if(nexOrder == false) return;
                                       //--------------end
                                       var checkoptionGroupList = {};
-                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                      for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                                         currentPrice += optionItem['currentPrice'];
 
                                         optionCodeList += (optionCodeList != "")
@@ -4503,7 +4503,7 @@ print("加1了");
                                             : value['groupTitle']+":"+value['optionTitles'];
                                       });
 
-                                      /*for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {LogUtil.d(optionItem);
+                                      /*for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
                                         currentPrice += optionItem['currentPrice'];
 
                                         optionCodeList += (optionCodeList != "")
