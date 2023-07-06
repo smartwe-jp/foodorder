@@ -1179,7 +1179,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    Future.delayed(Duration(milliseconds: 50), () async {
+    //Future.delayed(Duration(milliseconds: 50), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
       //if (printType == "1") {
@@ -1191,7 +1191,7 @@ class _SettlementPageState extends State<SettlementPage> {
         //await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
       //}
 
-    });
+    //});
   }
 
   _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
@@ -2231,7 +2231,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    Future.delayed(Duration(milliseconds: 100), () async {
+    Future.delayed(Duration(milliseconds: 200), () async {
       String base64Image = base64Encode(imageBytes);
       print("打印领収书来了-过来打印了：${DateTime.now()}");
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
