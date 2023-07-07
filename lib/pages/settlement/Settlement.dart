@@ -2145,25 +2145,25 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
     if (printData["memberNo"] != null && printData["memberNo"] != "") {
-      lineZeng = 110;
+      lineZeng += 20;
       categoryMenus.add(
-        _publicTwoColumnsTxtNew("カード番号", 26.0, FontWeight.w200,
+        _publicTwoColumnsTxtNewLine("カード番号", 26.0, FontWeight.w200,
             printData["memberNo"], 26.0, FontWeight.w100, false),
       );
       categoryMenus.add(
-        _publicTwoColumnsTxtNew("日期", 26.0, FontWeight.w200, printData["payDate"],
+        _publicTwoColumnsTxtNewLine("日期", 26.0, FontWeight.w200, printData["payDate"],
             26.0, FontWeight.w100, false),
       );
       categoryMenus.add(_publicSplitLine());
     }
     if (printData["serialNo"] != null && printData["serialNo"] != "") {
-      lineZeng = 110;
+      lineZeng += 20;
       categoryMenus.add(
-        _publicTwoColumnsTxtNew("カード取引通番", 26.0, FontWeight.w200,
+        _publicTwoColumnsTxtNewLine("カード取引通番", 26.0, FontWeight.w200,
             printData["serialNo"], 26.0, FontWeight.w100, false),
       );
       categoryMenus.add(
-        _publicTwoColumnsTxtNew("取引日時", 26.0, FontWeight.w200, printData["payDate"],
+        _publicTwoColumnsTxtNewLine("取引日時", 26.0, FontWeight.w200, printData["payDate"],
             26.0, FontWeight.w100, false),
       );
       categoryMenus.add(_publicSplitLine());
@@ -2208,7 +2208,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         ),
                       ],
                     )),
-                if(printData["change"] !=null && int.parse(printData["change"]) >=0)
+                if(printData["payMethod"] == "現金支払" && printData["change"] !=null && int.parse(printData["change"]) >=0)
                 Directionality(
                     textDirection: TextDirection.ltr,
                     child: Row(
@@ -2401,6 +2401,39 @@ class _SettlementPageState extends State<SettlementPage> {
         ));
   }
 
+  _publicTwoColumnsTxtNewLine(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
+      rightTxtContext, rightTxtFontSize, rightTxtFontWeight, isMoney) {
+
+    return Directionality(
+        textDirection: TextDirection.ltr,
+        child: Container(
+          margin: EdgeInsets.only(bottom: 3),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("${leftTxtContext}",
+                    style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                  )),
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Expanded(
+                    child: Container(
+                      width: ScreenAdapter.width(120),
+                      alignment: Alignment.centerRight,
+                      child: Text("${rightTxtContext}",
+                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+
+                      ),
+                    ),
+                  )),
+            ],
+          ),
+        ));
+  }
   //商品双列
   _publicGoodsTwoColumnsTxt(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
       rightTxtContext, rightTxtFontSize, rightTxtFontWeight) {
