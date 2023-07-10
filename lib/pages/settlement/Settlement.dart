@@ -778,6 +778,9 @@ class _SettlementPageState extends State<SettlementPage> {
         var response = json.decode(val.toString());
         //LogUtil.d(response);
         if (response['code'] == 200) {
+          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
+            _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
+          }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1){
@@ -791,11 +794,9 @@ class _SettlementPageState extends State<SettlementPage> {
             }
           }
 
-          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
-          _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
-          }
 
-          Future.delayed(Duration(milliseconds: 500),() async {
+
+          /*Future.delayed(Duration(milliseconds: 500),() async {
             if (_machineMode == "1") {
               eventBus.fire(new clearCartEvent('支付成功...'));
             }
@@ -807,7 +808,7 @@ class _SettlementPageState extends State<SettlementPage> {
               gotonewMyhome();
             }
 
-          });
+          });*/
 
         } else {
           //错误后重新调用一次
@@ -1207,6 +1208,22 @@ class _SettlementPageState extends State<SettlementPage> {
       //}
 
     //});
+
+    if(printType != "1"){
+      Future.delayed(Duration(milliseconds: 500),() async {
+        if (_machineMode == "1") {
+          eventBus.fire(new clearCartEvent('支付成功...'));
+        }
+
+        //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+        if (_payment_method_num == "1") {
+          nextOper();
+        } else {
+          gotonewMyhome();
+        }
+
+      });
+    }
   }
 
   _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
@@ -2265,6 +2282,20 @@ class _SettlementPageState extends State<SettlementPage> {
     Future.delayed(Duration(milliseconds: 200), () async {
       String base64Image = base64Encode(imageBytes);
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
+    });
+
+    Future.delayed(Duration(milliseconds: 500),() async {
+      if (_machineMode == "1") {
+        eventBus.fire(new clearCartEvent('支付成功...'));
+      }
+
+      //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+      if (_payment_method_num == "1") {
+        nextOper();
+      } else {
+        gotonewMyhome();
+      }
+
     });
   }
 
