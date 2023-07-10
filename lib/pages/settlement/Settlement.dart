@@ -796,7 +796,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
 
 
-          /*Future.delayed(Duration(milliseconds: 500),() async {
+          Future.delayed(Duration(milliseconds: 500),() async {
             if (_machineMode == "1") {
               eventBus.fire(new clearCartEvent('支付成功...'));
             }
@@ -808,7 +808,7 @@ class _SettlementPageState extends State<SettlementPage> {
               gotonewMyhome();
             }
 
-          });*/
+          });
 
         } else {
           //错误后重新调用一次
@@ -1208,22 +1208,6 @@ class _SettlementPageState extends State<SettlementPage> {
       //}
 
     //});
-
-    if(printType != "1"){
-      Future.delayed(Duration(milliseconds: 500),() async {
-        if (_machineMode == "1") {
-          eventBus.fire(new clearCartEvent('支付成功...'));
-        }
-
-        //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-        if (_payment_method_num == "1") {
-          nextOper();
-        } else {
-          gotonewMyhome();
-        }
-
-      });
-    }
   }
 
   _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
@@ -2235,7 +2219,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         ),
                       ],
                     )),
-                if(printData["payMethod"] == "現金支払" && printData["change"] !=null && int.parse(printData["change"]) >=0)
+                if(printData["payMethod"] == "現金支払" && printData["change"] !=null && printData["change"] !="")
                 Directionality(
                     textDirection: TextDirection.ltr,
                     child: Row(
@@ -2284,19 +2268,6 @@ class _SettlementPageState extends State<SettlementPage> {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
     });
 
-    Future.delayed(Duration(milliseconds: 500),() async {
-      if (_machineMode == "1") {
-        eventBus.fire(new clearCartEvent('支付成功...'));
-      }
-
-      //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-      if (_payment_method_num == "1") {
-        nextOper();
-      } else {
-        gotonewMyhome();
-      }
-
-    });
   }
 
   //单列文字
