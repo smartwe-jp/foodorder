@@ -5224,7 +5224,7 @@ print("加1了");
                                       child: SingleChildScrollView(
                                         physics: ClampingScrollPhysics(),
                                         child: Container(
-                                          width: ScreenAdapter.width(730),
+                                          width: ScreenAdapter.width(720),
                                           height: ScreenAdapter.height(300),
                                           color:
                                           ColorsUtil.hexToColor(Gcolor.cartListColor),
