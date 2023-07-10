@@ -1043,7 +1043,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(60)),
+                padding: EdgeInsets.only(left: ScreenAdapter.width(40)),
                 child: Row(
                   mainAxisAlignment: (value[0].length >wrapNum ) ? MainAxisAlignment.start : MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1054,6 +1054,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         child: Expanded(
                           child: Text("${value[0]}",
                               softWrap: true,
+                              textAlign: (value[0].length >wrapNum) ? TextAlign.left : TextAlign.right,
                               style: TextStyle(
                                 fontSize: print_menu_txt_size,
                                 fontWeight: FontWeight.w100,
@@ -1094,6 +1095,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     child: Expanded(
                       child: Text("${value[0]}",
                           softWrap: true,
+                          textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
@@ -1117,7 +1119,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
               optionSons.add(
                   Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(60)),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(40)),
                     child: Row(
                       mainAxisAlignment: (value[j].length >wrapNum) ? MainAxisAlignment.start : MainAxisAlignment.end,
                       textDirection: TextDirection.ltr,
@@ -1409,23 +1411,27 @@ class _SettlementPageState extends State<SettlementPage> {
 
                   ],
                 ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: Expanded(
-                          child: Text("${value[0]}",
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontFamily: 'JetBrainsMonoRegular',
-                                color: ColorsUtil.hexToColor("#000000"),
-                              )),
-                        )),
-                  ],
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
+                  child: Row(
+                    mainAxisAlignment: (value[0].length >10 ) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.rtl,
+                          child: Expanded(
+                            child: Text("${value[0]}",
+                                softWrap: true,
+                                textAlign: (value[0].length >10) ? TextAlign.left : TextAlign.right,
+                                style: TextStyle(
+                                  fontSize: 40,
+                                  fontFamily: 'JetBrainsMonoRegular',
+                                  color: ColorsUtil.hexToColor("#000000"),
+                                )),
+                          )),
+                    ],
+                  ),
                 ),
               ],
             ));
@@ -1452,6 +1458,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     child: Expanded(
                       child: Text("${value[0]}",
                           softWrap: true,
+                          textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: 40,
                             fontFamily: 'JetBrainsMonoRegular',
@@ -1472,20 +1479,23 @@ class _SettlementPageState extends State<SettlementPage> {
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Expanded(child: Text("  ${value[j]}",
-                          textDirection: TextDirection.ltr,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontFamily: 'JetBrainsMonoRegular',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w600
-                          ))),
-                    ],
+                  Container(
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
+                    child: Row(
+                      mainAxisAlignment: (value[j].length >12) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                      textDirection: TextDirection.ltr,
+                      children: [
+                        Expanded(child: Text("${value[j]}",
+                            textDirection: TextDirection.ltr,
+                            textAlign: (value[j].length >12) ? TextAlign.left : TextAlign.right,
+                            style: TextStyle(
+                              fontSize: 40,
+                              fontFamily: 'JetBrainsMonoRegular',
+                              color: ColorsUtil.hexToColor("#000000"),
+                              //fontWeight: FontWeight.w600
+                            ))),
+                      ],
+                    ),
                   )
               );
             }
