@@ -776,7 +776,7 @@ class _SettlementPageState extends State<SettlementPage> {
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
             _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
@@ -784,6 +784,7 @@ class _SettlementPageState extends State<SettlementPage> {
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1){
+
             _tpPrintnew(response['data'], printType);
             if(printType == "1"){
               _tpPrintReceipt(response['data']);
@@ -1813,7 +1814,7 @@ class _SettlementPageState extends State<SettlementPage> {
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
-    var lineHight = 620;
+    var lineHight = 625;
     var lineZeng = 100;
     var addRowHight = 0;
 
@@ -1935,7 +1936,7 @@ class _SettlementPageState extends State<SettlementPage> {
       var menuRowNum = menuLine.ceil();
       //linNum+=menuRowNum;
       var takeoutTag = (printData["takeOut"] == true) ? "*":"";
-      if(groupNameLength>11){
+      if(groupNameLength>10){
         linNum+=2;
         categoryMenus.add(
           Directionality(
@@ -1991,9 +1992,9 @@ class _SettlementPageState extends State<SettlementPage> {
                         Directionality(
                             textDirection: TextDirection.ltr,
                             child: Container(
-                              width: ScreenAdapter.width(88),
+                              width: ScreenAdapter.width(105),
                               alignment: Alignment.centerRight,
-                              child: Text("￥${lineVosList["price"]}",
+                              child: Text("￥${formatMoney(lineVosList["price"])}",
                                 style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                               ),
@@ -2040,9 +2041,9 @@ class _SettlementPageState extends State<SettlementPage> {
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
-                          width: ScreenAdapter.width(100),
+                          width: ScreenAdapter.width(105),
                           alignment: Alignment.centerRight,
-                          child: Text("￥${lineVosList["price"]}",
+                          child: Text("￥${formatMoney(lineVosList["price"])}",
                             style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                           ),
@@ -2081,9 +2082,9 @@ class _SettlementPageState extends State<SettlementPage> {
                 Directionality(
                     textDirection: TextDirection.ltr,
                     child: Container(
-                      width: ScreenAdapter.width(120),
+                      width: ScreenAdapter.width(130),
                       alignment: Alignment.centerRight,
-                      child: Text("￥${printData["price"]}",
+                      child: Text("￥${formatMoney(printData["price"])}",
                         style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                       ),
@@ -2104,7 +2105,7 @@ class _SettlementPageState extends State<SettlementPage> {
           "8%対象",
           24.0,
           FontWeight.w100,
-          (printData["takeOut"] == true) ? "${printData["price"]}" : "0",
+          (printData["takeOut"] == true) ? "${formatMoney(printData["price"])}" : "0",
           24.0,
           FontWeight.w100,
           true),
@@ -2115,7 +2116,7 @@ class _SettlementPageState extends State<SettlementPage> {
           "　  (内    消費税额",
           24.0,
           FontWeight.w100,
-          (printData["takeOut"] == true) ? "${printData["tax"]})" : "0)",
+          (printData["takeOut"] == true) ? "${formatMoney(printData["tax"])})" : "0)",
           24.0,
           FontWeight.w100,
           true),
@@ -2127,7 +2128,7 @@ class _SettlementPageState extends State<SettlementPage> {
           "10%対象",
           24.0,
           FontWeight.w100,
-          (printData["takeOut"] == false) ? "${printData["price"]}" : "0",
+          (printData["takeOut"] == false) ? "${formatMoney(printData["price"])}" : "0",
           24.0,
           FontWeight.w100,
           true),
@@ -2138,7 +2139,7 @@ class _SettlementPageState extends State<SettlementPage> {
           "　  (内    消費税额",
           24.0,
           FontWeight.w100,
-          (printData["takeOut"] == false) ? "${printData["tax"]})" : "0)",
+          (printData["takeOut"] == false) ? "${formatMoney(printData["tax"])})" : "0)",
           24.0,
           FontWeight.w100,
           true),
@@ -2151,7 +2152,7 @@ class _SettlementPageState extends State<SettlementPage> {
     if(printData["payMethod"] != "現金支払"){
       categoryMenus.add(
         _publicTwoColumnsTxtNew(printData["payMethod"], 26.0, FontWeight.w200,
-            "${printData["payPrice"]}", 26.0, FontWeight.w200, true),
+            "${formatMoney(printData["payPrice"])}", 26.0, FontWeight.w200, true),
       );
     }
 
@@ -2213,13 +2214,13 @@ class _SettlementPageState extends State<SettlementPage> {
                           style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                         ),
-                        Text("￥${printData["payPrice"]}",
+                        Text("￥${formatMoney(printData["payPrice"])}",
                           style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                         ),
                       ],
                     )),
-                if(printData["payMethod"] == "現金支払" && printData["change"] !=null && printData["change"] !="")
+                if(printData["payMethod"] == "現金支払" && printData["change"] !=null)
                 Directionality(
                     textDirection: TextDirection.ltr,
                     child: Row(
@@ -2229,7 +2230,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                         ),
-                        Text("￥${printData["change"]}",
+                        Text("￥${formatMoney(printData["change"])}",
                           style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                         ),
