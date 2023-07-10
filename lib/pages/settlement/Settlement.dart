@@ -2040,7 +2040,7 @@ class _SettlementPageState extends State<SettlementPage> {
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
-                          width: ScreenAdapter.width(88),
+                          width: ScreenAdapter.width(100),
                           alignment: Alignment.centerRight,
                           child: Text("￥${lineVosList["price"]}",
                             style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
