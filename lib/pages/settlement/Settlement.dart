@@ -1043,7 +1043,7 @@ class _SettlementPageState extends State<SettlementPage> {
                 ),
               ),
               Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(40)),
+                padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                 child: Row(
                   mainAxisAlignment: (value[0].length >wrapNum ) ? MainAxisAlignment.start : MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -1119,12 +1119,12 @@ class _SettlementPageState extends State<SettlementPage> {
 
               optionSons.add(
                   Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(40)),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                     child: Row(
                       mainAxisAlignment: (value[j].length >wrapNum) ? MainAxisAlignment.start : MainAxisAlignment.end,
                       textDirection: TextDirection.ltr,
                       children: [
-                        Expanded(child: Text("  ${value[j]}",
+                        Expanded(child: Text("${value[j]}",
                             textDirection: TextDirection.ltr,
                             textAlign: (value[j].length >wrapNum) ? TextAlign.left : TextAlign.right,
                             style: TextStyle(
