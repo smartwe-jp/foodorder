@@ -791,7 +791,7 @@ class _SettlementPageState extends State<SettlementPage> {
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
           if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){print("laileme");
@@ -949,20 +949,20 @@ class _SettlementPageState extends State<SettlementPage> {
   _tpPrintnew(printData, printType) async {
     var categoryVos = printData["printInfoListStruct"];
     var print_menu_txt_size = 28.0;
-    var wrapNum = 13;
-    var oneRowHeight = 47;
+    var wrapNum = 10;
+    var oneRowHeight = 48;
     if(_print_paper_txt_size == "1"){
       print_menu_txt_size = 28.0;
-      wrapNum = 13;
+      wrapNum = 10;
       oneRowHeight = 48;
     }else if(_print_paper_txt_size == "2"){
       print_menu_txt_size = 33.0;
-      wrapNum = 9;
-      oneRowHeight = 53;
+      wrapNum = 8;
+      oneRowHeight = 54;
     }else if(_print_paper_txt_size == "3"){
       print_menu_txt_size = 40.0;
-      wrapNum = 7;
-      oneRowHeight = 58;
+      wrapNum = 6;
+      oneRowHeight = 60;
     }
 
     List<Widget> categoryMenus = [];
@@ -1024,17 +1024,19 @@ class _SettlementPageState extends State<SettlementPage> {
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0;//optionLine.ceil();
 
-          var lineOptionTxtNum = (wrapNum-1)/2;
+          var lineOptionTxtNum = (wrapNum-1) ~/2;
 
           //处理option 开始-----------
-        if(groupNameLength >lineOptionTxtNum || optionNameLength>lineOptionTxtNum){
+        if((key.length+value[0].length) >wrapNum){
           var newLineNum = 0.0;
-          if(groupNameLength >wrapNum){
-            newLineNum += groupNameLength / wrapNum;
-          }
-          if(optionNameLength >wrapNum){
-            newLineNum += optionNameLength / wrapNum;
-          }
+          //if(groupNameLength >wrapNum){
+            newLineNum = groupNameLength / wrapNum;
+          //}
+          countLine += newLineNum.ceil();
+          optionLine += newLineNum;
+          //if(optionNameLength >wrapNum){
+            newLineNum = optionNameLength / wrapNum;
+          //}
           countLine += newLineNum.ceil();
           optionLine += newLineNum;
 
@@ -1136,8 +1138,8 @@ class _SettlementPageState extends State<SettlementPage> {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
-              newOptionSonLine += optionNameLength / wrapNum;
-              var oneOptionlength = optionNameLength / wrapNum;
+              newOptionSonLine += value[j].length / wrapNum;
+              var oneOptionlength = value[j].length / wrapNum;
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
@@ -1174,15 +1176,15 @@ class _SettlementPageState extends State<SettlementPage> {
 
         //处理option结束-----------
 
-          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();print(countLine);
           //addRowHight += 52 * optionRowNum;
           addRowHight += oneRowHeight*countLine;
           menuNum += optionRowNum;
           optionNum++;
         });
 
-        addRowHight += oneRowHeight * menuRowNum;
-        menuNum += menuRowNum;
+        //addRowHight += oneRowHeight * menuRowNum;
+        //menuNum += menuRowNum;
       } else {
         addRowHight += oneRowHeight * menuRowNum;
         menuNum += menuRowNum;
@@ -1459,6 +1461,7 @@ class _SettlementPageState extends State<SettlementPage> {
               ],
             ));
           }else{
+            //countLine += 1;
             categoryMenus.add(Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1497,20 +1500,20 @@ class _SettlementPageState extends State<SettlementPage> {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
              // print(value[j]);
-              newOptionSonLine += value[j].length / 12;
-              var oneOptionlength = value[j].length / 12;
+              newOptionSonLine += value[j].length / 10;
+              var oneOptionlength = value[j].length / 10;
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
                   Container(
                     padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
                     child: Row(
-                      mainAxisAlignment: (value[j].length >12) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                      mainAxisAlignment: (value[j].length >10) ? MainAxisAlignment.start : MainAxisAlignment.end,
                       textDirection: TextDirection.ltr,
                       children: [
                         Expanded(child: Text("${value[j]}",
                             textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length >12) ? TextAlign.left : TextAlign.right,
+                            textAlign: (value[j].length >10) ? TextAlign.left : TextAlign.right,
                             style: TextStyle(
                               fontSize: 40,
                               fontFamily: 'JetBrainsMonoRegular',
@@ -1536,19 +1539,19 @@ class _SettlementPageState extends State<SettlementPage> {
 
           var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
           //addRowHight += 52 * optionRowNum;
-          addRowHight += 58*countLine;
+          addRowHight += 59*countLine;
           menuNum += optionRowNum;
           optionNum++;
         });
 
-        addRowHight += 58 * mainTitleRowNum;
+        addRowHight += 59 * mainTitleRowNum;
         menuNum += mainTitleRowNum;
       } else {
         addRowHight += 60 * mainTitleRowNum;
         menuNum += mainTitleRowNum;
       }
 
-      addRowHight += 6;
+      addRowHight += 7;
       categoryMenus.add(
         Directionality(
             textDirection: TextDirection.ltr,
