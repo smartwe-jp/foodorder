@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'dart:ui';
@@ -12,6 +13,8 @@ import 'package:flutter/rendering.dart';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/fontSize.dart';
 import 'package:foodorder/config/imageData.dart';
@@ -41,6 +44,8 @@ import 'package:esc_pos_printer/esc_pos_printer.dart';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 
 import 'package:foodorder/services/queue_util.dart';
+
+import 'label_constrained_box.dart';
 
 class SettlementPage extends StatefulWidget {
   Map arguments;
@@ -100,6 +105,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _currencyString = ""; // 出金币种
   var _isPrint = true; //是否打印小票，默认打印，如果取消订单则不打印。
 
+
   var _showPrintButton = false; //如果投币金额不足，则不显示打印按钮
 
   var _allowClick = true;
@@ -141,6 +147,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _isAllowPos = "0";
   var _wlan_print_ip = "";
   var _wlan_print_port = "";
+  var _showPrintType =0; //0 receipt   1Lable
   var _wlan_print_ip_two = "";
   var _wlan_print_port_two = "";
   var _pos_ip = "";
@@ -247,6 +254,7 @@ class _SettlementPageState extends State<SettlementPage> {
       _is_back_home = systemSettingInfo['isAllowBackHome'];
       //新版精算模式也可点外带
       _machineMode = systemSettingInfo['machineMode'];
+      _showPrintType = int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
     });
     if(systemSettingInfo['isAllowWlanPrint'] == "1"){
       Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
@@ -764,8 +772,15 @@ class _SettlementPageState extends State<SettlementPage> {
       var formData = {
         "orderId": this._orderId,
         "payAmount": _getPutMoney,
-        "machineCode":_machineCode
+        "machineCode":_machineCode,
+        "printType":(_showPrintType ==1 && _wlan_print_ip !="")?"Label":""
       };
+      /*var formData = {
+        "orderId": "442800657845387264",
+        "payAmount": "1000",
+        "machineCode":"X3V9YPJABVZGAELIZ9",
+        "printType":(_showPrintType ==1 && _wlan_print_ip !="")?"Label":""
+      };print(formData);print(_wlan_print_ip);*/
       var queryUrl;
       //queryUrl = "webBootToPrintV4";
       //queryUrl = "webBootToPrintV5";
@@ -776,10 +791,16 @@ class _SettlementPageState extends State<SettlementPage> {
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        LogUtil.d(response);
+        //LogUtil.d(response);
         if (response['code'] == 200) {
-          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
+          //receipt
+          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){print("laileme");
             _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
+          }
+
+          //label打印
+          if(_showPrintType ==1 && _wlan_print_ip !="" && response['data']["printInfoListStruct"].length>0){
+            _wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
           }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -933,15 +954,15 @@ class _SettlementPageState extends State<SettlementPage> {
     if(_print_paper_txt_size == "1"){
       print_menu_txt_size = 28.0;
       wrapNum = 13;
-      oneRowHeight = 47;
+      oneRowHeight = 48;
     }else if(_print_paper_txt_size == "2"){
       print_menu_txt_size = 33.0;
       wrapNum = 9;
-      oneRowHeight = 52;
+      oneRowHeight = 53;
     }else if(_print_paper_txt_size == "3"){
       print_menu_txt_size = 40.0;
       wrapNum = 7;
-      oneRowHeight = 57;
+      oneRowHeight = 58;
     }
 
     List<Widget> categoryMenus = [];
@@ -1580,6 +1601,135 @@ class _SettlementPageState extends State<SettlementPage> {
     );
 
 
+  }
+
+  //打印label
+  _wifiNetworkLabelPrintData(extendPrintVo){
+    var printData = [];
+    for(var i=0;i<extendPrintVo.length;i++){
+      QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
+        return wifiNetPrintLabelnew(extendPrintVo[i]);
+      });
+    }
+  }
+
+  wifiNetPrintLabelnew(orderprintData) async {
+
+    ByteData byteData = await WidgetToImage.widgetToImage(
+        menuData(orderprintData)
+    );
+
+    Uint8List imageBytes = byteData.buffer.asUint8List();
+   var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+      imgData: imageBytes,
+      printType: PrintTypeEnum.label,
+    );
+/*
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            height:400,
+            decoration: BoxDecoration(
+              color: Colors.red,
+              border: Border(
+                top: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                left: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+                right: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
+              ),
+            ),
+
+            child: Image.memory(imageBytes),
+          );
+        });*/
+    // 网络 打印
+    final conn = printerPlus.NetConn(_wlan_print_ip);
+    conn.writeMultiBytes(printData);
+  }
+
+  Widget menuData(orderprintData){
+    return LabelConstrainedBox(
+        Padding(
+          padding: const EdgeInsets.only(
+            //left: 5,
+            top: 5,
+            //right: 5,
+            bottom: 5,
+          ),
+          child: Container(
+
+            child: Column(
+              mainAxisAlignment:MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textDirection: TextDirection.ltr,
+              children: [
+
+                Container(
+                  decoration: BoxDecoration(
+                    //color: Colors.red,
+                    border: Border(
+                      bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 2.5),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment:MainAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Expanded(child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: ScreenAdapter.width(20),
+                              maxWidth: ScreenAdapter.width(400),
+                              minHeight: ScreenAdapter.height(30),
+                              maxHeight: ScreenAdapter.height(60),
+                            ),
+                            child: AutoSizeText(
+                              "${orderprintData["printTitleText"]}",
+                              style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
+                              maxLines: 2,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                          )
+                      ),
+                    ],
+                  ),
+                ),
+
+              Row(
+                mainAxisAlignment:MainAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                  children: [
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Expanded(child: ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: ScreenAdapter.width(20),
+                            maxWidth: ScreenAdapter.width(400),
+                            minHeight: ScreenAdapter.height(30),
+                            maxHeight: ScreenAdapter.height(150),
+                          ),
+                          child: AutoSizeText(
+                            orderprintData["printText"],
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w400),
+                            maxLines: 4,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        )
+                        )
+                    ),
+                  ],
+                ),
+
+              ],
+            ),
+          ),
+        )
+    );
   }
 
 

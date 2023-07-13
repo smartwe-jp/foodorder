@@ -65,6 +65,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
   var _wlan_print_ip = "";
   var _wlan_print_port = "9100";
 
+  var _showPrintType =0; //0 receipt   1Lable
+
   var _is_allow_wlanPrint_Two = "0";//0 不开启  1 开启
   var _wlan_print_ip_Two = "";
   var _wlan_print_port_Two = "9100";
@@ -109,6 +111,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       _is_allow_backhome = systemSettingInfo['isAllowBackHome'];
       _is_allow_pos = systemSettingInfo['isAllowPos'];
       _is_allow_wlanPrint = systemSettingInfo['isAllowWlanPrint'];
+      _showPrintType = int.parse(systemSettingInfo['showPrintType']);
       _is_allow_wlanPrint_Two = systemSettingInfo['isAllowWlanPrintTwo'];
 
       if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
@@ -508,6 +511,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":checkedType, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -516,6 +520,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -666,6 +671,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":checkedType,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -674,6 +680,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -829,6 +836,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":checkedType,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -837,6 +845,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1050,6 +1059,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1207,6 +1217,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":checkedType,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1215,6 +1226,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1366,6 +1378,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":checkedType,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1374,6 +1387,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1525,6 +1539,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":checkedType, //是否开启预约服务
@@ -1533,6 +1548,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1684,12 +1700,16 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
       "isAllowAttendance":checkedType,//0不开启 1开启
+      "isAllowOneYen":_is_allow_oneyen,//0禁用1元 1不禁用
+      "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1867,6 +1887,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -1875,6 +1896,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":checkedType,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -1915,7 +1937,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
           return SetPosIpPage(
             posIp: _pos_ip,
             posPort: _pos_port,
-            onConfrimClick: (String posIp, String posPort) {
+            showRadio:0,
+            onConfrimClick: (String posIp, String posPort, int showPrintType) {
               if(posIp != ""){
                 setState(() {
                   _pos_ip = posIp;
@@ -2131,6 +2154,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2139,6 +2163,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":checkedType,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -2180,12 +2205,14 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
           return SetPosIpPage(
             posIp: _wlan_print_ip,
             posPort: _wlan_print_port,
-            onConfrimClick: (String printIp, String printPort) {
+            showRadio:1,
+            showPrintType:_showPrintType,
+            onConfrimClick: (String printIp, String printPort, int showPrintType) {
               if(printIp != ""){
                 setState(() {
                   _wlan_print_ip = printIp;
                   _wlan_print_port = printPort;
-
+                  _showPrintType = showPrintType;
                 });
                 checkIsAllowWlanPrint("1");
               }
@@ -2396,6 +2423,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2404,6 +2432,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":checkedType,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -2444,7 +2473,8 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
           return SetPosIpPage(
             posIp: _wlan_print_ip_Two,
             posPort: _wlan_print_port_Two,
-            onConfrimClick: (String printIp, String printPort) {
+            showRadio:0,
+            onConfrimClick: (String printIp, String printPort, int showPrintType) {
               if(printIp != ""){
                 setState(() {
                   _wlan_print_ip_Two = printIp;
@@ -2639,6 +2669,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2647,6 +2678,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":_is_allow_backhome,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -2804,6 +2836,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "diningType":_dining_type, //1堂食 2外带
       "menuDirection":_menu_direction,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":_print_paper_txt_size,//1 普通　2大　3特大
       "isAllowReceipt":_is_allow_receipt,//1必须打印小票 2不必须
       "machineMode":_machine_mode,//1普通券卖机 2 精算机
       "isReservation":_isReservation, //是否开启预约服务
@@ -2812,6 +2845,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       "isAllowBackHome":checkedType,//0返回home 1返回到菜单
       "isAllowPos":_is_allow_pos,//0不开启 1开启
       "isAllowWlanPrint":_is_allow_wlanPrint,//0不开启 1开启
+      "showPrintType":_showPrintType.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":_is_allow_wlanPrint_Two,//0不开启 1开启
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
@@ -2952,7 +2986,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                 children: [
 
                   SizedBox(
-                    height: ScreenAdapter.height(20),
+                    height: ScreenAdapter.height(10),
                   ),
                   setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向

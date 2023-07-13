@@ -11,11 +11,15 @@ class SetPosIpPage extends StatefulWidget {
       {Key key,
       this.posIp,
       this.posPort,
-        this.onConfrimClick
+      this.showRadio,
+      this.showPrintType,
+      this.onConfrimClick
       }) : super(key: key);
   final String posIp;
   final String posPort;
-  final Function(String, String) onConfrimClick;
+  final int showRadio;
+  final int showPrintType;
+  final Function(String, String,int) onConfrimClick;
 
   @override
   _SetPosIpPageState createState() => _SetPosIpPageState();
@@ -26,7 +30,9 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
   TextEditingController _tcpposPortController;
 
   String _posIp = "192.168.11.188";
-  String _posPort = "9999";
+  String _posPort = "9100";
+  int _showRadio = 0;
+  int _showPrintType = 0;
 
   @override
   void initState() {
@@ -34,6 +40,10 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
     super.initState();
     _posIp = widget.posIp;
     _posPort = widget.posPort;
+    _showRadio = widget.showRadio;
+    if(_showRadio == 1){
+      _showPrintType = widget.showPrintType;
+    }
 
     _tcpposIpController = TextEditingController.fromValue(TextEditingValue(
         text: _posIp,
@@ -113,7 +123,57 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
 
                   ],
                 ),
-                SizedBox(height: ScreenAdapter.height(40),),
+                SizedBox(height: ScreenAdapter.height(15),),
+                if(_showRadio == 1)// 简易选择项
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Container(
+                      //height: ScreenAdapter.height(90),
+                      child: Text("Receipt",style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(30),
+                        fontWeight: FontWeight.w600,
+                      )),
+                    ),
+                    Transform.scale(
+                      scale: 1.5,
+                      child: Radio(
+                        // 按钮的值
+                        value: 0,
+                        // 改变事件
+                        onChanged: (value){
+                          setState(() {
+                            this._showPrintType = value;
+                          });
+                        },
+                        // 按钮组的值
+                        groupValue:this._showPrintType ,
+                      ),
+                    ),
+
+                    SizedBox(width: 40,),
+                    Container(
+                      //height: ScreenAdapter.height(90),
+                      child: Text("Label",style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(30),
+                        fontWeight: FontWeight.w600,
+                      )),
+                    ),
+                    Transform.scale(
+                      scale: 1.5,
+                      child: Radio(
+                        value:1,
+                        onChanged: (value){
+                          setState(() {
+                            this._showPrintType = value;
+                          });
+                        },
+                        groupValue: this._showPrintType,
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: ScreenAdapter.height(20),),
                 Container(
                   alignment: Alignment.center,
                   width: ScreenAdapter.width(180),
@@ -137,7 +197,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                         print(_posIp);
                         print(_posPort);
                         if(_posIp != "" && _posPort != ""){
-                          widget.onConfrimClick(_posIp, _posPort);
+                          widget.onConfrimClick(_posIp, _posPort, _showPrintType);
                           Navigator.pop(context);
                         }
 
