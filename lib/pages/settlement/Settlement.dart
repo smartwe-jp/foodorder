@@ -791,7 +791,7 @@ class _SettlementPageState extends State<SettlementPage> {
       request(queryUrl, method: 'POST', parameters: formData)
           .then((val) async {
         var response = json.decode(val.toString());
-        LogUtil.d(response);
+       // LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
           if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){print("laileme");
@@ -1176,7 +1176,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
         //处理option结束-----------
 
-          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();print(countLine);
+          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
           //addRowHight += 52 * optionRowNum;
           addRowHight += oneRowHeight*countLine;
           menuNum += optionRowNum;
@@ -1309,7 +1309,7 @@ class _SettlementPageState extends State<SettlementPage> {
   organizeData(serialNumber,printData,takeOut,orderTime) {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
-    var lineHight = 180;
+    var lineHight = 200;
     var menuNum = 0;
     var optionNum = 0;
     int addRowHight = 0;
@@ -1398,18 +1398,20 @@ class _SettlementPageState extends State<SettlementPage> {
           var groupNameLength = key.length;
           var optionNameLength = value[0].length;
           var optionLine = (groupNameLength + optionNameLength) / 12;
-          var countLine = optionLine.ceil();
+          var countLine = 0;
 
 
           //处理option 开始-----------
-          if(groupNameLength >6 || optionNameLength>6){
+          if((key.length+value[0].length)>12){
             var newLineNum = 0.0;
-            if(groupNameLength >6){
-              newLineNum += groupNameLength / 12;
-            }
-            if(optionNameLength >6){
-              newLineNum += optionNameLength / 12;
-            }
+            //if(groupNameLength >6){
+              newLineNum = groupNameLength / 12;
+            //}
+            countLine += newLineNum.ceil();
+            optionLine += newLineNum;
+            //if(optionNameLength >6){
+              newLineNum = optionNameLength / 12;
+            //}
             countLine += newLineNum.ceil();
             optionLine += newLineNum;
 
@@ -1461,7 +1463,7 @@ class _SettlementPageState extends State<SettlementPage> {
               ],
             ));
           }else{
-            //countLine += 1;
+            countLine += 1;
             categoryMenus.add(Row(
               mainAxisAlignment: MainAxisAlignment.start,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1539,19 +1541,19 @@ class _SettlementPageState extends State<SettlementPage> {
 
           var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
           //addRowHight += 52 * optionRowNum;
-          addRowHight += 59*countLine;
+          addRowHight += 66*countLine;
           menuNum += optionRowNum;
           optionNum++;
         });
 
-        addRowHight += 59 * mainTitleRowNum;
-        menuNum += mainTitleRowNum;
+        //addRowHight += 59 * mainTitleRowNum;
+        //menuNum += mainTitleRowNum;
       } else {
-        addRowHight += 60 * mainTitleRowNum;
+        addRowHight += 65 * mainTitleRowNum;
         menuNum += mainTitleRowNum;
       }
 
-      addRowHight += 7;
+      addRowHight += 10;
       categoryMenus.add(
         Directionality(
             textDirection: TextDirection.ltr,
