@@ -2120,7 +2120,7 @@ print("加1了");
     if (showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
-
+            top: ScreenAdapter.height(8),
             bottom: ScreenAdapter.height(15)),
         //height: 450,
         child: showCategoryThreeItemList(showItemList),
@@ -2533,6 +2533,7 @@ print("加1了");
     if (showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
+            top: ScreenAdapter.height(8),
           //left: ScreenAdapter.width(8),
           //right: ScreenAdapter.width(8),
             bottom: ScreenAdapter.height(15)),
@@ -3063,6 +3064,7 @@ print("加1了");
         var _newItemList = showItemList.sublist(3);
 
         return Container(
+          padding: EdgeInsets.only(top: ScreenAdapter.height(8), ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             physics: new AlwaysScrollableScrollPhysics(),
@@ -3077,7 +3079,7 @@ print("加1了");
                             height: ScreenAdapter.height(835),
                             color: ColorsUtil.hexToColor("#FFFFFF"),
                             margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                                left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                             child: InkWell(
                                 enableFeedback: false,
                                 onTap: () async {
@@ -3175,7 +3177,7 @@ print("加1了");
                                 height: ScreenAdapter.height(412),
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 margin: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                                    left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                                 child: InkWell(
                                     enableFeedback: false,
                                     onTap: () async {
@@ -3538,6 +3540,7 @@ print("加1了");
         var _newItemList = showItemList.sublist(3);
 
         return Container(
+          padding: EdgeInsets.only(top: ScreenAdapter.height(8), ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             physics: new AlwaysScrollableScrollPhysics(),
@@ -3552,7 +3555,7 @@ print("加1了");
                           height: ScreenAdapter.height(835),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
                           margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                              left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                           child: InkWell(
                               enableFeedback: false,
                               onTap: () async {
@@ -3645,7 +3648,7 @@ print("加1了");
                               height: ScreenAdapter.height(412),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                               margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
+                                  left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                               child: InkWell(
                                   enableFeedback: false,
                                   onTap: () async {
