@@ -10,6 +10,7 @@ const servicePath = {
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
   //'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址
   'webBootOrder': base_url + 'pad/web/boot/v3/order', //提交订单请求地址
+  'webBootCalculateOrder': base_url + 'pad/web/boot/v3/calculate/order', //自助收银提交订单请求地址
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
   'webBootToPayv2': base_url + 'pad/web/boot/toPay/v2', //支付提交请求地址
   'webBootPosPayReport': base_url + 'pad/web/boot/pos/pay/report', //支付提交请求地址
@@ -50,4 +51,6 @@ const servicePath = {
 
   'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队
   'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
+
+  'webBootBarCodeQuery': base_url + 'pad/web/boot/bar_code/query', //通过商品条码找商品
 };

@@ -14,6 +14,8 @@ import 'package:foodorder/pages/transitpage/TransitPage.dart';
 import 'package:foodorder/pages/checkOut/CheckOut.dart';
 
 import '../pages/checkOut/ScanCode.dart';
+import '../pages/selfServiceSettlement/SelfServiceHome.dart';
+import '../pages/selfServiceSettlement/SelfServiceScanCode.dart';
 import '../pages/setting/MiddlewareSettingPage.dart';
 
 //配置路由
@@ -29,6 +31,9 @@ final routes = {
 
   '/transitPage': (context) => TransitPage(), //中转页面
   '/checkOutPage': (context) => CheckOutPage(), //精算机页面
+
+  '/selfServiceHomePage': (context) => selfServiceHomePage(), //自助结算机页面
+  '/selfServiceScanCodePage': (context,{arguments}) => selfServiceScanCodePage(arguments:arguments), //扫码菜单
 
   '/scanCodePage': (context,{arguments}) => ScanCodePage(arguments:arguments), //精算扫码页面
 

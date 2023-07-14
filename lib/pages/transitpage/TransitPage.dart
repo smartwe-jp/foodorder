@@ -23,7 +23,7 @@ class TransitPage extends StatefulWidget {
 
 class _TransitPageState extends State<TransitPage> {
   String _machineCode = "";
-  var _machineMode = "1";//1 券卖机  2 精算机
+  var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
   var _isCashState = true;
   var _actuarial = false;
 
@@ -160,7 +160,7 @@ class _TransitPageState extends State<TransitPage> {
     var checkmachineMode = "1";
     if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
       if(_actuarial==true){
-        checkmachineMode = "2";
+        checkmachineMode = (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
       }else{
         checkmachineMode = "1";
       }
@@ -204,7 +204,9 @@ class _TransitPageState extends State<TransitPage> {
     //sleep(Duration(milliseconds: 200));
     if(checkmachineMode == "2"){
         _goCheckOut();
-      }else{
+    }else if(checkmachineMode == "3"){
+      _goSelfService();
+    }else{
         _goMain();
       }
   }
@@ -218,6 +220,12 @@ class _TransitPageState extends State<TransitPage> {
   void _goCheckOut() async {
     Future.delayed(Duration(milliseconds: 300), () {
       Navigator.of(context).pushReplacementNamed('/checkOutPage');
+    });
+  }
+
+  void _goSelfService() async {
+    Future.delayed(Duration(milliseconds: 300), () {
+      Navigator.of(context).pushReplacementNamed('/selfServiceHomePage');
     });
   }
 

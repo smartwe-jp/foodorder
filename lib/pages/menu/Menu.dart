@@ -5211,159 +5211,152 @@ print("加1了");
                     top: ScreenAdapter.height(20),
                     right: ScreenAdapter.width(20),
                     bottom: ScreenAdapter.height(10)),
-                child: Column(
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    Expanded(
+                        child: Container(
+                          //alignment: Alignment.centerRight,
+                          child: InkWell(
+                            enableFeedback: false,
+                            onTap: () {
+                              controller.removeAllFromCart();
+                              Future.delayed(Duration(milliseconds: 200),() async {
+                                Navigator.of(context).pop();
+                              });
 
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
+                            },
                             child: Container(
-                              height: ScreenAdapter.height(300),
-                              child: Row(
-                                children: [
-                                  Scrollbar(
-                                      child: SingleChildScrollView(
-                                        physics: ClampingScrollPhysics(),
-                                        child: Container(
-                                          width: ScreenAdapter.width(720),
-                                          height: ScreenAdapter.height(300),
-                                          color:
-                                          ColorsUtil.hexToColor(Gcolor.cartListColor),
-                                          child: Stack(
-                                            alignment: Alignment.topRight,
-                                            children: [
-                                              GetBuilder<HomePageController>(
-                                                builder: (_) {
-                                                  if (controller.cartItems.length == 0) {
-                                                    return Center(
-                                                      child: Text(GString.getToString(
-                                                          this._checkLanguage, "cart_tag")),
-                                                    );
-                                                  }
-                                                  return ListView(
-                                                    shrinkWrap: true,
-                                                    children: controller.cartItems.map((d) => generateCartList(context, d)).toList(),
-                                                  );
-                                                },
-                                              ),
-                                            ],
+                              padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                              margin: EdgeInsets.only(left: ScreenAdapter.width(15),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
+                              width: ScreenAdapter.width(110),
+                              height: ScreenAdapter.height(60),
+                              //alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                image: new DecorationImage(
+                                  fit: BoxFit.fitWidth,
+                                  image: AssetImage(GImage.getImageString("imgpublic", "backbutton_top")),
+                                ),
+                              ),
+                              child: Center(
+                                //加上Center让文字居中
+                                child: Text(
+                                  GString.getToString(this._checkLanguage, "top_back_button"),
+                                  style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(26),
+                                      color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),),
+                    Container(
+                      height: ScreenAdapter.height(290),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+
+                          SizedBox(height: ScreenAdapter.height(25)),
+                          InkWell(
+                              onLongPress: (){
+                                if(int.parse(_shopCartTotalPrice) >0){
+                                  Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
+                                }
+
+                              },
+                              child:Container(
+                                decoration: BoxDecoration(
+                                    color: Colors.white12,
+                                    border: Border(
+                                      bottom: BorderSide(color: Colors.black, width: 1.5),
+                                      //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                    )),
+                                child: RichText(
+                                  text: TextSpan(
+                                      text: "¥",
+                                      //GString.getToString(this._checkLanguage, "show_price_front"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(GFontSize
+                                            .menusettlementBottomPriceLeft),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.mainTitleColor),
+                                      ),
+                                      children: [
+                                        TextSpan(
+                                          text: formatMoney(_shopCartTotalPrice.toString()),
+                                          style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(
+                                                GFontSize
+                                                    .menusettlementBottomPrice),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.priceColor),
                                           ),
                                         ),
-                                      )
-                                  ),
-
-                                ],
-                              ),
-                            )),
-                        Container(
-                          height: ScreenAdapter.height(290),
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-
-                              SizedBox(height: ScreenAdapter.height(25)),
-                              InkWell(
-                                  onLongPress: (){
-                                    if(int.parse(_shopCartTotalPrice) >0){
-                                      Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
-                                    }
-
-                                  },
-                                  child:Container(
-                                    decoration: BoxDecoration(
-                                        color: Colors.white12,
-                                        border: Border(
-                                          bottom: BorderSide(color: Colors.black, width: 1.5),
-                                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                        )),
-                                    child: RichText(
-                                      text: TextSpan(
-                                          text: "¥",
-                                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                                        TextSpan(
+                                          text:
+                                          "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
                                           style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(GFontSize
-                                                .menusettlementBottomPriceLeft),
+                                            fontSize: ScreenAdapter.fontSize(
+                                                GFontSize
+                                                    .menusettlementBottomPriceRight),
                                             fontWeight: FontWeight.w600,
                                             color: ColorsUtil.hexToColor(
                                                 Gcolor.mainTitleColor),
                                           ),
-                                          children: [
-                                            TextSpan(
-                                              text: formatMoney(_shopCartTotalPrice.toString()),
-                                              style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(
-                                                    GFontSize
-                                                        .menusettlementBottomPrice),
-                                                fontWeight: FontWeight.w600,
-                                                color: ColorsUtil.hexToColor(
-                                                    Gcolor.priceColor),
-                                              ),
-                                            ),
-                                            TextSpan(
-                                              text:
-                                              "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
-                                              style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(
-                                                    GFontSize
-                                                        .menusettlementBottomPriceRight),
-                                                fontWeight: FontWeight.w600,
-                                                color: ColorsUtil.hexToColor(
-                                                    Gcolor.mainTitleColor),
-                                              ),
-                                            ),
-                                          ]),
-                                    ),
-                                  )
-                              ),
-
-
-                              SizedBox(height: ScreenAdapter.height(18)),
-                              InkWell(
-                                enableFeedback: false,
-                                onTap: () {
-                                  if (int.parse(_shopCartTotalPrice) ==0) {
-                                    return false;
-                                  }
-
-                                  //点餐方式只有一种并且未开pos
-                                  /*if(_isAllowPos == "0"){
-                                  _doSubmitOrder();
-                                }else{*/
-                                  _doSubmitOrder();
-                                  //_showSelectMealTypeAndPaymentMethodDialog();
-                                  //}
-
-
-
-                                },
-                                child: Container(
-                                  width: ScreenAdapter.width(300),
-                                  height: ScreenAdapter.height(115),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-
-                                    color: (int.parse(_shopCartTotalPrice) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
-                                    //设置圆角
-                                    borderRadius: new BorderRadius.circular((16.0)),
-                                  ),
-                                  child: Text(
-                                      GString.getToString(this._checkLanguage,
-                                          "settlement_button"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(48),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.settlementBtnColor),
-                                      )),
+                                        ),
+                                      ]),
                                 ),
-                              ),
-                            ],
+                              )
                           ),
-                        ),
-                      ],
+
+
+                          SizedBox(height: ScreenAdapter.height(18)),
+                          InkWell(
+                            enableFeedback: false,
+                            onTap: () {
+                              if (int.parse(_shopCartTotalPrice) ==0) {
+                                return false;
+                              }
+
+                              //点餐方式只有一种并且未开pos
+                              /*if(_isAllowPos == "0"){
+                              _doSubmitOrder();
+                            }else{*/
+                              _doSubmitOrder();
+                              //_showSelectMealTypeAndPaymentMethodDialog();
+                              //}
+
+
+
+                            },
+                            child: Container(
+                              width: ScreenAdapter.width(300),
+                              height: ScreenAdapter.height(115),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+
+                                color: (int.parse(_shopCartTotalPrice) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((16.0)),
+                              ),
+                              child: Text(
+                                  GString.getToString(this._checkLanguage,
+                                      "settlement_button"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(48),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.settlementBtnColor),
+                                  )),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),

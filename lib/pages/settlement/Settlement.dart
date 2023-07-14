@@ -3002,6 +3002,8 @@ class _SettlementPageState extends State<SettlementPage> {
     //Navigator.of(context).pop();
     if (_machineMode == "1") {
       Navigator.pushNamed(context, '/home');
+    }if (_machineMode == "3") {
+      Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {
       //精算页面
       Navigator.pushNamed(context, '/checkOutPage');
@@ -3020,6 +3022,19 @@ class _SettlementPageState extends State<SettlementPage> {
     if (_machineMode == "1") {
       if(_is_back_home == "0"){
         Navigator.pushNamed(context, '/home');
+      }else{
+        eventBus.fire(new clearCartEvent('支付成功...'));
+
+        //有弹窗选择支付才在关闭一个
+        if(_showOpenPayment == true){
+          Navigator.of(context).pop();
+        }
+
+      }
+
+    }if (_machineMode == "3") {
+      if(_is_back_home == "0"){
+        Navigator.pushNamed(context, '/selfServiceHomePage');
       }else{
         eventBus.fire(new clearCartEvent('支付成功...'));
 
