@@ -3032,7 +3032,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
       }
 
-    }if (_machineMode == "3") {
+    }else if (_machineMode == "3") {
       if(_is_back_home == "0"){
         Navigator.pushNamed(context, '/selfServiceHomePage');
       }else{

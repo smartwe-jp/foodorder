@@ -128,11 +128,6 @@ class _selfServiceScanCodePageState extends State<selfServiceScanCodePage> {
     _getMachineInfo();
 
 
-    //监听增加打开现金机的广播
-    eventBus.on<PayCubeEvent>().listen((event) {
-      CheckPayCube();
-    });
-
     //监听清除购物车的广播
     eventBus.on<clearCartEvent>().listen((event) {
       _clearCartList();
@@ -148,79 +143,6 @@ class _selfServiceScanCodePageState extends State<selfServiceScanCodePage> {
     closetimer?.cancel();
     eventBus.fire(new clearCartEvent('支付成功...'));
     super.dispose();
-  }
-
-  //打开现金机
-  OpenPayCube() async {
-    String checkStatus = await Paycube.CheckPayCubeStatus;
-
-    //如果检测现金机打开错误，则重新打开一下
-    if(checkStatus == "openError"){
-      String openStatus = await Paycube.openPayCube;
-      //print("机器未打开lib未null，重新打开并连接了");
-    }else{
-      await Paycube.setReceiveEvent;
-      //print("机器已打开，并setreceive");
-    }
-
-    //await Paycube.endTrade;
-  }
-
-  //检测现金机状态
-  CheckPayCube() async {
-    String machineStatus = await Paycube.getPayCubeMachineStatus;
-
-    checkTimer?.cancel();
-    checkTimer = Timer.periodic(Duration(milliseconds: 600), (Timer checktimer) async {
-      String machineStatus = await Paycube.getPayCubeMachineStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      //待機中(入金不可)正常
-      if (machineStatus == "30--10--10--10") {
-        checktimer.cancel();
-      }else{
-        stopPaycube();
-        checktimer.cancel();
-      }
-    });
-
-  }
-
-  stopPaycube() async {
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
-    stopChecktimer?.cancel();
-    stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
-      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
-      //await Paycube.setReceiveEvent;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_stopStatus == "StopSuccess") {
-        closePaycube();
-        stopcheck.cancel();
-
-      }else if(_stopStatus == "Error-A0--02"){
-        //处理中
-        await Paycube.endPayCube;
-      }else{
-        await Paycube.endPayCube;
-      }
-    });
-  }
-
-  closePaycube() async {
-    //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;
-    closetimer?.cancel();
-    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
-      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_closeStatus == "EndSuccess" || _closeStatus == "Error-A0--02") {
-        closecheck.cancel();
-      }else{
-
-        await Paycube.endTrade;
-      }
-    });
   }
 
 //获取机器信息

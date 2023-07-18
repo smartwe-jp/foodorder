@@ -1191,30 +1191,30 @@ print("加1了");
                   right: ScreenAdapter.width(0),
                   top: ScreenAdapter.height(0),
                   child: Container(
-                      //width: ScreenAdapter.width(60),
-                      height: ScreenAdapter.height(24),
-                      alignment: Alignment.center,
-                      padding: EdgeInsets.only(
-                          //top: ScreenAdapter.height(2),
-                          left: ScreenAdapter.width(10),
+                    //width: ScreenAdapter.width(60),
+                    height: ScreenAdapter.height(24),
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(
+                      //top: ScreenAdapter.height(2),
+                        left: ScreenAdapter.width(10),
                         right: ScreenAdapter.width(10)
-                      ),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                       /* image: DecorationImage(
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                      /* image: DecorationImage(
                           image:
                           (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
                           fit: BoxFit.fill,
                         ),*/
-                      ),
-                      child: Text(
-                          (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(16),
-                            color: ColorsUtil.hexToColor(
-                                Gcolor.optionBtnColor),
-                          )),
+                    ),
+                    child: Text(
+                        (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(16),
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.optionBtnColor),
+                        )),
                     /*Container(
                         alignment: Alignment.topCenter,
                         // 旋转
@@ -1437,14 +1437,14 @@ print("加1了");
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        //width: ScreenAdapter.width(50),
+                      //width: ScreenAdapter.width(50),
                         height: ScreenAdapter.height(24),
                         alignment: Alignment.center,
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                         padding: EdgeInsets.only(
                           //top:ScreenAdapter.height(2),
                             left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
+                            right: ScreenAdapter.width(10)
                         ),
                         // alignment: Alignment.topRight,
                         decoration: BoxDecoration(
@@ -1692,12 +1692,12 @@ print("加1了");
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        //width: ScreenAdapter.width(60),
+                      //width: ScreenAdapter.width(60),
                         height: ScreenAdapter.height(24),
                         alignment: Alignment.center,
                         padding: EdgeInsets.only(
                             left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
+                            right: ScreenAdapter.width(10)
                         ),
                         //alignment: Alignment.topCenter,
                         decoration: BoxDecoration(
@@ -1893,17 +1893,17 @@ print("加1了");
                               //--------------end
                               var checkoptionGroupList = {};
                               for (var optionItem in _selectedMenuOptionList[itemsFirst['menuCode']]) {
-                              currentPrice += optionItem['currentPrice'];
+                                currentPrice += optionItem['currentPrice'];
 
-                              optionCodeList += (optionCodeList != "")
-                                  ? "," + optionItem['optionCode']
-                                  : optionItem['optionCode'];
-                              var groupKey = optionItem['groupCode'];
-                              //整理新数组
-                              checkoptionGroupList[groupKey] = {
-                                "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                "groupTitle":optionItem['groupTitle']
-                              };
+                                optionCodeList += (optionCodeList != "")
+                                    ? "," + optionItem['optionCode']
+                                    : optionItem['optionCode'];
+                                var groupKey = optionItem['groupCode'];
+                                //整理新数组
+                                checkoptionGroupList[groupKey] = {
+                                  "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                  "groupTitle":optionItem['groupTitle']
+                                };
                               }
 
                               checkoptionGroupList.forEach((key, value) {
@@ -2318,17 +2318,17 @@ print("加1了");
                             //--------------end
                             var checkoptionGroupList = {};
                             for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
-                            currentPrice += optionItem['currentPrice'];
+                              currentPrice += optionItem['currentPrice'];
 
-                            optionCodeList += (optionCodeList != "")
-                                ? "," + optionItem['optionCode']
-                                : optionItem['optionCode'];
-                            var groupKey = optionItem['groupCode'];
-                            //整理新数组
-                            checkoptionGroupList[groupKey] = {
-                              "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                              "groupTitle":optionItem['groupTitle']
-                            };
+                              optionCodeList += (optionCodeList != "")
+                                  ? "," + optionItem['optionCode']
+                                  : optionItem['optionCode'];
+                              var groupKey = optionItem['groupCode'];
+                              //整理新数组
+                              checkoptionGroupList[groupKey] = {
+                                "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                "groupTitle":optionItem['groupTitle']
+                              };
 
                             }
 
@@ -2534,8 +2534,8 @@ print("加1了");
       return Container(
         padding: EdgeInsets.only(
             top: ScreenAdapter.height(8),
-          //left: ScreenAdapter.width(8),
-          //right: ScreenAdapter.width(8),
+            //left: ScreenAdapter.width(8),
+            //right: ScreenAdapter.width(8),
             bottom: ScreenAdapter.height(15)),
         //height: 450,
         child: showCategoryFiveItemList(showItemList),
@@ -2720,17 +2720,17 @@ print("加1了");
                             //--------------end
                             var checkoptionGroupList = {};
                             for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
-                            currentPrice += optionItem['currentPrice'];
+                              currentPrice += optionItem['currentPrice'];
 
-                            optionCodeList += (optionCodeList != "")
-                                ? "," + optionItem['optionCode']
-                                : optionItem['optionCode'];
-                            var groupKey = optionItem['groupCode'];
-                            //整理新数组
-                            checkoptionGroupList[groupKey] = {
-                              "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                              "groupTitle":optionItem['groupTitle']
-                            };
+                              optionCodeList += (optionCodeList != "")
+                                  ? "," + optionItem['optionCode']
+                                  : optionItem['optionCode'];
+                              var groupKey = optionItem['groupCode'];
+                              //整理新数组
+                              checkoptionGroupList[groupKey] = {
+                                "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                "groupTitle":optionItem['groupTitle']
+                              };
                             }
 
                             checkoptionGroupList.forEach((key, value) {
@@ -2996,7 +2996,7 @@ print("加1了");
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-               
+
                         Container(
                           //width: ScreenAdapter.width(20),
                           height: ScreenAdapter.height(70),
@@ -3069,7 +3069,7 @@ print("加1了");
             scrollDirection: Axis.vertical,
             physics: new AlwaysScrollableScrollPhysics(),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -4171,17 +4171,17 @@ print("加1了");
                                       //--------------end
                                       var checkoptionGroupList = {};
                                       for (var optionItem in _selectedMenuOptionList[item['menuCode']]) {
-                                      currentPrice += optionItem['currentPrice'];
+                                        currentPrice += optionItem['currentPrice'];
 
-                                      optionCodeList += (optionCodeList != "")
-                                          ? "," + optionItem['optionCode']
-                                          : optionItem['optionCode'];
-                                      var groupKey = optionItem['groupCode'];
-                                      //整理新数组
-                                      checkoptionGroupList[groupKey] = {
-                                        "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                        "groupTitle":optionItem['groupTitle']
-                                      };
+                                        optionCodeList += (optionCodeList != "")
+                                            ? "," + optionItem['optionCode']
+                                            : optionItem['optionCode'];
+                                        var groupKey = optionItem['groupCode'];
+                                        //整理新数组
+                                        checkoptionGroupList[groupKey] = {
+                                          "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                          "groupTitle":optionItem['groupTitle']
+                                        };
                                       }
 
                                       checkoptionGroupList.forEach((key, value) {
@@ -4387,8 +4387,8 @@ print("加1了");
                 child: Dialog(
                   insetPadding: EdgeInsets.zero,
                   child: Container(
-                   // width: ScreenAdapter.width(1060),
-                   width: ScreenAdapter.width(1060),
+                    // width: ScreenAdapter.width(1060),
+                    width: ScreenAdapter.width(1060),
                     padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                     child: StatefulBuilder(
                       builder: (BuildContext context, menuindex) {
@@ -4467,21 +4467,21 @@ print("加1了");
                                       var attr = _menuOption[item['menuCode']];
                                       var nexOrder = true;
                                       for (var i = 0; i < attr.length; i++) {
-                                          //如果是多选，那么需要判断该组option数量是否超过最大值
-                                          if(int.parse(attr[i]["smallest"]) >0){
-                                            var current_option_checked = 0;
-                                            for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
-                                              if(attr[i]['optionVoList'][n]["checked"] == true){
-                                                current_option_checked++;
-                                              }
-                                            }
-                                            if(current_option_checked <int.parse(attr[i]["smallest"])){
-                                              nexOrder = false;
-                                              var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
-                                              showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
-                                              break;
+                                        //如果是多选，那么需要判断该组option数量是否超过最大值
+                                        if(int.parse(attr[i]["smallest"]) >0){
+                                          var current_option_checked = 0;
+                                          for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                            if(attr[i]['optionVoList'][n]["checked"] == true){
+                                              current_option_checked++;
                                             }
                                           }
+                                          if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                            nexOrder = false;
+                                            var showTag = GString.getToString(this._checkLanguage, "menu_option_less_smallest");
+                                            showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                            break;
+                                          }
+                                        }
 
                                       }
                                       if(nexOrder == false) return;
@@ -4493,12 +4493,12 @@ print("加1了");
                                         optionCodeList += (optionCodeList != "")
                                             ? "," + optionItem['optionCode']
                                             : optionItem['optionCode'];
-                                          var groupKey = optionItem['groupCode'];
+                                        var groupKey = optionItem['groupCode'];
                                         //整理新数组
-                                      checkoptionGroupList[groupKey] = {
-                                        "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                        "groupTitle":optionItem['groupTitle']
-                                      };
+                                        checkoptionGroupList[groupKey] = {
+                                          "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                          "groupTitle":optionItem['groupTitle']
+                                        };
                                       }
 
                                       checkoptionGroupList.forEach((key, value) {
@@ -4885,7 +4885,7 @@ print("加1了");
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(0),
                     child: Container(
-                        //width: ScreenAdapter.width(46),
+                      //width: ScreenAdapter.width(46),
                         height: ScreenAdapter.height(24),
                         alignment: Alignment.center,
                         //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -5122,7 +5122,7 @@ print("加1了");
                     right: ScreenAdapter.width(0),
                     top: ScreenAdapter.height(50),
                     child: Container(
-                      width: ScreenAdapter.width(180),
+                        width: ScreenAdapter.width(180),
                         height: ScreenAdapter.height(150),
                         alignment: Alignment.center,
 
@@ -5180,9 +5180,9 @@ print("加1了");
     controller.getCardList();
     var total = await controller.getCartAllPrice();
     if(total != null)
-    setState(() {
-      _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
-    });
+      setState(() {
+        _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+      });
 
     var totalNum = await controller.getCartTotalNum();
     setState(() {
@@ -5211,152 +5211,159 @@ print("加1了");
                     top: ScreenAdapter.height(20),
                     right: ScreenAdapter.width(20),
                     bottom: ScreenAdapter.height(10)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                child: Column(
                   children: [
-                    Expanded(
-                        child: Container(
-                          //alignment: Alignment.centerRight,
-                          child: InkWell(
-                            enableFeedback: false,
-                            onTap: () {
-                              controller.removeAllFromCart();
-                              Future.delayed(Duration(milliseconds: 200),() async {
-                                Navigator.of(context).pop();
-                              });
 
-                            },
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Expanded(
                             child: Container(
-                              padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-                              margin: EdgeInsets.only(left: ScreenAdapter.width(15),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
-                              width: ScreenAdapter.width(110),
-                              height: ScreenAdapter.height(60),
-                              //alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                image: new DecorationImage(
-                                  fit: BoxFit.fitWidth,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "backbutton_top")),
-                                ),
-                              ),
-                              child: Center(
-                                //加上Center让文字居中
-                                child: Text(
-                                  GString.getToString(this._checkLanguage, "top_back_button"),
-                                  style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(26),
-                                      color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                      fontWeight: FontWeight.w600),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ),),
-                    Container(
-                      height: ScreenAdapter.height(290),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-
-                          SizedBox(height: ScreenAdapter.height(25)),
-                          InkWell(
-                              onLongPress: (){
-                                if(int.parse(_shopCartTotalPrice) >0){
-                                  Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
-                                }
-
-                              },
-                              child:Container(
-                                decoration: BoxDecoration(
-                                    color: Colors.white12,
-                                    border: Border(
-                                      bottom: BorderSide(color: Colors.black, width: 1.5),
-                                      //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                    )),
-                                child: RichText(
-                                  text: TextSpan(
-                                      text: "¥",
-                                      //GString.getToString(this._checkLanguage, "show_price_front"),
-                                      style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(GFontSize
-                                            .menusettlementBottomPriceLeft),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.mainTitleColor),
-                                      ),
-                                      children: [
-                                        TextSpan(
-                                          text: formatMoney(_shopCartTotalPrice.toString()),
-                                          style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(
-                                                GFontSize
-                                                    .menusettlementBottomPrice),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.priceColor),
+                              height: ScreenAdapter.height(300),
+                              child: Row(
+                                children: [
+                                  Scrollbar(
+                                      child: SingleChildScrollView(
+                                        physics: ClampingScrollPhysics(),
+                                        child: Container(
+                                          width: ScreenAdapter.width(720),
+                                          height: ScreenAdapter.height(300),
+                                          color:
+                                          ColorsUtil.hexToColor(Gcolor.cartListColor),
+                                          child: Stack(
+                                            alignment: Alignment.topRight,
+                                            children: [
+                                              GetBuilder<HomePageController>(
+                                                builder: (_) {
+                                                  if (controller.cartItems.length == 0) {
+                                                    return Center(
+                                                      child: Text(GString.getToString(
+                                                          this._checkLanguage, "cart_tag")),
+                                                    );
+                                                  }
+                                                  return ListView(
+                                                    shrinkWrap: true,
+                                                    children: controller.cartItems.map((d) => generateCartList(context, d)).toList(),
+                                                  );
+                                                },
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        TextSpan(
-                                          text:
-                                          "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                      )
+                                  ),
+
+                                ],
+                              ),
+                            )),
+                        Container(
+                          height: ScreenAdapter.height(290),
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+
+                              SizedBox(height: ScreenAdapter.height(25)),
+                              InkWell(
+                                  onLongPress: (){
+                                    if(int.parse(_shopCartTotalPrice) >0){
+                                      Navigator.pushNamed(context, '/middlewareSettingPage', arguments: {"machineCode": this._machineCode});
+                                    }
+
+                                  },
+                                  child:Container(
+                                    decoration: BoxDecoration(
+                                        color: Colors.white12,
+                                        border: Border(
+                                          bottom: BorderSide(color: Colors.black, width: 1.5),
+                                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                        )),
+                                    child: RichText(
+                                      text: TextSpan(
+                                          text: "¥",
+                                          //GString.getToString(this._checkLanguage, "show_price_front"),
                                           style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(
-                                                GFontSize
-                                                    .menusettlementBottomPriceRight),
+                                            fontSize: ScreenAdapter.fontSize(GFontSize
+                                                .menusettlementBottomPriceLeft),
                                             fontWeight: FontWeight.w600,
                                             color: ColorsUtil.hexToColor(
                                                 Gcolor.mainTitleColor),
                                           ),
-                                        ),
-                                      ]),
-                                ),
-                              )
-                          ),
-
-
-                          SizedBox(height: ScreenAdapter.height(18)),
-                          InkWell(
-                            enableFeedback: false,
-                            onTap: () {
-                              if (int.parse(_shopCartTotalPrice) ==0) {
-                                return false;
-                              }
-
-                              //点餐方式只有一种并且未开pos
-                              /*if(_isAllowPos == "0"){
-                              _doSubmitOrder();
-                            }else{*/
-                              _doSubmitOrder();
-                              //_showSelectMealTypeAndPaymentMethodDialog();
-                              //}
-
-
-
-                            },
-                            child: Container(
-                              width: ScreenAdapter.width(300),
-                              height: ScreenAdapter.height(115),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-
-                                color: (int.parse(_shopCartTotalPrice) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
+                                          children: [
+                                            TextSpan(
+                                              text: formatMoney(_shopCartTotalPrice.toString()),
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize
+                                                        .menusettlementBottomPrice),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.priceColor),
+                                              ),
+                                            ),
+                                            TextSpan(
+                                              text:
+                                              "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
+                                              style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize
+                                                        .menusettlementBottomPriceRight),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor),
+                                              ),
+                                            ),
+                                          ]),
+                                    ),
+                                  )
                               ),
-                              child: Text(
-                                  GString.getToString(this._checkLanguage,
-                                      "settlement_button"),
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(48),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.settlementBtnColor),
-                                  )),
-                            ),
+
+
+                              SizedBox(height: ScreenAdapter.height(18)),
+                              InkWell(
+                                enableFeedback: false,
+                                onTap: () {
+                                  if (int.parse(_shopCartTotalPrice) ==0) {
+                                    return false;
+                                  }
+
+                                  //点餐方式只有一种并且未开pos
+                                  /*if(_isAllowPos == "0"){
+                                  _doSubmitOrder();
+                                }else{*/
+                                  _doSubmitOrder();
+                                  //_showSelectMealTypeAndPaymentMethodDialog();
+                                  //}
+
+
+
+                                },
+                                child: Container(
+                                  width: ScreenAdapter.width(300),
+                                  height: ScreenAdapter.height(115),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+
+                                    color: (int.parse(_shopCartTotalPrice) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
+                                    //设置圆角
+                                    borderRadius: new BorderRadius.circular((16.0)),
+                                  ),
+                                  child: Text(
+                                      GString.getToString(this._checkLanguage,
+                                          "settlement_button"),
+                                      style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(48),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.settlementBtnColor),
+                                      )),
+                                ),
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
@@ -5503,7 +5510,7 @@ print("加1了");
                       height: ScreenAdapter.height(50.0),
                       alignment: Alignment.center,//上下左右都居中
                       decoration: BoxDecoration(
-                          //color: Colors.white,
+                        //color: Colors.white,
                           border: Border(//外层已经有边框了所以这里只设置右边的边框
                               right:BorderSide(width: 1.0,color: Colors.black12)
                           )
@@ -5511,9 +5518,9 @@ print("加1了");
                       child: Text(
                         "－",
                         style: TextStyle(
-                            fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
-                            fontWeight: FontWeight.w600,
-                            color: Colors.black,
+                          fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
                         ),
                       ),
                     ),
@@ -5677,10 +5684,10 @@ print("加1了");
 
           //只有现金，并且其余都为false的时候，直接跳转支付
           if(_showCash == true &&
-             _isAllowPos == "0" &&
-             _showAlipay == false &&
-             _showWechat == false &&
-             _showPayPay == false
+              _isAllowPos == "0" &&
+              _showAlipay == false &&
+              _showWechat == false &&
+              _showPayPay == false
           ){
             setState(() {
               _payment_method_num = "1";
