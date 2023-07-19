@@ -1256,7 +1256,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   wifiNetPrintnew(serialNumber,printType,printData,takeOut,orderTime) async {//print("进来厨房打印了么");
     //如果整理的数据打印机不是10或11就返回
-    if(printType != "10" && printType != "11"){
+    if(printType != "10" && printType != "12"){
       return;
     }
 
@@ -1268,7 +1268,7 @@ class _SettlementPageState extends State<SettlementPage> {
       }else{
         return;
       }
-    }else if(printType == "11"){
+    }else if(printType == "12"){
       if(_wlan_print_ip_two != null && _wlan_print_ip_two != "" && _wlan_print_port_two != null && _wlan_print_port_two != ""){
         printerIpInfo = {"printer_ip":_wlan_print_ip_two,"printer_port":_wlan_print_port_two,};
       }else{

@@ -925,7 +925,6 @@ print("加1了");
 
   //获取选中的值
   _getSelectedAttrValuev1(menuCode, optionGroupList, setMenuState) {
-
     var _list = optionGroupList;
     List tempArr = [];
     var selectPrice = 0;
@@ -949,13 +948,11 @@ print("加1了");
       }
     }
 
-    if (tempArr.length > 0) {
-      setMenuState(() {
-        _selectedMenuOptionList[menuCode] = tempArr;
-        _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
-      });
-      tempArr = [];
-    }
+    setMenuState(() {
+      _selectedMenuOptionList[menuCode] = tempArr;
+      _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
+    });
+    tempArr = [];
   }
 
   //初始化默认option选项
@@ -1011,13 +1008,11 @@ print("加1了");
       }
     }
 
-    if (tempArr.length > 0) {
-      setMenuState(() {
-        _selectedMenuOptionList[menuCode] = tempArr;
-        _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
-      });
-      tempArr = [];
-    }
+    setMenuState(() {
+      _selectedMenuOptionList[menuCode] = tempArr;
+      _addselectedMenuOptionChangePrice[menuCode] = selectPrice;
+    });
+    tempArr = [];
   }
 
   //获取第一个页面的option widget
@@ -4039,13 +4034,41 @@ print("加1了");
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
-                                Expanded(
+                                /*Expanded(
                                   child: Container(
                                     padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
                                     child: publicShowMenuTitle(
                                         item['mainTitle'],
                                         GFontSize.cartListTitleCount,
                                         Gcolor.mainTitleColor),
+                                  ),
+                                ),*/
+                                Expanded(
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                              child: Container(
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                                child: publicShowMenuTitle(
+                                                    item['mainTitle'],
+                                                    GFontSize.cartListTitleCount,
+                                                    Gcolor.mainTitleColor),
+                                              )
+                                          ),
+                                        ],
+                                      ),
+
+                                      Container(
+                                        padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                        child: Row(
+                                          children: [
+                                            Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 //价格展示 item['currentPrice']
@@ -4425,12 +4448,31 @@ print("加1了");
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 Expanded(
-                                  child: Container(
-                                    padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                                    child: publicShowMenuTitle(
-                                        item['mainTitle'],
-                                        GFontSize.cartListTitleCount,
-                                        Gcolor.mainTitleColor),
+                                  child: Column(
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Expanded(
+                                              child: Container(
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                            child: publicShowMenuTitle(
+                                                item['mainTitle'],
+                                                GFontSize.cartListTitleCount,
+                                                Gcolor.mainTitleColor),
+                                          )
+                                          ),
+                                        ],
+                                      ),
+
+                                      Container(
+                                        padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                        child: Row(
+                                          children: [
+                                            Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
+                                          ],
+                                        ),
+                                      ),
+                                    ],
                                   ),
                                 ),
                                 //价格展示 item['currentPrice']
