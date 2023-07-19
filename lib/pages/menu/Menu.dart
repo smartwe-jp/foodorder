@@ -1783,6 +1783,7 @@ print("加1了");
         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
         padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
         child: ListView(
+          padding: EdgeInsets.zero,
           shrinkWrap: true,
           children: [
             publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:1080.0, imgHeight:870.0),
@@ -1997,6 +1998,7 @@ print("加1了");
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -2130,6 +2132,7 @@ print("加1了");
   showCategoryThreeItemList(items) {
     return Container(
       child: ListView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -2410,6 +2413,7 @@ print("加1了");
         //right: ScreenAdapter.width(15)
       ),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -2545,6 +2549,7 @@ print("加1了");
   showCategoryFiveItemList(items) {
     return Container(
       child: ListView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -2812,6 +2817,7 @@ print("加1了");
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -2939,6 +2945,7 @@ print("加1了");
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
         //addRepaintBoundaries:false,
@@ -3408,6 +3415,7 @@ print("加1了");
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         physics: new NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
@@ -3868,6 +3876,7 @@ print("加1了");
     return Padding(
       padding: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
+        padding: EdgeInsets.zero,
         physics: new NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives:true,
