@@ -487,7 +487,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               ),
                             ),
 
-                            InkWell(
+                            /*InkWell(
                               onTap: (){
                                 setState(() {
                                   _isAllowPos = "1";
@@ -537,7 +537,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   ],
                                 ),
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
 
