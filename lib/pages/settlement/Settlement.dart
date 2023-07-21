@@ -45,6 +45,7 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 
 import 'package:foodorder/services/queue_util.dart';
 
+import '../../widget/NumberCircle.dart';
 import 'label_constrained_box.dart';
 
 class SettlementPage extends StatefulWidget {
@@ -788,13 +789,12 @@ class _SettlementPageState extends State<SettlementPage> {
       queryUrl = "webBootToPrintV7"; //230704新修改小票
 
 
-      request(queryUrl, method: 'POST', parameters: formData)
-          .then((val) async {
+      request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
-       // LogUtil.d(response);
+        //LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
-          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){print("laileme");
+          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
             _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
           }
 
@@ -807,9 +807,7 @@ class _SettlementPageState extends State<SettlementPage> {
           if(response['data']["orderType"] == 1){
 
             _tpPrintnew(response['data'], printType);
-            if(printType == "1"){
-              _tpPrintReceipt(response['data']);
-            }
+
           }else{
             if (printType == "1") {
               _tpPrintReceipt(response['data']);
@@ -953,15 +951,15 @@ class _SettlementPageState extends State<SettlementPage> {
     var oneRowHeight = 48;
     if(_print_paper_txt_size == "1"){
       print_menu_txt_size = 28.0;
-      wrapNum = 10;
+      wrapNum = 12;
       oneRowHeight = 48;
     }else if(_print_paper_txt_size == "2"){
       print_menu_txt_size = 33.0;
-      wrapNum = 8;
+      wrapNum = 10;
       oneRowHeight = 54;
     }else if(_print_paper_txt_size == "3"){
       print_menu_txt_size = 40.0;
-      wrapNum = 6;
+      wrapNum = 8;
       oneRowHeight = 60;
     }
 
@@ -978,7 +976,7 @@ class _SettlementPageState extends State<SettlementPage> {
             textDirection: TextDirection.ltr,
             child: Text("${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: 32,
+                  fontSize: 28,
                   //fontFamily: 'JetBrainsMonoRegular',
                   fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -1024,20 +1022,18 @@ class _SettlementPageState extends State<SettlementPage> {
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0;//optionLine.ceil();
 
-          var lineOptionTxtNum = (wrapNum-1) ~/2;
-
           //处理option 开始-----------
-        if((key.length+value[0].length) >wrapNum){
+        if((key.length+value[0].length) >(wrapNum-2)){
           var newLineNum = 0.0;
           //if(groupNameLength >wrapNum){
-            newLineNum = groupNameLength / wrapNum;
+            newLineNum = groupNameLength / (wrapNum-2);
           //}
           countLine += newLineNum.ceil();
           optionLine += newLineNum;
           //if(optionNameLength >wrapNum){
-            newLineNum = optionNameLength / wrapNum;
+          var newLineNumLength = optionNameLength / (wrapNum-2);
           //}
-          countLine += newLineNum.ceil();
+          countLine += newLineNumLength.ceil();
           optionLine += newLineNum;
 
           categoryMenus.add(Column(
@@ -1070,7 +1066,7 @@ class _SettlementPageState extends State<SettlementPage> {
               Container(
                 padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                 child: Row(
-                  mainAxisAlignment: (value[0].length >wrapNum ) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                  mainAxisAlignment: (value[0].length >(wrapNum-2) ) ? MainAxisAlignment.start : MainAxisAlignment.end,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   textDirection: TextDirection.ltr,
                   children: [
@@ -1079,7 +1075,7 @@ class _SettlementPageState extends State<SettlementPage> {
                         child: Expanded(
                           child: Text("${value[0]}",
                               softWrap: true,
-                              textAlign: (value[0].length >wrapNum) ? TextAlign.left : TextAlign.right,
+                              textAlign: (value[0].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
                               style: TextStyle(
                                 fontSize: print_menu_txt_size,
                                 fontWeight: FontWeight.w100,
@@ -1098,36 +1094,32 @@ class _SettlementPageState extends State<SettlementPage> {
           categoryMenus.add(Container(
             padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               textDirection: TextDirection.ltr,
               children: [
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Expanded(
-                        child:Text("${key}",
-                            softWrap: true,
-                            style: TextStyle(
-                              fontSize: print_menu_txt_size,
-                              fontWeight: FontWeight.w100,
-                              fontFamily: 'ZenKakuGothicAntique',
-                              color: ColorsUtil.hexToColor("#000000"),
-                            ))
-                    )
+                    child: Text("${key}",
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: print_menu_txt_size,
+                          fontWeight: FontWeight.w100,
+                          fontFamily: 'ZenKakuGothicAntique',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ))
                 ),
                 Directionality(
                     textDirection: TextDirection.rtl,
-                    child: Expanded(
-                      child: Text("${value[0]}",
-                          softWrap: true,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: print_menu_txt_size,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'ZenKakuGothicAntique',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    )),
+                    child: Text("${value[0]}",
+                        softWrap: true,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: print_menu_txt_size,
+                          fontWeight: FontWeight.w100,
+                          fontFamily: 'ZenKakuGothicAntique',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ))),
               ],
             ),
           ));
@@ -1138,20 +1130,20 @@ class _SettlementPageState extends State<SettlementPage> {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
-              newOptionSonLine += value[j].length / wrapNum;
-              var oneOptionlength = value[j].length / wrapNum;
+              newOptionSonLine += value[j].length / (wrapNum-2);
+              var oneOptionlength = value[j].length / (wrapNum-2);
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
                   Container(
                     padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                     child: Row(
-                      mainAxisAlignment: (value[j].length >wrapNum) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                      mainAxisAlignment: (value[j].length >(wrapNum-2)) ? MainAxisAlignment.start : MainAxisAlignment.end,
                       textDirection: TextDirection.ltr,
                       children: [
                         Expanded(child: Text("${value[j]}",
                             textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length >wrapNum) ? TextAlign.left : TextAlign.right,
+                            textAlign: (value[j].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
                             style: TextStyle(
                               fontSize: print_menu_txt_size,
                               fontWeight: FontWeight.w100,
@@ -1183,8 +1175,8 @@ class _SettlementPageState extends State<SettlementPage> {
           optionNum++;
         });
 
-        //addRowHight += oneRowHeight * menuRowNum;
-        //menuNum += menuRowNum;
+        addRowHight += oneRowHeight * menuRowNum;
+        menuNum += menuRowNum;
       } else {
         addRowHight += oneRowHeight * menuRowNum;
         menuNum += menuRowNum;
@@ -1192,7 +1184,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
       //分割线
       if (_machineMode == "1") {
-        addRowHight += 6;
+        addRowHight += 8;
         categoryMenus.add(
           _publicSplitLine(),
         );
@@ -1222,14 +1214,19 @@ class _SettlementPageState extends State<SettlementPage> {
     //Future.delayed(Duration(milliseconds: 50), () async {
       String base64Image = base64Encode(imageBytes);
       //LogUtil.d(base64Image);
-      //if (printType == "1") {
+      if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
         await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
-
-        //_tpPrintReceipt(printData);
-      //} else {
-        //await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
-      //}
+        Future.delayed(Duration(milliseconds: 300), () async {
+          await FlutterPluginMsprinter.sendPrintCut("1");
+          _tpPrintReceipt(printData);
+        });
+      } else {
+        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
+        Future.delayed(Duration(milliseconds: 300), () async {
+          await FlutterPluginMsprinter.sendPrintCut("0");
+        });
+      }
 
     //});
   }
@@ -1246,15 +1243,15 @@ class _SettlementPageState extends State<SettlementPage> {
             printData.add(v[i]);
           }
         }
-        QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
+        //QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
           return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
-        });
+        //});
       }
     });
 
   }
 
-  wifiNetPrintnew(serialNumber,printType,printData,takeOut,orderTime) async {//print("进来厨房打印了么");
+  wifiNetPrintnew(serialNumber,printType,printData,takeOut,orderTime) async {
     //如果整理的数据打印机不是10或11就返回
     if(printType != "10" && printType != "12"){
       return;
@@ -1278,8 +1275,8 @@ class _SettlementPageState extends State<SettlementPage> {
       return;
     }
   //print(printData);
-
-    var imageWidget = organizeData(serialNumber,printData,takeOut,orderTime);
+    _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
+    /*var imageWidget = organizeData(serialNumber,printData,takeOut,orderTime);
     ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
@@ -1303,13 +1300,318 @@ class _SettlementPageState extends State<SettlementPage> {
     }else{
       showToast(res.msg);
       sleep(Duration(milliseconds: 5000));
+    }*/
+  }
+  _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
+    for(var i=0;i<printData.length;i++){
+         wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
+
     }
+  }
+
+  wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) async {
+    var lineHight = 120;
+    var menuNum = 0;
+    var optionNum = 0;
+    int addRowHight = 0;
+
+    List<Widget> printMenus = [];
+    printMenus.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        textDirection: TextDirection.ltr,
+        children: [
+          Directionality(
+              textDirection: TextDirection.ltr,
+              child:
+              RichText(
+                text: TextSpan(
+                    text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
+                    style: TextStyle(
+                      fontSize: 50,
+                      fontFamily: 'JetBrainsMonoRegular',
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "${serialNumber.toString()}",
+                        style: TextStyle(
+                          fontSize: 50,
+                          fontFamily: 'JetBrainsMonoRegular',
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ),
+                      ),
+                    ]),
+              )
+          ),
+          Directionality(
+              textDirection: TextDirection.ltr,
+              child: Text("${orderTime}",
+                  style: TextStyle(
+                    fontSize: 45,
+                    //fontFamily: 'JetBrainsMonoRegular',
+                    fontWeight: FontWeight.w500,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  ))
+          ),
+        ],
+      ),
+    );
+    printMenus.add(
+      Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        textDirection: TextDirection.ltr,
+        children: [
+          Directionality(
+              textDirection: TextDirection.ltr,
+              child: Expanded(
+                  child: Text("${orderprintData["mainTitle"]}",
+                      style: TextStyle(
+                        fontSize: 45,
+                        //fontFamily: 'JetBrainsMonoRegular',
+                        fontWeight: FontWeight.w500,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ))
+              )
+          ),
+          Container(
+            width: 50,
+            child: Directionality(
+                textDirection: TextDirection.ltr,
+                child: (int.parse(orderprintData["qtyBack"]) >1) ? NumberCircle(
+                  number: int.parse(orderprintData["qtyBack"]),
+                  circleColor: ColorsUtil.hexToColor("#000000"),
+                  circleSize: 50.0,
+                  numberStyle: TextStyle(
+                    fontSize: 42,
+                    fontFamily: 'JetBrainsMonoRegular',
+                    fontWeight: FontWeight.w400,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  ),
+                ) :Text("${orderprintData["qty"]}",//${printData["takeOut"]}
+                    style: TextStyle(
+                      fontSize: 42,
+                      fontFamily: 'JetBrainsMonoRegular',
+                      fontWeight: FontWeight.w400,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ))
+            ),
+          ),
+        ],
+      ),
+    );
+
+    var mainTitleLine = orderprintData["mainTitle"].length / 10;
+    int mainTitleRowNum = mainTitleLine.ceil();
+    optionNum = 0;
+
+
+    var optionVoListMap = orderprintData["optionVoListMsgMap"] ?? {};
+    if (optionVoListMap != null && optionVoListMap.isNotEmpty) {
+      optionVoListMap.forEach((key, value) {
+        // 计算菜品标题长度
+        var groupNameLength = key.length;
+        var optionNameLength = value[0].length;
+        var optionLine = (groupNameLength + optionNameLength) / 10;
+        var countLine = 0;
+
+        //处理option 开始-----------
+        if((key.length+value[0].length)>10){
+          var newLineNum = 0.0;
+          //if(groupNameLength >6){
+          newLineNum = groupNameLength / 10;
+          //}
+          countLine += newLineNum.ceil();
+          optionLine += newLineNum;
+          //if(optionNameLength >6){
+          var optionSonNameLength = optionNameLength / 10;
+          //}
+          countLine += optionSonNameLength.ceil();
+          optionLine += newLineNum;
+
+          printMenus.add(Column(
+            textDirection: TextDirection.rtl,
+            children: [
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Expanded(
+                          child:Text("    ${key}",
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontFamily: 'JetBrainsMonoRegular',
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ))
+                      )
+                  ),
+
+                ],
+              ),
+              Container(
+                padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
+                child: Row(
+                  mainAxisAlignment: (value[0].length >10 ) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  textDirection: TextDirection.ltr,
+                  children: [
+                    Directionality(
+                        textDirection: TextDirection.rtl,
+                        child: Expanded(
+                          child: Text("${value[0]}",
+                              softWrap: true,
+                              textAlign: (value[0].length >10) ? TextAlign.left : TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 40,
+                                fontFamily: 'JetBrainsMonoRegular',
+                                color: ColorsUtil.hexToColor("#000000"),
+                              )),
+                        )),
+                  ],
+                ),
+              ),
+            ],
+          ));
+        }else{
+          countLine += 1;
+          printMenus.add(Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: [
+              Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Text("    ${key}",
+                      softWrap: true,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: 'JetBrainsMonoRegular',
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ))
+              ),
+              Directionality(
+                  textDirection: TextDirection.rtl,
+                  child: Text("${value[0]}",
+                      softWrap: true,
+                      textAlign: TextAlign.right,
+                      style: TextStyle(
+                        fontSize: 40,
+                        fontFamily: 'JetBrainsMonoRegular',
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ))),
+            ],
+          ));
+        }
+
+        var newOptionSonLine = 0.0;
+        if(value.length>1){
+          List<Widget> optionSons = [];
+          for (var j = 1; j < value.length; j++) {
+            // print(value[j]);
+            newOptionSonLine += value[j].length / 10;
+            var oneOptionlength = value[j].length / 10;
+            countLine += oneOptionlength.ceil();
+
+            optionSons.add(
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
+                  child: Row(
+                    mainAxisAlignment: (value[j].length >10) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Expanded(child: Text("${value[j]}",
+                          textDirection: TextDirection.ltr,
+                          textAlign: (value[j].length >10) ? TextAlign.left : TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 40,
+                            fontFamily: 'JetBrainsMonoRegular',
+                            color: ColorsUtil.hexToColor("#000000"),
+                            //fontWeight: FontWeight.w600
+                          ))),
+                    ],
+                  ),
+                )
+            );
+          }
+
+          printMenus.add(Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            textDirection: TextDirection.rtl,
+            children: optionSons,
+          ));
+        }
+
+
+        //处理option结束-----------
+
+        var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+        //addRowHight += 52 * optionRowNum;
+        addRowHight += 65*countLine;
+        menuNum += optionRowNum;
+        optionNum++;
+      });
+
+      addRowHight += 45 * mainTitleRowNum;
+      menuNum += mainTitleRowNum;
+    } else {
+      addRowHight += 65 * mainTitleRowNum;
+      menuNum += mainTitleRowNum;
+    }
+
+    var totalHight = addRowHight+lineHight;
+    if(menuNum == 1){
+      totalHight +=15;
+    }
+
+
+    ByteData byteData = await WidgetToImage.widgetToImage(
+        Container(
+          width: 560,
+          height: totalHight.toDouble(),
+          padding: EdgeInsets.only(left: 0.5, right: 0.5),
+          color: Colors.white,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: printMenus,
+          ),
+        )
+    );
+
+    Uint8List imageBytes = byteData.buffer.asUint8List();
+    var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+      imgData: imageBytes,
+        printType: PrintTypeEnum.receipt,
+        imgSizeLimit : 560 * totalHight
+    );
+
+
+    QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
+      return setPrintData(printer_ip,printData);
+    });
+
+  }
+
+  setPrintData(printerIPVal,printData){
+    // 网络 打印
+    final conn = printerPlus.NetConn(printerIPVal);
+    conn.writeMultiBytes(printData);
   }
 
   organizeData(serialNumber,printData,takeOut,orderTime) {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
-    var lineHight = 200;
+    var lineHight = 230;
     var menuNum = 0;
     var optionNum = 0;
     int addRowHight = 0;
@@ -1349,7 +1651,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     for(var i=0; i<categoryVos.length; i++){
       var lineVos = categoryVos[i];
-      var optionVoList = categoryVos[i]["optionVoListMsgMap"] ?? [];
+      var optionVoList = categoryVos[i]["optionVoListMsgMap"] ?? {};
 
       // 计算菜品标题长度
       var mainTitleLength = lineVos["mainTitle"].length;
@@ -1465,34 +1767,30 @@ class _SettlementPageState extends State<SettlementPage> {
           }else{
             countLine += 1;
             categoryMenus.add(Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               textDirection: TextDirection.ltr,
               children: [
                 Directionality(
                     textDirection: TextDirection.ltr,
-                    child: Expanded(
-                        child:Text("    ${key}",
-                            softWrap: true,
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontFamily: 'JetBrainsMonoRegular',
-                              color: ColorsUtil.hexToColor("#000000"),
-                            ))
-                    )
+                    child: Text("    ${key}",
+                        softWrap: true,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontFamily: 'JetBrainsMonoRegular',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ))
                 ),
                 Directionality(
                     textDirection: TextDirection.rtl,
-                    child: Expanded(
-                      child: Text("${value[0]}",
-                          softWrap: true,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontFamily: 'JetBrainsMonoRegular',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )),
-                    )),
+                    child: Text("${value[0]}",
+                        softWrap: true,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 40,
+                          fontFamily: 'JetBrainsMonoRegular',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ))),
               ],
             ));
           }
@@ -1737,235 +2035,6 @@ class _SettlementPageState extends State<SettlementPage> {
     );
   }
 
-
-  _tpPrintReceiptold(printData) async {
-    List<Widget> categoryMenus = [];
-    var lineHight = 660;
-    var lineZeng = 20;
-
-    //电话
-    categoryMenus.add(_publicOneColumnTxt(
-        "電話 ${printData["telephone"]}", 24.0, FontWeight.w200));
-
-    var addressLine = printData["shopAddress"].length / 13;
-    var addressRowNum = addressLine.ceil();
-    lineHight += 25 * addressRowNum;
-
-    //地址
-    categoryMenus.add(_publicOneColumnTxt(
-        "${printData["shopAddress"]}", 24.0, FontWeight.w200));
-    //订单日期
-    /*categoryMenus.add(
-        _publicOneColumnTxt(printData["orderDate"],25.0,FontWeight.w200)
-    );*/
-    categoryMenus.add(Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.only(bottom: 3),
-      child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Text("${printData["orderDate"]}",
-              style: TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.w100,
-                  fontFamily: 'NotoSansJP',
-                  color: ColorsUtil.hexToColor("#000000")))),
-    ));
-    if (_machineMode == "1") {
-      lineHight += 25;
-      categoryMenus.add(Container(
-        alignment: Alignment.centerLeft,
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["numberTips"]}",
-                style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w100,
-                    fontFamily: 'NotoSansJP',
-                    color: ColorsUtil.hexToColor("#000000")))),
-      ));
-    }
-    //注文番号
-    categoryMenus.add(_publicOneColumnTxt(
-        "${printData["orderIdStr"]}", 24.0, FontWeight.w200));
-
-//领収书标题
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("領 収 書",
-                style: TextStyle(
-                  fontSize: 50,
-                  fontFamily: 'UbuntuMonoRegular',
-                  fontWeight: FontWeight.w300,
-                  color: ColorsUtil.hexToColor("#000000"),
-                ))),
-      ),
-    );
-//合计
-    categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("合計",
-                        style: TextStyle(
-                          fontSize: 28,
-                          fontWeight: FontWeight.w200,
-                          fontFamily: 'ZenKakuGothicAntique',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ))),
-                Expanded(child: Container()),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: RichText(
-                      text: TextSpan(
-                          text: "￥",
-                          //GString.getToString(this._checkLanguage, "show_price_front"),
-                          style: TextStyle(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w200,
-                            fontFamily: 'NotoSansJP',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          ),
-                          children: [
-                            TextSpan(
-                              text: "${printData["payPrice"]} ",
-                              style: TextStyle(
-                                fontSize: 28,
-                                fontWeight: FontWeight.w300,
-                                fontFamily: 'NotoSansJP',
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                            ),
-                          ]),
-                    )),
-              ],
-            ),
-          )),
-    );
-    categoryMenus.add(
-      _publicSplitLine(),
-    );
-    //税拔金额
-    categoryMenus.add(
-      _publicTwoColumnsTxt("税抜金額", 28.0, FontWeight.w200,
-          "${printData["excludingTaxStr"]}", 28.0, FontWeight.w200, true),
-    );
-    //消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxt("消費税", 28.0, FontWeight.w200,
-          "${printData["taxStr"]}", 28.0, FontWeight.w200, true),
-    );
-    //10%
-    categoryMenus.add(
-      _publicTwoColumnsTxt(
-          "対象10%",
-          28.0,
-          FontWeight.w200,
-          (printData["line7"] != "外") ? "${printData["payPrice"]}" : "0",
-          28.0,
-          FontWeight.w200,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxt(
-          "　内消費税",
-          28.0,
-          FontWeight.w200,
-          (printData["line7"] != "外") ? "${printData["taxStr"]}" : "0",
-          28.0,
-          FontWeight.w200,
-          true),
-    );
-    //8%
-    categoryMenus.add(
-      _publicTwoColumnsTxt(
-          "対象8%",
-          28.0,
-          FontWeight.w200,
-          (printData["line7"] == "外") ? "${printData["payPrice"]}" : "0",
-          28.0,
-          FontWeight.w200,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxt(
-          "　内消費税",
-          28.0,
-          FontWeight.w200,
-          (printData["line7"] == "外") ? "${printData["taxStr"]}" : "0",
-          28.0,
-          FontWeight.w200,
-          true),
-    );
-
-    categoryMenus.add(
-      _publicSplitLine(),
-    );
-    categoryMenus.add(
-      _publicTwoColumnsTxt(printData["payMethod"], 26.0, FontWeight.w200,
-          "${printData["payPrice"]}", 26.0, FontWeight.w200, true),
-    );
-    if (printData["memberNo"] != null && printData["memberNo"] != "") {
-      lineZeng = 110;
-      categoryMenus.add(
-        _publicTwoColumnsTxt("カード番号", 26.0, FontWeight.w200,
-            printData["memberNo"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(
-        _publicTwoColumnsTxt("日期", 26.0, FontWeight.w200, printData["payDate"],
-            26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(_publicSplitLine());
-    }
-    if (printData["serialNo"] != null && printData["serialNo"] != "") {
-      lineZeng = 110;
-      categoryMenus.add(
-        _publicTwoColumnsTxt("カード取引通番", 26.0, FontWeight.w200,
-            printData["serialNo"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(
-        _publicTwoColumnsTxt("取引日時", 26.0, FontWeight.w200, printData["payDate"],
-            26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(_publicSplitLine());
-    }
-    //お明細は上記のとおりです。
-    categoryMenus.add(_publicOneColumnTxt("お明細は上記のとおりです。", 26.0, FontWeight.w200));
-
-    var totalHight = lineZeng + lineHight;
-
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
-      width: 380,
-      height: totalHight.toDouble(),
-      color: Colors.white,
-      //alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        //crossAxisAlignment: CrossAxisAlignment.start,
-        children: categoryMenus,
-      ),
-    ));
-
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    Future.delayed(Duration(milliseconds: 100), () async {
-      String base64Image = base64Encode(imageBytes);
-
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
-    });
-  }
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
@@ -2419,10 +2488,13 @@ class _SettlementPageState extends State<SettlementPage> {
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    Future.delayed(Duration(milliseconds: 200), () async {
+    //Future.delayed(Duration(milliseconds: 200), () async {
       String base64Image = base64Encode(imageBytes);
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
-    });
+      Future.delayed(Duration(milliseconds: 300), () async {
+        await FlutterPluginMsprinter.sendPrintCut("1");
+      });
+    //});
 
   }
 
@@ -4110,12 +4182,15 @@ class _SettlementPageState extends State<SettlementPage> {
             ),
             if (_payment_method_num == "1")
               Container(
+                width: ScreenAdapter.width(1080),
+                alignment: Alignment.center,
                 //height: ScreenAdapter.height(940),
                 child: Image.asset(
                   GImage.getImageString("imgpublic",
                       "settlement_top_lead_cash_${_checkLanguage}"),
-                  width: ScreenAdapter.width(1080),
-                  fit: BoxFit.fitWidth,
+                  width: ScreenAdapter.width(780),
+                  height: ScreenAdapter.width(870),
+                  fit: BoxFit.fitHeight,
                 ),
               ),
             if (_payment_method_num == "2")
@@ -4497,6 +4572,18 @@ class _SettlementPageState extends State<SettlementPage> {
                 ),
               ),
             ),
+            if (_payment_method_num == "1")
+              Container(
+                width: ScreenAdapter.width(1080),
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString("imgpublic",
+                      "settlement_bottom_lead_cash_${_checkLanguage}"),
+                  height: ScreenAdapter.height(280),
+                  fit: BoxFit.fitHeight,
+                ),
+              ),
             if (_payment_method_num == "0" || _payment_method_num == "1")
               Container(
                 //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),

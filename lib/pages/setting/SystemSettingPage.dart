@@ -1890,7 +1890,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                                   )
                               ),
                               Text(
-                                  "端口:${_pos_port}",
+                                  "Port:${_pos_port}",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(22),
                                   )
@@ -2122,7 +2122,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                                   )
                               ),
                               Text(
-                                  "端口:${_wlan_print_port}",
+                                  "Port:${_wlan_print_port}",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(22),
                                   )
@@ -2181,7 +2181,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
                             //お持ち帰り
-                            child: Text("测试打印",
+                            child: Text("テスト印刷",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
@@ -2391,7 +2391,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                                   )
                               ),
                               Text(
-                                  "端口:${_wlan_print_port_Two}",
+                                  "Port:${_wlan_print_port_Two}",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(22),
                                   )
@@ -2450,7 +2450,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
                                 borderRadius: new BorderRadius.circular((16.0)),
                               ),
                               //お持ち帰り
-                              child: Text("测试打印",
+                              child: Text("テスト印刷",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(24),
                                     fontWeight: FontWeight.w600,

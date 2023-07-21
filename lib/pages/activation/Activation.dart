@@ -115,7 +115,7 @@ class _ActivationPageState extends State<ActivationPage> {
             ),
             TextButton(
               child: Text(
-                "确定激活",
+                "確 認",
                 style: TextStyle(
                     color: Colors.lightBlue,
                     fontSize: ScreenAdapter.fontSize(32.0)),

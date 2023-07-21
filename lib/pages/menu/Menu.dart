@@ -579,7 +579,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
             child: Container(
               padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
               margin: EdgeInsets.only(left: ScreenAdapter.width(15),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
-              width: ScreenAdapter.width(110),
+              width: ScreenAdapter.width(115),
               height: ScreenAdapter.height(60),
               //alignment: Alignment.center,
               decoration: BoxDecoration(
@@ -593,7 +593,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                 child: Text(
                   GString.getToString(this._checkLanguage, "top_back_button"),
                   style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(26),
+                      fontSize: ScreenAdapter.fontSize(22),
                       color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                       fontWeight: FontWeight.w600),
                 ),
@@ -4948,14 +4948,19 @@ print("加1了");
     controller.getCardList();
     var total = await controller.getCartAllPrice();
     if(total != null)
-      setState(() {
-        _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
-      });
+      if(mounted) {
+        setState(() {
+          _shopCartTotalPrice =
+          total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+        });
+      }
 
     var totalNum = await controller.getCartTotalNum();
-    setState(() {
-      _showCartTotalGoodsNum = totalNum;
-    });
+    if(mounted) {
+      setState(() {
+        _showCartTotalGoodsNum = totalNum;
+      });
+    }
 
 
     //return sum.toString();

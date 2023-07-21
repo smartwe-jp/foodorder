@@ -328,6 +328,20 @@ public class FlutterPluginMsprinterPlugin implements FlutterPlugin, MethodCallHa
 
 
         break;
+      case "sendPrintCut":
+        String newprintcutMode = call.argument("cutMode");
+
+        if (iDriverCheck_sendPrint == -1 || iDriverCheck_sendPrint == 1) {
+          result.error("40001","无法获得usb权限",null);
+          return;
+        }else{
+          print.execute_reserve_printCut(mUsbDriver,newprintcutMode);
+
+          result.success("success");
+        }
+
+
+        break;
       case "getPrintStatus":
         int iDriverCheck = usbDriverCheck();
         if (iDriverCheck == -1) {

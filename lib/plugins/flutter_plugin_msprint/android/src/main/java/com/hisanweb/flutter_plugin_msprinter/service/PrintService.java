@@ -562,6 +562,16 @@ public class PrintService  {
         bSendData = hexStringToBytes(strdata);
         mUsbDriver.write(bSendData);*/
         PrintFeedDot(20);
+        //int cutPaper = Integer.parseInt(cutMode);
+
+        //mUsbDriver.write(PrintCmd.PrintFeedline(5));
+        //mUsbDriver.write(PrintCmd.PrintCutpaper(cutPaper));
+
+    }
+
+    public void execute_reserve_printCut(UsbDriver mUsbDriver,String cutMode){
+
+        //PrintFeedDot(5);
         int cutPaper = Integer.parseInt(cutMode);
 
         mUsbDriver.write(PrintCmd.PrintFeedline(5));

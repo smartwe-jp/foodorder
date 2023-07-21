@@ -50,4 +50,10 @@ class FlutterPluginMsprinter {
     final String printStatus = await _channel.invokeMethod('sendPrintImgNew',map);
     return printStatus;
   }
+
+  static Future<String> sendPrintCut(cutMode) async {
+    Map<String, String> map = {"cutMode":cutMode};
+    final String printStatus = await _channel.invokeMethod('sendPrintCut',map);
+    return printStatus;
+  }
 }
