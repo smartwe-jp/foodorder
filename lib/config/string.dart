@@ -44,6 +44,7 @@ class GString{
         "settlement_back":"戻る",
         "settlement_confirmButton":"支払確定",
         "settlement_confirmButton_yes":"領収書発行",
+        "settlement_confirmButton_no2":"支払い確定",
         "settlement_confirmButton_no":"領収書不発行",
         "settlement_orderPrice":"お支払い金額",
         "settlement_putMoney":"お預り    ",

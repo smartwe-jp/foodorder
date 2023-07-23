@@ -248,7 +248,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-
+print(systemSettingInfo);
     setState(() {
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
@@ -3072,13 +3072,13 @@ class _SettlementPageState extends State<SettlementPage> {
     Navigator.pop(context);
     //Navigator.pushNamed(context, '/transitPage');
     //Navigator.of(context).pop();
-    if (_machineMode == "1") {
-      Navigator.pushNamed(context, '/home');
-    }if (_machineMode == "3") {
-      Navigator.pushNamed(context, '/selfServiceHomePage');
-    } else {
+    if(_machineMode == "2") {
       //精算页面
       Navigator.pushNamed(context, '/checkOutPage');
+    }else if(_machineMode == "3") {
+      Navigator.pushNamed(context, '/selfServiceHomePage');
+    } else {
+      Navigator.pushNamed(context, '/home');
     }
   }
 
@@ -4723,7 +4723,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                 mainAxisAlignment:
                                 MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton"),
@@ -4735,8 +4735,21 @@ class _SettlementPageState extends State<SettlementPage> {
                                         color: ColorsUtil.hexToColor(
                                             Gcolor
                                                 .settlementBtnColor),
-                                      )),
+                                      )),*/
                                   Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton_yes"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                  /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton_yes"),
@@ -4748,7 +4761,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                         color: ColorsUtil.hexToColor(
                                             Gcolor
                                                 .settlementBtnColor),
-                                      )),
+                                      )),*/
                                 ],
                               ),
                             ),
@@ -4788,7 +4801,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                 mainAxisAlignment:
                                 MainAxisAlignment.center,
                                 children: [
-                                  Text(
+                                  /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton"),
@@ -4800,8 +4813,21 @@ class _SettlementPageState extends State<SettlementPage> {
                                         color: ColorsUtil.hexToColor(
                                             Gcolor
                                                 .settlementBtnColor),
-                                      )),
+                                      )),*/
                                   Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton_no2"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(
+                                            32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor
+                                                .settlementBtnColor),
+                                      )),
+                                 /* Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton_no"),
@@ -4813,7 +4839,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                         color: ColorsUtil.hexToColor(
                                             Gcolor
                                                 .settlementBtnColor),
-                                      )),
+                                      )),*/
                                 ],
                               ),
                             ),
