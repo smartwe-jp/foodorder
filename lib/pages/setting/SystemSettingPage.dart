@@ -1781,7 +1781,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
       margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
       child: Column(
         children: [
-          Text("Pos設定",
+          Text("キャッシュレス端末設定",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,

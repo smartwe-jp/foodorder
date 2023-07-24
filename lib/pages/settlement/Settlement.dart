@@ -1317,47 +1317,54 @@ print(systemSettingInfo);
 
     List<Widget> printMenus = [];
     printMenus.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        textDirection: TextDirection.ltr,
-        children: [
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child:
-              RichText(
-                text: TextSpan(
-                    text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
-                    style: TextStyle(
-                      fontSize: 50,
-                      fontFamily: 'JetBrainsMonoRegular',
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor("#000000"),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "${serialNumber.toString()}",
-                        style: TextStyle(
-                          fontSize: 50,
-                          fontFamily: 'JetBrainsMonoRegular',
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ),
+      Container(
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 1.5),
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          textDirection: TextDirection.ltr,
+          children: [
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child:
+                RichText(
+                  text: TextSpan(
+                      text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
+                      style: TextStyle(
+                        fontSize: 50,
+                        fontFamily: 'JetBrainsMonoRegular',
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
                       ),
-                    ]),
-              )
-          ),
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child: Text("${orderTime}",
-                  style: TextStyle(
-                    fontSize: 45,
-                    //fontFamily: 'JetBrainsMonoRegular',
-                    fontWeight: FontWeight.w500,
-                    color: ColorsUtil.hexToColor("#000000"),
-                  ))
-          ),
-        ],
+                      children: [
+                        TextSpan(
+                          text: "${serialNumber.toString()}",
+                          style: TextStyle(
+                            fontSize: 50,
+                            fontFamily: 'JetBrainsMonoRegular',
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ),
+                        ),
+                      ]),
+                )
+            ),
+            Directionality(
+                textDirection: TextDirection.ltr,
+                child: Text("${orderTime}",
+                    style: TextStyle(
+                      fontSize: 45,
+                      //fontFamily: 'JetBrainsMonoRegular',
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ))
+            ),
+          ],
+        ),
       ),
     );
     printMenus.add(
@@ -1380,6 +1387,7 @@ print(systemSettingInfo);
           ),
           Container(
             width: 50,
+            alignment: Alignment.centerRight,
             child: Directionality(
                 textDirection: TextDirection.ltr,
                 child: (int.parse(orderprintData["qtyBack"]) >1) ? NumberCircle(
@@ -1392,7 +1400,8 @@ print(systemSettingInfo);
                     fontWeight: FontWeight.w400,
                     color: ColorsUtil.hexToColor("#000000"),
                   ),
-                ) :Text("${orderprintData["qty"]}",//${printData["takeOut"]}
+                ) :Text("${orderprintData["qty"]}",
+                    textAlign: TextAlign.right,//${printData["takeOut"]}
                     style: TextStyle(
                       fontSize: 42,
                       fontFamily: 'JetBrainsMonoRegular',
