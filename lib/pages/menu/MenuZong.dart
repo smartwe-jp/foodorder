@@ -42,6 +42,7 @@ import 'package:foodorder/widget/iosAlter.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
 import 'package:foodorder/services/Storage.dart';
+import 'package:badges/badges.dart' as badges;
 
 import 'package:foodorder/services/GetxStorage.dart';
 import 'SelectPayment.dart';
@@ -235,15 +236,16 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                                 mainAxisAlignment: MainAxisAlignment.center,
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+
                                   Container(
                                     width: ScreenAdapter.width(30),
-                                    child: Text(
+                                    child: RotatedBox(quarterTurns: 1,child: Text(
                                       GString.getToString(this._checkLanguage, "top_back_button"),
                                       style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(26),
                                           color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                                           fontWeight: FontWeight.w600),
-                                    ),
+                                    )),
                                   ),
                                 ],
                               ),
@@ -614,6 +616,9 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         } else if (item['showType'] == "table") { //340.0, 340.0
           return _showCategoryTwo(showItem[classTag]);
           //return _showCategoryEight(showItem[classTag]);
+        } else if (item['showType'] == "table_v1") { //350.0, 350.0
+          return _showCategoryTwo(showItem[classTag],popupType: "v1");
+          //return _showCategoryEight(showItem[classTag]);
         } else if (item['showType'] == "block") { //350.0, 350.0
           return _showCategoryThree(showItem[classTag]);
         } else if (item['showType'] == "grid") { //260.0, 400.0
@@ -622,8 +627,12 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           return _showCategoryFive(showItem[classTag]);
         } else if (item['showType'] == "double_column") {//540.0, 540.0
           return _showCategorySix(showItem[classTag]);
+        } else if (item['showType'] == "double_column_v1") { //530.0, 530.0
+          return _showCategorySix(showItem[classTag],popupType: "v1");
         } else if (item['showType'] == "three_column") { //350.0, 440.0
           return _showCategorySeven(showItem[classTag]);
+        } else if (item['showType'] == "three_column_v1") { //350.0, 440.0
+          return _showCategorySeven(showItem[classTag],popupType: "v1");
         } else if (item['showType'] == "mixed_column") { //混合模式
           return _showCategoryEight(showItem[classTag]);
           //return _showCategoryNine(showItem[classTag]);
@@ -632,6 +641,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
           //return _showCategoryNine(showItem[classTag]);
         } else if (item['showType'] == "mixed_two_column") { //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
           return _showCategoryNine(showItem[classTag]);
+        } else if (item['showType'] == "mixed_two_column_v1") { //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
+          return _showCategoryNine(showItem[classTag],popupType: "v1");
         }else{
           return _showCategoryTwo(showItem[classTag]);
         }
@@ -676,25 +687,85 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
 
   //公共设置价格
-  publicShowMenuPrice(currentPrice, priceFrontFontSize, priceFrontFontColor, priceFontSize, priceFontColor, priceBackFontSize, priceBackFontColor) {
-    return RichText(
-      text: TextSpan(
-          text: "¥",//GString.getToString(this._checkLanguage, "show_price_front"),
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(priceFrontFontSize),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(priceFrontFontColor),
-          ),
-          children: [
-            TextSpan(
-              text: currentPrice.toString(),
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(priceFontSize),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor(priceFontColor),
-              ),
+  publicShowMenuPrice(currentPrice,originalPrice, priceFrontFontSize, priceFrontFontColor, priceFontSize, priceFontColor, priceBackFontSize, priceBackFontColor) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: [
+        if(originalPrice!= null && originalPrice !="" && originalPrice>currentPrice)
+          Container(
+            padding: EdgeInsets.only(bottom: ScreenAdapter.height(3)),
+            //color: Colors.red,
+            child: RichText(
+              text: TextSpan(
+                  text: "${GString.getToString(this._checkLanguage, "show_original_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(priceFrontFontSize)/1.8,
+                    fontWeight: FontWeight.w500,
+                    color: ColorsUtil.hexToColor("#485460"),
+                    decoration: TextDecoration.lineThrough, // 添加中划线
+                    decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
+                    decorationThickness: 2.0, // 可以设置中划线的厚度
+                  ),
+                  children: [
+                    TextSpan(
+                      text: originalPrice.toString(),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(priceFontSize)/1.8,
+                        fontWeight: FontWeight.w500,
+                        color: ColorsUtil.hexToColor("#485460"),
+                        decoration: TextDecoration.lineThrough, // 添加中划线
+                        decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
+                        decorationThickness: 2.0, // 可以设置中划线的厚度
+                      ),
+                    ),
+                    TextSpan(
+                      text: "円",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
+                        fontWeight: FontWeight.w500,
+                        color: ColorsUtil.hexToColor("#485460"),
+                        decoration: TextDecoration.lineThrough, // 添加中划线
+                        decorationColor: ColorsUtil.hexToColor("#485460"),// 可以设置中划线的颜色
+                        decorationThickness: 2.0, // 可以设置中划线的厚度
+                      ),
+                    ),
+                  ]),
             ),
-          ]),
+          ),
+        SizedBox(width: ScreenAdapter.width(15),),
+        Container(
+          //color: Colors.blueGrey,
+          alignment: Alignment.bottomRight,
+          child: RichText(
+            text: TextSpan(
+                text: "${GString.getToString(this._checkLanguage, "show_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(priceFrontFontSize)/1.5,
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor(priceFrontFontColor),
+                ),
+                children: [
+                  TextSpan(
+                    text: currentPrice.toString(),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(priceFontSize),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(priceFontColor),
+                    ),
+                  ),
+                  TextSpan(
+                    text: "円",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(priceFontColor),
+                    ),
+                  ),
+                ]),
+          ),
+        ),
+      ],
     );
   }
 
@@ -1105,85 +1176,101 @@ print("加1了");
                 _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
-              child: Stack(
-                children: [
-                  Container(
-                      width: ScreenAdapter.width(225),
-                      height: ScreenAdapter.height(60),
-                      alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
-                          ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#C47829"),
-                            ColorsUtil.hexToColor("#854610"),
-                          ],
+              child: badges.Badge(
+                showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
+                badgeContent: Text(
+                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(16),
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.optionBtnColor),
+                    )),
+                //padding: EdgeInsets.all(5),
+                position:badges.BadgePosition.topEnd(top: -18, end: -9),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.square,
+                  padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
+                  borderRadius: BorderRadius.circular(5),
+                  badgeColor: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+
+                ),
+                child: Container(
+                    width: ScreenAdapter.width(225),
+                    height: ScreenAdapter.height(60),
+                    alignment: Alignment.center,
+                    decoration: (optionVolistSon['checked'] == true)
+                        ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#C47829"),
+                          ColorsUtil.hexToColor("#854610"),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    )
+                        : (buttonColor.length>0)?BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                      //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor(buttonColor[0]),
+                          ColorsUtil.hexToColor(buttonColor[1]),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    )  :BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(14.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#E9CE9B"),
+                          ColorsUtil.hexToColor("#CEA062"),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                            width: ScreenAdapter.width(15),
+                            height: ScreenAdapter.height(25),
+                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight)
+                            : Container(
+                          width: 0,
                         ),
-                              //设置阴影
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black26,
-                                    offset: Offset(2, 3),
-                                    blurRadius: 3.0,
-                                    spreadRadius: 0),
-                              ],
-                            )
-                          : (buttonColor.length>0)?BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                              //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-                              gradient: LinearGradient(
-                                begin: Alignment.centerLeft,
-                                end: Alignment.centerRight,
-                                colors: [
-                                  ColorsUtil.hexToColor(buttonColor[0]),
-                                  ColorsUtil.hexToColor(buttonColor[1]),
-                                ],
-                              ),
-                              //设置阴影
-                              boxShadow: [
-                                BoxShadow(
-                                    color: Colors.black26,
-                                    offset: Offset(2, 3),
-                                    blurRadius: 3.0,
-                                    spreadRadius: 0),
-                              ],
-                            )  :BoxDecoration(
-                                  borderRadius: BorderRadius.all(Radius.circular(14.0)),
-                                  gradient: LinearGradient(
-                                    begin: Alignment.centerLeft,
-                                    end: Alignment.centerRight,
-                                    colors: [
-                                      ColorsUtil.hexToColor("#E9CE9B"),
-                                      ColorsUtil.hexToColor("#CEA062"),
-                                    ],
-                                  ),
-                                  //设置阴影
-                                  boxShadow: [
-                                    BoxShadow(
-                                        color: Colors.black26,
-                                        offset: Offset(2, 3),
-                                        blurRadius: 3.0,
-                                        spreadRadius: 0),
-                                  ],
-                                ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          (optionVolistSon['homeImage'] != "" && optionVolistSon['homeImage'] != null)
-                              ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
-                                  width: ScreenAdapter.width(15),
-                                  height: ScreenAdapter.height(25),
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                  fit: BoxFit.fitHeight)
-                              : Container(
-                                  width: 0,
-                                ),
-                          SizedBox(
-                            width: ScreenAdapter.width(10),
-                          ),
+                        SizedBox(
+                          width: ScreenAdapter.width(10),
+                        ),
                         Container(
                           //width: ScreenAdapter.width(210),
                           height: ScreenAdapter.height(60),
@@ -1207,56 +1294,9 @@ print("加1了");
                               overflow: TextOverflow.ellipsis,
                             ),
                           ),
-                        )                       
-			 ],
-                      )),
-                  //绝对定位 盖章
-                  (optionVolistSon['currentPrice'] != 0)
-                      ? Positioned(
-                          right: ScreenAdapter.width(0),
-                          top: ScreenAdapter.height(0),
-                          child: Container(
-                              //width: ScreenAdapter.width(70),
-                              height: ScreenAdapter.height(24),
-				alignment: Alignment.center,
-                              padding: EdgeInsets.only(
-                                  //top: ScreenAdapter.height(2),
-                                  left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)
-                              ),
-                              decoration: BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                                color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                                /*image: DecorationImage(
-                                  image:
-                                  (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
-                                  fit: BoxFit.fill,
-                                ),*/
-                              ),
-                              child: Text(
-                                  (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(16),
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.optionBtnColor),
-                                  ))/*Container(
-                                alignment: Alignment.topCenter,
-                                // 旋转
-                                transform: Matrix4.rotationZ(0.7),
-                                child: Text(
-                                    "${optionVolistSon['currentPrice'].toString()}",
-                                    style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(16),
-                                      color: ColorsUtil.hexToColor(
-                                          Gcolor.optionBtnColor),
-                                    )),
-                              )*/),
                         )
-                      : Container(
-                          height: 0,
-                        ),
-
-                ],
+                      ],
+                    )),
               ),
             ),
           ));
@@ -1348,162 +1388,129 @@ print("加1了");
                 _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
-              child: Stack(
-                children: [
-                  Container(
-                    //width: ScreenAdapter.width(135),
-                      height: ScreenAdapter.height(50),
-                      alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
-                          ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#C47829"),
-                            ColorsUtil.hexToColor("#854610"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      )
-                          : (buttonColor.length>0) ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor(buttonColor[0]),
-                            ColorsUtil.hexToColor(buttonColor[1]),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      ): BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#E9CE9B"),
-                            ColorsUtil.hexToColor("#CEA062"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
+              child: badges.Badge(
+                showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
+                badgeContent: Text(
+                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(16),
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.optionBtnColor),
+                    )),
+                //padding: EdgeInsets.all(5),
+                position:badges.BadgePosition.topEnd(top: -18, end: -9),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.square,
+                  padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
+                  borderRadius: BorderRadius.circular(5),
+                  badgeColor: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+
+                ),
+                child: Container(
+                  //width: ScreenAdapter.width(135),
+                    height: ScreenAdapter.height(50),
+                    alignment: Alignment.center,
+                    decoration: (optionVolistSon['checked'] == true)
+                        ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#C47829"),
+                          ColorsUtil.hexToColor("#854610"),
                         ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          (optionVolistSon['homeImage'] != "" &&
-                              optionVolistSon['homeImage'] != null)
-                              ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
-                              width: ScreenAdapter.width(15),
-                              height: ScreenAdapter.height(25),
-                              color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                              fit: BoxFit.fitHeight)
-                              : Container(
-                            width: 0,
-                          ),
-                          SizedBox(
-                            width: ScreenAdapter.width(2),
-                          ),
-
-                          Container(
-                            //width: ScreenAdapter.width(130),
-                            height: ScreenAdapter.height(50),
-                            alignment: Alignment.center,
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minWidth: ScreenAdapter.width(20),
-                                maxWidth: ScreenAdapter.width(120),
-                                minHeight: ScreenAdapter.height(24),
-                                maxHeight: ScreenAdapter.height(48),
-                              ),
-                              child: AutoSizeText(
-                                optionVolistSon['mainTitle'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: ScreenAdapter.fontSize(28.0),
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                ),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    )
+                        : (buttonColor.length>0) ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor(buttonColor[0]),
+                          ColorsUtil.hexToColor(buttonColor[1]),
                         ],
-                      )),
-                  //绝对定位 盖章
-                  (optionVolistSon['currentPrice'] != 0)
-                      ? Positioned(
-                    right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Container(
-                        //width: ScreenAdapter.width(60),
-                        height: ScreenAdapter.height(24),
-                        alignment: Alignment.center,
-                        //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        padding: EdgeInsets.only(
-                          //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ): BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#E9CE9B"),
+                          ColorsUtil.hexToColor("#CEA062"),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        (optionVolistSon['homeImage'] != "" &&
+                            optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                            width: ScreenAdapter.width(15),
+                            height: ScreenAdapter.height(25),
+                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight)
+                            : Container(
+                          width: 0,
                         ),
-                        // alignment: Alignment.topRight,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                          /*image: DecorationImage(
-                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
-                            fit: BoxFit.fill,
-                          ),*/
+                        SizedBox(
+                          width: ScreenAdapter.width(2),
                         ),
-                        child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(16),
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.optionBtnColor),
-                            ))
-                      /*Container(
-                          alignment: Alignment.topCenter,
-                          // 旋转
-                          transform: Matrix4.rotationZ(0.7),
-                          child: Text(
-                              "${optionVolistSon['currentPrice'].toString()}",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(14),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.optionBtnColor),
-                              )),
-                        )*/),
-                  )
-                      : Container(
-                    height: 0,
-                  ),
 
-                ],
+                        Container(
+                          //width: ScreenAdapter.width(130),
+                          height: ScreenAdapter.height(50),
+                          alignment: Alignment.center,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: ScreenAdapter.width(20),
+                              maxWidth: ScreenAdapter.width(120),
+                              minHeight: ScreenAdapter.height(24),
+                              maxHeight: ScreenAdapter.height(48),
+                            ),
+                            child: AutoSizeText(
+                              optionVolistSon['mainTitle'],
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(28.0),
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              ),
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             ),
           ));
@@ -1604,160 +1611,129 @@ print("加1了");
                 _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
-              child: Stack(
-                children: [
-                  Container(
-                    //width: ScreenAdapter.width(160),
-                      height: ScreenAdapter.height(55),
-                      alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
-                          ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#C47829"),
-                            ColorsUtil.hexToColor("#854610"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      )
-                          : (buttonColor.length>0)?BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor(buttonColor[0]),
-                            ColorsUtil.hexToColor(buttonColor[1]),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      ):BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#E9CE9B"),
-                            ColorsUtil.hexToColor("#CEA062"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
+              child: badges.Badge(
+                showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
+                badgeContent: Text(
+                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(16),
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.optionBtnColor),
+                    )),
+                //padding: EdgeInsets.all(5),
+                position:badges.BadgePosition.topEnd(top: -18, end: -9),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.square,
+                  padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
+                  borderRadius: BorderRadius.circular(5),
+                  badgeColor: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+
+                ),
+                child: Container(
+                  //width: ScreenAdapter.width(160),
+                    height: ScreenAdapter.height(55),
+                    alignment: Alignment.center,
+                    decoration: (optionVolistSon['checked'] == true)
+                        ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#C47829"),
+                          ColorsUtil.hexToColor("#854610"),
                         ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          (optionVolistSon['homeImage'] != "" &&
-                              optionVolistSon['homeImage'] != null)
-                              ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
-                              width: ScreenAdapter.width(15),
-                              height: ScreenAdapter.height(25),
-                              color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                              fit: BoxFit.fitHeight)
-                              : Container(
-                            width: 0,
-                          ),
-                          SizedBox(
-                            width: ScreenAdapter.width(6),
-                          ),
-
-                          Container(
-                            //width: ScreenAdapter.width(190),
-                            height: ScreenAdapter.height(60),
-                            alignment: Alignment.center,
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minWidth: ScreenAdapter.width(20),
-                                maxWidth: ScreenAdapter.width(170),
-                                minHeight: ScreenAdapter.height(26),
-                                maxHeight: ScreenAdapter.height(52),
-                              ),
-                              child: AutoSizeText(
-                                optionVolistSon['mainTitle'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w600,
-                                  fontSize: ScreenAdapter.fontSize(28.0),
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                ),
-                                maxLines: 2,
-                                textAlign: TextAlign.center,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          )
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    )
+                        : (buttonColor.length>0)?BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor(buttonColor[0]),
+                          ColorsUtil.hexToColor(buttonColor[1]),
                         ],
-                      )),
-                  //绝对定位 盖章
-                  (optionVolistSon['currentPrice'] != 0)
-                      ? Positioned(
-                    right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Container(
-                        //width: ScreenAdapter.width(50),
-                        height: ScreenAdapter.height(24),
-			                  alignment: Alignment.center,
-                        padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10),
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ):BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#E9CE9B"),
+                          ColorsUtil.hexToColor("#CEA062"),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        (optionVolistSon['homeImage'] != "" &&
+                            optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                            width: ScreenAdapter.width(15),
+                            height: ScreenAdapter.height(25),
+                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight)
+                            : Container(
+                          width: 0,
                         ),
-                        //alignment: Alignment.topCenter,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                          /*image: DecorationImage(
+                        SizedBox(
+                          width: ScreenAdapter.width(6),
+                        ),
 
-                            image: AssetImage(
-                                GImage.getImageString("imgpublic", "price_tag")),
-                            fit: BoxFit.fill,
-                          ),*/
-                        ),
-                        child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(16),
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.optionBtnColor),
-                            ))/*Container(
-                          // 旋转
-                          transform: Matrix4.rotationZ(0.8),
-                          child: Text(
-                              "${optionVolistSon['currentPrice'].toString()}",
+                        Container(
+                          //width: ScreenAdapter.width(190),
+                          height: ScreenAdapter.height(60),
+                          alignment: Alignment.center,
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: ScreenAdapter.width(20),
+                              maxWidth: ScreenAdapter.width(140),
+                              minHeight: ScreenAdapter.height(26),
+                              maxHeight: ScreenAdapter.height(55),
+                            ),
+                            child: AutoSizeText(
+                              optionVolistSon['mainTitle'],
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(13),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.optionBtnColor),
-                              )),
-                        )*/),
-                  )
-                      : Container(
-                    height: 0,
-                  ),
-
-                ],
+                                fontWeight: FontWeight.w600,
+                                fontSize: ScreenAdapter.fontSize(28.0),
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              ),
+                              maxLines: 2,
+                              textAlign: TextAlign.center,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        )
+                      ],
+                    )),
               ),
             ),
           ));
@@ -1848,23 +1824,16 @@ print("加1了");
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
-                                child: Container(
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.start,
-                                    children: [
-                                      //菜单Title
-                                      publicShowMenuTitle(itemsFirst['mainTitle'],
-                                          38.0, Gcolor.mainTitleColor),
-                                    ],
-                                  ),
-                                )),
+                                child: publicShowMenuTitle(itemsFirst['mainTitle'],
+                                    38.0, Gcolor.mainTitleColor)),
                             //价格展示 //itemsFirst['currentPrice']
                             Container(
                               alignment: Alignment.centerRight,
-                              width: ScreenAdapter.width(200),
+                              //width: ScreenAdapter.width(200),
                               padding:EdgeInsets.only(right: ScreenAdapter.width(15)),
                               child: publicShowMenuPrice(
                                   _selectedMenuOptionChangePrice[itemsFirst['menuCode']]+_addselectedMenuOptionChangePrice[itemsFirst['menuCode']],
+                                  itemsFirst['price'],
                                   45.0,
                                   Gcolor.mainTitleColor,
                                   55.0,
@@ -1873,13 +1842,13 @@ print("加1了");
                                   Gcolor.mainTitleColor),
                             ),
                             //原价格展示 //itemsFirst['currentPrice']
-                            Container(
+                            /*Container(
                               width: ScreenAdapter.width(80),
                               child: Text("${itemsFirst['price']}",
                                 style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),),
                               ),
-                            ),
+                            ),*/
 
                             //确认按钮
                             InkWell(
@@ -2013,11 +1982,11 @@ print("加1了");
   }
 
   //第二个分类 小菜
-  _showCategoryTwo(showItemList) {
+  _showCategoryTwo(showItemList,{popupType:"old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
-        child: showCategoryTwoItemList(showItemList),
+        child: showCategoryTwoItemList(showItemList,popupType:popupType),
       );
     } else {
       return Container(
@@ -2026,7 +1995,7 @@ print("加1了");
     }
   }
 
-  showCategoryTwoItemList(items) {
+  showCategoryTwoItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8),left: ScreenAdapter.width(5), bottom: ScreenAdapter.height(8)),
@@ -2041,7 +2010,7 @@ print("加1了");
               crossAxisCount: 3,
               childAspectRatio: 0.72),
           itemBuilder: (BuildContext context, int index) {
-            return showCategoryTwoItemOne(items[index]);
+            return showCategoryTwoItemOne(items[index],popupType:popupType);
           },
           itemCount: items.length,
         ),
@@ -2049,7 +2018,7 @@ print("加1了");
     );
   }
 
-  showCategoryTwoItemOne(item) {
+  showCategoryTwoItemOne(item,{popupType:"old"}) {
     Offset temp;
     var subtitle = "";
     if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
@@ -2074,7 +2043,12 @@ print("加1了");
             }else{
               //如果option 存在，则弹出option
               if(item['optionGroupVoList']?.length > 0){
-                _publicShowOneItemWidget(item);
+                //_publicShowOneItemWidget(item);
+                if(popupType == "v1"){
+                  _publicShowOneItemWidgetv1(item);
+                }else{
+                  _publicShowOneItemWidget(item);
+                }
               }else{
                 _publicAddCart(item);
               }
@@ -2092,7 +2066,7 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0, subTitle: item['subtitle'],),
 
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
@@ -2108,38 +2082,21 @@ print("加1了");
                               Gcolor.mainTitleColor),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
-                              Container(
-                                //width: ScreenAdapter.width(125),
-                                //height: ScreenAdapter.height(315),
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),
-                                    right: ScreenAdapter.width(0)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //价格展示
-                                    publicShowMenuPrice(
-                                        item['currentPrice'],
-                                        GFontSize.menuTwopriceLift,
-                                        Gcolor.mainTitleColor,
-                                        GFontSize.menuTwoprice,
-                                        Gcolor.priceColor,
-                                        GFontSize.menuTwopriceRight,
-                                        Gcolor.mainTitleColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(15),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
                         ),
                       ],
                     )),
@@ -2293,10 +2250,11 @@ print("加1了");
                       //价格展示 item['currentPrice']
                       Container(
                         padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         alignment: Alignment.bottomRight,
                         child: publicShowMenuPrice(
                             _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                            item['price'],
                             35.0,
                             Gcolor.mainTitleColor,
                             54.0,
@@ -2514,20 +2472,20 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 260.0, imgHeight: 400.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 260.0, imgHeight: 400.0, subTitle: item['subtitle'],),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         SizedBox(
                           height: ScreenAdapter.height(1),
                         ),
                         Container(
                           //width: ScreenAdapter.width(1080),
-                          //height: ScreenAdapter.height(315),
+                          height: ScreenAdapter.height(65),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.end,
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               //菜单Title
                               Expanded(child: publicShowMenuTitle(
@@ -2538,32 +2496,26 @@ print("加1了");
                           ),
                         ),
                         SizedBox(
-                          height: ScreenAdapter.height(5),
+                          height: ScreenAdapter.height(3),
                         ),
-                        Container(
+                        /*Container(
                           padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
                           child: publicShowMenuSubtitle(item['subtitle']),
-                        ),
+                        ),*/
                         Container(
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               //top: ScreenAdapter.height(8),
-                              right: ScreenAdapter.width(5)),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              //价格展示
-                              publicShowMenuPrice(
-                                  item['currentPrice'],
-                                  GFontSize.menuFourpriceLift,
-                                  Gcolor.mainTitleColor,
-                                  GFontSize.menuFourprice,
-                                  Gcolor.priceColor,
-                                  GFontSize.menuFourpriceRight,
-                                  Gcolor.mainTitleColor),
-                            ],
-                          ),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuFourpriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuFourprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuFourpriceRight,
+                              Gcolor.mainTitleColor),
                         ),
 
                       ],
@@ -2708,11 +2660,12 @@ print("加1了");
                       //价格展示 item['currentPrice']
                       Container(
                         padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         alignment: Alignment.bottomRight,
                         //alignment: Alignment.centerRight,
                         child: publicShowMenuPrice(
                             _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                            item["price"],
                             35.0,
                             Gcolor.mainTitleColor,
                             54.0,
@@ -2847,11 +2800,11 @@ print("加1了");
   }
 
   //第六个分类 每页两列一行
-  _showCategorySix(showItemList) {
+  _showCategorySix(showItemList,{popupType:"old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
-        child: showCategorySixItemList(showItemList),
+        child: showCategorySixItemList(showItemList,popupType:popupType),
       );
     } else {
       return Container(
@@ -2860,7 +2813,7 @@ print("加1了");
     }
   }
 
-  showCategorySixItemList(items) {
+  showCategorySixItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8),left: ScreenAdapter.width(5)),
@@ -2874,14 +2827,14 @@ print("加1了");
             crossAxisCount: 2,
             childAspectRatio: 0.76),
         itemBuilder: (BuildContext context, int index) {
-          return showCategorySixItemOne(items[index]);
+          return showCategorySixItemOne(items[index],popupType:popupType);
         },
         itemCount: items.length,
       ),
     );
   }
 
-  showCategorySixItemOne(item) {
+  showCategorySixItemOne(item,{popupType:"old"}) {
     Offset temp;
     var subtitle = "";
     if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
@@ -2904,7 +2857,12 @@ print("加1了");
             }else{
               //如果option 存在，则弹出option
               if(item['optionGroupVoList']?.length > 0){
-                _publicShowOneItemWidget(item);
+                //_publicShowOneItemWidget(item);
+                if(popupType == "v1"){
+                  _publicShowOneItemWidgetv1(item);
+                }else{
+                  _publicShowOneItemWidget(item);
+                }
               }else{
                 _publicAddCart(item);
               }
@@ -2920,7 +2878,7 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0, subTitle: item['subtitle'],),
 
                         Container(
                           //width: ScreenAdapter.width(20),
@@ -2935,39 +2893,21 @@ print("加1了");
                               Gcolor.mainTitleColor),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
                           padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
-                          ),
-                          child: Row(
-                            children: [
-                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
-                              Container(
-                                //width: ScreenAdapter.width(125),
-                                //height: ScreenAdapter.height(315),
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),
-                                    right: ScreenAdapter.width(0)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //价格展示
-                                    publicShowMenuPrice(
-                                        item['currentPrice'],
-                                        GFontSize.menuTwopriceLift,
-                                        Gcolor.mainTitleColor,
-                                        GFontSize.menuTwoprice,
-                                        Gcolor.priceColor,
-                                        GFontSize.menuTwopriceRight,
-                                        Gcolor.mainTitleColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                              left: ScreenAdapter.width(15),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
                         ),
                       ],
                     )),
@@ -2980,11 +2920,11 @@ print("加1了");
   }
 
   //第七个分类 每页三列一行  饮品
-  _showCategorySeven(showItemList) {
+  _showCategorySeven(showItemList,{popupType:"old"}) {
     if (showItemList.length > 0) {
       return Container(
         //height: 450,
-        child: showCategorySevenItemList(showItemList),
+        child: showCategorySevenItemList(showItemList,popupType:popupType),
       );
     } else {
       return Container(
@@ -2993,7 +2933,7 @@ print("加1了");
     }
   }
 
-  showCategorySevenItemList(items) {
+  showCategorySevenItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8), left: ScreenAdapter.width(5)),
@@ -3007,14 +2947,14 @@ print("加1了");
             crossAxisCount: 3,
             childAspectRatio: 0.595),
         itemBuilder: (BuildContext context, int index) {
-          return showCategorySevenItemOne(items[index]);
+          return showCategorySevenItemOne(items[index],popupType:popupType);
         },
         itemCount: items.length,
       ),
     );
   }
 
-  showCategorySevenItemOne(item) {
+  showCategorySevenItemOne(item,{popupType:"old"}) {
     Offset temp;
     var subtitle = "";
     if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
@@ -3041,7 +2981,12 @@ print("加1了");
             }else{
               //如果option 存在，则弹出option
               if(item['optionGroupVoList']?.length > 0){
-                _publicShowOneItemWidget(item);
+                //_publicShowOneItemWidget(item);
+                if(popupType == "v1"){
+                  _publicShowOneItemWidgetv1(item);
+                }else{
+                  _publicShowOneItemWidget(item);
+                }
               }else{
                 _publicAddCart(item);
               }
@@ -3058,7 +3003,7 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0,subTitle: item['subtitle'],),
 
                         Container(
                           margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
@@ -3074,41 +3019,21 @@ print("加1了");
                         ),
 
                         Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
                           padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(child: publicShowMenuSubtitle(item['subtitle'])),
-                              Container(
-                                //width: ScreenAdapter.width(125),
-                                //height: ScreenAdapter.height(315),
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),
-                                    right: ScreenAdapter.width(0)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //价格展示
-                                    publicShowMenuPrice(
-                                        item['currentPrice'],
-                                        GFontSize.menuTwopriceLift,
-                                        Gcolor.mainTitleColor,
-                                        GFontSize.menuTwoprice,
-                                        Gcolor.priceColor,
-                                        GFontSize.menuTwopriceRight,
-                                        Gcolor.mainTitleColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                              left: ScreenAdapter.width(15),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
                         ),
                       ],
                     )),
@@ -3172,7 +3097,7 @@ print("加1了");
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0),
+                                  publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0, subTitle: _leftItem['subtitle'],),
                                   Container(
                                     width: ScreenAdapter.width(580),
                                     height: ScreenAdapter.height(68),
@@ -3188,30 +3113,22 @@ print("加1了");
 
                                   Container(
                                     width: ScreenAdapter.width(580),
-                                    //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Expanded(child: publicShowMenuSubtitle(_leftItem["subtitle"])),
-                                        Container(
-                                          //width: ScreenAdapter.width(125),
-                                          //height: ScreenAdapter.height(315),
-                                          alignment: Alignment.centerRight,
-                                          padding: EdgeInsets.only(
-                                              left: ScreenAdapter.width(5),
-                                              right: ScreenAdapter.width(0)),
-                                          child: publicShowMenuPrice(
-                                              _leftItem['currentPrice'],
-                                              GFontSize.menuTwopriceLift,
-                                              Gcolor.mainTitleColor,
-                                              GFontSize.menuTwoprice,
-                                              Gcolor.priceColor,
-                                              GFontSize.menuTwopriceRight,
-                                              Gcolor.mainTitleColor),
-                                        ),
-                                      ],
+                                    child: Container(
+                                      //width: ScreenAdapter.width(125),
+                                      //height: ScreenAdapter.height(315),
+                                      alignment: Alignment.centerRight,
+                                      padding: EdgeInsets.only(
+                                          left: ScreenAdapter.width(15),
+                                          right: ScreenAdapter.width(10)),
+                                      child: publicShowMenuPrice(
+                                          _leftItem['currentPrice'],
+                                          _leftItem['price'],
+                                          GFontSize.menuTwopriceLift,
+                                          Gcolor.mainTitleColor,
+                                          GFontSize.menuTwoprice,
+                                          Gcolor.priceColor,
+                                          GFontSize.menuTwopriceRight,
+                                          Gcolor.mainTitleColor),
                                     ),
                                   ),
                                 ],
@@ -3258,7 +3175,7 @@ print("加1了");
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0, subTitle: _rightTop["subtitle"],),
 
                                           Container(
                                             width: ScreenAdapter.width(400),
@@ -3273,39 +3190,21 @@ print("加1了");
                                           ),
 
                                           Container(
+                                            //width: ScreenAdapter.width(125),
+                                            //height: ScreenAdapter.height(315),
+                                            alignment: Alignment.centerRight,
                                             padding: EdgeInsets.only(
-                                                left: ScreenAdapter.width(5),
-                                                right: ScreenAdapter.width(0)),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Expanded(child: publicShowMenuSubtitle(_rightTop["subtitle"])),
-                                                Container(
-                                                  //width: ScreenAdapter.width(125),
-                                                  //height: ScreenAdapter.height(315),
-                                                  alignment: Alignment.centerRight,
-                                                  padding: EdgeInsets.only(
-                                                      left: ScreenAdapter.width(5),
-                                                      right: ScreenAdapter.width(0)),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                                      //价格展示
-                                                      publicShowMenuPrice(
-                                                          _rightTop['currentPrice'],
-                                                          GFontSize.menuTwopriceLift,
-                                                          Gcolor.mainTitleColor,
-                                                          GFontSize.menuTwoprice,
-                                                          Gcolor.priceColor,
-                                                          GFontSize.menuTwopriceRight,
-                                                          Gcolor.mainTitleColor),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                left: ScreenAdapter.width(15),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuPrice(
+                                                _rightTop['currentPrice'],
+                                                _rightTop['price'],
+                                                GFontSize.menuTwopriceLift,
+                                                Gcolor.mainTitleColor,
+                                                GFontSize.menuTwoprice,
+                                                Gcolor.priceColor,
+                                                GFontSize.menuTwopriceRight,
+                                                Gcolor.mainTitleColor),
                                           ),
                                         ],
                                       )),
@@ -3348,7 +3247,7 @@ print("加1了");
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0, subTitle: _rightBottom["subtitle"],),
                                           Container(
                                             width: ScreenAdapter.width(400),
                                             height: ScreenAdapter.height(68),
@@ -3361,40 +3260,21 @@ print("加1了");
                                                 Gcolor.mainTitleColor),
                                           ),
                                           Container(
+                                            //width: ScreenAdapter.width(125),
+                                            //height: ScreenAdapter.height(315),
+                                            alignment: Alignment.centerRight,
                                             padding: EdgeInsets.only(
-                                                left: ScreenAdapter.width(10),
-                                                right: ScreenAdapter.width(10)
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Expanded(child: publicShowMenuSubtitle(_rightBottom["subtitle"])),
-                                                Container(
-                                                  //width: ScreenAdapter.width(125),
-                                                  //height: ScreenAdapter.height(315),
-                                                  alignment: Alignment.centerRight,
-                                                  padding: EdgeInsets.only(
-                                                      left: ScreenAdapter.width(5),
-                                                      right: ScreenAdapter.width(0)),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                                      //价格展示
-                                                      publicShowMenuPrice(
-                                                          _rightBottom['currentPrice'],
-                                                          GFontSize.menuTwopriceLift,
-                                                          Gcolor.mainTitleColor,
-                                                          GFontSize.menuTwoprice,
-                                                          Gcolor.priceColor,
-                                                          GFontSize.menuTwopriceRight,
-                                                          Gcolor.mainTitleColor),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                left: ScreenAdapter.width(15),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuPrice(
+                                                _rightBottom['currentPrice'],
+                                                _rightBottom['price'],
+                                                GFontSize.menuTwopriceLift,
+                                                Gcolor.mainTitleColor,
+                                                GFontSize.menuTwoprice,
+                                                Gcolor.priceColor,
+                                                GFontSize.menuTwopriceRight,
+                                                Gcolor.mainTitleColor),
                                           ),
                                         ],
                                       )),
@@ -3487,7 +3367,7 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0, subTitle: item["subtitle"],),
                         Container(
                           //width: ScreenAdapter.width(20),
                           height: ScreenAdapter.height(68),
@@ -3501,41 +3381,21 @@ print("加1了");
                               Gcolor.mainTitleColor),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
                           padding: EdgeInsets.only(
-                          left: ScreenAdapter.width(15),
-                          right: ScreenAdapter.width(15)
-                          ),
-                          child:Row(
-                            mainAxisAlignment: MainAxisAlignment.start,
-                            crossAxisAlignment: CrossAxisAlignment.end,
-                            children: [
-                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
-                              Container(
-                                //width: ScreenAdapter.width(125),
-                                //height: ScreenAdapter.height(315),
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),
-                                    right: ScreenAdapter.width(0)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //价格展示
-                                    publicShowMenuPrice(
-                                        item['currentPrice'],
-                                        GFontSize.menuTwopriceLift,
-                                        Gcolor.mainTitleColor,
-                                        GFontSize.menuTwoprice,
-                                        Gcolor.priceColor,
-                                        GFontSize.menuTwopriceRight,
-                                        Gcolor.mainTitleColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                              left: ScreenAdapter.width(15),
+                              right: ScreenAdapter.width(10)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
                         ),
                       ],
                     )),
@@ -3548,7 +3408,7 @@ print("加1了");
   }
 
   //第九个分类 混合排列，第一行一大两小，其余2个一行每页2列一行
-  _showCategoryNine(showItemList) {
+  _showCategoryNine(showItemList,{popupType:"old"}) {
     if (showItemList.length > 0) {
       if(showItemList.length >=3){
         var _leftItem = showItemList[0];
@@ -3583,7 +3443,12 @@ print("加1了");
                                 }else{
                                   //如果option 存在，则弹出option
                                   if(_leftItem['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_leftItem);
+                                    //_publicShowOneItemWidget(_leftItem);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_leftItem);
+                                    }else{
+                                      _publicShowOneItemWidget(_leftItem);
+                                    }
                                   }else{
 
                                     _publicAddCart(_leftItem);
@@ -3594,7 +3459,7 @@ print("加1了");
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
-                                  publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0),
+                                  publicShowMenuImage(imgPath:_leftItem['homeImage'], imgWidth: 580.0, imgHeight: 710.0, subTitle: _leftItem["subtitle"],),
                                   Container(
                                     width: ScreenAdapter.width(580),
                                     height: ScreenAdapter.height(68),
@@ -3611,29 +3476,22 @@ print("加1了");
                                   Container(
                                     width: ScreenAdapter.width(580),
                                     //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                                    padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                                    child: Row(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.end,
-                                      children: [
-                                        Expanded(child: publicShowMenuSubtitle(_leftItem["subtitle"])),
-                                        Container(
-                                          //width: ScreenAdapter.width(125),
-                                          //height: ScreenAdapter.height(315),
-                                          alignment: Alignment.centerRight,
-                                          padding: EdgeInsets.only(
-                                              left: ScreenAdapter.width(5),
-                                              right: ScreenAdapter.width(0)),
-                                          child: publicShowMenuPrice(
-                                              _leftItem['currentPrice'],
-                                              GFontSize.menuTwopriceLift,
-                                              Gcolor.mainTitleColor,
-                                              GFontSize.menuTwoprice,
-                                              Gcolor.priceColor,
-                                              GFontSize.menuTwopriceRight,
-                                              Gcolor.mainTitleColor),
-                                        ),
-                                      ],
+                                    child: Container(
+                                      //width: ScreenAdapter.width(125),
+                                      //height: ScreenAdapter.height(315),
+                                      alignment: Alignment.centerRight,
+                                      padding: EdgeInsets.only(
+                                          left: ScreenAdapter.width(5),
+                                          right: ScreenAdapter.width(0)),
+                                      child: publicShowMenuPrice(
+                                          _leftItem['currentPrice'],
+                                          _leftItem['price'],
+                                          GFontSize.menuTwopriceLift,
+                                          Gcolor.mainTitleColor,
+                                          GFontSize.menuTwoprice,
+                                          Gcolor.priceColor,
+                                          GFontSize.menuTwopriceRight,
+                                          Gcolor.mainTitleColor),
                                     ),
                                   ),
                                 ],
@@ -3662,7 +3520,12 @@ print("加1了");
 
                                 }else{
                                   if(_rightTop['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_rightTop);
+                                    //_publicShowOneItemWidget(_rightTop);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_rightTop);
+                                    }else{
+                                      _publicShowOneItemWidget(_rightTop);
+                                    }
                                   }else{
                                     _publicAddCart(_rightTop);
                                   }
@@ -3676,7 +3539,7 @@ print("加1了");
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+                                          publicShowMenuImage(imgPath:_rightTop['homeImage'], imgWidth: 400.0, imgHeight: 290.0,subTitle:_rightTop["subtitle"]),
 
                                           Container(
                                             width: ScreenAdapter.width(400),
@@ -3691,39 +3554,21 @@ print("加1了");
                                           ),
 
                                           Container(
+                                            //width: ScreenAdapter.width(125),
+                                            //height: ScreenAdapter.height(315),
+                                            alignment: Alignment.centerRight,
                                             padding: EdgeInsets.only(
-                                                left: ScreenAdapter.width(5),
-                                                right: ScreenAdapter.width(0)),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Expanded(child: publicShowMenuSubtitle(_rightTop["subtitle"])),
-                                                Container(
-                                                  //width: ScreenAdapter.width(125),
-                                                  //height: ScreenAdapter.height(315),
-                                                  alignment: Alignment.centerRight,
-                                                  padding: EdgeInsets.only(
-                                                      left: ScreenAdapter.width(5),
-                                                      right: ScreenAdapter.width(0)),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                                      //价格展示
-                                                      publicShowMenuPrice(
-                                                          _rightTop['currentPrice'],
-                                                          GFontSize.menuTwopriceLift,
-                                                          Gcolor.mainTitleColor,
-                                                          GFontSize.menuTwoprice,
-                                                          Gcolor.priceColor,
-                                                          GFontSize.menuTwopriceRight,
-                                                          Gcolor.mainTitleColor),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                left: ScreenAdapter.width(15),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuPrice(
+                                                _rightTop['currentPrice'],
+                                                _rightTop['price'],
+                                                GFontSize.menuTwopriceLift,
+                                                Gcolor.mainTitleColor,
+                                                GFontSize.menuTwoprice,
+                                                Gcolor.priceColor,
+                                                GFontSize.menuTwopriceRight,
+                                                Gcolor.mainTitleColor),
                                           ),
                                         ],
                                       )),
@@ -3749,7 +3594,12 @@ print("加1了");
 
                                 }else{
                                   if(_rightBottom['optionGroupVoList']?.length > 0){
-                                    _publicShowOneItemWidget(_rightBottom);
+                                    //_publicShowOneItemWidget(_rightBottom);
+                                    if(popupType == "v1"){
+                                      _publicShowOneItemWidgetv1(_rightBottom);
+                                    }else{
+                                      _publicShowOneItemWidget(_rightBottom);
+                                    }
                                   }else{
                                     _publicAddCart(_rightBottom);
                                   }
@@ -3762,7 +3612,7 @@ print("加1了");
                                       child: Column(
                                         crossAxisAlignment: CrossAxisAlignment.start,
                                         children: <Widget>[
-                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0),
+                                          publicShowMenuImage(imgPath:_rightBottom['homeImage'], imgWidth: 400.0, imgHeight: 290.0,subTitle: _rightBottom["subtitle"],),
                                           Container(
                                             width: ScreenAdapter.width(400),
                                             height: ScreenAdapter.height(68),
@@ -3775,40 +3625,21 @@ print("加1了");
                                                 Gcolor.mainTitleColor),
                                           ),
                                           Container(
+                                            //width: ScreenAdapter.width(125),
+                                            //height: ScreenAdapter.height(315),
+                                            alignment: Alignment.centerRight,
                                             padding: EdgeInsets.only(
-                                                left: ScreenAdapter.width(10),
-                                                right: ScreenAdapter.width(10)
-                                            ),
-                                            child: Row(
-                                              mainAxisAlignment: MainAxisAlignment.start,
-                                              crossAxisAlignment: CrossAxisAlignment.end,
-                                              children: [
-                                                Expanded(child: publicShowMenuSubtitle(_rightBottom["subtitle"])),
-                                                Container(
-                                                  //width: ScreenAdapter.width(125),
-                                                  //height: ScreenAdapter.height(315),
-                                                  alignment: Alignment.centerRight,
-                                                  padding: EdgeInsets.only(
-                                                      left: ScreenAdapter.width(5),
-                                                      right: ScreenAdapter.width(0)),
-                                                  child: Row(
-                                                    mainAxisAlignment: MainAxisAlignment.end,
-                                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                                    children: [
-                                                      //价格展示
-                                                      publicShowMenuPrice(
-                                                          _rightBottom['currentPrice'],
-                                                          GFontSize.menuTwopriceLift,
-                                                          Gcolor.mainTitleColor,
-                                                          GFontSize.menuTwoprice,
-                                                          Gcolor.priceColor,
-                                                          GFontSize.menuTwopriceRight,
-                                                          Gcolor.mainTitleColor),
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
+                                                left: ScreenAdapter.width(15),
+                                                right: ScreenAdapter.width(10)),
+                                            child: publicShowMenuPrice(
+                                                _rightBottom['currentPrice'],
+                                                _rightBottom['price'],
+                                                GFontSize.menuTwopriceLift,
+                                                Gcolor.mainTitleColor,
+                                                GFontSize.menuTwoprice,
+                                                Gcolor.priceColor,
+                                                GFontSize.menuTwopriceRight,
+                                                Gcolor.mainTitleColor),
                                           ),
                                         ],
                                       )),
@@ -3821,14 +3652,14 @@ print("加1了");
                     ))
                   ],
                 ),
-                showCategoryNineItemList(_newItemList)
+                showCategoryNineItemList(_newItemList,popupType:popupType)
               ],
             ),
           ),
         );
       }else{
         return Container(
-          child: showCategoryNineItemList(showItemList),
+          child: showCategoryNineItemList(showItemList,popupType:popupType),
         );
       }
 
@@ -3839,7 +3670,7 @@ print("加1了");
     }
   }
 
-  showCategoryNineItemList(items) {
+  showCategoryNineItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
@@ -3853,14 +3684,14 @@ print("加1了");
             crossAxisCount: 2,
             childAspectRatio: 0.76),
         itemBuilder: (BuildContext context, int index) {
-          return showCategoryNineItemOne(items[index]);
+          return showCategoryNineItemOne(items[index],popupType:popupType);
         },
         itemCount: items.length,
       ),
     );
   }
 
-  showCategoryNineItemOne(item) {
+  showCategoryNineItemOne(item,{popupType:"old"}) {
     Offset temp;
     return Container(
       padding: EdgeInsets.only(
@@ -3878,7 +3709,12 @@ print("加1了");
             }else{
               //如果option 存在，则弹出option
               if(item['optionGroupVoList']?.length > 0){
-                _publicShowOneItemWidget(item);
+                //_publicShowOneItemWidget(item);
+                if(popupType == "v1"){
+                  _publicShowOneItemWidgetv1(item);
+                }else{
+                  _publicShowOneItemWidget(item);
+                }
               }else{
                 _publicAddCart(item);
               }
@@ -3896,7 +3732,7 @@ print("加1了");
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0,subTitle: item["subtitle"],),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -3912,36 +3748,21 @@ print("加1了");
                               Gcolor.mainTitleColor),
                         ),
                         Container(
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),right: ScreenAdapter.width(10)),
-                          child: Row(
-                            children: [
-                              Expanded(child: publicShowMenuSubtitle(item["subtitle"])),
-                              Container(
-                                //width: ScreenAdapter.width(125),
-                                //height: ScreenAdapter.height(315),
-                                alignment: Alignment.centerRight,
-                                padding: EdgeInsets.only(
-                                    left: ScreenAdapter.width(5),
-                                    right: ScreenAdapter.width(0)),
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //价格展示
-                                    publicShowMenuPrice(
-                                        item['currentPrice'],
-                                        GFontSize.menuTwopriceLift,
-                                        Gcolor.mainTitleColor,
-                                        GFontSize.menuTwoprice,
-                                        Gcolor.priceColor,
-                                        GFontSize.menuTwopriceRight,
-                                        Gcolor.mainTitleColor),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(5),
+                              right: ScreenAdapter.width(0)),
+                          child: publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
                         ),
                       ],
                     )),
@@ -4045,10 +3866,11 @@ print("加1了");
                                   //价格展示 item['currentPrice']
                                   Container(
                                     padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                                    width: ScreenAdapter.width(260),
+                                    //width: ScreenAdapter.width(260),
                                     alignment: Alignment.bottomRight,
                                     child: publicShowMenuPrice(
                                         _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                                        item['price'],
                                         GFontSize.menuTwopriceLift,
                                         Gcolor.mainTitleColor,
                                         GFontSize.mainPrice,
@@ -4262,10 +4084,11 @@ print("加1了");
                                   //价格展示 item['currentPrice']
                                   Container(
                                     padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                                    width: ScreenAdapter.width(260),
+                                    //width: ScreenAdapter.width(260),
                                     alignment: Alignment.bottomRight,
                                     child: publicShowMenuPrice(
                                         _selectedMenuOptionChangePrice[item['menuCode']]+_addselectedMenuOptionChangePrice[item['menuCode']],
+                                        item['price'],
                                         GFontSize.menuTwopriceLift,
                                         Gcolor.mainTitleColor,
                                         GFontSize.mainPrice,
@@ -4434,8 +4257,7 @@ print("加1了");
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
         options.add(Container(
-          padding: EdgeInsets.only(
-              top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+          padding: EdgeInsets.only(left:ScreenAdapter.width(5),top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
           child: Row(
             children: [
               RichText(
@@ -4470,7 +4292,7 @@ print("加1了");
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
           optionSons.add(Container(
-            width: ScreenAdapter.width(165),
+            width: ScreenAdapter.width(180),
             padding: EdgeInsets.only(
                 left: ScreenAdapter.width(5),
                 top: ScreenAdapter.height(5),
@@ -4482,160 +4304,128 @@ print("加1了");
                 _changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"], setFirstState);
               },
-              child: Stack(
-                children: [
-                  Container(
-                      width: ScreenAdapter.width(165),
-                      height: ScreenAdapter.height(60),
-                      alignment: Alignment.center,
-                      decoration: (optionVolistSon['checked'] == true)
-                          ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#C47829"),
-                            ColorsUtil.hexToColor("#854610"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      )
-                          : (buttonColor.length>0) ? BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor(buttonColor[0]),
-                            ColorsUtil.hexToColor(buttonColor[1]),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
-                        ],
-                      ): BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        gradient: LinearGradient(
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                          colors: [
-                            ColorsUtil.hexToColor("#E9CE9B"),
-                            ColorsUtil.hexToColor("#CEA062"),
-                          ],
-                        ),
-                        //设置阴影
-                        boxShadow: [
-                          BoxShadow(
-                              color: Colors.black26,
-                              offset: Offset(2, 3),
-                              blurRadius: 3.0,
-                              spreadRadius: 0),
+              child: badges.Badge(
+                showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
+                badgeContent: Text(
+                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(16),
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.optionBtnColor),
+                    )),
+                //padding: EdgeInsets.all(5),
+                position:badges.BadgePosition.topEnd(top: -18, end: -9),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.square,
+                  padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
+                  borderRadius: BorderRadius.circular(5),
+                  badgeColor: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+
+                ),
+                child: Container(
+                    width: ScreenAdapter.width(170),
+                    height: ScreenAdapter.height(65),
+                    alignment: Alignment.center,
+                    decoration: (optionVolistSon['checked'] == true)
+                        ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#C47829"),
+                          ColorsUtil.hexToColor("#854610"),
                         ],
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          (optionVolistSon['homeImage'] != "" &&
-                              optionVolistSon['homeImage'] != null)
-                              ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
-                              width: ScreenAdapter.width(20),
-                              height: ScreenAdapter.height(30),
-                              color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                              fit: BoxFit.fitHeight)
-                              : Container(
-                            width: 0,
-                          ),
-                          SizedBox(
-                            width: ScreenAdapter.width(4),
-                          ),
-                          ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: ScreenAdapter.width(20),
-                              maxWidth: ScreenAdapter.width(140),
-                              minHeight: ScreenAdapter.height(30),
-                              maxHeight: ScreenAdapter.height(60),
-                            ),
-                            child: AutoSizeText(
-                                optionVolistSon['mainTitle'],
-                                style: TextStyle(
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: ScreenAdapter.fontSize(24.0),
-                                  color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
-                                ),
-                                softWrap: true,
-                                //minFontSize: 10,
-                                //maxFontSize: 12,
-                                maxLines: 2,
-                                overflow: TextOverflow.ellipsis,
-                                textAlign: TextAlign.center
-                            ),
-                          ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    )
+                        : (buttonColor.length>0) ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor(buttonColor[0]),
+                          ColorsUtil.hexToColor(buttonColor[1]),
                         ],
-                      )
-                  ),
-                  //绝对定位 盖章
-                  (optionVolistSon['currentPrice'] != 0)
-                      ? Positioned(
-                    right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Container(
-                        //width: ScreenAdapter.width(65),
-                        height: ScreenAdapter.height(24),
-                        //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(
-                          //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ): BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#E9CE9B"),
+                          ColorsUtil.hexToColor("#CEA062"),
+                        ],
+                      ),
+                      //设置阴影
+                      boxShadow: [
+                        BoxShadow(
+                            color: Colors.black26,
+                            offset: Offset(2, 3),
+                            blurRadius: 3.0,
+                            spreadRadius: 0),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        (optionVolistSon['homeImage'] != "" &&
+                            optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
+                            width: ScreenAdapter.width(18),
+                            height: ScreenAdapter.height(30),
+                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight)
+                            : Container(
+                          width: 0,
                         ),
-                        // alignment: Alignment.topRight,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                          /*image: DecorationImage(
-                            image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
-                            fit: BoxFit.fill,
-                          ),*/
+                        SizedBox(
+                          width: ScreenAdapter.width(4),
                         ),
-                        child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(16),
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.optionBtnColor),
-                            ))
-                      /*Container(
-                          alignment: Alignment.topRight,
-                          // 旋转
-                          transform: Matrix4.rotationZ(0.85),
-                          child: Text(
-                              "${optionVolistSon['currentPrice'].toString()}",
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: ScreenAdapter.width(20),
+                            maxWidth: ScreenAdapter.width(145),
+                            minHeight: ScreenAdapter.height(30),
+                            maxHeight: ScreenAdapter.height(58),
+                          ),
+                          child: AutoSizeText(
+                              optionVolistSon['mainTitle'],
                               style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(17),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.optionBtnColor),
-                              )),
-                        )*/),
-                  )
-                      : Container(
-                    height: 0,
-                  ),
-
-                ],
+                                fontWeight: FontWeight.w500,
+                                fontSize: ScreenAdapter.fontSize(24.0),
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                              ),
+                              softWrap: true,
+                              //minFontSize: 10,
+                              //maxFontSize: 12,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center
+                          ),
+                        ),
+                      ],
+                    )
+                ),
               ),
             ),
           ));
@@ -4644,7 +4434,7 @@ print("加1了");
 
         options.add(Container(
           child: Wrap(
-            spacing: ScreenAdapter.width(5), // set spacing here
+            spacing: ScreenAdapter.width(2), // set spacing here
             runSpacing: ScreenAdapter.height(10),
             alignment: WrapAlignment.start,
             children: optionSons,
@@ -4756,7 +4546,7 @@ print("加1了");
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
                                     minWidth: ScreenAdapter.width(20),
-                                    maxWidth: ScreenAdapter.width(180),
+                                    maxWidth: ScreenAdapter.width(175),
                                     minHeight: ScreenAdapter.height(30),
                                     maxHeight: ScreenAdapter.height(60),
                                   ),
@@ -4884,14 +4674,19 @@ print("加1了");
 
     controller.getCardList();
     var total = await controller.getCartAllPrice();
+    if(mounted) {
       setState(() {
-        _shopCartTotalPrice = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+        _shopCartTotalPrice =
+        total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
       });
+    }
 
     var totalNum = await controller.getCartTotalNum();
-    setState(() {
-      _showCartTotalGoodsNum = totalNum;
-    });
+    if(mounted) {
+      setState(() {
+        _showCartTotalGoodsNum = totalNum;
+      });
+    }
 
     //return sum.toString();
   }

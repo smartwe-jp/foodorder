@@ -3028,7 +3028,7 @@ class _SystemSettingPageState extends State<SystemSettingPage> {
             Container(
               decoration: new BoxDecoration(color: Colors.white),
               margin: EdgeInsets.only(
-                top: ScreenAdapter.height(15.0),
+                top: ScreenAdapter.height(5.0),
               ),
               padding: EdgeInsets.only(
                 top: ScreenAdapter.height(10.0),

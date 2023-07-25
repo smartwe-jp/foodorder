@@ -10,6 +10,7 @@ class GString{
         "top_back_button":"Language",
 
         "show_price_front":"税込",
+        "show_original_price_front":"定価",
         "settlement_button":"お会計",
         "cancle_button":"すべてキャンセル",
         "tag_title":"お知らせ",
@@ -110,6 +111,7 @@ class GString{
         "top_back_button":"Language",
 
         "show_price_front":"含税",
+        "show_original_price_front":"原价",
         "settlement_button":"结算",
         "cancle_button":"全部取消",
         "tag_title":"温馨提示",
@@ -206,6 +208,7 @@ class GString{
         "top_back_button":"Language",
 
         "show_price_front":"Tax-In",
+        "show_original_price_front":"Original price",
         "settlement_button":"Check out",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
@@ -302,6 +305,7 @@ class GString{
         "top_back_button":"Language",
 
         "show_price_front":"세금 포함",//含税
+        "show_original_price_front":"원가",
         "settlement_button":"합의",
         "cancle_button":"모두 취소",
         "tag_title":"친절한 팁",
