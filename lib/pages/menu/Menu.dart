@@ -739,9 +739,9 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
           alignment: Alignment.bottomRight,
           child: RichText(
             text: TextSpan(
-                text: "${GString.getToString(this._checkLanguage, "show_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                text: "¥",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                 style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(priceFrontFontSize)/1.5,
+                  fontSize: ScreenAdapter.fontSize(priceFrontFontSize),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(priceFrontFontColor),
                 ),
@@ -755,7 +755,7 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
                     ),
                   ),
                   TextSpan(
-                    text: "円",
+                    text: "（${GString.getToString(this._checkLanguage, "show_price_front")}）",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,
                       fontWeight: FontWeight.w600,
