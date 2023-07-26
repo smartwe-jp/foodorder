@@ -92,10 +92,17 @@ class GImage{
         "settlement_nanaco":"assets/images/public/settlement_nanaco.png",
         "settlement_waon":"assets/images/public/settlement_waon.png",
         "settlement_quicpay":"assets/images/public/settlement_quicpay.png",
-        "settlement_jiaotongxi":"assets/images/public/settlement_jiaotongxi.jpg",
+        "settlement_jiaotongxi":"assets/images/public/settlement_jiaotongxi.png",
 
 
         "menu_option_check":"assets/images/public/menu_option_check.png",
+
+        "card_visa":"assets/images/public/card_visa.png",
+        "card_jcb":"assets/images/public/card_jcb.png",
+        "card_diners":"assets/images/public/card_diners.png",
+        "card_american":"assets/images/public/card_american.png",
+        "card_unionp":"assets/images/public/card_unionp.png",
+        "card_master":"assets/images/public/card_master.png",
       };
     }
 

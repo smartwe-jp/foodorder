@@ -136,6 +136,13 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showPosWAON = false;
   var _showPosnanaco = false;
 
+  var _showVisa = false;
+  var _showMaster = false;
+  var _showJcb = false;
+  var _showUnionPay = false;
+  var _showAmericanExpress = false;
+  var _showDinersClub = false;
+
   //后台返回是否可以使用pos刷卡机，如果后台可以使用，并且券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   var _showIsPos = true;
 
@@ -191,6 +198,14 @@ class _SettlementPageState extends State<SettlementPage> {
     this._showPosQUICPay = widget.arguments['showPosQUICPay'];
     this._showPosWAON = widget.arguments['showPosWAON'];
     this._showPosnanaco = widget.arguments['showPosnanaco'];
+
+    this._showVisa = widget.arguments["showVisa"];
+    this._showMaster = widget.arguments["showMaster"];
+    this._showJcb = widget.arguments["showJcb"];
+    this._showUnionPay = widget.arguments["showUnionPay"];
+    this._showAmericanExpress = widget.arguments["showAmericanExpress"];
+    this._showDinersClub = widget.arguments["showDinersClub"];
+
     this._showOpenPayment = widget.arguments['showOpenPayment'];
 
     _getSystemSettingInfo();
@@ -3640,6 +3655,48 @@ print(systemSettingInfo);
     );
   }
 
+  _showPosCancelEasyLoading() {
+    EasyLoading.dismiss();
+    var _showTag =
+    Text(GString.getToString(this._checkLanguage, "settlement_posPay_error"),
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            InkWell(
+              onLongPress: () {
+                _showEasyLoading();
+                Future.delayed(Duration(milliseconds: 1500),() async {
+                  CancelOrder();
+                });
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
   //pos机相关
   payconnectSocker() async {
     Socket.connect(
@@ -3656,7 +3713,7 @@ print(systemSettingInfo);
       }
       // 监听wifi模块发送的数据
       this._socket.listen((List<int> event) {
-        //LogUtil.d(event);
+        LogUtil.d(event);
         //if (event.length > 40) event.fillRange(266, 289, 32);
         for(var i=0; i< event.length; i++){
           if(event[i] >127){
@@ -3666,7 +3723,7 @@ print(systemSettingInfo);
         }
         var zhuanhuan = Uint8List.fromList(event);
         var eventString = Utf8Codec().decode(zhuanhuan);
-        //LogUtil.d(eventString);
+        LogUtil.d(eventString);
         //print(Utf8Codec().decode(zhuanhuan));
         //print("event=====${eventString}=====");
         String FirstString = eventString.substring(0, 1);
@@ -3674,17 +3731,22 @@ print(systemSettingInfo);
         String transaction_type = eventString.substring(3, 6);
         String resultString = eventString.substring(10, 13);
         String resultMPFSString = eventString.substring(13, 16);
-        //print("transaction_type==${transaction_type}");
+        print("FirstString==${FirstString}");
+        print("SecondString==${SecondString}");
+        print("transaction_type==${transaction_type}");
+        print("resultString==${resultString}");
+        print("resultMPFSString==${resultMPFSString}");
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
           //print("resultStringresultString==${resultString}");
           //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
 
           if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
-            CancelOrder();
+            //CancelOrder();
+          _showEasyLoading();
           }
         } else {
-          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000") {// &&  resultMPFSString == "000"
             var thincaCloud = ["5","6","7","8","9","10"];
             if (thincaCloud.contains(_payment_method_num) == true) {
               String reportString = eventString.substring(0, 169);
@@ -3698,8 +3760,15 @@ print(systemSettingInfo);
               /*if(resultString == "L11" || resultString == "L10"){
                 CancelOrder();
               }*/
-              if(resultString != "000" ||resultMPFSString != "000"){
+              /*if(resultString != "000" ||resultMPFSString == "L11"){
               CancelOrder();
+              }*/
+              if(resultString == "L11"){
+                Future.delayed(Duration(milliseconds: 2500),() async {
+                  CancelOrder();
+                });
+              }else{// if(resultString == "T10")
+                _showPosCancelEasyLoading();
               }
             }
           }
@@ -3760,7 +3829,8 @@ print(systemSettingInfo);
       "payType":_payType,
     };//print("_getPaymentPosData===${formData}");
     request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//print(response);
+      var response = json.decode(val.toString());
+      print("发送pos请求");LogUtil.d(response);
       if (response['code'] == 200 && response['data'].isNotEmpty) {
         var resultData = response['data'];
         if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){
@@ -3791,7 +3861,7 @@ print(systemSettingInfo);
 
     request("webBootCreditCardCancel", method: 'POST', parameters: formData)
         .then((val) async {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());print("发送取消请求");LogUtil.d(response);
       EasyLoading.dismiss();
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
@@ -4350,12 +4420,117 @@ print(systemSettingInfo);
               ),
             if (_payment_method_num == "3")
               Container(
+                alignment: Alignment.center,
                 //height: ScreenAdapter.height(940),
-                child: Image.asset(
-                  GImage.getImageString("imgpublic",
-                      "settlement_top_lead_card_${_checkLanguage}"),
-                  width: ScreenAdapter.width(1080),
-                  fit: BoxFit.fitWidth,
+                child: Stack(
+                  children: [
+                    Image.asset(
+                      GImage.getImageString("imgpublic",
+                          "settlement_top_lead_card_${_checkLanguage}"),
+                      width: ScreenAdapter.width(1060),
+                      fit: BoxFit.fitWidth,
+                    ),
+                    Positioned(
+                      //right: ScreenAdapter.width(120),
+                      bottom: ScreenAdapter.height(25),
+                      child: Container(
+                        width: ScreenAdapter.width(1080),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Wrap(
+                              spacing: ScreenAdapter.width(50), // set spacing here
+                              runSpacing: ScreenAdapter.height(40),
+                              alignment: WrapAlignment.center,
+                              //mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if(_showVisa == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_visa"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showJcb == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_jcb"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showMaster == true)
+                                  Container(
+                                   // width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_master"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showUnionPay == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_unionp"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showAmericanExpress == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_american"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+
+                                if(_showDinersClub == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             if (_payment_method_num == "4")

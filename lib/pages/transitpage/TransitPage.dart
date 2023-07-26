@@ -82,7 +82,7 @@ class _TransitPageState extends State<TransitPage> {
       "machineCode": _machineCode,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());//LogUtil.d(response);
+      var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
           //_shopCode = shopData["shopCode"];
@@ -102,6 +102,13 @@ class _TransitPageState extends State<TransitPage> {
         var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null ? shopData["linePayChannelMap"]["QUICPay"] :false;
         var _posWAON = shopData["linePayChannelMap"]["WAON"] != null ? shopData["linePayChannelMap"]["WAON"] :false;
         var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null ? shopData["linePayChannelMap"]["nanaco"] :false;
+
+        var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
+        var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
+        var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
+        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
+        var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
+        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
         var machineActivateData = {
           "showCash":(_isCashState == true) ? _showCash :false,
           "showWechat":_showWechat,
@@ -118,6 +125,12 @@ class _TransitPageState extends State<TransitPage> {
           "pos_QUICPay":_posQUICPay,
           "pos_WAON":_posWAON,
           "pos_nanaco":_posnanaco,
+          "show_visa":_visa,
+          "show_master":_master,
+          "show_jcb":_jcb,
+          "show_unionPay":_unionPay,
+          "show_americanExpress":_americanExpress,
+          "show_dinersClub":_dinersClub,
         };//print(machineActivateData);
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));

@@ -78,6 +78,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
   var _showPosWAON = false;
   var _showPosnanaco = false;
 
+  var _showVisa = false;
+  var _showMaster = false;
+  var _showJcb = false;
+  var _showUnionPay = false;
+  var _showAmericanExpress = false;
+  var _showDinersClub = false;
+
   var _orderId = "";
   var _totlaPrice = "0";
   var _tableNum = "0";
@@ -177,6 +184,13 @@ class _ScanCodePageState extends State<ScanCodePage> {
       _showPosQUICPay = systemSettingInfo['pos_QUICPay'];
       _showPosWAON = systemSettingInfo['pos_WAON'];
       _showPosnanaco = systemSettingInfo['pos_nanaco'];
+
+      _showVisa = systemSettingInfo['show_visa'];
+      _showMaster = systemSettingInfo['show_master'];
+      _showJcb = systemSettingInfo['show_jcb'];
+      _showUnionPay = systemSettingInfo['show_unionPay'];
+      _showAmericanExpress = systemSettingInfo['show_americanExpress'];
+      _showDinersClub = systemSettingInfo['show_dinersClub'];
     });
   }
 
@@ -419,6 +433,12 @@ class _ScanCodePageState extends State<ScanCodePage> {
             showPosQUICPay:this._showPosQUICPay,
             showPosWAON:this._showPosWAON,
             showPosnanaco:this._showPosnanaco,
+              showVisa:this._showVisa,
+              showMaster:this._showMaster,
+              showJcb:this._showJcb,
+              showUnionPay:this._showUnionPay,
+              showAmericanExpress:this._showAmericanExpress,
+              showDinersClub:this._showDinersClub,
             shopCartTotalPrice:_totlaPrice,
             tableNum: _tableNum,
             onConfrimClick: (String isAllowPos, String payment_method_num) {
@@ -497,6 +517,12 @@ class _ScanCodePageState extends State<ScanCodePage> {
           "showPosQUICPay":this._showPosQUICPay,
           "showPosWAON":this._showPosWAON,
           "showPosnanaco":this._showPosnanaco,
+          "showVisa":this._showVisa,
+          "showMaster":this._showMaster,
+          "showJcb":this._showJcb,
+          "showUnionPay":this._showUnionPay,
+          "showAmericanExpress":this._showAmericanExpress,
+          "showDinersClub":this._showDinersClub,
         });
   }
 

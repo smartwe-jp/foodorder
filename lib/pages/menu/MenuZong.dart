@@ -122,6 +122,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
   var _showPosWAON = false;
   var _showPosnanaco = false;
 
+  var _showVisa = false;
+  var _showMaster = false;
+  var _showJcb = false;
+  var _showUnionPay = false;
+  var _showAmericanExpress = false;
+  var _showDinersClub = false;
+
   var _showOpenPayment = false;
 
   var _optionMaxNum = 12;
@@ -324,6 +331,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       _showPosQUICPay = systemSettingInfo['pos_QUICPay'];
       _showPosWAON = systemSettingInfo['pos_WAON'];
       _showPosnanaco = systemSettingInfo['pos_nanaco'];
+
+      _showVisa = systemSettingInfo['show_visa'];
+      _showMaster = systemSettingInfo['show_master'];
+      _showJcb = systemSettingInfo['show_jcb'];
+      _showUnionPay = systemSettingInfo['show_unionPay'];
+      _showAmericanExpress = systemSettingInfo['show_americanExpress'];
+      _showDinersClub = systemSettingInfo['show_dinersClub'];
     });
     _getBookingBootMenu();
   }
@@ -362,6 +376,13 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
         _showPosQUICPay = systemSettingInfo['pos_QUICPay'];
         _showPosWAON = systemSettingInfo['pos_WAON'];
         _showPosnanaco = systemSettingInfo['pos_nanaco'];
+
+        _showVisa = systemSettingInfo['show_visa'];
+        _showMaster = systemSettingInfo['show_master'];
+        _showJcb = systemSettingInfo['show_jcb'];
+        _showUnionPay = systemSettingInfo['show_unionPay'];
+        _showAmericanExpress = systemSettingInfo['show_americanExpress'];
+        _showDinersClub = systemSettingInfo['show_dinersClub'];
       });
     }
 
@@ -692,7 +713,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       crossAxisAlignment: CrossAxisAlignment.end,
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
-        if(originalPrice!= null && originalPrice !="" && originalPrice>currentPrice)
+        if(originalPrice!= null && originalPrice !="" && originalPrice != currentPrice)
           Container(
             padding: EdgeInsets.only(bottom: ScreenAdapter.height(3)),
             //color: Colors.red,
@@ -706,10 +727,11 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                     decoration: TextDecoration.lineThrough, // 添加中划线
                     decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
                     decorationThickness: 2.0, // 可以设置中划线的厚度
+                    textBaseline: TextBaseline.alphabetic,
                   ),
                   children: [
                     TextSpan(
-                      text: originalPrice.toString(),
+                      text: formatMoney(originalPrice.toString()),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(priceFontSize)/1.8,
                         fontWeight: FontWeight.w500,
@@ -717,6 +739,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         decoration: TextDecoration.lineThrough, // 添加中划线
                         decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
                         decorationThickness: 2.0, // 可以设置中划线的厚度
+                        textBaseline: TextBaseline.alphabetic,
                       ),
                     ),
                     TextSpan(
@@ -728,6 +751,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                         decoration: TextDecoration.lineThrough, // 添加中划线
                         decorationColor: ColorsUtil.hexToColor("#485460"),// 可以设置中划线的颜色
                         decorationThickness: 2.0, // 可以设置中划线的厚度
+                        textBaseline: TextBaseline.alphabetic,
                       ),
                     ),
                   ]),
@@ -744,14 +768,16 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                   fontSize: ScreenAdapter.fontSize(priceFrontFontSize),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(priceFrontFontColor),
+                  textBaseline: TextBaseline.alphabetic,
                 ),
                 children: [
                   TextSpan(
-                    text: currentPrice.toString(),
+                    text: formatMoney(currentPrice.toString()),
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(priceFontSize),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(priceFontColor),
+                      textBaseline: TextBaseline.alphabetic,
                     ),
                   ),
                   TextSpan(
@@ -760,6 +786,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
                       fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(priceFontColor),
+                      textBaseline: TextBaseline.alphabetic,
                     ),
                   ),
                 ]),
@@ -5224,6 +5251,12 @@ print("加1了");
               showPosQUICPay:this._showPosQUICPay,
               showPosWAON:this._showPosWAON,
               showPosnanaco:this._showPosnanaco,
+              showVisa:this._showVisa,
+              showMaster:this._showMaster,
+              showJcb:this._showJcb,
+              showUnionPay:this._showUnionPay,
+              showAmericanExpress:this._showAmericanExpress,
+              showDinersClub:this._showDinersClub,
               shopCartTotalPrice:_shopCartTotalPrice,
               tableNum: "",
               onConfrimClick: (String isAllowPos, String payment_method_num) {
@@ -5315,6 +5348,12 @@ print("加1了");
           "showPosQUICPay":this._showPosQUICPay,
           "showPosWAON":this._showPosWAON,
           "showPosnanaco":this._showPosnanaco,
+          "showVisa":this._showVisa,
+          "showMaster":this._showMaster,
+          "showJcb":this._showJcb,
+          "showUnionPay":this._showUnionPay,
+          "showAmericanExpress":this._showAmericanExpress,
+          "showDinersClub":this._showDinersClub,
           "showOpenPayment":_showOpenPayment
         });
   }

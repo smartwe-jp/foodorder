@@ -37,6 +37,12 @@ class SelectPaymentPage extends StatefulWidget {
         this.showPosQUICPay,
         this.showPosWAON,
         this.showPosnanaco,
+        this.showVisa,
+        this.showMaster,
+        this.showJcb,
+        this.showUnionPay,
+        this.showAmericanExpress,
+        this.showDinersClub,
         this.shopCartTotalPrice,
         this.tableNum,
         this.onConfrimClick,
@@ -62,6 +68,12 @@ class SelectPaymentPage extends StatefulWidget {
   final bool showPosQUICPay;
   final bool showPosWAON;
   final bool showPosnanaco;
+  final bool showVisa;
+  final bool showMaster;
+  final bool showJcb;
+  final bool showUnionPay;
+  final bool showAmericanExpress;
+  final bool showDinersClub;
   final String shopCartTotalPrice;
   final String tableNum;
   final Function(String, String) onConfrimClick;
@@ -97,6 +109,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   var _showPosWAON = false;
   var _showPosnanaco = false;
 
+  var _showVisa = false;
+  var _showMaster = false;
+  var _showJcb = false;
+  var _showUnionPay = false;
+  var _showAmericanExpress = false;
+  var _showDinersClub = false;
+
   @override
   void initState() {
     // TODO: implement initState
@@ -125,6 +144,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showPosWAON = widget.showPosWAON;
     _showPosnanaco = widget.showPosnanaco;
     _menuCount = widget.menuCount;
+
+    _showVisa = widget.showVisa;
+    _showMaster = widget.showMaster;
+    _showJcb = widget.showJcb;
+    _showUnionPay = widget.showUnionPay;
+    _showAmericanExpress = widget.showAmericanExpress;
+    _showDinersClub = widget.showDinersClub;
 
     //监听是否展示现金的广播
     eventBus.on<setShowCashEvent>().listen((event) {
@@ -197,7 +223,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Stack(
@@ -206,7 +232,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                       mainAxisAlignment: MainAxisAlignment.start,
                                       crossAxisAlignment: CrossAxisAlignment.center,
                                       children: [
-                                        SizedBox(height: ScreenAdapter.height(25),),
+                                        SizedBox(height: ScreenAdapter.height(65),),
                                         Container(
                                           height: ScreenAdapter.height(210),
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
@@ -224,7 +250,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     ),
                                     Positioned(
                                         //right: ScreenAdapter.width(120),
-                                        bottom: ScreenAdapter.height(10),
+                                        top: ScreenAdapter.height(5),
                                         child: Container(
                                           width: ScreenAdapter.width(230),
                                           alignment: Alignment.center,
@@ -264,14 +290,15 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //设置圆角
                                     borderRadius: new BorderRadius.circular((5.0)),
                                     //设置阴影
-                                    boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                    boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                   ),
                                   child: Stack(
                                     children: [
                                       Column(
-                                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                        mainAxisAlignment: MainAxisAlignment.center,
                                         crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
+                                          SizedBox(height: ScreenAdapter.height(45),),
                                           Container(
                                             width: ScreenAdapter.width(350),
                                             child: Wrap(
@@ -290,7 +317,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_paypay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -307,7 +334,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_alipay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -324,7 +351,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_wechat"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -341,7 +368,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_aupay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -358,7 +385,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_dpay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -375,7 +402,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_rpay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -392,7 +419,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                       child: Image.asset(
                                                         GImage.getImageString(
                                                             "imgpublic", "settlement_mpay"),
-                                                        width: ScreenAdapter.width(75),
+                                                        width: ScreenAdapter.width(72),
                                                         //height: ScreenAdapter.height(100),
                                                         //color: Colors.lightGreen,
                                                         fit: BoxFit.fitWidth,
@@ -402,13 +429,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                                 ]),
                                           ),
 
-                                          SizedBox(height: ScreenAdapter.height(30),),
+                                          //SizedBox(height: ScreenAdapter.height(30),),
 
                                         ],
                                       ),
                                       Positioned(
                                         //right: ScreenAdapter.width(120),
-                                        bottom: ScreenAdapter.height(10),
+                                        top: ScreenAdapter.height(3),
                                         child: Container(
                                           width: ScreenAdapter.width(350),
                                           alignment: Alignment.center,
@@ -431,9 +458,9 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                         SizedBox(
                           height: ScreenAdapter.height(50),
                         ),
-                        if(_showCreditCard == true && _isAllowPos =="1")
+                        if((_showCreditCard == true || _showVisa== true || _showMaster == true || _showJcb == true || _showUnionPay == true || _showAmericanExpress == true || _showDinersClub == true) && _isAllowPos =="1")
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
                             InkWell(
                               onTap: (){
@@ -446,9 +473,9 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
 
                               },
                               child: Container(
-                                width: ScreenAdapter.width(350),
-                                height: ScreenAdapter.height(335),
-                                padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                width: ScreenAdapter.width(800),
+                                //height: ScreenAdapter.height(335),
+                                padding: EdgeInsets.only(left: ScreenAdapter.width(15),top: ScreenAdapter.height(20),right: ScreenAdapter.width(15),bottom: ScreenAdapter.height(20)),
                                 decoration: BoxDecoration(
                                   //设置边框
                                   //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -457,23 +484,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
-                                      height: ScreenAdapter.height(210),
-                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_card"),
-                                        width: ScreenAdapter.width(220),
-                                        //height: ScreenAdapter.height(100),
-                                        //color: Colors.lightGreen,
-                                        fit: BoxFit.fitWidth,
-                                      ),
-                                    ),
-                                    //SizedBox(height: ScreenAdapter.height(20),),
                                     Text(
                                       //"信用卡",
                                       GString.getToString(this._checkLanguage, "settlement_top_title_card"),
@@ -482,6 +498,106 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(34.0)),
                                     ),
+                                    /*Container(
+                                      height: ScreenAdapter.height(210),
+                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                      child: Image.asset(GImage.getImageString("imgpublic", "payment_card"),
+                                        width: ScreenAdapter.width(220),
+                                        //height: ScreenAdapter.height(100),
+                                        //color: Colors.lightGreen,
+                                        fit: BoxFit.fitWidth,
+                                      ),
+                                    ),*/
+                                    Wrap(
+                                      spacing: ScreenAdapter.width(70), // set spacing here
+                                      runSpacing: ScreenAdapter.height(40),
+                                      alignment: WrapAlignment.center,
+                                      //mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        if(_showVisa == true)
+                                          Container(
+                                            width: ScreenAdapter.width(120),
+                                            height: ScreenAdapter.height(90),
+                                            alignment: Alignment.center,
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                            child: Image.asset(GImage.getImageString("imgpublic", "card_visa"),
+                                              width: ScreenAdapter.width(75),
+                                              //height: ScreenAdapter.height(100),
+                                              //color: Colors.lightGreen,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
+                                        if(_showJcb == true)
+                                          Container(
+                                            width: ScreenAdapter.width(120),
+                                            height: ScreenAdapter.height(90),
+                                            alignment: Alignment.center,
+                                            padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                            child: Image.asset(GImage.getImageString("imgpublic", "card_jcb"),
+                                              width: ScreenAdapter.width(75),
+                                              //height: ScreenAdapter.height(100),
+                                              //color: Colors.lightGreen,
+                                              fit: BoxFit.fitWidth,
+                                            ),
+                                          ),
+                                        if(_showMaster == true)
+                                        Container(
+                                          width: ScreenAdapter.width(120),
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "card_master"),
+                                            width: ScreenAdapter.width(75),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+                                        if(_showUnionPay == true)
+                                        Container(
+                                          width: ScreenAdapter.width(120),
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "card_unionp"),
+                                            width: ScreenAdapter.width(75),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+                                        if(_showAmericanExpress == true)
+                                        Container(
+                                          width: ScreenAdapter.width(120),
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "card_american"),
+                                            width: ScreenAdapter.width(75),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+
+                                        if(_showDinersClub == true)
+                                        Container(
+                                          width: ScreenAdapter.width(120),
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
+                                            width: ScreenAdapter.width(75),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+
+                                      ],
+                                    ),
+                                    //SizedBox(height: ScreenAdapter.height(20),),
+
                                   ],
                                 ),
                               ),
@@ -509,7 +625,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -541,324 +657,287 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                           ],
                         ),
 
-                        if(_isAllowPos =="1")
+                        if(_isAllowPos =="1" && (_showPosEdy ==true || _showPosiD == true ||  _showPosIC ==true || _showPosQUICPay == true || _showPosWAON ==true || _showPosnanaco ==true))
                           Container(
                             margin: EdgeInsets.only(top: ScreenAdapter.height(30)),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: <Widget>[
-                                if(_showPosEdy ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "5";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                            child: Column(
+                              //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Text(
+                                  //"电子钱包",
+                                  GString.getToString(this._checkLanguage, "settlement_top_title_wallet"),
+                                  style: TextStyle(
+                                      color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: ScreenAdapter.fontSize(34.0)),
+                                ),
+                                SizedBox(height: ScreenAdapter.height(20),),
+                                Wrap(
+                                  spacing: ScreenAdapter.width(70), // set spacing here
+                                  runSpacing: ScreenAdapter.height(40),
+                                  alignment: WrapAlignment.center,
+                                  children: <Widget>[
+                                    if(_showPosEdy ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "5";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_edy"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_edy"),
+                                                  width: ScreenAdapter.width(120),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if(_showPosiD ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "6";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                      ),
+                                    if(_showPosiD ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "6";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_id"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_id"),
+                                                  width: ScreenAdapter.width(120),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if(_showPosnanaco ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "7";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                      ),
+                                    if(_showPosnanaco ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "7";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_nanaco"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_nanaco"),
+                                                  width: ScreenAdapter.width(120),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if(_showPosWAON ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "8";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                      ),
+                                    if(_showPosWAON ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "8";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_waon"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_waon"),
+                                                  width: ScreenAdapter.width(120),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if(_showPosQUICPay ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "9";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                      ),
+                                    if(_showPosQUICPay ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "9";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_quicpay"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_quicpay"),
+                                                  width: ScreenAdapter.width(120),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                if(_showPosIC ==true)
-                                InkWell(
-                                  onTap: (){
-                                    setState(() {
-                                      _isAllowPos = "1";
-                                      _payment_method_num = "10";
-                                    });
-                                    //Navigator.pop(pcontext);
-                                    widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                      ),
+                                    if(_showPosIC ==true)
+                                      InkWell(
+                                        onTap: (){
+                                          setState(() {
+                                            _isAllowPos = "1";
+                                            _payment_method_num = "10";
+                                          });
+                                          //Navigator.pop(pcontext);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
 
-                                  },
-                                  child: Container(
-                                    width: ScreenAdapter.width(120),
-                                    height: ScreenAdapter.height(235),
-                                    padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-                                    decoration: BoxDecoration(
-                                      //设置边框
-                                      //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
-                                      //背景颜色
-                                      color: Colors.white,
-                                      //设置圆角
-                                      borderRadius: new BorderRadius.circular((5.0)),
-                                      //设置阴影
-                                      boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
-                                    ),
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                      crossAxisAlignment: CrossAxisAlignment.center,
-                                      children: [
-                                        Container(
-                                          height: ScreenAdapter.height(110),
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
-                                          child: Image.asset(GImage.getImageString("imgpublic", "settlement_jiaotongxi"),
-                                            width: ScreenAdapter.width(120),
-                                            //height: ScreenAdapter.height(100),
-                                            //color: Colors.lightGreen,
-                                            fit: BoxFit.fitWidth,
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(220),
+                                          height: ScreenAdapter.height(135),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
+                                            //背景颜色
+                                            color: Colors.white,
+                                            //设置圆角
+                                            borderRadius: new BorderRadius.circular((5.0)),
+                                            //设置阴影
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                          ),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                                            crossAxisAlignment: CrossAxisAlignment.center,
+                                            children: [
+                                              Container(
+                                                height: ScreenAdapter.height(110),
+                                                padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                                child: Image.asset(GImage.getImageString("imgpublic", "settlement_jiaotongxi"),
+                                                  width: ScreenAdapter.width(110),
+                                                  //height: ScreenAdapter.height(100),
+                                                  //color: Colors.lightGreen,
+                                                  fit: BoxFit.fitWidth,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
-                                        //SizedBox(height: ScreenAdapter.height(20),),
-                                        /*Text(
-                                          //"信用卡",
-                                          GString.getToString(this._checkLanguage, "settlement_top_title_card"),
-                                          style: TextStyle(
-                                              color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: ScreenAdapter.fontSize(34.0)),
-                                        ),*/
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                      ),
+                                  ],
+                                )
                               ],
                             ),
                           ),

@@ -57,6 +57,7 @@ class GString{
         "settlement_nopayment_error":"        支払いが失敗しました。  \r\n 他の支払い方法をお選ぶください。",
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
         "settlement_scancodenochange_error":"済みません、他の支払い方法を選んでください。",
+        "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
         "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
@@ -70,6 +71,7 @@ class GString{
         "settlement_top_title_cash":"現金",
         "settlement_top_title_qr":"バーコード決済",
         "settlement_top_title_card":"クレジットカード",
+        "settlement_top_title_wallet":"電子マネー",
         "settlement_top_title_nfc":"タッチ決済",
 
         "settlement_top_title_edy":"楽天Edy",
@@ -156,6 +158,7 @@ class GString{
         "settlement_nopayment_error":"支付失败，请选择其他方式支付",
         "settlement_scancodenoopen_error":"请选择现金支付。",
         "settlement_scancodenochange_error":"暂不支持该支付，请选择其他方式。",
+        "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
         "tag_print_content_paper_error":"打印故障，请联系工作人员",
@@ -168,6 +171,7 @@ class GString{
         "settlement_top_title_cash":"现金",
         "settlement_top_title_qr":"扫码支付",
         "settlement_top_title_card":"信用卡",
+        "settlement_top_title_wallet":"电子钱包",
         "settlement_top_title_nfc":"NFC支付",
 
         "settlement_top_title_edy":"楽天Edy",
@@ -253,6 +257,7 @@ class GString{
         "settlement_nopayment_error":"Payment failed, please choose another payment method.",
         "settlement_scancodenoopen_error":"Please select cash payment.",
         "settlement_scancodenochange_error":"Please choose another method。",
+        "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
 
         "tag_print_content_paper_shortage":"System error. Please contact our staff.",
         "tag_print_content_paper_error":"System error. Please contact our staff.",
@@ -265,6 +270,7 @@ class GString{
         "settlement_top_title_cash":"Cash",
         "settlement_top_title_qr":"Code payment",
         "settlement_top_title_card":"Credit card",
+        "settlement_top_title_wallet":"E-Wallet",
         "settlement_top_title_nfc":"Tap to pay",
 
         "settlement_top_title_edy":"楽天Edy",
@@ -350,6 +356,7 @@ class GString{
         "settlement_nopayment_error":"결제에 실패했습니다. 다른 결제 수단을 선택하세요.",
         "settlement_scancodenoopen_error":"현금결제를 선택해주세요",
         "settlement_scancodenochange_error":"지금은 결제가 되지 않습니다. 다른 결제 수단을 선택하세요.",
+        "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
 
         "tag_print_content_paper_shortage":"영수증 기계에 용지가 없습니다. 직원에게 문의하십시오.",
         "tag_print_content_paper_error":"인쇄 실패, 직원에게 문의하십시오.",
@@ -362,6 +369,7 @@ class GString{
         "settlement_top_title_cash":"현금",
         "settlement_top_title_qr":"스캔 코드 결제",
         "settlement_top_title_card":"신용카드",
+        "settlement_top_title_wallet":"전자지갑",
         "settlement_top_title_nfc":"NFC지블",
 
         "settlement_top_title_edy":"楽天Edy",

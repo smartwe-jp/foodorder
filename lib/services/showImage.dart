@@ -44,7 +44,7 @@ class publicShowMenuImage  extends StatelessWidget{
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(17),
                     color: ColorsUtil.hexToColor("#000000")),
-                maxLines: 1,
+                maxLines: 2,
                 overflow: TextOverflow.ellipsis,
               )
               ),
