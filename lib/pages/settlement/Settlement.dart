@@ -4536,11 +4536,115 @@ print(systemSettingInfo);
             if (_payment_method_num == "4")
               Container(
                 //height: ScreenAdapter.height(940),
-                child: Image.asset(
-                  GImage.getImageString(
-                      "imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),
-                  width: ScreenAdapter.width(1080),
-                  fit: BoxFit.fitWidth,
+                child: Stack(
+                  children: [
+                    Image.asset(
+                      GImage.getImageString(
+                          "imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),
+                      width: ScreenAdapter.width(1060),
+                      fit: BoxFit.fitWidth,
+                    ),
+                    Positioned(
+                      //right: ScreenAdapter.width(120),
+                      bottom: ScreenAdapter.height(25),
+                      child: Container(
+                        width: ScreenAdapter.width(1080),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Wrap(
+                              spacing: ScreenAdapter.width(50), // set spacing here
+                              runSpacing: ScreenAdapter.height(40),
+                              alignment: WrapAlignment.center,
+                              //mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if(_showVisa == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_visa"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showJcb == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_jcb"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showMaster == true)
+                                  Container(
+                                    // width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_master"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showUnionPay == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_unionp"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+                                if(_showAmericanExpress == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_american"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+
+                                if(_showDinersClub == true)
+                                  Container(
+                                    //width: ScreenAdapter.width(120),
+                                    //height: ScreenAdapter.height(90),
+                                    alignment: Alignment.center,
+                                    padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                    child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
+                                      width: ScreenAdapter.width(105),
+                                      //height: ScreenAdapter.height(100),
+                                      //color: Colors.lightGreen,
+                                      fit: BoxFit.fitWidth,
+                                    ),
+                                  ),
+
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
                 ),
               ),
             if (_payment_method_num == "5" || _payment_method_num == "6"|| _payment_method_num == "7"|| _payment_method_num == "8"|| _payment_method_num == "9"|| _payment_method_num == "10")
