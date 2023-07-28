@@ -4104,7 +4104,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_edy"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4138,7 +4138,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_id"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4172,7 +4172,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_nanaco"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4206,7 +4206,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_waon"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4240,7 +4240,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_quicpay"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4274,7 +4274,7 @@ print(systemSettingInfo);
                         children: [
                           Image.asset(
                             GImage.getImageString(
-                                "imgpublic", "settlement_top_nfc"),
+                                "imgpublic", "settlement_jiaotongxi"),
                             width: ScreenAdapter.width(40),
                             fit: BoxFit.fitWidth,
                           ),
@@ -4683,7 +4683,73 @@ print(systemSettingInfo);
                   ],
                 ),
               ),
-            if (_payment_method_num == "5" || _payment_method_num == "6"|| _payment_method_num == "7"|| _payment_method_num == "8"|| _payment_method_num == "9"|| _payment_method_num == "10")
+            if (_payment_method_num == "5")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posEdy_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "6")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posID_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "7")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posNanaco_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "8")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posWAON_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "9")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posQUICPay_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            if (_payment_method_num == "10")
+              Container(
+                alignment: Alignment.center,
+                //height: ScreenAdapter.height(940),
+                child: Image.asset(
+                  GImage.getImageString(
+                      "imgpublic", "settlement_top_lead_posIC_${_checkLanguage}"),
+                  width: ScreenAdapter.width(1060),
+                  fit: BoxFit.fitWidth,
+                ),
+              ),
+            /*if (_payment_method_num == "5" || _payment_method_num == "6"|| _payment_method_num == "7"|| _payment_method_num == "8"|| _payment_method_num == "9"|| _payment_method_num == "10")
               Container(
                 //height: ScreenAdapter.height(940),
                 child: Image.asset(
@@ -4692,7 +4758,7 @@ print(systemSettingInfo);
                   width: ScreenAdapter.width(1080),
                   fit: BoxFit.fitWidth,
                 ),
-              ),
+              ),*/
             Container(
               height: ScreenAdapter.height(5),
               color: ColorsUtil.hexToColor("#D8D8D8"),

@@ -103,6 +103,41 @@ class GImage{
         "card_american":"assets/images/public/card_american.png",
         "card_unionp":"assets/images/public/card_unionp.png",
         "card_master":"assets/images/public/card_master.png",
+
+        "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
+        "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",
+        "settlement_top_lead_cash_EN":"assets/images/public/settlement_top_lead_cash_EN.png",
+        "settlement_top_lead_nfc_KO":"assets/images/public/settlement_top_lead_nfc_KO.png",
+
+        "settlement_top_lead_posEdy_JP":"assets/images/public/settlement_top_lead_posEdy_JP.png",
+        "settlement_top_lead_posEdy_CH":"assets/images/public/settlement_top_lead_posEdy_CH.png",
+        "settlement_top_lead_posEdy_EN":"assets/images/public/settlement_top_lead_posEdy_EN.png",
+        "settlement_top_lead_posEdy_KO":"assets/images/public/settlement_top_lead_posEdy_KO.png",
+
+        "settlement_top_lead_posID_JP":"assets/images/public/settlement_top_lead_posID_JP.png",
+        "settlement_top_lead_posID_CH":"assets/images/public/settlement_top_lead_posID_CH.png",
+        "settlement_top_lead_posID_EN":"assets/images/public/settlement_top_lead_posID_EN.png",
+        "settlement_top_lead_posID_KO":"assets/images/public/settlement_top_lead_posID_KO.png",
+
+        "settlement_top_lead_posIC_JP":"assets/images/public/settlement_top_lead_posIC_JP.png",
+        "settlement_top_lead_posIC_CH":"assets/images/public/settlement_top_lead_posIC_CH.png",
+        "settlement_top_lead_posIC_EN":"assets/images/public/settlement_top_lead_posIC_EN.png",
+        "settlement_top_lead_posIC_KO":"assets/images/public/settlement_top_lead_posIC_KO.png",
+
+        "settlement_top_lead_posQUICPay_JP":"assets/images/public/settlement_top_lead_posQUICPay_JP.png",
+        "settlement_top_lead_posQUICPay_CH":"assets/images/public/settlement_top_lead_posQUICPay_CH.png",
+        "settlement_top_lead_posQUICPay_EN":"assets/images/public/settlement_top_lead_posQUICPay_EN.png",
+        "settlement_top_lead_posQUICPay_KO":"assets/images/public/settlement_top_lead_posQUICPay_KO.png",
+
+        "settlement_top_lead_posWAON_JP":"assets/images/public/settlement_top_lead_posWAON_JP.png",
+        "settlement_top_lead_posWAON_CH":"assets/images/public/settlement_top_lead_posWAON_CH.png",
+        "settlement_top_lead_posWAON_EN":"assets/images/public/settlement_top_lead_posWAON_EN.png",
+        "settlement_top_lead_posWAON_KO":"assets/images/public/settlement_top_lead_posWAON_KO.png",
+
+        "settlement_top_lead_posNanaco_JP":"assets/images/public/settlement_top_lead_posNanaco_JP.png",
+        "settlement_top_lead_posNanaco_CH":"assets/images/public/settlement_top_lead_posNanaco_CH.png",
+        "settlement_top_lead_posNanaco_EN":"assets/images/public/settlement_top_lead_posNanaco_EN.png",
+        "settlement_top_lead_posNanaco_KO":"assets/images/public/settlement_top_lead_posNanaco_KO.png",
       };
     }
 

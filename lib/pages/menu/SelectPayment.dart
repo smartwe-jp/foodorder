@@ -691,8 +691,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -708,13 +708,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_edy"),
-                                                  width: ScreenAdapter.width(120),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
@@ -734,8 +734,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -751,13 +751,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_id"),
-                                                  width: ScreenAdapter.width(120),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
@@ -777,8 +777,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -794,13 +794,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_nanaco"),
-                                                  width: ScreenAdapter.width(120),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
@@ -820,8 +820,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -837,13 +837,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_waon"),
-                                                  width: ScreenAdapter.width(120),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
@@ -863,8 +863,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -880,13 +880,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_quicpay"),
-                                                  width: ScreenAdapter.width(120),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
@@ -906,8 +906,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         },
                                         child: Container(
                                           width: ScreenAdapter.width(220),
-                                          height: ScreenAdapter.height(135),
-                                          padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                                          height: ScreenAdapter.height(140),
+                                          padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
                                           decoration: BoxDecoration(
                                             //设置边框
                                             //border: new Border.all(color: Color(0xFFFF0000), width: 0.5),
@@ -923,13 +923,13 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             crossAxisAlignment: CrossAxisAlignment.center,
                                             children: [
                                               Container(
-                                                height: ScreenAdapter.height(110),
+                                                height: ScreenAdapter.height(135),
                                                 padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                                 child: Image.asset(GImage.getImageString("imgpublic", "settlement_jiaotongxi"),
-                                                  width: ScreenAdapter.width(110),
+                                                  height: ScreenAdapter.width(120),
                                                   //height: ScreenAdapter.height(100),
                                                   //color: Colors.lightGreen,
-                                                  fit: BoxFit.fitWidth,
+                                                  fit: BoxFit.fitHeight,
                                                 ),
                                               ),
                                             ],
