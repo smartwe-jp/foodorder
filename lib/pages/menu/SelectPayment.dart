@@ -458,7 +458,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                         SizedBox(
                           height: ScreenAdapter.height(50),
                         ),
-                        if((_showCreditCard == true || _showVisa== true || _showMaster == true || _showJcb == true || _showUnionPay == true || _showAmericanExpress == true || _showDinersClub == true) && _isAllowPos =="1")
+                        if(_isAllowPos =="1" && (_showCreditCard == true || _showVisa== true || _showMaster == true || _showJcb == true || _showUnionPay == true || _showAmericanExpress == true || _showDinersClub == true))
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
@@ -509,19 +509,19 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                       ),
                                     ),*/
                                     Wrap(
-                                      spacing: ScreenAdapter.width(70), // set spacing here
-                                      runSpacing: ScreenAdapter.height(40),
+                                      spacing: ScreenAdapter.width(10), // set spacing here
+                                      runSpacing: ScreenAdapter.height(20),
                                       alignment: WrapAlignment.center,
                                       //mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         if(_showVisa == true)
                                           Container(
-                                            width: ScreenAdapter.width(120),
+                                            width: ScreenAdapter.width(110),
                                             height: ScreenAdapter.height(90),
                                             alignment: Alignment.center,
                                             padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                             child: Image.asset(GImage.getImageString("imgpublic", "card_visa"),
-                                              width: ScreenAdapter.width(75),
+                                              width: ScreenAdapter.width(90),
                                               //height: ScreenAdapter.height(100),
                                               //color: Colors.lightGreen,
                                               fit: BoxFit.fitWidth,
@@ -529,12 +529,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                           ),
                                         if(_showJcb == true)
                                           Container(
-                                            width: ScreenAdapter.width(120),
+                                            width: ScreenAdapter.width(110),
                                             height: ScreenAdapter.height(90),
                                             alignment: Alignment.center,
                                             padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                             child: Image.asset(GImage.getImageString("imgpublic", "card_jcb"),
-                                              width: ScreenAdapter.width(75),
+                                              width: ScreenAdapter.width(90),
                                               //height: ScreenAdapter.height(100),
                                               //color: Colors.lightGreen,
                                               fit: BoxFit.fitWidth,
@@ -542,12 +542,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                           ),
                                         if(_showMaster == true)
                                         Container(
-                                          width: ScreenAdapter.width(120),
+                                          width: ScreenAdapter.width(110),
                                           height: ScreenAdapter.height(90),
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                           child: Image.asset(GImage.getImageString("imgpublic", "card_master"),
-                                            width: ScreenAdapter.width(75),
+                                            width: ScreenAdapter.width(90),
                                             //height: ScreenAdapter.height(100),
                                             //color: Colors.lightGreen,
                                             fit: BoxFit.fitWidth,
@@ -555,12 +555,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         ),
                                         if(_showUnionPay == true)
                                         Container(
-                                          width: ScreenAdapter.width(120),
+                                          width: ScreenAdapter.width(110),
                                           height: ScreenAdapter.height(90),
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                           child: Image.asset(GImage.getImageString("imgpublic", "card_unionp"),
-                                            width: ScreenAdapter.width(75),
+                                            width: ScreenAdapter.width(90),
                                             //height: ScreenAdapter.height(100),
                                             //color: Colors.lightGreen,
                                             fit: BoxFit.fitWidth,
@@ -568,12 +568,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                         ),
                                         if(_showAmericanExpress == true)
                                         Container(
-                                          width: ScreenAdapter.width(120),
+                                          width: ScreenAdapter.width(110),
                                           height: ScreenAdapter.height(90),
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                           child: Image.asset(GImage.getImageString("imgpublic", "card_american"),
-                                            width: ScreenAdapter.width(75),
+                                            width: ScreenAdapter.width(90),
                                             //height: ScreenAdapter.height(100),
                                             //color: Colors.lightGreen,
                                             fit: BoxFit.fitWidth,
@@ -582,12 +582,12 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
 
                                         if(_showDinersClub == true)
                                         Container(
-                                          width: ScreenAdapter.width(120),
+                                          width: ScreenAdapter.width(110),
                                           height: ScreenAdapter.height(90),
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                           child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
-                                            width: ScreenAdapter.width(75),
+                                            width: ScreenAdapter.width(90),
                                             //height: ScreenAdapter.height(100),
                                             //color: Colors.lightGreen,
                                             fit: BoxFit.fitWidth,

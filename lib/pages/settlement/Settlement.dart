@@ -3664,37 +3664,73 @@ print(systemSettingInfo);
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _showTag,
-            InkWell(
-              onLongPress: () {
-                _showEasyLoading();
-                Future.delayed(Duration(milliseconds: 1500),() async {
-                  CancelOrder();
-                });
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "printticketloading"),
-                    fit: BoxFit.fitHeight),
-              ),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return Container(
+            width: ScreenAdapter.width(950),
+            child: SimpleDialog(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(5),
+                ),
+                title: Align(
+                    alignment: Alignment.center,
+                    child: Text(
+                        GString.getToString(this._checkLanguage, "tag_title"),
+                        style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(28),
+                            fontWeight: FontWeight.w600))),
+                children: <Widget>[
+                  Container(
+                    width: ScreenAdapter.width(650),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                    child: Column(
+                      children: <Widget>[
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Align(
+                          child: Text(GString.getToString(this._checkLanguage, "settlement_posPay_error"),
+                              style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(28))),
+                          alignment: Alignment(0, 0),
+                        ),
+                        SizedBox(
+                          height: 10,
+                        ),
+                        Divider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+                        Container(
+                          alignment: Alignment.center,
+                          child: Padding(
+                            padding: const EdgeInsets.only(right: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                GString.getToString(this._checkLanguage,
+                                    "tag_button_yes"),
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                Navigator.pop(context);
+                                _showEasyLoading();
+                                Future.delayed(Duration(milliseconds: 1500),() async {
+                                  CancelOrder();
+                                });
+                              },
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ]),
+          );
+        });
+
   }
 
   //pos机相关
