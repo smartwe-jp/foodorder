@@ -2062,8 +2062,8 @@ print(systemSettingInfo);
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
-    var lineHight = 625;
-    var lineZeng = 100;
+    var lineHight = 630;
+    var lineZeng = 105;
     var addRowHight = 0;
 
     //店铺标题
@@ -2306,7 +2306,7 @@ print(systemSettingInfo);
 
     }
     //print("总行数${menuNum}");
-    addRowHight += 30 * linNum;
+    addRowHight += 31 * linNum;
     categoryMenus.add(SizedBox(height: 10,));
 //合计
     categoryMenus.add(
@@ -2405,7 +2405,7 @@ print(systemSettingInfo);
     }
 
     if (printData["memberNo"] != null && printData["memberNo"] != "") {
-      lineZeng += 20;
+      lineZeng += 25;
       categoryMenus.add(
         _publicTwoColumnsTxtNewLine("カード番号", 26.0, FontWeight.w200,
             printData["memberNo"], 26.0, FontWeight.w100, false),
@@ -2417,7 +2417,7 @@ print(systemSettingInfo);
       categoryMenus.add(_publicSplitLine());
     }
     if (printData["serialNo"] != null && printData["serialNo"] != "") {
-      lineZeng += 20;
+      lineZeng += 25;
       categoryMenus.add(
         _publicTwoColumnsTxtNewLine("カード取引通番", 26.0, FontWeight.w200,
             printData["serialNo"], 26.0, FontWeight.w100, false),
