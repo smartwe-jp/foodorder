@@ -211,7 +211,7 @@ class _SettlementPageState extends State<SettlementPage> {
     _getSystemSettingInfo();
 
     Future.delayed(const Duration(),
-        () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+            () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
 
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
     if (_payment_method_num == "0" || _payment_method_num == "1") {
@@ -263,7 +263,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-print(systemSettingInfo);
+    print(systemSettingInfo);
     setState(() {
       _is_allow_receipt = systemSettingInfo['isAllowReceipt'];
       _print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
@@ -356,23 +356,23 @@ print(systemSettingInfo);
         children: [
           Expanded(
               child: Container(
-            width: ScreenAdapter.width(930),
-            child: GetBuilder<HomePageController>(
-              builder: (_) {
-                if (controller.cartItems.length == 0) {
-                  return Center(
-                    child: Text("No item found"),
-                  );
-                }
-                return ListView(
-                  shrinkWrap: true,
-                  children: controller.cartItems
-                      .map((d) => generateCartList(context, d))
-                      .toList(),
-                );
-              },
-            ),
-          )),
+                width: ScreenAdapter.width(930),
+                child: GetBuilder<HomePageController>(
+                  builder: (_) {
+                    if (controller.cartItems.length == 0) {
+                      return Center(
+                        child: Text("No item found"),
+                      );
+                    }
+                    return ListView(
+                      shrinkWrap: true,
+                      children: controller.cartItems
+                          .map((d) => generateCartList(context, d))
+                          .toList(),
+                    );
+                  },
+                ),
+              )),
           Container(
               height: ScreenAdapter.height(150),
               child: Row(
@@ -437,52 +437,52 @@ print(systemSettingInfo);
           children: <Widget>[
             Expanded(
                 child: Container(
-              //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
-              //width: ScreenAdapter.width(495),
-              child: RichText(
-                text: TextSpan(
-                    text: d.mainTitle,
-                    style: TextStyle(
-                        fontSize:
+                  //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
+                  //width: ScreenAdapter.width(495),
+                  child: RichText(
+                    text: TextSpan(
+                        text: d.mainTitle,
+                        style: TextStyle(
+                            fontSize:
                             ScreenAdapter.fontSize(GFontSize.cartListTitle),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
-                    children: [
-                      d.goodsNum > 1
-                          ? TextSpan(
-                              text: " x ${d.goodsNum}",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.cartListTitleCount),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            )
-                          : TextSpan(
-                              text: "",
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor)),
+                        children: [
+                          d.goodsNum > 1
+                              ? TextSpan(
+                            text: " x ${d.goodsNum}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.cartListTitleCount),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
                             ),
-                      (d.optionVoListMsg != "")
-                          ? TextSpan(
-                              text: "（${d.optionVoListMsg}）",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.cartListTitleTag),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
-                            )
-                          : TextSpan(
-                              text: "",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(
-                                    GFontSize.cartListTitleTag),
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.mainTitleColor),
-                              ),
+                          )
+                              : TextSpan(
+                            text: "",
+                          ),
+                          (d.optionVoListMsg != "")
+                              ? TextSpan(
+                            text: "（${d.optionVoListMsg}）",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.cartListTitleTag),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
                             ),
-                    ]),
-              ),
-            )),
+                          )
+                              : TextSpan(
+                            text: "",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(
+                                  GFontSize.cartListTitleTag),
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                            ),
+                          ),
+                        ]),
+                  ),
+                )),
             Container(
               width: ScreenAdapter.width(140),
               alignment: Alignment.centerRight,
@@ -666,28 +666,28 @@ print(systemSettingInfo);
     int queryCount = 0;
     ScanCodeConfirmTimer?.cancel();
     ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
-        (Timer ConfirmTimer) async {
-      queryCount++;
-      if (queryCount > 60) {
-        //退出关闭
-        ConfirmTimer?.cancel();
-        _showScanCodeTimeOutDialog();
-      }
+            (Timer ConfirmTimer) async {
+          queryCount++;
+          if (queryCount > 60) {
+            //退出关闭
+            ConfirmTimer?.cancel();
+            _showScanCodeTimeOutDialog();
+          }
 
-      var formData = {
-        "orderId": this._orderId,
-      };
-      request('webBootLinePayConfirm', method: 'POST', parameters: formData)
-          .then((val) {
-        var response = json.decode(val.toString());
+          var formData = {
+            "orderId": this._orderId,
+          };
+          request('webBootLinePayConfirm', method: 'POST', parameters: formData)
+              .then((val) {
+            var response = json.decode(val.toString());
 
-        if (response['code'] == 200 && response['data'] == true) {
-          //退出关闭
-          ConfirmTimer?.cancel();
-          doPrintOrderMenu("1");
-        }
-      });
-    });
+            if (response['code'] == 200 && response['data'] == true) {
+              //退出关闭
+              ConfirmTimer?.cancel();
+              doPrintOrderMenu("1");
+            }
+          });
+        });
   }
 
   _doScanCodeTimeOutLastQuery() {
@@ -715,7 +715,7 @@ print(systemSettingInfo);
     });
 
     var show_dialog_content =
-        GString.getToString(this._checkLanguage, "settlement_nopayment_error");
+    GString.getToString(this._checkLanguage, "settlement_nopayment_error");
 
     //支付状态
     showDialog(
@@ -927,7 +927,7 @@ print(systemSettingInfo);
                                 height: 40,
                                 child: DecoratedBox(
                                   decoration:
-                                      BoxDecoration(color: Colors.black12),
+                                  BoxDecoration(color: Colors.black12),
                                 ),
                               ),
                               Padding(
@@ -1038,109 +1038,109 @@ print(systemSettingInfo);
           var countLine = 0;//optionLine.ceil();
 
           //处理option 开始-----------
-        if((key.length+value[0].length) >(wrapNum-2)){
-          var newLineNum = 0.0;
-          //if(groupNameLength >wrapNum){
+          if((key.length+value[0].length) >(wrapNum-2)){
+            var newLineNum = 0.0;
+            //if(groupNameLength >wrapNum){
             newLineNum = groupNameLength / (wrapNum-2);
-          //}
-          countLine += newLineNum.ceil();
-          optionLine += newLineNum;
-          //if(optionNameLength >wrapNum){
-          var newLineNumLength = optionNameLength / (wrapNum-2);
-          //}
-          countLine += newLineNumLength.ceil();
-          optionLine += newLineNum;
+            //}
+            countLine += newLineNum.ceil();
+            optionLine += newLineNum;
+            //if(optionNameLength >wrapNum){
+            var newLineNumLength = optionNameLength / (wrapNum-2);
+            //}
+            countLine += newLineNumLength.ceil();
+            optionLine += newLineNum;
 
-          categoryMenus.add(Column(
-            textDirection: TextDirection.rtl,
-            children: [
-              Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(
-                            child:Text("${key}",
+            categoryMenus.add(Column(
+              textDirection: TextDirection.rtl,
+              children: [
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Expanded(
+                              child:Text("${key}",
+                                  softWrap: true,
+                                  style: TextStyle(
+                                    fontSize: print_menu_txt_size,
+                                    fontWeight: FontWeight.w100,
+                                    fontFamily: 'ZenKakuGothicAntique',
+                                    color: ColorsUtil.hexToColor("#000000"),
+                                  ))
+                          )
+                      ),
+
+                    ],
+                  ),
+                ),
+                Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
+                  child: Row(
+                    mainAxisAlignment: (value[0].length >(wrapNum-2) ) ? MainAxisAlignment.start : MainAxisAlignment.end,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Expanded(
+                            child: Text("${value[0]}",
                                 softWrap: true,
+                                textAlign: (value[0].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
                                 style: TextStyle(
                                   fontSize: print_menu_txt_size,
                                   fontWeight: FontWeight.w100,
                                   fontFamily: 'ZenKakuGothicAntique',
                                   color: ColorsUtil.hexToColor("#000000"),
-                                ))
-                        )
-                    ),
-
-                  ],
+                                )),
+                          )),
+                    ],
+                  ),
                 ),
-              ),
-              Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
-                child: Row(
-                  mainAxisAlignment: (value[0].length >(wrapNum-2) ) ? MainAxisAlignment.start : MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(
-                          child: Text("${value[0]}",
-                              softWrap: true,
-                              textAlign: (value[0].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
-                              style: TextStyle(
-                                fontSize: print_menu_txt_size,
-                                fontWeight: FontWeight.w100,
-                                fontFamily: 'ZenKakuGothicAntique',
-                                color: ColorsUtil.hexToColor("#000000"),
-                              )),
-                        )),
-                  ],
-                ),
-              ),
-            ],
-          ));
-        }else{
-          countLine += 1;
-
-          categoryMenus.add(Container(
-            padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.ltr,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("${key}",
-                        softWrap: true,
-                        style: TextStyle(
-                          fontSize: print_menu_txt_size,
-                          fontWeight: FontWeight.w100,
-                          fontFamily: 'ZenKakuGothicAntique',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ))
-                ),
-                Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text("${value[0]}",
-                        softWrap: true,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: print_menu_txt_size,
-                          fontWeight: FontWeight.w100,
-                          fontFamily: 'ZenKakuGothicAntique',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ))),
               ],
-            ),
-          ));
-        }
+            ));
+          }else{
+            countLine += 1;
 
-        var newOptionSonLine = 0.0;
+            categoryMenus.add(Container(
+              padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                textDirection: TextDirection.ltr,
+                children: [
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Text("${key}",
+                          softWrap: true,
+                          style: TextStyle(
+                            fontSize: print_menu_txt_size,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ))
+                  ),
+                  Directionality(
+                      textDirection: TextDirection.rtl,
+                      child: Text("${value[0]}",
+                          softWrap: true,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: print_menu_txt_size,
+                            fontWeight: FontWeight.w100,
+                            fontFamily: 'ZenKakuGothicAntique',
+                            color: ColorsUtil.hexToColor("#000000"),
+                          ))),
+                ],
+              ),
+            ));
+          }
+
+          var newOptionSonLine = 0.0;
           if(value.length>1){
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
@@ -1181,7 +1181,7 @@ print(systemSettingInfo);
           }
 
 
-        //处理option结束-----------
+          //处理option结束-----------
 
           var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
           //addRowHight += 52 * optionRowNum;
@@ -1227,21 +1227,21 @@ print(systemSettingInfo);
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //Future.delayed(Duration(milliseconds: 50), () async {
-      String base64Image = base64Encode(imageBytes);
-      //LogUtil.d(base64Image);
-      if (printType == "1") {
+    String base64Image = base64Encode(imageBytes);
+    //LogUtil.d(base64Image);
+    if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
-        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
-        Future.delayed(Duration(milliseconds: 300), () async {
-          await FlutterPluginMsprinter.sendPrintCut("1");
-          _tpPrintReceipt(printData);
-        });
-      } else {
-        await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
-        Future.delayed(Duration(milliseconds: 300), () async {
-          await FlutterPluginMsprinter.sendPrintCut("0");
-        });
-      }
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
+      Future.delayed(Duration(milliseconds: 300), () async {
+        await FlutterPluginMsprinter.sendPrintCut("1");
+        _tpPrintReceipt(printData);
+      });
+    } else {
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
+      Future.delayed(Duration(milliseconds: 300), () async {
+        await FlutterPluginMsprinter.sendPrintCut("0");
+      });
+    }
 
     //});
   }
@@ -1259,7 +1259,7 @@ print(systemSettingInfo);
           }
         }
         //QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-          return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
+        return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
         //});
       }
     });
@@ -1289,7 +1289,7 @@ print(systemSettingInfo);
     }else{
       return;
     }
-  //print(printData);
+    //print(printData);
     _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
     /*var imageWidget = organizeData(serialNumber,printData,takeOut,orderTime);
     ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
@@ -1319,7 +1319,7 @@ print(systemSettingInfo);
   }
   _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
     for(var i=0;i<printData.length;i++){
-         wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
+      wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
 
     }
   }
@@ -1614,7 +1614,7 @@ print(systemSettingInfo);
 
     Uint8List imageBytes = byteData.buffer.asUint8List();
     var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
+        imgData: imageBytes,
         printType: PrintTypeEnum.receipt,
         imgSizeLimit : 560 * totalHight
     );
@@ -1731,12 +1731,12 @@ print(systemSettingInfo);
           if((key.length+value[0].length)>12){
             var newLineNum = 0.0;
             //if(groupNameLength >6){
-              newLineNum = groupNameLength / 12;
+            newLineNum = groupNameLength / 12;
             //}
             countLine += newLineNum.ceil();
             optionLine += newLineNum;
             //if(optionNameLength >6){
-              newLineNum = optionNameLength / 12;
+            newLineNum = optionNameLength / 12;
             //}
             countLine += newLineNum.ceil();
             optionLine += newLineNum;
@@ -1823,7 +1823,7 @@ print(systemSettingInfo);
           if(value.length>1){
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
-             // print(value[j]);
+              // print(value[j]);
               newOptionSonLine += value[j].length / 10;
               var oneOptionlength = value[j].length / 10;
               countLine += oneOptionlength.ceil();
@@ -1942,37 +1942,22 @@ print(systemSettingInfo);
 
   wifiNetPrintLabelnew(orderprintData) async {
 
-    ByteData byteData = await WidgetToImage.widgetToImage(
-        menuData(orderprintData)
-    );
+    Future.delayed(Duration(milliseconds: 1200),() async {
+      ByteData byteData = await WidgetToImage.widgetToImage(
+          menuData(orderprintData)
+      );
 
-    Uint8List imageBytes = byteData.buffer.asUint8List();
-   var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
-      printType: PrintTypeEnum.label,
-    );
-/*
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return Container(
-            height:400,
-            decoration: BoxDecoration(
-              color: Colors.red,
-              border: Border(
-                top: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                left: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                right: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-              ),
-            ),
+      Uint8List imageBytes = byteData.buffer.asUint8List();
+      var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+        imgData: imageBytes,
+        printType: PrintTypeEnum.label,
+      );
+      // 网络 打印
+      final conn = printerPlus.NetConn(_wlan_print_ip);
+      conn.writeMultiBytes(printData);
 
-            child: Image.memory(imageBytes),
-          );
-        });*/
-    // 网络 打印
-    final conn = printerPlus.NetConn(_wlan_print_ip);
-    conn.writeMultiBytes(printData);
+    });
+
   }
 
   Widget menuData(orderprintData){
@@ -2026,9 +2011,9 @@ print(systemSettingInfo);
                   ),
                 ),
 
-              Row(
-                mainAxisAlignment:MainAxisAlignment.start,
-                textDirection: TextDirection.ltr,
+                Row(
+                  mainAxisAlignment:MainAxisAlignment.start,
+                  textDirection: TextDirection.ltr,
                   children: [
                     Directionality(
                         textDirection: TextDirection.ltr,
@@ -2087,8 +2072,8 @@ print(systemSettingInfo);
     categoryMenus.add(SizedBox(height: 5,));
     //登录番号
     if(printData["ntaNo"] != null && printData["ntaNo"] != "")
-    categoryMenus.add(_publicOneColumnTxtNew(
-        "登録番号 ${printData["ntaNo"]}", 26.0, FontWeight.w300));
+      categoryMenus.add(_publicOneColumnTxtNew(
+          "登録番号 ${printData["ntaNo"]}", 26.0, FontWeight.w300));
     categoryMenus.add(SizedBox(height: 5,));
     categoryMenus.add(Container(
       alignment: Alignment.centerLeft,
@@ -2453,37 +2438,37 @@ print(systemSettingInfo);
             Expanded(child: Column(
               children: [
                 if(printData["payMethod"] == "現金支払")
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("お預り",
-                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("お預り",
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
-                        ),
-                        Text("￥${formatMoney(printData["payPrice"])}",
-                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                          ),
+                          Text("￥${formatMoney(printData["payPrice"])}",
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
-                        ),
-                      ],
-                    )),
+                          ),
+                        ],
+                      )),
                 if(printData["payMethod"] == "現金支払" && printData["change"] !=null)
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text("お釣",
-                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text("お釣",
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
-                        ),
-                        Text("￥${formatMoney(printData["change"])}",
-                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                          ),
+                          Text("￥${formatMoney(printData["change"])}",
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
-                        ),
-                      ],
-                    )),
+                          ),
+                        ],
+                      )),
               ],
             )),
           ],
@@ -2513,11 +2498,11 @@ print(systemSettingInfo);
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //Future.delayed(Duration(milliseconds: 200), () async {
-      String base64Image = base64Encode(imageBytes);
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
-      Future.delayed(Duration(milliseconds: 300), () async {
-        await FlutterPluginMsprinter.sendPrintCut("1");
-      });
+    String base64Image = base64Encode(imageBytes);
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",_printLogoImage);
+    Future.delayed(Duration(milliseconds: 300), () async {
+      await FlutterPluginMsprinter.sendPrintCut("1");
+    });
     //});
 
   }
@@ -2573,40 +2558,40 @@ print(systemSettingInfo);
               Expanded(child: Container()),
               (isMoney == true)
                   ? Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: RichText(
-                        text: TextSpan(
-                            text: "￥",
-                            //GString.getToString(this._checkLanguage, "show_price_front"),
+                  textDirection: TextDirection.ltr,
+                  child: RichText(
+                    text: TextSpan(
+                        text: "￥",
+                        //GString.getToString(this._checkLanguage, "show_price_front"),
+                        style: TextStyle(
+                          fontWeight: FontWeight.w100,
+                          fontSize: rightTxtFontSize,
+                          fontFamily: 'NotoSansJP',
+                          color: ColorsUtil.hexToColor("#000000"),
+                        ),
+                        children: [
+                          TextSpan(
+                            text: "${rightTxtContext} ",
                             style: TextStyle(
-                              fontWeight: FontWeight.w100,
                               fontSize: rightTxtFontSize,
+                              fontWeight: FontWeight.w200,
                               fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                             ),
-                            children: [
-                              TextSpan(
-                                text: "${rightTxtContext} ",
-                                style: TextStyle(
-                                  fontSize: rightTxtFontSize,
-                                  fontWeight: FontWeight.w200,
-                                  fontFamily: 'NotoSansJP',
-                                  color: ColorsUtil.hexToColor("#000000"),
-                                ),
-                              ),
-                            ]),
-                      ))
+                          ),
+                        ]),
+                  ))
                   : Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("${rightTxtContext} ",
-                          style: TextStyle(
-                            fontSize: rightTxtFontSize,
-                            fontWeight: rightTxtFontWeight,
-                            fontFamily: 'NotoSansJP',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w
-                            // 600
-                          ))),
+                  textDirection: TextDirection.ltr,
+                  child: Text("${rightTxtContext} ",
+                      style: TextStyle(
+                        fontSize: rightTxtFontSize,
+                        fontWeight: rightTxtFontWeight,
+                        fontFamily: 'NotoSansJP',
+                        color: ColorsUtil.hexToColor("#000000"),
+                        //fontWeight: FontWeight.w
+                        // 600
+                      ))),
             ],
           ),
         ));
@@ -2793,15 +2778,15 @@ print(systemSettingInfo);
                       textDirection: TextDirection.ltr,
                       child: Expanded(
                           child:Text("${leftTxtContext}",
-                          softWrap: true,
-                          style: TextStyle(
-                            fontSize: leftTxtFontSize,
-                            fontWeight: leftTxtFontWeight,
-                            fontFamily: 'ZenKakuGothicAntique',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          ))
+                              softWrap: true,
+                              style: TextStyle(
+                                fontSize: leftTxtFontSize,
+                                fontWeight: leftTxtFontWeight,
+                                fontFamily: 'ZenKakuGothicAntique',
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ))
                       )
-                      ),
+                  ),
                 ],
               ),
               Row(
@@ -2910,37 +2895,37 @@ print(systemSettingInfo);
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      _stopStatus = await Paycube.getPayCubeStopCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_stopStatus == "StopSuccess") {
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-          timer?.cancel();
-        });
-        //如果投币金额大于待支付总金额
-        if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
-          setState(() {
-            _giveChangeMoney =
-                int.parse(this._getPutMoney) - int.parse(this._totalPrice);
-          });
-          //找零
-          startOutPutMoney(_giveChangeMoney);
-        } else {
-          //已经结束入金，处理取引终了
-          payCubeCloseTransaction();
-        }
+          _stopStatus = await Paycube.getPayCubeStopCashStatus;
+          // 循环一定要记得设置取消条件，手动取消
+          if (_stopStatus == "StopSuccess") {
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+              timer?.cancel();
+            });
+            //如果投币金额大于待支付总金额
+            if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
+              setState(() {
+                _giveChangeMoney =
+                    int.parse(this._getPutMoney) - int.parse(this._totalPrice);
+              });
+              //找零
+              startOutPutMoney(_giveChangeMoney);
+            } else {
+              //已经结束入金，处理取引终了
+              payCubeCloseTransaction();
+            }
 
-        stopt.cancel();
-      }
-      /*else if(_stopStatus == "Error-A0--02" || _stopStatus == "Error-F0--16"){
+            stopt.cancel();
+          }
+          /*else if(_stopStatus == "Error-A0--02" || _stopStatus == "Error-F0--16"){
         //处理中
         await Paycube.endPayCube;
       }*/
-      else {
-        await Paycube.endPayCube;
-      }
-    });
+          else {
+            await Paycube.endPayCube;
+          }
+        });
   }
 
   //现金及支付
@@ -2952,28 +2937,28 @@ print(systemSettingInfo);
     allowtimer?.cancel();
     allowtimer =
         Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
-      _allowStatus = await Paycube.getPayCubeAllowCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_allowStatus == "AllowSuccess") {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 120;
+          _allowStatus = await Paycube.getPayCubeAllowCashStatus;
+          // 循环一定要记得设置取消条件，手动取消
+          if (_allowStatus == "AllowSuccess") {
+            //如果打开了现金机，则去掉倒计时监听
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 120;
+            });
+
+            getPutInMoney();
+
+            allowt.cancel();
+          } else if (_allowStatus == "Error-F0--16") {
+            await Paycube.endTrade;
+            //sleep(Duration(milliseconds: 200));
+            await Paycube.strartPayCube;
+          } else if (_allowStatus == "Error-A0--02") {
+            //sleep(Duration(milliseconds: 300));
+          } else {
+            await Paycube.strartPayCube;
+          }
         });
-
-        getPutInMoney();
-
-        allowt.cancel();
-      } else if (_allowStatus == "Error-F0--16") {
-        await Paycube.endTrade;
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.strartPayCube;
-      } else if (_allowStatus == "Error-A0--02") {
-        //sleep(Duration(milliseconds: 300));
-      } else {
-        await Paycube.strartPayCube;
-      }
-    });
   }
 
   //获取投入金额
@@ -3019,38 +3004,38 @@ print(systemSettingInfo);
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      _stopStatus = await Paycube.getPayCubeStopCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_stopStatus == "StopSuccess") {
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-          timer?.cancel();
-        });
-        if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
-          setState(() {
-            _giveChangeMoney =
-                int.parse(this._getPutMoney) - int.parse(this._totalPrice);
-          });
+          _stopStatus = await Paycube.getPayCubeStopCashStatus;
+          // 循环一定要记得设置取消条件，手动取消
+          if (_stopStatus == "StopSuccess") {
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+              timer?.cancel();
+            });
+            if (int.parse(this._getPutMoney) > int.parse(this._totalPrice)) {
+              setState(() {
+                _giveChangeMoney =
+                    int.parse(this._getPutMoney) - int.parse(this._totalPrice);
+              });
 
-          if (_isPrint == false) {
-            startOutPutMoney(_giveChangeMoney);
-          }
-        } else if (int.parse(this._getPutMoney) == int.parse(this._totalPrice)) {
-          if (_isPrint == false) {
-            //已经结束入金，处理取引终了
-            payCubeCloseTransaction();
-          }
-        }/* else {
+              if (_isPrint == false) {
+                startOutPutMoney(_giveChangeMoney);
+              }
+            } else if (int.parse(this._getPutMoney) == int.parse(this._totalPrice)) {
+              if (_isPrint == false) {
+                //已经结束入金，处理取引终了
+                payCubeCloseTransaction();
+              }
+            }/* else {
           showToast(
               GString.getToString(this._checkLanguage, "show_put_money_error"));
         }*/
 
-        stopt.cancel();
-      } else {
-        await Paycube.endPayCube;
-      }
-    });
+            stopt.cancel();
+          } else {
+            await Paycube.endPayCube;
+          }
+        });
   }
 
   startOutPutMoney(outMoney) async {
@@ -3065,27 +3050,27 @@ print(systemSettingInfo);
     outmoneytimer?.cancel();
     outmoneytimer =
         Timer.periodic(Duration(milliseconds: 200), (Timer outmoneyt) async {
-      _outStatus = await Paycube.getPayCubeOutMoneyStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_outStatus == "OutSuccess") {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-        });
-        //如果取消不汇报，则出金后直接关闭 ？？？？？？
-        _getPayCubeOutMoney();
+          _outStatus = await Paycube.getPayCubeOutMoneyStatus;
+          // 循环一定要记得设置取消条件，手动取消
+          if (_outStatus == "OutSuccess") {
+            //如果打开了现金机，则去掉倒计时监听
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+            });
+            //如果取消不汇报，则出金后直接关闭 ？？？？？？
+            _getPayCubeOutMoney();
 
-        outmoneyt.cancel();
-      } else if (_outStatus == "Error-A0--02") {
-        //await Paycube.setReceiveEvent;
-        //sleep(Duration(milliseconds: 200));
-        //await Paycube.getPayCubeOutMoneyStatus;
-        //print("_outStatus处理中:$_outStatus");
-      } else {
-        await Paycube.outPayCubeMoney(outStringMoney);
-      }
-    });
+            outmoneyt.cancel();
+          } else if (_outStatus == "Error-A0--02") {
+            //await Paycube.setReceiveEvent;
+            //sleep(Duration(milliseconds: 200));
+            //await Paycube.getPayCubeOutMoneyStatus;
+            //print("_outStatus处理中:$_outStatus");
+          } else {
+            await Paycube.outPayCubeMoney(outStringMoney);
+          }
+        });
   }
 
   gotonewMyhome() {
@@ -3167,22 +3152,22 @@ print(systemSettingInfo);
 
     OutMoneytimer =
         Timer.periodic(Duration(milliseconds: 400), (Timer outMoneyTime) async {
-      // 循环一定要记得设置取消条件，手动取消
-      String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
-      if (currencyString.trim().length > 0) {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-          _currencyString = currencyString;
+          // 循环一定要记得设置取消条件，手动取消
+          String currencyString = await Paycube.getPayCubeOutMoneyCurrency;
+          if (currencyString.trim().length > 0) {
+            //如果打开了现金机，则去掉倒计时监听
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+              _currencyString = currencyString;
+            });
+
+            //汇报出金币种
+            reportOutMoney();
+
+            outMoneyTime.cancel();
+          }
         });
-
-        //汇报出金币种
-        reportOutMoney();
-
-        outMoneyTime.cancel();
-      }
-    });
   }
 
   //汇报出金币种,请求后台
@@ -3206,22 +3191,22 @@ print(systemSettingInfo);
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      _stopStatus = await Paycube.getPayCubeStopCashStatus;
-      //await Paycube.setReceiveEvent;
-      // 循环一定要记得设置取消条件，手动取消
-      if (_stopStatus == "StopSuccess") {
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
+          _stopStatus = await Paycube.getPayCubeStopCashStatus;
+          //await Paycube.setReceiveEvent;
+          // 循环一定要记得设置取消条件，手动取消
+          if (_stopStatus == "StopSuccess") {
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+            });
+            //print("扫码成功结束");
+            payCubeCloseTransaction();
+            stopt.cancel();
+          } else {
+            //sleep(Duration(milliseconds: 150));
+            await Paycube.endPayCube;
+          }
         });
-        //print("扫码成功结束");
-        payCubeCloseTransaction();
-        stopt.cancel();
-      } else {
-        //sleep(Duration(milliseconds: 150));
-        await Paycube.endPayCube;
-      }
-    });
   }
 
   payCubeCloseTransaction() async {
@@ -3239,26 +3224,26 @@ print(systemSettingInfo);
     endtimer?.cancel();
     endtimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer endtradet) async {
-      _endStatus = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
-      if (_endStatus == "EndSuccess") {
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-        });
-        //关闭机器后的跳转
-        if (_isPrint == true) {
-          gotonewBack();
-        } else {
-          gotonewMenuPage();
-        }
+          _endStatus = await Paycube.getPayCubeEndTradeStatus;
+          // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+          if (_endStatus == "EndSuccess") {
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+            });
+            //关闭机器后的跳转
+            if (_isPrint == true) {
+              gotonewBack();
+            } else {
+              gotonewMenuPage();
+            }
 
-        endtradet.cancel();
-      } else {
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.endTrade;
-      }
-    });
+            endtradet.cancel();
+          } else {
+            //sleep(Duration(milliseconds: 200));
+            await Paycube.endTrade;
+          }
+        });
   }
 
   //取消购买 要判断是否投入现金，如果投入现金则现金机出金，出已投金额，否则直接取消退回首页 model0 券卖机 `1精算机
@@ -3408,21 +3393,21 @@ print(systemSettingInfo);
     await Paycube.setReceiveEvent;
     _countDownTimer("8");
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400),
-        (Timer putMoneyCurrencyTime) async {
-      // 循环一定要记得设置取消条件，手动取消
-      String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
-      if (putcurrencyString.trim().length > 0) {
-        showCashTimer?.cancel();
-        setState(() {
-          seconds = 180;
-          _getPutMoneyCurrency = putcurrencyString;
-        });
-        //汇报入金币种
-        reportPutMoneyCurrency();
+            (Timer putMoneyCurrencyTime) async {
+          // 循环一定要记得设置取消条件，手动取消
+          String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
+          if (putcurrencyString.trim().length > 0) {
+            showCashTimer?.cancel();
+            setState(() {
+              seconds = 180;
+              _getPutMoneyCurrency = putcurrencyString;
+            });
+            //汇报入金币种
+            reportPutMoneyCurrency();
 
-        putMoneyCurrencyTime.cancel();
-      }
-    });
+            putMoneyCurrencyTime.cancel();
+          }
+        });
   }
 
   //汇报入金币种,请求后台
@@ -3619,12 +3604,12 @@ print(systemSettingInfo);
 
   _showBackEasyLoading() {
     var _showTag =
-        Text(GString.getToString(this._checkLanguage, "settlement_noprint_tag"),
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(25),
-              fontWeight: FontWeight.w600,
-              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-            ));
+    Text(GString.getToString(this._checkLanguage, "settlement_noprint_tag"),
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
@@ -3778,7 +3763,7 @@ print(systemSettingInfo);
           //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
 
           if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
-            //CancelOrder();
+          //CancelOrder();
           _showEasyLoading();
           }
         } else {
@@ -3909,7 +3894,7 @@ print(systemSettingInfo);
   @override
   Widget build(BuildContext context) {
     var _settlement_payment_method =
-        GString.getToString(this._checkLanguage, "settlement_payment_method");
+    GString.getToString(this._checkLanguage, "settlement_payment_method");
 
     return Scaffold(
       backgroundColor: ColorsUtil.hexToColor("#FFFFFF"),
@@ -3925,33 +3910,33 @@ print(systemSettingInfo);
                 children: <Widget>[
                   Expanded(
                       child: TextField(
-                    keyboardType: TextInputType.number,
-                    autofocus: true,
-                    showCursor: false,
-                    // 显示光标
-                    //readOnly: true,
-                    controller: _scanQrCodeController,
-                    focusNode: _scanQrCodeFocusNode,
-                    decoration: InputDecoration(
-                      hintText: "请扫码",
-                      border: InputBorder.none,
-                      isDense: true,
-                    ),
-                    style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
-                    obscureText: false,
-                    onChanged: (value) {
-                      //print(value);
-                    },
-                    onSubmitted: (value) {
-                      setState(() {
-                        this._scanQrCode = value;
-                      });
+                        keyboardType: TextInputType.number,
+                        autofocus: true,
+                        showCursor: false,
+                        // 显示光标
+                        //readOnly: true,
+                        controller: _scanQrCodeController,
+                        focusNode: _scanQrCodeFocusNode,
+                        decoration: InputDecoration(
+                          hintText: "请扫码",
+                          border: InputBorder.none,
+                          isDense: true,
+                        ),
+                        style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                        obscureText: false,
+                        onChanged: (value) {
+                          //print(value);
+                        },
+                        onSubmitted: (value) {
+                          setState(() {
+                            this._scanQrCode = value;
+                          });
 
-                      _doToPay();
-                    },
+                          _doToPay();
+                        },
 
-                    /// 扫码密码
-                  )),
+                        /// 扫码密码
+                      )),
                 ],
               ),
             ),
@@ -4509,7 +4494,7 @@ print(systemSettingInfo);
                                   ),
                                 if(_showMaster == true)
                                   Container(
-                                   // width: ScreenAdapter.width(120),
+                                    // width: ScreenAdapter.width(120),
                                     //height: ScreenAdapter.height(90),
                                     alignment: Alignment.center,
                                     padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
@@ -4786,14 +4771,14 @@ print(systemSettingInfo);
                         bottom: ScreenAdapter.height(15),
                       ),
                       padding:
-                          EdgeInsets.only(bottom: ScreenAdapter.height(20)),
+                      EdgeInsets.only(bottom: ScreenAdapter.height(20)),
                       decoration: BoxDecoration(
                           border: Border(
-                        bottom: BorderSide(
-                            color: ColorsUtil.hexToColor("#D8D8D8"),
-                            width: 2.5),
-                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                      )),
+                            bottom: BorderSide(
+                                color: ColorsUtil.hexToColor("#D8D8D8"),
+                                width: 2.5),
+                            //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                          )),
                       child: Row(
                         crossAxisAlignment: CrossAxisAlignment.end,
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -4841,14 +4826,14 @@ print(systemSettingInfo);
                           bottom: ScreenAdapter.height(15),
                         ),
                         padding:
-                            EdgeInsets.only(bottom: ScreenAdapter.height(20)),
+                        EdgeInsets.only(bottom: ScreenAdapter.height(20)),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom: BorderSide(
-                              color: ColorsUtil.hexToColor("#D8D8D8"),
-                              width: 2.5),
-                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                        )),
+                              bottom: BorderSide(
+                                  color: ColorsUtil.hexToColor("#D8D8D8"),
+                                  width: 2.5),
+                              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                            )),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -4883,11 +4868,11 @@ print(systemSettingInfo);
                                           fontSize: ScreenAdapter.fontSize(28),
                                           fontWeight: FontWeight.w600,
                                           color:
-                                              (int.parse(this._getPutMoney) > 0)
-                                                  ? ColorsUtil.hexToColor(
-                                                      Gcolor.mainTitleColor)
-                                                  : ColorsUtil.hexToColor(
-                                                      "#808080"),
+                                          (int.parse(this._getPutMoney) > 0)
+                                              ? ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor)
+                                              : ColorsUtil.hexToColor(
+                                              "#808080"),
                                         ),
                                       ),
                                     ]),
@@ -4903,14 +4888,14 @@ print(systemSettingInfo);
                           bottom: ScreenAdapter.height(15),
                         ),
                         padding:
-                            EdgeInsets.only(bottom: ScreenAdapter.height(20)),
+                        EdgeInsets.only(bottom: ScreenAdapter.height(20)),
                         decoration: BoxDecoration(
                             border: Border(
-                          bottom: BorderSide(
-                              color: ColorsUtil.hexToColor("#D8D8D8"),
-                              width: 2.5),
-                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                        )),
+                              bottom: BorderSide(
+                                  color: ColorsUtil.hexToColor("#D8D8D8"),
+                                  width: 2.5),
+                              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                            )),
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.end,
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -4945,12 +4930,12 @@ print(systemSettingInfo);
                                           fontSize: ScreenAdapter.fontSize(28),
                                           fontWeight: FontWeight.w600,
                                           color:
-                                              (int.parse(this._showOutMoney) >
-                                                      0)
-                                                  ? ColorsUtil.hexToColor(
-                                                      Gcolor.mainTitleColor)
-                                                  : ColorsUtil.hexToColor(
-                                                      "#808080"),
+                                          (int.parse(this._showOutMoney) >
+                                              0)
+                                              ? ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor)
+                                              : ColorsUtil.hexToColor(
+                                              "#808080"),
                                         ),
                                       ),
                                     ]),
@@ -5021,72 +5006,12 @@ print(systemSettingInfo);
                     _showPrintButton == true
                         ? (
                         _is_allow_receipt == "1"
-                        ? Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(20)),
-                      width: ScreenAdapter.width(540),
-                      alignment: Alignment.centerLeft,
-                      child: InkWell(
-                        onTap: () {
-                          if (_allowClick == true) {
-                            setState(() {
-                              _allowClick = false;
-                            });
-
-                            _showEasyLoading();
-
-                            doPrintOrderMenu("1");
-                          }
-                        },
-                        child: Container(
+                            ? Container(
                           margin: EdgeInsets.only(
                               left: ScreenAdapter.width(20)),
-                          width: ScreenAdapter.width(270),
-                          height: ScreenAdapter.height(140),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                              colors: [
-                                ColorsUtil.hexToColor("#C47829"),
-                                ColorsUtil.hexToColor("#854610"),
-                              ],
-                            ),
-                            //设置圆角
-                            borderRadius:
-                            new BorderRadius.circular((5.0)),
-                          ),
-                          child: Column(
-                            mainAxisAlignment:
-                            MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                  GString.getToString(
-                                      this._checkLanguage,
-                                      "settlement_confirmButton"),
-                                  style: TextStyle(
-                                    fontSize:
-                                    ScreenAdapter.fontSize(32),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.settlementBtnColor),
-                                  )),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                        : Container(
-                      width: ScreenAdapter.width(540),
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(20)),
-                      alignment: Alignment.centerLeft,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          InkWell(
+                          width: ScreenAdapter.width(540),
+                          alignment: Alignment.centerLeft,
+                          child: InkWell(
                             onTap: () {
                               if (_allowClick == true) {
                                 setState(() {
@@ -5099,13 +5024,20 @@ print(systemSettingInfo);
                               }
                             },
                             child: Container(
-                              //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                              width: ScreenAdapter.width(220),
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(20)),
+                              width: ScreenAdapter.width(270),
                               height: ScreenAdapter.height(140),
                               alignment: Alignment.center,
                               decoration: BoxDecoration(
-                                color:
-                                ColorsUtil.hexToColor("#148DE8"),
+                                gradient: LinearGradient(
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight,
+                                  colors: [
+                                    ColorsUtil.hexToColor("#C47829"),
+                                    ColorsUtil.hexToColor("#854610"),
+                                  ],
+                                ),
                                 //设置圆角
                                 borderRadius:
                                 new BorderRadius.circular((5.0)),
@@ -5114,7 +5046,60 @@ print(systemSettingInfo);
                                 mainAxisAlignment:
                                 MainAxisAlignment.center,
                                 children: [
-                                  /*Text(
+                                  Text(
+                                      GString.getToString(
+                                          this._checkLanguage,
+                                          "settlement_confirmButton"),
+                                      style: TextStyle(
+                                        fontSize:
+                                        ScreenAdapter.fontSize(32),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(
+                                            Gcolor.settlementBtnColor),
+                                      )),
+                                ],
+                              ),
+                            ),
+                          ),
+                        )
+                            : Container(
+                          width: ScreenAdapter.width(540),
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(20)),
+                          alignment: Alignment.centerLeft,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  if (_allowClick == true) {
+                                    setState(() {
+                                      _allowClick = false;
+                                    });
+
+                                    _showEasyLoading();
+
+                                    doPrintOrderMenu("1");
+                                  }
+                                },
+                                child: Container(
+                                  //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                  width: ScreenAdapter.width(220),
+                                  height: ScreenAdapter.height(140),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color:
+                                    ColorsUtil.hexToColor("#148DE8"),
+                                    //设置圆角
+                                    borderRadius:
+                                    new BorderRadius.circular((5.0)),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton"),
@@ -5127,20 +5112,20 @@ print(systemSettingInfo);
                                             Gcolor
                                                 .settlementBtnColor),
                                       )),*/
-                                  Text(
-                                      GString.getToString(
-                                          this._checkLanguage,
-                                          "settlement_confirmButton_yes"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            32),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),
-                                  /*Text(
+                                      Text(
+                                          GString.getToString(
+                                              this._checkLanguage,
+                                              "settlement_confirmButton_yes"),
+                                          style: TextStyle(
+                                            fontSize:
+                                            ScreenAdapter.fontSize(
+                                                32),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor
+                                                    .settlementBtnColor),
+                                          )),
+                                      /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton_yes"),
@@ -5153,46 +5138,46 @@ print(systemSettingInfo);
                                             Gcolor
                                                 .settlementBtnColor),
                                       )),*/
-                                ],
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                          SizedBox(width: ScreenAdapter.width(30)),
-                          InkWell(
-                            onTap: () {
-                              if (_allowClick == true) {
-                                setState(() {
-                                  _allowClick = false;
-                                  _is_query_receipt = "2";
-                                });
+                              SizedBox(width: ScreenAdapter.width(30)),
+                              InkWell(
+                                onTap: () {
+                                  if (_allowClick == true) {
+                                    setState(() {
+                                      _allowClick = false;
+                                      _is_query_receipt = "2";
+                                    });
 
-                                if (_machineMode == "1") {
-                                  _showEasyLoading();
-                                } else {
-                                  _showSuccessEasyLoading();
-                                }
+                                    if (_machineMode == "1") {
+                                      _showEasyLoading();
+                                    } else {
+                                      _showSuccessEasyLoading();
+                                    }
 
-                                doPrintOrderMenu("2");
-                              }
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(220),
-                              height: ScreenAdapter.height(140),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color:
-                                ColorsUtil.hexToColor("#67c23a"),
-                                //设置圆角
-                                borderRadius:
-                                new BorderRadius.circular((5.0)),
-                              ),
-                              child: Column(
-                                mainAxisAlignment:
-                                MainAxisAlignment.center,
-                                children: [
-                                  /*Text(
+                                    doPrintOrderMenu("2");
+                                  }
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      left: ScreenAdapter.width(10)),
+                                  width: ScreenAdapter.width(220),
+                                  height: ScreenAdapter.height(140),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color:
+                                    ColorsUtil.hexToColor("#67c23a"),
+                                    //设置圆角
+                                    borderRadius:
+                                    new BorderRadius.circular((5.0)),
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment:
+                                    MainAxisAlignment.center,
+                                    children: [
+                                      /*Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton"),
@@ -5205,20 +5190,20 @@ print(systemSettingInfo);
                                             Gcolor
                                                 .settlementBtnColor),
                                       )),*/
-                                  Text(
-                                      GString.getToString(
-                                          this._checkLanguage,
-                                          "settlement_confirmButton_no2"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            32),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),
-                                 /* Text(
+                                      Text(
+                                          GString.getToString(
+                                              this._checkLanguage,
+                                              "settlement_confirmButton_no2"),
+                                          style: TextStyle(
+                                            fontSize:
+                                            ScreenAdapter.fontSize(
+                                                32),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor
+                                                    .settlementBtnColor),
+                                          )),
+                                      /* Text(
                                       GString.getToString(
                                           this._checkLanguage,
                                           "settlement_confirmButton_no"),
@@ -5231,20 +5216,20 @@ print(systemSettingInfo);
                                             Gcolor
                                                 .settlementBtnColor),
                                       )),*/
-                                ],
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           ),
-                        ],
-                      ),
-                    )
+                        )
                     )
                         : Container(
-                            margin:
-                                EdgeInsets.only(left: ScreenAdapter.width(20)),
-                            width: ScreenAdapter.width(540),
-                            height: ScreenAdapter.height(100),
-                          ),
+                      margin:
+                      EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      width: ScreenAdapter.width(540),
+                      height: ScreenAdapter.height(100),
+                    ),
                   ],
                 ),
               ),

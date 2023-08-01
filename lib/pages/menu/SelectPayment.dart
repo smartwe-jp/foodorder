@@ -269,7 +269,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                 ),
                               ),
                             ),
-                            if(_showAlipay == true || _showWechat == true || _showPayPay == true || _showCreditCard == true)
+                            if(_showAlipay == true || _showWechat == true || _showPayPay == true)
                               InkWell(
                                 onTap: (){
                                   setState(() {
@@ -460,7 +460,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                         SizedBox(
                           height: ScreenAdapter.height(60),
                         ),
-                        if(_isAllowPos =="1" && (_showCreditCard == true || _showVisa== true || _showMaster == true || _showJcb == true || _showUnionPay == true || _showAmericanExpress == true || _showDinersClub == true))
+                        if(_isAllowPos =="1" && _showCreditCard == true && ( _showVisa== true || _showMaster == true || _showJcb == true || _showUnionPay == true || _showAmericanExpress == true || _showDinersClub == true))
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
