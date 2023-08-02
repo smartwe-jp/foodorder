@@ -8,6 +8,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
@@ -20,9 +21,11 @@ import 'package:foodorder/services/Storage.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:paycube/paycube.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 import 'config/colorsUtil.dart';
 import 'config/index.dart';
+import 'config/printer_info.dart';
 
 Future<void> main() async {
 
@@ -57,6 +60,28 @@ class MyApp extends StatelessWidget {
   final easyload = EasyLoading.init();
   final ftoast = FToastBuilder();
 
+  //打印图层生成成功
+  Future<void> _onPictureGenerated(PicGenerateResult data) async {
+  final imageBytes = data.data;
+  final printTask = data.taskItem;
+
+  //指定的打印机
+  final printerInfo = printTask.params as PrinterInfo;
+  //打印票据类型（标签、小票）
+  final printTypeEnum = printTask.printTypeEnum;
+
+  if (imageBytes != null) {
+    var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+      imgData: imageBytes,
+      printType: printTypeEnum,
+    );
+
+    // 网络 打印
+    final conn = printerPlus.NetConn(printerInfo.ip);
+    conn.writeMultiBytes(printData);
+  }
+  }
+
   @override
   Widget build(BuildContext context) {
     return ScreenUtilInit(
@@ -84,7 +109,14 @@ class MyApp extends StatelessWidget {
           }
         );
       },
-      child: MyHomePage(),
+      child: Scaffold(
+        body: PrintImageGenerateWidget(
+          contentBuilder: (context) {
+            return MyHomePage();
+          },
+          onPictureGenerated: _onPictureGenerated,
+        ),
+      ),
     );
   }
 }
@@ -445,7 +477,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _goMain() async {
 
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/transitPage');
+      Navigator.pushNamed(context,"/transitPage");
+      //Navigator.of(context).pushReplacementNamed('/transitPage');
     });
 
   }
@@ -453,7 +486,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _goActivation() async {
 
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/activation');
+      Navigator.pushNamed(context,"/activation");
+      //Navigator.of(context).pushReplacementNamed('/activation');
     });
 
   }

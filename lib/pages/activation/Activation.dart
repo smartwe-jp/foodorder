@@ -46,7 +46,8 @@ class _ActivationPageState extends State<ActivationPage> {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/transitPage');
+      //Navigator.of(context).pushReplacementNamed('/transitPage');
+      Navigator.pushNamed(context,"/transitPage");
     });
   }
 
@@ -88,7 +89,7 @@ class _ActivationPageState extends State<ActivationPage> {
                 controller: _activationCodeController,
                 focusNode: _activationCodeFocusNode,
                 decoration: InputDecoration(
-                  hintText: "请输入激活码",
+                  hintText: "コードを入力してください",
                   border: InputBorder.none,
                   isDense: true,
                 ),

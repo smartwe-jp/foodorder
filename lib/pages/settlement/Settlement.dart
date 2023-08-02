@@ -14,6 +14,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
+import 'package:foodorder/pages/settlement/receipt_constrained_box.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/config/colorsUtil.dart';
 import 'package:foodorder/config/fontSize.dart';
@@ -45,6 +46,7 @@ import 'package:esc_pos_utils/esc_pos_utils.dart';
 
 import 'package:foodorder/services/queue_util.dart';
 
+import '../../config/printer_info.dart';
 import '../../widget/NumberCircle.dart';
 import 'label_constrained_box.dart';
 
@@ -1291,40 +1293,24 @@ class _SettlementPageState extends State<SettlementPage> {
     }
     //print(printData);
     _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
-    /*var imageWidget = organizeData(serialNumber,printData,takeOut,orderTime);
-    ByteData byteData = await WidgetToImage.widgetToImage(imageWidget);
 
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-
-    const PaperSize paper = PaperSize.mm80;
-    final profile = await CapabilityProfile.load();
-    final printer = NetworkPrinter(paper, profile);
-    final PosPrintResult res = await printer.connect(printerIpInfo["printer_ip"], port: int.parse(printerIpInfo["printer_port"]));
-
-    if (res == PosPrintResult.success) {
-      Future.delayed(Duration(milliseconds: 300),() async {
-        //网络打印机
-
-        printer.image(decodeImage(imageBytes));
-        printer.feed(1);
-        printer.cut();
-        printer.disconnect();
-      });
-
-    }else{
-      showToast(res.msg);
-      sleep(Duration(milliseconds: 5000));
-    }*/
   }
   _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
     for(var i=0;i<printData.length;i++){
-      wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
+     // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
+
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip) as ATempWidget,
+          printTypeEnum: PrintTypeEnum.receipt,
+          params: PrinterInfo(ip:_wlan_print_ip),
+        ),
+      );
 
     }
   }
 
-  wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) async {
+  Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
     var lineHight = 120;
     var menuNum = 0;
     var optionNum = 0;
@@ -1597,7 +1583,14 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
 
-    ByteData byteData = await WidgetToImage.widgetToImage(
+    // 生成打印图层任务，指定任务类型为标签
+    return ReceiptConstrainedBox(Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: printMenus,
+    ));
+
+    /*ByteData byteData = await WidgetToImage.widgetToImage(
         Container(
           width: 560,
           height: totalHight.toDouble(),
@@ -1622,7 +1615,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
       return setPrintData(printer_ip,printData);
-    });
+    });*/
 
   }
 
@@ -1934,9 +1927,17 @@ class _SettlementPageState extends State<SettlementPage> {
   _wifiNetworkLabelPrintData(extendPrintVo){
     var printData = [];
     for(var i=0;i<extendPrintVo.length;i++){
-      QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
+      // 生成打印图层任务，指定任务类型为标签
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: menuData(extendPrintVo[i]) as ATempWidget,
+          printTypeEnum: PrintTypeEnum.label,
+          params: PrinterInfo(ip:_wlan_print_ip),
+        ),
+      );
+      /*QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
         return wifiNetPrintLabelnew(extendPrintVo[i]);
-      });
+      });*/
     }
   }
 
@@ -2291,7 +2292,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     }
     //print("总行数${menuNum}");
-    addRowHight += 31 * linNum;
+    addRowHight += 33 * linNum;
     categoryMenus.add(SizedBox(height: 10,));
 //合计
     categoryMenus.add(

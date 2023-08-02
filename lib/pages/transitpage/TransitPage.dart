@@ -226,19 +226,22 @@ class _TransitPageState extends State<TransitPage> {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/home');
+      //Navigator.of(context).pushReplacementNamed('/home');
+      Navigator.pushNamed(context,"/home");
     });
   }
 
   void _goCheckOut() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/checkOutPage');
+      //Navigator.of(context).pushReplacementNamed('/checkOutPage');
+      Navigator.pushNamed(context,"/checkOutPage");
     });
   }
 
   void _goSelfService() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Navigator.of(context).pushReplacementNamed('/selfServiceHomePage');
+      //Navigator.of(context).pushReplacementNamed('/selfServiceHomePage');
+      Navigator.pushNamed(context,"/selfServiceHomePage");
     });
   }
 
