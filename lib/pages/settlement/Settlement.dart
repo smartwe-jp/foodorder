@@ -969,19 +969,19 @@ class _SettlementPageState extends State<SettlementPage> {
     if(_print_paper_txt_size == "1"){
       print_menu_txt_size = 28.0;
       wrapNum = 12;
-      oneRowHeight = 48;
+      oneRowHeight = 38;
     }else if(_print_paper_txt_size == "2"){
       print_menu_txt_size = 33.0;
       wrapNum = 10;
-      oneRowHeight = 54;
+      oneRowHeight = 44;
     }else if(_print_paper_txt_size == "3"){
       print_menu_txt_size = 40.0;
       wrapNum = 8;
-      oneRowHeight = 60;
+      oneRowHeight = 55;
     }
 
     List<Widget> categoryMenus = [];
-    var lineHight = 145;
+    var lineHight = 125;
     var menuNum = 0;
     var optionNum = 0;
     var addRowHight = 0;
@@ -1109,6 +1109,7 @@ class _SettlementPageState extends State<SettlementPage> {
             countLine += 1;
 
             categoryMenus.add(Container(
+              height: oneRowHeight.toDouble(),
               padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1187,21 +1188,21 @@ class _SettlementPageState extends State<SettlementPage> {
 
           var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
           //addRowHight += 52 * optionRowNum;
-          addRowHight += oneRowHeight*countLine;
+          addRowHight += oneRowHeight*countLine+(countLine-1)*10;
           menuNum += optionRowNum;
           optionNum++;
         });
 
-        addRowHight += oneRowHeight * menuRowNum;
+        addRowHight += oneRowHeight * menuRowNum+(menuRowNum-1)*10;
         menuNum += menuRowNum;
       } else {
-        addRowHight += oneRowHeight * menuRowNum;
+        addRowHight += oneRowHeight * menuRowNum+(menuRowNum-1)*10;
         menuNum += menuRowNum;
       }
 
       //分割线
       if (_machineMode == "1") {
-        addRowHight += 8;
+        addRowHight += 20;
         categoryMenus.add(
           _publicSplitLine(),
         );
@@ -2048,8 +2049,8 @@ class _SettlementPageState extends State<SettlementPage> {
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
-    var lineHight = 630;
-    var lineZeng = 105;
+    var lineHight = 580;
+    var lineZeng = 0;
     var addRowHight = 0;
 
     //店铺标题
@@ -2067,6 +2068,11 @@ class _SettlementPageState extends State<SettlementPage> {
 
     //日期 地址 电话
     //地址
+    // 计算菜品标题长度
+    var addressLength = printData["address"].length;
+    var addressLine = addressLength / 15;
+    var addressRowNum = addressLine.ceil();
+    addRowHight += addressRowNum*33+(addressRowNum-1)*10;
     categoryMenus.add(_publicOneColumnTxtNew(
         "${printData["address"]}", 26.0, FontWeight.w300));
 
@@ -2172,11 +2178,13 @@ class _SettlementPageState extends State<SettlementPage> {
       var takeoutTag = (printData["takeOut"] == true) ? "*":"";
       if(groupNameLength>10){
         linNum+=2;
+        addRowHight += 76;
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                margin: EdgeInsets.only(bottom: 3),
+                height: 76,
+                //margin: EdgeInsets.only(bottom: 3),
                 child: Column(
                   textDirection: TextDirection.rtl,
                   children: [
@@ -2241,12 +2249,14 @@ class _SettlementPageState extends State<SettlementPage> {
               )),
         );
       }else{
+        addRowHight += 33;
         linNum+=1;
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                margin: EdgeInsets.only(bottom: 3),
+                height: 33,
+                //margin: EdgeInsets.only(bottom: 3),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -2292,7 +2302,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     }
     //print("总行数${menuNum}");
-    addRowHight += 33 * linNum;
+    //addRowHight += 33 * linNum;
     categoryMenus.add(SizedBox(height: 10,));
 //合计
     categoryMenus.add(
@@ -2384,6 +2394,7 @@ class _SettlementPageState extends State<SettlementPage> {
       _publicSplitLine(),
     );
     if(printData["payMethod"] != "現金支払"){
+      lineZeng += 33;
       categoryMenus.add(
         _publicTwoColumnsTxtNew(printData["payMethod"], 26.0, FontWeight.w200,
             "${formatMoney(printData["payPrice"])}", 26.0, FontWeight.w200, true),
@@ -2391,7 +2402,7 @@ class _SettlementPageState extends State<SettlementPage> {
     }
 
     if (printData["memberNo"] != null && printData["memberNo"] != "") {
-      lineZeng += 25;
+      lineZeng += 76;
       categoryMenus.add(
         _publicTwoColumnsTxtNewLine("カード番号", 26.0, FontWeight.w200,
             printData["memberNo"], 26.0, FontWeight.w100, false),
@@ -2403,7 +2414,7 @@ class _SettlementPageState extends State<SettlementPage> {
       categoryMenus.add(_publicSplitLine());
     }
     if (printData["serialNo"] != null && printData["serialNo"] != "") {
-      lineZeng += 25;
+      lineZeng += 76;
       categoryMenus.add(
         _publicTwoColumnsTxtNewLine("カード取引通番", 26.0, FontWeight.w200,
             printData["serialNo"], 26.0, FontWeight.w100, false),
