@@ -2027,7 +2027,7 @@ class _SettlementPageState extends State<SettlementPage> {
                           ),
                           child: AutoSizeText(
                             orderprintData["printText"],
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w400),
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w500),
                             maxLines: 4,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,

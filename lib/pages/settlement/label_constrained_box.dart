@@ -13,7 +13,7 @@ class LabelConstrainedBox extends StatelessWidget with ATempWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("wwwwwwwww${1.w}");// 384/8纸宽度 232、8纸高度 mm
+    // 384/8纸宽度 232、8纸高度 mm
     return Container(
       color: Colors.white,
       width: 384.w,

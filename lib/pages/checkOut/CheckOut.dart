@@ -955,77 +955,81 @@ class _CheckOutPageState extends State<CheckOutPage> {
           value: SystemUiOverlayStyle.light,
           child: Stack(
             children: [
-              ListView(
-                children: [
-                  Container(
-                    height: 0,
-                    padding: EdgeInsets.only(left: 20),
-                    child: Row(
-                      children: <Widget>[
-                        Expanded(
-                            child: TextField(
-                              keyboardType: TextInputType.text,
-                              autofocus: true,
-                              showCursor: true, // 显示光标
-                              //readOnly: true,
-                              controller: _scanQrCodeController,
-                              focusNode: _scanQrCodeFocusNode,
-                              decoration: InputDecoration(
-                                hintText: "请扫码",
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
-                              style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
-                              onChanged: (value) {
-                                //print(value);
-                                if(value.length==1){
-                                  _showOrderEasyLoading();
-                                }
+              Container(
+                padding: EdgeInsets.zero,
+                child: ListView(
+                  children: [
+                    Container(
+                      height: 0,
+                      padding: EdgeInsets.only(left: 20),
+                      child: Row(
+                        children: <Widget>[
+                          Expanded(
+                              child: TextField(
+                                keyboardType: TextInputType.text,
+                                autofocus: true,
+                                showCursor: true, // 显示光标
+                                //readOnly: true,
+                                controller: _scanQrCodeController,
+                                focusNode: _scanQrCodeFocusNode,
+                                decoration: InputDecoration(
+                                  hintText: "请扫码",
+                                  border: InputBorder.none,
+                                  isDense: true,
+                                ),
+                                style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
+                                onChanged: (value) {
+                                  //print(value);
+                                  if(value.length==1){
+                                    _showOrderEasyLoading();
+                                  }
 
-                              },
-                              onSubmitted: (value){
-                                setState(() {
-                                  this._tableCode = value;
-                                });
+                                },
+                                onSubmitted: (value){
+                                  setState(() {
+                                    this._tableCode = value;
+                                  });
 
-                                Future.delayed(Duration(milliseconds: 300), () {
-                                  _doNextPay();
-                                });
+                                  Future.delayed(Duration(milliseconds: 300), () {
+                                    _doNextPay();
+                                  });
 
 
 
-                              },
+                                },
 
-                              /// 扫码密码
-                            )
-                        ),
-                      ],
+                                /// 扫码密码
+                              )
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  Container(
-                    width: MediaQuery.of(context).size.width,
-                    height: MediaQuery.of(context).size.height,
-                    child: Swiper(
-                      //itemHeight: 200,
-                      itemBuilder: (BuildContext context,int index){
-                        // 配置图片地址
-                        return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
-                      },
-                      // 配置图片数量
-                      itemCount: _homeList.length,
-                      // 底部分页器
-                      //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                      // 左右箭头
-                      //control: new SwiperControl(),
-                      // 无限循环
-                      loop: (_homeList.length >1) ?true :false,
-                      duration: 1000,
-                      autoplayDelay:12000,
-                      // 自动轮播
-                      autoplay: (_homeList.length >1) ?true :false,
+                    Container(
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                      padding: EdgeInsets.zero,
+                      child: Swiper(
+                        //itemHeight: 200,
+                        itemBuilder: (BuildContext context,int index){
+                          // 配置图片地址
+                          return publicShowMenuImage(imgPath:_homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                        },
+                        // 配置图片数量
+                        itemCount: _homeList.length,
+                        // 底部分页器
+                        //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                        // 左右箭头
+                        //control: new SwiperControl(),
+                        // 无限循环
+                        loop: (_homeList.length >1) ?true :false,
+                        duration: 1000,
+                        autoplayDelay:12000,
+                        // 自动轮播
+                        autoplay: (_homeList.length >1) ?true :false,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
 
               Positioned(
