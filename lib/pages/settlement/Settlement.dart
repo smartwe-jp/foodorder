@@ -1969,7 +1969,6 @@ class _SettlementPageState extends State<SettlementPage> {
             //left: 5,
             top: 5,
             //right: 5,
-            bottom: 5,
           ),
           child: Container(
 
@@ -1997,7 +1996,7 @@ class _SettlementPageState extends State<SettlementPage> {
                               minWidth: ScreenAdapter.width(20),
                               maxWidth: ScreenAdapter.width(400),
                               minHeight: ScreenAdapter.height(30),
-                              maxHeight: ScreenAdapter.height(60),
+                              maxHeight: ScreenAdapter.height(70),
                             ),
                             child: AutoSizeText(
                               "${orderprintData["printTitleText"]}",
@@ -2024,11 +2023,11 @@ class _SettlementPageState extends State<SettlementPage> {
                             minWidth: ScreenAdapter.width(20),
                             maxWidth: ScreenAdapter.width(400),
                             minHeight: ScreenAdapter.height(30),
-                            maxHeight: ScreenAdapter.height(150),
+                            maxHeight: ScreenAdapter.height(210),
                           ),
                           child: AutoSizeText(
                             orderprintData["printText"],
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w500),
+                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
                             maxLines: 4,
                             textAlign: TextAlign.left,
                             overflow: TextOverflow.ellipsis,
