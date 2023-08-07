@@ -515,7 +515,7 @@ class _SettlementPageState extends State<SettlementPage> {
     //不是扫码支付直接return
     if (_payment_method_num != "2") return;
 
-    if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
+    /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
       _showScanCodeNoOpenDialog(1,"");
       return;
     }
@@ -537,8 +537,8 @@ class _SettlementPageState extends State<SettlementPage> {
         _showScanCodeNoOpenDialog(2,"");
         return;
       }
-    }
-
+    }*/
+print(_scanQrCode);
     if (_machineCode != "" && _scanQrCode != "" && _orderId != null) {
       //_showEasyLoading();
       _showEasyLoadingScan();
@@ -550,7 +550,7 @@ class _SettlementPageState extends State<SettlementPage> {
       };//print(formData);
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());//print(response);
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
           if(resultData["requestInfo"] != ""){
@@ -3711,6 +3711,7 @@ class _SettlementPageState extends State<SettlementPage> {
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
                               onPressed: () async {
+                                _getPaymentCancelPosData();
                                 Navigator.pop(context);
                                 _showEasyLoading();
                                 Future.delayed(Duration(milliseconds: 1500),() async {
@@ -4460,12 +4461,12 @@ class _SettlementPageState extends State<SettlementPage> {
                     Image.asset(
                       GImage.getImageString("imgpublic",
                           "settlement_top_lead_card_${_checkLanguage}"),
-                      width: ScreenAdapter.width(1060),
+                      width: ScreenAdapter.width(920),
                       fit: BoxFit.fitWidth,
                     ),
                     Positioned(
                       //right: ScreenAdapter.width(120),
-                      bottom: ScreenAdapter.height(25),
+                      bottom: ScreenAdapter.height(65),
                       child: Container(
                         width: ScreenAdapter.width(1080),
                         child: Row(
