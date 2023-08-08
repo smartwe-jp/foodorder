@@ -4534,6 +4534,7 @@ print("加1了");
               child: Stack(
                 children: [
                   Container(
+                    height: ScreenAdapter.height(200),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -4550,12 +4551,13 @@ print("加1了");
                       ],
                     ),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         (optionVolistSon['homeImage'] != "" &&
                             optionVolistSon['homeImage'] != null)
                             ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
                             width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(140),
+                            height: ScreenAdapter.height(135),
                             //color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                             fit: BoxFit.fitHeight)
                             : Container(
@@ -4573,7 +4575,7 @@ print("加1了");
                                 ConstrainedBox(
                                   constraints: BoxConstraints(
                                     minWidth: ScreenAdapter.width(20),
-                                    maxWidth: ScreenAdapter.width(175),
+                                    maxWidth: ScreenAdapter.width(170),
                                     minHeight: ScreenAdapter.height(30),
                                     maxHeight: ScreenAdapter.height(60),
                                   ),
@@ -4646,7 +4648,7 @@ print("加1了");
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
                     right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(50),
+                    top: ScreenAdapter.height(40),
                     child: Container(
                         width: ScreenAdapter.width(180),
                         height: ScreenAdapter.height(150),
