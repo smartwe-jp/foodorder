@@ -1008,8 +1008,10 @@ print("加1了");
         }
         for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
           if(attr[i]["multipleState"] == "1"){
-            attr[i]['optionVoList'][j]["checked"] = false;
-            if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
+            //attr[i]['optionVoList'][j]["checked"] = false;
+            if (attr[i]['optionVoList'][j]["optionCode"] != optionCode) {
+              attr[i]['optionVoList'][j]["checked"] = false;
+            }else if (attr[i]['optionVoList'][j]["optionCode"] == optionCode) {
               attr[i]['optionVoList'][j]["checked"] = !attr[i]['optionVoList'][j]["checked"];
             }
           }else{
@@ -1037,7 +1039,7 @@ print("加1了");
       for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
         if (_list[i]['optionVoList'][j]['checked'] == true) {
           var selectMapItem = {
-            "groupCode": _list[i]["groupCode"],
+            "group": _list[i]["groupCode"],
             "groupTitle": _list[i]["groupName"],
             "optionCode": _list[i]['optionVoList'][j]["optionCode"],
             "mainTitle": _list[i]['optionVoList'][j]["mainTitle"],
@@ -1921,7 +1923,7 @@ print("加1了");
                                 optionCodeList += (optionCodeList != "")
                                     ? "," + optionItem['optionCode']
                                     : optionItem['optionCode'];
-                                var groupKey = optionItem['groupCode'];
+                                var groupKey = optionItem['group'];
                                 //整理新数组
                                 checkoptionGroupList[groupKey] = {
                                   "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
@@ -2338,7 +2340,7 @@ print("加1了");
                               optionCodeList += (optionCodeList != "")
                                   ? "," + optionItem['optionCode']
                                   : optionItem['optionCode'];
-                              var groupKey = optionItem['groupCode'];
+                              var groupKey = optionItem['group'];
                               //整理新数组
                               checkoptionGroupList[groupKey] = {
                                 "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
@@ -2745,7 +2747,7 @@ print("加1了");
                               optionCodeList += (optionCodeList != "")
                                   ? "," + optionItem['optionCode']
                                   : optionItem['optionCode'];
-                              var groupKey = optionItem['groupCode'];
+                              var groupKey = optionItem['group'];
                               //整理新数组
                               checkoptionGroupList[groupKey] = {
                                 "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
@@ -4038,7 +4040,7 @@ print("加1了");
                                           optionCodeList += (optionCodeList != "")
                                               ? "," + optionItem['optionCode']
                                               : optionItem['optionCode'];
-                                          var groupKey = optionItem['groupCode'];
+                                          var groupKey = optionItem['group'];
                                           //整理新数组
                                           checkoptionGroupList[groupKey] = {
                                             "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
@@ -4258,14 +4260,13 @@ print("加1了");
                                           optionCodeList += (optionCodeList != "")
                                               ? "," + optionItem['optionCode']
                                               : optionItem['optionCode'];
-                                          var groupKey = optionItem['groupCode'];
+                                          var groupKey = optionItem['group'];
                                           //整理新数组
                                           checkoptionGroupList[groupKey] = {
                                             "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
                                             "groupTitle":optionItem['groupTitle']
                                           };
                                         }
-
                                         checkoptionGroupList.forEach((key, value) {
                                           optionTitle += (optionTitle != "")
                                               ? "," + value['groupTitle']+":"+value['optionTitles']
@@ -4273,7 +4274,7 @@ print("加1了");
                                         });
 
                                       }
-
+print(optionTitle);
                                       var cartItem = {
                                         "menuCode": item['menuCode'],
                                         "mainTitle": item['mainTitle'],
