@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'dart:convert';
 import 'package:appset/appset.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
@@ -151,7 +152,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     requestPermission();
-
+    //checkInterNetStatus();
 
     EasyLoading.instance
       ..indicatorType = EasyLoadingIndicatorType.fadingCircle
@@ -193,6 +194,29 @@ class _MyHomePageState extends State<MyHomePage> {
     }else{
 
       OpenPayCube();
+    }
+  }
+
+  //检测网络状态
+  checkInterNetStatus() async {
+    final connectivityResult = await (Connectivity().checkConnectivity());
+    if (connectivityResult == ConnectivityResult.mobile) {print("mobile");
+      // I am connected to a mobile network.
+    } else if (connectivityResult == ConnectivityResult.wifi) {print("wifi");
+      // I am connected to a wifi network.
+    } else if (connectivityResult == ConnectivityResult.ethernet) {print("ethernet");
+      // I am connected to a ethernet network.
+    } else if (connectivityResult == ConnectivityResult.vpn) {print("vpn");
+      // I am connected to a vpn network.
+      // Note for iOS and macOS:
+      // There is no separate network interface type for [vpn].
+      // It returns [other] on any device (also simulator)
+    } else if (connectivityResult == ConnectivityResult.bluetooth) {print("bluetooth");
+      // I am connected to a bluetooth.
+    } else if (connectivityResult == ConnectivityResult.other) {print("other");
+      // I am connected to a network which is not in the above mentioned networks.
+    } else if (connectivityResult == ConnectivityResult.none) {print("没有网络");
+      // I am not connected to any network.
     }
   }
 
