@@ -472,13 +472,13 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       "qtyBounds": item['qtyBounds']
     };
     publicAddCartMenu(cartItem, true).then((val) {
-
+      //更改显示购物车价格
+      //getCartPriceTotal();
       if(val != false){
         _publicShowAddCartNew();
       }
 
-      //更改显示购物车价格
-      getCartPriceTotal();
+
     });
   }
 
@@ -908,6 +908,8 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
       result = await controller.addToCart(cartItem, checkItem: checkItem);
       controller.getCardList();
 
+      //更改显示购物车价格
+      getCartPriceTotal();
 
     } catch (e) {
       print(e);
@@ -1083,11 +1085,13 @@ print("加1了");
       }
     }
 
-    setMenuState(() {
-      _menuOption[menuCode] = attr;
-      _selectedMenuOptionList[menuCode] = _initialMenuOption[menuCode];
-      _addselectedMenuOptionChangePrice[menuCode] = _addOptionPrice;
-    });
+    if(mounted){
+      setMenuState(() {
+        _menuOption[menuCode] = attr;
+        _selectedMenuOptionList[menuCode] = _initialMenuOption[menuCode];
+        _addselectedMenuOptionChangePrice[menuCode] = _addOptionPrice;
+      });
+    }
   }
   _changeInitialAllOption(menuCode) {
     var attr = _menuOption[menuCode];
@@ -1960,14 +1964,15 @@ print("加1了");
                               };
                               publicAddCartMenu(cartItem, false).then((val) {
                                 //_publicShowAddCart(temp,itemsFirst['homeImage']);
+                                //更改显示购物车价格
+                                //getCartPriceTotal();
                                 if(val != false){
                                   _publicShowAddCartNew();
                                 }
 
 
                                 _changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
-                                //更改显示购物车价格
-                                getCartPriceTotal();
+
                               });
                             },
                             child: Container(
@@ -2368,13 +2373,13 @@ print("加1了");
                             "unitPrice":currentPrice
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
-
+                            //更改显示购物车价格
+                            //getCartPriceTotal();
                             if(val != false){
                               _publicShowAddCartNew();
                             }
                             _changeInitialOption(item['menuCode'], menuindex);
-                            //更改显示购物车价格
-                            getCartPriceTotal();
+
                           });
                         },
                         child: Container(
@@ -2775,7 +2780,8 @@ print("加1了");
                             "unitPrice":currentPrice
                           };
                           publicAddCartMenu(cartItem, false).then((val) {
-
+                            //更改显示购物车价格
+                            //getCartPriceTotal();
                             if(val != false){
                               _publicShowAddCartNew();
                             }
@@ -2783,8 +2789,7 @@ print("加1了");
                             if (item['optionGroupVoList']?.length > 0) {
                               _changeInitialOption(item['menuCode'], menuFiveindex);
                             }
-                            //更改显示购物车价格
-                            getCartPriceTotal();
+
                           });
                         },
                         child: Container(
@@ -4068,16 +4073,17 @@ print("加1了");
                                         "unitPrice":currentPrice
                                       };
                                       publicAddCartMenu(cartItem, false).then((val) {
-
+                                        //更改显示购物车价格
+                                        //getCartPriceTotal();
                                         if(val != false){
                                           _publicShowAddCartNew();
                                         }
                                         _changeInitialOption(item['menuCode'], menuindex);
-                                        //更改显示购物车价格
-                                        getCartPriceTotal();
 
+                                        Future.delayed(Duration(milliseconds: 50),() async {
+                                          Navigator.pop(context);
+                                        });
                                       });
-                                      Navigator.pop(context);
                                     },
                                     child: Container(
                                       margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),),
@@ -4274,7 +4280,6 @@ print("加1了");
                                         });
 
                                       }
-print(optionTitle);
                                       var cartItem = {
                                         "menuCode": item['menuCode'],
                                         "mainTitle": item['mainTitle'],
@@ -4287,16 +4292,19 @@ print(optionTitle);
                                         "unitPrice":currentPrice
                                       };
                                       publicAddCartMenu(cartItem, false).then((val) {
-
+                                            //更改显示购物车价格
+                                        //getCartPriceTotal();
                                         if(val != false){
                                           _publicShowAddCartNew();
                                         }
                                         _changeInitialOption(item['menuCode'], menuindex);
-                                        //更改显示购物车价格
-                                        getCartPriceTotal();
 
+
+                                        Future.delayed(Duration(milliseconds: 50),() async {
+                                          Navigator.pop(context);
+                                        });
                                       });
-                                      Navigator.pop(context);
+
                                     },
                                     child: Container(
                                       margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(15),),
@@ -4797,14 +4805,15 @@ print(optionTitle);
   getCartPriceTotal() async {
 
     controller.getCardList();
-    var total = await controller.getCartAllPrice();
-    if(total != null)
+    var total = await controller.getCartAllPrice();print("更改购物车总钱数==${total}");
+    if(total != null){
       if(mounted) {
-        setState(() {
-          _shopCartTotalPrice =
-          total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
-        });
+      setState(() {
+        _shopCartTotalPrice =
+        total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+      });
       }
+    }
 
     var totalNum = await controller.getCartTotalNum();
     if(mounted) {
@@ -5294,16 +5303,17 @@ print(optionTitle);
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": _mealType,
-      };
+      };print("webBootOrder${formData}");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           setState(() {
             _doSubmitOrderId = response['data']["orderId"];
+            _shopCartTotalPrice = response['data']["total"].toString();
           });
 
           //只有现金，并且其余都为false的时候，直接跳转支付
@@ -5336,6 +5346,12 @@ print(optionTitle);
 
   //选择食用方式和支付方式
   _showSelectMealTypeAndPaymentMethodDialog() async {
+    /*var cartTotalPrice =  getItemTotal(controller.cartItems);
+    if(int.parse(_shopCartTotalPrice) != int.parse(cartTotalPrice)){print("不相等的价格");
+      setState(() {
+        _shopCartTotalPrice = cartTotalPrice;
+      });
+    }*/
     await showDialog(
         barrierDismissible: false, //表示点击灰色背景的时候是否消失弹出框
         context: context,

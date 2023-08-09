@@ -530,7 +530,7 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       }
 
       //更改显示购物车价格
-      getCartPriceTotal();
+      //getCartPriceTotal();
     });
   }
 
@@ -901,6 +901,8 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
       controller.getCardList();
 
 
+      //更改显示购物车价格
+      getCartPriceTotal();
     } catch (e) {
       print(e);
       result = false;
@@ -1968,7 +1970,7 @@ print("加1了");
 
                                   _changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
                                   //更改显示购物车价格
-                                  getCartPriceTotal();
+                                  //getCartPriceTotal();
                                 });
                               },
                               child: Container(
@@ -2384,7 +2386,7 @@ print("加1了");
                             }
                             _changeInitialOption(item['menuCode'], menuindex);
                             //更改显示购物车价格
-                            getCartPriceTotal();
+                            //getCartPriceTotal();
                           });
                         },
                         child: Container(
@@ -2792,7 +2794,7 @@ print("加1了");
                               _changeInitialOption(item['menuCode'], menuFiveindex);
                             }
                             //更改显示购物车价格
-                            getCartPriceTotal();
+                            //getCartPriceTotal();
                           });
                         },
                         child: Container(
@@ -3984,10 +3986,12 @@ print("加1了");
                                         }
                                         _changeInitialOption(item['menuCode'], menuindex);
                                         //更改显示购物车价格
-                                        getCartPriceTotal();
+                                        //getCartPriceTotal();
 
+                                        Future.delayed(Duration(milliseconds: 50),() async {
+                                          Navigator.pop(context);
+                                        });
                                       });
-                                      Navigator.pop(context);
                                     },
                                     child: Container(
                                       margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10)),
@@ -4205,10 +4209,12 @@ print("加1了");
                                         }
                                         _changeInitialOption(item['menuCode'], menuindex);
                                         //更改显示购物车价格
-                                        getCartPriceTotal();
+                                        //getCartPriceTotal();
+                                        Future.delayed(Duration(milliseconds: 50),() async {
+                                          Navigator.pop(context);
+                                        });
 
                                       });
-                                      Navigator.pop(context);
                                     },
                                     child: Container(
                                       margin:EdgeInsets.only(top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(15),),
@@ -5196,6 +5202,7 @@ print("加1了");
 
           setState(() {
             _doSubmitOrderId = response['data']["orderId"];
+            _shopCartTotalPrice = response['data']["total"].toString();
           });
 
           //只有现金，并且其余都为false的时候，直接跳转支付
