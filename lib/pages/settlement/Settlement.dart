@@ -149,6 +149,7 @@ class _SettlementPageState extends State<SettlementPage> {
   var _showIsPos = true;
 
   var _machineMode = "1"; //机器类型 1普通券卖机 2精算机
+  var _is_allow_oneyen = "0";//0 禁用  1 允许
   var _goodsList = [];
 
   //支付类型相关
@@ -273,6 +274,7 @@ class _SettlementPageState extends State<SettlementPage> {
       //新版精算模式也可点外带
       _machineMode = systemSettingInfo['machineMode'];
       _showPrintType = int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
+      _is_allow_oneyen = systemSettingInfo['isAllowOneYen'];
     });
     if(systemSettingInfo['isAllowWlanPrint'] == "1"){
       Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
@@ -3435,6 +3437,7 @@ print(_scanQrCode);
       "orderId": this._orderId,
       "price": int.parse(this._getPutMoney),
       "operation": operation,
+      "coinForbidden":int.parse(_is_allow_oneyen)
     };
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
@@ -3454,7 +3457,8 @@ print(_scanQrCode);
         "changeInfo": this._currencyString.trim(),
         "machineCode": _machineCode,
         "orderId": this._orderId,
-        "price": _giveChangeMoney
+        "price": _giveChangeMoney,
+        "coinForbidden":int.parse(_is_allow_oneyen)
       };
       request('webBootToReportV1', method: 'POST', parameters: formData)
           .then((val) {
