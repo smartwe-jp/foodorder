@@ -404,6 +404,30 @@ class _ScanCodePageState extends State<ScanCodePage> {
     }
   }
 
+  postNewOrderId() {
+
+    var formData = {
+      "orderId": _orderId,
+    };
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
+        setState(() {
+          _orderId = response['data']["orderId"];
+        });
+
+        _goToSettlement();
+      }else{
+
+        showToast(response['data']["message"]);
+      }
+    });
+
+
+  }
   //选择支付方式
   _showSelectMealTypeAndPaymentMethodDialog() async {
 
@@ -453,7 +477,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
               if (paymentMethod.contains(_payment_method_num) == true) {
                 _getPosSettingInfo();
               }else{
-                _goToSettlement();
+                postNewOrderId();
               }
 
               /*if(_payment_method_num == "3" || _payment_method_num == "4"){
@@ -485,7 +509,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
       _pos_ip = posSettingInfo['posIp'];
       _pos_port = posSettingInfo['posPort'];
     });
-    _goToSettlement();
+    postNewOrderId();
   }
   _goToSettlement(){
     setState(() {
@@ -700,7 +724,7 @@ class _ScanCodePageState extends State<ScanCodePage> {
                                 this._tableCode = value;
                               });
 
-                              Future.delayed(Duration(milliseconds: 300), () {
+                              Future.delayed(Duration(milliseconds: 200), () {
                                 _doNextPay();
                               });
 

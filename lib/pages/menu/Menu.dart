@@ -5326,7 +5326,8 @@ print("加1了");
             setState(() {
               _payment_method_num = "1";
             });
-            gotoSettlement();
+            //gotoSettlement();
+            postNewOrderId();
           }else{
             _showSelectMealTypeAndPaymentMethodDialog();
           }
@@ -5393,14 +5394,14 @@ print("加1了");
                   _payment_method_num = payment_method_num;
                   _showOpenPayment = true;
                 });
-                //230629点击弹出支付方式后，需要重新请求下后台获得orderid
-                postNewOrderId();
-                /*var paymentMethod = ["3","4","5","6","7","8","9","10"];
+
+                var paymentMethod = ["3","4","5","6","7","8","9","10"];
                 if (paymentMethod.contains(_payment_method_num) == true) {
                   _getPosSettingInfo();
                 }else{
-                  gotoSettlement();
-                }*/
+                  //230629点击弹出支付方式后，需要重新请求下后台获得orderid
+                  postNewOrderId();
+                }
                 /*if(_payment_method_num == "3" || _payment_method_num == "4"){
                   _getPosSettingInfo();
                 }else{
@@ -5432,12 +5433,7 @@ print("加1了");
           _doSubmitOrderId = response['data']["orderId"];
         });
 
-        var paymentMethod = ["3","4","5","6","7","8","9","10"];
-        if (paymentMethod.contains(_payment_method_num) == true) {
-          _getPosSettingInfo();
-        }else{
-          gotoSettlement();
-        }
+        gotoSettlement();
       }else{
 
         showToast(response['data']["message"]);
@@ -5501,7 +5497,8 @@ print("加1了");
       _pos_ip = posSettingInfo['posIp'];
       _pos_port = posSettingInfo['posPort'];
     });
-    gotoSettlement();
+    //gotoSettlement();
+    postNewOrderId();
   }
 
 

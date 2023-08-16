@@ -542,7 +542,7 @@ class _CheckOutPageState extends State<CheckOutPage> {
               if (paymentMethod.contains(_payment_method_num) == true) {
                 _getPosSettingInfo();
               }else{
-                _goToSettlement();
+                postNewOrderId();
               }
 
               /*if(_payment_method_num == "3" || _payment_method_num == "4"){
@@ -568,13 +568,38 @@ class _CheckOutPageState extends State<CheckOutPage> {
         });
   }
 
+  postNewOrderId() {
+
+    var formData = {
+      "orderId": _orderId,
+    };
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
+        setState(() {
+          _orderId = response['data']["orderId"];
+        });
+
+        _goToSettlement();
+      }else{
+
+        showToast(response['data']["message"]);
+      }
+    });
+
+
+  }
+
   _getPosSettingInfo() async {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     setState(() {
       _pos_ip = posSettingInfo['posIp'];
       _pos_port = posSettingInfo['posPort'];
     });
-    _goToSettlement();
+    postNewOrderId();
   }
   _goToSettlement(){
     setState(() {
