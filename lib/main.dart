@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
       imgData: imageBytes,
       printType: printTypeEnum,
     );
-
+print(printerInfo.ip);
     // 网络 打印
     final conn = printerPlus.NetConn(printerInfo.ip);
     conn.writeMultiBytes(printData);

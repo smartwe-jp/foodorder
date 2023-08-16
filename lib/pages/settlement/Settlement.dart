@@ -277,7 +277,7 @@ class _SettlementPageState extends State<SettlementPage> {
       _is_allow_oneyen = systemSettingInfo['isAllowOneYen'];
     });
     if(systemSettingInfo['isAllowWlanPrint'] == "1"){
-      Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
+      Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();print(wlanPrintSettingInfo);
       if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
         _wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'];
         _wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'];
@@ -286,6 +286,7 @@ class _SettlementPageState extends State<SettlementPage> {
 
     if(systemSettingInfo['isAllowWlanPrintTwo'] == "1"){
       Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
+      print(wlanPrintSettingTwoInfo);
       if(wlanPrintSettingTwoInfo['wlanPrintIp'] !=null && wlanPrintSettingTwoInfo['wlanPrintIp'] !="" && wlanPrintSettingTwoInfo['wlanPrintPort'] !=null && wlanPrintSettingTwoInfo['wlanPrintPort'] !=""){
         _wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintIp'];
         _wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintPort'];
@@ -810,7 +811,7 @@ print(_scanQrCode);
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
           if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
@@ -1264,7 +1265,7 @@ print(_scanQrCode);
           }
         }
         //QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-        return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
+          return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
         //});
       }
     });
@@ -1279,15 +1280,17 @@ print(_scanQrCode);
 
     //判断是否有打印机ip
     Map printerIpInfo = {"printer_ip":"","printer_port":"",};
-    if(printType == "10"){
+    if(printType == "10"){print("10${_wlan_print_ip}");
       if(_wlan_print_ip != null && _wlan_print_ip != "" && _wlan_print_port != null && _wlan_print_port != ""){
         printerIpInfo = {"printer_ip":_wlan_print_ip,"printer_port":_wlan_print_port,};
+       // _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,_wlan_print_ip);
       }else{
         return;
       }
-    }else if(printType == "12"){
+    }else if(printType == "12"){print("12${_wlan_print_ip_two}");
       if(_wlan_print_ip_two != null && _wlan_print_ip_two != "" && _wlan_print_port_two != null && _wlan_print_port_two != ""){
         printerIpInfo = {"printer_ip":_wlan_print_ip_two,"printer_port":_wlan_print_port_two,};
+        //_wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,_wlan_print_ip_two);
       }else{
         return;
       }
@@ -1298,7 +1301,7 @@ print(_scanQrCode);
     _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
 
   }
-  _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
+  _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){print(printData);
     for(var i=0;i<printData.length;i++){
      // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
 
@@ -1306,7 +1309,7 @@ print(_scanQrCode);
         PicGenerateTask<PrinterInfo>(
           tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip) as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
-          params: PrinterInfo(ip:_wlan_print_ip),
+          params: PrinterInfo(ip:printer_ip),
         ),
       );
 
