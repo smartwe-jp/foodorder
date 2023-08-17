@@ -390,11 +390,30 @@ class _MenuZongPageState extends State<MenuZongPage>  with AutomaticKeepAliveCli
 
   //获取菜单
   _getBookingBootMenu() {
+    var queryTakeout = "2";
+    switch(_dining_type){
+      case "1":
+        queryTakeout = "2";
+        break;
+      case "2":
+        queryTakeout = "0";
+        break;
+      case "3":
+        if(_mealType == true){
+          queryTakeout = "0";
+        }else{
+          queryTakeout = "2";
+        }
+        break;
+      default:
+        queryTakeout = "2";
+    }
     var formData = {
       "machineCode": _machineCode,
-      "language": this._checkLanguage
+      "language": this._checkLanguage,
+      "takeout":queryTakeout,
     };
-    request('webBootIndex', method: 'POST', parameters: formData).then((val) {
+    request('webBootIndexv1', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {

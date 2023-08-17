@@ -6,6 +6,7 @@ const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
+  'webBootIndexv1': base_url + 'pad/web/boot/index/v1', //获取首页菜单地址
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
   //'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址

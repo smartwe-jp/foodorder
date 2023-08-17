@@ -340,13 +340,32 @@ class _MenuPageState extends State<MenuPage>  with AutomaticKeepAliveClientMixin
 
   //获取菜单
   _getBookingBootMenu() {
+    var queryTakeout = "2";
+    switch(_dining_type){
+      case "1":
+        queryTakeout = "2";
+        break;
+      case "2":
+        queryTakeout = "0";
+        break;
+      case "3":
+        if(_mealType == true){
+          queryTakeout = "0";
+        }else{
+          queryTakeout = "2";
+        }
+        break;
+      default:
+        queryTakeout = "2";
+    }
     var formData = {
       "machineCode": _machineCode,
-      "language": this._checkLanguage
-    };
-    request('webBootIndex', method: 'POST', parameters: formData).then((val) {
+      "language": this._checkLanguage,
+      "takeout":queryTakeout,
+    };print(formData);
+    request('webBootIndexv1', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
+//LogUtil.d(response);
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
