@@ -2082,10 +2082,13 @@ print(_scanQrCode);
 
     categoryMenus.add(SizedBox(height: 5,));
     //登录番号
-    if(printData["ntaNo"] != null && printData["ntaNo"] != "")
+    if(printData["ntaNo"] != null && printData["ntaNo"] != ""){
+      addRowHight += 38;
       categoryMenus.add(_publicOneColumnTxtNew(
           "登録番号 ${printData["ntaNo"]}", 26.0, FontWeight.w300));
-    categoryMenus.add(SizedBox(height: 5,));
+      categoryMenus.add(SizedBox(height: 5,));
+    }
+
     categoryMenus.add(Container(
       alignment: Alignment.centerLeft,
       margin: EdgeInsets.only(bottom: 3),
@@ -2095,6 +2098,10 @@ print(_scanQrCode);
             style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
           )),
     ));
+    if (_machineMode == "1") {
+      addRowHight += 38;
+      categoryMenus.add(_publicOneColumnTxtNew("${printData["numberTip"]}${printData["serialNumber"]}", 26.0, FontWeight.w300));
+    }
     //注文番号
     categoryMenus.add(_publicOneColumnTxtNew(
         "注文番号:${printData["order"]}", 26.0, FontWeight.w300));
