@@ -18,7 +18,7 @@ packages:
   appset:
     dependency: "direct main"
     description:
-      path: "lib/plugins/appset"
+      path: "lib/app/plugins/appset"
       relative: true
     source: path
     version: "0.0.1"
@@ -317,7 +317,7 @@ packages:
   flutter_plugin_msprinter:
     dependency: "direct main"
     description:
-      path: "lib/plugins/flutter_plugin_msprint"
+      path: "lib/app/plugins/flutter_plugin_msprint"
       relative: true
     source: path
     version: "0.0.1"
@@ -365,7 +365,7 @@ packages:
       name: fluttertoast
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "8.2.1"
+    version: "8.2.2"
   gbk_codec:
     dependency: transitive
     description:
@@ -544,7 +544,7 @@ packages:
   paycube:
     dependency: "direct main"
     description:
-      path: "lib/plugins/paycube"
+      path: "lib/app/plugins/paycube"
       relative: true
     source: path
     version: "0.0.1"
