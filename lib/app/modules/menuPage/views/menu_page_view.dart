@@ -131,7 +131,8 @@ class MenuPageView extends GetView {
           child: InkWell(
             enableFeedback: false,
             onTap: () {
-              controller.ordersqlcontroller.removeAllFromCart();
+              //controller.ordersqlcontroller.removeAllFromCart();
+              controller.clearCartList();
               Future.delayed(Duration(milliseconds: 100),() async {
                 Get.back();
               });

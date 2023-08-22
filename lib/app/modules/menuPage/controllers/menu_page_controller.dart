@@ -171,11 +171,11 @@ class MenuPageController extends GetxController with StateMixin {
     showUnionPay.value = systemSettingInfo['show_unionPay'];
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    _getBookingBootMenu();
+    getBookingBootMenu();
   }
 
   //获取菜单
-  _getBookingBootMenu() {
+  getBookingBootMenu() {print("获取菜单来了");
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch(dining_type.value){
@@ -759,7 +759,7 @@ print("加1了");
   }
   publicShowOneItemWidgetv1(item){
     changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 100),() async {
+    Future.delayed(Duration(milliseconds: 50),() async {
       var subtitle = "";
       if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
         for (var i = 0; i < item["subtitle"].length; i++) {
@@ -935,7 +935,7 @@ print("加1了");
 
 
         }else{
-          _getBookingBootMenu();
+          getBookingBootMenu();
           menuLackMap.value = response['data']["menuLackMap"];
           showToast(response['data']["message"]);
         }
@@ -1095,7 +1095,9 @@ print(response);
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
+    classTag.value = topMenu.value[0]["categoryCode"];
     getCartPriceTotal();
   }
+
 
 }

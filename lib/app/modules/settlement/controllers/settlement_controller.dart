@@ -1174,11 +1174,12 @@ class SettlementController extends GetxController with StateMixin {
 
 
 
-          Future.delayed(Duration(milliseconds: 500),() async {
+          Future.delayed(Duration(milliseconds: 300),() async {
             if (machineMode.value == "1") {
               //eventBus.fire(new clearCartEvent('支付成功...'));
               Get.find<OrderHomeController>().clearCartList();
               Get.find<MenuPageController>().clearCartList();
+              Get.find<MenuPageController>().getBookingBootMenu();
             }
 print(payment_method_num.value);
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -1336,7 +1337,7 @@ print(payment_method_num.value);
   getPutInMoney() async {print("开始投币了么");
     await Paycube.setReceiveEvent;
     timer?.cancel();
-    timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
+    timer = Timer.periodic(Duration(milliseconds: 400), (Timer t) async {
       var result = await Paycube.getPayCubeMoney;print(result);
       if (int.parse(result) > 0) {
         getPutMoney.value = result;
@@ -1403,15 +1404,15 @@ print(payment_method_num.value);
 
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
-    sleep(Duration(milliseconds: 100));
+    sleep(Duration(milliseconds: 50));
     await Paycube.setReceiveEvent;
     var endStatus = await Paycube.endPayCube;
     //开启倒计时
     _countDownTimer("3");
 
     stoptimer?.cancel();
-    stoptimer =Timer.periodic(Duration(milliseconds: 650), (Timer stopt) async {
-          stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+    stoptimer =Timer.periodic(Duration(milliseconds: 500), (Timer stopt) async {
+          stopStatus.value = await Paycube.getPayCubeStopCashStatus;print(stopStatus.value);
           // 循环一定要记得设置取消条件，手动取消
           if (stopStatus.value == "StopSuccess") {
             showCashTimer?.cancel();
@@ -1478,7 +1479,7 @@ print(payment_method_num.value);
     _countDownTimer("7");
 
     OutMoneytimer =
-        Timer.periodic(Duration(milliseconds: 200), (Timer outMoneyTime) async {
+        Timer.periodic(Duration(milliseconds: 300), (Timer outMoneyTime) async {
           // 循环一定要记得设置取消条件，手动取消
           String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
           if (currencyStringresult.trim().length > 0) {
@@ -1541,7 +1542,7 @@ print(payment_method_num.value);
     putMoneyCurrencytimer?.cancel();
     await Paycube.setReceiveEvent;
     _countDownTimer("8");
-    putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 200),
+    putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 400),
             (Timer putMoneyCurrencyTime) async {
           // 循环一定要记得设置取消条件，手动取消
           String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
