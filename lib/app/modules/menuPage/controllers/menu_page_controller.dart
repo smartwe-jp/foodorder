@@ -600,34 +600,6 @@ class MenuPageController extends GetxController with StateMixin {
       volume: 0.8,
     );
   }
-
-
-  //初始化默认option选项
-  changeInitialOption(menuCode, setMenuState) {
-    var attr = menuOption.value[menuCode];
-    var initMenuOption = noChangeinitialmenuOption.value[menuCode];
-    var _addOptionPrice = 0;
-
-    if(attr != null){
-      for (var i = 0; i < attr.length; i++) {
-        for (var j = 0; j < attr[i]['optionVoList'].length; j++) {
-          var check = initMenuOption.any((e) => e ==attr[i]['optionVoList'][j]["optionCode"]);
-          if(true == check){
-            attr[i]['optionVoList'][j]["checked"] = true;
-            _addOptionPrice += attr[i]['optionVoList'][j]["currentPrice"];
-          }else{
-            attr[i]['optionVoList'][j]["checked"] = false;
-          }
-
-        }
-      }
-    }
-
-    menuOption.value[menuCode] = attr;
-    selectedMenuOptionList.value[menuCode] = initialMenuOption.value[menuCode];
-    addselectedMenuOptionChangePrice.value[menuCode] = _addOptionPrice;
-  }
-
   changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {
     //playQRScannerSound();
 
@@ -746,13 +718,7 @@ print("加1了");
   //展示某带option商品
   publicShowOneItemWidget(item){
     changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 100),() async {
-      var subtitle = "";
-      if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
-        for (var i = 0; i < item["subtitle"].length; i++) {
-          subtitle += item["subtitle"][i];
-        }
-      }
+    Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
           showOneItemOptionWidgetView(item)
       );
@@ -761,18 +727,13 @@ print("加1了");
   publicShowOneItemWidgetv1(item){
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50),() async {
-      var subtitle = "";
-      if (item["subtitle"] != null && item["subtitle"]?.length > 0) {
-        for (var i = 0; i < item["subtitle"].length; i++) {
-          subtitle += item["subtitle"][i];
-        }
-      }
       Get.dialog(
           showOneItemOptionWidgetVOneView(item)
       );
     });
   }
 
+  //初始化默认option选项
   changeInitialAllOption(menuCode) {
     var attr = menuOption.value[menuCode];
     var initMenuOption = noChangeinitialmenuOption.value[menuCode];
@@ -1092,6 +1053,7 @@ print("加1了");
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
     classTag.value = topMenu.value[0]["categoryCode"];
+    menuLackMap.value = {};
     getCartPriceTotal();
   }
 

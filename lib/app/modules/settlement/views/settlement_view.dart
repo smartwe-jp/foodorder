@@ -33,12 +33,12 @@ class SettlementView extends GetView {
                           fontWeight: FontWeight.w600))),
               children: <Widget>[
                 Container(
-                  width: ScreenAdapter.width(650),
+                  width: ScreenAdapter.width(850),
                   padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
                   child: Column(
                     children: <Widget>[
                       SizedBox(
-                        height: 10,
+                        height: 20,
                       ),
                       Align(
                         child: Text(GString.getToString(controller.checkLanguage.value, "settlement_back_alertcontent"),
@@ -47,7 +47,7 @@ class SettlementView extends GetView {
                         alignment: Alignment(0, 0),
                       ),
                       SizedBox(
-                        height: 10,
+                        height: 30,
                       ),
                       Divider(
                         thickness: 1.0,
@@ -58,15 +58,20 @@ class SettlementView extends GetView {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 70.0),
-                            child: TextButton(
-                              child: Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "tag_button_no"),
-                                style: TextStyle(
-                                    color: Colors.lightBlue,
-                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                            child: InkWell(
+                              child: Container(
+                                width: ScreenAdapter.width(300),
+                                height: ScreenAdapter.height(75),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  GString.getToString(controller.checkLanguage.value,
+                                      "tag_button_no"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
                               ),
-                              onPressed: () {
+                              onTap: () {
                                 //sleep(Duration(milliseconds: 3000));
                                 Get.back();
 
@@ -76,25 +81,31 @@ class SettlementView extends GetView {
                           //垂直分割线
                           SizedBox(
                             width: 1,
-                            height: 40,
+                            height: 80,
                             child: DecoratedBox(
                               decoration: BoxDecoration(color: Colors.black12),
                             ),
                           ),
                           Padding(
                             padding: const EdgeInsets.only(right: 70.0),
-                            child: TextButton(
-                              child: Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "tag_button_yes"),
-                                style: TextStyle(
-                                    color: Colors.lightBlue,
-                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                            child: InkWell(
+                              child: Container(
+                                width: ScreenAdapter.width(300),
+                                height: ScreenAdapter.height(75),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  GString.getToString(controller.checkLanguage.value,
+                                      "tag_button_yes"),
+                                  style: TextStyle(
+                                      color: Colors.lightBlue,
+                                      fontSize: ScreenAdapter.fontSize(32.0)),
+                                ),
                               ),
-                              onPressed: () async {
+                              onTap: () {
                                 Get.back();
                                 controller.showBackEasyLoading();
                                 controller.CancelOrder();
+
                               },
                             ),
                           )
@@ -104,7 +115,8 @@ class SettlementView extends GetView {
                   ),
                 ),
               ]),
-        )
+        ),
+      barrierDismissible: false
     );
   }
 

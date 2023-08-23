@@ -15,10 +15,12 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
+import '../../menuPage/controllers/menu_page_controller.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  MenuPageController menuPagecontroller = Get.put(MenuPageController());
   RxString machineCode = "".obs;
 
   RxList cashList = [].obs;

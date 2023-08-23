@@ -60,6 +60,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString getPutMoneyCurrency = "".obs; //投币金额币种
   RxString showOutMoney = "0".obs; //展示应出金金额
   RxBool allowClick = true.obs;
+  RxBool isReportCash = false.obs; //是否已汇报过现金
 
   Timer timer;
   Timer allowtimer;
@@ -1502,11 +1503,11 @@ print(payment_method_num.value);
             showCashTimer?.cancel();
             seconds.value = 180;
             currencyString.value = currencyStringresult;
-
+            outMoneyTime.cancel();
             //汇报出金币种
             reportOutMoney();
 
-            outMoneyTime.cancel();
+
           }
         });
   }
@@ -1565,16 +1566,23 @@ print(payment_method_num.value);
             showCashTimer?.cancel();
             seconds.value = 180;
             getPutMoneyCurrency.value = putcurrencyString;
+            putMoneyCurrencyTime.cancel();
             //汇报入金币种
             reportPutMoneyCurrency();
 
-            putMoneyCurrencyTime.cancel();
+
           }
         });
   }
 
   //汇报入金币种,请求后台
   reportPutMoneyCurrency() {
+
+    if(isReportCash.value == true){print("已汇报过");
+      return;
+    }
+
+    isReportCash.value = true;
     //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機)
     var operation = 0;
     if (isCancel.value == true) {

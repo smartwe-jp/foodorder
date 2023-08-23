@@ -19,7 +19,7 @@ import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../controllers/menu_page_controller.dart';
 
-class MenuPageView extends GetView {
+class MenuPageView extends StatelessWidget {
   final MenuPageController controller = Get.put(MenuPageController());
   MenuPageView({Key key}) : super(key: key);
 
@@ -369,7 +369,7 @@ class MenuPageView extends GetView {
                                 }
 
 
-                                controller.changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
+                                controller.changeInitialAllOption(itemsFirst['menuCode']);
 
                               });
                             },
@@ -968,7 +968,7 @@ class MenuPageView extends GetView {
                             if(val != false){
                               controller.publicShowAddCartNew(context);
                             }
-                            controller.changeInitialOption(item['menuCode'], menuindex);
+                            controller.changeInitialAllOption(item['menuCode']);
 
                           });
                         },
@@ -1585,7 +1585,7 @@ class MenuPageView extends GetView {
                             }
 
                             if (item['optionGroupVoList']?.length > 0) {
-                              controller.changeInitialOption(item['menuCode'], menuFiveindex);
+                              controller.changeInitialAllOption(item['menuCode']);
                             }
 
                           });
@@ -2918,6 +2918,8 @@ class MenuPageView extends GetView {
 
   @override
   Widget build(BuildContext context) {
+
+
     return Scaffold(
       body: GetBuilder<MenuPageController>(builder: (controller){
         return controller.obx((state) => AnnotatedRegion(

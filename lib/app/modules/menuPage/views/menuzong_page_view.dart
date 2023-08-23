@@ -18,7 +18,7 @@ import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../controllers/menu_page_controller.dart';
 
-class MenuzongPageView extends GetView {
+class MenuzongPageView extends StatelessWidget {
   final MenuPageController controller = Get.put(MenuPageController());
   MenuzongPageView({Key key}) : super(key: key);
 
@@ -56,7 +56,7 @@ class MenuzongPageView extends GetView {
                 //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#FFFFFF"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.0), ],
               ) : BoxDecoration(
                 //背景颜色
-                color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+                color: ColorsUtil.hexToColor("#F0DFB3"),
               ),
               child: Center(
                 //加上Center让文字居中
@@ -327,7 +327,7 @@ class MenuzongPageView extends GetView {
                                     controller.publicShowAddCartNew(context);
                                   }
 
-                                  controller.changeInitialOption(itemsFirst['menuCode'], setFirstMenuState);
+                                  controller.changeInitialAllOption(itemsFirst['menuCode']);
                                   //更改显示购物车价格
                                   //getCartPriceTotal();
                                 });
@@ -944,7 +944,7 @@ class MenuzongPageView extends GetView {
                             if(val != false){
                               controller.publicShowAddCartNew(context);
                             }
-                            controller.changeInitialOption(item['menuCode'], menuindex);
+                            controller.changeInitialAllOption(item['menuCode']);
 
                           });
                         },
@@ -1567,7 +1567,7 @@ class MenuzongPageView extends GetView {
                             }
 
                             if (item['optionGroupVoList']?.length > 0) {
-                              controller.changeInitialOption(item['menuCode'], menuFiveindex);
+                              controller.changeInitialAllOption(item['menuCode']);
                             }
                             //更改显示购物车价格
                             //getCartPriceTotal();

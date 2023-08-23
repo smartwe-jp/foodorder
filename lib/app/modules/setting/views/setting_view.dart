@@ -662,6 +662,7 @@ class SettingView extends GetView<SettingController> {
                         InkWell(
                           onTap: () {
                             controller.ordersqlcontroller.removeAllFromCart();
+                            controller.menuPagecontroller.clearCartList();
                             //sleep(Duration(milliseconds: 100));
                             //Get.back();
                             //controller.goToBack();

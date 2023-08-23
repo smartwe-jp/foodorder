@@ -415,7 +415,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                                       if(val != false){
                                         controller.publicShowAddCartNew(context);
                                       }
-                                      controller.changeInitialOption(item['menuCode'], menuindex);
+                                      controller.changeInitialAllOption(item['menuCode']);
 
 
                                       Future.delayed(Duration(milliseconds: 50),() async {
