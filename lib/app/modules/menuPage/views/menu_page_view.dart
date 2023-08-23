@@ -132,10 +132,7 @@ class MenuPageView extends GetView {
             enableFeedback: false,
             onTap: () {
               //controller.ordersqlcontroller.removeAllFromCart();
-              controller.clearCartList();
-              Future.delayed(Duration(milliseconds: 100),() async {
-                Get.back();
-              });
+              controller.gotoLanguageHome();
 
             },
             child: Container(

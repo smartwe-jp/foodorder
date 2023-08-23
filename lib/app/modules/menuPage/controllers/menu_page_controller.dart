@@ -176,6 +176,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   //获取菜单
   getBookingBootMenu() {print("获取菜单来了");
+  topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch(dining_type.value){
@@ -989,11 +990,6 @@ print("加1了");
                   //postNewOrderId();
                   gotoSettlement();
                 }
-              /*if(_payment_method_num == "3" || _payment_method_num == "4"){
-                  _getPosSettingInfo();
-                }else{
-                  gotoSettlement();
-                }*/
 
             },
             onCancelClick: (String isBack){
@@ -1013,7 +1009,7 @@ print("加1了");
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       //EasyLoading.dismiss();
-print(response);
+//print(response);
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
         doSubmitOrderId.value = response['data']["orderId"];
@@ -1039,8 +1035,8 @@ print(response);
   }
 
 
-  gotoSettlement() {print("settlement==${doSubmitOrderId.value}");
-    Get.toNamed('/settlement',
+  gotoSettlement() async {print("settlement==${doSubmitOrderId.value}");
+    await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineCode.value,
@@ -1097,6 +1093,14 @@ print(response);
     ordersqlcontroller.getCardList();
     classTag.value = topMenu.value[0]["categoryCode"];
     getCartPriceTotal();
+  }
+
+  gotoLanguageHome(){
+    clearCartList();
+    //getBookingBootMenu();
+    Future.delayed(Duration(milliseconds: 100),() async {
+      Get.back();
+    });
   }
 
 

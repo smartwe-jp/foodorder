@@ -13,8 +13,101 @@ import '../../../services/formatMoney.dart';
 import '../controllers/settlement_controller.dart';
 
 class SettlementView extends GetView {
-  final SettlementController controller = Get.put(SettlementController());
+  final SettlementController controller = Get.find<SettlementController>();
   SettlementView({Key key}) : super(key: key);
+
+  showCashAlert(){
+    Get.dialog(
+        Container(
+          width: ScreenAdapter.width(950),
+          child: SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              title: Align(
+                  alignment: Alignment.center,
+                  child: Text(
+                      GString.getToString(controller.checkLanguage.value, "tag_title"),
+                      style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(28),
+                          fontWeight: FontWeight.w600))),
+              children: <Widget>[
+                Container(
+                  width: ScreenAdapter.width(650),
+                  padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                  child: Column(
+                    children: <Widget>[
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Align(
+                        child: Text(GString.getToString(controller.checkLanguage.value, "settlement_back_alertcontent"),
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(28))),
+                        alignment: Alignment(0, 0),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      Divider(
+                        thickness: 1.0,
+                        color: Colors.black12,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                GString.getToString(controller.checkLanguage.value,
+                                    "tag_button_no"),
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () {
+                                //sleep(Duration(milliseconds: 3000));
+                                Get.back();
+
+                              },
+                            ),
+                          ),
+                          //垂直分割线
+                          SizedBox(
+                            width: 1,
+                            height: 40,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(color: Colors.black12),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                GString.getToString(controller.checkLanguage.value,
+                                    "tag_button_yes"),
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                Get.back();
+                                controller.showBackEasyLoading();
+                                controller.CancelOrder();
+                              },
+                            ),
+                          )
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ]),
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -1093,10 +1186,7 @@ class SettlementView extends GetView {
                         child: InkWell(
                           onTap: () {
                             try {
-                              //Navigator.pop(context);
-                              controller.showBackEasyLoading();
-                              controller.CancelOrder();;
-                              //showCancelConfirm();
+                              showCashAlert();
                             } catch (_) {}
                           },
                           child: Container(

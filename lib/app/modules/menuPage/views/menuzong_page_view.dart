@@ -31,6 +31,7 @@ class MenuzongPageView extends GetView {
     int _categoryNum = 1;
 
     for (var item in controller.topMenu.value) {
+      if(menuIndex >5) menuIndex = 0;
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
@@ -2814,11 +2815,9 @@ class MenuzongPageView extends GetView {
                               child: InkWell(
                                 enableFeedback: false,
                                 onTap: () {
+                                  controller.gotoLanguageHome();
                                   //controller.ordersqlcontroller.removeAllFromCart();
-                                  controller.clearCartList();
-                                  Future.delayed(Duration(milliseconds: 100),() async {
-                                    Get.back();
-                                  });
+
                                 },
                                 child: Container(
                                   margin: EdgeInsets.only(bottom: ScreenAdapter.height(15)),

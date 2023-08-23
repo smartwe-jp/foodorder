@@ -500,6 +500,13 @@ class SettlementController extends GetxController with StateMixin {
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
+    }else if(resultString =="L06"){//需要从端末点击返回
+      _showTag = Align(
+        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
+            style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(28))),
+        alignment: Alignment(0, 0),
+      );
     }else{
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
@@ -557,7 +564,7 @@ class SettlementController extends GetxController with StateMixin {
                                   fontSize: ScreenAdapter.fontSize(32.0)),
                             ),
                             onPressed: () async {
-                              if(resultString !="M10"){
+                              if(resultString !="M10" && resultString !="L06"){
                                 getPaymentCancelPosData();
                               }
 
@@ -963,12 +970,20 @@ class SettlementController extends GetxController with StateMixin {
         print("resultMPFSString==${resultMPFSString}");
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
-          //print("resultStringresultString==${resultString}");
-          //print("resultMPFSStringresultMPFSString==${resultMPFSString}");
-
           if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
-          //CancelOrder();
-          showEasyLoading();
+            //CancelOrder();
+            showEasyLoading();
+          }else if(resultString.trim() != ""){
+
+            //T10 交通系等待时间超过30-40后自动返回
+            //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
+            var posErrorCode = ["L06"];
+            if (posErrorCode.contains(resultString) == true) {
+              _showPosCancelEasyLoading(resultString);
+              /*Future.delayed(Duration(milliseconds: 2500),() async {
+                CancelOrder();
+              });*/
+            }
           }
         } else {
           if (FirstString == "3" && SecondString == "11" && resultString == "000") {// &&  resultMPFSString == "000"
