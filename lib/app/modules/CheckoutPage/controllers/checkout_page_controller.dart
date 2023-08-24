@@ -14,6 +14,7 @@ import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
@@ -202,7 +203,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   _showDialogError(msg){
     //查询订单弹出提示
-    Get.dialog(
+    /*Get.dialog(
         Container(
           width: ScreenAdapter.width(950),
           child: SimpleDialog(
@@ -249,34 +250,7 @@ class CheckoutPageController extends GetxController with StateMixin {
                       SizedBox(
                         height: 15,
                       ),
-                      /*Divider(
-                            thickness: 1.0,
-                            color: Colors.black12,
-                          ),*/
-                      InkWell(
-                        onTap: (){
-                          Get.back();
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(85),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
-                          decoration: BoxDecoration(
-
-                            color: ColorsUtil.hexToColor("#A61C1C"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
-                          ),
-                          child: Text(
-                            "${GString.getToString(checkLanguage.value,"tag_button_yes")}",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: ScreenAdapter.fontSize(32.0)),
-                          ),
-                        ),
-                      ),
-                      /*Container(
+                      Container(
                             alignment: Alignment.center,
                             child: Padding(
                               padding: const EdgeInsets.only(right: 70.0),
@@ -293,13 +267,23 @@ class CheckoutPageController extends GetxController with StateMixin {
                                 },
                               ),
                             ),
-                          ),*/
+                          ),
                     ],
                   ),
                 ),
               ]
           ),
         )
+    );*/
+
+    Get.dialog(
+        DialogUtils.alertOneButton(msg,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            contentTagImg:"error_public",
+            confirm: () {
+              Get.back();
+            })
     );
   }
 

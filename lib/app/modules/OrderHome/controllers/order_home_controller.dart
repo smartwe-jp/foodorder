@@ -39,7 +39,7 @@ class OrderHomeController extends GetxController with StateMixin {
   }
 
   //获取机器信息
-  _getMachineInfo() async {print("开始选择预言了");
+  _getMachineInfo() async {
     var machineCodeString = await HomeServices.getMachineInfo();
     if (machineCodeString != "") {
       machineCode.value = machineCodeString;

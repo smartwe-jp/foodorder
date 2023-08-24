@@ -401,7 +401,7 @@ class showOneItemOptionWidgetView extends GetView {
                                       "goodsNum": 1,
                                       "qtyBounds": item['qtyBounds'],
                                       "unitPrice":currentPrice
-                                    };print(cartItem);
+                                    };
                                     controller.publicAddCartMenu(cartItem, false).then((val) {
                                       //更改显示购物车价格
                                       //getCartPriceTotal();

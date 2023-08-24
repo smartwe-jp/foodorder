@@ -22,7 +22,7 @@ class TransitPageController extends GetxController {
   RxBool _actuarial = false.obs;
 
   @override
-  void onInit() {print("init进来了么");
+  void onInit() {
     getIsShowCashInfo();
     super.onInit();
   }
@@ -38,7 +38,7 @@ class TransitPageController extends GetxController {
   }
 
 
-  getIsShowCashInfo() async {print("返回来了么1");
+  getIsShowCashInfo() async {
     Map systemSettingInfo = await HomeServices.getIsShowCash();
 
     _isCashState.value = systemSettingInfo['isCash'];
@@ -47,7 +47,7 @@ class TransitPageController extends GetxController {
   }
 
   _getMachineInfo() async {
-    var machineCode = await HomeServices.getMachineInfo();print("返回来了么${machineCode}");
+    var machineCode = await HomeServices.getMachineInfo();
     if (machineCode != "") {
       _machineCode.value = machineCode;
 
@@ -61,7 +61,7 @@ class TransitPageController extends GetxController {
       "machineCode": _machineCode.value,
     };
     request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
-      var response = json.decode(val.toString());LogUtil.d(response);
+      var response = json.decode(val.toString());
       if (response['code'] == 200) {
         var shopData = response['data'];
         //_shopCode = shopData["shopCode"];
@@ -110,7 +110,7 @@ class TransitPageController extends GetxController {
           "show_unionPay":_unionPay,
           "show_americanExpress":_americanExpress,
           "show_dinersClub":_dinersClub,
-        };//print(machineActivateData);
+        };
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
@@ -179,7 +179,6 @@ class TransitPageController extends GetxController {
     if(systemSettingData["isAllowOneYen"] == "0"){
       var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
     }
-print("开始准备跳转了");
     if(checkmachineMode == "2"){
       _goCheckOut();
     }else if(checkmachineMode == "3"){

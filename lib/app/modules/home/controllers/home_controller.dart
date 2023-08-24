@@ -36,7 +36,7 @@ class HomeController extends GetxController {
   var _closeStatus;
 
   @override
-  void onInit() {print("开始进来了");
+  void onInit() {
   super.onInit();
     requestPermission();
   //getIsFirstOpen();

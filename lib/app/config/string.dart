@@ -44,7 +44,7 @@ class GString{
         "settlement_payment_method_title":"お支払い方法のガイド",
         "settlement_back":"戻る",
         "settlement_back_alertcontent":"お支払いを取り消ししますか？",
-        "settlement_confirmButton":"支払確定",
+        "settlement_confirmButton":"支払い確定",
         "settlement_confirmButton_yes":"領収書発行",
         "settlement_confirmButton_no2":"支払い確定",
         "settlement_confirmButton_no":"領収書不発行",
@@ -151,7 +151,7 @@ class GString{
         "settlement_back_alertcontent":"您要取消支付吗？",
         "settlement_confirmButton":"确定支付",
         "settlement_confirmButton_yes":"要发票",
-        "settlement_confirmButton_no":"不要发票",
+        "settlement_confirmButton_no2":"不要发票",
         "settlement_orderPrice":"订单金额",
         "settlement_putMoney":"已投币    ",
         "settlement_outMoney":"找零    ",
@@ -251,9 +251,10 @@ class GString{
         "settlement_payment_method_title":"Guide to Payment Methods",
         "settlement_back":"Back",
         "settlement_back_alertcontent":"Do you want to cancel the payment?",
-        "settlement_confirmButton":"Comfirm payment",
+        "settlement_confirmButton":"Confirm",
         "settlement_confirmButton_yes":"Have a receipt",
         "settlement_confirmButton_no":"No receipt",
+        "settlement_confirmButton_no2":"No receipt",
         "settlement_orderPrice":"Tatol amount",
         "settlement_putMoney":"Amount paid",
         "settlement_outMoney":"Change due",
@@ -277,8 +278,8 @@ class GString{
         "show_please_select_error":"Please complete your order.",
 
         "settlement_top_title_cash":"Cash",
-        "settlement_top_title_qr":"Code payment",
-        "settlement_top_title_card":"Credit card",
+        "settlement_top_title_qr":"Code Payment",
+        "settlement_top_title_card":"Credit Card",
         "settlement_top_title_wallet":"E-Wallet",
         "settlement_top_title_nfc":"Tap to pay",
 
@@ -290,7 +291,7 @@ class GString{
         "settlement_top_title_nanaco":"nanaco",
 
         "select_payment_dining_title":"Please choose Eat in or Take out",
-        "select_payment_type_title":"Please choose your payment method",
+        "select_payment_type_title":"Please select a payment method",
 
         "payment_success_title":"Payment succeeded.",
 
@@ -308,7 +309,7 @@ class GString{
 
         "menu_option_more_multipleState":"Up to %% maximum",
         "menu_option_less_smallest":"Please select %%",
-        "show_selectPay_point":"dishes",
+        "show_selectPay_point":"",
 
         "select_selfservice_bag_title":"请选择是否需要袋子",
         "select_selfservice_nobag_title":"不要",
@@ -354,8 +355,9 @@ class GString{
         "settlement_back":"반품",
         "settlement_back_alertcontent":"결제를 취소하시겠습니까?",
         "settlement_confirmButton":"결제 확인",
-        "settlement_confirmButton_yes":"청구서를 원하다",
-        "settlement_confirmButton_no":"송장이 필요하지 않음",
+        "settlement_confirmButton_yes":"영수증 발행",
+        "settlement_confirmButton_no":"결제 확인",
+        "settlement_confirmButton_no2":"결제 확인",
         "settlement_orderPrice":"주문금액",
         "settlement_putMoney":"입금완료   ",
         "settlement_outMoney":"거스름돈을 주다",
@@ -392,7 +394,7 @@ class GString{
         "settlement_top_title_nanaco":"nanaco",
 
         "select_payment_dining_title":"매장 내 식사 또는 테이크아웃을 선택하세요.",
-        "select_payment_type_title":"지불 방식을 선택하십시오",
+        "select_payment_type_title":"결제 방법을 선택해주세요",
 
         "payment_success_title":"결제 성공",
 

@@ -8,6 +8,7 @@ import '../../../config/string.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
+import '../../../widget/DialogUtils.dart';
 import '../controllers/menu_page_controller.dart';
 
 class publicShowCartView extends GetView {
@@ -220,7 +221,7 @@ class publicShowCartView extends GetView {
   //清空购物车弹出提示、
   showDialogTag(menuId) {
 
-    Get.dialog(
+    /*Get.dialog(
         Container(
           width: ScreenAdapter.width(950),
           child: SimpleDialog(
@@ -308,6 +309,27 @@ class publicShowCartView extends GetView {
               ]
           ),
         )
+    );*/
+    Get.dialog(
+        DialogUtils.alert(GString.getToString(controller.checkLanguage.value, "show_del_cart_item_tag"),
+            title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+            canceltitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_no"),
+            confirmtitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_yes"),
+            confirm: () {
+              //widget.confirmCallback('确定');
+              controller.ordersqlcontroller.removeFromCart(menuId ?? 0);
+              //print("Item removed from cart successfully");
+              //删除商品声音
+              controller.deleteItemSound();
+              controller.ordersqlcontroller.getCardList();
+              //更改显示购物车价格
+              controller.getCartPriceTotal();
+
+              Get.back();
+            },
+            cancle: () {
+              Get.back();
+            })
     );
   }
 
@@ -377,7 +399,7 @@ class publicShowCartView extends GetView {
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: [
 
-                                  SizedBox(height: ScreenAdapter.height(25)),
+                                  SizedBox(height: ScreenAdapter.height(10)),
                                   InkWell(
                                       onLongPress: (){
                                         if(int.parse(controller.shopCartTotalPrice.value) >0){
@@ -433,7 +455,7 @@ class publicShowCartView extends GetView {
                                   ),
 
 
-                                  SizedBox(height: ScreenAdapter.height(18)),
+                                  SizedBox(height: ScreenAdapter.height(10)),
                                   InkWell(
                                     enableFeedback: false,
                                     onTap: () {
@@ -454,7 +476,7 @@ class publicShowCartView extends GetView {
                                     },
                                     child: Container(
                                       width: ScreenAdapter.width(300),
-                                      height: ScreenAdapter.height(115),
+                                      height: ScreenAdapter.height(165),
                                       alignment: Alignment.center,
                                       decoration: BoxDecoration(
 

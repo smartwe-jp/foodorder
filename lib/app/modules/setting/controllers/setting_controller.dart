@@ -93,14 +93,14 @@ class SettingController extends GetxController with StateMixin {
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
       "file": await MultipartFile.fromFile(logfile),
-    });print(formData);
+    });
 
     request(
         'webBootLogUpload',
         method: 'POST',
         parameters: formData
     ).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
       EasyLoading.dismiss();
       if (response["code"] == 200) {
 

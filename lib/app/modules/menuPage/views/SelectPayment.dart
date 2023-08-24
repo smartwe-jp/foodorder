@@ -217,7 +217,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Stack(
@@ -285,7 +285,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     //设置圆角
                                     borderRadius: new BorderRadius.circular((5.0)),
                                     //设置阴影
-                                    boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                    boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                   ),
                                   child: Stack(
                                     children: [
@@ -479,7 +479,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                 ),
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -582,7 +582,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                           alignment: Alignment.center,
                                           padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                           child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
-                                            width: ScreenAdapter.width(90),
+                                            width: ScreenAdapter.width(110),
                                             //height: ScreenAdapter.height(100),
                                             //color: Colors.lightGreen,
                                             fit: BoxFit.fitWidth,
@@ -696,7 +696,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -739,7 +739,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -782,7 +782,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -825,7 +825,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -868,7 +868,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -911,7 +911,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //设置圆角
                                             borderRadius: new BorderRadius.circular((5.0)),
                                             //设置阴影
-                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                            boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#cdcdcd"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
                                           ),
                                           child: Column(
                                             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -965,7 +965,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                           ),
                           if(_menuCount != null && _menuCount >0)
                             Text(
-                              "    ${_menuCount.toString()}${GString.getToString(this._checkLanguage, "show_selectPay_point")}",
+                              "  ${_menuCount.toString()}  ${GString.getToString(this._checkLanguage, "show_selectPay_point")}",
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                   fontWeight: FontWeight.w600,

@@ -27,6 +27,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../../widget/NumberCircle.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
@@ -158,7 +159,7 @@ class SettlementController extends GetxController with StateMixin {
     super.onClose();
   }
 
-  readyQueryData(){print(Get.arguments);
+  readyQueryData(){
     checkLanguage.value =Get.arguments['checkLanguage'];
     machineCode.value = Get.arguments['machineCode'];
     orderId.value = Get.arguments['orderId'];
@@ -282,11 +283,7 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewMenuPage() {
     if(isPayConfirmOrderId.value == true){
-      if(isAllowPos.value == "1" ||
-          showAlipay.value == true ||
-          showWechat.value == true ||
-          showPayPay.value == true
-      ){
+      if(payment_method_num.value == "0" || payment_method_num.value == "1"){
         if(machineMode.value == "2") {//精算时候请求
           print("精算请求了new order id");
           Get.find<CheckoutPageController>().postNewOrderId();
@@ -313,6 +310,7 @@ class SettlementController extends GetxController with StateMixin {
       Get.toNamed("/selfservice-page");
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {
+      Get.delete<MenuPageController>(); // 手动删除控制器实例
       Get.toNamed("/order-home");
       //Navigator.pushNamed(context, '/home');
     }
@@ -325,6 +323,7 @@ class SettlementController extends GetxController with StateMixin {
     Get.back();
     if (machineMode.value == "1") {
       if(is_back_home.value == "0"){
+        Get.delete<MenuPageController>(); // 手动删除控制器实例
         Get.toNamed("/order-home");
         //Navigator.pushNamed(context, '/home');
       }else{
@@ -494,6 +493,7 @@ class SettlementController extends GetxController with StateMixin {
   _showPosCancelEasyLoading(resultString) {
     EasyLoading.dismiss();
     var _showTag;
+    var _showTagContent = "";
     if(resultString =="M10"){//需要从端末点击返回
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
@@ -501,6 +501,7 @@ class SettlementController extends GetxController with StateMixin {
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
+      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
     }else if(resultString =="L06"){//需要从端末点击返回
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
@@ -508,6 +509,7 @@ class SettlementController extends GetxController with StateMixin {
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
+      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
     }else{
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
@@ -515,74 +517,23 @@ class SettlementController extends GetxController with StateMixin {
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
+      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
     }
     Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                      GString.getToString(checkLanguage.value, "tag_title"),
-                      style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontWeight: FontWeight.w600))),
-              children: <Widget>[
-                Container(
-                  width: ScreenAdapter.width(650),
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Align(
-                        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(28))),
-                        alignment: Alignment(0, 0),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 1.0,
-                        color: Colors.black12,
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 70.0),
-                          child: TextButton(
-                            child: Text(
-                              GString.getToString(checkLanguage.value,
-                                  "tag_button_yes"),
-                              style: TextStyle(
-                                  color: Colors.lightBlue,
-                                  fontSize: ScreenAdapter.fontSize(32.0)),
-                            ),
-                            onPressed: () async {
-                              if(resultString !="M10" && resultString !="L06"){
-                                getPaymentCancelPosData();
-                              }
+        DialogUtils.alertOneButton(_showTagContent,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              if(resultString !="M10" && resultString !="L06"){
+                getPaymentCancelPosData();
+              }
 
-                              Get.back();
-                              showEasyLoading();
-                              Future.delayed(Duration(milliseconds: 1500),() async {
-                                CancelOrder();
-                              });
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-        )
+              Get.back();
+              showEasyLoading();
+              Future.delayed(Duration(milliseconds: 1500),() async {
+                CancelOrder();
+              });
+            })
     );
 
   }
@@ -680,7 +631,6 @@ class SettlementController extends GetxController with StateMixin {
       };//print(formData);
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());//print(response);
-        LogUtil.d(response);
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
           if(resultData["requestInfo"] != ""){
@@ -729,7 +679,7 @@ class SettlementController extends GetxController with StateMixin {
       show_dialog_content = showContent;
     }
     //支付状态
-    Get.dialog(
+    /*Get.dialog(
         Container(
           width: ScreenAdapter.width(950),
           padding: EdgeInsets.only(left: ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
@@ -791,6 +741,18 @@ class SettlementController extends GetxController with StateMixin {
                 ),
               ]),
         )
+    );*/
+
+    Get.dialog(
+        DialogUtils.alertOneButton(show_dialog_content,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+              if(payType == "pos"){
+                Get.back();
+              }
+            })
     );
   }
 
@@ -851,7 +813,7 @@ class SettlementController extends GetxController with StateMixin {
     GString.getToString(checkLanguage.value, "settlement_nopayment_error");
 
     //支付状态
-    Get.dialog(
+    /*Get.dialog(
         Container(
           width: ScreenAdapter.width(950),
           child: SimpleDialog(
@@ -909,6 +871,15 @@ class SettlementController extends GetxController with StateMixin {
                 ),
               ]),
         )
+    );*/
+
+    Get.dialog(
+        DialogUtils.alertOneButton(show_dialog_content,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+            })
     );
   }
 
@@ -1011,7 +982,17 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
         }
-      });
+      },
+      onDone: () {
+        socketState.value = false;
+        print("pos机done了");
+      },
+      onError: (e) {
+        socketState.value = false;
+        print("pos机错误了");
+      //_close();
+      },
+      );
 
         socketState.value = true;
 
@@ -1227,93 +1208,18 @@ print(payment_method_num.value);
       }
       //小票状态
       Get.dialog(
-          Container(
-            width: ScreenAdapter.width(950),
-            child: SimpleDialog(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(5),
-                ),
-                title: Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                        GString.getToString(checkLanguage.value, "tag_title"),
-                        style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(28),
-                            fontWeight: FontWeight.w600))),
-                children: <Widget>[
-                  Container(
-                    width: ScreenAdapter.width(650),
-                    child: Column(
-                      children: <Widget>[
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          child: Text(show_dialog_content,
-                              style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(28))),
-                          alignment: Alignment(0, 0),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Divider(
-                          thickness: 1.0,
-                          color: Colors.black12,
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 70.0),
-                              child: TextButton(
-                                child: Text(
-                                  GString.getToString(checkLanguage.value,
-                                      "tag_print_button_no"),
-                                  style: TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () {
-                                  //sleep(Duration(milliseconds: 3000));
-                                  Get.back();
-                                  gotonewMyhome();
-                                },
-                              ),
-                            ),
-                            //垂直分割线
-                            SizedBox(
-                              width: 1,
-                              height: 40,
-                              child: DecoratedBox(
-                                decoration:
-                                BoxDecoration(color: Colors.black12),
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(right: 70.0),
-                              child: TextButton(
-                                child: Text(
-                                  GString.getToString(checkLanguage.value,
-                                      "tag_print_button_yes"),
-                                  style: TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () async {
-                                  //widget.confirmCallback('确定');
-                                  Get.back();
-                                  doPrintOrderMenu(printType);
-                                },
-                              ),
-                            )
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ]),
-          )
+          DialogUtils.alert(show_dialog_content,
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value,"tag_print_button_no"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_print_button_yes"),
+              confirm: () {
+                Get.back();
+                doPrintOrderMenu(printType);
+              },
+              cancle: () {
+                Get.back();
+                gotonewMyhome();
+              })
       );
     }
   }

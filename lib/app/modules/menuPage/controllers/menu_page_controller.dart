@@ -299,7 +299,7 @@ class MenuPageController extends GetxController with StateMixin {
   getCartPriceTotal() async {
 
     ordersqlcontroller.getCardList();
-    var total = await ordersqlcontroller.getCartAllPrice();print("更改购物车总钱数==${total}");
+    var total = await ordersqlcontroller.getCartAllPrice();
     if(total != null){
       shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
     }
@@ -875,11 +875,11 @@ print("加1了");
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": mealType.value,
-      };print("webBootOrder${formData}");
+      };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-        LogUtil.d(response);
+
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
@@ -972,7 +972,7 @@ print("加1了");
 
     var formData = {
       "orderId": doSubmitOrderId.value,
-    };print(doSubmitOrderId.value);
+    };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       //EasyLoading.dismiss();
@@ -980,7 +980,6 @@ print("加1了");
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
         doSubmitOrderId.value = response['data']["orderId"];
-        print(doSubmitOrderId.value);
 
           //gotoSettlement();
 

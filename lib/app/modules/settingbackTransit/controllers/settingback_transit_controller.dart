@@ -5,7 +5,7 @@ class SettingbackTransitController extends GetxController {
 
   final count = 0.obs;
   @override
-  void onInit() {print("setting中转过来跳转");
+  void onInit() {
     _goMain();
     super.onInit();
   }
