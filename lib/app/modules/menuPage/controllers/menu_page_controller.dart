@@ -200,7 +200,7 @@ class MenuPageController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "language": checkLanguage.value,
       "takeout":queryTakeout,
-    };print(formData);
+    };print("webBootIndexv1==${formData}");
     request('webBootIndexv1', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
@@ -214,15 +214,20 @@ class MenuPageController extends GetxController with StateMixin {
           Get.back();
         }
 
+        List MenuColor = ["#F05F32","#B2D3CE","#ABC251","#89A0F0","#E78BC5","#F05F32"];
+        var menuIndex = 0;
           for (var i = 0; i < myList.length; i++) {
+            print(menuIndex);
+            if(menuIndex >=5) menuIndex = 0;
             var categoryVoList = myList[i];
             //配置顶部菜单
             topMenu.value.add({
               "categoryCode": categoryVoList['categoryCode'],
               "categoryName": categoryVoList['categoryName'],
-              "showType": categoryVoList['showType']
+              "showType": categoryVoList['showType'],
+              "showColor":MenuColor[menuIndex]
             });
-
+            menuIndex++;
             //配置顶部菜单默认项
             if (i == 0) classTag.value = categoryVoList['categoryCode'];
             showItem.value[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
@@ -281,6 +286,7 @@ class MenuPageController extends GetxController with StateMixin {
 
 
           }
+          update();
         change(null, status: RxStatus.success());
       } else {
         showToast(response['msg']);
@@ -1044,7 +1050,7 @@ print("加1了");
 
 
   //切换顶部菜单分类
-  changeCategory(categoryCode){
+  changeCategory(categoryCode){print("不能切换了");
     classTag.value = categoryCode;
     update();
   }
@@ -1060,9 +1066,9 @@ print("加1了");
   gotoLanguageHome(){
     clearCartList();
     //getBookingBootMenu();
-    Future.delayed(Duration(milliseconds: 100),() async {
+    //Future.delayed(Duration(milliseconds: 100),() async {
       Get.back();
-    });
+    //});
   }
 
 

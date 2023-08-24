@@ -145,6 +145,11 @@ class SettingController extends GetxController with StateMixin {
   }
 
   goToBack(){
-    Get.find<TransitPageController>().getIsShowCashInfo();
+    //Get.find<TransitPageController>().getIsShowCashInfo();
+    menuPagecontroller.clearCartList();
+    Get.delete<MenuPageController>(); // 手动删除控制器实例
+    Future.delayed(Duration(milliseconds: 100), (){
+      Get.toNamed('/transit-page');
+    });
   }
 }

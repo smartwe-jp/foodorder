@@ -7,7 +7,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/transit_page_controller.dart';
 
-class TransitPageView extends GetView<TransitPageController> {
+class TransitPageView extends GetView {
   final TransitPageController controller = Get.put(TransitPageController());
   //final TransitPageController controller = Get.find<TransitPageController>();
    TransitPageView({Key key}) : super(key: key);

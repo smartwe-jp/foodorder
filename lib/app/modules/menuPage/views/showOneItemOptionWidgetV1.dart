@@ -207,18 +207,22 @@ class showOneItemOptionWidgetVOneView extends GetView {
                   (optionVolistSon['checked'] == true)
                       ? Positioned(
                     right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(40),
+                    top: ScreenAdapter.height(30),
                     child: Container(
                         width: ScreenAdapter.width(180),
                         height: ScreenAdapter.height(150),
                         alignment: Alignment.center,
 
-                        child: Image.asset(
+                        child: Icon(
+                          Icons.check,
+                          color: ColorsUtil.hexToColor("#2aa515"),
+                          size: 120,
+                        )/*Image.asset(
                           GImage.getImageString("imgpublic", "menu_option_check"),
                           width: ScreenAdapter.width(90),
                           fit: BoxFit.fitWidth,
                           color: Colors.green,
-                        )
+                        )*/
                     ),
                   )
                       : Container(

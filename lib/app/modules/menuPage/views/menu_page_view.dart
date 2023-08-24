@@ -19,18 +19,16 @@ import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../controllers/menu_page_controller.dart';
 
-class MenuPageView extends StatelessWidget {
+class MenuPageView extends GetView {
   final MenuPageController controller = Get.put(MenuPageController());
   MenuPageView({Key key}) : super(key: key);
 
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#B5C99A"];
-    var menuIndex = 0;
+    //List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#B5C99A"];
+    //List MenuColor = ["#F05F32","#B2D3CE","#92C90B","#89A0F0","#E78BC5","#F05F32"];
     for (var item in controller.topMenu.value) {
-      if(menuIndex >5) menuIndex = 0;
-
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
@@ -44,13 +42,13 @@ class MenuPageView extends StatelessWidget {
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
               width: ScreenAdapter.width(165),
               //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
-              height: ScreenAdapter.height(65),
+              height: ScreenAdapter.height(90),
               alignment: Alignment.center,
               decoration: (controller.classTag.value == item['categoryCode']) ? BoxDecoration(
                 //设置边框
                 //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
                 //背景颜色
-                color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+                color: ColorsUtil.hexToColor(item['showColor']),
                 //设置圆角
                 //borderRadius: new BorderRadius.circular((15.0)),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
@@ -58,7 +56,8 @@ class MenuPageView extends StatelessWidget {
                 //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
               ) : BoxDecoration(
                 //背景颜色
-                color: ColorsUtil.hexToColor(MenuColor[menuIndex]),
+                color: ColorsUtil.hexToColor(item['showColor']),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
               ),
               child: Center(
                 //加上Center让文字居中
@@ -70,7 +69,7 @@ class MenuPageView extends StatelessWidget {
                     maxHeight: ScreenAdapter.height(65),
                   ),
                   child: AutoSizeText(
-                    item['categoryName'],
+                    "${item['categoryName']}",
                     style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(30),
                         color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
@@ -103,13 +102,12 @@ class MenuPageView extends StatelessWidget {
         ),
       ));
 
-      menuIndex++;
     }
 
     //categoryMenus.add();
 
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.end,
+      crossAxisAlignment: CrossAxisAlignment.center,
       //mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: [
         Expanded(
@@ -119,7 +117,7 @@ class MenuPageView extends StatelessWidget {
               scrollDirection: Axis.horizontal,
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: categoryMenus,
                 )
               ],
@@ -2931,9 +2929,9 @@ class MenuPageView extends StatelessWidget {
                 width: ScreenAdapter.getScreenWidth(),
                 height: ScreenAdapter.height(95),
                 padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
-                alignment: Alignment.bottomLeft,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
-                  color: ColorsUtil.hexToColor("#000000"),
+                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                   /*image: new DecorationImage(
                 alignment: Alignment.centerRight,
                 fit: BoxFit.fitHeight,

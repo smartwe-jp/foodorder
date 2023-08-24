@@ -53,7 +53,7 @@ class GString{
         "settlement_outMoney":"お釣り    ",
         "settlement_print_outprice_tag":"    お釣りを取って下さい  \r\n しばらくお待ちください",
         "settlement_print_tag":"しばらくお待ちください",
-        "settlement_print_loading_tag":"少々お待ちください",
+        "settlement_print_loading_tag":"処理中・・・",//少々お待ちください
         "settlement_noprint_tag":"しばらくお待ちください",
         "settlement_nopayment_error":"        支払いが失敗しました。  \r\n 他の支払い方法をお選ぶください。",
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
@@ -157,7 +157,7 @@ class GString{
         "settlement_outMoney":"找零    ",
         "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
         "settlement_print_tag":"请等待小票打印",
-        "settlement_print_loading_tag":"处理中，请稍候……",
+        "settlement_print_loading_tag":"处理中……",//，请稍候
         "settlement_noprint_tag":"请稍候~",
         "settlement_nopayment_error":"支付失败，请选择其他方式支付",
         "settlement_scancodenoopen_error":"请选择现金支付。",
@@ -259,7 +259,7 @@ class GString{
         "settlement_outMoney":"Change due",
         "settlement_print_outprice_tag":"Please take your change and receipt",
         "settlement_print_tag":"Please take your receipt.",
-        "settlement_print_loading_tag":"Processing, please wait",
+        "settlement_print_loading_tag":"Processing……",//, please wait
         "settlement_noprint_tag":"Please wait a moment.",
         "settlement_nopayment_error":"Payment failed, please choose another payment method.",
         "settlement_scancodenoopen_error":"Please select cash payment.",
@@ -361,7 +361,7 @@ class GString{
         "settlement_outMoney":"거스름돈을 주다",
         "settlement_print_outprice_tag":"거스름돈을 꺼내고 영수증을 기다리세요",
         "settlement_print_tag":"영수증을기다리세요",
-        "settlement_print_loading_tag":"처리중이니 기다려주세요",
+        "settlement_print_loading_tag":"처리 중...",//처리중이니 기다려주세요
         "settlement_noprint_tag":"기다리세요.",
         "settlement_nopayment_error":"결제에 실패했습니다. 다른 결제 수단을 선택하세요.",
         "settlement_scancodenoopen_error":"현금결제를 선택해주세요",

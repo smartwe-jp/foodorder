@@ -5,8 +5,9 @@ import '../controllers/order_home_controller.dart';
 class OrderHomeBinding extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut<OrderHomeController>(
+    Get.put(OrderHomeController());
+    /*Get.lazyPut<OrderHomeController>(
       () => OrderHomeController(),
-    );
+    );*/
   }
 }

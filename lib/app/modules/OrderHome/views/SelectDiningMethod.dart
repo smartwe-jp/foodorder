@@ -102,20 +102,29 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 3.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
+                                    /*Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                       child: Image.asset(GImage.getImageString("imgpublic", "dining_in_checked"),
                                         //width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(140),
                                         fit: BoxFit.fitHeight,
+                                      ),
+                                    ),*/
+                                    Container(
+                                      height: ScreenAdapter.height(210),
+                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                      child: Icon(
+                                        Icons.local_dining,
+                                        color: ColorsUtil.hexToColor("#af6b22"),
+                                        size: 200,
                                       ),
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),
@@ -154,20 +163,29 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                   //设置阴影
-                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 6.0), ],
+                                  boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#844811"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 3.0), ],
                                 ),
                                 alignment: Alignment.center,
                                 child: Column(
                                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    Container(
+                                    /*Container(
                                       height: ScreenAdapter.height(210),
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
                                       child: Image.asset(GImage.getImageString("imgpublic", "dining_away_checked"),
                                         //width: ScreenAdapter.width(120),
                                         height: ScreenAdapter.height(140),
                                         fit: BoxFit.fitHeight,
+                                      ),
+                                    ),*/
+                                    Container(
+                                      height: ScreenAdapter.height(210),
+                                      padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(10),bottom: ScreenAdapter.height(10)),
+                                      child: Icon(
+                                        Icons.takeout_dining,
+                                        color: ColorsUtil.hexToColor("#af6b22"),
+                                        size: 200,
                                       ),
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),

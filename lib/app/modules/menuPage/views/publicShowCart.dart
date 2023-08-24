@@ -59,8 +59,8 @@ class publicShowCartView extends GetView {
                   child: Container(
                     padding: EdgeInsets.only(
                         left: ScreenAdapter.width(5),
-                        top: ScreenAdapter.height(8),
-                        bottom: ScreenAdapter.height(8)),
+                        top: ScreenAdapter.height(5),
+                        bottom: ScreenAdapter.height(5)),
                     //width: ScreenAdapter.width(495),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,14 +323,20 @@ class publicShowCartView extends GetView {
                 Positioned(
                   bottom: 0,
                   child: Container(
-                    color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+
                     width: ScreenAdapter.width(1080),
-                    height: ScreenAdapter.height(340),
+                    height: ScreenAdapter.height(330),
                     padding: EdgeInsets.only(
                         left: ScreenAdapter.width(5),
-                        top: ScreenAdapter.height(20),
+                        top: ScreenAdapter.height(2),
                         right: ScreenAdapter.width(20),
-                        bottom: ScreenAdapter.height(10)),
+                        bottom: ScreenAdapter.height(2)),
+                    decoration: BoxDecoration(
+                      //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                      border: Border(
+                        top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
+                      ),
+                    ),
                     child: Column(
                       children: [
 
@@ -340,7 +346,7 @@ class publicShowCartView extends GetView {
                           children: [
                             Expanded(
                                 child: Container(
-                                  height: ScreenAdapter.height(300),
+                                  height: ScreenAdapter.height(315),
                                   child: Row(
                                     children: [
                                       Scrollbar(
@@ -348,7 +354,7 @@ class publicShowCartView extends GetView {
                                             physics: ClampingScrollPhysics(),
                                             child: Container(
                                               width: ScreenAdapter.width(720),
-                                              height: ScreenAdapter.height(300),
+                                              height: ScreenAdapter.height(315),
                                               color:
                                               ColorsUtil.hexToColor(Gcolor.cartListColor),
                                               child: Stack(
@@ -365,7 +371,7 @@ class publicShowCartView extends GetView {
                                   ),
                                 )),
                             Container(
-                              height: ScreenAdapter.height(290),
+                              height: ScreenAdapter.height(310),
                               child: Column(
                                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                                 crossAxisAlignment: CrossAxisAlignment.center,

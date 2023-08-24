@@ -661,14 +661,13 @@ class SettingView extends GetView<SettingController> {
                       children: [
                         InkWell(
                           onTap: () {
-                            controller.ordersqlcontroller.removeAllFromCart();
-                            controller.menuPagecontroller.clearCartList();
+                            //controller.menuPagecontroller.clearCartList();
                             //sleep(Duration(milliseconds: 100));
                             //Get.back();
-                            //controller.goToBack();
+                            controller.goToBack();
                             Future.delayed(Duration(milliseconds: 100), () {
                               //Get.back();
-                              Get.off(() => TransitPageView());
+                              //Get.off(() => TransitPageView());
                               //Get.toNamed('/transit-page');
                               //Get.toNamed('/settingback-transit');
                               //Get.to(() => TransitPageView());

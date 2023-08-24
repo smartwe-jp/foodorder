@@ -23,10 +23,8 @@ class TransitPageController extends GetxController {
 
   @override
   void onInit() {print("init进来了么");
-  super.onInit();
     getIsShowCashInfo();
-
-
+    super.onInit();
   }
 
   @override
