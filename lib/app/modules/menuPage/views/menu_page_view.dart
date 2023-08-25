@@ -17,6 +17,7 @@ import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../controllers/menu_page_controller.dart';
 
 class MenuPageView extends GetView {
@@ -317,7 +318,15 @@ class MenuPageView extends GetView {
                                   if(current_option_checked <int.parse(attr[i]["smallest"])){
                                     nexOrder = false;
                                     var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                    showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                    //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                    Get.dialog(
+                                        DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                            title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                            confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                            confirm: () {
+                                              Get.back();
+                                            })
+                                    );
                                     break;
                                   }
                                 }
@@ -918,7 +927,15 @@ class MenuPageView extends GetView {
                                 if(current_option_checked <int.parse(attr[i]["smallest"])){
                                   nexOrder = false;
                                   var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  Get.dialog(
+                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          confirm: () {
+                                            Get.back();
+                                          })
+                                  );
                                   break;
                                 }
                               }
@@ -1533,7 +1550,15 @@ class MenuPageView extends GetView {
                                 if(current_option_checked <int.parse(attr[i]["smallest"])){
                                   nexOrder = false;
                                   var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  Get.dialog(
+                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          confirm: () {
+                                            Get.back();
+                                          })
+                                  );
                                   break;
                                 }
                               }
@@ -2946,6 +2971,7 @@ class MenuPageView extends GetView {
                     child: Container(
                       color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                       height: ScreenAdapter.height(1480),
+                      alignment: Alignment.center,
                       child: showMiddleMenuList(context),
                     ),
                   )),

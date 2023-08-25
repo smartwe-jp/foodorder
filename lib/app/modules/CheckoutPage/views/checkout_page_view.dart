@@ -8,10 +8,12 @@ import 'package:get_storage/get_storage.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
+import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
+import 'ScanCode.dart';
 
 class CheckoutPageView extends GetView {
   final CheckoutPageController controller = Get.put(CheckoutPageController());
@@ -86,6 +88,8 @@ class CheckoutPageView extends GetView {
           billMenus.add(InkWell(
             onTap: () {
               controller.checkLanguage.value = item["value"];
+              controller.scanQrCodeHomeController.text = "";
+              controller.scanQrCodeHomeFocusNode.requestFocus();
 
 
               Get.toNamed("/scancode-page",arguments: {"checkLanguage": controller.checkLanguage.value});
@@ -95,7 +99,7 @@ class CheckoutPageView extends GetView {
             child: Container(
               width: ScreenAdapter.width(217),
               height: ScreenAdapter.height(90),
-              margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+              margin: EdgeInsets.only(left:ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
               decoration: BoxDecoration(
                 image: DecorationImage(
                   //alignment: Alignment.topCenter,
@@ -189,6 +193,7 @@ class CheckoutPageView extends GetView {
             children: [
               Container(
                 padding: EdgeInsets.zero,
+                height: ScreenAdapter.height(1920),
                 child: Column(
                   children: [
                     Container(
@@ -202,8 +207,8 @@ class CheckoutPageView extends GetView {
                                 autofocus: true,
                                 showCursor: true, // 显示光标
                                 //readOnly: true,
-                                controller: controller.scanQrCodeController,
-                                focusNode: controller.scanQrCodeFocusNode,
+                                controller: controller.scanQrCodeHomeController,
+                                focusNode: controller.scanQrCodeHomeFocusNode,
                                 decoration: InputDecoration(
                                   hintText: "请扫码",
                                   border: InputBorder.none,
@@ -219,7 +224,7 @@ class CheckoutPageView extends GetView {
                                 },
                                 onSubmitted: (value){
                                   Future.delayed(Duration(milliseconds: 150), () {print("精算扫码了");
-                                    controller.doNextPay();
+                                  controller.doNextHomePay();
                                   });
 
 
@@ -234,7 +239,7 @@ class CheckoutPageView extends GetView {
                     ),
                     Container(
                       width: MediaQuery.of(context).size.width,
-                      height: MediaQuery.of(context).size.height,
+                     height: MediaQuery.of(context).size.height,
                       padding: EdgeInsets.zero,
                       child: Swiper(
                         //itemHeight: 200,
@@ -286,7 +291,7 @@ class CheckoutPageView extends GetView {
                 ),
               ),
               Positioned(
-                top: ScreenAdapter.height(1300),
+                top: ScreenAdapter.height(1400),
                 child: Container(
                   width: ScreenAdapter.width(1080),
                   child: Column(
@@ -298,7 +303,7 @@ class CheckoutPageView extends GetView {
                         _showTakeoutButton(),
 
                       _showLanguagesButton(),
-                      SizedBox(height: ScreenAdapter.height(60),),
+                      SizedBox(height: ScreenAdapter.height(40),),
                       //是否展示预定排号
                       if(controller.lineup.value == true && controller.isReservation.value == "1")
                         _showLineUpButton(),

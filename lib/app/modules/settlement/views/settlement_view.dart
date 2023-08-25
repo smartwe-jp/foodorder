@@ -18,116 +18,6 @@ class SettlementView extends GetView {
   SettlementView({Key key}) : super(key: key);
 
   showCashAlert(){
-    /*Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                      GString.getToString(controller.checkLanguage.value, "tag_title"),
-                      style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontWeight: FontWeight.w600))),
-              children: <Widget>[
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                      child: Icon(
-                        Icons.notifications_outlined,
-                        //color: ColorsUtil.hexToColor("#2aa515"),
-                        size: 80,
-                      ),
-                    ),
-                    Expanded(
-                        child: Container(
-                          width: ScreenAdapter.width(700),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(20)),
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
-                          child: Align(
-                            child: Text(GString.getToString(controller.checkLanguage.value, "settlement_back_alertcontent"),
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(28))),
-                            alignment: Alignment(0, 0),
-                          ),
-                        )
-                    ),
-                  ],
-                ),
-                SizedBox(
-                  height: 30,
-                ),
-                Divider(
-                  thickness: 3.0,
-                  color: Colors.black12,
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    InkWell(
-                      child: Container(
-                        padding: EdgeInsets.only(left: 70.0),
-                        width: ScreenAdapter.width(400),
-                        height: ScreenAdapter.height(75),
-                        alignment: Alignment.center,
-                        child: Text(
-                          GString.getToString(controller.checkLanguage.value,
-                              "tag_button_no"),
-                          style: TextStyle(
-                            //color: Colors.lightBlue,
-                              fontWeight: FontWeight.w600,
-                              fontSize: ScreenAdapter.fontSize(34.0)
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        //sleep(Duration(milliseconds: 3000));
-                        Get.back();
-
-                      },
-                    ),
-                    //垂直分割线
-                    SizedBox(
-                      width: 3,
-                      height: ScreenAdapter.height(95),
-                      child: DecoratedBox(
-                        decoration: BoxDecoration(color: Colors.black12),
-                      ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        padding: EdgeInsets.only(right: 70.0),
-                        width: ScreenAdapter.width(400),
-                        height: ScreenAdapter.height(75),
-                        alignment: Alignment.center,
-                        child: Text(
-                          GString.getToString(controller.checkLanguage.value,
-                              "tag_button_yes"),
-                          style: TextStyle(
-                            //color: Colors.lightBlue,
-                              fontSize: ScreenAdapter.fontSize(34.0),
-                              fontWeight: FontWeight.w600
-                          ),
-                        ),
-                      ),
-                      onTap: () {
-                        Get.back();
-                        controller.showBackEasyLoading();
-                        controller.CancelOrder();
-
-                      },
-                    )
-                  ],
-                ),
-              ]),
-        ),
-      barrierDismissible: false
-    );*/
     Get.dialog(
         DialogUtils.alert(GString.getToString(controller.checkLanguage.value, "settlement_back_alertcontent"),
         title: GString.getToString(controller.checkLanguage.value, "tag_title"),
@@ -268,7 +158,7 @@ class SettlementView extends GetView {
                         onLongPress: () {
                           try {
                             //Navigator.pop(context);
-                            controller.CancelOrder();;
+                            controller.CancelOrder();
                             //showCancelConfirm();
                           } catch (_) {}
                         },
@@ -785,7 +675,7 @@ class SettlementView extends GetView {
                                       alignment: Alignment.bottomCenter,
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                       child: Image.asset(GImage.getImageString("imgpublic", "card_american"),
-                                        width: ScreenAdapter.width(80),
+                                        width: ScreenAdapter.width(100),
                                         //height: ScreenAdapter.height(100),
                                         //color: Colors.lightGreen,
                                         fit: BoxFit.fitWidth,
@@ -800,7 +690,7 @@ class SettlementView extends GetView {
                                       alignment: Alignment.topCenter,
                                       padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
                                       child: Image.asset(GImage.getImageString("imgpublic", "card_diners"),
-                                        width: ScreenAdapter.width(110),
+                                        width: ScreenAdapter.width(100),
                                         //height: ScreenAdapter.height(100),
                                         //color: Colors.lightGreen,
                                         fit: BoxFit.fitWidth,

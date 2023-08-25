@@ -38,7 +38,7 @@ class DialogUtils {
                   Container(
                     margin: EdgeInsets.only(left: ScreenAdapter.width(10)),
                     child: Text(
-                        title,
+                        "${title}          ",
                         style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(34),
                             fontWeight: FontWeight.w600)),
@@ -164,7 +164,7 @@ class DialogUtils {
                   Container(
                     margin: EdgeInsets.only(left: ScreenAdapter.width(10)),
                     child: Text(
-                        title,
+                        "${title}          ",
                         style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(34),
                             fontWeight: FontWeight.w600)),
@@ -175,13 +175,7 @@ class DialogUtils {
             Row(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-              if(contentTagImg != "")
-                Container(
-                  //width: ScreenAdapter.width(400),
-                  //margin: EdgeInsets.only(top: 60),
-                  height: ScreenAdapter.height(75),
-                  child: Image.asset(GImage.getImageString("imgpublic", contentTagImg),fit: BoxFit.fitHeight),
-                ),
+
                 Expanded(
                     child: Column(
                       children: [
@@ -190,9 +184,22 @@ class DialogUtils {
                           margin: EdgeInsets.only(top: ScreenAdapter.height(20)),
                           padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
                           child: Align(
-                            child: Text(content,
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(32))),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                if(contentTagImg != "")
+                                  Container(
+                                    //width: ScreenAdapter.width(400),
+                                    //margin: EdgeInsets.only(top: 60),
+                                    margin: EdgeInsets.only(right: ScreenAdapter.width(10)),
+                                    height: ScreenAdapter.height(55),
+                                    child: Image.asset(GImage.getImageString("imgpublic", contentTagImg),fit: BoxFit.fitHeight),
+                                  ),
+                                Text(content,
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(32))),
+                              ],
+                            ),
                             alignment: Alignment(0, 0),
                           ),
                         ),

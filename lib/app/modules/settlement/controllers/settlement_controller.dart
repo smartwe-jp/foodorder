@@ -303,6 +303,7 @@ class SettlementController extends GetxController with StateMixin {
     EasyLoading.dismiss();
     Get.back();
     if(machineMode.value == "2") {
+      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Get.toNamed("/checkout-page");
       //Navigator.pushNamed(context, '/checkOutPage');
@@ -351,6 +352,7 @@ class SettlementController extends GetxController with StateMixin {
       }
 
     } else {
+      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Get.toNamed("/checkout-page");
       //Navigator.pushNamed(context, '/checkOutPage');

@@ -37,7 +37,7 @@ class ScanCodeView extends GetView {
                           child: TextField(
                             keyboardType: TextInputType.text,
                             autofocus: true,
-                            showCursor: false, // 显示光标
+                            showCursor: true, // 显示光标
                             //readOnly: true,
                             controller: controller.scanQrCodeController,
                             focusNode: controller.scanQrCodeFocusNode,
@@ -55,8 +55,8 @@ class ScanCodeView extends GetView {
 
                             },
                             onSubmitted: (value){
-                              Future.delayed(Duration(milliseconds: 300), () {
-                                controller.doNextPay();
+                              Future.delayed(Duration(milliseconds: 150), () {print("精算扫码了");
+                              controller.doNextPay();
                               });
 
 
@@ -71,16 +71,21 @@ class ScanCodeView extends GetView {
                 ),
                 Container(
                   width: ScreenAdapter.getScreenWidth(),
-                  height: ScreenAdapter.height(95),
+                  height: ScreenAdapter.height(115),
                   decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
-                      colors: [
-                        ColorsUtil.hexToColor("#C47829"),
-                        ColorsUtil.hexToColor("#854610"),
-                      ],
-                    ),
+                      color: ColorsUtil.hexToColor("#ffffff"),
+                      border: Border(
+                        bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5.0),
+                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                      )
+                    /*gradient: LinearGradient(
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight,
+                    colors: [
+                      ColorsUtil.hexToColor("#C47829"),
+                      ColorsUtil.hexToColor("#854610"),
+                    ],
+                  ),*/
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -94,6 +99,7 @@ class ScanCodeView extends GetView {
                             GImage.getImageString(
                                 "imgpublic", "settlement_top_qr"),
                             width: ScreenAdapter.width(40),
+                            color: Colors.black87,
                             fit: BoxFit.fitWidth,
                           ),
                           SizedBox(
@@ -102,7 +108,7 @@ class ScanCodeView extends GetView {
                           Text(
                             GString.getToString(controller.checkLanguage.value, "checkoutScanTitle"),
                             style: TextStyle(
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                                //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
@@ -117,7 +123,7 @@ class ScanCodeView extends GetView {
                       //height: ScreenAdapter.height(940),
                       child: Image.asset(
                         GImage.getImageString("imgpublic","jingsuantag"),
-                        width: ScreenAdapter.width(1070),
+                        width: ScreenAdapter.width(970),
                         fit: BoxFit.fitWidth,
                       ),
                     )
@@ -134,7 +140,9 @@ class ScanCodeView extends GetView {
                         onTap: () {
                           try {
                             //showCancelConfirm();
-                            Navigator.pop(context);
+                            //Navigator.pop(context);
+                            Get.back();
+                            //controller.backCheckHome();
 
                           } catch (_) {}
                         },

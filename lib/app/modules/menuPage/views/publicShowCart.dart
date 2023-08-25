@@ -340,171 +340,161 @@ class publicShowCartView extends GetView {
         return Obx(() => RepaintBoundary(
           child: Container(
             height: ScreenAdapter.height(330),
-            child: Stack(
-              children: [
-                Positioned(
-                  bottom: 0,
-                  child: Container(
+            child: Container(
 
-                    width: ScreenAdapter.width(1080),
-                    height: ScreenAdapter.height(330),
-                    padding: EdgeInsets.only(
-                        left: ScreenAdapter.width(5),
-                        top: ScreenAdapter.height(2),
-                        right: ScreenAdapter.width(20),
-                        bottom: ScreenAdapter.height(2)),
-                    decoration: BoxDecoration(
-                      //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                      border: Border(
-                        top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
-                      ),
-                    ),
-                    child: Column(
-                      children: [
-
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.center,
+              width: ScreenAdapter.width(1080),
+              height: ScreenAdapter.height(330),
+              padding: EdgeInsets.only(
+                  left: ScreenAdapter.width(5),
+                  top: ScreenAdapter.height(2),
+                  right: ScreenAdapter.width(5),
+                  bottom: ScreenAdapter.height(2)),
+              decoration: BoxDecoration(
+                //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                border: Border(
+                  top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
+                ),
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                      child: Container(
+                        height: ScreenAdapter.height(315),
+                        child: Row(
                           children: [
-                            Expanded(
-                                child: Container(
-                                  height: ScreenAdapter.height(315),
-                                  child: Row(
-                                    children: [
-                                      Scrollbar(
-                                          child: SingleChildScrollView(
-                                            physics: ClampingScrollPhysics(),
-                                            child: Container(
-                                              width: ScreenAdapter.width(720),
-                                              height: ScreenAdapter.height(315),
-                                              color:
-                                              ColorsUtil.hexToColor(Gcolor.cartListColor),
-                                              child: Stack(
-                                                alignment: Alignment.topRight,
-                                                children: [
-                                                  showCartListMenu(context),
-                                                ],
-                                              ),
-                                            ),
-                                          )
-                                      ),
-
-                                    ],
-                                  ),
-                                )),
-                            Container(
-                              height: ScreenAdapter.height(310),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-
-                                  SizedBox(height: ScreenAdapter.height(10)),
-                                  InkWell(
-                                      onLongPress: (){
-                                        if(int.parse(controller.shopCartTotalPrice.value) >0){
-                                          Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
-                                        }
-
-                                      },
-                                      child:Container(
-                                        decoration: BoxDecoration(
-                                            color: Colors.white12,
-                                            border: Border(
-                                              bottom: BorderSide(color: Colors.black, width: 1.5),
-                                              //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                            )),
-                                        child: RichText(
-                                          text: TextSpan(
-                                              text: "¥",
-                                              //GString.getToString(controller.checkLanguage.value, "show_price_front"),
-                                              style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(GFontSize
-                                                    .menusettlementBottomPriceLeft),
-                                                fontWeight: FontWeight.w600,
-                                                color: ColorsUtil.hexToColor(
-                                                    Gcolor.mainTitleColor),
-                                              ),
-                                              children: [
-                                                TextSpan(
-                                                  text: formatMoney(controller.shopCartTotalPrice.value),
-                                                  style: TextStyle(
-                                                    fontSize: ScreenAdapter.fontSize(
-                                                        GFontSize
-                                                            .menusettlementBottomPrice),
-                                                    fontWeight: FontWeight.w600,
-                                                    color: ColorsUtil.hexToColor(
-                                                        Gcolor.priceColor),
-                                                  ),
-                                                ),
-                                                TextSpan(
-                                                  text:
-                                                  "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
-                                                  style: TextStyle(
-                                                    fontSize: ScreenAdapter.fontSize(
-                                                        GFontSize
-                                                            .menusettlementBottomPriceRight),
-                                                    fontWeight: FontWeight.w600,
-                                                    color: ColorsUtil.hexToColor(
-                                                        Gcolor.mainTitleColor),
-                                                  ),
-                                                ),
-                                              ]),
-                                        ),
-                                      )
-                                  ),
-
-
-                                  SizedBox(height: ScreenAdapter.height(10)),
-                                  InkWell(
-                                    enableFeedback: false,
-                                    onTap: () {
-                                      if (int.parse(controller.shopCartTotalPrice.value) ==0) {
-                                        return false;
-                                      }
-
-                                      //点餐方式只有一种并且未开pos
-                                      /*if(_isAllowPos == "0"){
-                                  _doSubmitOrder();
-                                }else{*/
-                                      controller.doSubmitOrder();
-                                      //_showSelectMealTypeAndPaymentMethodDialog();
-                                      //}
-
-
-
-                                    },
-                                    child: Container(
-                                      width: ScreenAdapter.width(300),
-                                      height: ScreenAdapter.height(165),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-
-                                        color: (int.parse(controller.shopCartTotalPrice.value) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
-                                        //设置圆角
-                                        borderRadius: new BorderRadius.circular((16.0)),
-                                      ),
-                                      child: Text(
-                                          GString.getToString(controller.checkLanguage.value,
-                                              "settlement_button"),
-                                          style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(48),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.settlementBtnColor),
-                                          )),
+                            Scrollbar(
+                                child: SingleChildScrollView(
+                                  physics: ClampingScrollPhysics(),
+                                  child: Container(
+                                    width: ScreenAdapter.width(730),
+                                    height: ScreenAdapter.height(315),
+                                    color:
+                                    ColorsUtil.hexToColor(Gcolor.cartListColor),
+                                    child: Stack(
+                                      alignment: Alignment.topRight,
+                                      children: [
+                                        showCartListMenu(context),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                )
                             ),
+
                           ],
+                        ),
+                      )),
+                  Container(
+                    width: ScreenAdapter.width(330),
+                    height: ScreenAdapter.height(310),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+
+                        SizedBox(height: ScreenAdapter.height(10)),
+                        InkWell(
+                            onLongPress: (){
+                              if(int.parse(controller.shopCartTotalPrice.value) >0){
+                                Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
+                              }
+
+                            },
+                            child:Container(
+                              decoration: BoxDecoration(
+                                  color: Colors.white12,
+                                  border: Border(
+                                    bottom: BorderSide(color: Colors.black, width: 1.5),
+                                    //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                  )),
+                              child: RichText(
+                                text: TextSpan(
+                                    text: "¥",
+                                    //GString.getToString(controller.checkLanguage.value, "show_price_front"),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(GFontSize
+                                          .menusettlementBottomPriceLeft),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.mainTitleColor),
+                                    ),
+                                    children: [
+                                      TextSpan(
+                                        text: formatMoney(controller.shopCartTotalPrice.value),
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize
+                                                  .menusettlementBottomPrice),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.priceColor),
+                                        ),
+                                      ),
+                                      TextSpan(
+                                        text:
+                                        "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
+                                        style: TextStyle(
+                                          fontSize: ScreenAdapter.fontSize(
+                                              GFontSize
+                                                  .menusettlementBottomPriceRight),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor.mainTitleColor),
+                                        ),
+                                      ),
+                                    ]),
+                              ),
+                            )
+                        ),
+
+
+                        SizedBox(height: ScreenAdapter.height(10)),
+                        InkWell(
+                          enableFeedback: false,
+                          onTap: () {
+                            if (int.parse(controller.shopCartTotalPrice.value) ==0) {
+                              return false;
+                            }
+
+                            //点餐方式只有一种并且未开pos
+                            /*if(_isAllowPos == "0"){
+                                  _doSubmitOrder();
+                                }else{*/
+                            controller.doSubmitOrder();
+                            //_showSelectMealTypeAndPaymentMethodDialog();
+                            //}
+
+
+
+                          },
+                          child: Container(
+                            width: ScreenAdapter.width(300),
+                            height: ScreenAdapter.height(165),
+                            margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+
+                              color: (int.parse(controller.shopCartTotalPrice.value) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text(
+                                GString.getToString(controller.checkLanguage.value,
+                                    "settlement_button"),
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(48),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.settlementBtnColor),
+                                )),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                )
-              ],
+                ],
+              ),
             ),
           ),
         ));

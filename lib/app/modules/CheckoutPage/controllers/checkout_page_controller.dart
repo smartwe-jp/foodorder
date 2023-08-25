@@ -19,6 +19,9 @@ import '../../menuPage/views/SelectPayment.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
   //TODO: Implement CheckoutPageController
+  TextEditingController scanQrCodeHomeController = new TextEditingController();
+  FocusNode scanQrCodeHomeFocusNode = FocusNode();
+
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
 
@@ -325,9 +328,48 @@ class CheckoutPageController extends GetxController with StateMixin {
     }
   }
 
+  doNextHomePay(){
+    var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
+    if(scanQrCodeHomeController.text !=""){
+      //_showOrderEasyLoading();
+      if(scanQrCodeHomeController.text.contains('?p=') == true){
+        _orderkey = scanQrCodeHomeController.text.substring(scanQrCodeHomeController.text.length-21);
+      }
+      //自定义声音
+      //playQRScannerSound();
+
+      var formData = {
+        "orderKey": _orderkey
+      };print(formData);
+      request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());print(response);
+        EasyLoading.dismiss();
+        //print(response);
+        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
+          if(response["data"]["totalPrice"] >0){
+            orderId.value = response["data"]["orderId"].toString();
+            totlaPrice.value = response["data"]["totalPrice"].toString();
+            tableNum.value = response["data"]["tableNum"].toString();
+            _showSelectMealTypeAndPaymentMethodDialog();
+          }else{
+            scanQrCodeHomeController.text = "";
+            scanQrCodeHomeFocusNode.requestFocus();
+          }
+
+        }else{
+          scanQrCodeHomeController.text = "";
+
+          _showDialogError(response['msg']);
+          scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+        }
+      });
+    }
+  }
+
   //选择食用方式和支付方式
   _showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
+    scanQrCodeHomeFocusNode.requestFocus();
     Get.dialog(
         SelectPaymentPage(
             checkLanguage: checkLanguage.value,
@@ -363,6 +405,7 @@ class CheckoutPageController extends GetxController with StateMixin {
                 payment_method_num.value = payment_method_numcheck;
                 checkLanguage.value = "JP";
                 scanQrCodeController.text = "";
+                scanQrCodeHomeController.text = "";
 
               var paymentMethod = ["3","4","5","6","7","8","9","10"];
               if (paymentMethod.contains(payment_method_num.value) == true) {
@@ -376,9 +419,10 @@ class CheckoutPageController extends GetxController with StateMixin {
             onCancelClick: (String isBack){
               if(isBack == "back"){
                 scanQrCodeController.text = "";
-
+                scanQrCodeHomeController.text = "";
               }
               scanQrCodeFocusNode.requestFocus();// 获取焦点
+              scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
             }
         )
     );
@@ -400,7 +444,15 @@ print(response);
           //goToSettlement();
       }else{
 
-        showToast(response['data']["message"]);
+        //showToast(response['data']["message"]);
+        Get.dialog(
+            DialogUtils.alertOneButton("${response['data']["message"]}",
+                title: GString.getToString(checkLanguage.value, "tag_title"),
+                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
       }
     });
 
@@ -416,7 +468,8 @@ print(response);
   }
   goToSettlement(){
     scanQrCodeController.text = "";
-    Get.toNamed('/settlement',
+    scanQrCodeHomeController.text = "";
+    Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage": checkLanguage.value,
           "machineCode": machineCode.value,
@@ -448,6 +501,12 @@ print(response);
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
         });
+  }
+
+  backCheckHome(){
+    Get.back();
+    scanQrCodeFocusNode.requestFocus();// 获取焦点
+
   }
 
 

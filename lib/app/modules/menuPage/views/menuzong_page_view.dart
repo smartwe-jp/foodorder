@@ -16,6 +16,7 @@ import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../controllers/menu_page_controller.dart';
 
 class MenuzongPageView extends GetView {
@@ -33,58 +34,81 @@ class MenuzongPageView extends GetView {
         onTap: () {
           controller.changeCategory(item['categoryCode']);
         },
-        child: Container(
-          //margin: EdgeInsets.only(top: ScreenAdapter.height(2),bottom: ScreenAdapter.height(2)),
-          width: ScreenAdapter.width(75), //(classTag == item['categoryCode']) ? ScreenAdapter.width(102) : ScreenAdapter.width(72),
-          //height: ScreenAdapter.height(190),
-          decoration: (controller.classTag.value == item['categoryCode']) ? BoxDecoration(
-            //设置边框
-            //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-            //背景颜色
-            color: ColorsUtil.hexToColor("#FFFFFF"),
-            border: Border(
-              bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5),
-            ),
-          ) : BoxDecoration(
-            //背景颜色
-            color: ColorsUtil.hexToColor("#F0DFB3"),
-            border: Border(
-              bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5),
-            ),
-          ),
-          child: Center(
-            //加上Center让文字居中
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
-                  width: ScreenAdapter.width(35),
-                  child: controller.checkLanguage.value != "EN" ?Text(
-                    item['categoryName'],
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(28),
-                      //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                      color: ColorsUtil.hexToColor("#282828"),
-                      fontWeight: FontWeight.w600,
-                    ),
-                    //maxLines: 2,
-                    //overflow: TextOverflow.ellipsis,
-                  ):RotatedBox(quarterTurns: 1,child: Text(
-                    item['categoryName'],
-                    style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(28),
-                        //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                        color: ColorsUtil.hexToColor("#282828"),
-                        fontWeight: FontWeight.w600),
-                    //maxLines: 2,
-                    //overflow: TextOverflow.ellipsis,
-                  ),),
+        child: Stack(
+          children: [
+            Container(
+              //margin: EdgeInsets.only(top: ScreenAdapter.height(2),bottom: ScreenAdapter.height(2)),
+              width: ScreenAdapter.width(75), //(classTag == item['categoryCode']) ? ScreenAdapter.width(102) : ScreenAdapter.width(72),
+              //height: ScreenAdapter.height(190),
+              decoration: (controller.classTag.value == item['categoryCode']) ? BoxDecoration(
+                //设置边框
+                //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
+                //背景颜色
+                color: ColorsUtil.hexToColor(item['showColor']),
+                border: Border(
+                  bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5),
                 ),
-              ],
+              ) : BoxDecoration(
+                //背景颜色
+                color: ColorsUtil.hexToColor(item['showColor']),
+                border: Border(
+                  bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5),
+                ),
+              ),
+              child: Center(
+                //加上Center让文字居中
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Container(
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
+                      width: ScreenAdapter.width(35),
+                      child: controller.checkLanguage.value != "EN" ?Text(
+                        item['categoryName'],
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(28),
+                          //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                          color: ColorsUtil.hexToColor("#282828"),
+                          fontWeight: FontWeight.w600,
+                        ),
+                        //maxLines: 2,
+                        //overflow: TextOverflow.ellipsis,
+                      ):RotatedBox(quarterTurns: 1,child: Text(
+                        item['categoryName'],
+                        style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(28),
+                            //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                            color: ColorsUtil.hexToColor("#282828"),
+                            fontWeight: FontWeight.w600),
+                        //maxLines: 2,
+                        //overflow: TextOverflow.ellipsis,
+                      ),),
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
+            (controller.classTag.value == item['categoryCode'])
+                ? Positioned.fill(
+              child: Align(
+                alignment: Alignment.centerRight,
+                child: Container(
+                  //width: ScreenAdapter.width(10),
+                  //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                  child: Image.asset(
+                    GImage.getImageString("imgpublic", "zong_menu_up"),
+                    width: ScreenAdapter.width(20),
+                    fit: BoxFit.fitWidth,
+                    color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                  )
+                ),
+              ),
+            )
+                : Container(
+              height: 0,
+            ),
+          ],
         ),
       ));
 
@@ -265,7 +289,15 @@ class MenuzongPageView extends GetView {
                                     if(current_option_checked <int.parse(attr[i]["smallest"])){
                                       nexOrder = false;
                                       var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                      showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                      //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                      Get.dialog(
+                                          DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              confirm: () {
+                                                Get.back();
+                                              })
+                                      );
                                       break;
                                     }
                                   }
@@ -889,7 +921,15 @@ class MenuzongPageView extends GetView {
                                 if(current_option_checked <int.parse(attr[i]["smallest"])){
                                   nexOrder = false;
                                   var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  Get.dialog(
+                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          confirm: () {
+                                            Get.back();
+                                          })
+                                  );
                                   break;
                                 }
                               }
@@ -1510,7 +1550,15 @@ class MenuzongPageView extends GetView {
                                 if(current_option_checked <int.parse(attr[i]["smallest"])){
                                   nexOrder = false;
                                   var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                  Get.dialog(
+                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          confirm: () {
+                                            Get.back();
+                                          })
+                                  );
                                   break;
                                 }
                               }
@@ -2858,6 +2906,7 @@ class MenuzongPageView extends GetView {
                         width: ScreenAdapter.width(1005),
                         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                         //padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                        alignment: Alignment.center,
                         child: showMiddleMenuList(context),
                       ),
                     )),

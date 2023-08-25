@@ -219,7 +219,7 @@ class GString{
 
         "show_price_front":"Tax-In",
         "show_original_price_front":"Original price",
-        "settlement_button":"Check out",
+        "settlement_button":"Check Out",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",
         "tag_content":"Are you sure you want to empty the shopping cart?",
@@ -297,7 +297,7 @@ class GString{
 
         "show_storage_num_error":"Out of stock",
 
-        "show_del_cart_item_tag":"remove item？",
+        "show_del_cart_item_tag":"Remove item？",
         "show_del_cart_item_yes":"Yes",
         "show_del_cart_item_no":"No",
 

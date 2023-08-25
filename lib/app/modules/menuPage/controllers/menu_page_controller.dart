@@ -25,6 +25,7 @@ import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
 import '../views/showOneItemOptionWidget.dart';
 import '../views/showOneItemOptionWidgetV1.dart';
@@ -209,7 +210,15 @@ class MenuPageController extends GetxController with StateMixin {
         List myList = response['data']['categoryVoList'];
         //如果菜单为空则返回言语选择页面并给出提示
         if(myList.length == 0 || null == myList || "" == myList){
-          showToast("少々お待ちください");
+          //showToast("少々お待ちください");
+          Get.dialog(
+              DialogUtils.alertOneButton("少々お待ちください",
+                  title: GString.getToString(checkLanguage.value, "tag_title"),
+                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  confirm: () {
+                    Get.back();
+                  })
+          );
           sleep(Duration(milliseconds: 2000));
           Get.back();
         }
@@ -217,7 +226,6 @@ class MenuPageController extends GetxController with StateMixin {
         List MenuColor = ["#F05F32","#B2D3CE","#ABC251","#89A0F0","#E78BC5","#F05F32"];
         var menuIndex = 0;
           for (var i = 0; i < myList.length; i++) {
-            print(menuIndex);
             if(menuIndex >=5) menuIndex = 0;
             var categoryVoList = myList[i];
             //配置顶部菜单
@@ -289,7 +297,15 @@ class MenuPageController extends GetxController with StateMixin {
           update();
         change(null, status: RxStatus.success());
       } else {
-        showToast(response['msg']);
+        //showToast(response['msg']);
+        Get.dialog(
+            DialogUtils.alertOneButton(response['msg'],
+                title: GString.getToString(checkLanguage.value, "tag_title"),
+                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
@@ -495,7 +511,15 @@ class MenuPageController extends GetxController with StateMixin {
       var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
       if(checkresult>=cartItem['qtyBounds']){
         var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
-        showToast("${showString}");
+        //showToast("${showString}");
+        Get.dialog(
+            DialogUtils.alertOneButton(showString,
+                title: GString.getToString(checkLanguage.value, "tag_title"),
+                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
         return false;
       }
     }
@@ -548,7 +572,15 @@ class MenuPageController extends GetxController with StateMixin {
           var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
           if(checkresult>=cartItem['qtyBounds']){
             var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
-            showToast("${showString}");
+            //showToast("${showString}");
+            Get.dialog(
+                DialogUtils.alertOneButton(showString,
+                    title: GString.getToString(checkLanguage.value, "tag_title"),
+                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    confirm: () {
+                      Get.back();
+                    })
+            );
             return;
           }else{
             result = await ordersqlcontroller.addToCartNum(cartItem);
@@ -630,8 +662,15 @@ print("加1了");
 
           if(current_option_checked >=int.parse(attr[i]["multipleState"])){
             var showTag = GString.getToString(checkLanguage.value, "menu_option_more_multipleState");
-            showToast("${showTag.replaceAll("%%", attr[i]["multipleState"])}");
-            //showToast("该组选项不能超过${attr[i]["multipleState"]}个");
+            //showToast("${showTag.replaceAll("%%", attr[i]["multipleState"])}");
+            Get.dialog(
+                DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["multipleState"])}",
+                    title: GString.getToString(checkLanguage.value, "tag_title"),
+                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    confirm: () {
+                      Get.back();
+                    })
+            );
             break;
           }
 
@@ -703,7 +742,15 @@ print("加1了");
 
     if(result>=item['qtyBounds']){
       var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
-      showToast("${showString}");
+      //showToast("${showString}");
+      Get.dialog(
+          DialogUtils.alertOneButton(showString,
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              confirm: () {
+                Get.back();
+              })
+      );
       return;
     }else{
       //如果option 存在，则弹出option
@@ -905,7 +952,15 @@ print("加1了");
         }else{
           getBookingBootMenu();
           menuLackMap.value = response['data']["menuLackMap"];
-          showToast(response['data']["message"]);
+          //showToast(response['data']["message"]);
+          Get.dialog(
+              DialogUtils.alertOneButton(response['data']["message"],
+                  title: GString.getToString(checkLanguage.value, "tag_title"),
+                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  confirm: () {
+                    Get.back();
+                  })
+          );
         }
       });
     }
@@ -985,7 +1040,16 @@ print("加1了");
 
       }else{
 
-        showToast(response['data']["message"]);
+        //showToast(response['data']["message"]);
+        Get.dialog(
+            DialogUtils.alertOneButton(response['data']["message"],
+                title: GString.getToString(checkLanguage.value, "tag_title"),
+                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
+
       }
     });
 

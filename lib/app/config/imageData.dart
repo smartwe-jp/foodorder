@@ -40,6 +40,7 @@ class GImage{
         "home_button":"assets/images/public/home_button.png",
         "qiandaobutton":"assets/images/public/qiandaobutton.png",
         "menu_up":"assets/images/public/menu_up.png",
+        "zong_menu_up":"assets/images/public/zong_menu_up.png",
         "optionChecked":"assets/images/public/optionChecked.png",
         "price_tag":"assets/images/public/price_tag.png",
         "price_subtraction_tag":"assets/images/public/price_subtraction_tag.png",
@@ -99,8 +100,8 @@ class GImage{
 
         "card_visa":"assets/images/public/card_visa.png",
         "card_jcb":"assets/images/public/card_jcb.png",
-        "card_diners":"assets/images/public/card_diners.png",
-        "card_american":"assets/images/public/card_american.png",
+        "card_diners":"assets/images/public/card_diners.jpg",
+        "card_american":"assets/images/public/card_american.jpg",
         "card_unionp":"assets/images/public/card_unionp.png",
         "card_master":"assets/images/public/card_master.png",
 
