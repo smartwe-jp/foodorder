@@ -1113,7 +1113,7 @@ print("加1了");
 
 
   //切换顶部菜单分类
-  changeCategory(categoryCode){print("不能切换了");
+  changeCategory(categoryCode){
     classTag.value = categoryCode;
     update();
   }

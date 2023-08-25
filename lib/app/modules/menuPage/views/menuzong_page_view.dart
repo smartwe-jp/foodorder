@@ -38,7 +38,7 @@ class MenuzongPageView extends GetView {
           children: [
             Container(
               //margin: EdgeInsets.only(top: ScreenAdapter.height(2),bottom: ScreenAdapter.height(2)),
-              width: ScreenAdapter.width(75), //(classTag == item['categoryCode']) ? ScreenAdapter.width(102) : ScreenAdapter.width(72),
+              //width: ScreenAdapter.width(75), //(classTag == item['categoryCode']) ? ScreenAdapter.width(102) : ScreenAdapter.width(72),
               //height: ScreenAdapter.height(190),
               decoration: (controller.classTag.value == item['categoryCode']) ? BoxDecoration(
                 //设置边框
@@ -98,7 +98,7 @@ class MenuzongPageView extends GetView {
                   //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                   child: Image.asset(
                     GImage.getImageString("imgpublic", "zong_menu_up"),
-                    width: ScreenAdapter.width(20),
+                    width: ScreenAdapter.width(17),
                     fit: BoxFit.fitWidth,
                     color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                   )
@@ -119,7 +119,7 @@ class MenuzongPageView extends GetView {
 
     return Container(
       //padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
-      width: ScreenAdapter.width(75),
+      //width: ScreenAdapter.width(75),
       //height: ScreenAdapter.height(1465),
       alignment: Alignment.topCenter,
       //color: ColorsUtil.hexToColor("#545454"),
@@ -194,7 +194,7 @@ class MenuzongPageView extends GetView {
     if (itemsFirst != null) {
       return Container(
         //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-        padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(5),left: ScreenAdapter.width(5)),
+        padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(5)),
         child: ListView(
           padding: EdgeInsets.zero,
           shrinkWrap: true,
@@ -622,7 +622,7 @@ class MenuzongPageView extends GetView {
   showCategoryTwoItemList(items,context,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
-          top: ScreenAdapter.height(8),left: ScreenAdapter.width(5), bottom: ScreenAdapter.height(8)),
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
@@ -730,7 +730,6 @@ class MenuzongPageView extends GetView {
       return Container(
         padding: EdgeInsets.only(
             top: ScreenAdapter.height(8),
-            left: ScreenAdapter.width(5),
             bottom: ScreenAdapter.height(15)),
         //height: 450,
         child: showCategoryThreeItemList(showItemList),
@@ -773,7 +772,7 @@ class MenuzongPageView extends GetView {
       child: Material(
         child: Container(
           padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
-          margin: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(5)),
+          margin: EdgeInsets.only(left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
           //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
           color: ColorsUtil.hexToColor("#f0f0f0"),
           child: StatefulBuilder(
@@ -1223,8 +1222,6 @@ class MenuzongPageView extends GetView {
   publicShowThreeMenuOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(5),
-          right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
       child: Column(
@@ -1253,7 +1250,6 @@ class MenuzongPageView extends GetView {
     return Padding(
       padding: EdgeInsets.only(
         top: ScreenAdapter.height(8),
-        left: ScreenAdapter.width(5),
         //left: ScreenAdapter.width(15),
         //right: ScreenAdapter.width(15)
       ),
@@ -1373,7 +1369,6 @@ class MenuzongPageView extends GetView {
       return Container(
         padding: EdgeInsets.only(
             top: ScreenAdapter.height(8),
-            left: ScreenAdapter.width(5),
             //right: ScreenAdapter.width(8),
             bottom: ScreenAdapter.height(8)),
         //height: 450,
@@ -1418,7 +1413,7 @@ class MenuzongPageView extends GetView {
           padding: EdgeInsets.only(
               top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
           margin: EdgeInsets.only(
-              left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+              left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
           //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
           color: ColorsUtil.hexToColor("#f0f0f0"),
           child: StatefulBuilder(
@@ -1855,8 +1850,8 @@ class MenuzongPageView extends GetView {
   publicShowFiveMenuOptionGroupWidget(menuCode, menuindex) {
     return Container(
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(8),
-          right: ScreenAdapter.width(3),
+          //left: ScreenAdapter.width(8),
+          //right: ScreenAdapter.width(3),
           top: ScreenAdapter.height(5),
           bottom: ScreenAdapter.height(10)),
       child: Column(
@@ -1884,7 +1879,7 @@ class MenuzongPageView extends GetView {
   showCategorySixItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
-          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8),left: ScreenAdapter.width(5)),
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
@@ -1998,7 +1993,7 @@ class MenuzongPageView extends GetView {
   showCategorySevenItemList(items,{popupType:"old"}) {
     return Padding(
       padding: EdgeInsets.only(
-          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8), left: ScreenAdapter.width(5)),
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,
@@ -2124,8 +2119,8 @@ class MenuzongPageView extends GetView {
                         Container(
                           height: ScreenAdapter.height(830),
                           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                          margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(5)),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
                           child: InkWell(
                               enableFeedback: false,
                               onTap: () async {
@@ -2373,7 +2368,7 @@ class MenuzongPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.73),
+            childAspectRatio: 0.72),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryEightItemOne(items[index],context,popupType:popupType);
         },
@@ -2485,8 +2480,9 @@ class MenuzongPageView extends GetView {
                         Container(
                           height: ScreenAdapter.height(830),
                           color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                          padding: EdgeInsets.only(left: ScreenAdapter.width(6)),
                           margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
+                              top: ScreenAdapter.height(10), right: ScreenAdapter.width(4)),
                           child: InkWell(
                               enableFeedback: false,
                               onTap: () async {
@@ -2737,7 +2733,7 @@ class MenuzongPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(5),
             crossAxisCount: 2,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.75),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryNineItemOne(items[index],context,popupType:popupType);
         },
@@ -2787,7 +2783,7 @@ class MenuzongPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0,subTitle: item["subtitle"],),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 538.0,subTitle: item["subtitle"],),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -2849,8 +2845,8 @@ class MenuzongPageView extends GetView {
                     Container(
                         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
                         height: ScreenAdapter.height(1585),
-                        width: ScreenAdapter.width(75),
-                        padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
+                        width: ScreenAdapter.width(80),
+                        padding: EdgeInsets.only(top: ScreenAdapter.height(8),left: ScreenAdapter.width(2)),
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.start,
                           children: [
@@ -2903,9 +2899,9 @@ class MenuzongPageView extends GetView {
                     Expanded(child: RepaintBoundary(
                       child: Container(
                         height: ScreenAdapter.height(1585),
-                        width: ScreenAdapter.width(1005),
+                        width: ScreenAdapter.width(1000),
                         color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                        //padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                        padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
                         alignment: Alignment.center,
                         child: showMiddleMenuList(context),
                       ),

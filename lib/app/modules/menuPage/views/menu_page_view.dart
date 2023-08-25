@@ -39,23 +39,13 @@ class MenuPageView extends GetView {
         child: Stack(
           children: [
             Container(
-              margin: EdgeInsets.only(right: ScreenAdapter.width(6)),
+              margin: EdgeInsets.only(right: ScreenAdapter.width(6),top: ScreenAdapter.height(5)),
               padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
               width: ScreenAdapter.width(165),
               //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
-              height: ScreenAdapter.height(90),
+              //height: ScreenAdapter.height(90),
               alignment: Alignment.center,
-              decoration: (controller.classTag.value == item['categoryCode']) ? BoxDecoration(
-                //设置边框
-                //border: new Border.all(color: ColorsUtil.hexToColor("#F9F9F9"), width: 0.5),
-                //背景颜色
-                color: ColorsUtil.hexToColor(item['showColor']),
-                //设置圆角
-                //borderRadius: new BorderRadius.circular((15.0)),
-                borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-                //设置阴影
-                //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#949191"), offset: Offset(1.0, 1.0), blurRadius: 1.5, spreadRadius: 1.5), ],
-              ) : BoxDecoration(
+              decoration: BoxDecoration(
                 //背景颜色
                 color: ColorsUtil.hexToColor(item['showColor']),
                 borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
@@ -84,18 +74,22 @@ class MenuPageView extends GetView {
               ),
             ),
             (controller.classTag.value == item['categoryCode'])
-                ? Positioned(
-                right: ScreenAdapter.width(71),
-                bottom: 0,
+                ? Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
                 child: Container(
-                  alignment: Alignment.center,
-                  child: Image.asset(
-                    GImage.getImageString("imgpublic", "menu_up"),
-                    width: ScreenAdapter.width(35),
-                    fit: BoxFit.fitWidth,
-                    color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                  ),
-                ))
+                  padding: EdgeInsets.zero,
+                  //width: ScreenAdapter.width(10),
+                  //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    child: Image.asset(
+                      GImage.getImageString("imgpublic", "menu_up"),
+                      height: ScreenAdapter.width(20),
+                      fit: BoxFit.fitHeight,
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    )
+                ),
+              ),
+            )
                 : Container(
               height: 0,
             ),
