@@ -2647,12 +2647,12 @@ print(payment_method_num.value);
     //日期 地址 电话
     //地址
     // 计算菜品标题长度
-    var addressLength = printData["address"].length;
+    var newAddress = printData["address"].replaceAll("%%", "\n");
+    var addressLength = printData["address"].length;print(printData["address"]);print(newAddress);
     var addressLine = addressLength / 15;
     var addressRowNum = addressLine.ceil();
     addRowHight += addressRowNum*33+(addressRowNum-1)*10;
-    categoryMenus.add(_publicOneColumnTxtNew(
-        "${printData["address"]}", 26.0, FontWeight.w300));
+    categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
 
     categoryMenus.add(SizedBox(height: 5,));
     //登录番号
