@@ -526,7 +526,7 @@ class MenuPageController extends GetxController with StateMixin {
 
     var result = false;
     try {
-      result = await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
+      result = await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);print(result);
       ordersqlcontroller.getCardList();
 
 

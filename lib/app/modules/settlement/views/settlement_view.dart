@@ -17,22 +17,7 @@ class SettlementView extends GetView {
   final SettlementController controller = Get.find<SettlementController>();
   SettlementView({Key key}) : super(key: key);
 
-  showCashAlert(){
-    Get.dialog(
-        DialogUtils.alert(GString.getToString(controller.checkLanguage.value, "settlement_back_alertcontent"),
-        title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-        canceltitle: GString.getToString(controller.checkLanguage.value,"tag_button_no"),
-        confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
-        confirm: () {
-          Get.back();
-          controller.showBackEasyLoading();
-          controller.CancelOrder();
-        },
-        cancle: () {
-              Get.back();
-        })
-    );
-  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -1127,7 +1112,12 @@ class SettlementView extends GetView {
                         child: InkWell(
                           onTap: () {
                             try {
-                              showCashAlert();
+                              if(controller.isPrintClick.value == false){
+                                controller.isCancelClick.value = true;
+                                controller.allowClick.value = false;
+                                controller.showCashAlert();
+                              }
+
                             } catch (_) {}
                           },
                           child: Container(
@@ -1155,14 +1145,16 @@ class SettlementView extends GetView {
                           ? (
                           controller.is_allow_receipt.value == "1"
                               ? Container(
+                            width: ScreenAdapter.width(740),
                             margin: EdgeInsets.only(
                                 left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
                             //width: ScreenAdapter.width(540),
                             alignment: Alignment.centerRight,
                             child: InkWell(
                               onTap: () {
-                                if (controller.allowClick.value == true) {
+                                if (controller.allowClick.value == true ) {
                                     controller.allowClick.value = false;
+                                    controller.isPrintClick.value = true;
 
                                   controller.showEasyLoading();
 
@@ -1202,10 +1194,10 @@ class SettlementView extends GetView {
                             ),
                           )
                               : Container(
-                            //width: ScreenAdapter.width(540),
+                            width: ScreenAdapter.width(740),
                             margin: EdgeInsets.only(
                                 left: ScreenAdapter.width(20),right: ScreenAdapter.width(30)),
-                            alignment: Alignment.centerLeft,
+                            alignment: Alignment.centerRight,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
                               crossAxisAlignment: CrossAxisAlignment.center,
@@ -1214,6 +1206,7 @@ class SettlementView extends GetView {
                                   onTap: () {
                                     if (controller.allowClick.value == true) {
                                       controller.allowClick.value = false;
+                                      controller.isPrintClick.value = true;
 
                                       controller.showEasyLoading();
 
@@ -1283,6 +1276,7 @@ class SettlementView extends GetView {
 
                                         controller.allowClick.value = false;
                                         controller.is_query_receipt.value = "2";
+                                        controller.isPrintClick.value = true;
 
 
                                       if (controller.machineMode.value == "1") {
@@ -1361,7 +1355,7 @@ class SettlementView extends GetView {
                           : Container(
                         margin:
                         EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        width: ScreenAdapter.width(540),
+                        width: ScreenAdapter.width(740),
                         height: ScreenAdapter.height(100),
                       ),
                     ],

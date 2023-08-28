@@ -232,7 +232,7 @@ class MenuPageView extends GetView {
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           children: [
-            publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:1080.0, imgHeight:870.0,subTitle:itemsFirst["subtitle"]),
+            publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:1080.0, imgHeight:850.0,subTitle:itemsFirst["subtitle"]),
             Container(
               color: ColorsUtil.hexToColor(Gcolor.whiteColor),
               width: ScreenAdapter.width(1080),
@@ -1263,7 +1263,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(7),
             crossAxisCount: 4,
-            childAspectRatio: 0.55),
+            childAspectRatio: 0.53),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryFourItemOne(items[index],context,popupType:popupType);
         },
@@ -1313,7 +1313,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:260.0, imgHeight: 400.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:260.0, imgHeight: 380.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         SizedBox(
                           height: ScreenAdapter.height(8),

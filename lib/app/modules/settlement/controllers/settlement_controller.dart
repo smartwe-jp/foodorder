@@ -82,6 +82,8 @@ class SettlementController extends GetxController with StateMixin {
   RxString outStringMoney = "0".obs; //找零金额
   RxString currencyString = "".obs; // 出金币种
   RxBool isPrint = true.obs; //是否打印小票，默认打印，如果取消订单则不打印。
+  RxBool isPrintClick = false.obs; //是否点击了打印小票。
+  RxBool isCancelClick = false.obs; //是否点击了取消。
 
 
   RxBool showPrintButton = false.obs;  //如果投币金额不足，则不显示打印按钮
@@ -3251,6 +3253,29 @@ print(payment_method_num.value);
           color: ColorsUtil.hexToColor("#000000"),
           width: 375,
         ));
+  }
+
+
+  showCashAlert(){
+    Future.delayed(Duration(milliseconds: 50),() async {
+      Get.dialog(
+          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
+              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
+              confirm: () {
+                Get.back();
+                showBackEasyLoading();
+                CancelOrder();
+              },
+              cancle: () {
+                allowClick.value = true;
+                Get.back();
+              }),
+        barrierDismissible: false
+      );
+
+    });
   }
 
 

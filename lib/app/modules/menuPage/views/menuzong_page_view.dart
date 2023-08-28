@@ -199,7 +199,7 @@ class MenuzongPageView extends GetView {
           padding: EdgeInsets.zero,
           shrinkWrap: true,
           children: [
-            publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth: 995.0, imgHeight: 870.0),
+            publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth: 995.0, imgHeight: 850.0),
             Container(
               color: ColorsUtil.hexToColor(Gcolor.whiteColor),
               width: ScreenAdapter.width(995),
@@ -1307,7 +1307,7 @@ class MenuzongPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 260.0, imgHeight: 400.0, subTitle: item['subtitle'],),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 260.0, imgHeight: 390.0, subTitle: item['subtitle'],),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         SizedBox(
                           height: ScreenAdapter.height(1),
