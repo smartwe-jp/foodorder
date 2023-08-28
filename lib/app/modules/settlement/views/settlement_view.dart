@@ -1106,7 +1106,7 @@ class SettlementView extends GetView {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
-                        width: ScreenAdapter.width(440),
+                        width: ScreenAdapter.width(360),
                         alignment: Alignment.bottomLeft,
                         padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
                         child: InkWell(
@@ -1145,9 +1145,8 @@ class SettlementView extends GetView {
                           ? (
                           controller.is_allow_receipt.value == "1"
                               ? Container(
-                            width: ScreenAdapter.width(740),
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                            width: ScreenAdapter.width(700),
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
                             //width: ScreenAdapter.width(540),
                             alignment: Alignment.centerRight,
                             child: InkWell(
@@ -1194,9 +1193,8 @@ class SettlementView extends GetView {
                             ),
                           )
                               : Container(
-                            width: ScreenAdapter.width(740),
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(20),right: ScreenAdapter.width(30)),
+                            width: ScreenAdapter.width(700),
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(30)),
                             alignment: Alignment.centerRight,
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.start,
@@ -1355,7 +1353,7 @@ class SettlementView extends GetView {
                           : Container(
                         margin:
                         EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        width: ScreenAdapter.width(740),
+                        width: ScreenAdapter.width(700),
                         height: ScreenAdapter.height(100),
                       ),
                     ],
