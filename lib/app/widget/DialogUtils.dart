@@ -195,9 +195,11 @@ class DialogUtils {
                                     height: ScreenAdapter.height(55),
                                     child: Image.asset(GImage.getImageString("imgpublic", contentTagImg),fit: BoxFit.fitHeight),
                                   ),
-                                Text(content,
-                                    style: TextStyle(
-                                        fontSize: ScreenAdapter.fontSize(32))),
+                                Expanded(
+                                    child: Text(content,
+                                        style: TextStyle(
+                                            fontSize: ScreenAdapter.fontSize(32)))
+                                ),
                               ],
                             ),
                             alignment: Alignment(0, 0),
