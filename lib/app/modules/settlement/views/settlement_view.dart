@@ -1102,7 +1102,7 @@ class SettlementView extends GetView {
                   height: ScreenAdapter.height(200),
                   color: ColorsUtil.hexToColor("#DCDCDC"),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
@@ -1146,7 +1146,7 @@ class SettlementView extends GetView {
                           controller.is_allow_receipt.value == "1"
                               ? Container(
                             width: ScreenAdapter.width(700),
-                            padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(80)),
                             //width: ScreenAdapter.width(540),
                             alignment: Alignment.centerRight,
                             child: InkWell(
@@ -1351,8 +1351,7 @@ class SettlementView extends GetView {
                           )
                       )
                           : Container(
-                        margin:
-                        EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        padding:EdgeInsets.only(left: ScreenAdapter.width(20)),
                         width: ScreenAdapter.width(700),
                         height: ScreenAdapter.height(100),
                       ),

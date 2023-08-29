@@ -2648,7 +2648,7 @@ print(payment_method_num.value);
     //地址
     // 计算菜品标题长度
     var newAddress = printData["address"].replaceAll("%%", "\n");
-    var addressLength = printData["address"].length;print(printData["address"]);print(newAddress);
+    var addressLength = printData["address"].length;print(printData["address"]);//print(newAddress);
     var addressLine = addressLength / 15;
     var addressRowNum = addressLine.ceil();
     addRowHight += addressRowNum*33+(addressRowNum-1)*10;
@@ -3111,9 +3111,16 @@ print(payment_method_num.value);
       margin: EdgeInsets.only(bottom: 3),
       child: Directionality(
           textDirection: TextDirection.ltr,
-          child: Text("${txtContext}",
-            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
-
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: [
+              Expanded(
+                  child: Text("${txtContext}",
+                    style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                  )
+              ),
+            ],
           )),
     );
   }

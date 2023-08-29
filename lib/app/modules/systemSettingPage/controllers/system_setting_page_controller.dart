@@ -20,6 +20,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
+import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../settlement/views/label_constrained_box.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
@@ -325,7 +326,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
       dining_type.value = checkedType;
     update();
-    Get.find<OrderHomeController>().getSystemSettingInfo();
+    if(machine_mode == "1"){
+      Get.find<OrderHomeController>().getSystemSettingInfo();
+    }else if(machine_mode == "2"){
+      Get.find<CheckoutPageController>().getSystemSettingInfo();
+    }
+
   }
 
   checkMenuDirection(checkedType){

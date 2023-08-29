@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 
+import '../../menuPage/controllers/menu_page_controller.dart';
 import '../controllers/setting_controller.dart';
 
 class SettingBinding extends Bindings {
@@ -7,6 +8,9 @@ class SettingBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<SettingController>(
       () => SettingController(),
+    );
+    Get.lazyPut<MenuPageController>(
+          () => MenuPageController(),
     );
   }
 }

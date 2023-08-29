@@ -11,9 +11,11 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
+import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
+import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 
@@ -22,6 +24,7 @@ class SettingController extends GetxController with StateMixin {
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MenuPageController menuPagecontroller = Get.put(MenuPageController());
   RxString machineCode = "".obs;
+  RxString machine_mode = "1".obs;//1 普通点餐券卖机  2 精算机（结账机）
 
   RxList cashList = [].obs;
   RxList lastTotalList = [].obs;
@@ -116,8 +119,14 @@ class SettingController extends GetxController with StateMixin {
   //获取版本号
   _getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value = packageInfo.version+"+"+packageInfo.buildNumber;
+    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
 
+    getSystemSettingInfo();
+  }
+
+  getSystemSettingInfo() async {
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+    machine_mode.value = SystemSettingInfo['machineMode'];
     //查看机器零钱状态
     _getPaycubeChangeState();
   }
@@ -146,8 +155,14 @@ class SettingController extends GetxController with StateMixin {
 
   goToBack(){
     //Get.find<TransitPageController>().getIsShowCashInfo();
-    menuPagecontroller.clearCartList();
-    Get.delete<MenuPageController>(); // 手动删除控制器实例
+    if(machine_mode.value == "1"){
+      menuPagecontroller.clearCartList();
+      Get.delete<MenuPageController>(); // 手动删除控制器实例
+    }else if(machine_mode.value == "1"){
+      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+    }
+
+
     Future.delayed(Duration(milliseconds: 100), (){
       Get.toNamed('/transit-page');
     });

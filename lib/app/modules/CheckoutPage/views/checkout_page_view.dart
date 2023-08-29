@@ -62,7 +62,7 @@ class CheckoutPageView extends GetView {
     return Container(
       width: ScreenAdapter.width(1080),
       height: ScreenAdapter.height(120),
-      margin: EdgeInsets.only(bottom: ScreenAdapter.height(200)),
+      margin: EdgeInsets.only(bottom: ScreenAdapter.height(60)),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         crossAxisAlignment: CrossAxisAlignment.end,

@@ -123,7 +123,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
+print(SystemSettingInfo);
       menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
       isReservation.value = SystemSettingInfo["isReservation"];
       isAllowPos.value = SystemSettingInfo['isAllowPos'];
