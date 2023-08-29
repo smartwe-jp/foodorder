@@ -218,7 +218,7 @@ class GString{
         "top_back_button":"Language",
 
         "show_price_front":"Tax-In",
-        "show_original_price_front":"Original price",
+        "show_original_price_front":"Orig",
         "settlement_button":"Check Out",
         "cancle_button":"Cancel all",
         "tag_title":"Reminder",

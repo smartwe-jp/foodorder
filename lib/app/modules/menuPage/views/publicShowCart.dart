@@ -386,7 +386,7 @@ class publicShowCartView extends GetView {
                         ),
                       )),
                   Container(
-                    width: ScreenAdapter.width(330),
+                    width: ScreenAdapter.width(340),
                     height: ScreenAdapter.height(310),
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -433,7 +433,7 @@ class publicShowCartView extends GetView {
                                       ),
                                       TextSpan(
                                         text:
-                                        "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
+                                        "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
                                         style: TextStyle(
                                           fontSize: ScreenAdapter.fontSize(
                                               GFontSize

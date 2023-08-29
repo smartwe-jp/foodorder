@@ -37,7 +37,7 @@ class GFontSize{
   static const double menusettlementLingshoushu = 28;
 
   static const double menusettlementBottomHeji = 48;
-  static const double menusettlementBottomPriceLeft = 45;
-  static const double menusettlementBottomPrice = 55;
-  static const double menusettlementBottomPriceRight = 28;
+  static const double menusettlementBottomPriceLeft = 42;
+  static const double menusettlementBottomPrice = 52;
+  static const double menusettlementBottomPriceRight = 26;
 }
