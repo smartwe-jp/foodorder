@@ -1180,7 +1180,7 @@ class SettlementController extends GetxController with StateMixin {
               //eventBus.fire(new clearCartEvent('支付成功...'));
               Get.find<OrderHomeController>().clearCartList();
               Get.find<MenuPageController>().clearCartList();
-              Get.find<MenuPageController>().getBookingBootMenu();
+              //Get.find<MenuPageController>().getBookingBootMenu();
             }
 print(payment_method_num.value);
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
