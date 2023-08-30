@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:package_info/package_info.dart';
 
 
 import '../../../plugins/paycube/lib/paycube.dart';
@@ -20,6 +21,7 @@ class TransitPageController extends GetxController {
   var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
   RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
+  RxString local_version = "".obs; //本appversion
 
   @override
   void onInit() {
@@ -52,15 +54,24 @@ class TransitPageController extends GetxController {
       _machineCode.value = machineCode;
 
       //_getSystemSettingInfo();
-      _getMachineActivate();
+      _getPackageInfo();
     }
+  }
+
+  //获取版本号
+  _getPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
+
+    _getMachineActivate();
   }
 
   _getMachineActivate(){
     var formData = {
       "machineCode": _machineCode.value,
-    };
-    request('webBootActivatev2', method: 'GET', parameters: formData).then((val) {
+      "version":local_version.value
+    };print(formData);
+    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
         var shopData = response['data'];

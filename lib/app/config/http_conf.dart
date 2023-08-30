@@ -7,6 +7,11 @@ const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 const servicePath = {
   'webBootIndex': base_url + 'pad/web/boot/index', //获取首页菜单地址
   'webBootIndexv1': base_url + 'pad/web/boot/index/v1', //获取首页菜单地址
+
+  //新改版获取分类菜单
+  'webBootIndexCategoryv2': base_url + 'pad/web/boot/index/category/v2', //获取首页分类
+  'webBootIndexMenuv2': base_url + 'pad/web/boot/index/menu/v2', //获取某分类菜单
+
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
   //'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址
@@ -44,6 +49,7 @@ const servicePath = {
   //点餐机激活
   'webBootActivate': base_url + 'pad/web/boot/activate', //点餐机激活
   'webBootActivatev2': base_url + 'pad/web/boot/activate/v2', //点餐机激活
+  'webBootActivatev3': base_url + 'pad/web/boot/activate/v3', //点餐机激活 发送版本号
 
   //精算机使用接口
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
