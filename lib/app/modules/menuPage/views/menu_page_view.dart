@@ -2395,6 +2395,7 @@ class MenuPageView extends GetView {
                       )
                     ],
                   ),
+                  if(_newItemList.length>0)
                   showCategoryEightItemList(_newItemList,popupType:popupType)
                 ]
             ),
@@ -2812,6 +2813,7 @@ class MenuPageView extends GetView {
                     )
                   ],
                 ),
+                if(_newItemList.length>0)
                 showCategoryNineItemList(_newItemList,popupType:popupType)
               ],
             ),
