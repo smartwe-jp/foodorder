@@ -16,7 +16,9 @@ import '../../../services/GetxStorage.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/Storage.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../TransitPage/views/transit_page_view.dart';
+import '../views/showSteep.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
@@ -30,6 +32,7 @@ class HomeController extends GetxController {
   Timer showCashTimer;
   RxInt seconds = 60.obs;
   RxBool _isCashState = true.obs;
+  RxInt checkSteeps = 1.obs; //自检步骤
 
   var _allowStatus;
   var _stopStatus;
@@ -65,6 +68,7 @@ class HomeController extends GetxController {
 
 
   Future requestPermission() async {
+
     //霸屏隐藏状态栏导航栏
     await Appset.hideBullyScreen;
     /// 权限检测
@@ -76,12 +80,14 @@ class HomeController extends GetxController {
         //print("权限申请被拒绝");
       }else{
 
+        checkInterNetStatus();
         //第一步，链接现金机，并打开现金机
-        OpenPayCube();
+        //OpenPayCube();
       }
     }else{
 
-      OpenPayCube();
+      checkInterNetStatus();
+      //OpenPayCube();
     }
   }
 
@@ -89,25 +95,30 @@ class HomeController extends GetxController {
   //セルフレジはインターネットに接続されてません。 ()弹出框提示语
   // 先に、インターネットの接続のご確認をお願いします。 （）提示的提示语
   checkInterNetStatus() async {
+    checkSteeps.value = 1;
     final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile) {print("mobile");
-      // I am connected to a mobile network.
-    } else if (connectivityResult == ConnectivityResult.wifi) {print("wifi");
-      // I am connected to a wifi network.
-    } else if (connectivityResult == ConnectivityResult.ethernet) {print("ethernet");
-      // I am connected to a ethernet network.
-    } else if (connectivityResult == ConnectivityResult.vpn) {print("vpn");
-      // I am connected to a vpn network.
-      // Note for iOS and macOS:
-      // There is no separate network interface type for [vpn].
-      // It returns [other] on any device (also simulator)
-    } else if (connectivityResult == ConnectivityResult.bluetooth) {print("bluetooth");
-      // I am connected to a bluetooth.
-    } else if (connectivityResult == ConnectivityResult.other) {print("other");
-      // I am connected to a network which is not in the above mentioned networks.
-    } else if (connectivityResult == ConnectivityResult.none) {print("没有网络");
+    if (connectivityResult == ConnectivityResult.mobile
+    || connectivityResult == ConnectivityResult.wifi
+    || connectivityResult == ConnectivityResult.ethernet) {print("ethernet");
+    OpenPayCube();
+    } else {print("没有网络");
       // I am not connected to any network.
+      Get.dialog(
+          DialogUtils.alertOneButton("セルフレジはインターネットに接続されてません。\r\n先に、インターネットの接続のご確認をお願いします。",
+              title: "お知らせ",
+              confirmtitle: "ログアウト",
+              confirm: () {
+                Future.delayed(Duration(milliseconds: 200), () {
+                  Get.back();
+                  //退出关闭
+                  exit(0);
+                });
+
+              })
+      );
     }
+
+
   }
 
 
@@ -131,43 +142,6 @@ class HomeController extends GetxController {
 
   //打开现金机
   OpenPayCube() async {
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(450),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("テスト中です、しばらくお待ちください。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                )),
-            Text("1、釣銭機を開けています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-            Text("2、現金機を閉じています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-            Container(
-              //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(250),
-              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
     String checkStatus = await Paycube.CheckPayCubeStatus;
@@ -185,45 +159,7 @@ class HomeController extends GetxController {
 
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
-    EasyLoading.dismiss();
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(450),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("テスト中です、しばらくお待ちください。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-            Text("1、釣銭機を開けています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                )),
-            Text("2、釣銭機を閉じています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-
-            Container(
-              //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(250),
-              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
+    checkSteeps.value = 2;
     //入金开始
     int connectCount = 0;
     String strartPayCube = await Paycube.strartPayCube;
@@ -264,44 +200,7 @@ class HomeController extends GetxController {
 
   }
   stopPaycube() async {
-    EasyLoading.dismiss();
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(450),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("テスト中です、しばらくお待ちください。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-            Text("1、釣銭機を開けています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black26,
-                )),
-            Text("2、釣銭機を閉じています。",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                )),
-            Container(
-              //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(250),
-              child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
+    checkSteeps.value = 3;
     await Paycube.setReceiveEvent;
     var endStatus = await Paycube.endPayCube;
     stopChecktimer?.cancel();
@@ -365,8 +264,6 @@ class HomeController extends GetxController {
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
-
-    EasyLoading.dismiss();
 
     var isFirst = await HomeServices.getOpenFirstState();
     if(isFirst == true){
