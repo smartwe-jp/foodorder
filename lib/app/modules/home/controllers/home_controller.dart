@@ -18,7 +18,6 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/Storage.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../TransitPage/views/transit_page_view.dart';
-import '../views/showSteep.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
