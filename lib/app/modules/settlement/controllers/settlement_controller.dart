@@ -49,6 +49,7 @@ class SettlementController extends GetxController with StateMixin {
 
   RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
   RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
+  RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
   RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
@@ -228,6 +229,7 @@ class SettlementController extends GetxController with StateMixin {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     print(systemSettingInfo);
     is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
+    is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
     print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
     is_back_home.value = systemSettingInfo['isAllowBackHome'];
     //新版精算模式也可点外带
@@ -1163,7 +1165,7 @@ class SettlementController extends GetxController with StateMixin {
           }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
-          if(response['data']["orderType"] == 1){
+          if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
 
             _tpPrintnew(response['data'], printType);
 

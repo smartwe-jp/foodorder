@@ -34,6 +34,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxString print_paper_size = "1".obs;//1 默认58mm  2 宽纸80mm
   RxString print_paper_txt_size = "1".obs;//1 普通　2大　3特大
   RxString is_allow_receipt = "1".obs;//1 必须打印  2 不必须打印
+  RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
   RxString machine_mode = "1".obs;//1 普通点餐券卖机  2 精算机（结账机）
   RxString isReservation = "0".obs;// 0 不开启  1开启
   RxString is_allow_attendance = "0".obs;//0 不开启  1 开启
@@ -91,6 +92,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
 
       is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
+      is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
       machine_mode.value = systemSettingInfo['machineMode'];
       isReservation.value = systemSettingInfo['isReservation'];
       is_allow_attendance.value = systemSettingInfo['isAllowAttendance'];
@@ -309,6 +311,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -341,6 +344,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -366,6 +370,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":checkedType,//1 58mm 2 80mm
       "printPaperTxtSize":checkedType,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -391,6 +396,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":checkedType,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -409,6 +415,33 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
+  checkIsAllowReceiptMenu(checkedType) async {
+
+    var systemSettingData = {
+      "diningType":dining_type.value, //1堂食 2外带
+      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
+      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
+      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
+      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":checkedType, //1必须 2 不要
+      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
+      "isReservation":isReservation.value, //是否开启预约服务
+      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
+      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
+      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
+      "isAllowPos":is_allow_pos.value,//0不开启 1开启
+      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "showPrintType":showPrintType.value.toString(), //0receipt 1label
+      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+    };
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+
+    is_allow_receipt_menu.value = checkedType;
+    update();
+
+  }
+
   checkMachineMode(checkedType) async {
 
     var systemSettingData = {
@@ -417,6 +450,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":checkedType,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -443,6 +477,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":checkedType, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -468,6 +503,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -513,6 +549,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -560,6 +597,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -699,6 +737,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
@@ -732,6 +771,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
       "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
+      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
       "machineMode":machine_mode.value,//1普通券卖机 2 精算机
       "isReservation":isReservation.value, //是否开启预约服务
       "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启

@@ -669,6 +669,140 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+  //设置是否必须打印领収书
+  setIsAllowReceiptMenu() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      child: Column(
+        children: [
+          Text("領収書顶部菜单の発行の設定",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(22),
+                fontWeight: FontWeight.w600,
+                color: ColorsUtil.hexToColor("#000000"),
+              )),
+          Container(
+            width: ScreenAdapter.width(1050.0),
+            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                InkWell(
+                  onTap: () {
+                    controller.checkIsAllowReceiptMenu("1");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text("必須",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (controller.is_allow_receipt_menu.value == "1")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+                InkWell(
+                  onTap: () {
+                    controller.checkIsAllowReceiptMenu("2");
+                  },
+                  child: Stack(
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(10),
+                            right: ScreenAdapter.width(10)),
+                        width: ScreenAdapter.width(190),
+                        height: ScreenAdapter.height(65),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        //お持ち帰り
+                        child: Text("不要",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(24),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )),
+                      ),
+                      //绝对定位 盖章
+                      (controller.is_allow_receipt_menu.value == "2")
+                          ? Positioned(
+                        right: ScreenAdapter.width(15),
+                        top: ScreenAdapter.height(20),
+                        child: Container(
+                          width: ScreenAdapter.width(40),
+                          height: ScreenAdapter.height(40),
+                          padding: EdgeInsets.only(
+                              top: ScreenAdapter.height(4),
+                              left: ScreenAdapter.width(10)),
+                          //alignment: Alignment.topCenter,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                            image: DecorationImage(
+                              image:
+                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
+                              fit: BoxFit.fill,
+                            ),
+                          ),
+                        ),
+                      )
+                          : Container(
+                        height: 0,
+                      ),
+                    ],
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   //设置机器类型
   setMachineMode() {
     return Container(
@@ -2021,6 +2155,7 @@ class SystemSettingPageView extends GetView {
                   //setPrintPaperSize(),//打印纸大小
                   setPrintPaperTxtSize(),//打印菜单文字大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
+                  setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
                   (controller.actuarial.value == true) ? setMachineMode() : Container(height: 0,), //设置机器类型
                   (controller.lineup.value == true) ? setIsReservation() : Container(height: 0,),  //是否开启预约服务
                   //setIsAllowAttendance(),//是否开启签到
