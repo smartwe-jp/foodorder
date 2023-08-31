@@ -16,192 +16,102 @@ class SystemSettingPageView extends GetView {
   //设置就餐类型
   setDiningtype() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("利用形式",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Text("(お持帰りと店内のご利用で税率が異なります。)",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkDiningtype("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("店内のみ",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.dining_type.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkDiningtype("2");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(220),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("テイクアウトのみ",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.dining_type.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkDiningtype("3");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("両方可",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.dining_type.value == "3")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkDiningtype("1");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.dining_type.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("店　内",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.dining_type.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkDiningtype("2");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.dining_type.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("テイクアウト",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.dining_type.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkDiningtype("3");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.dining_type.value == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("両方可",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.dining_type.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
@@ -210,132 +120,72 @@ class SystemSettingPageView extends GetView {
   //设置菜单方向
   setMenuDirection() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("メニューバーの表示",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkMenuDirection("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("上部横並び",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.menu_direction.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkMenuDirection("2");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("左側縦表示",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.menu_direction.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkMenuDirection("1");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.menu_direction.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("上に横に",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.menu_direction.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkMenuDirection("2");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.menu_direction.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("左に縦に",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.menu_direction.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
@@ -344,186 +194,102 @@ class SystemSettingPageView extends GetView {
   //设置打印菜单部分文字大小
   setPrintPaperTxtSize() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("レシート字体設置",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkPrintPaperTxtSize("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("普通",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.print_paper_txt_size.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkPrintPaperTxtSize("2");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("大",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.print_paper_txt_size.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkPrintPaperTxtSize("3");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("特大",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.print_paper_txt_size.value == "3")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkPrintPaperTxtSize("1");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.print_paper_txt_size.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("普　通",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.print_paper_txt_size.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkPrintPaperTxtSize("2");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.print_paper_txt_size.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("大",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.print_paper_txt_size.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkPrintPaperTxtSize("3");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.print_paper_txt_size.value == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("特　大",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.print_paper_txt_size.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
@@ -532,272 +298,170 @@ class SystemSettingPageView extends GetView {
   //设置是否必须打印领収书
   setIsAllowReceipt() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Column(
         children: [
-          Text("領収書の発行の設定",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Text("（必須を選ぶ場合は、領収書が自動的に印刷されます。）",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
           Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () {
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
                     controller.checkIsAllowReceipt("1");
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("必須",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_receipt.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
+                  child: Container(
+                    //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_receipt.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Text("発　行",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(22.0),
+                          color: (controller.is_allow_receipt.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                        )
+                    ),
                   ),
                 ),
                 InkWell(
-                  onTap: () {
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
                     controller.checkIsAllowReceipt("2");
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("要確認",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_receipt.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
+                  child: Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_receipt.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Text("お客様選択",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(22.0),
+                          color: (controller.is_allow_receipt.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                        )
+                    ),
                   ),
                 ),
 
               ],
             ),
           ),
+          Text("注：現金でお支払いの場合の設定です。他のお支払い方法の場合は全て「発行」となります。",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(18),
+                fontWeight: FontWeight.w400,
+                color: ColorsUtil.hexToColor("#d90000"),
+              )),
         ],
       ),
     );
   }
 
-  //设置是否必须打印领収书
+  //设置是否必须打印领収书顶部菜单
   setIsAllowReceiptMenu() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Column(
         children: [
-          Text("領収書顶部菜单の発行の設定",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
           Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 InkWell(
-                  onTap: () {
-                    controller.checkIsAllowReceiptMenu("1");
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    controller.checkIsAllowReceiptMenu("2");
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("必須",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_receipt_menu.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
+                  child: Container(
+                    //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_receipt_menu.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Text("プリントしない",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(22.0),
+                          color: (controller.is_allow_receipt_menu.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                        )
+                    ),
                   ),
                 ),
                 InkWell(
-                  onTap: () {
-                    controller.checkIsAllowReceiptMenu("2");
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    controller.checkIsAllowReceiptMenu("1");
                   },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("不要",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_receipt_menu.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
+                  child: Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_receipt_menu.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Text("プリントする",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(22.0),
+                          color: (controller.is_allow_receipt_menu.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                        )
+                    ),
                   ),
                 ),
 
               ],
             ),
           ),
+          Text("注：券売機モードはキッチンプリンターを設置した場合、プリントする必要はありません。",
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(18),
+                fontWeight: FontWeight.w400,
+                color: ColorsUtil.hexToColor("#d90000"),
+              )),
         ],
       ),
     );
@@ -806,184 +470,123 @@ class SystemSettingPageView extends GetView {
   //设置机器类型
   setMachineMode() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("マシンモード設定",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkMachineMode("1");
-                  },
-                  child: Stack(
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkMachineMode("1");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("券売機",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkMachineMode("2");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.machine_mode.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "精算機",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.machine_mode.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
+                      TextSpan(
+                        text: "（後払い）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
                         ),
-                        child: Text("券売機モード",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
                       ),
-                      //绝对定位 盖章
-                      (controller.machine_mode.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkMachineMode("2");
-                  },
-                  child: Stack(
+                    ]),
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkMachineMode("3");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.machine_mode.value == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "精算機",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.machine_mode.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
+                      TextSpan(
+                        text: "（バーコード）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
                         ),
-                        //お持ち帰り
-                        child: Text("精算機モード",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
                       ),
-                      //绝对定位 盖章
-                      (controller.machine_mode.value == "2")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                /*InkWell(
-                  onTap: () {
-                    checkMachineMode("3");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("自助收银机",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (_machine_mode == "3")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),*/
-
-              ],
+                    ]),
+              ),
             ),
           ),
         ],
@@ -994,132 +597,72 @@ class SystemSettingPageView extends GetView {
   //设置是否开启预约
   setIsReservation() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("予約サービス設定",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsReservation("0");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("停止",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.isReservation.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkIsReservation("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("起動",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.isReservation.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsReservation("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.isReservation.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("停 止",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.isReservation.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsReservation("1");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.isReservation.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("起 動",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.isReservation.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
@@ -1128,159 +671,92 @@ class SystemSettingPageView extends GetView {
   //设置是否开启pos刷卡
   setIsAllowPos() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("キャッシュレス端末設定",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowPos("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_pos.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("設置しない",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_pos.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              _showPosSettingDialog();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_pos.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("設置",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_pos.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          if (controller.pos_ip.value != "" && controller.pos_port.value != "")
           Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+            margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowPos("0");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("OFF",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_pos.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
+                Text(
+                    "ip:${controller.pos_ip.value}",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(22),
+                    )
                 ),
-                InkWell(
-                  onTap: () {
-                    //if(_pos_ip == ""){
-                    _showPosSettingDialog();
-
-                    //}
-                    /*else{
-                      checkIsAllowPos("1");
-                    }*/
-                  },
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(190),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#409eff"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            //お持ち帰り
-                            child: Text("ON",
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
-                          (controller.pos_ip.value != "" && controller.pos_port.value != "") ? Row(
-                            children: [
-                              Text(
-                                  "ip:${controller.pos_ip.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              ),
-                              Text(
-                                  "Port:${controller.pos_port.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              )
-                            ],
-                          ) : Container(height: 0,)
-                        ],
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_pos.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(45),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
+                Text(
+                    "Port:${controller.pos_port.value}",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(22),
+                    )
+                )
               ],
             ),
           ),
+
         ],
       ),
     );
@@ -1311,194 +787,185 @@ class SystemSettingPageView extends GetView {
   //设置是否开启打印机
   setIsAllowWlanPrint() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("キッチンプリンター",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowWlanPrint("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オフ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPrint.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.is_allow_wlanPrint_continuous.value = "0";
+              _showWlanPrintSettingDialog();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "オン",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "（単票）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.is_allow_wlanPrint_continuous.value = "1";
+              _showWlanPrintSettingDialog();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "オン",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "（連票）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
           Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            margin: EdgeInsets.only(left: ScreenAdapter.width(25)),
+            child: Column(
               children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowWlanPrint("0");
-                  },
-                  child: Stack(
+                if (controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("OFF",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
+                      Text(
+                          "${controller.wlan_print_ip.value}:",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(22),
+                          )
                       ),
-                      //绝对定位 盖章
-                      (controller.is_allow_wlanPrint.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
+                      Text(
+                          "${controller.wlan_print_port.value}",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(22),
+                          )
                       )
-                          : Container(
-                        height: 0,
-                      ),
                     ],
                   ),
-                ),
-                InkWell(
-                  onTap: () {
-                    //if(_pos_ip == ""){
-                    _showWlanPrintSettingDialog();
-
-                    //}
-                    /*else{
-                      checkIsAllowPos("1");
-                    }*/
-                  },
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(190),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#409eff"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            //お持ち帰り
-                            child: Text("ON",
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
-                          (controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "") ? Row(
-                            children: [
-                              Text(
-                                  "ip:${controller.wlan_print_ip.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              ),
-                              Text(
-                                  "Port:${controller.wlan_print_port.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              )
-                            ],
-                          ) : Container(height: 0,)
-                        ],
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_wlanPrint.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(45),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
                 if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
                   InkWell(
-                    onTap: () {
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
                       controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
                     },
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(190),
-                              height: ScreenAdapter.height(65),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#409eff"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              //お持ち帰り
-                              child: Text("テスト印刷",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(24),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
-                            ),
-                          ],
-                        ),
-
-                      ],
+                    child: Container(
+                      //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(140),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: (controller.is_allow_wlanPrint.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
+                      ),
+                      child: Text("テスト印刷",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenAdapter.fontSize(22.0),
+                            color: (controller.is_allow_wlanPrint.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                          )
+                      ),
                     ),
                   ),
-
               ],
             ),
           ),
+
         ],
       ),
     );
@@ -1530,194 +997,185 @@ class SystemSettingPageView extends GetView {
   //设置是否开启打印机
   setIsAllowWlanPrintTwo() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text("カウンタープリンター",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowWlanPrintTwo("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オフ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.is_allow_wlanPrint_Two_continuous.value = "0";
+              _showWlanPrintSettingDialogTwo();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "オン",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "（単票）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.is_allow_wlanPrint_Two_continuous.value = "1";
+              _showWlanPrintSettingDialogTwo();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "オン",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "（連票）",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
           Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            margin: EdgeInsets.only(left: ScreenAdapter.width(25)),
+            child: Column(
               children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowWlanPrintTwo("0");
-                  },
-                  child: Stack(
+                if (controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("OFF",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
+                      Text(
+                          "${controller.wlan_print_ip_Two.value}:",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(22),
+                          )
                       ),
-                      //绝对定位 盖章
-                      (controller.is_allow_wlanPrint_Two.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
+                      Text(
+                          "${controller.wlan_print_port_Two.value}",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(22),
+                          )
                       )
-                          : Container(
-                        height: 0,
-                      ),
                     ],
                   ),
-                ),
-                InkWell(
-                  onTap: () {
-                    //if(_pos_ip == ""){
-                    _showWlanPrintSettingDialogTwo();
-
-                    //}
-                    /*else{
-                      checkIsAllowPos("1");
-                    }*/
-                  },
-                  child: Stack(
-                    children: [
-                      Column(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(190),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#409eff"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            //お持ち帰り
-                            child: Text("ON",
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
-                          (controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "") ? Row(
-                            children: [
-                              Text(
-                                  "ip:${controller.wlan_print_ip_Two.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              ),
-                              Text(
-                                  "Port:${controller.wlan_print_port_Two.value}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(22),
-                                  )
-                              )
-                            ],
-                          ) : Container(height: 0,)
-                        ],
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_wlanPrint_Two.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(45),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
                 if(controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
                   InkWell(
-                    onTap: () {
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
                       controller.printTest(controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
                     },
-                    child: Stack(
-                      children: [
-                        Column(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(190),
-                              height: ScreenAdapter.height(65),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#409eff"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              //お持ち帰り
-                              child: Text("テスト印刷",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(24),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
-                            ),
-                          ],
-                        ),
-
-                      ],
+                    child: Container(
+                      //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(140),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: (controller.is_allow_wlanPrint_Two.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
+                      ),
+                      child: Text("テスト印刷",
+                          style: TextStyle(
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenAdapter.fontSize(22.0),
+                            color: (controller.is_allow_wlanPrint_Two.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                          )
+                      ),
                     ),
                   ),
-
               ],
             ),
           ),
+
         ],
       ),
     );
@@ -1747,266 +1205,146 @@ class SystemSettingPageView extends GetView {
   //设置是否允许使用一元
   setIsAllowOneYen() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("お釣り1円",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowOneYen("0");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("不使用",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_oneyen.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowOneYen("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("使用",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_oneyen.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowOneYen("0");
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使えない",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowOneYen("1");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使える",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
   }
 
-  //设置是否允许使用一元
+  //会计结算后返回
   setIsAllowSettlementHome() {
     return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
-      child: Column(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Text("都度topページに",
-              style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(22),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor("#000000"),
-              )),
-          Container(
-            width: ScreenAdapter.width(1050.0),
-            padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowBackHome("0");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("戻る",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_backhome.value == "0")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-                InkWell(
-                  onTap: () {
-                    controller.checkIsAllowBackHome("1");
-                  },
-                  child: Stack(
-                    children: [
-                      Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(190),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#409eff"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        //お持ち帰り
-                        child: Text("戻らない",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                      //绝对定位 盖章
-                      (controller.is_allow_backhome.value == "1")
-                          ? Positioned(
-                        right: ScreenAdapter.width(15),
-                        top: ScreenAdapter.height(20),
-                        child: Container(
-                          width: ScreenAdapter.width(40),
-                          height: ScreenAdapter.height(40),
-                          padding: EdgeInsets.only(
-                              top: ScreenAdapter.height(4),
-                              left: ScreenAdapter.width(10)),
-                          //alignment: Alignment.topCenter,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-                            image: DecorationImage(
-                              image:
-                              AssetImage(GImage.getImageString("imgpublic", "optionChecked")),
-                              fit: BoxFit.fill,
-                            ),
-                          ),
-                        ),
-                      )
-                          : Container(
-                        height: 0,
-                      ),
-                    ],
-                  ),
-                ),
-
-              ],
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowBackHome("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_backhome.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("トップページに戻る",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_backhome.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
             ),
           ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowBackHome("1");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_backhome.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("メニューリストに戻る",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_backhome.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
         ],
       ),
     );
@@ -2030,7 +1368,7 @@ class SystemSettingPageView extends GetView {
               decoration: new BoxDecoration(color: Colors.white),
               width: ScreenAdapter.width(820.0),
               margin: EdgeInsets.only(
-                top: ScreenAdapter.height(30.0),
+                top: ScreenAdapter.height(20.0),
               ),
               alignment: Alignment.center,
               padding: EdgeInsets.only(
@@ -2040,6 +1378,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   InkWell(
                     onTap: () {
@@ -2077,6 +1416,7 @@ class SystemSettingPageView extends GetView {
                     ),
                   ),
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       InkWell(
                         onTap: () {
@@ -2103,29 +1443,49 @@ class SystemSettingPageView extends GetView {
                         ),
                       ),
                       SizedBox(width: 30,),
-                      InkWell(
-                        onTap: () {
-                          controller.showDownloadingAlert();
-                        },
-                        child: Container(
-                          margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(10)),
-                          width: ScreenAdapter.width(180),
-                          height: ScreenAdapter.height(65),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor("#409eff"),
-                            //设置圆角
-                            borderRadius: new BorderRadius.circular((16.0)),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          InkWell(
+                            onTap: () {
+                              controller.showDownloadingAlert();
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10),
+                                  right: ScreenAdapter.width(10)),
+                              width: ScreenAdapter.width(180),
+                              height: ScreenAdapter.height(65),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: ColorsUtil.hexToColor("#409eff"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((16.0)),
+                              ),
+                              child: Text("アップデート",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(24),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  )),
+                            ),
                           ),
-                          child: Text("アップデート",
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(24),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                              )),
-                        ),
+                          GestureDetector(
+                            onTap: (){
+                              controller.uploadErrorLog();
+                            },
+                            child: Container(
+                              padding:
+                              EdgeInsets.only(right: ScreenAdapter.width(18)),
+                              child: Text(
+                                "バージョン：${controller.local_version.value}",
+                                style: TextStyle(
+                                    color: Colors.grey[500],
+                                    fontSize: ScreenAdapter.fontSize(20.0)),
+                              ),
+                            ),
+                          )
+                        ],
                       ),
                     ],
                   ),
@@ -2136,23 +1496,346 @@ class SystemSettingPageView extends GetView {
             Container(
               decoration: new BoxDecoration(color: Colors.white),
               margin: EdgeInsets.only(
-                top: ScreenAdapter.height(5.0),
+                top: ScreenAdapter.height(10.0),
               ),
               padding: EdgeInsets.only(
-                top: ScreenAdapter.height(10.0),
+                top: ScreenAdapter.height(5.0),
                 left: ScreenAdapter.width(14.0),
                 right: ScreenAdapter.width(14.0),
+                bottom: ScreenAdapter.height(30)
               ),
               child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-
-                  SizedBox(
-                    height: ScreenAdapter.height(10),
+                  Container(
+                    margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                    alignment: Alignment.center,
+                    child: Text(
+                      "セルフレジを設置",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(26),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      ),
+                    ),
                   ),
-                  setDiningtype(),//食事のタイプ
+                  Table(
+                    border: TableBorder.all(),
+                    columnWidths: const <int, TableColumnWidth>{
+                      //0: IntrinsicColumnWidth(),
+                      0:FlexColumnWidth(30),
+                      1: FixedColumnWidth(970),
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: <TableRow>[
+                      TableRow(
+                        children: <Widget>[
+                          Container(
+                            //color: Colors.blue,
+                            //height: ScreenAdapter.height(65),
+                            width: ScreenAdapter.width(35),
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: ScreenAdapter.width(35),
+                                  child: Text(
+                                    "一般设定",
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(24),
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            //height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            child: Table(
+                              border: TableBorder.all(),
+                              columnWidths: const <int, TableColumnWidth>{
+                                //0: IntrinsicColumnWidth(),
+                                0:FlexColumnWidth(300),
+                                1: FixedColumnWidth(750),
+                              },
+                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                children: <TableRow>[
+                                  if(controller.actuarial.value == true)
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "モード",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setMachineMode(),//设置机器类型
+                                      ]
+                                  ), //设置机器类型
+                                  if(controller.lineup.value == true)
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "予約サービス",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsReservation(),//设置机器类型
+                                      ]
+                                  ), //设置机器类型
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "店内・テイクアウト",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setDiningtype(),//食事のタイプ
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "カテゴリ様式",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setMenuDirection(),//菜单方向
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "領収書",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowReceipt(),//设置是否允强制必须打印领収书
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "レシート字体",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                              Text(
+                                                "（セルフレジから）",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(18),
+                                                    fontWeight: FontWeight.w500,
+                                                  color: ColorsUtil.hexToColor("#d90000"),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        setPrintPaperTxtSize(),//打印菜单文字大小
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "注文明細",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "一円",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowOneYen(),//是否允许一元
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "会計完了",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowSettlementHome(),//是否结算完后回到首页
+                                      ]
+                                  )
+                                ]
+                            ),
+                          ),
+                        ],
+                      ),
+                      TableRow(
+                        children: <Widget>[
+                          Container(
+                            //color: Colors.blue,
+                            //height: ScreenAdapter.height(65),
+                            width: ScreenAdapter.width(35),
+                            alignment: Alignment.center,
+                            child: Column(
+                              children: [
+                                Container(
+                                  width: ScreenAdapter.width(35),
+                                  child: Text(
+                                    "プリンター",
+                                    style: TextStyle(
+                                        fontSize: ScreenAdapter.fontSize(24),
+                                        fontWeight: FontWeight.w500
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          Container(
+                            //height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.zero,
+                            child: Table(
+                                border: TableBorder.all(),
+                                columnWidths: const <int, TableColumnWidth>{
+                                  //0: IntrinsicColumnWidth(),
+                                  0:FlexColumnWidth(300),
+                                  1: FixedColumnWidth(750),
+                                },
+                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                children: <TableRow>[
+
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "キッチン",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowWlanPrint(),//是否开启网络打印机
+
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "カウンター",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowWlanPrintTwo(),//第二台打印机
+
+                                      ]
+                                  ),
+                                ]
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                  Table(
+                      border: TableBorder.all(),
+                      columnWidths: const <int, TableColumnWidth>{
+                        //0: IntrinsicColumnWidth(),
+                        0:FlexColumnWidth(300),
+                        1: FixedColumnWidth(750),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      children: <TableRow>[
+
+                        TableRow(
+                            children: <Widget>[
+                              Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "キャッシュレス端末",
+                                  style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(22),
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              ),
+                              setIsAllowPos(),//是否开启pos机刷卡
+                            ]
+                        ),
+                      ]
+                  ),
+
+
+
+
+                  /*setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向
-                  //setPrintPaperSize(),//打印纸大小
                   setPrintPaperTxtSize(),//打印菜单文字大小
                   setIsAllowReceipt(),//设置是否允强制必须打印领収书
                   setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
@@ -2163,7 +1846,7 @@ class SystemSettingPageView extends GetView {
                   setIsAllowWlanPrint(),//是否开启网络打印机
                   setIsAllowWlanPrintTwo(),//第二台打印机
                   setIsAllowOneYen(),//是否允许一元
-                  setIsAllowSettlementHome(),//是否结算完后回到首页
+                  setIsAllowSettlementHome(),//是否结算完后回到首页*/
                 ],
               ),
             ),

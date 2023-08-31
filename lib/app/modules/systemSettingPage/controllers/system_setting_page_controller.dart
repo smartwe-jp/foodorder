@@ -4,18 +4,21 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:get/get.dart' hide Response;
+import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
 import 'package:open_file/open_file.dart';
+import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
+import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
+import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
@@ -28,6 +31,9 @@ import '../views/showSpeed.dart';
 
 class SystemSettingPageController extends GetxController with StateMixin {
   //TODO: Implement SystemSettingPageController
+
+  RxString local_version = "".obs; //本appversion
+  RxString machineCode = "".obs;
 
   RxString dining_type = "1".obs; //1 堂食  2 外袋  0 两种都可
   RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
@@ -48,12 +54,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求wlan print的相关数据
   RxString is_allow_wlanPrint = "0".obs;//0 不开启  1 开启
+  RxString is_allow_wlanPrint_continuous = "0".obs;//0 单票  1 连票  Print Continuous
   RxString wlan_print_ip = "".obs;
   RxString wlan_print_port = "9100".obs;
 
   RxInt showPrintType =0.obs; //0 receipt   1Lable
 
   RxString is_allow_wlanPrint_Two = "0".obs;//0 不开启  1 开启
+  RxString is_allow_wlanPrint_Two_continuous = "0".obs;//0 单票  1 连票  Print Continuous
   RxString wlan_print_ip_Two = "".obs;
   RxString wlan_print_port_Two = "9100".obs;
 
@@ -64,7 +72,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    _getSystemSettingInfo();
+    machineCode.value = Get.arguments['machineCode'];
+    _getPackageInfo();
+
     super.onInit();
   }
 
@@ -76,6 +86,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  //获取版本号
+  _getPackageInfo() async {
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
+
+    _getSystemSettingInfo();
   }
 
   _getSystemSettingInfo() async {
@@ -100,8 +118,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       is_allow_backhome.value = systemSettingInfo['isAllowBackHome'];
       is_allow_pos.value = systemSettingInfo['isAllowPos'];
       is_allow_wlanPrint.value = systemSettingInfo['isAllowWlanPrint'];
+      is_allow_wlanPrint_continuous.value = systemSettingInfo['isAllowWlanPrintContinuous'];
       showPrintType.value = int.parse(systemSettingInfo['showPrintType']);
       is_allow_wlanPrint_Two.value = systemSettingInfo['isAllowWlanPrintTwo'];
+      is_allow_wlanPrint_Two_continuous.value = systemSettingInfo['isAllowWlanPrintTwoContinuous'];
 
       if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
         pos_ip.value = posSettingInfo['posIp'];
@@ -319,8 +339,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -352,8 +374,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -378,8 +402,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -404,8 +430,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -431,8 +459,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -458,8 +488,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -485,8 +517,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -511,8 +545,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":checkedType,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -557,8 +593,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":checkedType,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -605,8 +643,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":checkedType,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
+
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -745,8 +786,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -779,8 +822,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       "isAllowBackHome":checkedType,//0返回home 1返回到菜单
       "isAllowPos":is_allow_pos.value,//0不开启 1开启
       "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
+      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
       "showPrintType":showPrintType.value.toString(), //0receipt 1label
       "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
+      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -789,6 +834,65 @@ class SystemSettingPageController extends GetxController with StateMixin {
     is_allow_backhome.value = checkedType;
 
     update();
+  }
+
+  //上传现金机log
+  uploadErrorLog() async {
+    _showEasyLoading();
+    var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+
+    FormData formData = FormData.fromMap({
+      "machineCode": machineCode.value,
+      "file": await MultipartFile.fromFile(logfile),
+    });
+
+    request(
+        'webBootLogUpload',
+        method: 'POST',
+        parameters: formData
+    ).then((val) {
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+      if (response["code"] == 200) {
+
+        showToast('上传成功~~');
+      } else {
+        showToast('上传失败!');
+      }
+    });
+
+
+  }
+
+  _showEasyLoading(){
+    var _showTag;
+    _showTag = Text("Uploading……",
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            _showTag,
+            Container(
+              //width: ScreenAdapter.width(400),
+              margin: EdgeInsets.only(top: 60),
+              height: ScreenAdapter.height(200),
+              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
   }
 
 }

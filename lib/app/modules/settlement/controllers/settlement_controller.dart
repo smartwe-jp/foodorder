@@ -98,8 +98,10 @@ class SettlementController extends GetxController with StateMixin {
   RxInt showPrintType =0.obs; //0 receipt   1Lable
   RxString wlan_print_ip = "".obs;
   RxString wlan_print_port = "".obs;
+  RxString is_allow_wlanPrint_continuous = "0".obs;//0 单票  1 连票  Print Continuous
   RxString wlan_print_ip_two = "".obs;
   RxString wlan_print_port_two = "".obs;
+  RxString is_allow_wlanPrint_Two_continuous = "0".obs;//0 单票  1 连票  Print Continuous
 
   RxString printLogoImage = "".obs;
 
@@ -238,6 +240,7 @@ class SettlementController extends GetxController with StateMixin {
     is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
 
     if(systemSettingInfo['isAllowWlanPrint'] == "1"){
+      is_allow_wlanPrint_continuous.value = systemSettingInfo['isAllowWlanPrintContinuous'];
       Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
       if(wlanPrintSettingInfo['wlanPrintIp'] !=null && wlanPrintSettingInfo['wlanPrintIp'] !="" && wlanPrintSettingInfo['wlanPrintPort'] !=null && wlanPrintSettingInfo['wlanPrintPort'] !=""){
         wlan_print_ip.value = wlanPrintSettingInfo['wlanPrintIp'];
@@ -246,6 +249,7 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     if(systemSettingInfo['isAllowWlanPrintTwo'] == "1"){
+      is_allow_wlanPrint_Two_continuous.value = systemSettingInfo['isAllowWlanPrintTwoContinuous'];
       Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
       if(wlanPrintSettingTwoInfo['wlanPrintIp'] !=null && wlanPrintSettingTwoInfo['wlanPrintIp'] !="" && wlanPrintSettingTwoInfo['wlanPrintPort'] !=null && wlanPrintSettingTwoInfo['wlanPrintPort'] !=""){
         wlan_print_ip_two.value = wlanPrintSettingTwoInfo['wlanPrintIp'];
@@ -1859,14 +1863,26 @@ print(payment_method_num.value);
     //判断是否有打印机ip
     Map printerIpInfo = {"printer_ip":"","printer_port":"",};
     if(printType == "10"){
-      if(wlan_print_ip.value != null && wlan_print_ip.value != "" && wlan_print_port.value != null && wlan_print_port.value != ""){
+      if(wlan_print_ip.value != null && wlan_print_ip.value != ""){
         printerIpInfo = {"printer_ip":wlan_print_ip.value,"printer_port":wlan_print_port.value,};
+        if(is_allow_wlanPrint_continuous.value =="1"){
+          _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+        }else{
+          _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+        }
+
       }else{
         return;
       }
     }else if(printType == "12"){
-      if(wlan_print_ip_two.value != null && wlan_print_ip_two.value != "" && wlan_print_port_two.value != null && wlan_print_port_two.value != ""){
+      if(wlan_print_ip_two.value != null && wlan_print_ip_two.value != ""){
         printerIpInfo = {"printer_ip":wlan_print_ip_two.value,"printer_port":wlan_print_port_two.value,};
+        if(is_allow_wlanPrint_Two_continuous.value =="1"){
+          _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+
+        }else{print(wlan_print_ip_two.value);
+          _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+        }
       }else{
         return;
       }
@@ -1874,9 +1890,11 @@ print(payment_method_num.value);
       return;
     }
     //print(printData);
-    _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
+    //_wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
 
   }
+
+  //单票
   _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
     for(var i=0;i<printData.length;i++){
       // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
@@ -1891,7 +1909,6 @@ print(payment_method_num.value);
 
     }
   }
-
   Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
     var lineHight = 120;
     var menuNum = 0;
@@ -2201,13 +2218,17 @@ print(payment_method_num.value);
 
   }
 
-  setPrintData(printerIPVal,printData){
-    // 网络 打印
-    final conn = printerPlus.NetConn(printerIPVal);
-    conn.writeMultiBytes(printData);
+  //连票
+  _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip){
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(ip:printer_ip),
+      ),
+    );
   }
-
-  organizeData(serialNumber,printData,takeOut,orderTime) {
+  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 230;
@@ -2489,7 +2510,7 @@ print(payment_method_num.value);
       totalHight +=15;
     }
 
-    return Container(
+    /*return Container(
       width: 550,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
@@ -2500,7 +2521,14 @@ print(payment_method_num.value);
         crossAxisAlignment: CrossAxisAlignment.center,
         children: categoryMenus,
       ),
-    );
+    );*/
+
+    return ReceiptConstrainedBox(Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: categoryMenus,
+    ));
+
 
 
   }
