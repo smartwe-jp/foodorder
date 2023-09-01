@@ -205,10 +205,10 @@ class SettlementController extends GetxController with StateMixin {
     //打开现金机
     _countDownTimer("1");print("开始结算了么");
     Starttoubi();
-  } else if (payment_method_num.value == "2") {
+  } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();
-  } else if (payment_method_num.value == "3" ||
+  }*/ else if (payment_method_num.value == "3" ||
       payment_method_num.value == "4" ||
       payment_method_num.value == "5" ||
       payment_method_num.value == "6" ||
@@ -640,14 +640,17 @@ class SettlementController extends GetxController with StateMixin {
         "payType":"",
       };//print(formData);
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());//print(response);
+        var response = json.decode(val.toString());print(response);
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
           if(resultData["requestInfo"] != ""){
             if(resultData["exceptionMessage"] == ""){
               posResultReportData.value = response['data'];
-              //判断不为空则POS机
-              this._socket.write(resultData["requestInfo"]);
+              //检测是否需要连接socket
+              checkpayconnectSocker(questData: resultData["requestInfo"]);
+
+
+
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -686,7 +689,12 @@ class SettlementController extends GetxController with StateMixin {
       show_dialog_content = GString.getToString(
           checkLanguage.value, "settlement_scancodenochange_error");
     } else if (checknum == 3) {
-      show_dialog_content = showContent;
+      if(showContent != null && showContent!=""){
+        show_dialog_content = showContent;
+      }else{
+        show_dialog_content = GString.getToString(checkLanguage.value, "settlement_nopayment_error");
+      }
+
     }
     //支付状态
     /*Get.dialog(
@@ -894,7 +902,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //pos机相关
-  checkpayconnectSocker() async {
+  checkpayconnectSocker({questData=""}) async {
     Map systemSettingInfo = await HomeServices.getMachineActivateData();
     var showCreditCard = systemSettingInfo['showCreditCard'];
     if(showCreditCard == true){
@@ -904,7 +912,7 @@ class SettlementController extends GetxController with StateMixin {
         pos_ip.value = posSettingInfo['posIp'];
         pos_port.value = posSettingInfo['posPort'];
         if(pos_ip.value != "" && pos_port.value != ""){
-          payconnectSocker();
+          payconnectSocker(questData: questData);
         }
 
       }
@@ -912,7 +920,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //pos机相关
-  payconnectSocker() async {
+  payconnectSocker({questData=""}) async {
     Socket.connect(
       pos_ip.value,
       int.parse(pos_port.value),
@@ -920,6 +928,13 @@ class SettlementController extends GetxController with StateMixin {
     ).then((Socket socket) {
       print("连接成功了么");
       this._socket = socket;
+
+      //扫码过来的，请求数据不为空时候发送POS请求
+      if(questData!=""){
+        //判断不为空则POS机
+        this._socket.write(questData);
+      }
+
       //获得pos数据并发送
       var paymentMethod = ["3","4","5","6","7","8","9","10"];
       if (paymentMethod.contains(payment_method_num.value) == true) {
