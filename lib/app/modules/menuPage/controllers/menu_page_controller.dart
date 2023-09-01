@@ -224,7 +224,7 @@ class MenuPageController extends GetxController with StateMixin {
           Get.back();
         }
 
-        List MenuColor = ["#F05F32","#B2D3CE","#ABC251","#89A0F0","#E78BC5","#F05F32"];
+        List MenuColor = ["#F05F32","#50CAC0","#ABC251","#89A0F0","#E78BC5","#F05F32"];
         var menuIndex = 0;
           for (var i = 0; i < myList.length; i++) {
             if(menuIndex >=5) menuIndex = 0;
@@ -361,7 +361,7 @@ class MenuPageController extends GetxController with StateMixin {
           Get.back();
         }
 
-        List MenuColor = ["#F05F32","#B2D3CE","#ABC251","#89A0F0","#E78BC5","#F05F32"];
+        List MenuColor = ["#F05F32","#98b9b3","#ABC251","#89A0F0","#E78BC5","#F05F32"];
         var menuIndex = 0;
         for (var i = 0; i < myList.length; i++) {
           if(menuIndex >=5) menuIndex = 0;
