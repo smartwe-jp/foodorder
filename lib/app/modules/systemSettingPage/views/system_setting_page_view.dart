@@ -829,8 +829,8 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.is_allow_wlanPrint_continuous.value = "0";
-              _showWlanPrintSettingDialog();
+              //controller.is_allow_wlanPrint_continuous.value = "0";
+              _showWlanPrintSettingDialog("0");
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -872,8 +872,8 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.is_allow_wlanPrint_continuous.value = "1";
-              _showWlanPrintSettingDialog();
+
+              _showWlanPrintSettingDialog("1");
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -974,7 +974,7 @@ class SystemSettingPageView extends GetView {
   }
 
   //设置网络打印机ip
-  _showWlanPrintSettingDialog() async {
+  _showWlanPrintSettingDialog(continousType) async {
     Get.dialog(
         SetPosIpPage(
           posIp: controller.wlan_print_ip.value,
@@ -987,7 +987,7 @@ class SystemSettingPageView extends GetView {
                 controller.wlan_print_ip.value = printIp;
                 controller.wlan_print_port.value = printPort;
                 controller.showPrintType.value = showPrintType;
-
+                controller.is_allow_wlanPrint_continuous.value = continousType;
               controller.checkIsAllowWlanPrint("1");
             }
 
@@ -1039,8 +1039,8 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.is_allow_wlanPrint_Two_continuous.value = "0";
-              _showWlanPrintSettingDialogTwo();
+
+              _showWlanPrintSettingDialogTwo("0");
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -1082,8 +1082,7 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.is_allow_wlanPrint_Two_continuous.value = "1";
-              _showWlanPrintSettingDialogTwo();
+              _showWlanPrintSettingDialogTwo("1");
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -1185,7 +1184,7 @@ class SystemSettingPageView extends GetView {
 
 
   //设置网络打印机ip
-  _showWlanPrintSettingDialogTwo() async {
+  _showWlanPrintSettingDialogTwo(continousType) async {
     Get.dialog(
         SetPosIpPage(
       posIp: controller.wlan_print_ip_Two.value,
@@ -1196,6 +1195,7 @@ class SystemSettingPageView extends GetView {
           controller.wlan_print_ip_Two.value = printIp;
           controller.wlan_print_port_Two.value = printPort;
 
+          controller.is_allow_wlanPrint_Two_continuous.value = continousType;
           controller.checkIsAllowWlanPrintTwo("1");
         }
 
