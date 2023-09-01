@@ -36,7 +36,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.dining_type.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.dining_type_one.value == true) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -46,7 +46,7 @@ class SystemSettingPageView extends GetView {
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.dining_type.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.dining_type_one.value == true) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -66,7 +66,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.dining_type.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.dining_type_two.value == true) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -76,12 +76,12 @@ class SystemSettingPageView extends GetView {
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.dining_type.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.dining_type_two.value == true) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
           ),
-          InkWell(
+          /*InkWell(
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
@@ -110,7 +110,7 @@ class SystemSettingPageView extends GetView {
                   )
               ),
             ),
-          ),
+          ),*/
 
         ],
       ),
@@ -301,6 +301,7 @@ class SystemSettingPageView extends GetView {
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             child: Row(
@@ -372,7 +373,7 @@ class SystemSettingPageView extends GetView {
           ),
           Text("注：現金でお支払いの場合の設定です。他のお支払い方法の場合は全て「発行」となります。",
               style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(18),
+                fontSize: ScreenAdapter.fontSize(17),
                 fontWeight: FontWeight.w400,
                 color: ColorsUtil.hexToColor("#d90000"),
               )),
@@ -387,6 +388,7 @@ class SystemSettingPageView extends GetView {
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             child: Row(
@@ -458,7 +460,7 @@ class SystemSettingPageView extends GetView {
           ),
           Text("注：券売機モードはキッチンプリンターを設置した場合、プリントする必要はありません。",
               style: TextStyle(
-                fontSize: ScreenAdapter.fontSize(18),
+                fontSize: ScreenAdapter.fontSize(17),
                 fontWeight: FontWeight.w400,
                 color: ColorsUtil.hexToColor("#d90000"),
               )),
@@ -687,7 +689,7 @@ class SystemSettingPageView extends GetView {
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
+              width: ScreenAdapter.width(220),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
@@ -717,7 +719,7 @@ class SystemSettingPageView extends GetView {
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
+              width: ScreenAdapter.width(220),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
@@ -738,17 +740,17 @@ class SystemSettingPageView extends GetView {
           ),
           if (controller.pos_ip.value != "" && controller.pos_port.value != "")
           Container(
-            margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+            margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
             child: Row(
               children: [
                 Text(
-                    "ip:${controller.pos_ip.value}",
+                    "${controller.pos_ip.value}:",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(22),
                     )
                 ),
                 Text(
-                    "Port:${controller.pos_port.value}",
+                    "${controller.pos_port.value}",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(22),
                     )
@@ -909,62 +911,62 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(left: ScreenAdapter.width(25)),
-            child: Column(
-              children: [
-                if (controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                          "${controller.wlan_print_ip.value}:",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(22),
-                          )
-                      ),
-                      Text(
-                          "${controller.wlan_print_port.value}",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(22),
-                          )
-                      )
-                    ],
-                  ),
-                if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
-                  InkWell(
-                    highlightColor: Colors.transparent, // 透明色
-                    splashColor: Colors.transparent, // 透明色
-                    onTap: (){
-                      controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
-                    },
-                    child: Container(
-                      //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-                      //设置 child 居中
-                      alignment: Alignment(0, 0),
-                      height: ScreenAdapter.height(60),
-                      width: ScreenAdapter.width(140),
-                      //边框设置
-                      decoration: new BoxDecoration(
-                        //背景
-                        color: (controller.is_allow_wlanPrint.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                        //设置四周圆角 角度
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        //设置四周边框
-                        //border: new Border.all(width: 1, color: Colors.red),
-                      ),
-                      child: Text("テスト印刷",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(22.0),
-                            color: (controller.is_allow_wlanPrint.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                          )
-                      ),
+          if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
+            InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.wlan_print_ip.value}:",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                        Text(
+                            "${controller.wlan_print_port.value}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        )
+                      ],
                     ),
-                  ),
-              ],
+                    Text("テスト印刷",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
 
         ],
       ),
@@ -1119,62 +1121,62 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
-          Container(
-            margin: EdgeInsets.only(left: ScreenAdapter.width(25)),
-            child: Column(
-              children: [
-                if (controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                          "${controller.wlan_print_ip_Two.value}:",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(22),
-                          )
-                      ),
-                      Text(
-                          "${controller.wlan_print_port_Two.value}",
-                          style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(22),
-                          )
-                      )
-                    ],
-                  ),
-                if(controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
-                  InkWell(
-                    highlightColor: Colors.transparent, // 透明色
-                    splashColor: Colors.transparent, // 透明色
-                    onTap: (){
-                      controller.printTest(controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
-                    },
-                    child: Container(
-                      //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-                      //设置 child 居中
-                      alignment: Alignment(0, 0),
-                      height: ScreenAdapter.height(60),
-                      width: ScreenAdapter.width(140),
-                      //边框设置
-                      decoration: new BoxDecoration(
-                        //背景
-                        color: (controller.is_allow_wlanPrint_Two.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                        //设置四周圆角 角度
-                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        //设置四周边框
-                        //border: new Border.all(width: 1, color: Colors.red),
-                      ),
-                      child: Text("テスト印刷",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(22.0),
-                            color: (controller.is_allow_wlanPrint_Two.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                          )
-                      ),
+          if(controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
+            InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.printTest(controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.wlan_print_ip_Two.value}:",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                        Text(
+                            "${controller.wlan_print_port_Two.value}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        )
+                      ],
                     ),
-                  ),
-              ],
+                    Text("テスト印刷",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
             ),
-          ),
 
         ],
       ),

@@ -35,7 +35,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxString local_version = "".obs; //本appversion
   RxString machineCode = "".obs;
 
-  RxString dining_type = "1".obs; //1 堂食  2 外袋  0 两种都可
+  RxString dining_type = "1".obs; //1 堂食  2 外袋  3 两种都可
+  RxBool dining_type_one = false.obs; //false无堂食 true 堂食
+  RxBool dining_type_two = false.obs; //false无外卖  true 外卖
   RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
   RxString print_paper_size = "1".obs;//1 默认58mm  2 宽纸80mm
   RxString print_paper_txt_size = "1".obs;//1 普通　2大　3特大
@@ -105,6 +107,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
     var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
 
       dining_type.value = systemSettingInfo['diningType'];
+      if(dining_type.value == "1"){
+        dining_type_one.value= true;
+        dining_type_two.value = false;
+      }else if(dining_type.value == "2"){
+        dining_type_one.value= false;
+        dining_type_two.value = true;
+      }else if(dining_type.value == "3"){
+        dining_type_one.value= true;
+        dining_type_two.value = true;
+      }
       menu_direction.value = systemSettingInfo['menuDirection'];
       // _print_paper_size = systemSettingInfo['printPaperSize'];
       print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
@@ -325,8 +337,25 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkDiningtype(checkedType){
+    if(checkedType == "1"){
+      dining_type_one.value = !dining_type_one.value;
+    }else if(checkedType == "2"){
+      dining_type_two.value = !dining_type_two.value;
+    }
+
+    var dining_type_tmp = "1";
+    if(dining_type_one.value == true && dining_type_two.value == false){
+      dining_type_tmp = "1";
+    }else if(dining_type_one.value == false && dining_type_two.value == true){
+      dining_type_tmp = "2";
+    }else if(dining_type_one.value == true && dining_type_two.value == true){
+      dining_type_tmp = "3";
+    }else{
+      dining_type_one.value = true;
+      dining_type_tmp = "1";
+    }
     var systemSettingData = {
-      "diningType":checkedType, //1堂食 2外带
+      "diningType":dining_type_tmp, //1堂食 2外带
       "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
       //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
       "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
@@ -349,7 +378,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
 
 
-      dining_type.value = checkedType;
+      dining_type.value = dining_type_tmp;
     update();
     if(machine_mode == "1"){
       Get.find<OrderHomeController>().getSystemSettingInfo();
