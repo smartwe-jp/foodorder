@@ -1903,68 +1903,111 @@ class SystemSettingPageView extends GetView {
                             //height: ScreenAdapter.height(65),
                             alignment: Alignment.center,
                             padding: EdgeInsets.zero,
-                            child: Table(
-                                border: TableBorder.all(),
-                                columnWidths: const <int, TableColumnWidth>{
-                                  //0: IntrinsicColumnWidth(),
-                                  0:FlexColumnWidth(300),
-                                  1: FixedColumnWidth(750),
-                                },
-                                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                children: <TableRow>[
+                            child: Column(
+                              children: [
+                                Table(
+                                    border: TableBorder.all(),
+                                    columnWidths: const <int, TableColumnWidth>{
+                                      //0: IntrinsicColumnWidth(),
+                                      0:FlexColumnWidth(300),
+                                      1: FixedColumnWidth(750),
+                                    },
+                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                    children: <TableRow>[
 
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          height: ScreenAdapter.height(90),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "キッチン",
-                                            style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "キッチン",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        setIsAllowWlanPrint(),//是否开启网络打印机
+                                            setIsAllowWlanPrint(),//是否开启网络打印机
 
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          height: ScreenAdapter.height(90),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "キッチン（ラベル）",
-                                            style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
+                                          ]
+                                      ),
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "キッチン（ラベル）",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
                                             ),
-                                          ),
-                                        ),
-                                        setIsAllowWlanLablePrint(),//是否开启网络打印机
+                                            setIsAllowWlanLablePrint(),//是否开启网络打印机
 
-                                      ]
-                                  ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          height: ScreenAdapter.height(90),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "カウンター",
-                                            style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
+                                          ]
+                                      ),
+                                    ]
+                                ),
+                                Table(
+                                    border: TableBorder.all(),
+                                    columnWidths: const <int, TableColumnWidth>{
+                                      //0: IntrinsicColumnWidth(),
+                                      0:FlexColumnWidth(1050),
+                                    },
+                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                    children: <TableRow>[
+
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(50),
+                                              padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                              alignment: Alignment.centerLeft,
+                                              child: Text("注：「キッチンプリンター」か「キッチン（ラベル）プリンター」かどちらか１台のご利用となります。",
+                                                  style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(17),
+                                                    fontWeight: FontWeight.w400,
+                                                    color: ColorsUtil.hexToColor("#d90000"),
+                                                  )),
                                             ),
-                                          ),
-                                        ),
-                                        setIsAllowWlanPrintTwo(),//第二台打印机
 
-                                      ]
-                                  ),
-                                ]
+                                          ]
+                                      ),
+                                    ]
+                                ),
+                                Table(
+                                    border: TableBorder.all(),
+                                    columnWidths: const <int, TableColumnWidth>{
+                                      //0: IntrinsicColumnWidth(),
+                                      0:FlexColumnWidth(300),
+                                      1: FixedColumnWidth(750),
+                                    },
+                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                                    children: <TableRow>[
+
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "カウンター",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                            ),
+                                            setIsAllowWlanPrintTwo(),//第二台打印机
+
+                                          ]
+                                      ),
+                                    ]
+                                ),
+                              ],
                             ),
                           ),
                         ],
