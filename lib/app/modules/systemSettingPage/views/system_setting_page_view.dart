@@ -1680,7 +1680,7 @@ class SystemSettingPageView extends GetView {
                                           //height: ScreenAdapter.height(65),
                                           alignment: Alignment.center,
                                           child: Text(
-                                            "注文明細",
+                                            "オーダーシート",
                                             style: TextStyle(
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500

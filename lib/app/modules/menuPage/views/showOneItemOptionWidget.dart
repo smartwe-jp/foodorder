@@ -84,7 +84,7 @@ class showOneItemOptionWidgetView extends GetView {
             buttonColor = optionVolistSon['buttonColorValue'].split(',');
           }
           optionSons.add(Container(
-            width: ScreenAdapter.width(180),
+            width: ScreenAdapter.width(255),
             padding: EdgeInsets.only(
                 left: ScreenAdapter.width(5),
                 top: ScreenAdapter.height(5),
@@ -115,8 +115,8 @@ class showOneItemOptionWidgetView extends GetView {
 
                 ),
                 child: Container(
-                    width: ScreenAdapter.width(170),
-                    height: ScreenAdapter.height(65),
+                    width: ScreenAdapter.width(245),
+                    height: ScreenAdapter.height(70),
                     alignment: Alignment.center,
                     decoration: (optionVolistSon['checked'] == true)
                         ? BoxDecoration(
@@ -196,9 +196,9 @@ class showOneItemOptionWidgetView extends GetView {
                         ConstrainedBox(
                           constraints: BoxConstraints(
                             minWidth: ScreenAdapter.width(20),
-                            maxWidth: ScreenAdapter.width(145),
+                            maxWidth: ScreenAdapter.width(225),
                             minHeight: ScreenAdapter.height(30),
-                            maxHeight: ScreenAdapter.height(58),
+                            maxHeight: ScreenAdapter.height(62),
                           ),
                           child: AutoSizeText(
                               optionVolistSon['mainTitle'],
@@ -287,7 +287,7 @@ class showOneItemOptionWidgetView extends GetView {
                                         ),
 
                                         Container(
-                                          padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
                                           child: Row(
                                             children: [
                                               Expanded(child: controller.publicShowMenuSubtitle(item["subtitle"])),
@@ -325,7 +325,7 @@ class showOneItemOptionWidgetView extends GetView {
                                 mainAxisAlignment: MainAxisAlignment.start,
                                 crossAxisAlignment: CrossAxisAlignment.center,
                                 children: <Widget>[
-                                  publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 250.0, imgHeight: 250.0),
+                                  //publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 250.0, imgHeight: 250.0),
                                   (item['optionGroupVoList']?.length > 0)
                                       ? Expanded(
                                     child: publicShowOneItemOptionGroupWidget(
@@ -388,7 +388,7 @@ class showOneItemOptionWidgetView extends GetView {
                                             text: TextSpan(
                                                 text: "¥",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                                                 style: TextStyle(
-                                                  fontSize: ScreenAdapter.fontSize(32),
+                                                  fontSize: ScreenAdapter.fontSize(50),
                                                   fontWeight: FontWeight.w600,
                                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                                   textBaseline: TextBaseline.alphabetic,
@@ -398,7 +398,7 @@ class showOneItemOptionWidgetView extends GetView {
                                                   TextSpan(
                                                     text: formatMoney((controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']]).toString()),
                                                     style: TextStyle(
-                                                      fontSize: ScreenAdapter.fontSize(50),
+                                                      fontSize: ScreenAdapter.fontSize(70),
                                                       fontWeight: FontWeight.w600,
                                                       color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                                       textBaseline: TextBaseline.alphabetic,
@@ -407,7 +407,7 @@ class showOneItemOptionWidgetView extends GetView {
                                                   TextSpan(
                                                     text: "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）",
                                                     style: TextStyle(
-                                                      fontSize: ScreenAdapter.fontSize(50)/2.5,
+                                                      fontSize: ScreenAdapter.fontSize(70)/2.5,
                                                       fontWeight: FontWeight.w600,
                                                       color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                                       textBaseline: TextBaseline.alphabetic,
@@ -524,7 +524,7 @@ class showOneItemOptionWidgetView extends GetView {
                                               GString.getToString(
                                                   controller.checkLanguage.value, "add_option_cart"),
                                               style: TextStyle(
-                                                fontSize: ScreenAdapter.fontSize(30),
+                                                fontSize: ScreenAdapter.fontSize(40),
                                                 fontWeight: FontWeight.w500,
                                                 color: ColorsUtil.hexToColor(
                                                     Gcolor.optionBtnColor),
