@@ -7,6 +7,8 @@ import '../modules/CheckoutPage/views/ScanCode.dart';
 import '../modules/CheckoutPage/views/checkout_page_view.dart';
 import '../modules/OrderHome/bindings/order_home_binding.dart';
 import '../modules/OrderHome/views/order_home_view.dart';
+import '../modules/SelfCheckoutscanningcode/bindings/self_checkoutscanningcode_binding.dart';
+import '../modules/SelfCheckoutscanningcode/views/self_checkoutscanningcode_view.dart';
 import '../modules/SelfservicePage/bindings/selfservice_page_binding.dart';
 import '../modules/SelfservicePage/views/selfservice_page_view.dart';
 import '../modules/TransitPage/bindings/transit_page_binding.dart';
@@ -57,7 +59,7 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SELFSERVICE_PAGE,
-      page: () => const SelfservicePageView(),
+      page: () => SelfservicePageView(),
       binding: SelfservicePageBinding(),
     ),
     GetPage(
@@ -88,7 +90,11 @@ class AppPages {
     GetPage(
       name: _Paths.SETTING,
       page: () => SettingView(),
-      bindings: [SettingBinding(),SettingbackTransitBinding(),TransitPageBinding()],
+      bindings: [
+        SettingBinding(),
+        SettingbackTransitBinding(),
+        TransitPageBinding()
+      ],
     ),
     GetPage(
       name: _Paths.MIDDLEWARE_SETTING_PAGE,
@@ -102,8 +108,13 @@ class AppPages {
     ),
     GetPage(
       name: _Paths.SETTINGBACK_TRANSIT,
-      page: () =>  SettingbackTransitView(),
+      page: () => SettingbackTransitView(),
       binding: SettingbackTransitBinding(),
+    ),
+    GetPage(
+      name: _Paths.SELF_CHECKOUTSCANNINGCODE,
+      page: () => const SelfCheckoutscanningcodeView(),
+      binding: SelfCheckoutscanningcodeBinding(),
     ),
   ];
 }

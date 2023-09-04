@@ -771,7 +771,7 @@ class SystemSettingPageView extends GetView {
           posIp: controller.pos_ip.value,
           posPort: controller.pos_port.value,
           showRadio:0,
-          onConfrimClick: (String posIp, String posPort, int showPrintType) {
+          onConfrimClick: (String posIp, String posPort) {
             if(posIp != ""){
 
                 controller.pos_ip.value = posIp;
@@ -810,7 +810,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.is_allow_wlanPrint.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -820,7 +820,7 @@ class SystemSettingPageView extends GetView {
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_wlanPrint.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -830,7 +830,7 @@ class SystemSettingPageView extends GetView {
             splashColor: Colors.transparent, // 透明色
             onTap: (){
               //controller.is_allow_wlanPrint_continuous.value = "0";
-              _showWlanPrintSettingDialog("0");
+              _showWlanPrintSettingDialog("0",0);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -841,7 +841,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -853,7 +853,7 @@ class SystemSettingPageView extends GetView {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                     ),
                     children: [
                       TextSpan(
@@ -873,7 +873,7 @@ class SystemSettingPageView extends GetView {
             splashColor: Colors.transparent, // 透明色
             onTap: (){
 
-              _showWlanPrintSettingDialog("1");
+              _showWlanPrintSettingDialog("1",0);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -884,7 +884,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -896,7 +896,7 @@ class SystemSettingPageView extends GetView {
                     style: TextStyle(
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                     ),
                     children: [
                       TextSpan(
@@ -911,7 +911,157 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
-          if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "")
+          if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "" && controller.showPrintType.value==0)
+            InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.wlan_print_ip.value}:",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                        Text(
+                            "${controller.wlan_print_port.value}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        )
+                      ],
+                    ),
+                    Text("テスト印刷",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+        ],
+      ),
+    );
+  }
+
+  setIsAllowWlanLablePrint() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowWlanPrint("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オフ",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              //controller.is_allow_wlanPrint_continuous.value = "0";
+              _showWlanPrintSettingDialog("0",1);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: RichText(
+                text: TextSpan(
+                    text: "オン",
+                    style: TextStyle(
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: "",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(18),
+                          fontWeight: FontWeight.w400,
+                          color: ColorsUtil.hexToColor("#d90000"),
+                        ),
+                      ),
+                    ]),
+              ),
+            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+            //设置 child 居中
+            alignment: Alignment(0, 0),
+            height: ScreenAdapter.height(60),
+            width: ScreenAdapter.width(140),
+          ),
+          if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "" && controller.showPrintType.value==1)
             InkWell(
               highlightColor: Colors.transparent, // 透明色
               splashColor: Colors.transparent, // 透明色
@@ -974,14 +1124,14 @@ class SystemSettingPageView extends GetView {
   }
 
   //设置网络打印机ip
-  _showWlanPrintSettingDialog(continousType) async {
+  _showWlanPrintSettingDialog(continousType,showPrintType) async {
     Get.dialog(
         SetPosIpPage(
           posIp: controller.wlan_print_ip.value,
           posPort: controller.wlan_print_port.value,
           showRadio:1,
           showPrintType:controller.showPrintType.value,
-          onConfrimClick: (String printIp, String printPort, int showPrintType) {
+          onConfrimClick: (String printIp, String printPort) {
             if(printIp != ""){
 
                 controller.wlan_print_ip.value = printIp;
@@ -1190,7 +1340,7 @@ class SystemSettingPageView extends GetView {
       posIp: controller.wlan_print_ip_Two.value,
       posPort: controller.wlan_print_port_Two.value,
       showRadio:0,
-      onConfrimClick: (String printIp, String printPort, int showPrintType) {
+      onConfrimClick: (String printIp, String printPort) {
         if(printIp != ""){
           controller.wlan_print_ip_Two.value = printIp;
           controller.wlan_print_port_Two.value = printPort;
@@ -1777,6 +1927,23 @@ class SystemSettingPageView extends GetView {
                                           ),
                                         ),
                                         setIsAllowWlanPrint(),//是否开启网络打印机
+
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "キッチン（ラベル）",
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllowWlanLablePrint(),//是否开启网络打印机
 
                                       ]
                                   ),

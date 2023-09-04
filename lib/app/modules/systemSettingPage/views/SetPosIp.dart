@@ -20,7 +20,7 @@ class SetPosIpPage extends StatefulWidget {
   final String posPort;
   final int showRadio;
   final int showPrintType;
-  final Function(String, String,int) onConfrimClick;
+  final Function(String, String) onConfrimClick;
 
   @override
   _SetPosIpPageState createState() => _SetPosIpPageState();
@@ -124,7 +124,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
 
                   ],
                 ),
-                SizedBox(height: ScreenAdapter.height(15),),
+                /*SizedBox(height: ScreenAdapter.height(15),),
                 if(_showRadio == 1)// 简易选择项
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -173,7 +173,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                       ),
                     ),
                   ],
-                ),
+                ),*/
                 SizedBox(height: ScreenAdapter.height(20),),
                 Container(
                   alignment: Alignment.center,
@@ -198,7 +198,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                         print(_posIp);
                         print(_posPort);
                         if(_posIp != "" && _posPort != ""){
-                          widget.onConfrimClick(_posIp, _posPort, _showPrintType);
+                          widget.onConfrimClick(_posIp, _posPort);
                           Navigator.pop(context);
                         }
 

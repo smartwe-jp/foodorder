@@ -17,6 +17,7 @@ abstract class Routes {
   static const MIDDLEWARE_SETTING_PAGE = _Paths.MIDDLEWARE_SETTING_PAGE;
   static const SYSTEM_SETTING_PAGE = _Paths.SYSTEM_SETTING_PAGE;
   static const SETTINGBACK_TRANSIT = _Paths.SETTINGBACK_TRANSIT;
+  static const SELF_CHECKOUTSCANNINGCODE = _Paths.SELF_CHECKOUTSCANNINGCODE;
 }
 
 abstract class _Paths {
@@ -35,4 +36,5 @@ abstract class _Paths {
   static const MIDDLEWARE_SETTING_PAGE = '/middlewaresettingpage';
   static const SYSTEM_SETTING_PAGE = '/system-setting-page';
   static const SETTINGBACK_TRANSIT = '/settingback-transit';
+  static const SELF_CHECKOUTSCANNINGCODE = '/self-checkoutscanningcode';
 }
