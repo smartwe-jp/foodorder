@@ -559,15 +559,27 @@ class MenuPageController extends GetxController with StateMixin {
               text: TextSpan(
                   text: "${GString.getToString(checkLanguage.value, "show_original_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                   style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(priceFrontFontSize)/1.8,
+                    fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                     fontWeight: FontWeight.w500,
                     color: ColorsUtil.hexToColor("#485460"),
-                    decoration: TextDecoration.lineThrough, // 添加中划线
-                    decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
-                    decorationThickness: 2.0, // 可以设置中划线的厚度
+                    //decoration: TextDecoration.lineThrough, // 添加中划线
+                    //decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
+                    //decorationThickness: 2.0, // 可以设置中划线的厚度
                     textBaseline: TextBaseline.alphabetic,
                   ),
                   children: [
+                    TextSpan(
+                      text: "¥",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
+                        fontWeight: FontWeight.w500,
+                        color: ColorsUtil.hexToColor("#485460"),
+                        decoration: TextDecoration.lineThrough, // 添加中划线
+                        decorationColor: ColorsUtil.hexToColor("#485460"),// 可以设置中划线的颜色
+                        decorationThickness: 2.0, // 可以设置中划线的厚度
+                        textBaseline: TextBaseline.alphabetic,
+                      ),
+                    ),
                     TextSpan(
                       text: formatMoney(originalPrice.toString()),
                       style: TextStyle(
@@ -581,7 +593,7 @@ class MenuPageController extends GetxController with StateMixin {
                       ),
                     ),
                     TextSpan(
-                      text: "円",
+                      text: "",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                         fontWeight: FontWeight.w500,
