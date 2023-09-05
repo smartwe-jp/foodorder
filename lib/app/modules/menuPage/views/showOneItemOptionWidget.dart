@@ -320,10 +320,11 @@ class showOneItemOptionWidgetView extends GetView {
                               color: Color.fromRGBO(227, 227, 227, 1),
                             ),
                             Container(
+                              constraints: BoxConstraints(minHeight: ScreenAdapter.height(400),),
                               padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: <Widget>[
                                   //publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 250.0, imgHeight: 250.0),
                                   (item['optionGroupVoList']?.length > 0)

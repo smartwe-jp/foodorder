@@ -25,7 +25,7 @@ class SettlementView extends GetView {
       body: GetBuilder<SettlementController>(builder: (controller){
         return controller.obx((state) => AnnotatedRegion(
           value: SystemUiOverlayStyle.light,
-          child: Column(
+          child:  Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -65,19 +65,19 @@ class SettlementView extends GetView {
                 width: ScreenAdapter.getScreenWidth(),
                 height: ScreenAdapter.height(115),
                 decoration: BoxDecoration(
-                  color: ColorsUtil.hexToColor("#ffffff"),
-                  border: Border(
+                    color: ColorsUtil.hexToColor("#ffffff"),
+                    border: Border(
                       bottom: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 5.0),
                       //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                  )
+                    )
                   /*gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      ColorsUtil.hexToColor("#C47829"),
-                      ColorsUtil.hexToColor("#854610"),
-                    ],
-                  ),*/
+                      begin: Alignment.centerLeft,
+                      end: Alignment.centerRight,
+                      colors: [
+                        ColorsUtil.hexToColor("#C47829"),
+                        ColorsUtil.hexToColor("#854610"),
+                      ],
+                    ),*/
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -89,11 +89,11 @@ class SettlementView extends GetView {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           /*Image.asset(
-                            GImage.getImageString(
-                                "imgpublic", "settlement_top_cash"),
-                            width: ScreenAdapter.width(40),
-                            fit: BoxFit.fitWidth,
-                          ),*/
+                              GImage.getImageString(
+                                  "imgpublic", "settlement_top_cash"),
+                              width: ScreenAdapter.width(40),
+                              fit: BoxFit.fitWidth,
+                            ),*/
                           Icon(
                             Icons.currency_yen_outlined,
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -106,7 +106,7 @@ class SettlementView extends GetView {
                             GString.getToString(
                                 controller.checkLanguage.value, "settlement_top_title_cash"),
                             style: TextStyle(
-                                //color: ColorsUtil.hexToColor("#FFFFFF"),
+                              //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(36.0)),
                           ),
@@ -131,7 +131,7 @@ class SettlementView extends GetView {
                             GString.getToString(
                                 controller.checkLanguage.value, "settlement_top_title_qr"),
                             style: TextStyle(
-                                //color: ColorsUtil.hexToColor("#FFFFFF"),
+                              //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(36.0)),
                           ),
@@ -872,15 +872,15 @@ class SettlementView extends GetView {
                   ),
                 ),
               /*if (controller.payment_method_num.value == "5" || controller.payment_method_num.value == "6"|| controller.payment_method_num.value == "7"|| controller.payment_method_num.value == "8"|| controller.payment_method_num.value == "9"|| controller.payment_method_num.value == "10")
-              Container(
-                //height: ScreenAdapter.height(940),
-                child: Image.asset(
-                  GImage.getImageString(
-                      "imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),
-                  width: ScreenAdapter.width(1080),
-                  fit: BoxFit.fitWidth,
-                ),
-              ),*/
+                Container(
+                  //height: ScreenAdapter.height(940),
+                  child: Image.asset(
+                    GImage.getImageString(
+                        "imgpublic", "settlement_top_lead_nfc_${_checkLanguage}"),
+                    width: ScreenAdapter.width(1080),
+                    fit: BoxFit.fitWidth,
+                  ),
+                ),*/
               Container(
                 height: ScreenAdapter.height(5),
                 color: ColorsUtil.hexToColor("#D8D8D8"),
@@ -1152,8 +1152,8 @@ class SettlementView extends GetView {
                             child: InkWell(
                               onTap: () {
                                 if (controller.allowClick.value == true ) {
-                                    controller.allowClick.value = false;
-                                    controller.isPrintClick.value = true;
+                                  controller.allowClick.value = false;
+                                  controller.isPrintClick.value = true;
 
                                   controller.showEasyLoading();
 
@@ -1227,18 +1227,18 @@ class SettlementView extends GetView {
                                       MainAxisAlignment.center,
                                       children: [
                                         /*Text(
-                                      GString.getToString(
-                                          controller.checkLanguage.value,
-                                          "settlement_confirmButton"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            32),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),*/
+                                        GString.getToString(
+                                            controller.checkLanguage.value,
+                                            "settlement_confirmButton"),
+                                        style: TextStyle(
+                                          fontSize:
+                                          ScreenAdapter.fontSize(
+                                              32),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor
+                                                  .settlementBtnColor),
+                                        )),*/
                                         Text(
                                             GString.getToString(
                                                 controller.checkLanguage.value,
@@ -1251,18 +1251,18 @@ class SettlementView extends GetView {
                                               color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                                             )),
                                         /*Text(
-                                      GString.getToString(
-                                          controller.checkLanguage.value,
-                                          "settlement_confirmButton_yes"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            20),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),*/
+                                        GString.getToString(
+                                            controller.checkLanguage.value,
+                                            "settlement_confirmButton_yes"),
+                                        style: TextStyle(
+                                          fontSize:
+                                          ScreenAdapter.fontSize(
+                                              20),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor
+                                                  .settlementBtnColor),
+                                        )),*/
                                       ],
                                     ),
                                   ),
@@ -1272,9 +1272,9 @@ class SettlementView extends GetView {
                                   onTap: () {
                                     if (controller.allowClick.value == true) {
 
-                                        controller.allowClick.value = false;
-                                        controller.is_query_receipt.value = "2";
-                                        controller.isPrintClick.value = true;
+                                      controller.allowClick.value = false;
+                                      controller.is_query_receipt.value = "2";
+                                      controller.isPrintClick.value = true;
 
 
                                       if (controller.machineMode.value == "1") {
@@ -1304,18 +1304,18 @@ class SettlementView extends GetView {
                                       MainAxisAlignment.center,
                                       children: [
                                         /*Text(
-                                      GString.getToString(
-                                          controller.checkLanguage.value,
-                                          "settlement_confirmButton"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            32),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),*/
+                                        GString.getToString(
+                                            controller.checkLanguage.value,
+                                            "settlement_confirmButton"),
+                                        style: TextStyle(
+                                          fontSize:
+                                          ScreenAdapter.fontSize(
+                                              32),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor
+                                                  .settlementBtnColor),
+                                        )),*/
                                         Text(
                                             GString.getToString(
                                                 controller.checkLanguage.value,
@@ -1330,18 +1330,18 @@ class SettlementView extends GetView {
                                                       .settlementBtnColor),
                                             )),
                                         /* Text(
-                                      GString.getToString(
-                                          controller.checkLanguage.value,
-                                          "settlement_confirmButton_no"),
-                                      style: TextStyle(
-                                        fontSize:
-                                        ScreenAdapter.fontSize(
-                                            20),
-                                        fontWeight: FontWeight.w600,
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor
-                                                .settlementBtnColor),
-                                      )),*/
+                                        GString.getToString(
+                                            controller.checkLanguage.value,
+                                            "settlement_confirmButton_no"),
+                                        style: TextStyle(
+                                          fontSize:
+                                          ScreenAdapter.fontSize(
+                                              20),
+                                          fontWeight: FontWeight.w600,
+                                          color: ColorsUtil.hexToColor(
+                                              Gcolor
+                                                  .settlementBtnColor),
+                                        )),*/
                                       ],
                                     ),
                                   ),
@@ -1387,11 +1387,11 @@ class SettlementView extends GetView {
                               Get.back();
                             }
                             /*if (controller.payment_method_num.value == "3" ||
-                              controller.payment_method_num.value == "4") {
-                            _getPaymentCancelPosData();
-                          } else {
-                            Navigator.pop(context);
-                          }*/
+                                controller.payment_method_num.value == "4") {
+                              _getPaymentCancelPosData();
+                            } else {
+                              Navigator.pop(context);
+                            }*/
 
 
                           } catch (_) {}
