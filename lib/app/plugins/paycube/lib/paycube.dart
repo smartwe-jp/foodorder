@@ -6,7 +6,6 @@ import 'package:flutter/services.dart';
 
 class Paycube {
   static const MethodChannel _channel = const MethodChannel('paycube');
-  static Function(String) _listener;
 
   static void setEndListener(Function(String) listener) {
     _channel.setMethodCallHandler((call) async {print(call.method);
@@ -23,12 +22,6 @@ class Paycube {
         listener(message);
       }
     });
-  }
-
-  static void _sendToFlutter(String message) {
-    if (_listener != null) {
-      _listener(message);
-    }
   }
 
   static Future<String> get platformVersion async {
