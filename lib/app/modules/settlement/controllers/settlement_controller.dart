@@ -2622,6 +2622,88 @@ class SettlementController extends GetxController with StateMixin {
         Padding(
           padding: const EdgeInsets.only(
             //left: 5,
+            top: 2,
+            //right: 5,
+          ),
+          child: Container(
+
+            child: Column(
+              mainAxisAlignment:MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              textDirection: TextDirection.ltr,
+              children: [
+
+                Container(
+                  decoration: BoxDecoration(
+                    //color: Colors.red,
+                    border: Border(
+                      bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 2),
+                    ),
+                  ),
+                  child: Row(
+                    mainAxisAlignment:MainAxisAlignment.start,
+                    textDirection: TextDirection.ltr,
+                    children: [
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Expanded(child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minWidth: ScreenAdapter.width(20),
+                              maxWidth: ScreenAdapter.width(400),
+                              minHeight: ScreenAdapter.height(30),
+                              maxHeight: ScreenAdapter.height(75),
+                            ),
+                            child: AutoSizeText(
+                              "${orderprintData["printTitleText"]}",
+                              style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
+                              maxLines: 2,
+                              textAlign: TextAlign.left,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          )
+                          )
+                      ),
+                    ],
+                  ),
+                ),
+
+                Expanded(
+                    child: Row(
+                      mainAxisAlignment:MainAxisAlignment.start,
+                      textDirection: TextDirection.ltr,
+                      children: [
+                        Directionality(
+                            textDirection: TextDirection.ltr,
+                            child: Expanded(child: Container(
+                              /*constraints: BoxConstraints(
+                            minWidth: ScreenAdapter.width(20),
+                            maxWidth: ScreenAdapter.width(400),
+                            minHeight: ScreenAdapter.height(30),
+                            maxHeight: ScreenAdapter.height(210),
+                          ),*/
+                              child: Text(
+                                orderprintData["printText"],
+                                style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
+                                maxLines: 4,
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                            )
+                        ),
+                      ],
+                    )
+                ),
+
+              ],
+            ),
+          ),
+        )
+    );
+    /*return LabelConstrainedBox(
+        Padding(
+          padding: const EdgeInsets.only(
+            //left: 5,
             top: 5,
             //right: 5,
           ),
@@ -2697,7 +2779,7 @@ class SettlementController extends GetxController with StateMixin {
             ),
           ),
         )
-    );
+    );*/
   }
 
   _tpPrintReceipt(printData) async {
