@@ -45,6 +45,10 @@ class ItemServices {
     return await sqlService.getCartList();
   }
 
+  Future getAscCartList() async {
+    return await sqlService.getAscCartList();
+  }
+
   Future getCartListPrice() async {
     return await sqlService.getCartListPrice();
   }

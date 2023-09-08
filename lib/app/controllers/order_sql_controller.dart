@@ -45,6 +45,21 @@ class OrderSqlController extends GetxController {
     }
   }
 
+  getAscCardList() async{
+    try {
+      getcartItems = await itemServices.getAscCartList();
+      cartItems.clear();
+      getcartItems.forEach((element) {
+        cartItems.add(ShopItemModel.fromJson(element));
+      });
+
+      update();
+
+    } catch (e) {
+      print(e);
+    }
+  }
+
   getCartAllPrice() async {
     var result;
     result = await itemServices.getCartListPrice();

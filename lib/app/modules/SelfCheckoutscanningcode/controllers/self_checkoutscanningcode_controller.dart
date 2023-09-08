@@ -153,6 +153,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     update();
     change(null, status: RxStatus.success());
+
+
   }
 
   deleteItemSound() async {
@@ -201,14 +203,14 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     };print(formData);
 
     request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString()); print(response);
+      var response = json.decode(val.toString());
       //EasyLoading.dismiss();
       scanQrCodeController.text = "";
       scanQrCodeFocusNode.requestFocus();     // 获取焦点
 
       //print(response);
       if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-        print(response);
+
         publicAddCart(response["data"]);
 
       }else{
@@ -241,7 +243,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     var result = false;
     try {
     await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
-      ordersqlcontroller.getCardList();
+      //ordersqlcontroller.getCardList();
     result = true;
 
     } catch (e) {

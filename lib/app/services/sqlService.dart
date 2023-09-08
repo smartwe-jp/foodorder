@@ -60,6 +60,15 @@ class SQLService {
     }
   }
 
+   Future getAscCartList() async {
+     try {
+       var list = await db?.rawQuery('SELECT * FROM cart_list ORDER BY id ASC', []);
+       return list ?? [];
+     } catch (e) {
+       return Future.error(e);
+     }
+   }
+
   Future getCartListPrice() async {
     var query = "SELECT SUM(currentPrice) AS totalPrice FROM cart_list";
     return await this.db?.rawQuery(query);

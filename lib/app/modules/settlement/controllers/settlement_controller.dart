@@ -1454,10 +1454,10 @@ class SettlementController extends GetxController with StateMixin {
         if(getOutMoneyString.value == true){
           // 循环一定要记得设置取消条件，手动取消
           String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-          if (currencyStringresult.trim().length > 50) {
+          if (currencyStringresult.trim().length > 50) {print(currencyStringresult.trim());
             var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringresult.trim());
-            print("计算现金机出金金额与实际投入是否相等==${outtotalAmount.toString()}");
-            print("计算现金机出金金额与实际投入是否相等==${currencyStringresult}");
+            print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
+            print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
             if(outtotalAmount == int.parse(outStringMoney.value)){
               //如果打开了现金机，则去掉倒计时监听
@@ -1553,10 +1553,14 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     isReportCash.value = true;
-    //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機) 3 自助精算返回
+    //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機、自助结算)
     var operation = 0;
     if (isCancel.value == true) {
-      operation = int.parse(machineMode.value);
+      if(machineMode.value == "1") {
+        operation = 1;
+      }else{
+        operation = 2;
+      }
     }
 
     var formData = {
@@ -2833,7 +2837,7 @@ class SettlementController extends GetxController with StateMixin {
     if(printData["ntaNo"] != null && printData["ntaNo"] != ""){
       addRowHight += 38;
       categoryMenus.add(_publicOneColumnTxtNew(
-          "登録番号 ${printData["ntaNo"]}", 26.0, FontWeight.w300));
+          "登録番号:${printData["ntaNo"]}", 26.0, FontWeight.w300));
       categoryMenus.add(SizedBox(height: 5,));
     }
     categoryMenus.add(Container(
