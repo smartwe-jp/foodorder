@@ -9,7 +9,7 @@ class NumberCircle extends StatelessWidget {
   final TextStyle numberStyle;
 
   NumberCircle({
-    this.number,
+    required this.number,
     this.circleColor = Colors.red,
     this.circleSize = 30.0,
     this.numberStyle = const TextStyle(color: Colors.white, fontSize: 16.0),

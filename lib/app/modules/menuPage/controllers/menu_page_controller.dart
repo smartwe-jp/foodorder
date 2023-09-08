@@ -34,7 +34,7 @@ class MenuPageController extends GetxController with StateMixin {
   //TODO: Implement MenuPageController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
 
-  FToast fToast;
+   FToast? fToast;
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
@@ -118,8 +118,12 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   readyQueryData(){print(Get.arguments);
-    checkLanguage.value = Get.arguments['checkLanguage'];
-    mealType.value = Get.arguments["mealType"];
+    if(Get.arguments != null){
+      checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
+      mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
+
+    }
+
     _getMachineInfo();
 
 
@@ -244,7 +248,7 @@ class MenuPageController extends GetxController with StateMixin {
             //该分类下有option，先初始化页面数据
             if (categoryVoList['menuVoList']?.length > 0) {
               for (var menuVoList in categoryVoList['menuVoList']) {
-                var _addOptionPrice = 0;
+                num _addOptionPrice = 0;
                 if (menuVoList['optionGroupVoList'] != null &&
                     menuVoList['optionGroupVoList']?.length > 0 &&
                     menuVoList['optionGroupVoList'] != "") {
@@ -448,9 +452,9 @@ class MenuPageController extends GetxController with StateMixin {
         showItem.value[queryCategoryCode] = myList;
 
         //该分类下有option，先初始化页面数据
-        if (myList?.length > 0) {
+        if (myList.length > 0) {
           for (var menuVoList in myList) {
-            var _addOptionPrice = 0;
+            num _addOptionPrice = 0;
             if (menuVoList['optionGroupVoList'] != null &&
                 menuVoList['optionGroupVoList']?.length > 0 &&
                 menuVoList['optionGroupVoList'] != "") {
@@ -743,8 +747,9 @@ class MenuPageController extends GetxController with StateMixin {
 
     var result = false;
     try {
-      result = await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
+      await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
       ordersqlcontroller.getCardList();
+      result = true;
 
 
       //更改显示购物车价格
@@ -756,7 +761,7 @@ class MenuPageController extends GetxController with StateMixin {
     return result;
   }
 
-  publicAddCart(BuildContext context,item) async {
+  publicAddCart(BuildContext context,item) async {print("加入购物车");
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
@@ -823,7 +828,7 @@ class MenuPageController extends GetxController with StateMixin {
   //公共展示加入购物车动画
   publicShowAddCartNew(BuildContext context){
     fToast = FToast();
-    fToast.init(context);
+    fToast?.init(context);
 
     Widget toast = Container(
       color: Colors.transparent,
@@ -925,7 +930,7 @@ print("加1了");
   _getSelectedAttrValuev1(menuCode, optionGroupList, setMenuState) {
     var _list = optionGroupList;
     List tempArr = [];
-    var selectPrice = 0;
+    num selectPrice = 0;
     for (var i = 0; i < _list.length; i++) {
       for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
         if (_list[i]['optionVoList'][j]['checked'] == true) {
@@ -1007,7 +1012,7 @@ print("加1了");
   changeInitialAllOption(menuCode) {
     var attr = menuOption.value[menuCode];
     var initMenuOption = noChangeinitialmenuOption.value[menuCode];
-    var _addOptionPrice = 0;
+    num _addOptionPrice = 0;
 
     if(attr != null){
       for (var i = 0; i < attr.length; i++) {
@@ -1034,7 +1039,7 @@ print("加1了");
 
     var _list = optionGroupList;
     List tempArr = [];
-    var selectPrice = 0;
+    num selectPrice = 0;
     for (var i = 0; i < _list.length; i++) {
       for (var j = 0; j < _list[i]['optionVoList'].length; j++) {
         if (_list[i]['optionVoList'][j]['checked'] == true) {
@@ -1093,7 +1098,7 @@ print("加1了");
 
   //购物车
   getItemTotal(List items) {
-    int sum = 0;
+    num sum = 0;
     items.forEach((e) {
       sum += e.currentPrice;
     });

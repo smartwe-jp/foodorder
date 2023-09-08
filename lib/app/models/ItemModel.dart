@@ -1,28 +1,28 @@
 import 'package:flutter/cupertino.dart';
 
 class ShopItemModel {
-  String menuCode;
+  String? menuCode;
   String mainTitle;
-  String image;
-  int currentPrice;
-  int unitPrice;
-  int qtyBounds;
-  String optionGroupVoList;
-  String optionVoListMsg;
+  String? image;
+  int? currentPrice;
+  int? unitPrice;
+  int? qtyBounds;
+  String? optionGroupVoList;
+  String? optionVoListMsg;
   int goodsNum;
-  int id;
+  int? id;
 
   ShopItemModel(
       {this.menuCode,
         this.id,
-        this.mainTitle,
+        required this.mainTitle,
         this.image,
         this.currentPrice,
         this.unitPrice,
         this.qtyBounds,
         this.optionGroupVoList,
         this.optionVoListMsg,
-        this.goodsNum});
+        required this.goodsNum});
 
   factory ShopItemModel.fromJson(Map<String, dynamic> json) {
     return ShopItemModel(

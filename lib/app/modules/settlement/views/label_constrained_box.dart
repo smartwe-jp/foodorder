@@ -8,7 +8,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 class LabelConstrainedBox extends StatelessWidget with ATempWidget {
   final Widget child;
 
-  const LabelConstrainedBox(this.child, {Key key}) : super(key: key);
+  const LabelConstrainedBox(this.child, {Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

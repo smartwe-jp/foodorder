@@ -6,13 +6,13 @@ class NumPad extends StatelessWidget {
   final double buttonSize;
   final Color buttonColor;
   final Color iconColor;
-  final TextEditingController controller;
-  final Function delete;
-  final Function onSubmit;
+  final TextEditingController? controller;
+  final Function? delete;
+  final Function? onSubmit;
   final int textLength;
 
   const NumPad({
-    Key key,
+    Key? key,
     this.buttonSize = 50,
     this.buttonColor = Colors.lime,
     this.iconColor = Colors.pink,
@@ -38,21 +38,21 @@ class NumPad extends StatelessWidget {
                 number: 1,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 2,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 3,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
             ],
@@ -65,21 +65,21 @@ class NumPad extends StatelessWidget {
                 number: 4,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 5,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 6,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
             ],
@@ -92,21 +92,21 @@ class NumPad extends StatelessWidget {
                 number: 7,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 8,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               NumberButton(
                 number: 9,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
             ],
@@ -117,7 +117,7 @@ class NumPad extends StatelessWidget {
             children: [
               // this button is used to delete the last number
               IconButton(
-                onPressed: () => delete(),
+                onPressed: () => delete!(),
                 icon: Icon(
                   Icons.backspace,
                   color: iconColor,
@@ -128,12 +128,12 @@ class NumPad extends StatelessWidget {
                 number: 0,
                 size: buttonSize,
                 color: buttonColor,
-                controller: controller,
+                controller: controller!,
                 textLength:textLength,
               ),
               // this button is used to submit the entered value
               IconButton(
-                onPressed: () => onSubmit(),
+                onPressed: () => onSubmit!(),
                 icon: Icon(
                   Icons.done_rounded,
                   color: iconColor,
@@ -151,19 +151,19 @@ class NumPad extends StatelessWidget {
 // define NumberButton widget
 // its shape is round
 class NumberButton extends StatelessWidget {
-  final int number;
-  final double size;
-  final Color color;
+  final int? number;
+  final double? size;
+  final Color? color;
   final TextEditingController controller;
   final int textLength;
 
   const NumberButton({
-    Key key,
+    Key? key,
     this.number,
     this.size,
     this.color,
-    this.controller,
-    this.textLength,
+    required this.controller,
+    required this.textLength,
   }) : super(key: key);
 
   @override
@@ -180,12 +180,12 @@ class NumberButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          if(textLength >0){
+          if(textLength! >0){
             if(controller.text.length >=textLength){
               return;
             }
           }
-          controller.text += number.toString();
+          controller?.text += number.toString();
         },
         child: Center(
           child: Text(

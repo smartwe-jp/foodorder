@@ -6,7 +6,7 @@ class Storage{
        SharedPreferences sp=await SharedPreferences.getInstance();
        sp.setString(key, value);
   }
-  static Future<String> getString(key) async{
+  static Future<String?> getString(key) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
        return sp.getString(key);
   }
@@ -14,7 +14,7 @@ class Storage{
     SharedPreferences sp=await SharedPreferences.getInstance();
     sp.setBool(key, value);
   }
-  static Future<bool> getBool(key) async{
+  static Future<bool?> getBool(key) async{
     SharedPreferences sp=await SharedPreferences.getInstance();
     return sp.getBool(key);
   }
@@ -35,7 +35,7 @@ class Storage{
 
   Future getItem(String key) async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
-    String value = prefs.getString(key);
+    String? value = prefs.getString(key);
     return value;
   }
 

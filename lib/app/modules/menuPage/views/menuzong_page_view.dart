@@ -21,7 +21,7 @@ import '../controllers/menu_page_controller.dart';
 
 class MenuzongPageView extends GetView {
   final MenuPageController controller = Get.put(MenuPageController());
-  MenuzongPageView({Key key}) : super(key: key);
+  MenuzongPageView({Key? key}) : super(key: key);
 
   //左侧分类导航
   showLeftCategoryMenu() {

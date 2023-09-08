@@ -12,12 +12,12 @@ enum LoadDataState { State_Success, State_Error, State_Loading, State_Empty }
 class LoadStateLayout extends StatefulWidget {
 
   final LoadDataState state; //页面状态
-  final Widget successWidget;//成功视图
-  final VoidCallback errorRetry; //错误事件处理
-  final VoidCallback emptyRetry; //空数据事件处理
+  final Widget? successWidget;//成功视图
+  final VoidCallback? errorRetry; //错误事件处理
+  final VoidCallback? emptyRetry; //空数据事件处理
 
   LoadStateLayout(
-      {Key key,
+      {Key? key,
         this.state = LoadDataState.State_Loading,//默认为加载状态
         this.successWidget,
         this.errorRetry,
@@ -41,7 +41,7 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
   }
 
   ///根据不同状态来显示不同的视图
-  Widget get _buildWidget {
+  Widget? get _buildWidget {
     switch (widget.state) {
       case LoadDataState.State_Success:
         return widget.successWidget;
@@ -53,7 +53,7 @@ class _LoadStateLayoutState extends State<LoadStateLayout> {
         return _loadingView;
         break;
       case LoadDataState.State_Empty:
-        return NoDataView(widget.emptyRetry);
+        return NoDataView(widget.emptyRetry!);
         break;
       default:
         return null;

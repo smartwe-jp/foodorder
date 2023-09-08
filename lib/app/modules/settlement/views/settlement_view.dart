@@ -15,7 +15,7 @@ import '../controllers/settlement_controller.dart';
 
 class SettlementView extends GetView {
   final SettlementController controller = Get.find<SettlementController>();
-  SettlementView({Key key}) : super(key: key);
+  SettlementView({Key? key}) : super(key: key);
 
 
 

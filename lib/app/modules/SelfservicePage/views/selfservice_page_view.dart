@@ -8,11 +8,32 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
+import '../../OrderHome/views/SelectDiningMethod.dart';
 import '../controllers/selfservice_page_controller.dart';
 
 class SelfservicePageView extends GetView {
   final SelfservicePageController controller = Get.put(SelfservicePageController());
-  SelfservicePageView({Key key}) : super(key: key);
+  SelfservicePageView({Key? key}) : super(key: key);
+
+  //选择食用方式和支付方式
+  _showSelectMealTypeDialog(checkedLanguage) async {
+    Get.dialog(
+        SelectDiningMethodPage(
+          checkLanguage: checkedLanguage,
+          dining_type: controller.dining_type.value,
+          menu_direction:controller.menu_direction.value,
+          onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
+
+            Get.toNamed('/self-checkoutscanningcode',arguments: {
+              "checkLanguage": checkedLanguage,
+              "mealType":mealType
+            });
+
+          },
+        )
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,10 +101,18 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_JP.value == true)
                         InkWell(
                           onTap: () {
-                            //_clearCartList();
-                            Get.toNamed('/self-checkoutscanningcode',arguments: {
-                              "checkLanguage": "JP"
-                            });
+                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
+                              var mealType = (controller.dining_type.value == "2") ? true: false;
+
+                              Get.toNamed('/self-checkoutscanningcode',arguments: {
+                                "checkLanguage": "JP",
+                                "mealType":mealType
+                              });
+
+                            }else{
+                              _showSelectMealTypeDialog("JP");
+                            }
+
 
 
                           },
@@ -115,9 +144,17 @@ class SelfservicePageView extends GetView {
                         InkWell(
                           onTap: () {
 
-                            Get.toNamed('/self-checkoutscanningcode',arguments: {
-                              "checkLanguage": "CH"
-                            });
+                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
+                              var mealType = (controller.dining_type.value == "2") ? true: false;
+
+                              Get.toNamed('/self-checkoutscanningcode',arguments: {
+                                "checkLanguage": "CH",
+                                "mealType":mealType
+                              });
+
+                            }else{
+                              _showSelectMealTypeDialog("CH");
+                            }
                           },
                           child: Container(
                             width: ScreenAdapter.width(217),
@@ -146,9 +183,17 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_EN.value == true)
                         InkWell(
                           onTap: () {
-                            Get.toNamed('/self-checkoutscanningcode',arguments: {
-                              "checkLanguage": "EN"
-                            });
+                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
+                              var mealType = (controller.dining_type.value == "2") ? true: false;
+
+                              Get.toNamed('/self-checkoutscanningcode',arguments: {
+                                "checkLanguage": "EN",
+                                "mealType":mealType
+                              });
+
+                            }else{
+                              _showSelectMealTypeDialog("EN");
+                            }
                           },
                           child: Container(
                             width: ScreenAdapter.width(217),
@@ -177,9 +222,17 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_KO.value == true)
                         InkWell(
                           onTap: () {
-                            Get.toNamed('/self-checkoutscanningcode',arguments: {
-                              "checkLanguage": "KO"
-                            });
+                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
+                              var mealType = (controller.dining_type.value == "2") ? true: false;
+
+                              Get.toNamed('/self-checkoutscanningcode',arguments: {
+                                "checkLanguage": "KO",
+                                "mealType":mealType
+                              });
+
+                            }else{
+                              _showSelectMealTypeDialog("KO");
+                            }
                           },
                           child: Container(
                             width: ScreenAdapter.width(217),

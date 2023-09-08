@@ -13,7 +13,7 @@ import '../controllers/menu_page_controller.dart';
 
 class publicShowCartView extends GetView {
   final MenuPageController controller = Get.put(MenuPageController());
-  publicShowCartView({Key key}) : super(key: key);
+  publicShowCartView({Key? key}) : super(key: key);
 
   showCartListMenu(BuildContext context){
     if (controller.showCartItems.length == 0) {
@@ -454,7 +454,7 @@ class publicShowCartView extends GetView {
                           enableFeedback: false,
                           onTap: () {
                             if (int.parse(controller.shopCartTotalPrice.value) ==0) {
-                              return false;
+                              return;
                             }
 
                             //点餐方式只有一种并且未开pos

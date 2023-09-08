@@ -3,7 +3,6 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
-import 'package:foodorder/app/services/KeepAliveWrapper.dart';
 
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
@@ -22,13 +21,11 @@ import '../controllers/menu_page_controller.dart';
 
 class MenuPageView extends GetView {
   final MenuPageController controller = Get.put(MenuPageController());
-  MenuPageView({Key key}) : super(key: key);
+  MenuPageView({Key? key}) : super(key: key);
 
   //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    //List MenuColor = ["#A61C1C","#894911","#078E42","#E8B854","#4C7FBC","#B5C99A"];
-    //List MenuColor = ["#F05F32","#B2D3CE","#92C90B","#89A0F0","#E78BC5","#F05F32"];
     for (var item in controller.topMenu.value) {
       categoryMenus.add(InkWell(
         //enableFeedback: false,

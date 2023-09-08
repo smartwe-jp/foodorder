@@ -17,7 +17,7 @@ import 'ScanCode.dart';
 
 class CheckoutPageView extends GetView {
   final CheckoutPageController controller = Get.put(CheckoutPageController());
-  CheckoutPageView({Key key}) : super(key: key);
+  CheckoutPageView({Key? key}) : super(key: key);
 
   //展示外带按钮
   _showTakeoutButton() {
@@ -87,7 +87,7 @@ class CheckoutPageView extends GetView {
         if(controller.machineLanguagesList.value.contains(item["value"]) == true){
           billMenus.add(InkWell(
             onTap: () {
-              controller.checkLanguage.value = item["value"];
+              controller.checkLanguage.value = item["value"]!;
               controller.scanQrCodeHomeController.text = "";
               controller.scanQrCodeHomeFocusNode.requestFocus();
 

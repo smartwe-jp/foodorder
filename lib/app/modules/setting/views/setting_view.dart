@@ -12,7 +12,7 @@ import '../controllers/setting_controller.dart';
 
 class SettingView extends GetView<SettingController> {
   final SettingController controller = Get.put(SettingController());
-  SettingView({Key key}) : super(key: key);
+  SettingView({Key? key}) : super(key: key);
 
   //支付金额展示
   getDepositListShow() {

@@ -3,7 +3,7 @@
 /// formatMoney(123456) => 123,456
 /// formatMoney(123456.1234) => 123,456.1234
 /// formatMoney(123456.1234, toFixed: 2) => 123,456.12
-String formatMoney(Object val, {int toFixed}) {
+String formatMoney(Object val, {int? toFixed}) {
 if (toFixed != null) {
 val = double.parse(val.toString()).toStringAsFixed(toFixed);
 }

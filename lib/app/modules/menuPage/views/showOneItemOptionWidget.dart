@@ -19,7 +19,7 @@ class showOneItemOptionWidgetView extends GetView {
   @override
   final MenuPageController controller = Get.find();
   final Map item;
-  showOneItemOptionWidgetView(this.item,{Key key}) : super(key: key);
+  showOneItemOptionWidgetView(this.item,{Key? key}) : super(key: key);
 
 //获取带option的widget
   publicShowOneItemOptionGroupWidget(menuCode, menuindex) {
@@ -196,7 +196,7 @@ class showOneItemOptionWidgetView extends GetView {
                         ConstrainedBox(
                           constraints: BoxConstraints(
                             minWidth: ScreenAdapter.width(20),
-                            maxWidth: ScreenAdapter.width(225),
+                            maxWidth: ScreenAdapter.width(220),
                             minHeight: ScreenAdapter.height(30),
                             maxHeight: ScreenAdapter.height(62),
                           ),

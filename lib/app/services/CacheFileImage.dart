@@ -24,7 +24,7 @@ class CacheFileImage {
   }
 
   /// 判断是否有对应图片缓存文件存在
-  Future<Uint8List> getFileBytes(String url) async {
+  Future<Uint8List?> getFileBytes(String url) async {
     String cacheDirPath = await getCachePath();
     String urlMd5 = getUrlMd5(url);
     File file = File("$cacheDirPath/$urlMd5");

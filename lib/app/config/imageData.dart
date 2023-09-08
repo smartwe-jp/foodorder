@@ -139,6 +139,18 @@ class GImage{
         "settlement_top_lead_posNanaco_CH":"assets/images/public/settlement_top_lead_posNanaco_CH.png",
         "settlement_top_lead_posNanaco_EN":"assets/images/public/settlement_top_lead_posNanaco_EN.png",
         "settlement_top_lead_posNanaco_KO":"assets/images/public/settlement_top_lead_posNanaco_KO.png",
+
+        "safeScanback_JP":"assets/images/public/safeScanback_JP.jpg",
+        "safeScanback_CH":"assets/images/public/safeScanback_CH.jpg",
+        "safeScanback_EN":"assets/images/public/safeScanback_EN.jpg",
+        "safeScanback_KO":"assets/images/public/safeScanback_KO.jpg",
+
+        "safeScantop_JP":"assets/images/public/safeScantop_JP.jpg",
+        "safeScantop_CH":"assets/images/public/safeScantop_CH.jpg",
+        "safeScantop_EN":"assets/images/public/safeScantop_EN.jpg",
+        "safeScantop_KO":"assets/images/public/safeScantop_KO.jpg",
+
+        "cartItemCancel":"assets/images/public/cartItemCancel.png",
       };
     }
 

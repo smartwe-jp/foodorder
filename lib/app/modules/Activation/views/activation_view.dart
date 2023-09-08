@@ -7,7 +7,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../controllers/activation_controller.dart';
 
 class ActivationView extends GetView<ActivationController> {
-  const ActivationView({Key key}) : super(key: key);
+  const ActivationView({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Scaffold(

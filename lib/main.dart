@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -21,23 +22,32 @@ import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
 //打印图层生成成功
-Future<void> _onPictureGenerated(PicGenerateResult data) async {
-  final imageBytes = data.data;
-  final printTask = data.taskItem;
+Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
+  //final imageBytes = imgdata.data;
+  final printTask = imgdata.taskItem;
 
   //指定的打印机
   final printerInfo = printTask.params as PrinterInfo;
   //打印票据类型（标签、小票）
   final printTypeEnum = printTask.printTypeEnum;
 
+  final imageBytes = await imgdata.convertUint8List(imageByteFormat:ImageByteFormat.rawRgba);
+  //也可以使用 ImageByteFormat.png
+  final argbWidth = imgdata.imageWidth;
+  final argbHeight = imgdata.imageHeight;
+  if (imageBytes == null) {
+    return;
+  }
   if (imageBytes != null) {
     var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
       imgData: imageBytes,
       printType: printTypeEnum,
+      argbWidthPx: argbWidth,
+      argbHeightPx: argbHeight,
     );
 
     // 网络 打印
-    final conn = printerPlus.NetConn(printerInfo.ip);
+    final conn = printerPlus.NetConn(printerInfo.ip!);
     conn.writeMultiBytes(printData);
   }
 }

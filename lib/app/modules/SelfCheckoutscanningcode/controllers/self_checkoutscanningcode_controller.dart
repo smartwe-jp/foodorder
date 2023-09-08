@@ -1,15 +1,19 @@
 import 'dart:convert';
 
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import '../../../config/imageData.dart';
+import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../widget/DialogUtils.dart';
+import '../../menuPage/views/SelectPayment.dart';
 
 class SelfCheckoutscanningcodeController extends GetxController with StateMixin {
   //TODO: Implement SelfCheckoutscanningcodeController
@@ -21,6 +25,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
   RxString machineCode = "".obs;
+  RxBool mealType = false.obs;//用于判断下单
 
   RxList showCartItems = [].obs;
   RxMap showItem = {}.obs;
@@ -59,6 +64,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
 
+  RxString doSubmitOrderId = "".obs;
+
   @override
   void onInit() {
     readyQueryData();
@@ -76,7 +83,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   readyQueryData(){print(Get.arguments);
-  checkLanguage.value = Get.arguments['checkLanguage'];
+    checkLanguage.value = Get.arguments['checkLanguage'];
+    mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
   _getMachineInfo();
 
   }
@@ -147,6 +155,14 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     change(null, status: RxStatus.success());
   }
 
+  deleteItemSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/697.wav"),
+      autoStart: true,
+      volume: 0.8,
+    );
+  }
+
   showOrderEasyLoading(){
     EasyLoading.show(
       //status: 'loading...',
@@ -176,7 +192,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  doScanQrCodeQuery(){print("扫码进来了");
+  doScanQrCodeQuery(){print("扫码进来了");print(scanQrCodeController.text);
   if(scanQrCodeController.text !=""){
 
     var formData = {
@@ -186,7 +202,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString()); print(response);
-      EasyLoading.dismiss();
+      //EasyLoading.dismiss();
       scanQrCodeController.text = "";
       scanQrCodeFocusNode.requestFocus();     // 获取焦点
 
@@ -224,9 +240,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   publicAddCartMenu(cartItem, checkItem) async {
     var result = false;
     try {
-      result = await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
+    await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
       ordersqlcontroller.getCardList();
-
+    result = true;
 
     } catch (e) {
       print(e);
@@ -235,5 +251,303 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     return result;
   }
 
+  //公共购物车加减
+  publicChangeCartMenuCount(cartItem, changeType) async {
+    scanQrCodeController.text = "";
+    scanQrCodeFocusNode.requestFocus();     // 获取焦点
+
+    var result;
+    try {
+      if(changeType == 'add'){
+        if(cartItem['qtyBounds'] >0){
+          var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
+          if(checkresult>=cartItem['qtyBounds']){
+            var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
+            //showToast("${showString}");
+            Get.dialog(
+                DialogUtils.alertOneButton(showString,
+                    title: GString.getToString(checkLanguage.value, "tag_title"),
+                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    confirm: () {
+                      Get.back();
+                    })
+            );
+            return;
+          }else{
+            result = await ordersqlcontroller.addToCartNum(cartItem);
+          }
+        }else if(cartItem['qtyBounds'] <0){
+          result = await ordersqlcontroller.addToCartNum(cartItem);
+        }
+
+      }else{
+        result = await ordersqlcontroller.reduceToCart(cartItem);
+      }
+
+      ordersqlcontroller.getCardList();
+
+
+    } catch (e) {
+      print(e);
+      result = 0;
+    }
+    return result;
+  }
+
+  clearCartList() {
+    ordersqlcontroller.removeAllFromCart();
+    ordersqlcontroller.getCardList();
+    getCartPriceTotal();
+  }
+
+  gotoLanguageHome(){
+    clearCartList();
+    //getBookingBootMenu();
+    //Future.delayed(Duration(milliseconds: 100),() async {
+    Get.back();
+    //});
+  }
+
+  playQRScannerSound() async {
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/14428.wav"),
+      autoStart: true,
+      volume: 0.3,
+    );
+  }
+
+  //购物车
+  getItemTotal(List items) {
+    num sum = 0;
+    items.forEach((e) {
+      sum += e.currentPrice;
+    });
+
+    return sum.toString();
+  }
+
+  //提交订单
+  doSubmitOrder(){
+    if(machineCode.value !=""){
+      showOrderEasyLoading();
+
+      //自定义声音
+      playQRScannerSound();
+
+      var cartItems = ordersqlcontroller.getcartItems;
+      List selectedItem = [];
+
+
+      for(var oneItem in cartItems){
+        var optionMap = {};
+        if(oneItem["optionGroupVoList"] == ""){
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "qty": oneItem["goodsNum"]
+          };
+        }else{
+          var optionGroupVoList = oneItem["optionGroupVoList"];
+          var itemsOption = optionGroupVoList.split(',');
+          optionMap = {
+            "menuCode": oneItem["menuCode"],
+            "optionList": itemsOption,
+            "qty": oneItem["goodsNum"]
+          };
+        }
+        selectedItem.add(optionMap);
+      }
+      var orderTotlaPrice = getItemTotal(ordersqlcontroller.cartItems);
+      var formData = {
+        "language": checkLanguage.value,
+        "machineCode": machineCode.value,
+        "orderLineList": selectedItem,
+        "total": orderTotlaPrice,
+        //"takeout": (_dining_type == "2") ? true: false,
+        "takeout": mealType.value,
+      };
+      request('webBootOrder', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+        EasyLoading.dismiss();
+
+        if (response['code'] == 200) {
+          //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
+
+          doSubmitOrderId.value = response['data']["orderId"];
+          shopCartTotalPrice.value = response['data']["total"].toString();
+
+          //只有现金，并且其余都为false的时候，直接跳转支付
+          if(showCash.value == true &&
+              isAllowPos.value == "0" &&
+              showAlipay.value == false &&
+              showWechat.value == false &&
+              showPayPay.value == false
+          ){
+            payment_method_num.value = "1";
+            //postNewOrderId();
+            gotoSettlement();
+          }else{
+            showSelectMealTypeAndPaymentMethodDialog();
+          }
+
+
+
+        }else{
+          //getBookingBootMenu();
+          //menuLackMap.value = response['data']["menuLackMap"];
+          //showToast(response['data']["message"]);
+          Get.dialog(
+              DialogUtils.alertOneButton(response['data']["message"],
+                  title: GString.getToString(checkLanguage.value, "tag_title"),
+                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  confirm: () {
+                    Get.back();
+                  })
+          );
+        }
+      });
+    }
+  }
+
+  //选择食用方式和支付方式
+  showSelectMealTypeAndPaymentMethodDialog() async {
+    Get.dialog(
+        SelectPaymentPage(
+            checkLanguage: checkLanguage.value,
+            menuCount: showCartTotalGoodsNum.value,
+            //mealType:_mealType.value,
+            isAllowPos:isAllowPos.value,
+            payment_method_num:payment_method_num.value,
+            showCash: showCash.value,
+            showWechat: showWechat.value,
+            showAlipay: showAlipay.value,
+            showPayPay: showPayPay.value,
+            showauPay: showauPay.value,
+            showdPay: showdPay.value,
+            showrPay: showrPay.value,
+            showmPay: showmPay.value,
+            showCreditCard: showCreditCard.value,
+            showPosEdy: showPosEdy.value,
+            showPosiD: showPosiD.value,
+            showPosIC: showPosIC.value,
+            showPosQUICPay: showPosQUICPay.value,
+            showPosWAON: showPosWAON.value,
+            showPosnanaco: showPosnanaco.value,
+            showVisa: showVisa.value,
+            showMaster: showMaster.value,
+            showJcb: showJcb.value,
+            showUnionPay: showUnionPay.value,
+            showAmericanExpress: showAmericanExpress.value,
+            showDinersClub: showDinersClub.value,
+            shopCartTotalPrice:shopCartTotalPrice.value,
+            tableNum: "",
+            onConfrimClick: (String isAllowPosString, String payment_method_num_string) {
+
+              isAllowPos.value = isAllowPosString;
+              payment_method_num.value = payment_method_num_string;
+              showOpenPayment.value = true;
+              //230629点击弹出支付方式后，需要重新请求下后台获得orderid
+
+              var paymentMethod = ["3","4","5","6","7","8","9","10"];
+              if (paymentMethod.contains(payment_method_num.value) == true) {
+                _getPosSettingInfo();
+              }else{
+                //postNewOrderId();
+                gotoSettlement();
+              }
+
+            },
+            onCancelClick: (String isBack){
+              if(isBack == "back"){
+                CancelOrder();
+              }
+            }
+        )
+    );
+  }
+
+  postNewOrderId() {
+
+    var formData = {
+      "orderId": doSubmitOrderId.value,
+    };
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+      var response = json.decode(val.toString());
+
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
+        doSubmitOrderId.value = response['data']["orderId"];
+
+      }else{
+
+        //showToast(response['data']["message"]);
+        Get.dialog(
+            DialogUtils.alertOneButton(response['data']["message"],
+                title: GString.getToString(checkLanguage.value, "tag_title"),
+                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
+
+      }
+    });
+
+
+  }
+
+  _getPosSettingInfo() async {
+    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    pos_ip.value = posSettingInfo['posIp'];
+    pos_port.value = posSettingInfo['posPort'];
+    //postNewOrderId();
+    gotoSettlement();
+  }
+
+
+  gotoSettlement() async {
+    await Get.toNamed('/settlement',preventDuplicates: false,
+        arguments: {
+          "checkLanguage":  checkLanguage.value,
+          "machineCode":  machineCode.value,
+          "orderId" : doSubmitOrderId.value,
+          "totalPrice" : shopCartTotalPrice.value,
+          "machineMode":"1",
+          "isAllowPos":isAllowPos.value,
+          "posIp":pos_ip.value,
+          "posPort":pos_port.value,
+          "paymentMethod":payment_method_num.value,
+          "showWechat": showWechat.value,
+          "showAlipay": showAlipay.value,
+          "showPayPay": showPayPay.value,
+          "showCreditCard":showCreditCard.value,
+          "showauPay": showauPay.value,
+          "showdPay": showdPay.value,
+          "showrPay": showrPay.value,
+          "showmPay": showmPay.value,
+          "showPosEdy": showPosEdy.value,
+          "showPosiD": showPosiD.value,
+          "showPosIC": showPosIC.value,
+          "showPosQUICPay": showPosQUICPay.value,
+          "showPosWAON": showPosWAON.value,
+          "showPosnanaco": showPosnanaco.value,
+          "showVisa": showVisa.value,
+          "showMaster": showMaster.value,
+          "showJcb": showJcb.value,
+          "showUnionPay": showUnionPay.value,
+          "showAmericanExpress": showAmericanExpress.value,
+          "showDinersClub": showDinersClub.value,
+          "showOpenPayment":showOpenPayment.value
+        });
+  }
+
+  CancelOrder() {
+    var formData = {
+      "machineCode": machineCode.value,
+      "orderId": doSubmitOrderId.value,
+      "model": "0",
+    };
+    request('webBootCancelV1', method: 'POST', parameters: formData);
+
+  }
 
 }

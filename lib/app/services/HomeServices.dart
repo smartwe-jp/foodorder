@@ -7,17 +7,19 @@ class HomeServices{
 
   static getOpenFirstState() async{
       var homeOpen = await Storage.getBool('homeOpen');
-      GetxStorage.setBool('machineInfo', homeOpen);
-      if(homeOpen == true){
+      if(homeOpen != null)
+      GetxStorage.setBool('machineInfo', homeOpen!);
+
+      if(homeOpen != null && homeOpen == true){
         return true;
       }
       return false;
   }
 
   static getMachineInfo() async{
-    String machineinfo;
+    String? machineinfo;
     try {
-      String machineInfoData = await Storage.getString('machineInfo');
+      String? machineInfoData = await Storage.getString('machineInfo');
       GetxStorage.setData('machineInfo', machineInfoData);
       machineinfo = machineInfoData;
     } catch (e) {
@@ -28,9 +30,9 @@ class HomeServices{
 
   //菜单方向
   static getMenuDirectionInfo() async{
-    String menuDirectionInfo;
+    String? menuDirectionInfo;
     try {
-      String menuDirectionData = await Storage.getString('menuDirection');
+      String? menuDirectionData = await Storage.getString('menuDirection');
       GetxStorage.setData('menuDirection', menuDirectionData);
       menuDirectionInfo = menuDirectionData;
     } catch (e) {
@@ -42,9 +44,9 @@ class HomeServices{
 
   //是否必须打印领収书
   static getIsAllowReceiptInfo() async{
-    String isAllowReceiptInfo;
+    String? isAllowReceiptInfo;
     try {
-      String isAllowReceiptData = await Storage.getString('isAllowReceipt');
+      String? isAllowReceiptData = await Storage.getString('isAllowReceipt');
       GetxStorage.setData('isAllowReceipt', isAllowReceiptData);
       isAllowReceiptInfo = isAllowReceiptData;
     } catch (e) {
@@ -55,9 +57,10 @@ class HomeServices{
 
   //多参数设置
   static getSystemSettingInfo() async{
-    Map systemSettingInfo;
+    Map? systemSettingInfo;
     try {
-      Map systemSettingData = json.decode(await Storage.getString('smartwe_systemSetting'));
+      var systemSettingDatatmp = await Storage.getString('smartwe_systemSetting');
+      Map? systemSettingData = json.decode(systemSettingDatatmp!);
       GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
       systemSettingInfo = systemSettingData;
     } catch (e) {
@@ -68,9 +71,10 @@ class HomeServices{
 
   //pos机多参数设置
   static getPosSettingInfo() async{
-    Map posSettingInfo;
+    Map? posSettingInfo;
     try {
-      Map posSettingData = json.decode(await Storage.getString('smartwe_posSetting'));
+      var posSettingDatatmp = await Storage.getString('smartwe_posSetting');
+      Map? posSettingData = json.decode(posSettingDatatmp!);
       GetxStorage.setData('smartwe_posSetting', json.encode(posSettingData));
       posSettingInfo = posSettingData;
     } catch (e) {
@@ -81,9 +85,10 @@ class HomeServices{
 
   //wlan print机多参数设置
   static getWlanPrintSettingInfo() async{
-    Map printSettingInfo;
+    Map? printSettingInfo;
     try {
-      Map printSettingData = json.decode(await Storage.getString('smartwe_wlanPrintSetting'));
+      var printSettingDatatmp = await Storage.getString('smartwe_wlanPrintSetting');
+      Map? printSettingData = json.decode(printSettingDatatmp!);
       GetxStorage.setData('smartwe_wlanPrintSetting', json.encode(printSettingData));
       printSettingInfo = printSettingData;
     } catch (e) {
@@ -95,7 +100,8 @@ class HomeServices{
   static getWlanPrintSettingTwoInfo() async{
     Map printSettingInfo;
     try {
-      Map printSettingData = json.decode(await Storage.getString('smartwe_wlanPrintSettingTwo'));
+      var printSettingDatatmp = await Storage.getString('smartwe_wlanPrintSettingTwo');
+      Map printSettingData = json.decode(printSettingDatatmp!);
       GetxStorage.setData('smartwe_wlanPrintSettingTwo', json.encode(printSettingData));
       printSettingInfo = printSettingData;
     } catch (e) {
@@ -108,7 +114,8 @@ class HomeServices{
   static getMachineActivateData() async{
     Map machineActivateInfo;
     try {
-      Map machineActivateData = json.decode(await Storage.getString('smartwe_machineActivateData'));
+      var machineActivateDatatmp = await Storage.getString('smartwe_machineActivateData');
+      Map machineActivateData = json.decode(machineActivateDatatmp!);
       GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
       machineActivateInfo = machineActivateData;
     } catch (e) {
@@ -119,9 +126,9 @@ class HomeServices{
 
   //打卡机器码
   static getAttendanceCode() async{
-    String attendanceCode;
+    String? attendanceCode;
     try {
-      String attendanceCodeData = await Storage.getString('machineAttendanceCode');
+      String? attendanceCodeData = await Storage.getString('machineAttendanceCode');
       GetxStorage.setData('machineAttendanceCode', attendanceCodeData);
       attendanceCode = attendanceCodeData;
     } catch (e) {
@@ -134,7 +141,8 @@ class HomeServices{
   static getIsShowCash() async{
     Map showCashInfo;
     try {
-      Map showCashData = json.decode(await Storage.getString('isCashState'));
+      var showCashDatatmp = await Storage.getString('isCashState');
+      Map showCashData = json.decode(showCashDatatmp!);
       GetxStorage.setData('isCashState', json.encode(showCashData));
       showCashInfo = showCashData;
     } catch (e) {
@@ -147,7 +155,8 @@ class HomeServices{
   static getMachineLanguages() async{
     var machineLanguages;
     try {
-      var machineLanguagesData = json.decode(await Storage.getString('smartwe_machineLanguages'));
+      var machineLanguagesDatatmp = await Storage.getString('smartwe_machineLanguages');
+      var machineLanguagesData = json.decode(machineLanguagesDatatmp!);
       GetxStorage.setData('smartwe_machineLanguages', json.encode(machineLanguagesData));
       machineLanguages = machineLanguagesData;
     } catch (e) {
@@ -160,7 +169,8 @@ class HomeServices{
   static getSmartweHomeImagesData() async{
     var smartweHomeImagesInfo;
     try {
-      var homeImageData = json.decode(await Storage.getString('smartwe_homeImages'));
+      var homeImageDatatmp = await Storage.getString('smartwe_homeImages');
+      var homeImageData = json.decode(homeImageDatatmp!);
       GetxStorage.setData('smartwe_homeImages', json.encode(homeImageData));
       smartweHomeImagesInfo = homeImageData;
     } catch (e) {
@@ -186,7 +196,8 @@ class HomeServices{
   static getSmartweCheckOutTakeoutData() async{
     var smartweTakeoutInfo;
     try {
-      var takeoutData = json.decode(await Storage.getString('smartwe_checkOut_takeout'));
+      var takeoutDatatmp = await Storage.getString('smartwe_checkOut_takeout');
+      var takeoutData = json.decode(takeoutDatatmp!);
       GetxStorage.setData('smartwe_checkOut_takeout', json.encode(takeoutData));
       smartweTakeoutInfo = takeoutData;
     } catch (e) {
@@ -199,7 +210,8 @@ class HomeServices{
   static getSmartweCheckOutBillData() async{
     var smartweBillInfo;
     try {
-      var billData = json.decode(await Storage.getString('smartwe_checkOut_bill'));
+      var billDatatmp = await Storage.getString('smartwe_checkOut_bill');
+      var billData = json.decode(billDatatmp!);
       GetxStorage.setData('smartwe_checkOut_bill', json.encode(billData));
       smartweBillInfo = billData;
     } catch (e) {
@@ -212,7 +224,8 @@ class HomeServices{
   static getSmartweCheckOutLineUpData() async{
     var smartweLineUpInfo;
     try {
-      var lineUpData = json.decode(await Storage.getString('smartwe_checkOut_lineUp'));
+      var lineUpDatatmp = await Storage.getString('smartwe_checkOut_lineUp');
+      var lineUpData = json.decode(lineUpDatatmp!);
       GetxStorage.setData('smartwe_checkOut_lineUp', json.encode(lineUpData));
       smartweLineUpInfo = lineUpData;
     } catch (e) {
@@ -225,7 +238,8 @@ class HomeServices{
   static getSmartweMachineSettingData() async{
     var machineSettingInfo;
     try {
-      var machineSettingData = json.decode(await Storage.getString('machineSettingData'));
+      var machineSettingDatatemp = await Storage.getString('machineSettingData');
+      var machineSettingData = json.decode(machineSettingDatatemp!);
       machineSettingInfo = machineSettingData;
     } catch (e) {
       machineSettingInfo = {};
@@ -234,10 +248,10 @@ class HomeServices{
   }
 
   static getMachineSettingManagePasswordInfo() async{
-    String passwordinfo;
+    String? passwordinfo;
     try {
       //String machineInfoData = await GetxStorage.getString('machineSettingManagePassword');
-      String machineInfoData = await Storage.getString('machineSettingManagePassword');
+      String? machineInfoData = await Storage.getString('machineSettingManagePassword');
       passwordinfo = machineInfoData;
     } catch (e) {
       passwordinfo = "";

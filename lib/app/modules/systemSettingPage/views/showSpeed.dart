@@ -10,7 +10,7 @@ import '../controllers/system_setting_page_controller.dart';
 
 class showSpeedView extends GetView {
   final SystemSettingPageController controller = Get.find();
-  showSpeedView({Key key}) : super(key: key);
+  showSpeedView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

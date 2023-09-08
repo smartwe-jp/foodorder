@@ -16,7 +16,7 @@ import 'SelectDiningMethod.dart';
 
 class OrderHomeView extends GetView<OrderHomeController> {
   final OrderHomeController controller = Get.put(OrderHomeController());
-  OrderHomeView({Key key}) : super(key: key);
+  OrderHomeView({Key? key}) : super(key: key);
 
   //选择食用方式和支付方式
   _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {

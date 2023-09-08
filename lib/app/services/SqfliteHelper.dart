@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 class SqfliteHelper{
   final sqFileName = "myfanxing.sql";
   final table = "fx_food";
-  Database db;
+   Database? db;
   open() async {
     String path = "${await getDatabasesPath()}/$sqFileName";
     if(db == null){
@@ -23,19 +23,19 @@ class SqfliteHelper{
 
   insert(Map<String, dynamic> m) async{
     //插入冲突策略，新的替换旧的 conflictAlgorithm: ConflictAlgorithm.replace
-    return await db.insert(table, m, conflictAlgorithm: ConflictAlgorithm.replace);
+    return await db?.insert(table, m, conflictAlgorithm: ConflictAlgorithm.replace);
   }
 
   queryAll() async {
-    return await db.query(table, columns: null);
+    return await db?.query(table, columns: null);
   }
 
   queryone(int id) async {
-    return await db.query(table, columns: null, where: "id=$id");
+    return await db?.query(table, columns: null, where: "id=$id");
   }
 
   delete(int id) async{
-    return await db.delete(table,where: "id=$id");
+    return await db?.delete(table,where: "id=$id");
   }
 
 }

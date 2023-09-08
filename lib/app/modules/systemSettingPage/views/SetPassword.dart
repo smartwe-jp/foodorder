@@ -18,7 +18,7 @@ import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
 
 class SetPasswordPage extends StatefulWidget {
-  SetPasswordPage({Key key}) : super(key: key);
+  SetPasswordPage({Key? key}) : super(key: key);
 
   _SetPasswordPageState createState() => _SetPasswordPageState();
 }

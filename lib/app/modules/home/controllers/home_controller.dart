@@ -22,13 +22,13 @@ import '../../TransitPage/views/transit_page_view.dart';
 class HomeController extends GetxController {
   //TODO: Implement HomeController
 
-  Timer allowtimer;
-  Timer stoptimer;
-  Timer stopChecktimer;
-  Timer closetimer;
+   Timer? allowtimer;
+   Timer? stoptimer;
+   Timer? stopChecktimer;
+   Timer? closetimer;
 
   //60秒内未接收现金机正确通知，则进行下一步操作
-  Timer showCashTimer;
+   Timer? showCashTimer;
   RxInt seconds = 60.obs;
   RxBool _isCashState = true.obs;
   RxInt checkSteeps = 1.obs; //自检步骤

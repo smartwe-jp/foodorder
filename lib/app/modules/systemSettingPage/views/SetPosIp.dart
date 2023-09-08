@@ -7,28 +7,28 @@ import '../../../services/ScreenAdapter.dart';
 
 
 class SetPosIpPage extends StatefulWidget {
-  Map arguments;
+   Map? arguments;
   SetPosIpPage(
-      {Key key,
+      {Key? key,
       this.posIp,
       this.posPort,
       this.showRadio,
       this.showPrintType,
       this.onConfrimClick
       }) : super(key: key);
-  final String posIp;
-  final String posPort;
-  final int showRadio;
-  final int showPrintType;
-  final Function(String, String) onConfrimClick;
+  final String? posIp;
+  final String? posPort;
+  final int? showRadio;
+  final int? showPrintType;
+  final Function(String, String)? onConfrimClick;
 
   @override
   _SetPosIpPageState createState() => _SetPosIpPageState();
 }
 
 class _SetPosIpPageState extends State<SetPosIpPage> {
-  TextEditingController _tcpposIpController;
-  TextEditingController _tcpposPortController;
+   TextEditingController? _tcpposIpController;
+   TextEditingController? _tcpposPortController;
 
   String _posIp = "192.168.11.188";
   String _posPort = "9100";
@@ -39,11 +39,11 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    _posIp = widget.posIp;
-    _posPort = widget.posPort;
-    _showRadio = widget.showRadio;
+    _posIp = widget.posIp!;
+    _posPort = widget.posPort!;
+    _showRadio = widget.showRadio!;
     if(_showRadio == 1){
-      _showPrintType = widget.showPrintType;
+      _showPrintType = widget.showPrintType!;
     }
 
     _tcpposIpController = TextEditingController.fromValue(TextEditingValue(
@@ -198,7 +198,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                         print(_posIp);
                         print(_posPort);
                         if(_posIp != "" && _posPort != ""){
-                          widget.onConfrimClick(_posIp, _posPort);
+                          widget.onConfrimClick!(_posIp, _posPort);
                           Navigator.pop(context);
                         }
 

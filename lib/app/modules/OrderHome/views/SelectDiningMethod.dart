@@ -9,14 +9,14 @@ import '../../../services/ScreenAdapter.dart';
 
 
 class SelectDiningMethodPage extends StatefulWidget {
-  Map arguments;
+   Map? arguments;
   SelectDiningMethodPage(
-      {Key key,
-      this.checkLanguage,
-      this.dining_type,
-      this.menu_direction,
+      {Key? key,
+      required this.checkLanguage,
+      required this.dining_type,
+      required this.menu_direction,
         //this.mealType,
-      this.onConfrimClick
+      required this.onConfrimClick
       }) : super(key: key);
   final String checkLanguage;
   final String dining_type;

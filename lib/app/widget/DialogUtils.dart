@@ -11,9 +11,8 @@ class DialogUtils {
         String title = "提示",
         String canceltitle = "取消",
         String confirmtitle = "确定",
-        GestureTapCallback confirm,
-        GestureTapCallback cancle,
-        List<Widget> actions, // 自定义按钮
+        required GestureTapCallback confirm,
+        required GestureTapCallback cancle,
       }) {
     return Container(
       width: ScreenAdapter.width(950),
@@ -137,9 +136,8 @@ class DialogUtils {
       String content, {
         String title = "提示",
         String confirmtitle = "确定",
-        GestureTapCallback confirm,
+        required GestureTapCallback confirm,
         String contentTagImg = "",
-        List<Widget> actions, // 自定义按钮
       }) {
     return Container(
       width: ScreenAdapter.width(950),

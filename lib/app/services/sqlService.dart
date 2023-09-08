@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class SQLService {
-  Database db;
+   Database? db;
 
   Future openDB() async {
     try {

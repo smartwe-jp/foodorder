@@ -17,8 +17,8 @@ import '../../../widget/num_pad.dart';
 
 
 class VerifyPasswordPage extends StatefulWidget {
-  Map arguments;
-  VerifyPasswordPage({Key key,this.machineCode,}) : super(key: key);
+   Map? arguments;
+  VerifyPasswordPage({Key? key,required this.machineCode,}) : super(key: key);
   final String machineCode;
   _VerifyPasswordPageState createState() => _VerifyPasswordPageState();
 }

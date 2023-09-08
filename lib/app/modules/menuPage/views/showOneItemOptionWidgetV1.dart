@@ -18,7 +18,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
   @override
   final MenuPageController controller = Get.find();
   final Map item;
-  showOneItemOptionWidgetVOneView(this.item,{Key key}) : super(key: key);
+  showOneItemOptionWidgetVOneView(this.item,{Key? key}) : super(key: key);
 
   publicShowOneItemOptionGroupWidgetv1(menuCode, menuindex) {
     return Container(

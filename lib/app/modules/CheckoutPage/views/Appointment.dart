@@ -8,9 +8,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
-
-
 import 'package:widget_to_image/widget_to_image.dart';
+
+
+
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -22,7 +23,7 @@ import '../../../services/showToast.dart';
 import '../../../widget/LoadState.dart';
 
 class AppointmentPage extends StatefulWidget {
-  AppointmentPage({Key key}) : super(key: key);
+  AppointmentPage({Key? key}) : super(key: key);
 
   _AppointmentPageState createState() => _AppointmentPageState();
 }
@@ -226,7 +227,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
           return InkWell(
             onTap: (){
               setState(() {
-                _selectTableType = tableItem["optionVal"];
+                _selectTableType = tableItem["optionVal"]!;
               });
             },
             child: Container(
@@ -541,7 +542,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
         Container(
           width: 380,
           height: lineHight.toDouble(),
-          color: Colors.white,
+          //color: Colors.white,
           //alignment: Alignment.topCenter,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,

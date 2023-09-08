@@ -10,7 +10,7 @@ import '../controllers/transit_page_controller.dart';
 class TransitPageView extends GetView {
   final TransitPageController controller = Get.put(TransitPageController());
   //final TransitPageController controller = Get.find<TransitPageController>();
-   TransitPageView({Key key}) : super(key: key);
+   TransitPageView({Key? key}) : super(key: key);
 
 
   @override

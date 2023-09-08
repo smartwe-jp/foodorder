@@ -11,7 +11,7 @@ import 'SetPosIp.dart';
 
 class SystemSettingPageView extends GetView {
   final SystemSettingPageController controller = Get.put(SystemSettingPageController());
-  SystemSettingPageView({Key key}) : super(key: key);
+  SystemSettingPageView({Key? key}) : super(key: key);
 
   //设置就餐类型
   setDiningtype() {

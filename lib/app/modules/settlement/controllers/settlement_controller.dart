@@ -32,6 +32,7 @@ import '../../../widget/DialogUtils.dart';
 import '../../../widget/NumberCircle.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
+import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/label_constrained_box.dart';
 import '../views/receipt_constrained_box.dart';
@@ -70,16 +71,16 @@ class SettlementController extends GetxController with StateMixin {
   RxBool getputMoneyString = true.obs; //是否允许获取入金金额字符串
   RxInt putMonyNum = 0.obs;
 
-  Timer timer;
-  Timer allowtimer;
-  Timer stoptimer;
-  Timer outmoneytimer;
-  Timer getoutmoneytimer;
-  Timer endtimer;
-  Timer OutMoneytimer;
-  Timer putMoneyCurrencytimer;
+  Timer? timer;
+  Timer? allowtimer;
+  Timer? stoptimer;
+  Timer? outmoneytimer;
+  Timer? getoutmoneytimer;
+  Timer? endtimer;
+  Timer? OutMoneytimer;
+  Timer? putMoneyCurrencytimer;
 
-  Timer ScanCodeConfirmTimer;
+  Timer? ScanCodeConfirmTimer;
 
   RxString allowStatus = "".obs;
   RxString stopStatus = "".obs;
@@ -140,9 +141,9 @@ class SettlementController extends GetxController with StateMixin {
   RxBool showOpenPayment = false.obs;
 
   //60秒内未接收现金机正确通知，则进行下一步操作
-  Timer showCashTimer;
+  Timer? showCashTimer;
   RxInt seconds = 60.obs;
-  Socket _socket; //socket对象
+  Socket? _socket; //socket对象
   RxBool socketState = false.obs; //连接状态
 
   RxBool isReportOutMoney = false.obs; //新处理 默认不汇报出金信息  先汇报入金信息在汇报出金信息
@@ -168,7 +169,7 @@ class SettlementController extends GetxController with StateMixin {
   @override
   void onClose() {
     if (socketState.value == true) {
-      this._socket.close();
+      this._socket?.close();
     }
     allowtimer?.cancel();
     timer?.cancel();
@@ -316,6 +317,9 @@ class SettlementController extends GetxController with StateMixin {
         if(machineMode.value == "2") {//精算时候请求
           print("精算请求了new order id");
           Get.find<CheckoutPageController>().postNewOrderId();
+        }else if(machineMode.value == "3"){
+          print("自助精算请求了new order id");
+          Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         }else{
           print("普通支付请求了new order id");
           Get.find<MenuPageController>().postNewOrderId();
@@ -337,6 +341,7 @@ class SettlementController extends GetxController with StateMixin {
       Get.toNamed("/checkout-page");
       //Navigator.pushNamed(context, '/checkOutPage');
     }else if(machineMode.value == "3") {
+      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       Get.toNamed("/selfservice-page");
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {
@@ -368,6 +373,7 @@ class SettlementController extends GetxController with StateMixin {
 
     }else if (machineMode.value == "3") {
       if(is_back_home.value == "0"){
+        Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
         Get.toNamed("/selfservice-page");
         //Navigator.pushNamed(context, '/selfServiceHomePage');
       }else{
@@ -953,7 +959,7 @@ class SettlementController extends GetxController with StateMixin {
       //扫码过来的，请求数据不为空时候发送POS请求
       if(questData!=""){
         //判断不为空则POS机
-        this._socket.write(questData);
+        this._socket?.write(questData);
       }
 
       //获得pos数据并发送
@@ -962,7 +968,7 @@ class SettlementController extends GetxController with StateMixin {
         _getPaymentPosData();
       }
       // 监听wifi模块发送的数据
-      this._socket.listen((List<int> event) {
+      this._socket?.listen((List<int> event) {
         LogUtil.d(event);
         //if (event.length > 40) event.fillRange(266, 289, 32);
         for(var i=0; i< event.length; i++){
@@ -1064,7 +1070,7 @@ class SettlementController extends GetxController with StateMixin {
       "10":"IC",
     };
     var thincaCloud = ["5","6","7","8","9","10"];
-    var _payType = "";
+    String? _payType = "";
     if (thincaCloud.contains(payment_method_num.value) == true) {
       _payType = payTypeData[payment_method_num.value];
     }
@@ -1084,7 +1090,7 @@ class SettlementController extends GetxController with StateMixin {
           if(resultData["exceptionMessage"] != null && resultData["exceptionMessage"] == ""){
             posResultReportData.value = response['data'];
             //判断不为空则POS机
-            this._socket.write(resultData["requestInfo"]);
+            this._socket?.write(resultData["requestInfo"]);
           }else{
             _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
           }
@@ -1112,7 +1118,7 @@ class SettlementController extends GetxController with StateMixin {
       EasyLoading.dismiss();
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
-        this._socket.write(response['data']);
+        this._socket?.write(response['data']);
       }
     });
   }
@@ -1223,6 +1229,8 @@ class SettlementController extends GetxController with StateMixin {
               Get.find<OrderHomeController>().clearCartList();
               Get.find<MenuPageController>().clearCartList();
               //Get.find<MenuPageController>().getBookingBootMenu();
+            }else if(machineMode.value == "3"){
+              Get.find<SelfCheckoutscanningcodeController>().clearCartList();
             }
             print(payment_method_num.value);
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -1545,10 +1553,10 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     isReportCash.value = true;
-    //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機)
+    //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機) 3 自助精算返回
     var operation = 0;
     if (isCancel.value == true) {
-      operation = (machineMode.value == "1") ? 1 : 2;
+      operation = int.parse(machineMode.value);
     }
 
     var formData = {
@@ -1596,7 +1604,7 @@ class SettlementController extends GetxController with StateMixin {
     var categoryVos = printData["printInfoListStruct"];
     var print_menu_txt_size = 28.0;
     var wrapNum = 10;
-    var oneRowHeight = 48;
+    int oneRowHeight = 48;
     if(print_paper_txt_size.value == "1"){
       print_menu_txt_size = 28.0;
       wrapNum = 12;
@@ -1655,7 +1663,7 @@ class SettlementController extends GetxController with StateMixin {
       // 计算菜品标题长度
       var menuLength = lineItem["mainTitle"].length;
       var menuLine = menuLength / wrapNum;
-      var menuRowNum = menuLine.ceil();
+      int menuRowNum = menuLine.ceil();
       optionNum = 0;
 
       categoryMenus.add(
@@ -1679,7 +1687,8 @@ class SettlementController extends GetxController with StateMixin {
             countLine += newLineNum.ceil();
             optionLine += newLineNum;
             //if(optionNameLength >wrapNum){
-            var newLineNumLength = optionNameLength / (wrapNum-2);
+            var newLineNumLength = 0.0;
+            newLineNumLength = optionNameLength / (wrapNum-2);
             //}
             countLine += newLineNumLength.ceil();
             optionLine += newLineNum;
@@ -1780,7 +1789,8 @@ class SettlementController extends GetxController with StateMixin {
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
               newOptionSonLine += value[j].length / (wrapNum-2);
-              var oneOptionlength = value[j].length / (wrapNum-2);
+              var oneOptionlength = 0.0;
+              oneOptionlength = value[j].length / (wrapNum-2);
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
@@ -1816,11 +1826,11 @@ class SettlementController extends GetxController with StateMixin {
 
 
           //处理option结束-----------
-
-          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+          var optionRowNum = 0.0;
+          optionRowNum = optionLine + newOptionSonLine;
           //addRowHight += 52 * optionRowNum;
           addRowHight += oneRowHeight*countLine+(countLine-1)*10;
-          menuNum += optionRowNum;
+          menuNum += optionRowNum.ceil();
           optionNum++;
         });
 
@@ -1832,7 +1842,7 @@ class SettlementController extends GetxController with StateMixin {
       }
 
       //分割线
-      if (machineMode.value == "1") {
+      if (machineMode.value == "1" || machineMode.value == "3") {
         addRowHight += 20;
         categoryMenus.add(
           _publicSplitLine(),
@@ -1856,7 +1866,9 @@ class SettlementController extends GetxController with StateMixin {
         textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
-    ));
+    ),
+      size: Size(385, totalHight.toDouble())
+    );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
@@ -1957,7 +1969,7 @@ class SettlementController extends GetxController with StateMixin {
   }
   Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
     var lineHight = 120;
-    var menuNum = 0;
+    int menuNum = 0;
     var optionNum = 0;
     int addRowHight = 0;
 
@@ -2083,7 +2095,8 @@ class SettlementController extends GetxController with StateMixin {
           countLine += newLineNum.ceil();
           optionLine += newLineNum;
           //if(optionNameLength >6){
-          var optionSonNameLength = optionNameLength / 10;
+          var optionSonNameLength = 0.0;
+          optionSonNameLength = optionNameLength / 10;
           //}
           countLine += optionSonNameLength.ceil();
           optionLine += newLineNum;
@@ -2172,7 +2185,8 @@ class SettlementController extends GetxController with StateMixin {
           for (var j = 1; j < value.length; j++) {
             // print(value[j]);
             newOptionSonLine += value[j].length / 10;
-            var oneOptionlength = value[j].length / 10;
+            var oneOptionlength = 0.0;
+            oneOptionlength = value[j].length / 10;
             countLine += oneOptionlength.ceil();
 
             optionSons.add(
@@ -2207,11 +2221,11 @@ class SettlementController extends GetxController with StateMixin {
 
 
         //处理option结束-----------
-
-        var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+        var optionRowNum = 0.0;
+        optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
         //addRowHight += 52 * optionRowNum;
         addRowHight += 65*countLine;
-        menuNum += optionRowNum;
+        menuNum += optionRowNum.ceil();
         optionNum++;
       });
 
@@ -2278,7 +2292,7 @@ class SettlementController extends GetxController with StateMixin {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 230;
-    var menuNum = 0;
+    int menuNum = 0;
     var optionNum = 0;
     int addRowHight = 0;
 
@@ -2467,7 +2481,8 @@ class SettlementController extends GetxController with StateMixin {
             for (var j = 1; j < value.length; j++) {
               // print(value[j]);
               newOptionSonLine += value[j].length / 10;
-              var oneOptionlength = value[j].length / 10;
+              var oneOptionlength = 0.0;
+              oneOptionlength = value[j].length / 10;
               countLine += oneOptionlength.ceil();
 
               optionSons.add(
@@ -2502,11 +2517,11 @@ class SettlementController extends GetxController with StateMixin {
 
 
           //处理option结束-----------
-
-          var optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
+          var optionRowNum = 0.0;
+          optionRowNum = optionLine + newOptionSonLine;
           //addRowHight += 52 * optionRowNum;
           addRowHight += 66*countLine;
-          menuNum += optionRowNum;
+          menuNum += optionRowNum.ceil();
           optionNum++;
         });
 
@@ -2787,7 +2802,7 @@ class SettlementController extends GetxController with StateMixin {
     var menuVos = printData["details"];
     var lineHight = 580;
     var lineZeng = 0;
-    var addRowHight = 0;
+    int addRowHight = 0;
 
     //店铺标题
     /*categoryMenus.add(
@@ -2808,7 +2823,8 @@ class SettlementController extends GetxController with StateMixin {
     var newAddress = printData["address"].replaceAll("%%", "\n");
     var addressLength = printData["address"].length;print(printData["address"]);//print(newAddress);
     var addressLine = addressLength / 15;
-    var addressRowNum = addressLine.ceil();
+    var addressRowNum = 0;
+    addressRowNum = addressLine.ceil();
     addRowHight += addressRowNum*33+(addressRowNum-1)*10;
     categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
 
@@ -2829,7 +2845,7 @@ class SettlementController extends GetxController with StateMixin {
             style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
           )),
     ));
-    if (machineMode.value == "1") {
+    if (machineMode.value == "1" || machineMode.value == "3") {
       addRowHight += 38;
       categoryMenus.add(_publicOneColumnTxtNew("${printData["numberTip"]}${printData["serialNumber"]}", 26.0, FontWeight.w300));
     }
@@ -3247,7 +3263,9 @@ class SettlementController extends GetxController with StateMixin {
         textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
-    ));
+    ),
+        size: Size(385, totalHight.toDouble())
+    );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 

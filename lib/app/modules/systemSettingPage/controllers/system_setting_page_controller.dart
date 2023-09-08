@@ -247,7 +247,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   /// 下载安卓更新包
-  Future<String> downloadAndroid(String url) async {
+  Future<String?> downloadAndroid(String url) async {
     final permissions = await Permission.storage.status;
     //print('permission $permissions');
     if (!permissions.isGranted) {

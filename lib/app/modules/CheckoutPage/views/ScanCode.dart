@@ -16,7 +16,7 @@ import 'Appointment.dart';
 
 class ScanCodeView extends GetView {
   final CheckoutPageController controller = Get.put(CheckoutPageController());
-  ScanCodeView({Key key}) : super(key: key);
+  ScanCodeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

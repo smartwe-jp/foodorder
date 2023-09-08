@@ -12,8 +12,8 @@ class publicShowMenuImage  extends StatelessWidget{
   final String imgPath;
   final double imgWidth;
   final double imgHeight;
-  final List subTitle;
-  publicShowMenuImage({Key key,this.imgPath,this.imgWidth=200.0,this.imgHeight=200.0,this.subTitle}) : super(key: key);
+  final List? subTitle;
+  publicShowMenuImage({Key? key,required this.imgPath,this.imgWidth=200.0,this.imgHeight=200.0,this.subTitle}) : super(key: key);
 
   //公共设置标签 subTitle
   publicShowMenuSubtitle(subtitleList) {
@@ -28,7 +28,7 @@ class publicShowMenuImage  extends StatelessWidget{
       return Container(
         width: ScreenAdapter.width(imgWidth),
           decoration: BoxDecoration(
-            color: Colors.blueGrey[50].withOpacity(0.65),
+            color: Colors.blueGrey[50]?.withOpacity(0.65),
             /*border: Border(
               top: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
               right: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 0.5),
@@ -83,7 +83,6 @@ class publicShowMenuImage  extends StatelessWidget{
             //height: ScreenAdapter.width(imgWidth),
             memCacheWidth: ScreenAdapter.width(imgWidth).toInt(),
             memCacheHeight: ScreenAdapter.height(imgHeight).toInt(),
-            //cacheManager: EsoImageCacheManager(),
             imageBuilder: (context, imageProvider) => Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
