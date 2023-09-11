@@ -198,6 +198,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   if(scanQrCodeController.text !=""){
 
     var formData = {
+      "language": checkLanguage.value,
       "machineCode": machineCode.value,
       "barCode":scanQrCodeController.text
     };print(formData);

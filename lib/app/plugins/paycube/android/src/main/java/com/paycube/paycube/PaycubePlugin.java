@@ -138,7 +138,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             }
                                             //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                             // 当监听的服务发生变化时，调用_sendToFlutter向Flutter端发送通知
-                                            //_sendToFlutter("onEndServiceChange",_payCubeStopCashStatus);
+                                            _sendToFlutter("onEndServiceChange",_payCubeStopCashStatus);
 
                                         }else if(event.getReceiveData()[3] == (byte) 0x03){
                                             //取引终了监听状态
@@ -150,10 +150,10 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                                     _payCubeEndTradeStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
                                                 }
                                             }
-                                            //_sendToFlutter("onEndTradeServiceChange",_payCubeEndTradeStatus);
+                                            _sendToFlutter("onEndTradeServiceChange",_payCubeEndTradeStatus);
                                         }
 
-                                        channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
+                                        //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                     } else if (event.getReceiveData()[1] == (byte) 0x06 && event.getReceiveData()[2] == (byte) 0x0B && event.getReceiveData()[3] == (byte) 0x01) {
                                         //出金金额监听状态
                                         if(_payCubeOutMoneyStatus != "OutSuccess"){
@@ -164,6 +164,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                                 _payCubeOutMoneyStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
                                             }
                                         }
+                                        _sendToFlutter("onPayOutServiceChange",_payCubeOutMoneyStatus);
 
                                     } else if (event.getReceiveData()[2] == (byte) 0x0A && (event.getReceiveData()[3] == (byte) 0x81 || event.getReceiveData()[3] == (byte) 0x82)) {
                                         //根据文档查找金额字符串，先判断是否有 4A 50 59（JPY），如果有则直接取后面四个字节，然后换算
@@ -178,6 +179,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             int ten = Integer.parseInt(coinMessage, 16);
                                             putMoney = String.valueOf(ten);
 
+                                            _sendToFlutter("onGetPutMoneyStringChange",putMoney);
                                             //入金金额大于0后，说明允许投币了
                                             _payCubeAllowCashStatus = "AllowSuccess";
                                         }
@@ -187,6 +189,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                                 //入金币种
                                                 //putCurrency = ("".equals(putCurrency)) ? receiveStr.substring(24) : putCurrency + " "+receiveStr.substring(24);
                                                 putCurrency = receiveStr.substring(26);
+
+                                                _sendToFlutter("onGetPutMoneyCurrencyStringChange",putCurrency);
                                                 Log.logger.info("入金币种字符串=======start");
                                                 Log.logger.info(receiveStr);
                                                 Log.logger.info("入金币种字符串=======middle");
@@ -316,6 +320,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                         if (receiveStr.contains(outfindStr)) {
                                             //出金币种
                                             currencyString = ("".equals(currencyString)) ? receiveStr.substring(54) : currencyString + " "+receiveStr.substring(54);
+                                            _sendToFlutter("getPayOutMoneyServiceChange",currencyString);
                                             Log.logger.info("出金币种字符串=======start");
                                             Log.logger.info(receiveStr);
                                             Log.logger.info("出金币种字符串=======middle");
@@ -409,6 +414,9 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             } else if (operEvent.equals("getPayCubeOutMoneyCurrency")) {
                 //返回币种枚数字符串;
                 // -- body --
+                if(currencyString.length() >= 70 ){
+                    currencyString = currencyString.substring(63);
+                }
                 result.success(currencyString);
             } else if (operEvent.equals("getPayCubePutMoneyCurrency")) {
                 //返回入金币种枚数字符串;

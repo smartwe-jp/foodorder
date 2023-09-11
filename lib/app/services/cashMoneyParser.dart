@@ -1,5 +1,5 @@
 class MoneyParser {
-  static int calculateTotalAmount(String input) {
+  static int calculateTotalAmount(String input) {print("input${input}");
     final List<String> parts = input.split(' ');
     int totalAmount = 0;
 

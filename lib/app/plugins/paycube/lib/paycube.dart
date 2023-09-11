@@ -7,6 +7,47 @@ import 'package:flutter/services.dart';
 class Paycube {
   static const MethodChannel _channel = const MethodChannel('paycube');
 
+  static void getPutMoneyListener(Function(Map) listener) {
+    _channel.setMethodCallHandler((call) async {print(call.method);
+    Map message = {};
+    if (call.method == 'onGetPutMoneyStringChange') {
+      message = {"PutMoney":call.arguments};print(message);
+      //listener(message);
+    }else if (call.method == 'onGetPutMoneyCurrencyStringChange') {
+      //final String message = call.arguments;print(message);
+      message = {"PutMoneyString":call.arguments};
+      //listener(message);
+    }/*else if (call.method == 'getPayOutMoneyServiceChange') {
+      //final String message = call.arguments;print(message);
+      message = {"outMoneyString":call.arguments};
+
+    }*/
+    listener(message);
+    });
+  }
+
+  static void getPayCubeListener(Function(Map) listener) {
+    _channel.setMethodCallHandler((call) async {print(call.method);
+    Map message = {};
+    if (call.method == 'onGetPutMoneyStringChange') {
+      message = {"PutMoney":call.arguments};print(message);
+    }else if (call.method == 'onGetPutMoneyCurrencyStringChange') {
+      message = {"PutMoneyString":call.arguments};
+    }else if (call.method == 'onEndServiceChange') {
+      message = {"EndMoneyString":call.arguments};
+    }else if (call.method == 'onPayOutServiceChange') {
+      message = {"PayOutServiceString":call.arguments};
+    }else if (call.method == 'getPayOutMoneyServiceChange') {
+      message = {"PayOutMoneyStringServiceString":call.arguments};
+    }else if (call.method == 'onEndTradeServiceChange') {
+      //final String message = call.arguments;print(message);
+      message = {"EndTradeString":call.arguments};
+
+    }
+    listener(message);
+    });
+  }
+
   static void setEndListener(Function(String) listener) {
     _channel.setMethodCallHandler((call) async {print(call.method);
       if (call.method == 'onEndServiceChange') {
@@ -15,6 +56,24 @@ class Paycube {
       }
     });
   }
+  static void getPayOutListener(Function(String) listener) {
+    _channel.setMethodCallHandler((call) async {print(call.method);
+    if (call.method == 'onPayOutServiceChange') {
+      final String message = call.arguments;print(message);
+      listener(message);
+    }
+    });
+  }
+
+  static void getPayOutMoneyListener(Function(String) listener) {
+    _channel.setMethodCallHandler((call) async {print(call.method);
+    if (call.method == 'getPayOutMoneyServiceChange') {
+      final String message = call.arguments;print(message);
+      listener(message);
+    }
+    });
+  }
+
   static void setEndTradeListener(Function(String) listener) {
     _channel.setMethodCallHandler((call) async {
       if (call.method == 'onEndTradeServiceChange') {
