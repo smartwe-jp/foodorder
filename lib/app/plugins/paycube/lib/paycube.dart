@@ -48,6 +48,15 @@ class Paycube {
     });
   }
 
+  // 创建一个方法来停止监听
+  static Future<void> stopListening() async {
+    try {
+      _channel.setMethodCallHandler(null);
+    } catch (e) {
+      print('停止监听失败: $e');
+    }
+  }
+
   static void setEndListener(Function(String) listener) {
     _channel.setMethodCallHandler((call) async {print(call.method);
       if (call.method == 'onEndServiceChange') {

@@ -153,6 +153,18 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             _sendToFlutter("onEndTradeServiceChange",_payCubeEndTradeStatus);
                                         }
 
+                                        //根据现金机androiddemo增加
+                                        try {
+                                            ByteBuffer buf = ByteBuffer.allocate(6);
+                                            buf.put(new byte[]{(byte) 0x00, (byte) 0x04});    // Len2
+                                            buf.put(new byte[]{event.getReceiveData()[2], event.getReceiveData()[3]});    // Header
+                                            buf.put(new byte[]{event.getReceiveData()[4], event.getReceiveData()[5]});
+                                            // -- body --
+                                            lib.write(buf.array());
+                                        } catch (Exception e) {
+                                            // Do Nothing
+                                        }
+
                                         //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                     } else if (event.getReceiveData()[1] == (byte) 0x06 && event.getReceiveData()[2] == (byte) 0x0B && event.getReceiveData()[3] == (byte) 0x01) {
                                         //出金金额监听状态

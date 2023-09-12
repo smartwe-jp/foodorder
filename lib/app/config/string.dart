@@ -53,7 +53,7 @@ class GString{
         "settlement_outMoney":"お釣り    ",
         "settlement_print_outprice_tag":"    お釣りを取って下さい  \r\n しばらくお待ちください",
         "settlement_print_tag":"しばらくお待ちください",
-        "settlement_print_loading_tag":"処理中・・・",//少々お待ちください
+        "settlement_print_loading_tag":"しばらくお待ちください",//少々お待ちください
         "settlement_noprint_tag":"しばらくお待ちください",
         "settlement_nopayment_error":"        支払いが失敗しました。  \r\n 他の支払い方法をお選ぶください。",
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
@@ -157,7 +157,7 @@ class GString{
         "settlement_outMoney":"找零    ",
         "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
         "settlement_print_tag":"请等待小票打印",
-        "settlement_print_loading_tag":"处理中……",//，请稍候
+        "settlement_print_loading_tag":"请稍候~",//，请稍候
         "settlement_noprint_tag":"请稍候~",
         "settlement_nopayment_error":"支付失败，请选择其他方式支付",
         "settlement_scancodenoopen_error":"请选择现金支付。",
