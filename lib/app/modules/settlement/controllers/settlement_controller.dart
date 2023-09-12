@@ -152,6 +152,8 @@ class SettlementController extends GetxController with StateMixin {
   RxBool isPayConfirmOrderId = false.obs; //现金支付后，判断是否需要重新请求confirm orderid
 
   RxInt CashStep = 1.obs;
+  RxInt socketNumberTimes = 0.obs;
+  RxBool socketPosCancel = false.obs;
 
 
   @override
@@ -243,6 +245,7 @@ class SettlementController extends GetxController with StateMixin {
     ) {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
       if(pos_ip.value != "" && pos_port.value != ""){
+        showPosEasyLoading();
         payconnectSocker();
       }
     }
@@ -630,6 +633,47 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
+  showPosEasyLoading() {
+    /*var _showTag;
+    _showTag = Text(
+        GString.getToString(
+            checkLanguage.value, "settlement_print_loading_tag"),
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));*/
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Container(height: 0,),//_showTag
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
+            ),
+
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
   //扫码支付
   doToPay() {
     //不是扫码支付直接return
@@ -677,9 +721,6 @@ class SettlementController extends GetxController with StateMixin {
               posResultReportData.value = response['data'];
               //检测是否需要连接socket
               checkpayconnectSocker(questData: resultData["requestInfo"]);
-
-
-
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -726,69 +767,6 @@ class SettlementController extends GetxController with StateMixin {
 
     }
     //支付状态
-    /*Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          padding: EdgeInsets.only(left: ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                      GString.getToString(checkLanguage.value, "tag_title"),
-                      style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontWeight: FontWeight.w600))),
-              children: <Widget>[
-                Container(
-                  width: ScreenAdapter.width(650),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Align(
-                        child: Text(show_dialog_content,
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(28))),
-                        alignment: Alignment(0, 0),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 1.0,
-                        color: Colors.black12,
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 70.0),
-                          child: TextButton(
-                            child: Text(
-                              GString.getToString(checkLanguage.value,
-                                  "tag_button_yes"),
-                              style: TextStyle(
-                                  color: Colors.lightBlue,
-                                  fontSize: ScreenAdapter.fontSize(32.0)),
-                            ),
-                            onPressed: () async {
-                              Get.back();
-                              if(payType == "pos"){
-                                Get.back();
-                              }
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-        )
-    );*/
 
     Get.dialog(
         DialogUtils.alertOneButton(show_dialog_content,
@@ -859,66 +837,6 @@ class SettlementController extends GetxController with StateMixin {
     var show_dialog_content =
     GString.getToString(checkLanguage.value, "settlement_nopayment_error");
 
-    //支付状态
-    /*Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(5),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child: Text(
-                      GString.getToString(checkLanguage.value, "tag_title"),
-                      style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontWeight: FontWeight.w600))),
-              children: <Widget>[
-                Container(
-                  width: ScreenAdapter.width(650),
-                  child: Column(
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Align(
-                        child: Text(show_dialog_content,
-                            style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(28))),
-                        alignment: Alignment(0, 0),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Divider(
-                        thickness: 1.0,
-                        color: Colors.black12,
-                      ),
-                      Container(
-                        alignment: Alignment.center,
-                        child: Padding(
-                          padding: const EdgeInsets.only(right: 70.0),
-                          child: TextButton(
-                            child: Text(
-                              GString.getToString(checkLanguage.value,
-                                  "tag_button_yes"),
-                              style: TextStyle(
-                                  color: Colors.lightBlue,
-                                  fontSize: ScreenAdapter.fontSize(32.0)),
-                            ),
-                            onPressed: () async {
-                              Get.back();
-                            },
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ]),
-        )
-    );*/
 
     Get.dialog(
         DialogUtils.alertOneButton(show_dialog_content,
@@ -950,10 +868,18 @@ class SettlementController extends GetxController with StateMixin {
 
   //pos机相关
   payconnectSocker({questData=""}) async {
+
+    //判断socket请求次数
+    socketNumberTimes.value++;
+    if(socketNumberTimes.value>20){
+      _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
+      return;
+    }
+
     Socket.connect(
       pos_ip.value,
       int.parse(pos_port.value),
-      timeout: Duration(seconds: 5),
+      //timeout: Duration(seconds: 5),
     ).then((Socket socket) {
       print("连接成功了么");
       this._socket = socket;
@@ -969,6 +895,12 @@ class SettlementController extends GetxController with StateMixin {
       if (paymentMethod.contains(payment_method_num.value) == true) {
         _getPaymentPosData();
       }
+
+      //扫码后直接打完票后关闭
+      if(payment_method_num.value != "2"){
+        EasyLoading.dismiss();
+      }
+
       // 监听wifi模块发送的数据
       this._socket?.listen((List<int> event) {
         LogUtil.d(event);
@@ -1012,7 +944,13 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
         } else {
-          if (FirstString == "3" && SecondString == "11" && resultString == "000") {// &&  resultMPFSString == "000"
+          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
+            //除了扫码的才显示
+            if(payment_method_num.value != "2"){
+              showEasyLoading();
+            }
+
+
             var thincaCloud = ["5","6","7","8","9","10"];
             if (thincaCloud.contains(payment_method_num.value) == true) {
               String reportString = eventString.substring(0, 169);
@@ -1027,8 +965,9 @@ class SettlementController extends GetxController with StateMixin {
               //T10 交通系等待时间超过30-40后自动返回
               var posErrorCode = ["L11","T10"];
               if (posErrorCode.contains(resultString) == true) {
-                Future.delayed(Duration(milliseconds: 2500),() async {
-                  CancelOrder();
+                Future.delayed(Duration(milliseconds: 2500),() async {print("来这里取消了么");
+                //CancelOrder();
+                gotonewMenuPage();
                 });
               }else{// if(resultString == "T10")
                 _showPosCancelEasyLoading(resultString);
@@ -1055,7 +994,11 @@ class SettlementController extends GetxController with StateMixin {
       socketState.value = false;
 
       print("Unable to connect: $e");
-      _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
+      print("POS机连接${socketNumberTimes.value}");
+      Future.delayed(Duration(milliseconds: 400), () async {
+        payconnectSocker(questData:questData);
+      });
+      //_showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
     });
 
   }
@@ -1108,25 +1051,49 @@ class SettlementController extends GetxController with StateMixin {
 
   }
 
-  getPaymentCancelPosData() {
-    var formData = {
-      "machineCode": machineCode.value,
-      "orderId": orderId.value,
-    };
+  showPosCancelAlert(){
+    if(socketPosCancel.value == true) return;
 
-    request("webBootCreditCardCancel", method: 'POST', parameters: formData)
-        .then((val) async {
-      var response = json.decode(val.toString());print("发送取消请求");LogUtil.d(response);
-      EasyLoading.dismiss();
-      if (response['code'] == 200) {
-        //var _queryString =       "2101500001       00509                  000000120221114093225";
-        this._socket?.write(response['data']);
-      }
+    Future.delayed(Duration(milliseconds: 50),() async {
+      Get.dialog(
+          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
+              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
+              confirm: () {
+                Get.back();
+                socketPosCancel.value = true;
+                getPaymentCancelPosData();
+              },
+              cancle: () {
+                Get.back();
+              }),
+          barrierDismissible: false
+      );
+
     });
+  }
+  getPaymentCancelPosData() {print("pos点了取消");print(socketPosCancel.value);
+  //if(socketPosCancel.value == true) return;
+
+  var formData = {
+    "machineCode": machineCode.value,
+    "orderId": orderId.value,
+  };
+
+  request("webBootCreditCardCancel", method: 'POST', parameters: formData)
+      .then((val) async {
+    var response = json.decode(val.toString());print("发送取消请求");LogUtil.d(response);
+    //EasyLoading.dismiss();
+    if (response['code'] == 200) {
+      //var _queryString =       "2101500001       00509                  000000120221114093225";
+      this._socket?.write(response['data']);
+    }
+  });
   }
 //刷卡机nfc支付汇报
   CreditCardPayReport(eventString) {
-    showEasyLoading();
+    //showEasyLoading();
     posResultReportData.value["result"] = true;
     posResultReportData.value["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport', method: 'POST', parameters: posResultReportData.value).then((val) {
@@ -1137,6 +1104,7 @@ class SettlementController extends GetxController with StateMixin {
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
+        _showPosCancelEasyLoading("900");
       }
     });
 

@@ -420,12 +420,18 @@ class SettlementView extends GetView {
                   width: ScreenAdapter.width(1080),
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString("imgpublic",
-                        "settlement_top_lead_cash_${controller.checkLanguage.value}"),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_cash_${controller.checkLanguage.value}")),
                     width: ScreenAdapter.width(780),
                     height: ScreenAdapter.width(870),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "2")
@@ -433,11 +439,17 @@ class SettlementView extends GetView {
                   //height: ScreenAdapter.height(940),
                   child: Stack(
                     children: [
-                      Image.asset(
-                        GImage.getImageString(
-                            "imgpublic", "settlement_top_lead_qr"),
-                        width: ScreenAdapter.width(1080),
-                        fit: BoxFit.fitWidth,
+                      FadeInImage(
+                        placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                        image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_qr")),
+                        width: ScreenAdapter.width(1060),
+                        fit: BoxFit.fitHeight,
+                        // [占位符] 的淡出动画时间
+                        fadeOutDuration: Duration(milliseconds: 100),
+                        // [图像] 的渐入动画曲线
+                        fadeInCurve: Curves.easeIn,
+                        // [图像] 的渐入动画时间
+                        fadeInDuration: Duration(milliseconds: 100),
                       ),
                       Positioned(
                           right: ScreenAdapter.width(120),
@@ -580,11 +592,17 @@ class SettlementView extends GetView {
                   //height: ScreenAdapter.height(940),
                   child: Stack(
                     children: [
-                      Image.asset(
-                        GImage.getImageString("imgpublic",
-                            "settlement_top_lead_card_${controller.checkLanguage.value}"),
+                      FadeInImage(
+                        placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                        image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_card_${controller.checkLanguage.value}")),
                         width: ScreenAdapter.height(820),
                         fit: BoxFit.fitHeight,
+                        // [占位符] 的淡出动画时间
+                        fadeOutDuration: Duration(milliseconds: 100),
+                        // [图像] 的渐入动画曲线
+                        fadeInCurve: Curves.easeIn,
+                        // [图像] 的渐入动画时间
+                        fadeInDuration: Duration(milliseconds: 100),
                       ),
                       Positioned(
                         //right: ScreenAdapter.width(120),
@@ -696,11 +714,17 @@ class SettlementView extends GetView {
                   //height: ScreenAdapter.height(940),
                   child: Stack(
                     children: [
-                      Image.asset(
-                        GImage.getImageString(
-                            "imgpublic", "settlement_top_lead_nfc_${controller.checkLanguage.value}"),
-                        width: ScreenAdapter.height(820),
+                      FadeInImage(
+                        placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                        image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_nfc_${controller.checkLanguage.value}")),
+                        width: ScreenAdapter.width(820),
                         fit: BoxFit.fitHeight,
+                        // [占位符] 的淡出动画时间
+                        fadeOutDuration: Duration(milliseconds: 100),
+                        // [图像] 的渐入动画曲线
+                        fadeInCurve: Curves.easeIn,
+                        // [图像] 的渐入动画时间
+                        fadeInDuration: Duration(milliseconds: 100),
                       ),
                       Positioned(
                         //right: ScreenAdapter.width(120),
@@ -809,67 +833,103 @@ class SettlementView extends GetView {
                 Container(
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posEdy_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posEdy_${controller.checkLanguage.value}")),
+                    width: ScreenAdapter.width(820),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "6")
                 Container(
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posID_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posID_${controller.checkLanguage.value}")),
+                    width: ScreenAdapter.width(820),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "7")
                 Container(
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posNanaco_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posNanaco_${controller.checkLanguage.value}")),
+                    width: ScreenAdapter.width(820),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "8")
                 Container(
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posWAON_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posWAON_${controller.checkLanguage.value}")),
+                    width: ScreenAdapter.width(820),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "9")
                 Container(
                   alignment: Alignment.center,
                   //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posQUICPay_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
+                  child: FadeInImage(
+                    placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                    image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posQUICPay_${controller.checkLanguage.value}")),
+                    width: ScreenAdapter.width(820),
                     fit: BoxFit.fitHeight,
+                    // [占位符] 的淡出动画时间
+                    fadeOutDuration: Duration(milliseconds: 100),
+                    // [图像] 的渐入动画曲线
+                    fadeInCurve: Curves.easeIn,
+                    // [图像] 的渐入动画时间
+                    fadeInDuration: Duration(milliseconds: 100),
                   ),
                 ),
               if (controller.payment_method_num.value == "10")
                 Container(
-                  alignment: Alignment.center,
-                  //height: ScreenAdapter.height(940),
-                  child: Image.asset(
-                    GImage.getImageString(
-                        "imgpublic", "settlement_top_lead_posIC_${controller.checkLanguage.value}"),
-                    width: ScreenAdapter.height(820),
-                    fit: BoxFit.fitHeight,
-                  ),
+                    alignment: Alignment.center,
+                    //height: ScreenAdapter.height(940),
+                    child: FadeInImage(
+                      placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                      image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posIC_${controller.checkLanguage.value}")),
+                      width: ScreenAdapter.width(820),
+                      fit: BoxFit.fitHeight,
+                      // [占位符] 的淡出动画时间
+                      fadeOutDuration: Duration(milliseconds: 100),
+                      // [图像] 的渐入动画曲线
+                      fadeInCurve: Curves.easeIn,
+                      // [图像] 的渐入动画时间
+                      fadeInDuration: Duration(milliseconds: 100),
+                    )
                 ),
               /*if (controller.payment_method_num.value == "5" || controller.payment_method_num.value == "6"|| controller.payment_method_num.value == "7"|| controller.payment_method_num.value == "8"|| controller.payment_method_num.value == "9"|| controller.payment_method_num.value == "10")
                 Container(
@@ -1379,10 +1439,11 @@ class SettlementView extends GetView {
                         onTap: () {
                           try {
                             //showCancelConfirm();
-                            EasyLoading.dismiss();
+                            //EasyLoading.dismiss();
                             var paymentMethod = ["3","4","5","6","7","8","9","10"];
                             if (paymentMethod.contains(controller.payment_method_num.value) == true) {
-                              controller.getPaymentCancelPosData();
+
+                              controller.showPosCancelAlert();
                             }else{
                               Get.back();
                             }
