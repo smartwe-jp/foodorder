@@ -17,10 +17,11 @@ class Paycube {
   static String payCubeEndTradeStatus = "Error";
 
   static void getPayCubeListener() {
-    _channel.setMethodCallHandler((call) async {print(call.method);
+    _channel.setMethodCallHandler((call) async {
+      //print(call.method);
     Map message = {};
     if (call.method == 'onGetPutMoneyStringChange') {
-      print(message);
+      //print(message);
       putMoney = call.arguments;
       //message = {"PutMoney":call.arguments};print(message);
     }else if (call.method == 'onGetPutMoneyCurrencyStringChange') {
@@ -32,7 +33,8 @@ class Paycube {
     }else if (call.method == 'onPayOutServiceChange') {
       payCubeOutMoneyStatus = call.arguments;
       //message = {"PayOutServiceString":call.arguments};
-    }else if (call.method == 'getPayOutMoneyServiceChange') {print("出金统计字符串${call.arguments}");
+    }else if (call.method == 'getPayOutMoneyServiceChange') {
+      //print("出金统计字符串${call.arguments}");
       currencyString = call.arguments;
       //message = {"PayOutMoneyStringServiceString":call.arguments};
     }else if (call.method == 'onEndTradeServiceChange') {
@@ -107,7 +109,7 @@ class Paycube {
 
   //入金禁止状态
   static Future<String> get getPayCubeStopCashStatus async {
-    print("这是返回插件更新后的static payCubeStopCashStatus${payCubeStopCashStatus}");
+    //print("这是返回插件更新后的static payCubeStopCashStatus${payCubeStopCashStatus}");
     return payCubeStopCashStatus;
     /*Map<String, Object> map = {'operEvent': 'getPayCubeStopCashStatus'};
     final String stopstatus = await _channel.invokeMethod('startOpenPayCube',map);
@@ -123,7 +125,7 @@ class Paycube {
 
   //取引终了状态
   static Future<String> get getPayCubeEndTradeStatus async {
-    print("这是返回插件更新后的static payCubeEndTradeStatus${payCubeEndTradeStatus}");
+    //print("这是返回插件更新后的static payCubeEndTradeStatus${payCubeEndTradeStatus}");
     return payCubeEndTradeStatus;
     /*Map<String, Object> map = {'operEvent': 'getPayCubeEndTradeStatus'};
     final String endstatus = await _channel.invokeMethod('startOpenPayCube',map);
@@ -138,7 +140,8 @@ class Paycube {
   }
 
   //获取入金金额
-  static Future<String> get getPayCubeMoney async {print("这是返回插件更新后的static pubmoney${putMoney}");
+  static Future<String> get getPayCubeMoney async {
+    //print("这是返回插件更新后的static pubmoney${putMoney}");
     return putMoney;
     /*Map<String, Object> map = {'operEvent': 'getPayCubeMoney'};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
@@ -154,7 +157,7 @@ class Paycube {
 
   //出金状态
   static Future<String> get getPayCubeOutMoneyStatus async {
-    print("这是返回插件更新后的static payCubeOutMoneyStatus${payCubeOutMoneyStatus}");
+    //print("这是返回插件更新后的static payCubeOutMoneyStatus${payCubeOutMoneyStatus}");
     return payCubeOutMoneyStatus;
     /*Map<String, Object> map = {'operEvent': 'getPayCubeOutMoneyStatus'};
     final String outstatus = await _channel.invokeMethod('startOpenPayCube',map);
@@ -170,11 +173,11 @@ class Paycube {
 
   //获取出金币种
   static Future<String> get getPayCubeOutMoneyCurrency async {
-    print("这是返回插件更新后的static1111111 currencyString${currencyString}");
+    //print("这是返回插件更新后的static1111111 currencyString${currencyString}");
     if(currencyString.length >= 70 ){
       currencyString = currencyString.substring(63);
     }
-    print("这是返回插件更新后的static currencyString${currencyString}");
+    //print("这是返回插件更新后的static currencyString${currencyString}");
     return currencyString;
     /*Map<String, Object> map = {'operEvent': 'getPayCubeOutMoneyCurrency'};
     final String currencyString = await _channel.invokeMethod('startOpenPayCube',map);
@@ -183,7 +186,7 @@ class Paycube {
 
   //获取入金币种
   static Future<String> get getPayCubePutMoneyCurrency async {
-    print("这是返回插件更新后的static putCurrency${putCurrency}");
+    //print("这是返回插件更新后的static putCurrency${putCurrency}");
     return putCurrency;
     /*Map<String, Object> map = {'operEvent': 'getPayCubePutMoneyCurrency'};
     final String currencyString = await _channel.invokeMethod('startOpenPayCube',map);

@@ -1,12 +1,12 @@
 class MoneyParser {
-  static int calculateTotalAmount(String input) {print("input${input}");
+  static int calculateTotalAmount(String input) {//print("input${input}");
     final List<String> parts = input.split(' ');
     int totalAmount = 0;
 
     for (int i = 0; i < parts.length; i += 3) {
       final String denomination = parts[i];
       final String hexQuantity = parts[i + 1];
-      final String hexQuantity2 = parts[i + 2];print(denomination +"=="+hexQuantity +"=="+hexQuantity2);
+      final String hexQuantity2 = parts[i + 2];//print(denomination +"=="+hexQuantity +"=="+hexQuantity2);
       //print(hexQuantity2);break;
 
       // 解析面额并将其映射到实际金额
