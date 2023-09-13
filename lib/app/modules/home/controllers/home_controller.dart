@@ -62,6 +62,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
+    Paycube.stopListening();
     super.onClose();
   }
 
@@ -162,6 +163,9 @@ class HomeController extends GetxController {
     //入金开始
     int connectCount = 0;
     String strartPayCube = await Paycube.strartPayCube;
+    //调用插件的监听
+    Paycube.getPayCubeListener();
+
     await Paycube.setReceiveEvent;
     allowtimer?.cancel();
     allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {

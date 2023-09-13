@@ -41,8 +41,7 @@ import sg.exception.COMException;
 public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     private MethodChannel channel;
     private ReceiveEventListener chargingStateChangeReceiver;
-    //private Handler handler;
-    private final Handler handler = new Handler(Looper.getMainLooper());
+    private Handler handler;
     private int count = 0;
 
 
@@ -153,19 +152,6 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             _sendToFlutter("onEndTradeServiceChange",_payCubeEndTradeStatus);
                                         }
 
-                                        //根据现金机androiddemo增加
-                                        try {
-                                            ByteBuffer buf = ByteBuffer.allocate(6);
-                                            buf.put(new byte[]{(byte) 0x00, (byte) 0x04});    // Len2
-                                            buf.put(new byte[]{event.getReceiveData()[2], event.getReceiveData()[3]});    // Header
-                                            buf.put(new byte[]{event.getReceiveData()[4], event.getReceiveData()[5]});
-                                            // -- body --
-                                            lib.write(buf.array());
-                                        } catch (Exception e) {
-                                            // Do Nothing
-                                        }
-
-                                        //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                     } else if (event.getReceiveData()[1] == (byte) 0x06 && event.getReceiveData()[2] == (byte) 0x0B && event.getReceiveData()[3] == (byte) 0x01) {
                                         //出金金额监听状态
                                         if(_payCubeOutMoneyStatus != "OutSuccess"){
@@ -494,17 +480,6 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     buf.put(getSeqNo());
                     lib.write(buf.array());
 
-
-                    /*handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 在这里执行延迟操作
-                            // 例如，发送成功结果给Flutter端
-                            //methodChannel.invokeMethod("onDelayedExecution", "Success");
-                            //putMoney = "0";
-                            result.success(_payCubeStopCashStatus);
-                        }
-                    }, 500);*/ // 500毫秒的延迟
 
                     result.success("endsuccess");
                     //lib.setReceiveEventEnable(false);
