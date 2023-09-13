@@ -351,10 +351,10 @@ class showOneItemOptionWidgetView extends GetView {
                                       Get.back();
                                     },
                                     child: Container(
-                                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                      margin: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(20)),
                                       alignment: Alignment.center,
-                                      width: ScreenAdapter.width(260),
-                                      height: ScreenAdapter.height(140),
+                                      width: ScreenAdapter.width(240),
+                                      height: ScreenAdapter.height(120),
                                       //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
                                       decoration: BoxDecoration(
 
