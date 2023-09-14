@@ -58,6 +58,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxBool showPosQUICPay = false.obs;
   RxBool showPosWAON = false.obs;
   RxBool showPosnanaco = false.obs;
+  RxBool showOpenPayment = false.obs;
 
   RxBool showVisa = false.obs;
   RxBool showMaster = false.obs;
@@ -123,7 +124,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-print(SystemSettingInfo);
+
       menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
       isReservation.value = SystemSettingInfo["isReservation"];
       isAllowPos.value = SystemSettingInfo['isAllowPos'];
@@ -302,9 +303,9 @@ print(SystemSettingInfo);
 
       var formData = {
         "orderKey": _orderkey
-      };print(formData);
+      };
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());print(response);
+        var response = json.decode(val.toString());
         EasyLoading.dismiss();
         //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
@@ -340,9 +341,9 @@ print(SystemSettingInfo);
 
       var formData = {
         "orderKey": _orderkey
-      };print(formData);
+      };
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());print(response);
+        var response = json.decode(val.toString());
         EasyLoading.dismiss();
         //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
@@ -406,6 +407,7 @@ print(SystemSettingInfo);
                 checkLanguage.value = "JP";
                 scanQrCodeController.text = "";
                 scanQrCodeHomeController.text = "";
+                showOpenPayment.value = true;
 
               var paymentMethod = ["3","4","5","6","7","8","9","10"];
               if (paymentMethod.contains(payment_method_num.value) == true) {
@@ -432,11 +434,11 @@ print(SystemSettingInfo);
 
     var formData = {
       "orderId": orderId.value,
-    };print(orderId.value);
+    };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
-print(response);
+
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
           orderId.value = response['data']["orderId"];
@@ -500,6 +502,7 @@ print(response);
           "showUnionPay": showUnionPay.value,
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
+          "showOpenPayment":showOpenPayment.value
         });
   }
 

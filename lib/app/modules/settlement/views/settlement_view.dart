@@ -1170,9 +1170,9 @@ class SettlementView extends GetView {
                         alignment: Alignment.bottomLeft,
                         padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
                         child: InkWell(
-                          onTap: () {print("进来取消了22");
+                          onTap: () {
                             try {
-                              if(controller.isPrintClick.value == false){print("进来取消了");
+                              if(controller.isPrintClick.value == false){
                                 controller.isCancelClick.value = true;
                                 controller.allowClick.value = false;
                                 controller.showCashAlert();

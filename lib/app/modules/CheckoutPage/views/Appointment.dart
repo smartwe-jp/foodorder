@@ -384,7 +384,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
     };
 
     request('webBootReserve', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());print(response);
+      var response = json.decode(val.toString());
       if (response['code'] == 200  && response['data'] != null) {
         doPrintReserve(response['data']);
         //showToast("预约排队成功");

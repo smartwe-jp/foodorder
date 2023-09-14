@@ -223,7 +223,7 @@ class CheckoutPageView extends GetView {
 
                                 },
                                 onSubmitted: (value){
-                                  Future.delayed(Duration(milliseconds: 150), () {print("精算扫码了");
+                                  Future.delayed(Duration(milliseconds: 150), () {
                                   controller.doNextHomePay();
                                   });
 

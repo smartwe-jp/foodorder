@@ -117,7 +117,7 @@ class MenuPageController extends GetxController with StateMixin {
     super.onClose();
   }
 
-  readyQueryData(){print(Get.arguments);
+  readyQueryData(){
     if(Get.arguments != null){
       checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
       mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
@@ -181,7 +181,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取菜单
-  getBookingBootMenu() {print("获取菜单来了");
+  getBookingBootMenu() {
   topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -761,7 +761,7 @@ class MenuPageController extends GetxController with StateMixin {
     return result;
   }
 
-  publicAddCart(BuildContext context,item) async {print("加入购物车");
+  publicAddCart(BuildContext context,item) async {
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
@@ -1253,7 +1253,7 @@ print("加1了");
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       //EasyLoading.dismiss();
-//print(response);
+
       if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
 
         doSubmitOrderId.value = response['data']["orderId"];

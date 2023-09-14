@@ -99,7 +99,7 @@ class HomeController extends GetxController {
     final connectivityResult = await (Connectivity().checkConnectivity());
     if (connectivityResult == ConnectivityResult.mobile
     || connectivityResult == ConnectivityResult.wifi
-    || connectivityResult == ConnectivityResult.ethernet) {print("ethernet");
+    || connectivityResult == ConnectivityResult.ethernet) {
     OpenPayCube();
     } else {print("没有网络");
       // I am not connected to any network.

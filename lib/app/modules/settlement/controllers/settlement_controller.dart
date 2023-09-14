@@ -1074,7 +1074,7 @@ class SettlementController extends GetxController with StateMixin {
 
     });
   }
-  getPaymentCancelPosData() {//print("pos点了取消");print(socketPosCancel.value);
+  getPaymentCancelPosData() {
   //if(socketPosCancel.value == true) return;
 
   var formData = {
@@ -1359,12 +1359,12 @@ class SettlementController extends GetxController with StateMixin {
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
     await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;print("发送如今结束指令返回${endStatus}");
+    var endStatus = await Paycube.endPayCube;
     //开启倒计时
     _countDownTimer("3");
     stoptimer?.cancel();
     stoptimer =Timer.periodic(Duration(milliseconds: 450), (Timer stopt) async {
-      stopStatus.value = await Paycube.getPayCubeStopCashStatus;print("点击确认关闭投币口${stopStatus.value}");
+      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (stopStatus.value == "StopSuccess") {
         showCashTimer?.cancel();
@@ -1388,7 +1388,7 @@ class SettlementController extends GetxController with StateMixin {
     });
   }
 
-  startOutPutMoney(outMoney) async {print("开始找零了${outMoney}");
+  startOutPutMoney(outMoney) async {
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
     await Paycube.setReceiveEvent;
@@ -1398,7 +1398,7 @@ class SettlementController extends GetxController with StateMixin {
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 300), (Timer outmoneyt) async {
-        outStatus.value = await Paycube.getPayCubeOutMoneyStatus;print("outStatus.value${outStatus.value}");
+        outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (outStatus.value == "OutSuccess") {
         //如果打开了现金机，则去掉倒计时监听
@@ -1430,9 +1430,6 @@ class SettlementController extends GetxController with StateMixin {
     //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
 
     OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
-        print("进入循环${outMonyNum.value}");
-        print("进入循环${currencyString.value}");
-        print("进入循环${getOutMoneyString.value}");
 
         if(queryTimes>150){
           //如果打开了现金机，则去掉倒计时监听

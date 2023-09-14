@@ -196,7 +196,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  doScanQrCodeQuery(){print(scanQrCodeController.text);
+  doScanQrCodeQuery(){
   if(scanQrCodeController.text !=""){
 
     var formData = {
