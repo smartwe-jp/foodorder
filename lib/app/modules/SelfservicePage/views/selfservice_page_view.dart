@@ -101,6 +101,8 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_JP.value == true)
                         InkWell(
                           onTap: () {
+                            controller.ordersqlcontroller.removeAllFromCart();
+
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
 
@@ -143,6 +145,7 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_CH.value == true)
                         InkWell(
                           onTap: () {
+                            controller.ordersqlcontroller.removeAllFromCart();
 
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
@@ -183,6 +186,8 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_EN.value == true)
                         InkWell(
                           onTap: () {
+                            controller.ordersqlcontroller.removeAllFromCart();
+
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
 
@@ -222,6 +227,8 @@ class SelfservicePageView extends GetView {
                       if(controller.machineLanguages_KO.value == true)
                         InkWell(
                           onTap: () {
+                            controller.ordersqlcontroller.removeAllFromCart();
+
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
 

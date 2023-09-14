@@ -79,6 +79,11 @@ class SQLService {
     return await this.db?.rawQuery(query);
   }
 
+   Future getCartItemNewId(String menuCode) async {
+     var query = "SELECT id FROM cart_list where menuCode = ${menuCode}";
+     return await this.db?.rawQuery(query);
+   }
+
   Future getCartTotalNum() async {
     var query = "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list";
     return await this.db?.rawQuery(query);

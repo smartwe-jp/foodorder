@@ -60,6 +60,7 @@ class HomeView extends GetView {
                         )),
                   ),
                   Container(
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(100),top: ScreenAdapter.height(30)),
                     //width: ScreenAdapter.width(400),
                     height: ScreenAdapter.height(250),
                     child: Image.asset("assets/images/public/printticketloading.gif",fit: BoxFit.fitHeight),

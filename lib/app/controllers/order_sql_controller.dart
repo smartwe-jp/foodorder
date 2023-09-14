@@ -77,6 +77,17 @@ class OrderSqlController extends GetxController {
 
   }
 
+  getCartItemNewId(menuCode) async {
+    var result;
+    result = await itemServices.getCartItemNewId(menuCode);
+    if(result[0] == null){
+      return 0;
+    }else{
+      return result[0]["id"];
+    }
+
+  }
+
   getCartTotalNum() async {
     var result;
     result = await itemServices.getCartTotalNumber();

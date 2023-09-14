@@ -20,7 +20,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
 
   TextEditingController scanQrCodeController = new TextEditingController();
-  FocusNode scanQrCodeFocusNode = FocusNode();
+  FocusNode scanQrCodeFocusNode = FocusNode(debugLabel: 'TextField');
+
+  ScrollController itemscrollController = ScrollController();
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
@@ -28,6 +30,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool mealType = false.obs;//用于判断下单
 
   RxList showCartItems = [].obs;
+  RxList showScanCartItems = [].obs;
   RxMap showItem = {}.obs;
   RxString shopCartTotalPrice = "0".obs;
   RxInt showCartTotalGoodsNum = 0.obs;
@@ -82,7 +85,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     super.onClose();
   }
 
-  readyQueryData(){print(Get.arguments);
+  readyQueryData(){
     checkLanguage.value = Get.arguments['checkLanguage'];
     mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
   _getMachineInfo();
@@ -148,12 +151,11 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     var totalNum = await ordersqlcontroller.getCartTotalNum();
     showCartTotalGoodsNum.value = totalNum;
 
-
     showCartItems.value = ordersqlcontroller.cartItems;
+
 
     update();
     change(null, status: RxStatus.success());
-
 
   }
 
@@ -194,14 +196,14 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  doScanQrCodeQuery(){print("扫码进来了");print(scanQrCodeController.text);
+  doScanQrCodeQuery(){print(scanQrCodeController.text);
   if(scanQrCodeController.text !=""){
 
     var formData = {
       "language": checkLanguage.value,
       "machineCode": machineCode.value,
       "barCode":scanQrCodeController.text
-    };print(formData);
+    };
 
     request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
@@ -225,7 +227,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     var cartItem = {
       "menuCode": item['menuCode'],
       "mainTitle": item['mainTitle'],
-      "image": item['homeImage'],
+      "image": "",//item['homeImage']
       "currentPrice": item['currentPrice'],
       "unitPrice": item['currentPrice'],
       "optionGroupVoList": "",
@@ -244,6 +246,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     var result = false;
     try {
     await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
+
+    publicScanAddToCart(cartItem);
+
       //ordersqlcontroller.getCardList();
     result = true;
 
@@ -254,11 +259,40 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     return result;
   }
 
-  //公共购物车加减
-  publicChangeCartMenuCount(cartItem, changeType) async {
-    scanQrCodeController.text = "";
-    scanQrCodeFocusNode.requestFocus();     // 获取焦点
+  publicScanAddToCart(cartItem) async {
+    var processData = false;
+    if(showScanCartItems.value.length>0){
+      for(var i=0;i<showScanCartItems.value.length;i++){
+        if(cartItem['menuCode'] == showScanCartItems.value[i]['menuCode']){
+          showScanCartItems.value[i]["goodsNum"]++;
+          showScanCartItems.value[i]["currentPrice"] = showScanCartItems.value[i]["currentPrice"]+cartItem["unitPrice"];
+          processData = true;
+          break;
+        }
+      }
+    }
 
+    if(processData == false){
+      var queryResult = await ordersqlcontroller.getCartItemNewId(cartItem['menuCode']);
+      cartItem["id"] = queryResult;
+
+      showScanCartItems.value.add(cartItem);
+
+    }
+
+    scrollToBottom();
+  }
+
+  void scrollToBottom() {
+    itemscrollController.animateTo(
+      itemscrollController.position.maxScrollExtent+200,
+      duration: Duration(milliseconds: 100),
+      curve: Curves.easeOut,
+    );
+  }
+
+  //公共购物车加减
+  publicChangeCartMenuCount(cartItem, index, changeType) async {
     var result;
     try {
       if(changeType == 'add'){
@@ -283,23 +317,36 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           result = await ordersqlcontroller.addToCartNum(cartItem);
         }
 
+        showScanCartItems.value[index]["goodsNum"]++;
+        showScanCartItems.value[index]["currentPrice"] = showScanCartItems.value[index]["currentPrice"]+cartItem["unitPrice"];
+
       }else{
         result = await ordersqlcontroller.reduceToCart(cartItem);
+
+        showScanCartItems.value[index]["goodsNum"]--;
+        showScanCartItems.value[index]["currentPrice"] = showScanCartItems.value[index]["currentPrice"]-cartItem["unitPrice"];
       }
 
-      ordersqlcontroller.getCardList();
+      //ordersqlcontroller.getCardList();
 
 
     } catch (e) {
       print(e);
       result = 0;
     }
+
     return result;
+  }
+
+  deleteScanCartItems(index){
+    showScanCartItems.value.removeAt(index);
+    update();
   }
 
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
+    showScanCartItems.value = [];
     getCartPriceTotal();
   }
 
@@ -310,6 +357,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     Get.back();
     //});
   }
+
 
   playQRScannerSound() async {
     AssetsAudioPlayer.newPlayer().open(
