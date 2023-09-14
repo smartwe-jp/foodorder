@@ -1511,7 +1511,7 @@ class SystemSettingPageView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text("システム設定")),
+      //appBar: AppBar(title: Text("システム設定")),
       body: GetBuilder<SystemSettingPageController>(builder: (controller){
         return controller.obx((state) => ListView(
           children: <Widget>[
