@@ -239,9 +239,9 @@ class SelfCheckoutscanningcodeView
                               TextSpan(
                                 text: formatMoney(item["currentPrice"].toString()),
                                 style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(50),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                  fontSize: ScreenAdapter.fontSize(40),
+                                  fontWeight: FontWeight.w400,
+                                  //color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                   textBaseline: TextBaseline.alphabetic,
                                 ),
                               ),
@@ -343,7 +343,7 @@ class SelfCheckoutscanningcodeView
                 Container(
                   padding: EdgeInsets.only(top: ScreenAdapter.height(20)),
                   width: ScreenAdapter.width(1080),
-                  height: ScreenAdapter.height(450),
+                  height: ScreenAdapter.height(400),
                   decoration: BoxDecoration(
                     color: ColorsUtil.hexToColor("#FFFFFF"),
                   ),
@@ -367,8 +367,10 @@ class SelfCheckoutscanningcodeView
                   children: controller.ordersqlcontroller.cartItems.map((d) => generateCartList(context, d)).toList(),
                 ),
               ),*/
+
                 Expanded(
                     child: Container(
+                      margin: EdgeInsets.only(top: ScreenAdapter.height(10)),
                       padding: EdgeInsets.zero,
                       //padding: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(15)),
                       //height: ScreenAdapter.height(1280),
@@ -386,6 +388,109 @@ class SelfCheckoutscanningcodeView
                         },
                       ),
                     )
+                ),
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  //padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
+                  height: ScreenAdapter.height(90),
+                  //color: ColorsUtil.hexToColor("#DCDCDC"),
+                  decoration: BoxDecoration(
+                      //color: ColorsUtil.hexToColor("#DCDCDC"),
+                      color: ColorsUtil.hexToColor("#e9e9e9"),
+                      border: Border(
+                        //bottom: BorderSide(color: Colors.grey.shade400, width: 5.0),
+                        bottom: BorderSide(color: ColorsUtil.hexToColor("#efefef"), width: 5.0),
+                      )),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Container(
+                        margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        alignment: Alignment.centerLeft,
+                        width: ScreenAdapter.width(400),
+                        height: ScreenAdapter.height(90),
+
+                        child: Text(
+                          "  ${controller.showCartTotalGoodsNum.value.toString()}  ${GString.getToString(controller.checkLanguage.value, "show_selectPay_point")}",
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                              fontWeight: FontWeight.w600,
+                              fontSize: ScreenAdapter.fontSize(40.0)),
+                        ),
+                      ),
+                      Expanded(
+                          child: Container(
+                            height: ScreenAdapter.height(90),
+                            //width: ScreenAdapter.width(700),
+                            margin: EdgeInsets.only(right: ScreenAdapter.width(20)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  width: ScreenAdapter.width(200),
+                                  margin: EdgeInsets.only(right: ScreenAdapter.width(30)),
+
+                                  alignment: Alignment.centerRight,
+                                  child: Text(
+                                    "${GString.getToString(controller.checkLanguage.value, "settlement_total_price")}",
+                                    style: TextStyle(
+                                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: ScreenAdapter.fontSize(40.0)),
+                                  ),
+                                ),
+                                Expanded(
+                                    child: Container(
+                                      margin: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                                      alignment: Alignment.centerRight,
+                                      child: RichText(
+                                        text: TextSpan(
+                                            text: "¥",
+                                            //GString.getToString(controller.checkLanguage.value, "show_price_front"),
+                                            style: TextStyle(
+                                              fontSize: ScreenAdapter.fontSize(GFontSize
+                                                  .menusettlementBottomPriceLeft),
+                                              fontWeight: FontWeight.w600,
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                            ),
+                                            children: [
+                                              TextSpan(
+                                                text: formatMoney(controller.shopCartTotalPrice.value),
+                                                style: TextStyle(
+                                                  fontSize: ScreenAdapter.fontSize(
+                                                      GFontSize
+                                                          .menusettlementBottomPrice),
+                                                  fontWeight: FontWeight.w600,
+                                                  color: ColorsUtil.hexToColor(
+                                                      Gcolor.priceColor),
+                                                ),
+                                              ),
+                                              TextSpan(
+                                                text:
+                                                "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
+                                                style: TextStyle(
+                                                  fontSize: ScreenAdapter.fontSize(
+                                                      GFontSize
+                                                          .menusettlementBottomPriceRight),
+                                                  fontWeight: FontWeight.w600,
+                                                  color: ColorsUtil.hexToColor(
+                                                      Gcolor.mainTitleColor),
+                                                ),
+                                              ),
+                                            ]),
+                                      ),
+                                    )
+                                ),
+                              ],
+                            ),
+                          )
+                      ),
+
+                    ],
+                  ),
                 ),
                 Container(
                   width: MediaQuery.of(context).size.width,
@@ -429,7 +534,7 @@ class SelfCheckoutscanningcodeView
                           mainAxisAlignment: MainAxisAlignment.end,
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
-                            Container(
+                            /*Container(
                               margin: EdgeInsets.only(right: ScreenAdapter.width(30),bottom: ScreenAdapter.height(15)),
                               decoration: BoxDecoration(
                                   color: Colors.white12,
@@ -474,7 +579,7 @@ class SelfCheckoutscanningcodeView
                                       ),
                                     ]),
                               ),
-                            ),
+                            ),*/
                             InkWell(
                               enableFeedback: false,
                               onTap: () {
