@@ -1889,7 +1889,7 @@ class SystemSettingPageView extends GetView {
                                 Container(
                                   width: ScreenAdapter.width(35),
                                   child: Text(
-                                    "プリンター",
+                                    "プリンタ│",
                                     style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500
