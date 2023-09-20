@@ -108,7 +108,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   @override
   void onReady() {
-    print(Get.arguments);
+
     super.onReady();
   }
 
@@ -529,7 +529,7 @@ class MenuPageController extends GetxController with StateMixin {
       shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
     }
 
-    var totalNum = await ordersqlcontroller.getCartTotalNum();print(totalNum);
+    var totalNum = await ordersqlcontroller.getCartTotalNum();
     showCartTotalGoodsNum.value = totalNum;
 
 
@@ -729,7 +729,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //公共加入购物车
-  publicAddCartMenu(cartItem, checkItem) async {print(cartItem);
+  publicAddCartMenu(cartItem, checkItem) async {
     if(cartItem['qtyBounds'] >0){
       var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
       if(checkresult>=cartItem['qtyBounds']){

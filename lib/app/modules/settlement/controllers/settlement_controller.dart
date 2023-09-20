@@ -1295,7 +1295,6 @@ class SettlementController extends GetxController with StateMixin {
       getPutMoney.value = result;
       scanQrCodeFocusNode.unfocus();
       int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
-      print("totalPriceResult${totalPriceResult}");
       //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
       if(int.parse(result) >= totalPriceResult){
         if(isCancel.value == false){
@@ -1448,8 +1447,8 @@ class SettlementController extends GetxController with StateMixin {
           String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
           if (currencyStringresult.trim().length > 50) {
           var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringresult.trim());
-          print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
-          print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
+          //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
+          //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
           if(outtotalAmount == int.parse(outStringMoney.value)){
             //如果打开了现金机，则去掉倒计时监听
@@ -1517,7 +1516,7 @@ class SettlementController extends GetxController with StateMixin {
     _countDownTimer("8");
     var putQueryNum = 0;
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 350),(Timer putMoneyCurrencyTime) async {
-      print("入金循环次数${putMonyNum.value}");
+
       if(putQueryNum >100){
         showCashTimer?.cancel();
         putMoneyCurrencyTime.cancel();
@@ -1572,7 +1571,7 @@ class SettlementController extends GetxController with StateMixin {
       "price": int.parse(getPutMoney.value),
       "operation": operation,
       "coinForbidden":int.parse(is_allow_oneyen.value)
-    };print("webBootToReportV1==${formData}");
+    };//print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
@@ -1593,7 +1592,7 @@ class SettlementController extends GetxController with StateMixin {
         "orderId": orderId.value,
         "price": giveChangeMoney.value,
         "coinForbidden":int.parse(is_allow_oneyen.value)
-      };print(formData);
+      };//print(formData);
       request('webBootToReportV1', method: 'POST', parameters: formData)
           .then((val) {
         var response = json.decode(val.toString());
@@ -2093,18 +2092,6 @@ class SettlementController extends GetxController with StateMixin {
 
         //处理option 开始-----------
         if((key.length+value[0].length)>10){
-          var newLineNum = 0.0;
-          //if(groupNameLength >6){
-          newLineNum = groupNameLength / 10;
-          //}
-          countLine += newLineNum.ceil();
-          optionLine += newLineNum;
-          //if(optionNameLength >6){
-          var optionSonNameLength = 0.0;
-          optionSonNameLength = optionNameLength / 10;
-          //}
-          countLine += optionSonNameLength.ceil();
-          optionLine += newLineNum;
 
           printMenus.add(Column(
             textDirection: TextDirection.rtl,
@@ -2154,7 +2141,6 @@ class SettlementController extends GetxController with StateMixin {
             ],
           ));
         }else{
-          countLine += 1;
           printMenus.add(Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -2188,11 +2174,6 @@ class SettlementController extends GetxController with StateMixin {
         if(value.length>1){
           List<Widget> optionSons = [];
           for (var j = 1; j < value.length; j++) {
-            // print(value[j]);
-            newOptionSonLine += value[j].length / 10;
-            var oneOptionlength = 0.0;
-            oneOptionlength = value[j].length / 10;
-            countLine += oneOptionlength.ceil();
 
             optionSons.add(
                 Container(
@@ -2224,28 +2205,9 @@ class SettlementController extends GetxController with StateMixin {
           ));
         }
 
-
-        //处理option结束-----------
-        int optionRowNum = 0;
-        optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
-        //addRowHight += 52 * optionRowNum;
-        addRowHight += 65*countLine;
-        menuNum += optionRowNum.ceil();
-        optionNum++;
       });
 
-      addRowHight += 45 * mainTitleRowNum;
-      menuNum += mainTitleRowNum;
-    } else {
-      addRowHight += 65 * mainTitleRowNum;
-      menuNum += mainTitleRowNum;
     }
-
-    var totalHight = addRowHight+lineHight;
-    if(menuNum == 1){
-      totalHight +=15;
-    }
-
 
     // 生成打印图层任务，指定任务类型为标签
     return ReceiptConstrainedBox(Column(
@@ -2254,32 +2216,7 @@ class SettlementController extends GetxController with StateMixin {
       children: printMenus,
     ));
 
-    /*ByteData byteData = await WidgetToImage.widgetToImage(
-        Container(
-          width: 560,
-          height: totalHight.toDouble(),
-          padding: EdgeInsets.only(left: 0.5, right: 0.5),
-          color: Colors.white,
-          alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: printMenus,
-          ),
-        )
-    );
 
-    Uint8List imageBytes = byteData.buffer.asUint8List();
-    var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-        imgData: imageBytes,
-        printType: PrintTypeEnum.receipt,
-        imgSizeLimit : 560 * totalHight
-    );
-
-
-    QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-      return setPrintData(printer_ip,printData);
-    });*/
 
   }
 
