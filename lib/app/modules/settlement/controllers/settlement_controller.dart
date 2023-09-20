@@ -1294,9 +1294,10 @@ class SettlementController extends GetxController with StateMixin {
     if (int.parse(result) > 0) {
       getPutMoney.value = result;
       scanQrCodeFocusNode.unfocus();
-
-      if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
-
+      int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+      print("totalPriceResult${totalPriceResult}");
+      //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
+      if(int.parse(result) >= totalPriceResult){
         if(isCancel.value == false){
           showPrintButton.value = true;
         }else{
@@ -2225,7 +2226,7 @@ class SettlementController extends GetxController with StateMixin {
 
 
         //处理option结束-----------
-        var optionRowNum = 0.0;
+        int optionRowNum = 0;
         optionRowNum = optionLine.ceil() + newOptionSonLine.ceil();
         //addRowHight += 52 * optionRowNum;
         addRowHight += 65*countLine;
