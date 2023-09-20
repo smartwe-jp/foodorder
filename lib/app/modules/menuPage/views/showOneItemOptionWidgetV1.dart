@@ -255,7 +255,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
 
   @override
   Widget build(BuildContext context) {
-    var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']];
+    var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']];
     return GetBuilder<MenuPageController>(
         builder: (controller) {
           return RepaintBoundary(
