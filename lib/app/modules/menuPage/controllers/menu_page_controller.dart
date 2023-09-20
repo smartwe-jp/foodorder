@@ -529,11 +529,13 @@ class MenuPageController extends GetxController with StateMixin {
       shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
     }
 
-    var totalNum = await ordersqlcontroller.getCartTotalNum();
+    var totalNum = await ordersqlcontroller.getCartTotalNum();print(totalNum);
     showCartTotalGoodsNum.value = totalNum;
 
 
     showCartItems.value = ordersqlcontroller.cartItems;
+
+    update();
   }
 
   //公共设置菜单Title
@@ -727,7 +729,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //公共加入购物车
-  publicAddCartMenu(cartItem, checkItem) async {
+  publicAddCartMenu(cartItem, checkItem) async {print(cartItem);
     if(cartItem['qtyBounds'] >0){
       var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
       if(checkresult>=cartItem['qtyBounds']){
@@ -758,6 +760,7 @@ class MenuPageController extends GetxController with StateMixin {
       print(e);
       result = false;
     }
+    update();
     return result;
   }
 

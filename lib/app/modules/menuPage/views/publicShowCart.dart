@@ -453,7 +453,7 @@ class publicShowCartView extends GetView {
                         InkWell(
                           enableFeedback: false,
                           onTap: () {
-                            if (int.parse(controller.shopCartTotalPrice.value) ==0) {
+                            if (int.parse(controller.shopCartTotalPrice.value) <=0) {
                               return;
                             }
 
