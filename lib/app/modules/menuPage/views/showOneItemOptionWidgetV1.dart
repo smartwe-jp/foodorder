@@ -185,9 +185,10 @@ class showOneItemOptionWidgetVOneView extends GetView {
                               ),*/
                         ),
                         child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
                             style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(18),
+                              fontSize: ScreenAdapter.fontSize(20),
+                              fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(
                                   Gcolor.optionBtnColor),
                             ))/*Container(

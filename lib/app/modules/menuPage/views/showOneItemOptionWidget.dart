@@ -99,14 +99,15 @@ class showOneItemOptionWidgetView extends GetView {
               child: badges.Badge(
                 showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
                 badgeContent: Text(
-                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
+                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
                     style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(16),
+                      fontSize: ScreenAdapter.fontSize(20),
+                      fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
                     )),
                 //padding: EdgeInsets.all(5),
-                position:badges.BadgePosition.topEnd(top: -18, end: -9),
+                position:badges.BadgePosition.topEnd(top: -18, end: -7),
                 badgeStyle: badges.BadgeStyle(
                   shape: badges.BadgeShape.square,
                   padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
