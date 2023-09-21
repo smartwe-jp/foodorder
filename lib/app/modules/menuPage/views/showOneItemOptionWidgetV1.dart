@@ -322,7 +322,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                                         GFontSize.menuTwopriceLift,
                                         Gcolor.mainTitleColor,
                                         GFontSize.mainPrice,
-                                        Gcolor.priceColor,
+                                        Gcolor.mainTitleColor,
                                         GFontSize.menuTwopriceRight,
                                         Gcolor.mainTitleColor),
                                   ),
