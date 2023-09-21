@@ -1408,7 +1408,7 @@ class SettlementController extends GetxController with StateMixin {
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "Error-A0--02") {
+      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
         //await Paycube.setReceiveEvent;
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
@@ -1502,7 +1502,7 @@ class SettlementController extends GetxController with StateMixin {
         }
 
         endtradet.cancel();
-      } else {
+      }else {
         //sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }
