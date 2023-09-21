@@ -1260,7 +1260,7 @@ class SettlementController extends GetxController with StateMixin {
     Paycube.getPayCubeListener();
 
     allowtimer?.cancel();
-    allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
+    allowtimer = Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
       allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (allowStatus.value == "AllowSuccess") {
