@@ -179,10 +179,6 @@ class showOneItemOptionWidgetVOneView extends GetView {
                         decoration: BoxDecoration(
                           color: (optionVolistSon['currentPrice'] > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                          /*image: DecorationImage(
-                                image: (optionVolistSon['currentPrice'] > 0) ? AssetImage(GImage.getImageString("imgpublic", "price_tag")) :AssetImage(GImage.getImageString("imgpublic", "price_subtraction_tag")),
-                                fit: BoxFit.fill,
-                              ),*/
                         ),
                         child: Text(
                             (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
@@ -191,18 +187,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(
                                   Gcolor.optionBtnColor),
-                            ))/*Container(
-                              alignment: Alignment.topRight,
-                              // 旋转
-                              transform: Matrix4.rotationZ(0.78),
-                              child: Text(
-                                  "${optionVolistSon['currentPrice'].toString()}",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(14),
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.optionBtnColor),
-                                  )),
-                            )*/),
+                            ))),
                   )
                       : Container(
                     height: 0,

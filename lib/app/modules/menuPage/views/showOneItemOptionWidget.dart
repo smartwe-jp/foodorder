@@ -130,14 +130,7 @@ class showOneItemOptionWidgetView extends GetView {
                           ColorsUtil.hexToColor("#854610"),
                         ],
                       ),
-                      //设置阴影
-                      /*boxShadow: [
-                        BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(2, 3),
-                            blurRadius: 3.0,
-                            spreadRadius: 0),
-                      ],*/
+
                     )
                         : (buttonColor.length>0) ? BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
@@ -150,14 +143,7 @@ class showOneItemOptionWidgetView extends GetView {
                           ColorsUtil.hexToColor(buttonColor[1]),
                         ],
                       ),
-                      //设置阴影
-                      /*boxShadow: [
-                        BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(2, 3),
-                            blurRadius: 3.0,
-                            spreadRadius: 0),
-                      ],*/
+
                     ): BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       gradient: LinearGradient(
@@ -168,14 +154,7 @@ class showOneItemOptionWidgetView extends GetView {
                           ColorsUtil.hexToColor("#CEA062"),
                         ],
                       ),
-                      //设置阴影
-                      /*boxShadow: [
-                        BoxShadow(
-                            color: Colors.black26,
-                            offset: Offset(2, 3),
-                            blurRadius: 3.0,
-                            spreadRadius: 0),
-                      ],*/
+
                     ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
