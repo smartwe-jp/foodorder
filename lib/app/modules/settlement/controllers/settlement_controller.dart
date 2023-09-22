@@ -1397,7 +1397,7 @@ class SettlementController extends GetxController with StateMixin {
     _countDownTimer("6");
 
     outmoneytimer?.cancel();
-    outmoneytimer = Timer.periodic(Duration(milliseconds: 300), (Timer outmoneyt) async {
+    outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
         outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (outStatus.value == "OutSuccess") {
