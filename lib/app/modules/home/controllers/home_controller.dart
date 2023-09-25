@@ -142,6 +142,7 @@ class HomeController extends GetxController {
 
   //打开现金机
   OpenPayCube() async {
+    checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
     String checkStatus = await Paycube.CheckPayCubeStatus;
@@ -159,7 +160,7 @@ class HomeController extends GetxController {
 
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
-    checkSteeps.value = 2;
+
     //入金开始
     int connectCount = 0;
     String strartPayCube = await Paycube.strartPayCube;
@@ -228,6 +229,7 @@ class HomeController extends GetxController {
   }
 
   closePaycube() async {
+    checkSteeps.value = 4;
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
     await Paycube.setReceiveEvent;
