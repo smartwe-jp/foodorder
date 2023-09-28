@@ -427,10 +427,10 @@ class MenuPageController extends GetxController with StateMixin {
       "language": checkLanguage.value,
       "takeout":queryTakeout,
       "categoryCode":queryCategoryCode
-    };
+    };print(formData);
     request('webBootIndexMenuv2', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
+LogUtil.d(response);
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data'];
