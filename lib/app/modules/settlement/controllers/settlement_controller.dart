@@ -3057,7 +3057,7 @@ class SettlementController extends GetxController with StateMixin {
     //内消费税
     categoryMenus.add(
       _publicTwoColumnsTxtNew(
-          "　  (内    消費税额",
+          "　  (内    消費税",
           24.0,
           FontWeight.w100,
           (printData["takeOut"] == true) ? "${formatMoney(printData["tax"])})" : "0)",
@@ -3080,7 +3080,7 @@ class SettlementController extends GetxController with StateMixin {
     //内消费税
     categoryMenus.add(
       _publicTwoColumnsTxtNew(
-          "　  (内    消費税额",
+          "　  (内    消費税",
           24.0,
           FontWeight.w100,
           (printData["takeOut"] == false) ? "${formatMoney(printData["tax"])})" : "0)",
