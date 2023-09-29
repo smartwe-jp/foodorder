@@ -1692,7 +1692,7 @@ class SystemSettingPageView extends GetView {
                                 Container(
                                   width: ScreenAdapter.width(35),
                                   child: Text(
-                                    "一般设定",
+                                    "一般設定",
                                     style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500

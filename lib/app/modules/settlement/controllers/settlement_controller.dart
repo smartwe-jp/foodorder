@@ -898,8 +898,10 @@ class SettlementController extends GetxController with StateMixin {
       }
 
       //扫码后直接打完票后关闭
-      if(payment_method_num.value != "2"){
+      if(payment_method_num.value != "2"){print("进来关闭弹窗");
+      Future.delayed(Duration(milliseconds: 1300), () async {
         EasyLoading.dismiss();
+      });
       }
 
       // 监听wifi模块发送的数据
