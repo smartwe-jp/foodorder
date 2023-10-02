@@ -154,7 +154,7 @@ LogUtil.d(response);
     }else if(
       refundInfo.value["payChannel"] =="Alipay" ||
       refundInfo.value["payChannel"] =="Wechat" ||
-      refundInfo.value["payChannel"] =="Paypay"
+      refundInfo.value["payChannel"] =="PayPay"
     ){
       showPosEasyLoading();
       refundScanCodePay();
@@ -169,7 +169,7 @@ LogUtil.d(response);
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());print("webBootReimburseExecute===${response}");
-      if(response['code'] == 200 && (response['data']["payChannel"] =="Alipay" || response['data']["payChannel"] =="Wechat" || response['data']["payChannel"] =="Paypay") && response['data']["executeMark"] == true){
+      if(response['code'] == 200 && (response['data']["payChannel"] =="Alipay" || response['data']["payChannel"] =="Wechat" || response['data']["payChannel"] =="PayPay") && response['data']["executeMark"] == true){
         EasyLoading.dismiss();
 
         Get.dialog(
@@ -187,7 +187,7 @@ LogUtil.d(response);
             barrierDismissible: false
         );
 
-      }else if(response['code'] == 200 && response['data']["payChannel"] =="Paypay" && response['data']["executeMark"] == false && response['data']["requestMessage"] !=""){
+      }else if(response['code'] == 200 && response['data']["payChannel"] =="PayPay" && response['data']["executeMark"] == false && response['data']["requestMessage"] !=""){
         //showPosEasyLoading();
         payconnectSocker(questData: response['data']["requestMessage"]);
       }else{
@@ -514,7 +514,7 @@ LogUtil.d(response);
 
   //汇报出金币种,请求后台
   reportChange(changeString) {
-    payCubeCloseTransaction();
+    //payCubeCloseTransaction();
     if(isReportCash.value == true){print("已汇报过");
     return;
     }
