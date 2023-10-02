@@ -16,6 +16,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
+import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 
@@ -162,8 +163,10 @@ class SettingController extends GetxController with StateMixin {
     if(machine_mode.value == "1"){
       menuPagecontroller.clearCartList();
       Get.delete<MenuPageController>(); // 手动删除控制器实例
-    }else if(machine_mode.value == "1"){
+    }else if(machine_mode.value == "2"){
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+    }else if(machine_mode.value == "3"){
+      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
 
 

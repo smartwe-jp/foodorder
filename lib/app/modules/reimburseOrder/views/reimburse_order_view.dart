@@ -235,7 +235,9 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                       controller: controller.orderIdController,
                       textLength: 6,
                       delete: () {
-                        controller.orderIdController.text = controller.orderIdController.text.substring(0, controller.orderIdController.text.length - 1);
+                        if(controller.orderIdController.text.length >1){
+                          controller.orderIdController.text = controller.orderIdController.text.substring(0, controller.orderIdController.text.length - 1);
+                        }
                       },
                       // do something with the input numbers
                       onSubmit: () {print("5435345");
