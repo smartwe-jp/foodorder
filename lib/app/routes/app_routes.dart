@@ -18,6 +18,7 @@ abstract class Routes {
   static const SYSTEM_SETTING_PAGE = _Paths.SYSTEM_SETTING_PAGE;
   static const SETTINGBACK_TRANSIT = _Paths.SETTINGBACK_TRANSIT;
   static const SELF_CHECKOUTSCANNINGCODE = _Paths.SELF_CHECKOUTSCANNINGCODE;
+  static const REIMBURSE_ORDER = _Paths.REIMBURSE_ORDER;
 }
 
 abstract class _Paths {
@@ -37,4 +38,5 @@ abstract class _Paths {
   static const SYSTEM_SETTING_PAGE = '/system-setting-page';
   static const SETTINGBACK_TRANSIT = '/settingback-transit';
   static const SELF_CHECKOUTSCANNINGCODE = '/self-checkoutscanningcode';
+  static const REIMBURSE_ORDER = '/reimburse-order';
 }

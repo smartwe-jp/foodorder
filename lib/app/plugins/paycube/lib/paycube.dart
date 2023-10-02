@@ -18,7 +18,7 @@ class Paycube {
 
   static void getPayCubeListener() {
     _channel.setMethodCallHandler((call) async {
-      //print(call.method);
+      print(call.method+"======"+call.arguments);
     Map message = {};
     if (call.method == 'onGetPutMoneyStringChange') {
       //print(message);
@@ -219,6 +219,20 @@ class Paycube {
     Map<String, Object> map = {'operEvent': 'allowOneCash'};
     final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
     return prohibitOneCashString;
+  }
+
+  //开始入金
+  static Future<String> get strartRefundPayCube async {print("退款开始出金");
+    putMoney = "0";
+    putCurrency = "";
+    currencyString = ""; //币种 截取0B 81的43位开始
+
+    //监听几种状态
+    payCubeStopCashStatus = "Error";
+    payCubeOutMoneyStatus = "Error";
+    payCubeEndTradeStatus = "Error";
+
+    return "Success";
   }
 
 }

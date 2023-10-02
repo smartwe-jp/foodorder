@@ -72,7 +72,7 @@ class TransitPageController extends GetxController {
       "version":local_version.value
     };print(formData);
     request('webBootActivatev3', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
+      var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
         //_shopCode = shopData["shopCode"];
@@ -122,16 +122,20 @@ class TransitPageController extends GetxController {
           "show_americanExpress":_americanExpress,
           "show_dinersClub":_dinersClub,
         };
+        //是否允许退款 1展示退款按钮 0 不展示
+        var reimburse = (shopData["reimburse"]==true) ? "1":"0";
         Storage.setString('smartwe_machineActivateData', json.encode(machineActivateData));
         Storage.setString('smartwe_machineLanguages', json.encode(shopData["languages"]));
 
         Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
         Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+        Storage.setString('smartwe_reimburse', reimburse);
 
         GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
         GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
         GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
         GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
+        GetxStorage.setData('smartwe_reimburse', reimburse);
 
         var machineSettingBool = {
           'machineLineup':shopData["lineup"],

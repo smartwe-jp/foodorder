@@ -25,6 +25,7 @@ class SettingController extends GetxController with StateMixin {
   MenuPageController menuPagecontroller = Get.put(MenuPageController());
   RxString machineCode = "".obs;
   RxString machine_mode = "1".obs;//1 普通点餐券卖机  2 精算机（结账机）
+  RxString is_reimburse = "0".obs;//是否展示退款按钮， 0 不展示 1 展示
 
   RxList cashList = [].obs;
   RxList lastTotalList = [].obs;
@@ -127,6 +128,9 @@ class SettingController extends GetxController with StateMixin {
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
+
+    var reimburse= await HomeServices.getSmartweReimburseData();
+    is_reimburse.value = reimburse;
     //查看机器零钱状态
     _getPaycubeChangeState();
   }

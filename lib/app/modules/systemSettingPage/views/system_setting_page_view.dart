@@ -1520,7 +1520,7 @@ class SystemSettingPageView extends GetView {
               decoration: new BoxDecoration(color: Colors.white),
               width: ScreenAdapter.width(820.0),
               margin: EdgeInsets.only(
-                top: ScreenAdapter.height(20.0),
+                top: ScreenAdapter.height(30.0),
               ),
               alignment: Alignment.center,
               padding: EdgeInsets.only(

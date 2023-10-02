@@ -20,6 +20,8 @@ import '../modules/menuPage/views/menu_page_view.dart';
 import '../modules/menuPage/views/menuzong_page_view.dart';
 import '../modules/middlewareSettingPage/bindings/middleware_setting_page_binding.dart';
 import '../modules/middlewareSettingPage/views/middleware_setting_page_view.dart';
+import '../modules/reimburseOrder/bindings/reimburse_order_binding.dart';
+import '../modules/reimburseOrder/views/reimburse_order_view.dart';
 import '../modules/setting/bindings/setting_binding.dart';
 import '../modules/setting/views/setting_view.dart';
 import '../modules/settingbackTransit/bindings/settingback_transit_binding.dart';
@@ -115,6 +117,11 @@ class AppPages {
       name: _Paths.SELF_CHECKOUTSCANNINGCODE,
       page: () => const SelfCheckoutscanningcodeView(),
       binding: SelfCheckoutscanningcodeBinding(),
+    ),
+    GetPage(
+      name: _Paths.REIMBURSE_ORDER,
+      page: () => ReimburseOrderView(),
+      binding: ReimburseOrderBinding(),
     ),
   ];
 }
