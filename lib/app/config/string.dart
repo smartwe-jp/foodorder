@@ -95,7 +95,7 @@ class GString{
         "show_del_cart_item_yes":"はい",
         "show_del_cart_item_no":"いいえ",
 
-        "show_product_restrictions":"%%份限定",
+        "show_product_restrictions":"数量限定",//"""%%份限定",
         "show_check_tableno":"お席番号：",
 
         "select_checkOut_tip_title":"店内またはテイクアウトをお選びください",

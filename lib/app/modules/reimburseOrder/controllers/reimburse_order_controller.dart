@@ -50,6 +50,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   RxString pos_port = "".obs;
   Socket? _socket; //socket对象
   RxBool socketState = false.obs; //连接状态
+  RxString eventReportString = "".obs;
 
   RxInt socketNumberTimes = 0.obs;
 
@@ -168,7 +169,7 @@ LogUtil.d(response);
     };print("webBootReimburseExecute==${formData}");
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
-      var response = json.decode(value.toString());print("webBootReimburseExecute===${response}");
+      var response = json.decode(value.toString());LogUtil.d("webBootReimburseExecute===${response}");
       if(response['code'] == 200 && (response['data']["payChannel"] =="Alipay" || response['data']["payChannel"] =="Wechat" || response['data']["payChannel"] =="PayPay") && response['data']["executeMark"] == true){
         EasyLoading.dismiss();
 
@@ -282,14 +283,15 @@ LogUtil.d(response);
         }
         var zhuanhuan = Uint8List.fromList(event);
         var eventString = Utf8Codec().decode(zhuanhuan);
+        eventReportString.value += eventString;
         LogUtil.d(eventString);
         //print(Utf8Codec().decode(zhuanhuan));
         //print("event=====${eventString}=====");
-        String FirstString = eventString.substring(0, 1);
-        String SecondString = eventString.substring(1, 3);
-        String transaction_type = eventString.substring(3, 6);
-        String resultString = eventString.substring(10, 13);
-        String resultMPFSString = eventString.substring(13, 16);
+        String FirstString = eventReportString.value.substring(0, 1);
+        String SecondString = eventReportString.value.substring(1, 3);
+        String transaction_type = eventReportString.value.substring(3, 6);
+        String resultString = eventReportString.value.substring(10, 13);
+        String resultMPFSString = eventReportString.value.substring(13, 16);
         print("FirstString==${FirstString}");
         print("SecondString==${SecondString}");
         print("transaction_type==${transaction_type}");
@@ -312,12 +314,33 @@ LogUtil.d(response);
               });*/
             }
           }
-        } else {
+        }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
+            reportChange(eventReportString.value);
+
+          } else {
+            EasyLoading.dismiss();
+            if(resultString.trim() != ""){
+
+              Get.dialog(
+                  DialogUtils.alertOneButton("決済失敗ので、別の支払方法にて取引を実施してください。",
+                      title: "お知らせ",
+                      confirmtitle: "はい",
+                      confirm: () {
+
+                        Get.back();
+
+                      })
+              );
+            }
+          }
+        }else if (transaction_type != "600" || transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
 
           } else {
+            EasyLoading.dismiss();
             if(resultString.trim() != ""){
 
               Get.dialog(

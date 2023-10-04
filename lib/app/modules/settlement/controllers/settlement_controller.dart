@@ -100,6 +100,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString isAllowPos = "0".obs;
   RxString pos_ip = "".obs;
   RxString pos_port = "".obs;
+  RxString eventReportString = "".obs;
   RxString payment_method_num = "0".obs; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
   RxMap posResultReportData = {}.obs;
   RxInt showPrintType =0.obs; //0 receipt   1Lable
@@ -716,7 +717,7 @@ class SettlementController extends GetxController with StateMixin {
       request('webBootToPayv2', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         if (response['code'] == 200 && response['data'].isNotEmpty) {
-          var resultData = response['data'];
+          var resultData = response['data'];LogUtil.d(resultData);
           if(resultData["requestInfo"] != ""){
             if(resultData["exceptionMessage"] == ""){
               posResultReportData.value = response['data'];
@@ -916,14 +917,15 @@ class SettlementController extends GetxController with StateMixin {
         }
         var zhuanhuan = Uint8List.fromList(event);
         var eventString = Utf8Codec().decode(zhuanhuan);
-        LogUtil.d(eventString);
+        eventReportString.value += eventString;
+        LogUtil.d(eventReportString.value);
         //print(Utf8Codec().decode(zhuanhuan));
         //print("event=====${eventString}=====");
-        String FirstString = eventString.substring(0, 1);
-        String SecondString = eventString.substring(1, 3);
-        String transaction_type = eventString.substring(3, 6);
-        String resultString = eventString.substring(10, 13);
-        String resultMPFSString = eventString.substring(13, 16);
+        String FirstString = eventReportString.value.substring(0, 1);
+        String SecondString = eventReportString.value.substring(1, 3);
+        String transaction_type = eventReportString.value.substring(3, 6);
+        String resultString = eventReportString.value.substring(10, 13);
+        String resultMPFSString = eventReportString.value.substring(13, 16);
         print("FirstString==${FirstString}");
         print("SecondString==${SecondString}");
         print("transaction_type==${transaction_type}");
@@ -946,7 +948,39 @@ class SettlementController extends GetxController with StateMixin {
               });*/
             }
           }
-        } else {
+        }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
+          //print("eventReportString.value.length==${eventReportString.value.length}");
+          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
+            //除了扫码的才显示
+            if(payment_method_num.value != "2"){
+              showEasyLoading();
+            }
+
+
+            var thincaCloud = ["5","6","7","8","9","10"];
+            if (thincaCloud.contains(payment_method_num.value) == true) {
+              String reportString = eventString.substring(0, 169);
+              CreditCardPayReport(reportString);
+            }else{
+              CreditCardPayReport(eventReportString.value);
+            }
+
+          } else {
+            if(resultString.trim() != ""){
+
+              //T10 交通系等待时间超过30-40后自动返回
+              var posErrorCode = ["L11","T10"];
+              if (posErrorCode.contains(resultString) == true) {
+                Future.delayed(Duration(milliseconds: 2500),() async {print("来这里取消了么");
+                //CancelOrder();
+                gotonewMenuPage();
+                });
+              }else{// if(resultString == "T10")
+                _showPosCancelEasyLoading(resultString);
+              }
+            }
+          }
+        } else if (transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             //除了扫码的才显示
             if(payment_method_num.value != "2"){
