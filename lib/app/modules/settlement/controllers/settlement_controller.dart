@@ -932,11 +932,11 @@ class SettlementController extends GetxController with StateMixin {
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
         //支付成功 打印，返回首页 除了成功都取消
-        if (transaction_type == "900") {
+        if (transaction_type == "900" && eventReportString.value.length == 40) {
           if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
-          //CancelOrder();
-          showEasyLoading();
-          }else if(resultString.trim() != ""){
+          CancelOrder();
+          //showEasyLoading();
+          }else if(resultString.trim() != "000"){
 
             //T10 交通系等待时间超过30-40后自动返回
             //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
@@ -1120,7 +1120,8 @@ class SettlementController extends GetxController with StateMixin {
 
   request("webBootCreditCardCancel", method: 'POST', parameters: formData)
       .then((val) async {
-    var response = json.decode(val.toString());//print("发送取消请求");LogUtil.d(response);
+    var response = json.decode(val.toString());//print("发送取消请求");
+    LogUtil.d(response);
     //EasyLoading.dismiss();
     if (response['code'] == 200) {
       //var _queryString =       "2101500001       00509                  000000120221114093225";
@@ -1418,7 +1419,9 @@ class SettlementController extends GetxController with StateMixin {
         }
 
         stopt.cancel();
-      }else {
+      }/* else if (stopStatus.value == "Error-A0--02") {
+
+      }*/else {
         await Paycube.endPayCube;
       }
     });
