@@ -932,8 +932,8 @@ class SettlementController extends GetxController with StateMixin {
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
         //支付成功 打印，返回首页 除了成功都取消
-        if (transaction_type == "900" && eventReportString.value.length == 40) {
-          if (FirstString == "3" && SecondString == "11" && resultString == "000") {print("进来取消了");
+        if (transaction_type == "900") {
+          if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
           CancelOrder();
           //showEasyLoading();
           }else if(resultString.trim() != "000"){
@@ -980,7 +980,7 @@ class SettlementController extends GetxController with StateMixin {
               }
             }
           }
-        } else if (transaction_type != "600" && transaction_type != "601") {
+        } else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             //除了扫码的才显示
             if(payment_method_num.value != "2"){

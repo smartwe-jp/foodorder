@@ -81,15 +81,18 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   _getPosSettingInfo() async {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    pos_ip.value = posSettingInfo['posIp'];
-    pos_port.value = posSettingInfo['posPort'];
+    if(posSettingInfo.isNotEmpty){
+      pos_ip.value = posSettingInfo['posIp'];
+      pos_port.value = posSettingInfo['posPort'];
+    }
+
 
     update();
     change(null, status: RxStatus.success());
   }
 
 
-  queryOrder(){print("fdsfds");
+  queryOrder(){
     if(orderIdController.text == ""){
       update();
       return;
@@ -107,17 +110,6 @@ LogUtil.d(response);
         orderList.value = response['data'];
         //print(orderId.value);
         //goToSettlement();
-      }else{
-
-        //showToast(response['data']["message"]);
-        /*Get.dialog(
-            DialogUtils.alertOneButton("${response['data']["message"]}",
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-                confirm: () {
-                  Get.back();
-                })
-        );*/
       }
 
       update();
@@ -151,7 +143,7 @@ LogUtil.d(response);
       //调用插件的监听
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
-      //Starttoubi();
+
     }else if(
       refundInfo.value["payChannel"] =="Alipay" ||
       refundInfo.value["payChannel"] =="Wechat" ||
@@ -334,7 +326,7 @@ LogUtil.d(response);
               );
             }
           }
-        }else if (transaction_type != "600" || transaction_type != "601") {
+        }else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
@@ -399,63 +391,7 @@ LogUtil.d(response);
     });
   }
 
-  //现金机开始 打开现金机，准备开始投币
-  Starttoubi() async {
-    //入金开始
-    String strartPayCube = await Paycube.strartPayCube;
-    await Paycube.setReceiveEvent;
-    //调用插件的监听
-    Paycube.getPayCubeListener();
-
-    allowtimer?.cancel();
-    allowtimer = Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
-      allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (allowStatus.value == "AllowSuccess") {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        seconds.value = 120;
-
-        //退款走找零流程
-        nextOper();
-
-        allowt.cancel();
-      } else if (allowStatus.value == "Error-F0--16") {
-        await Paycube.endTrade;
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.strartPayCube;
-      } else if (allowStatus.value == "Error-A0--02") {
-        //sleep(Duration(milliseconds: 300));
-      } else {
-        await Paycube.strartPayCube;
-      }
-    });
-  }
-
-  nextOper() async {
-    //sleep(Duration(milliseconds: 50));
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
-    //开启倒计时
-    _countDownTimer("3");
-    stoptimer?.cancel();
-    stoptimer =Timer.periodic(Duration(milliseconds: 450), (Timer stopt) async {
-      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (stopStatus.value == "StopSuccess") {
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        //如果投币金额大于待支付总金额
-        startOutPutMoney(refundInfo.value["payAmount"]);
-
-        stopt.cancel();
-      }else {
-        await Paycube.endPayCube;
-      }
-    });
-  }
-
-
+  //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     var outStringMoney = outMoney.toString();
     await Paycube.setReceiveEvent;
@@ -476,10 +412,7 @@ LogUtil.d(response);
 
         outmoneyt?.cancel();
       } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
-        //await Paycube.setReceiveEvent;
-        //sleep(Duration(milliseconds: 200));
-        //await Paycube.getPayCubeOutMoneyStatus;
-        //print("_outStatus处理中:$_outStatus");
+
       } else {
         await Paycube.outPayCubeMoney(outStringMoney);
       }
@@ -498,17 +431,6 @@ LogUtil.d(response);
 
     OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
 
-      /*if(queryTimes>150){
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        getOutMoneyString.value == false;
-
-        OutMoneytimer?.cancel();
-        //汇报出金币种
-        reportChange("");
-      }*/
-
       if(getOutMoneyString.value == true){
         // 循环一定要记得设置取消条件，手动取消
         String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
@@ -525,8 +447,8 @@ LogUtil.d(response);
             getOutMoneyString.value == false;
 
             OutMoneytimer?.cancel();
-            //汇报出金币种
-            reportChange(currencyStringresult);
+
+            payCubeCloseTransaction(currencyStringresult);
           }
 
         }
@@ -537,7 +459,6 @@ LogUtil.d(response);
 
   //汇报出金币种,请求后台
   reportChange(changeString) {
-    //payCubeCloseTransaction();
     if(isReportCash.value == true){print("已汇报过");
     return;
     }
@@ -573,7 +494,7 @@ LogUtil.d(response);
 
   }
 
-  payCubeCloseTransaction() async {
+  payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
     //开启倒计时
@@ -581,13 +502,13 @@ LogUtil.d(response);
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-      endStatus.value = await Paycube.getPayCubeEndTradeStatus;
+      endStatus.value = await Paycube.getPayCubeEndTradeStatus;print("endStatus.value==${endStatus.value}");
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
         print("退款成功");
-
+        reportChange(cashOutString);
         endtradet.cancel();
       }else {
         //sleep(Duration(milliseconds: 200));

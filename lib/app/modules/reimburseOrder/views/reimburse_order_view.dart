@@ -72,13 +72,13 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                             color: ColorsUtil.hexToColor("#000000"),
                           )
                       ),
-                      Text("是否允许支付:${showexecuteMarkText}",
+                      /*Text("是否允许支付:${showexecuteMarkText}",
                           style: TextStyle(
                             fontWeight: FontWeight.w400,
                             fontSize: ScreenAdapter.fontSize(26.0),
                             color: ColorsUtil.hexToColor("#000000"),
                           )
-                      )
+                      )*/
                     ],
                   ),
                 ),
