@@ -22,7 +22,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   TextEditingController orderIdController=TextEditingController();
 
   RxString machineCode = "".obs;
-  RxString reimburseText = "请输入六位注文番号".obs;
+  RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
   RxList orderList = [].obs;
   RxMap refundInfo = {}.obs;
 
@@ -100,7 +100,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode.value,
       "orderIdStr": orderIdController.text,
-    };print(formData);
+    };
     request('webBootReimburseQuery', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
@@ -120,7 +120,7 @@ LogUtil.d(response);
 
   refoundOrderAlert(orderinfo){
     Get.dialog(
-        DialogUtils.alert("确定要取消该笔订单么？",
+        DialogUtils.alert("この注文をキャンセルして返金しますか？",
             title: "お知らせ",
             canceltitle: "いいえ",
             confirmtitle: "はい",
@@ -144,11 +144,7 @@ LogUtil.d(response);
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
 
-    }else if(
-      refundInfo.value["payChannel"] =="Alipay" ||
-      refundInfo.value["payChannel"] =="Wechat" ||
-      refundInfo.value["payChannel"] =="PayPay"
-    ){
+    }else{
       showPosEasyLoading();
       refundScanCodePay();
     }
@@ -158,15 +154,15 @@ LogUtil.d(response);
     var formData = {
       "machineCode": machineCode.value,
       "orderId": refundInfo.value["orderId"],
-    };print("webBootReimburseExecute==${formData}");
+    };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
-      var response = json.decode(value.toString());LogUtil.d("webBootReimburseExecute===${response}");
-      if(response['code'] == 200 && (response['data']["payChannel"] =="Alipay" || response['data']["payChannel"] =="Wechat" || response['data']["payChannel"] =="PayPay") && response['data']["executeMark"] == true){
+      var response = json.decode(value.toString());
+      if(response['code'] == 200 &&  response['data']["executeMark"] == true){
         EasyLoading.dismiss();
 
         Get.dialog(
-            DialogUtils.alertOneButton("退款成功",
+            DialogUtils.alertOneButton("返金成功",
                 title: "お知らせ",
                 confirmtitle: "はい",
                 confirm: () {
@@ -180,12 +176,12 @@ LogUtil.d(response);
             barrierDismissible: false
         );
 
-      }else if(response['code'] == 200 && response['data']["payChannel"] =="PayPay" && response['data']["executeMark"] == false && response['data']["requestMessage"] !=""){
+      }else if(response['code'] == 200 && response['data']["executeMark"] == false && response['data']["requestMessage"] !=""){
         //showPosEasyLoading();
         payconnectSocker(questData: response['data']["requestMessage"]);
       }else{
         Get.dialog(
-            DialogUtils.alertOneButton("退款失败",
+            DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
                 title: "お知らせ",
                 confirmtitle: "はい",
                 confirm: () {
@@ -315,7 +311,7 @@ LogUtil.d(response);
             if(resultString.trim() != ""){
 
               Get.dialog(
-                  DialogUtils.alertOneButton("決済失敗ので、別の支払方法にて取引を実施してください。",
+                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
                       title: "お知らせ",
                       confirmtitle: "はい",
                       confirm: () {
@@ -336,7 +332,7 @@ LogUtil.d(response);
             if(resultString.trim() != ""){
 
               Get.dialog(
-                  DialogUtils.alertOneButton("決済失敗ので、別の支払方法にて取引を実施してください。",
+                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
                       title: "お知らせ",
                       confirmtitle: "はい",
                       confirm: () {
@@ -401,7 +397,7 @@ LogUtil.d(response);
 
     outmoneytimer?.cancel();
     outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
-      outStatus.value = await Paycube.getPayCubeOutMoneyStatus;print("outStatus.value${outStatus.value}");
+      outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (outStatus.value == "OutSuccess") {
         //如果打开了现金机，则去掉倒计时监听
@@ -419,7 +415,7 @@ LogUtil.d(response);
     });
   }
 
-  _getPayCubeOutMoney() async {print("进来获取出金币种了么？");
+  _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
     OutMoneytimer?.cancel();
     await Paycube.setReceiveEvent;
@@ -459,7 +455,7 @@ LogUtil.d(response);
 
   //汇报出金币种,请求后台
   reportChange(changeString) {
-    if(isReportCash.value == true){print("已汇报过");
+    if(isReportCash.value == true){
     return;
     }
 
@@ -469,14 +465,14 @@ LogUtil.d(response);
       "responseMessage": changeString,
       "machineCode": machineCode.value,
       "orderId": refundInfo.value["orderId"],
-    };print("webBootToReportV1==${formData}");
+    };
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
-      var response = json.decode(value.toString());print(response);
+      var response = json.decode(value.toString());
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
         Get.dialog(
-            DialogUtils.alertOneButton("退款成功",
+            DialogUtils.alertOneButton("返金成功。",
                 title: "お知らせ",
                 confirmtitle: "はい",
                 confirm: () {
@@ -489,6 +485,20 @@ LogUtil.d(response);
             barrierDismissible: false
         );
 
+      }else{
+        Get.dialog(
+            DialogUtils.alertOneButton("返金失敗です。",
+                title: "お知らせ",
+                confirmtitle: "はい",
+                confirm: () {
+                  orderIdController.text = "";
+                  orderList.value = [];
+                  refundInfo.value = {};
+                  queryOrder();
+                  Get.back();
+                }),
+            barrierDismissible: false
+        );
       }
     });
 
@@ -502,12 +512,12 @@ LogUtil.d(response);
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-      endStatus.value = await Paycube.getPayCubeEndTradeStatus;print("endStatus.value==${endStatus.value}");
+      endStatus.value = await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
-        print("退款成功");
+
         reportChange(cashOutString);
         endtradet.cancel();
       }else {

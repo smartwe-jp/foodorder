@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/services/formatMoney.dart';
 
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -24,13 +25,13 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
         itemCount: controller.orderList.value.length,
         itemBuilder: (context, index) {
           var itemDetail = controller.orderList.value[index];
-          var showexecuteMarkText = (itemDetail["executeMark"] == true) ? "允许":"不允许";
+          //var showexecuteMarkText = (itemDetail["executeMark"] == true) ? "允许":"不允许";
 
           return Container(
-            width: ScreenAdapter.width(600),
-            height: ScreenAdapter.height(200),
+            //width: ScreenAdapter.width(800),
+            //height: ScreenAdapter.height(200),
             margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-            padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+            padding: EdgeInsets.only(left: ScreenAdapter.width(15),right:ScreenAdapter.width(15),top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
             decoration: BoxDecoration(
               boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#9d9d9d"), blurRadius: 4)],
               color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -39,76 +40,212 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
             child: Row(
               children: [
                 Container(
-                  width: ScreenAdapter.width(400),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("注文番号:${itemDetail["orderIdStr"]}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(26.0),
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )
+                  width: ScreenAdapter.width(470),
+                  child: Table(
+                    border: TableBorder.all(width: 0,style: BorderStyle.none),
+                    columnWidths: <int, TableColumnWidth>{
+                      //0: IntrinsicColumnWidth(),
+                      0:FlexColumnWidth(320),
+                      1: FixedColumnWidth(320),
+                    },
+                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                    children: <TableRow>[
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                              child: Container(
+                                //color: Colors.blue,
+                                //height: ScreenAdapter.height(65),
+                                //width: ScreenAdapter.width(235),
+                                alignment: Alignment.centerLeft,
+                                child: Text("注文番号:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                          TableCell(
+                              child: Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.centerRight,
+                                child: Text("${itemDetail["orderIdStr"]}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                        ],
                       ),
-                      Text("支付时间:${itemDetail["payTime"]}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(26.0),
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                              child: Container(
+                                //color: Colors.blue,
+                                //height: ScreenAdapter.height(65),
+                                //width: ScreenAdapter.width(335),
+                                alignment: Alignment.centerLeft,
+                                child: Text("支払時間:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                          TableCell(
+                              child: Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.centerRight,
+                                child: Text("${itemDetail["payTime"]}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                        ],
                       ),
-                      Text("支付金额:${itemDetail["amount"]}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(26.0),
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                              child: Container(
+                                //color: Colors.blue,
+                                //height: ScreenAdapter.height(65),
+                                //width: ScreenAdapter.width(335),
+                                alignment: Alignment.centerLeft,
+                                child: Text("支払金額:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                          TableCell(
+                              child: Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.centerRight,
+                                child: Text(formatMoney(itemDetail["amount"]),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                        ],
                       ),
-                      Text("支付类型:${itemDetail["payChannel"]}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(26.0),
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                              child: Container(
+                                //color: Colors.blue,
+                                //height: ScreenAdapter.height(65),
+                                //width: ScreenAdapter.width(335),
+                                alignment: Alignment.centerLeft,
+                                child: Text("支払方法:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                          TableCell(
+                              child: Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.centerRight,
+                                child: Text("${itemDetail["payChannel"]}",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w400,
+                                      fontSize: ScreenAdapter.fontSize(26.0),
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    )
+                                ),
+                              )
+                          ),
+                        ],
                       ),
-                      /*Text("是否允许支付:${showexecuteMarkText}",
-                          style: TextStyle(
-                            fontWeight: FontWeight.w400,
-                            fontSize: ScreenAdapter.fontSize(26.0),
-                            color: ColorsUtil.hexToColor("#000000"),
-                          )
-                      )*/
+                      TableRow(
+                        children: <Widget>[
+                          TableCell(
+                              child: Container(
+                                //color: Colors.blue,
+                                //height: ScreenAdapter.height(65),
+                                //width: ScreenAdapter.width(335),
+                                alignment: Alignment.centerLeft,
+                                child: Text("返金額:",
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenAdapter.fontSize(32.0),
+                                      color: ColorsUtil.hexToColor("#A61C1C"),
+                                    )
+                                ),
+                              )
+                          ),
+                          TableCell(
+                              child: Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.centerRight,
+                                child: Text(formatMoney(itemDetail["amount"]),
+                                    style: TextStyle(
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenAdapter.fontSize(32.0),
+                                      color: ColorsUtil.hexToColor("#A61C1C"),
+                                    )
+                                ),
+                              )
+                          ),
+                        ],
+                      ),
                     ],
                   ),
                 ),
-                if(itemDetail["executeMark"] == true || (itemDetail["executeMark"] == false && itemDetail["requestMessage"] != ""))
-                InkWell(
-                  enableFeedback: false,
-                  onTap: () {
-                    controller.refoundOrderAlert(itemDetail);
-                  },
-                  child: Container(
-                    width: ScreenAdapter.width(120),
-                    height: ScreenAdapter.height(85),
-                    //margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
 
-                      color: ColorsUtil.hexToColor("#A61C1C"),
-                      //设置圆角
-                      borderRadius: new BorderRadius.circular((16.0)),
+
+                if(itemDetail["executeMark"] == true || (itemDetail["executeMark"] == false && itemDetail["requestMessage"] != ""))
+                  Container(
+                    width: ScreenAdapter.width(190),
+                    alignment: Alignment.centerRight,
+                    child: InkWell(
+                      enableFeedback: false,
+                      onTap: () {
+                        controller.refoundOrderAlert(itemDetail);
+                      },
+                      child: Container(
+                        width: ScreenAdapter.width(160),
+                        height: ScreenAdapter.height(145),
+                        //margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+
+                          color: ColorsUtil.hexToColor("#A61C1C"),
+                          //设置圆角
+                          borderRadius: new BorderRadius.circular((16.0)),
+                        ),
+                        child: Text(
+                            "退款",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(28),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.settlementBtnColor),
+                            )),
+                      ),
                     ),
-                    child: Text(
-                        "退款",
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(28),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor(
-                              Gcolor.settlementBtnColor),
-                        )),
-                  ),
-                )
+                  )
               ],
             ),
           );
@@ -219,7 +356,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                             keyboardType: TextInputType.none,
                             decoration: InputDecoration(
                               hintStyle: TextStyle(fontSize: ScreenAdapter.fontSize(24)),
-                              hintText: "请填写6位注文番号",
+                              hintText: "注文番号の後ろ六桁を入力してください",
                               //border: InputBorder.none
                             ),
                           )),
@@ -240,9 +377,9 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                         }
                       },
                       // do something with the input numbers
-                      onSubmit: () {print("5435345");
+                      onSubmit: () {
                       if(controller.orderIdController.text.length <6){
-                        showToast("正しいパスワードを入力してください");
+                        showToast("注文番号の後ろ六桁を入力してください");
                         return;
                       }
                       if(controller.orderIdController.text.length >6){
@@ -262,7 +399,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                     color: Colors.black12,
                   ),
                   Container(
-                    width: ScreenAdapter.width(600),
+                    width: ScreenAdapter.width(710),
                     child: showOrderInfo(),
                   ),
 

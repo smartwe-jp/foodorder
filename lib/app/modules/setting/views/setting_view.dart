@@ -820,7 +820,7 @@ class SettingView extends GetView<SettingController> {
                         //设置圆角
                         borderRadius: new BorderRadius.circular((16.0)),
                       ),
-                      child: Text("退款",
+                      child: Text("返金",
                           style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,

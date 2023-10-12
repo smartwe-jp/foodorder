@@ -69,7 +69,7 @@ class SelfservicePageView extends GetView {
                 right: ScreenAdapter.width(0),
                 top: ScreenAdapter.height(20),
                 child: InkWell(
-                  onTap: (){
+                  onLongPress: (){
                     Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
                   },
                   child: Container(
