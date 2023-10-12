@@ -673,7 +673,7 @@ class SettlementController extends GetxController with StateMixin {
               ],
             ),
             Container(
-              margin: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(10)),
+              margin: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(20)),
               child: Divider(  // 这是一个分割线
                 color: Colors.black,  // 设置分割线的颜色
                 thickness: 2,  // 设置分割线的粗细
@@ -683,7 +683,7 @@ class SettlementController extends GetxController with StateMixin {
             ),
             Container(
               //width: ScreenAdapter.width(700),
-              alignment: Alignment.topCenter,
+              alignment: Alignment.center,
               //height: ScreenAdapter.height(940),
               child: FadeInImage(
                 placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像

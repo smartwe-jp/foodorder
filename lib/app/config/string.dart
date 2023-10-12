@@ -59,7 +59,7 @@ class GString{
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
         "settlement_scancodenochange_error":"済みません、他の支払い方法を選んでください。",
         "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
-        "settlement_posPay_error_connect_worker":"支払いが失敗しました。\r\n スタッフに連絡してください！",
+        "settlement_posPay_error_connect_worker":"支払いが失敗しました。\r\n 他の支払い方法をお選ぶください。",//スタッフに連絡してください！
         "settlement_posPay_connect_error":"セルフレジは端末に接続されてません、スタフに聞いてお願いします。",
         "settlement_posPay_loadint_title":"支払処理中です、しばらくお待ち下さい。",
 
