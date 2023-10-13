@@ -247,7 +247,7 @@ class SettlementController extends GetxController with StateMixin {
     ) {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
       if(pos_ip.value != "" && pos_port.value != ""){
-        showPosEasyLoading();
+        showEasyLoading();
         payconnectSocker();
       }
     }
@@ -651,7 +651,7 @@ class SettlementController extends GetxController with StateMixin {
               children: [
                 InkWell(
                   onLongPress: () {
-                    //EasyLoading.dismiss();
+                    EasyLoading.dismiss();
                   },
                   child: Container(
                     //width: ScreenAdapter.width(400),
@@ -737,7 +737,7 @@ class SettlementController extends GetxController with StateMixin {
     //print(scanQrCodeController.text);
     if (machineCode.value != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
-
+      _showEasyLoadingScan();
       var formData = {
         "auth_code": scanQrCodeController.text,
         "machineCode": machineCode.value,
@@ -749,6 +749,7 @@ class SettlementController extends GetxController with StateMixin {
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];LogUtil.d(resultData);
           if(resultData["requestInfo"] != ""){
+            EasyLoading.dismiss();
             if(resultData["exceptionMessage"] == ""){
               showPosEasyLoading();
               posResultReportData.value = response['data'];
@@ -758,8 +759,6 @@ class SettlementController extends GetxController with StateMixin {
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
           }else{
-            _showEasyLoadingScan();
-
             if(resultData["result"] == true){
               doPrintOrderMenu("1");
             }else{
@@ -940,7 +939,7 @@ class SettlementController extends GetxController with StateMixin {
 
       // 监听wifi模块发送的数据
       this._socket?.listen((List<int> event) {
-        LogUtil.d(event);
+        //LogUtil.d(event);
         //if (event.length > 40) event.fillRange(266, 289, 32);
         for(var i=0; i< event.length; i++){
           if(event[i] >127){
@@ -1014,11 +1013,15 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
         } else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
+          //除了扫码的才显示
+          if(payment_method_num.value != "2"){
+            showPosEasyLoading();
+          }
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             //除了扫码的才显示
-            if(payment_method_num.value != "2"){
+            /*if(payment_method_num.value != "2"){
               showEasyLoading();
-            }
+            }*/
 
 
             var thincaCloud = ["5","6","7","8","9","10"];
@@ -1103,6 +1106,10 @@ class SettlementController extends GetxController with StateMixin {
         var resultData = response['data'];
         if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){
           if(resultData["exceptionMessage"] != null && resultData["exceptionMessage"] == ""){
+            //EasyLoading.dismiss();
+            print("刷卡到这里了么？");
+            //showPosEasyLoading();
+
             posResultReportData.value = response['data'];
             //判断不为空则POS机
             this._socket?.write(resultData["requestInfo"]);
