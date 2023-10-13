@@ -534,7 +534,7 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
-  _showPosCancelEasyLoading(resultString) {
+  _showPosCancelEasyLoading(resultString,{resultPFSString:""}) {
     EasyLoading.dismiss();
     var _showTag;
     var _showTagContent = "";
@@ -564,7 +564,7 @@ class SettlementController extends GetxController with StateMixin {
       _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
     }
     Get.dialog(
-        DialogUtils.alertOneButton(_showTagContent,
+        DialogUtils.alertOneButton(_showTagContent+"[${resultString}-${resultPFSString}]",
             title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
@@ -706,7 +706,7 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
-  //扫码支付
+  //扫码支付T
   doToPay() {
     //不是扫码支付直接return
     if (payment_method_num.value != "2") return;
@@ -963,6 +963,7 @@ class SettlementController extends GetxController with StateMixin {
         print("transaction_type==${transaction_type}");
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
+        print(eventReportString.value.length);
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
@@ -974,7 +975,7 @@ class SettlementController extends GetxController with StateMixin {
             //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
             var posErrorCode = ["L06"];
             if (posErrorCode.contains(resultString) == true) {
-              _showPosCancelEasyLoading(resultString);
+              _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               /*Future.delayed(Duration(milliseconds: 2500),() async {
                 CancelOrder();
               });*/
@@ -999,17 +1000,18 @@ class SettlementController extends GetxController with StateMixin {
 
           } else {
             if(resultString.trim() != ""){
-
+              _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               //T10 交通系等待时间超过30-40后自动返回
-              var posErrorCode = ["L11","T10"];
+              /*var posErrorCode = ["L11","T10"];
               if (posErrorCode.contains(resultString) == true) {
-                Future.delayed(Duration(milliseconds: 2500),() async {print("来这里取消了么");
+                Future.delayed(Duration(milliseconds: 2500),() async {
                 //CancelOrder();
                 gotonewMenuPage();
                 });
               }else{// if(resultString == "T10")
-                _showPosCancelEasyLoading(resultString);
-              }
+
+                _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
+              }*/
             }
           }
         } else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
@@ -1043,7 +1045,7 @@ class SettlementController extends GetxController with StateMixin {
                 gotonewMenuPage();
                 });
               }else{// if(resultString == "T10")
-                _showPosCancelEasyLoading(resultString);
+                _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               }
             }
           }
