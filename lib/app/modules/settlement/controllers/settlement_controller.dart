@@ -351,7 +351,7 @@ class SettlementController extends GetxController with StateMixin {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       Get.toNamed("/selfservice-page");
       //Navigator.pushNamed(context, '/selfServiceHomePage');
-    } else {
+    } else {print("过来删除menu了");
       Get.delete<MenuPageController>(); // 手动删除控制器实例
       Get.toNamed("/order-home");
       //Navigator.pushNamed(context, '/home');
@@ -1277,7 +1277,7 @@ class SettlementController extends GetxController with StateMixin {
             if (machineMode.value == "1") {
               //eventBus.fire(new clearCartEvent('支付成功...'));
               Get.find<OrderHomeController>().clearCartList();
-              Get.find<MenuPageController>().clearCartList();
+              //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
               //Get.find<MenuPageController>().getBookingBootMenu();
             }else if(machineMode.value == "3"){
               Get.find<SelfCheckoutscanningcodeController>().clearCartList();
