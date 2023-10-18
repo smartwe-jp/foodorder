@@ -126,8 +126,8 @@ class MenuPageView extends GetView {
 
             },
             child: Container(
-              padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-              margin: EdgeInsets.only(left: ScreenAdapter.width(10),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
+              padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(10),top:ScreenAdapter.height(10),right: ScreenAdapter.width(5),),
               width: ScreenAdapter.width(95),
               height: ScreenAdapter.height(85),
               //alignment: Alignment.center,

@@ -1194,6 +1194,7 @@ print("加1了");
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     Get.dialog(
+        barrierDismissible:false,
         SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
