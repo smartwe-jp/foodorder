@@ -428,7 +428,7 @@ class MenuPageController extends GetxController with StateMixin {
       "takeout":queryTakeout,
       "categoryCode":queryCategoryCode
     };
-    request('webBootIndexMenuv2', method: 'POST', parameters: formData).then((val) {
+    request('webBootIndexMenuv3', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
