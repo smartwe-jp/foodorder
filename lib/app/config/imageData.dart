@@ -151,6 +151,11 @@ class GImage{
         "safeScantop_KO":"assets/images/public/safeScantop_KO.jpg",
 
         "cartItemCancel":"assets/images/public/cartItemCancel.png",
+
+        "settlement_pos_loading_JP":"assets/images/public/settlement_pos_loading_JP.jpg",
+        "settlement_pos_loading_CH":"assets/images/public/settlement_pos_loading_CH.jpg",
+        "settlement_pos_loading_EN":"assets/images/public/settlement_pos_loading_EN.jpg",
+        "settlement_pos_loading_KO":"assets/images/public/settlement_pos_loading_KO.jpg",
       };
     }
 

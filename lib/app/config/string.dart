@@ -59,8 +59,9 @@ class GString{
         "settlement_scancodenoopen_error":" 済みません、今度は現金でお願いします。",
         "settlement_scancodenochange_error":"済みません、他の支払い方法を選んでください。",
         "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
-        "settlement_posPay_error_connect_worker":"支払いが失敗しました。\r\n スタッフに連絡してください！",
+        "settlement_posPay_error_connect_worker":"支払いが失敗しました。\r\n 他の支払い方法をお選ぶください。",//スタッフに連絡してください！
         "settlement_posPay_connect_error":"セルフレジは端末に接続されてません、スタフに聞いてお願いします。",
+        "settlement_posPay_loadint_title":"支払処理中です、しばらくお待ち下さい。",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
         "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
@@ -165,6 +166,7 @@ class GString{
         "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
         "settlement_posPay_connect_error":"自助结账终端未连接，请向工作人员咨询。",
         "settlement_posPay_error_connect_worker":"支付失败,请联系工作人员！",
+        "settlement_posPay_loadint_title":"支付处理中，请稍等片刻。",
 
         "tag_print_content_paper_shortage":"小票机缺纸，请联系工作人员",
         "tag_print_content_paper_error":"打印故障，请联系工作人员",
@@ -268,6 +270,7 @@ class GString{
         "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
         "settlement_posPay_error_connect_worker":"Payment failed. Please contact the staff!",
         "settlement_posPay_connect_error":"The self-checkout is not connected to the terminal. Please ask the staff for assistance.",
+        "settlement_posPay_loadint_title":"Payment processing. Please wait for a moment.",
 
         "tag_print_content_paper_shortage":"System error. Please contact our staff.",
         "tag_print_content_paper_error":"System error. Please contact our staff.",
@@ -371,6 +374,7 @@ class GString{
         "settlement_posPay_error":"決済失敗ので、別の支払方法にて取引を実施してください。",
         "settlement_posPay_error_connect_worker":"결제가 실패했습니다. 직원에게 연락하세요.",
         "settlement_posPay_connect_error":"셀프 레지는 단말기에 연결되어 있지 않습니다. 직원에게 문의해 주세요.",
+        "settlement_posPay_loadint_title":"결제 처리 중입니다. 잠시 기다려 주세요.",
 
         "tag_print_content_paper_shortage":"영수증 기계에 용지가 없습니다. 직원에게 문의하십시오.",
         "tag_print_content_paper_error":"인쇄 실패, 직원에게 문의하십시오.",

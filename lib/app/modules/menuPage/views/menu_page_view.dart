@@ -783,8 +783,13 @@ class MenuPageView extends GetView {
     }
 
     return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8)),
+      decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
+          )),
       child: Material(
         child: Container(
           padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
@@ -1414,8 +1419,13 @@ class MenuPageView extends GetView {
     }
 
     return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(8)),
+      decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
+          )),
       child: Material(
         child: Container(
           padding: EdgeInsets.only(
