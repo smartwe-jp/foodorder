@@ -127,24 +127,24 @@ class MenuPageView extends GetView {
             },
             child: Container(
               padding: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
-              width: ScreenAdapter.width(115),
-              height: ScreenAdapter.height(55),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(10),bottom: ScreenAdapter.height(5),right: ScreenAdapter.width(5),),
+              width: ScreenAdapter.width(95),
+              height: ScreenAdapter.height(85),
               //alignment: Alignment.center,
-              /*decoration: BoxDecoration(
-                image: new DecorationImage(
-                  fit: BoxFit.fitWidth,
-                  image: AssetImage(GImage.getImageString("imgpublic", "backbutton_top")),
-                ),
-              ),*/
               decoration: BoxDecoration(
+                image: new DecorationImage(
+                  fit: BoxFit.fitHeight,
+                  image: AssetImage("assets/images/public/language.png"),
+                ),
+              ),
+              /*decoration: BoxDecoration(
                 //color: Color(0x11111111),
                 image: DecorationImage(
                   //alignment: Alignment.topCenter,
                     image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
                     fit: BoxFit.fill),
-              ),
-              child: Center(
+              ),*/
+              /*child: Center(
                 //加上Center让文字居中
                 child: Text(
                   GString.getToString(controller.checkLanguage.value, "top_back_button"),
@@ -153,7 +153,7 @@ class MenuPageView extends GetView {
                       color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                       fontWeight: FontWeight.w600),
                 ),
-              ),
+              ),*/
             ),
           ),
         ),
