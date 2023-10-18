@@ -352,8 +352,8 @@ class SettlementController extends GetxController with StateMixin {
       Get.toNamed("/selfservice-page");
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {print("过来删除menu了");
-      Get.delete<MenuPageController>(); // 手动删除控制器实例
-      Get.toNamed("/order-home");
+    Get.delete<MenuPageController>(); // 手动删除控制器实例
+    Get.toNamed("/order-home");
       //Navigator.pushNamed(context, '/home');
     }
   }
@@ -968,6 +968,7 @@ class SettlementController extends GetxController with StateMixin {
         if (transaction_type == "900") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
           CancelOrder();
+            //showEasyLoading();
           }else if(resultString.trim() != "000"){
 
             //T10 交通系等待时间超过30-40后自动返回
@@ -982,37 +983,6 @@ class SettlementController extends GetxController with StateMixin {
           }
         }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
           //print("eventReportString.value.length==${eventReportString.value.length}");
-          if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
-            //除了扫码的才显示
-            if(payment_method_num.value != "2"){
-              showEasyLoading();
-            }
-
-
-            var thincaCloud = ["5","6","7","8","9","10"];
-            if (thincaCloud.contains(payment_method_num.value) == true) {
-              String reportString = eventString.substring(0, 169);
-              CreditCardPayReport(reportString);
-            }else{
-              CreditCardPayReport(eventReportString.value);
-            }
-
-          } else {
-            if(resultString.trim() != ""){
-
-              //T10 交通系等待时间超过30-40后自动返回
-              var posErrorCode = ["L11","T10"];
-              if (posErrorCode.contains(resultString) == true) {
-                Future.delayed(Duration(milliseconds: 2500),() async {print("来这里取消了么");
-                //CancelOrder();
-                gotonewMenuPage();
-                });
-              }else{// if(resultString == "T10")
-                _showPosCancelEasyLoading(resultString);
-              }
-            }
-          }
-        } else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             //除了扫码的才显示
             if(payment_method_num.value != "2"){
@@ -1190,16 +1160,16 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
     };
 
-  request("webBootCreditCardCancel", method: 'POST', parameters: formData)
-      .then((val) async {
-    var response = json.decode(val.toString());//print("发送取消请求");
-    LogUtil.d(response);
-    //EasyLoading.dismiss();
-    if (response['code'] == 200) {
-      //var _queryString =       "2101500001       00509                  000000120221114093225";
-      this._socket?.write(response['data']);
-    }
-  });
+    request("webBootCreditCardCancel", method: 'POST', parameters: formData)
+        .then((val) async {
+      var response = json.decode(val.toString());//print("发送取消请求");
+      LogUtil.d(response);
+      //EasyLoading.dismiss();
+      if (response['code'] == 200) {
+        //var _queryString =       "2101500001       00509                  000000120221114093225";
+        this._socket?.write(response['data']);
+      }
+    });
   }
 //刷卡机nfc支付汇报
   CreditCardPayReport(eventString) {
