@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'dart:ui';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:auto_size_text/auto_size_text.dart';
@@ -685,14 +686,16 @@ class MenuPageController extends GetxController with StateMixin {
   publicShowMenuSellOut(bounds) {
     if (bounds == 0) {
       return Positioned(
-        right: ScreenAdapter.width(10),
-        top: ScreenAdapter.height(20),
+        left: ScreenAdapter.width(5),
+        top: ScreenAdapter.height(8),
         child: Image.asset(
-          GImage.getImageString("imgpublic", "shouqing_png"),
+            //"assets/images/public/shouqing${randomNum.value.toString()}.png",
+          GImage.getImageString("imgpublic", "shouqing_png_${checkLanguage.value}"),
           width: ScreenAdapter.width(120),
           fit: BoxFit.fitWidth,
         ),
       );
+
     } else if(bounds > 0){
       var showString = GString.getToString(checkLanguage.value, "show_product_restrictions").replaceAll('%%', bounds.toString());
       return Positioned(
