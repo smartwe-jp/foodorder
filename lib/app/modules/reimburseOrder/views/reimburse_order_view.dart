@@ -236,7 +236,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                           borderRadius: new BorderRadius.circular((16.0)),
                         ),
                         child: Text(
-                            "退款",
+                            "返金",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(28),
                               fontWeight: FontWeight.w600,
