@@ -691,7 +691,7 @@ class MenuPageController extends GetxController with StateMixin {
         child: Image.asset(
             //"assets/images/public/shouqing${randomNum.value.toString()}.png",
           GImage.getImageString("imgpublic", "shouqing_png_${checkLanguage.value}"),
-          width: ScreenAdapter.width(120),
+          width: ScreenAdapter.width(105),
           fit: BoxFit.fitWidth,
         ),
       );
