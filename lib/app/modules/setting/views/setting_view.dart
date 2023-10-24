@@ -754,6 +754,32 @@ class SettingView extends GetView<SettingController> {
                                 )),
                           ),
                         ),
+                        if(controller.is_reimburse.value == "1")
+                          InkWell(
+                            onTap: () {
+                              Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
+
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10),
+                                  right: ScreenAdapter.width(10)),
+                              width: ScreenAdapter.width(180),
+                              height: ScreenAdapter.height(65),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: ColorsUtil.hexToColor("#A61C1C"),
+                                //设置圆角
+                                borderRadius: new BorderRadius.circular((16.0)),
+                              ),
+                              child: Text("返金",
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(24),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  )),
+                            ),
+                          ),
 
                       ],
                     ),
@@ -802,35 +828,7 @@ class SettingView extends GetView<SettingController> {
                     height: ScreenAdapter.height(20),
                   ),
 
-                  if(controller.is_reimburse.value == "1")
-                  Container(
-                    alignment: Alignment.centerRight,
-                    child: InkWell(
-                      onTap: () {
-                        Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
 
-                      },
-                      child: Container(
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)),
-                        width: ScreenAdapter.width(180),
-                        height: ScreenAdapter.height(65),
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: ColorsUtil.hexToColor("#A61C1C"),
-                          //设置圆角
-                          borderRadius: new BorderRadius.circular((16.0)),
-                        ),
-                        child: Text("返金",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(24),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )),
-                      ),
-                    ),
-                  ),
 
                 ],
               ),
