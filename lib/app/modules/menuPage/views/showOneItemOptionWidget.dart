@@ -299,23 +299,15 @@ class showOneItemOptionWidgetView extends GetView {
                               height: 1,
                               color: Color.fromRGBO(227, 227, 227, 1),
                             ),
+                            if(item['optionGroupVoList']?.length > 0)
                             Container(
-                              constraints: BoxConstraints(minHeight: ScreenAdapter.height(400),),
+                              constraints: BoxConstraints(minHeight: ScreenAdapter.height(400),maxHeight: ScreenAdapter.height(1500),),
                               padding: EdgeInsets.only(left: ScreenAdapter.width(10),top: ScreenAdapter.height(10),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(10)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: <Widget>[
-                                  //publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 250.0, imgHeight: 250.0),
-                                  (item['optionGroupVoList']?.length > 0)
-                                      ? Expanded(
-                                    child: publicShowOneItemOptionGroupWidget(
-                                        item['menuCode'], menuindex),
+                              child: Scrollbar(
+                                  child: SingleChildScrollView(
+                                    physics: ClampingScrollPhysics(),
+                                    child: publicShowOneItemOptionGroupWidget(item['menuCode'], menuindex),
                                   )
-                                      : Container(
-                                    height: 0,
-                                  ),
-                                ],
                               ),
                             ),
                             Container(
@@ -485,7 +477,7 @@ class showOneItemOptionWidgetView extends GetView {
                                             if(val != false){
                                               controller.publicShowAddCartNew(context);
                                             }
-                                            controller.changeInitialAllOption(item['menuCode']);
+                                            //controller.changeInitialAllOption(item['menuCode']);
 
                                             Future.delayed(Duration(milliseconds: 50),() async {
                                               Get.back();

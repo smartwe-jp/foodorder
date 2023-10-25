@@ -319,21 +319,15 @@ class showOneItemOptionWidgetVOneView extends GetView {
                               height: 1,
                               color: Color.fromRGBO(227, 227, 227, 1),
                             ),
+                            if(item['optionGroupVoList']?.length > 0)
                             Container(
+                              constraints: BoxConstraints(minHeight: ScreenAdapter.height(400),maxHeight: ScreenAdapter.height(1500),),
                               padding: EdgeInsets.only(left: ScreenAdapter.width(15),top: ScreenAdapter.height(10),right: ScreenAdapter.width(15),bottom: ScreenAdapter.height(10)),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: <Widget>[
-                                  (item['optionGroupVoList']?.length > 0)
-                                      ? Expanded(
-                                    child: publicShowOneItemOptionGroupWidgetv1(
-                                        item['menuCode'], menuindex),
+                              child: Scrollbar(
+                                  child: SingleChildScrollView(
+                                    physics: ClampingScrollPhysics(),
+                                    child: publicShowOneItemOptionGroupWidgetv1(item['menuCode'], menuindex),
                                   )
-                                      : Container(
-                                    height: 0,
-                                  ),
-                                ],
                               ),
                             ),
 
@@ -509,7 +503,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                                             if(val != false){
                                               controller.publicShowAddCartNew(context);
                                             }
-                                            controller.changeInitialAllOption(item['menuCode']);
+                                            //controller.changeInitialAllOption(item['menuCode']);
 
                                             Future.delayed(Duration(milliseconds: 50),() async {
                                               Get.back();

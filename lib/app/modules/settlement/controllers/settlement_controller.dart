@@ -976,9 +976,6 @@ class SettlementController extends GetxController with StateMixin {
             var posErrorCode = ["L06"];
             if (posErrorCode.contains(resultString) == true) {
               _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
-              /*Future.delayed(Duration(milliseconds: 2500),() async {
-                CancelOrder();
-              });*/
             }
           }
         }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
@@ -1020,12 +1017,6 @@ class SettlementController extends GetxController with StateMixin {
             showPosEasyLoading();
           }
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
-            //除了扫码的才显示
-            /*if(payment_method_num.value != "2"){
-              showEasyLoading();
-            }*/
-
-
             var thincaCloud = ["5","6","7","8","9","10"];
             if (thincaCloud.contains(payment_method_num.value) == true) {
               String reportString = eventString.substring(0, 169);

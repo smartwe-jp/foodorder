@@ -1001,6 +1001,7 @@ print("加1了");
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
+          barrierDismissible:false,
           showOneItemOptionWidgetView(item)
       );
     });
@@ -1009,6 +1010,7 @@ print("加1了");
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
+          barrierDismissible:false,
           showOneItemOptionWidgetVOneView(item)
       );
     });
