@@ -791,232 +791,261 @@ class MenuPageView extends GetView {
             bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
           )),
       child: Material(
-        child: Container(
-          padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
-          margin: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
-          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-          child: StatefulBuilder(
-            builder: (BuildContext context, menuindex) {
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(
-                      //top: ScreenAdapter.height(5),
-                      bottom: ScreenAdapter.height(5),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0),
-                        (item['optionGroupVoList']?.length > 0)
-                            ? Expanded(child: publicShowThreeMenuOptionGroupWidget(
-                            item['menuCode'], menuindex))
-                            : Container(
-                          height: 0,
-                        ),
-                      ],
-                    ),
-                  ),
-
-                  Divider(
-                    height: 1,
-                    color: Color.fromRGBO(227, 227, 227, 1),
-                  ),
-                  //标题价格
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+        child: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.only(top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(10)),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+              color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+              child: StatefulBuilder(
+                builder: (BuildContext context, menuindex) {
+                  return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Expanded(
-                          child: Container(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                //菜单Title
+                      Container(
+                        padding: EdgeInsets.only(
+                          //top: ScreenAdapter.height(5),
+                          bottom: ScreenAdapter.height(5),
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: <Widget>[
+                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0),
+                            (item['optionGroupVoList']?.length > 0)
+                                ? Expanded(child: publicShowThreeMenuOptionGroupWidget(
+                                item['menuCode'], menuindex,item['qtyBounds']))
+                                : Container(
+                              height: 0,
+                            ),
+                          ],
+                        ),
+                      ),
 
-                                Row(
+                      Divider(
+                        height: 1,
+                        color: Color.fromRGBO(227, 227, 227, 1),
+                      ),
+                      //标题价格
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                              child: Container(
+                                child: Column(
                                   mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     //菜单Title
-                                    Expanded(child: Container(
-                                      padding: EdgeInsets.only(
-                                          right: ScreenAdapter.width(15)),
-                                      child: controller.publicShowMenuTitle(item['mainTitle'],
-                                          32.0, Gcolor.mainTitleColor),
-                                    ),),
 
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //副标题
-                                    subtitle != ""
-                                        ? Expanded(child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        '${subtitle}',
-                                        style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(
-                                                GFontSize
-                                                    .menuThreeListFoodSubtitle),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor)),
-                                      ),
-                                    ))
-                                        : Container(
-                                      width: 0,
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        //菜单Title
+                                        Expanded(child: Container(
+                                          padding: EdgeInsets.only(
+                                              right: ScreenAdapter.width(15)),
+                                          child: controller.publicShowMenuTitle(item['mainTitle'],
+                                              32.0, Gcolor.mainTitleColor),
+                                        ),),
+
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        //副标题
+                                        subtitle != ""
+                                            ? Expanded(child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            '${subtitle}',
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize
+                                                        .menuThreeListFoodSubtitle),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor)),
+                                          ),
+                                        ))
+                                            : Container(
+                                          width: 0,
+                                        ),
+
+                                      ],
                                     ),
 
                                   ],
                                 ),
+                              )),
+                          //价格展示 item['currentPrice']
+                          Container(
+                            padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                            //width: ScreenAdapter.width(200),
+                            alignment: Alignment.bottomRight,
+                            child: controller.publicShowMenuPrice(
+                                controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']],
+                                item['price'],
+                                35.0,
+                                Gcolor.mainTitleColor,
+                                54.0,
+                                Gcolor.priceColor,
+                                28.0,
+                                Gcolor.mainTitleColor),
+                          ),
 
-                              ],
-                            ),
-                          )),
-                      //价格展示 item['currentPrice']
-                      Container(
-                        padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                        //width: ScreenAdapter.width(200),
-                        alignment: Alignment.bottomRight,
-                        child: controller.publicShowMenuPrice(
-                            controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']],
-                            item['price'],
-                            35.0,
-                            Gcolor.mainTitleColor,
-                            54.0,
-                            Gcolor.priceColor,
-                            28.0,
-                            Gcolor.mainTitleColor),
-                      ),
+                          //确认按钮
+                          InkWell(
+                            enableFeedback: false,
+                            onTap: () async {
+                            if (item['qtyBounds'] == 0) {
+                            return;
+                            } else if (item['qtyBounds'] > 0) {
+                            //请求限定接口
+                              var cartItemNum = await controller.ordersqlcontroller.getCartItemNum(item['menuCode']);print(cartItemNum);
+                              if(cartItemNum>=item['qtyBounds']){
+                                var showString = GString.getToString(controller.checkLanguage.value,"show_storage_num_error");
+                                //showToast("${showString}");
+                                Get.dialog(
+                                    DialogUtils.alertOneButton(showString,
+                                        title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                        confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                        confirm: () {
+                                          Get.back();
+                                        })
+                                );
+                                return;
+                              }
+                            }
 
-                      //确认按钮
-                      InkWell(
-                        enableFeedback: false,
-                        onTap: () {
+                              //判断选择后option是否与optiongroup相等
+                              var currentPrice = item['currentPrice'];
+                              var optionCodeList = "";
+                              var optionTitle = "";
+                              if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
 
-                          //判断选择后option是否与optiongroup相等
-                          var currentPrice = item['currentPrice'];
-                          var optionCodeList = "";
-                          var optionTitle = "";
-                          if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
-
-                            //--------------检测option单选还是多选是否满足
-                            var attr = controller.menuOption.value[item['menuCode']];
-                            var nexOrder = true;
-                            for (var i = 0; i < attr.length; i++) {
-                              //如果是多选，那么需要判断该组option数量是否超过最大值
-                              if(int.parse(attr[i]["smallest"]) >0){
-                                var current_option_checked = 0;
-                                for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
-                                  if(attr[i]['optionVoList'][n]["checked"] == true){
-                                    current_option_checked++;
+                                //--------------检测option单选还是多选是否满足
+                                var attr = controller.menuOption.value[item['menuCode']];
+                                var nexOrder = true;
+                                for (var i = 0; i < attr.length; i++) {
+                                  //如果是多选，那么需要判断该组option数量是否超过最大值
+                                  if(int.parse(attr[i]["smallest"]) >0){
+                                    var current_option_checked = 0;
+                                    for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                      if(attr[i]['optionVoList'][n]["checked"] == true){
+                                        current_option_checked++;
+                                      }
+                                    }
+                                    if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                      nexOrder = false;
+                                      var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                      //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                      Get.dialog(
+                                          DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              confirm: () {
+                                                Get.back();
+                                              })
+                                      );
+                                      break;
+                                    }
                                   }
+
                                 }
-                                if(current_option_checked <int.parse(attr[i]["smallest"])){
-                                  nexOrder = false;
-                                  var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
-                                  Get.dialog(
-                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
-                                          confirm: () {
-                                            Get.back();
-                                          })
-                                  );
-                                  break;
+                                if(nexOrder == false) return;
+                                //--------------end
+                                var checkoptionGroupList = {};
+                                for (var optionItem in controller.selectedMenuOptionList.value[item['menuCode']]) {
+                                  currentPrice += optionItem['currentPrice'];
+
+                                  optionCodeList += (optionCodeList != "")
+                                      ? "," + optionItem['optionCode']
+                                      : optionItem['optionCode'];
+                                  var groupKey = optionItem['group'];
+                                  //整理新数组
+                                  checkoptionGroupList[groupKey] = {
+                                    "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                    "groupTitle":optionItem['groupTitle']
+                                  };
+
                                 }
+
+                                checkoptionGroupList.forEach((key, value) {
+                                  optionTitle += (optionTitle != "")
+                                      ? "," + value['groupTitle']+":"+value['optionTitles']
+                                      : value['groupTitle']+":"+value['optionTitles'];
+                                });
                               }
 
-                            }
-                            if(nexOrder == false) return;
-                            //--------------end
-                            var checkoptionGroupList = {};
-                            for (var optionItem in controller.selectedMenuOptionList.value[item['menuCode']]) {
-                              currentPrice += optionItem['currentPrice'];
-
-                              optionCodeList += (optionCodeList != "")
-                                  ? "," + optionItem['optionCode']
-                                  : optionItem['optionCode'];
-                              var groupKey = optionItem['group'];
-                              //整理新数组
-                              checkoptionGroupList[groupKey] = {
-                                "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                "groupTitle":optionItem['groupTitle']
+                              var cartItem = {
+                                "menuCode": item['menuCode'],
+                                "mainTitle": item['mainTitle'],
+                                "image": item['homeImage'],
+                                "currentPrice": currentPrice,
+                                "optionGroupVoList": optionCodeList,
+                                "optionVoListMsg": optionTitle,
+                                "goodsNum": 1,
+                                "qtyBounds": item['qtyBounds'],
+                                "unitPrice":currentPrice
                               };
+                              controller.publicAddCartMenu(cartItem, false).then((val) {
+                                //更改显示购物车价格
+                                //getCartPriceTotal();
+                                if(val != false){
+                                  controller.publicShowAddCartNew(context);
+                                }
+                                controller.changeInitialAllOption(item['menuCode']);
 
-                            }
+                              });
 
-                            checkoptionGroupList.forEach((key, value) {
-                              optionTitle += (optionTitle != "")
-                                  ? "," + value['groupTitle']+":"+value['optionTitles']
-                                  : value['groupTitle']+":"+value['optionTitles'];
-                            });
-                          }
 
-                          var cartItem = {
-                            "menuCode": item['menuCode'],
-                            "mainTitle": item['mainTitle'],
-                            "image": item['homeImage'],
-                            "currentPrice": currentPrice,
-                            "optionGroupVoList": optionCodeList,
-                            "optionVoListMsg": optionTitle,
-                            "goodsNum": 1,
-                            "qtyBounds": item['qtyBounds'],
-                            "unitPrice":currentPrice
-                          };
-                          controller.publicAddCartMenu(cartItem, false).then((val) {
-                            //更改显示购物车价格
-                            //getCartPriceTotal();
-                            if(val != false){
-                              controller.publicShowAddCartNew(context);
-                            }
-                            controller.changeInitialAllOption(item['menuCode']);
 
-                          });
-                        },
-                        child: Container(
-                          margin:
-                          EdgeInsets.only(top: ScreenAdapter.height(15)),
-                          width: ScreenAdapter.width(250),
-                          height: ScreenAdapter.height(67),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor("#078E42"),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
 
+                            },
+                            child: Container(
+                              margin:
+                              EdgeInsets.only(top: ScreenAdapter.height(15)),
+                              width: ScreenAdapter.width(250),
+                              height: ScreenAdapter.height(67),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: (item['qtyBounds'] != 0) ? ColorsUtil.hexToColor("#078E42"): ColorsUtil.hexToColor("#C1C1C1"),
+                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+
+                              ),
+                              child: Text(
+                                  GString.getToString(
+                                      controller.checkLanguage.value, "add_option_cart"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.optionBtnColor),
+                                  )),
+                            ),
                           ),
-                          child: Text(
-                              GString.getToString(
-                                  controller.checkLanguage.value, "add_option_cart"),
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(32),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.optionBtnColor),
-                              )),
-                        ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            ),
+            //绝对定位 盖章
+            controller.publicShowMenuSellOut(item['qtyBounds']),
+          ],
         ),
       ),
     );
   }
 
-  _getThreeOptionWidget(menuCode, setFirstState) {
+  _getThreeOptionWidget(menuCode, setFirstState,qtyBounds) {
     var optionGroupVoList = controller.menuOption.value[menuCode];
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
     if (optionGroupVoList != null &&
@@ -1074,8 +1103,9 @@ class MenuPageView extends GetView {
             child: InkWell(
               //enableFeedback: false,
               onTap: () {
-                controller.changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
-                    optionVolistSon["optionCode"], setFirstState);
+                if(qtyBounds !=0){
+                  controller.changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"], setFirstState);
+                }
               },
               child: badges.Badge(
                 showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
@@ -1221,7 +1251,7 @@ class MenuPageView extends GetView {
   }
 
   //获取第三个页面的widget
-  publicShowThreeMenuOptionGroupWidget(menuCode, menuindex) {
+  publicShowThreeMenuOptionGroupWidget(menuCode, menuindex,qtyBounds) {
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(8),
@@ -1231,7 +1261,7 @@ class MenuPageView extends GetView {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: _getThreeOptionWidget(menuCode, menuindex),
+        children: _getThreeOptionWidget(menuCode, menuindex,qtyBounds),
       ),
     );
   }
@@ -1427,227 +1457,253 @@ class MenuPageView extends GetView {
             bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
           )),
       child: Material(
-        child: Container(
-          padding: EdgeInsets.only(
-              top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
-          margin: EdgeInsets.only(
-              left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
-          color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-          child: StatefulBuilder(
-            builder: (BuildContext context, menuFiveindex) {
-              return Column(
-                children: [
-                  Container(
-                    padding: EdgeInsets.only(
-                      bottom: ScreenAdapter.height(5),
-                    ),
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 400.0, imgHeight: 260.0),
-                        (item['optionGroupVoList']?.length > 0)
-                            ? Expanded(
-                            child: publicShowFiveMenuOptionGroupWidget(
-                                item['menuCode'], menuFiveindex)
-                        )
-                            : Container(
-                          height: 0,
-                        ),
-                      ],
-                    ),
-                  ),
-                  Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
-
-                  //标题价格
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.end,
+        child: Stack(
+          children: [
+            Container(
+              padding: EdgeInsets.only(
+                  top: ScreenAdapter.height(10), bottom: ScreenAdapter.height(10)),
+              margin: EdgeInsets.only(
+                  left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+              color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+              child: StatefulBuilder(
+                builder: (BuildContext context, menuFiveindex) {
+                  return Column(
                     children: [
-                      Expanded(
-                          child: Container(
-                            padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
-                            child: Column(
-                              children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //菜单Title
-                                    Expanded(child: Container(
-                                      padding: EdgeInsets.only(
-                                          right: ScreenAdapter.width(15)),
-                                      child: controller.publicShowMenuTitle(item['mainTitle'],
-                                          32.0, Gcolor.mainTitleColor),
-                                    ),),
-
-                                  ],
-                                ),
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.start,
-                                  crossAxisAlignment: CrossAxisAlignment.end,
-                                  children: [
-                                    //副标题
-                                    subtitle != ""
-                                        ? Expanded(child: Container(
-                                      alignment: Alignment.centerLeft,
-                                      child: Text(
-                                        '${subtitle}',
-                                        style: TextStyle(
-                                            fontSize: ScreenAdapter.fontSize(
-                                                GFontSize.menuThreeListFoodSubtitle),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor)),
-                                      ),
-                                    ))
-                                        : Container(
-                                      width: 0,
-                                    ),
-
-                                  ],
-                                ),
-                              ],
-                            ),
-                          )),
-                      //价格展示 item['currentPrice']
                       Container(
-                        padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
-                        //width: ScreenAdapter.width(200),
-                        alignment: Alignment.bottomRight,
-                        //alignment: Alignment.centerRight,
-                        child: controller.publicShowMenuPrice(
-                            controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']],
-                            item['price'],
-                            35.0,
-                            Gcolor.mainTitleColor,
-                            54.0,
-                            Gcolor.priceColor,
-                            28.0,
-                            Gcolor.mainTitleColor),
+                        padding: EdgeInsets.only(
+                          bottom: ScreenAdapter.height(5),
+                        ),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 400.0, imgHeight: 260.0),
+                            (item['optionGroupVoList']?.length > 0)
+                                ? Expanded(
+                                child: publicShowFiveMenuOptionGroupWidget(
+                                    item['menuCode'], menuFiveindex,item['qtyBounds'])
+                            )
+                                : Container(
+                              height: 0,
+                            ),
+                          ],
+                        ),
                       ),
-                      //确认按钮
-                      InkWell(
-                        enableFeedback: false,
-                        onTap: () {
+                      Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
-                          //判断选择后option是否与optiongroup相等
-                          var optionCodeList = "";
-                          var optionTitle = "";
-                          var currentPrice = item['currentPrice'];
-                          if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
-                            
-                            //--------------检测option单选还是多选是否满足
-                            var attr = controller.menuOption.value[item['menuCode']];
-                            var nexOrder = true;
-                            for (var i = 0; i < attr.length; i++) {
-                              //如果是多选，那么需要判断该组option数量是否超过最大值
-                              if(int.parse(attr[i]["smallest"]) >0){
-                                var current_option_checked = 0;
-                                for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
-                                  if(attr[i]['optionVoList'][n]["checked"] == true){
-                                    current_option_checked++;
-                                  }
-                                }
-                                if(current_option_checked <int.parse(attr[i]["smallest"])){
-                                  nexOrder = false;
-                                  var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
-                                  //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                      //标题价格
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Expanded(
+                              child: Container(
+                                padding: EdgeInsets.only(left: ScreenAdapter.width(10)),
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        //菜单Title
+                                        Expanded(child: Container(
+                                          padding: EdgeInsets.only(
+                                              right: ScreenAdapter.width(15)),
+                                          child: controller.publicShowMenuTitle(item['mainTitle'],
+                                              32.0, Gcolor.mainTitleColor),
+                                        ),),
+
+                                      ],
+                                    ),
+                                    Row(
+                                      mainAxisAlignment: MainAxisAlignment.start,
+                                      crossAxisAlignment: CrossAxisAlignment.end,
+                                      children: [
+                                        //副标题
+                                        subtitle != ""
+                                            ? Expanded(child: Container(
+                                          alignment: Alignment.centerLeft,
+                                          child: Text(
+                                            '${subtitle}',
+                                            style: TextStyle(
+                                                fontSize: ScreenAdapter.fontSize(
+                                                    GFontSize.menuThreeListFoodSubtitle),
+                                                fontWeight: FontWeight.w600,
+                                                color: ColorsUtil.hexToColor(
+                                                    Gcolor.mainTitleColor)),
+                                          ),
+                                        ))
+                                            : Container(
+                                          width: 0,
+                                        ),
+
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              )),
+                          //价格展示 item['currentPrice']
+                          Container(
+                            padding: EdgeInsets.only(right: ScreenAdapter.width(30)),
+                            //width: ScreenAdapter.width(200),
+                            alignment: Alignment.bottomRight,
+                            //alignment: Alignment.centerRight,
+                            child: controller.publicShowMenuPrice(
+                                controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']],
+                                item['price'],
+                                35.0,
+                                Gcolor.mainTitleColor,
+                                54.0,
+                                Gcolor.priceColor,
+                                28.0,
+                                Gcolor.mainTitleColor),
+                          ),
+                          //确认按钮
+                          InkWell(
+                            enableFeedback: false,
+                            onTap: () async {
+
+                              if (item['qtyBounds'] == 0) {
+                                return;
+                              } else if (item['qtyBounds'] > 0) {
+                                //请求限定接口
+                                var cartItemNum = await controller.ordersqlcontroller.getCartItemNum(item['menuCode']);print(cartItemNum);
+                                if(cartItemNum>=item['qtyBounds']){
+                                  var showString = GString.getToString(controller.checkLanguage.value,"show_storage_num_error");
+                                  //showToast("${showString}");
                                   Get.dialog(
-                                      DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                      DialogUtils.alertOneButton(showString,
                                           title: GString.getToString(controller.checkLanguage.value, "tag_title"),
                                           confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
                                           confirm: () {
                                             Get.back();
                                           })
                                   );
-                                  break;
+                                  return;
                                 }
                               }
 
-                            }
-                            if(nexOrder == false) return;
-                            //--------------end
-                            var checkoptionGroupList = {};
-                            for (var optionItem in controller.selectedMenuOptionList.value[item['menuCode']]) {
-                              currentPrice += optionItem['currentPrice'];
+                              //判断选择后option是否与optiongroup相等
+                              var optionCodeList = "";
+                              var optionTitle = "";
+                              var currentPrice = item['currentPrice'];
+                              if (item['optionGroupVoList']?.length > 0) {//item['optionGroupVoList'].length
 
-                              optionCodeList += (optionCodeList != "")
-                                  ? "," + optionItem['optionCode']
-                                  : optionItem['optionCode'];
-                              var groupKey = optionItem['group'];
-                              //整理新数组
-                              checkoptionGroupList[groupKey] = {
-                                "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                "groupTitle":optionItem['groupTitle']
+                                //--------------检测option单选还是多选是否满足
+                                var attr = controller.menuOption.value[item['menuCode']];
+                                var nexOrder = true;
+                                for (var i = 0; i < attr.length; i++) {
+                                  //如果是多选，那么需要判断该组option数量是否超过最大值
+                                  if(int.parse(attr[i]["smallest"]) >0){
+                                    var current_option_checked = 0;
+                                    for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                      if(attr[i]['optionVoList'][n]["checked"] == true){
+                                        current_option_checked++;
+                                      }
+                                    }
+                                    if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                      nexOrder = false;
+                                      var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                      //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                      Get.dialog(
+                                          DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
+                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              confirm: () {
+                                                Get.back();
+                                              })
+                                      );
+                                      break;
+                                    }
+                                  }
+
+                                }
+                                if(nexOrder == false) return;
+                                //--------------end
+                                var checkoptionGroupList = {};
+                                for (var optionItem in controller.selectedMenuOptionList.value[item['menuCode']]) {
+                                  currentPrice += optionItem['currentPrice'];
+
+                                  optionCodeList += (optionCodeList != "")
+                                      ? "," + optionItem['optionCode']
+                                      : optionItem['optionCode'];
+                                  var groupKey = optionItem['group'];
+                                  //整理新数组
+                                  checkoptionGroupList[groupKey] = {
+                                    "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                    "groupTitle":optionItem['groupTitle']
+                                  };
+                                }
+
+                                checkoptionGroupList.forEach((key, value) {
+                                  optionTitle += (optionTitle != "")
+                                      ? "," + value['groupTitle']+":"+value['optionTitles']
+                                      : value['groupTitle']+":"+value['optionTitles'];
+                                });
+
+                              }
+
+                              var cartItem = {
+                                "menuCode": item['menuCode'],
+                                "mainTitle": item['mainTitle'],
+                                "image": item['homeImage'],
+                                "currentPrice": currentPrice,
+                                "optionGroupVoList": optionCodeList,
+                                "optionVoListMsg": optionTitle,
+                                "goodsNum": 1,
+                                "qtyBounds": item['qtyBounds'],
+                                "unitPrice":currentPrice
                               };
-                            }
+                              controller.publicAddCartMenu(cartItem, false).then((val) {
+                                //更改显示购物车价格
+                                //getCartPriceTotal();
+                                if(val != false){
+                                  controller.publicShowAddCartNew(context);
+                                }
 
-                            checkoptionGroupList.forEach((key, value) {
-                              optionTitle += (optionTitle != "")
-                                  ? "," + value['groupTitle']+":"+value['optionTitles']
-                                  : value['groupTitle']+":"+value['optionTitles'];
-                            });
+                                if (item['optionGroupVoList']?.length > 0) {
+                                  controller.changeInitialAllOption(item['menuCode']);
+                                }
 
-                          }
+                              });
+                            },
+                            child: Container(
+                              margin:
+                              EdgeInsets.only(top: ScreenAdapter.height(15)),
+                              width: ScreenAdapter.width(250),
+                              height: ScreenAdapter.height(67),
+                              alignment: Alignment.center,
+                              decoration: BoxDecoration(
+                                color: (item['qtyBounds'] != 0) ? ColorsUtil.hexToColor("#078E42"): ColorsUtil.hexToColor("#C1C1C1"),
+                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
 
-                          var cartItem = {
-                            "menuCode": item['menuCode'],
-                            "mainTitle": item['mainTitle'],
-                            "image": item['homeImage'],
-                            "currentPrice": currentPrice,
-                            "optionGroupVoList": optionCodeList,
-                            "optionVoListMsg": optionTitle,
-                            "goodsNum": 1,
-                            "qtyBounds": item['qtyBounds'],
-                            "unitPrice":currentPrice
-                          };
-                          controller.publicAddCartMenu(cartItem, false).then((val) {
-                            //更改显示购物车价格
-                            //getCartPriceTotal();
-                            if(val != false){
-                              controller.publicShowAddCartNew(context);
-                            }
-
-                            if (item['optionGroupVoList']?.length > 0) {
-                              controller.changeInitialAllOption(item['menuCode']);
-                            }
-
-                          });
-                        },
-                        child: Container(
-                          margin:
-                          EdgeInsets.only(top: ScreenAdapter.height(15)),
-                          width: ScreenAdapter.width(250),
-                          height: ScreenAdapter.height(67),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor("#078E42"),
-                            borderRadius: BorderRadius.all(Radius.circular(10.0)),
-
+                              ),
+                              child: Text(
+                                  GString.getToString(
+                                      controller.checkLanguage.value, "add_option_cart"),
+                                  style: TextStyle(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w500,
+                                    color: ColorsUtil.hexToColor(
+                                        Gcolor.optionBtnColor),
+                                  )),
+                            ),
                           ),
-                          child: Text(
-                              GString.getToString(
-                                  controller.checkLanguage.value, "add_option_cart"),
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(32),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor(
-                                    Gcolor.optionBtnColor),
-                              )),
-                        ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              );
-            },
-          ),
+                  );
+                },
+              ),
+            ),
+            //绝对定位 盖章
+            controller.publicShowMenuSellOut(item['qtyBounds']),
+          ],
         ),
       ),
     );
   }
 
-  _getFiveOptionWidget(menuCode, setFirstState) {
+  _getFiveOptionWidget(menuCode, setFirstState,qtyBounds) {
     var optionGroupVoList = controller.menuOption.value[menuCode];
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
     if (optionGroupVoList != null &&
@@ -1705,8 +1761,10 @@ class MenuPageView extends GetView {
             child: InkWell(
               //enableFeedback: false,
               onTap: () {
-                controller.changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],
-                    optionVolistSon["optionCode"], setFirstState);
+                if(qtyBounds != 0){
+                  controller.changeOptionv1(menuCode, optionGroupVoList[i]["groupCode"],optionVolistSon["optionCode"], setFirstState);
+                }
+
               },
               child: badges.Badge(
                 showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
@@ -1852,7 +1910,7 @@ class MenuPageView extends GetView {
   }
 
   //获取第五个页面的widget
-  publicShowFiveMenuOptionGroupWidget(menuCode, menuindex) {
+  publicShowFiveMenuOptionGroupWidget(menuCode, menuindex,qtyBounds) {
     return Container(
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(8),
@@ -1862,7 +1920,7 @@ class MenuPageView extends GetView {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.start,
-        children: _getFiveOptionWidget(menuCode, menuindex),
+        children: _getFiveOptionWidget(menuCode, menuindex,qtyBounds),
       ),
     );
   }
