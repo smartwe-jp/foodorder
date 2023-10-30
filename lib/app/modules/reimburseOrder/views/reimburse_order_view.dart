@@ -374,6 +374,8 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                       delete: () {
                         if(controller.orderIdController.text.length >1){
                           controller.orderIdController.text = controller.orderIdController.text.substring(0, controller.orderIdController.text.length - 1);
+                        }else if(controller.orderIdController.text.length ==1){
+                          controller.orderIdController.text = "";
                         }
                       },
                       // do something with the input numbers
