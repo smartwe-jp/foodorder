@@ -38,7 +38,7 @@ class CheckoutPageView extends GetView {
         child: Container(
           width: ScreenAdapter.width(217),
           height: ScreenAdapter.height(90),
-          margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+          margin: EdgeInsets.only(left:ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
           decoration: BoxDecoration(
             image: DecorationImage(
               //alignment: Alignment.topCenter,
@@ -291,7 +291,7 @@ class CheckoutPageView extends GetView {
                 ),
               ),
               Positioned(
-                top: ScreenAdapter.height(1400),
+                top: ScreenAdapter.height(1370),
                 child: Container(
                   width: ScreenAdapter.width(1080),
                   child: Column(
