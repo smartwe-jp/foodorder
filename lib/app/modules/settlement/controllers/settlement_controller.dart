@@ -2843,6 +2843,14 @@ class SettlementController extends GetxController with StateMixin {
     categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
 
     categoryMenus.add(SizedBox(height: 5,));
+
+    //电话
+    if (printData["telNo"] != null && printData["telNo"] != "") {
+      addRowHight += 38;
+      categoryMenus.add(_publicOneColumnTxtNew("電話番号:${printData["telNo"]}", 26.0, FontWeight.w300));
+      categoryMenus.add(SizedBox(height: 5,));
+    }
+
     //登录番号
     if(printData["ntaNo"] != null && printData["ntaNo"] != ""){
       addRowHight += 38;
