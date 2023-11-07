@@ -1196,8 +1196,9 @@ class SettlementView extends GetView {
                         //SizedBox(width: ScreenAdapter.width(80)),
                         controller.showPrintButton.value == true
                             ? (
-                            controller.is_allow_receipt.value == "1"
-                                ? Container(
+                            // controller.is_allow_receipt.value == "1"
+                            //     ?
+                            Container(
                               width: ScreenAdapter.width(700),
                               padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(80)),
                               //width: ScreenAdapter.width(540),
@@ -1210,7 +1211,7 @@ class SettlementView extends GetView {
 
                                     controller.showEasyLoading();
 
-                                    controller.doPrintOrderMenu("1");
+                                    controller.doPrintOrderMenu(controller.receiptPrintType.value);
                                   }
                                 },
                                 child: Container(
@@ -1245,163 +1246,163 @@ class SettlementView extends GetView {
                                 ),
                               ),
                             )
-                                : Container(
-                              width: ScreenAdapter.width(700),
-                              padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(30)),
-                              alignment: Alignment.centerRight,
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      if (controller.allowClick.value == true) {
-                                        controller.allowClick.value = false;
-                                        controller.isPrintClick.value = true;
-
-                                        controller.showEasyLoading();
-
-                                        controller.doPrintOrderMenu("1");
-                                      }
-                                    },
-                                    child: Container(
-                                      //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                                      width: ScreenAdapter.width(270),
-                                      height: ScreenAdapter.height(140),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color:ColorsUtil.hexToColor("#148DE8"),
-                                        //设置圆角
-                                        borderRadius:
-                                        new BorderRadius.circular((5.0)),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          /*Text(
-                                          GString.getToString(
-                                              controller.checkLanguage.value,
-                                              "settlement_confirmButton"),
-                                          style: TextStyle(
-                                            fontSize:
-                                            ScreenAdapter.fontSize(
-                                                32),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor
-                                                    .settlementBtnColor),
-                                          )),*/
-                                          Text(
-                                              GString.getToString(
-                                                  controller.checkLanguage.value,
-                                                  "settlement_confirmButton_yes"),
-                                              style: TextStyle(
-                                                fontSize:
-                                                ScreenAdapter.fontSize(
-                                                    32),
-                                                fontWeight: FontWeight.w600,
-                                                color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                              )),
-                                          /*Text(
-                                          GString.getToString(
-                                              controller.checkLanguage.value,
-                                              "settlement_confirmButton_yes"),
-                                          style: TextStyle(
-                                            fontSize:
-                                            ScreenAdapter.fontSize(
-                                                20),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor
-                                                    .settlementBtnColor),
-                                          )),*/
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: ScreenAdapter.width(30)),
-                                  InkWell(
-                                    onTap: () {
-                                      if (controller.allowClick.value == true) {
-
-                                        controller.allowClick.value = false;
-                                        controller.is_query_receipt.value = "2";
-                                        controller.isPrintClick.value = true;
-
-
-                                        if (controller.machineMode.value == "1") {
-                                          controller.showEasyLoading();
-                                        } else {
-                                          controller.showSuccessEasyLoading();
-                                        }
-
-                                        controller.doPrintOrderMenu("2");
-                                      }
-                                    },
-                                    child: Container(
-                                      margin: EdgeInsets.only(
-                                          left: ScreenAdapter.width(10)),
-                                      width: ScreenAdapter.width(270),
-                                      height: ScreenAdapter.height(140),
-                                      alignment: Alignment.center,
-                                      decoration: BoxDecoration(
-                                        color:
-                                        ColorsUtil.hexToColor("#67c23a"),
-                                        //设置圆角
-                                        borderRadius:
-                                        new BorderRadius.circular((5.0)),
-                                      ),
-                                      child: Column(
-                                        mainAxisAlignment:
-                                        MainAxisAlignment.center,
-                                        children: [
-                                          /*Text(
-                                          GString.getToString(
-                                              controller.checkLanguage.value,
-                                              "settlement_confirmButton"),
-                                          style: TextStyle(
-                                            fontSize:
-                                            ScreenAdapter.fontSize(
-                                                32),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor
-                                                    .settlementBtnColor),
-                                          )),*/
-                                          Text(
-                                              GString.getToString(
-                                                  controller.checkLanguage.value,
-                                                  "settlement_confirmButton_no2"),
-                                              style: TextStyle(
-                                                fontSize:
-                                                ScreenAdapter.fontSize(
-                                                    32),
-                                                fontWeight: FontWeight.w600,
-                                                color: ColorsUtil.hexToColor(
-                                                    Gcolor
-                                                        .settlementBtnColor),
-                                              )),
-                                          /* Text(
-                                          GString.getToString(
-                                              controller.checkLanguage.value,
-                                              "settlement_confirmButton_no"),
-                                          style: TextStyle(
-                                            fontSize:
-                                            ScreenAdapter.fontSize(
-                                                20),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor
-                                                    .settlementBtnColor),
-                                          )),*/
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            )
+                            //     : Container(
+                            //   width: ScreenAdapter.width(700),
+                            //   padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(30)),
+                            //   alignment: Alignment.centerRight,
+                            //   child: Row(
+                            //     mainAxisAlignment: MainAxisAlignment.start,
+                            //     crossAxisAlignment: CrossAxisAlignment.center,
+                            //     children: [
+                            //       InkWell(
+                            //         onTap: () {
+                            //           if (controller.allowClick.value == true) {
+                            //             controller.allowClick.value = false;
+                            //             controller.isPrintClick.value = true;
+                            //
+                            //             controller.showEasyLoading();
+                            //
+                            //             controller.doPrintOrderMenu("1");
+                            //           }
+                            //         },
+                            //         child: Container(
+                            //           //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                            //           width: ScreenAdapter.width(270),
+                            //           height: ScreenAdapter.height(140),
+                            //           alignment: Alignment.center,
+                            //           decoration: BoxDecoration(
+                            //             color:ColorsUtil.hexToColor("#148DE8"),
+                            //             //设置圆角
+                            //             borderRadius:
+                            //             new BorderRadius.circular((5.0)),
+                            //           ),
+                            //           child: Column(
+                            //             mainAxisAlignment:
+                            //             MainAxisAlignment.center,
+                            //             children: [
+                            //               /*Text(
+                            //               GString.getToString(
+                            //                   controller.checkLanguage.value,
+                            //                   "settlement_confirmButton"),
+                            //               style: TextStyle(
+                            //                 fontSize:
+                            //                 ScreenAdapter.fontSize(
+                            //                     32),
+                            //                 fontWeight: FontWeight.w600,
+                            //                 color: ColorsUtil.hexToColor(
+                            //                     Gcolor
+                            //                         .settlementBtnColor),
+                            //               )),*/
+                            //               Text(
+                            //                   GString.getToString(
+                            //                       controller.checkLanguage.value,
+                            //                       "settlement_confirmButton_yes"),
+                            //                   style: TextStyle(
+                            //                     fontSize:
+                            //                     ScreenAdapter.fontSize(
+                            //                         32),
+                            //                     fontWeight: FontWeight.w600,
+                            //                     color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                            //                   )),
+                            //               /*Text(
+                            //               GString.getToString(
+                            //                   controller.checkLanguage.value,
+                            //                   "settlement_confirmButton_yes"),
+                            //               style: TextStyle(
+                            //                 fontSize:
+                            //                 ScreenAdapter.fontSize(
+                            //                     20),
+                            //                 fontWeight: FontWeight.w600,
+                            //                 color: ColorsUtil.hexToColor(
+                            //                     Gcolor
+                            //                         .settlementBtnColor),
+                            //               )),*/
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       ),
+                            //       SizedBox(width: ScreenAdapter.width(30)),
+                            //       InkWell(
+                            //         onTap: () {
+                            //           if (controller.allowClick.value == true) {
+                            //
+                            //             controller.allowClick.value = false;
+                            //             controller.is_query_receipt.value = "2";
+                            //             controller.isPrintClick.value = true;
+                            //
+                            //
+                            //             if (controller.machineMode.value == "1") {
+                            //               controller.showEasyLoading();
+                            //             } else {
+                            //               controller.showSuccessEasyLoading();
+                            //             }
+                            //
+                            //             controller.doPrintOrderMenu("2");
+                            //           }
+                            //         },
+                            //         child: Container(
+                            //           margin: EdgeInsets.only(
+                            //               left: ScreenAdapter.width(10)),
+                            //           width: ScreenAdapter.width(270),
+                            //           height: ScreenAdapter.height(140),
+                            //           alignment: Alignment.center,
+                            //           decoration: BoxDecoration(
+                            //             color:
+                            //             ColorsUtil.hexToColor("#67c23a"),
+                            //             //设置圆角
+                            //             borderRadius:
+                            //             new BorderRadius.circular((5.0)),
+                            //           ),
+                            //           child: Column(
+                            //             mainAxisAlignment:
+                            //             MainAxisAlignment.center,
+                            //             children: [
+                            //               /*Text(
+                            //               GString.getToString(
+                            //                   controller.checkLanguage.value,
+                            //                   "settlement_confirmButton"),
+                            //               style: TextStyle(
+                            //                 fontSize:
+                            //                 ScreenAdapter.fontSize(
+                            //                     32),
+                            //                 fontWeight: FontWeight.w600,
+                            //                 color: ColorsUtil.hexToColor(
+                            //                     Gcolor
+                            //                         .settlementBtnColor),
+                            //               )),*/
+                            //               Text(
+                            //                   GString.getToString(
+                            //                       controller.checkLanguage.value,
+                            //                       "settlement_confirmButton_no2"),
+                            //                   style: TextStyle(
+                            //                     fontSize:
+                            //                     ScreenAdapter.fontSize(
+                            //                         32),
+                            //                     fontWeight: FontWeight.w600,
+                            //                     color: ColorsUtil.hexToColor(
+                            //                         Gcolor
+                            //                             .settlementBtnColor),
+                            //                   )),
+                            //               /* Text(
+                            //               GString.getToString(
+                            //                   controller.checkLanguage.value,
+                            //                   "settlement_confirmButton_no"),
+                            //               style: TextStyle(
+                            //                 fontSize:
+                            //                 ScreenAdapter.fontSize(
+                            //                     20),
+                            //                 fontWeight: FontWeight.w600,
+                            //                 color: ColorsUtil.hexToColor(
+                            //                     Gcolor
+                            //                         .settlementBtnColor),
+                            //               )),*/
+                            //             ],
+                            //           ),
+                            //         ),
+                            //       ),
+                            //     ],
+                            //   ),
+                            // )
                         )
                             : Container(
                           padding:EdgeInsets.only(left: ScreenAdapter.width(20)),

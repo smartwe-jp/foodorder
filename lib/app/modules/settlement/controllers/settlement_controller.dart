@@ -52,6 +52,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
   RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
   RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
+  RxString receiptPrintType = "2".obs;//1 打印  2 不打印
   RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
@@ -199,6 +200,7 @@ class SettlementController extends GetxController with StateMixin {
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
     isAllowPos.value = Get.arguments['isAllowPos'];
+    receiptPrintType.value = Get.arguments['receiptPrintType'];
     pos_ip.value = Get.arguments['posIp'];
     pos_port.value = Get.arguments['posPort'];
     payment_method_num.value = Get.arguments['paymentMethod'];

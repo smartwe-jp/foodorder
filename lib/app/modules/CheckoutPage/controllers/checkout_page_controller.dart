@@ -35,6 +35,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString isReservation = "0".obs;
 
   RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
+  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
+  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
   RxString pos_ip = "".obs;
   RxString pos_port = "".obs;
 
@@ -128,6 +130,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
       isReservation.value = SystemSettingInfo["isReservation"];
       isAllowPos.value = SystemSettingInfo['isAllowPos'];
+      isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
       takeOut.value = (SystemSettingInfo['diningType'] == "2" || SystemSettingInfo['diningType'] == "3") ? true : false;
 
     getmenchineLanguages();
@@ -377,6 +380,7 @@ class CheckoutPageController extends GetxController with StateMixin {
             menuCount: 0,
             //mealType:_mealType,
             isAllowPos: isAllowPos.value,
+            isAllowReceipt: isAllowReceipt.value,
             payment_method_num: payment_method_num.value,
             showCash: showCash.value,
             showWechat: showWechat.value,
@@ -401,9 +405,10 @@ class CheckoutPageController extends GetxController with StateMixin {
             showDinersClub:showDinersClub.value,
             shopCartTotalPrice:totlaPrice.value,
             tableNum: tableNum.value,
-            onConfrimClick: (String isAllowPosstr, String payment_method_numcheck) {
+            onConfrimClick: (String isAllowPosstr, String payment_method_numcheck, String receiptPrintTypeString) {
                 isAllowPos.value = isAllowPosstr;
                 payment_method_num.value = payment_method_numcheck;
+                receiptPrintType.value = receiptPrintTypeString;
                 checkLanguage.value = "JP";
                 scanQrCodeController.text = "";
                 scanQrCodeHomeController.text = "";
@@ -479,6 +484,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           "totalPrice" : totlaPrice.value,
           "machineMode":"2",
           "isAllowPos": isAllowPos.value,
+          "receiptPrintType": receiptPrintType.value,
           "posIp": pos_ip.value,
           "posPort": pos_port.value,
           "paymentMethod":payment_method_num.value,

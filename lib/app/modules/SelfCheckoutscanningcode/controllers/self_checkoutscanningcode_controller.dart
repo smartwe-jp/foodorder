@@ -36,6 +36,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxInt showCartTotalGoodsNum = 0.obs;
 
   RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
+  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
+  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
   RxString pos_ip = "".obs;
   RxString pos_port = "".obs;
   RxString payment_method_num = "0".obs; //支付类型选择
@@ -105,6 +107,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     isAllowPos.value = systemSettingInfo['isAllowPos'];
+    isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
     _getMachineActivateInfo();
 
   }
@@ -467,6 +470,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             menuCount: showCartTotalGoodsNum.value,
             //mealType:_mealType.value,
             isAllowPos:isAllowPos.value,
+            isAllowReceipt: isAllowReceipt.value,
             payment_method_num:payment_method_num.value,
             showCash: showCash.value,
             showWechat: showWechat.value,
@@ -491,10 +495,11 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             showDinersClub: showDinersClub.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
-            onConfrimClick: (String isAllowPosString, String payment_method_num_string) {
+            onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptPrintTypeString) {
 
               isAllowPos.value = isAllowPosString;
               payment_method_num.value = payment_method_num_string;
+              receiptPrintType.value = receiptPrintTypeString;
               showOpenPayment.value = true;
               //230629点击弹出支付方式后，需要重新请求下后台获得orderid
 
@@ -564,6 +569,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           "totalPrice" : shopCartTotalPrice.value,
           "machineMode":"1",
           "isAllowPos":isAllowPos.value,
+          "receiptPrintType": receiptPrintType.value,
           "posIp":pos_ip.value,
           "posPort":pos_port.value,
           "paymentMethod":payment_method_num.value,
