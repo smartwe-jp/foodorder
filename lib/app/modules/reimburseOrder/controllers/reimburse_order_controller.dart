@@ -105,17 +105,36 @@ class ReimburseOrderController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 LogUtil.d(response);
-      if (response['code'] == 200 && response['data'] !=null) {
+      if (response['code'] == 200 && response['data'] !=null && response['data'].length > 0) {
 
         orderList.value = response['data'];
         //print(orderId.value);
         //goToSettlement();
+      } else {
+        noOrderAlsert();
       }
 
       update();
     });
 
 
+  }
+
+  noOrderAlsert() {
+    Get.dialog(
+        DialogUtils.alertOneButton("指定した取引は存在しません。",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
   }
 
   refoundOrderAlert(orderinfo){
@@ -137,17 +156,36 @@ LogUtil.d(response);
   }
 
   refoundOrder() async {
-    if(refundInfo.value["payChannel"] =="Cash"){
+    if (refundInfo.value["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
       //调用插件的监听
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
 
-    }else{
+    } else if (refundInfo.value["payChannel"] =="CreditCard") {
+      showPosEasyLoading();
+      refundCreditCard();
+    } else{
       showPosEasyLoading();
       refundScanCodePay();
     }
+  }
+
+  refundCreditCard() {
+    var formData = {
+      "machineCode": machineCode.value,
+      "orderId": refundInfo.value["orderId"],
+    };
+    request('webBootReimburseExecute', method: 'POST', parameters: formData)
+        .then((value) {
+      var response = json.decode(value.toString());
+      if(response['code'] == 200 && response['data']["executeMark"] == true && response['data']["requestMessage"] !=""){
+        payconnectSocker(questData: response['data']["requestMessage"]);
+      } else {
+        refundFailedAlert();
+      }
+    });
   }
 
   refundScanCodePay(){
@@ -180,19 +218,41 @@ LogUtil.d(response);
         //showPosEasyLoading();
         payconnectSocker(questData: response['data']["requestMessage"]);
       }else{
-        Get.dialog(
-            DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  //orderIdController.text = "";
-                  //queryOrder();
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
+        refundFailedAlert();
       }
     });
+  }
+
+  //refund failed alert
+  refundFailedAlert(){
+    Get.dialog(
+        DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              //orderIdController.text = "";
+              //queryOrder();
+              Get.back();
+            }),
+        barrierDismissible: false
+    );
+  }
+
+  hadRefundAlert(){
+    Get.dialog(
+        DialogUtils.alertOneButton("指定した取引は既に取消されています。",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
   }
 
   //pos机相关
@@ -233,13 +293,15 @@ LogUtil.d(response);
     //判断socket请求次数
     socketNumberTimes.value++;
     if(socketNumberTimes.value>20){
+      socketNumberTimes.value = 0;
+      EasyLoading.dismiss();
       Get.dialog(
           DialogUtils.alertOneButton("セルフレジは端末に接続されてません、スタフに聞いてお願いします。",
               title: "お知らせ",
               confirmtitle: "はい",
               confirm: () {
                 Get.back();
-              })
+              }),
       );
       return;
     }
@@ -310,37 +372,19 @@ LogUtil.d(response);
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
 
-              Get.dialog(
-                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                      title: "お知らせ",
-                      confirmtitle: "はい",
-                      confirm: () {
-
-                        Get.back();
-
-                      })
-              );
+              refundFailedAlert();
             }
           }
         }else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
-
+            EasyLoading.dismiss();
           } else {
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
 
-              Get.dialog(
-                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                      title: "お知らせ",
-                      confirmtitle: "はい",
-                      confirm: () {
-
-                        Get.back();
-
-                      })
-              );
+              refundFailedAlert();
             }
           }
         }
