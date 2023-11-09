@@ -439,6 +439,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     var formData = {
       "orderId": orderId.value,
+      "machineCode": machineCode.value,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());

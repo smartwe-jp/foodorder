@@ -1263,6 +1263,7 @@ print("加1了");
 
     var formData = {
       "orderId": doSubmitOrderId.value,
+      "machineCode": machineCode.value,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());

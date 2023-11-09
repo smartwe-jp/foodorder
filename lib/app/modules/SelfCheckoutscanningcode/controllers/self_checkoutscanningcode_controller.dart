@@ -525,6 +525,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     var formData = {
       "orderId": doSubmitOrderId.value,
+      "machineCode": machineCode.value,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
