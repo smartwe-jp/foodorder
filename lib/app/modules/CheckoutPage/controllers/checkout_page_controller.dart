@@ -409,7 +409,7 @@ class CheckoutPageController extends GetxController with StateMixin {
                 isAllowPos.value = isAllowPosstr;
                 payment_method_num.value = payment_method_numcheck;
                 receiptPrintType.value = receiptPrintTypeString;
-                checkLanguage.value = "JP";
+                //checkLanguage.value = "JP";
                 scanQrCodeController.text = "";
                 scanQrCodeHomeController.text = "";
                 showOpenPayment.value = true;
