@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -1042,6 +1043,29 @@ class SettlementController extends GetxController with StateMixin {
               }
             }
           }
+        } else {
+          //Charge Error
+          var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
+          var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
+              + "transaction_type:${transaction_type} " + "resultString:${resultString} "
+              + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
+
+          FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
+            "reportInfo":reportInfo,
+          });
+          CreditCardPayReport(reportInfo);
+          Get.dialog(
+              DialogUtils.alert("Error Message：${reportInfo}",
+                  title: "POS Charge Error",
+                  canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
+                  confirm: () {
+                    Get.back();
+                  },
+                  cancle: () {
+                    Get.back();
+                  }),
+              barrierDismissible: false
+          );
         }
       },
         onDone: () {
