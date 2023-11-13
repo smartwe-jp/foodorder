@@ -374,7 +374,6 @@ LogUtil.d(response);
         }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             reportChange(eventReportString.value);
-            _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
           } else {
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
@@ -386,7 +385,6 @@ LogUtil.d(response);
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
-            _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
             EasyLoading.dismiss();
           } else {
             EasyLoading.dismiss();
@@ -523,6 +521,7 @@ LogUtil.d(response);
       var response = json.decode(value.toString());
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
+        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
                 title: "お知らせ",
