@@ -8,14 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
+import 'package:widget_to_image/widget_to_image.dart';
 
 import '../../../config/imageData.dart';
+import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../widget/DialogUtils.dart';
+import '../views/reimbruse_order_print_view.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
@@ -25,6 +28,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
   RxList orderList = [].obs;
   RxMap refundInfo = {}.obs;
+  RxString printLogoImage = "".obs;
 
   Timer? allowtimer;
   Timer? stoptimer;
@@ -54,7 +58,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   RxInt socketNumberTimes = 0.obs;
 
-
+  late ReimbursePrintView reimbursePrintView;
+  late Size reimbursePrintViewSize;
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -76,7 +81,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     isAllowPos.value = systemSettingInfo['isAllowPos'];
     _getPosSettingInfo();
-
+    _getPrintLogoImageData();
   }
 
   _getPosSettingInfo() async {
@@ -137,7 +142,9 @@ LogUtil.d(response);
     );
   }
 
-  refoundOrderAlert(orderinfo){
+  refoundOrderAlert(orderinfo, refoundView, viewSize) {
+    reimbursePrintView = refoundView;
+    reimbursePrintViewSize = viewSize;
     Get.dialog(
         DialogUtils.alert("この注文をキャンセルして返金しますか？",
             title: "お知らせ",
@@ -367,7 +374,7 @@ LogUtil.d(response);
         }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             reportChange(eventReportString.value);
-
+            _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
           } else {
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
@@ -379,6 +386,7 @@ LogUtil.d(response);
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
+            _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
             EasyLoading.dismiss();
           } else {
             EasyLoading.dismiss();
@@ -571,7 +579,34 @@ LogUtil.d(response);
     });
   }
 
+  _printReimburseReceipt(Size size, Widget widget) async {
+    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+      width: size.width.toDouble(),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
+      height: size.height.toDouble(),
+      color: Colors.white,
+      child: widget,
+      ),
+      size: size,
+    );
 
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    String base64Image = base64Encode(imageBytes);
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", "");//printLogoImage.value
+    Future.delayed(Duration(milliseconds: 300), () async {
+      await FlutterPluginMsprinter.sendPrintCut("1");
+    });
+  }
+
+  _getPrintLogoImageData() async {
+    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+    if(logoImageInfo != "" && logoImageInfo != null){
+      printLogoImage.value = logoImageInfo;
+    }
+
+    change(null, status: RxStatus.success());
+  }
 
 
 }

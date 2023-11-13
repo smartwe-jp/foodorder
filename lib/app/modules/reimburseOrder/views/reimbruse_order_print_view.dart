@@ -11,10 +11,11 @@ import '../controllers/reimburse_order_controller.dart';
 class ReimbursePrintView extends StatelessWidget {
 
   final Map<String, dynamic> reimburseInfo;
-
+  final GlobalKey containerKey = GlobalKey();
   ReimbursePrintView({Key? key, required this.reimburseInfo})
       : super(key: key);
-
+  final contentStyle = GoogleFonts.zenKakuGothicAntique(
+      fontSize: 26, fontWeight: FontWeight.w300, color: Colors.black87);
 
 
   @override
@@ -31,41 +32,47 @@ class ReimbursePrintView extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.only(bottom: 20),
-              child: Text("[売上取消票]",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87)),
+              child:
+              Directionality(
+                textDirection: TextDirection.ltr,
+                child: Text("[売上取消票]",
+                    style: contentStyle),
+              ),
             ),
           ],
         ),
       ),
     );
-    categoryMenus.add(_publicSplitLine());
+    categoryMenus.add(_publicSplitLine());//
 
     //branch info
     categoryMenus.add(shitenInfoArea());
-    categoryMenus.add(_publicSplitLine());
+    categoryMenus.add(_publicSplitLine());//分割线
 
     //order info
     categoryMenus.add(reimburseInfoArea());
-    categoryMenus.add(_publicSplitLine());
+    categoryMenus.add(_publicSplitLine());//分割线
 
     //reimburse info
     categoryMenus.add(amountInfoArea());
 
-    return Wrap(
-      children: [
-        Container(
-          margin: EdgeInsets.only(top: 20, bottom: 10, left: 10, right: 20),
-          width: 375,
-          color: Colors.white,
-          child: Column(
-            children: categoryMenus,
-          ),
+    return
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child:Wrap(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 10, bottom: 40),
+              width: 385,
+              color: Colors.white,
+              child: Column(
+                children: categoryMenus,
+              ),
+            ),
+          ],
         ),
-      ],
-    );
+      );
+
   }
 
   //分割线
@@ -76,83 +83,80 @@ class ReimbursePrintView extends StatelessWidget {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 0.5,
           color: ColorsUtil.hexToColor("#000000"),
-          width: 375,
+          width: 385,
         ));
   }
 
   Widget shitenInfoArea() {
     return Container(
         margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: Column(
+        child:
+        Directionality(
+        textDirection: TextDirection.ltr,
+        child:
+        Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //店舗名
-            Container(
+            hasShopName() ? Container(
               margin: EdgeInsets.only(bottom: 10),
               child: Text(
-                "甘蘭牛肉麵大阪頓堀店",
+                "${reimburseInfo["shopName"]}",
                 style: GoogleFonts.zenKakuGothicAntique(
                     fontSize: 30,
                     fontWeight: FontWeight.w600,
                     color: Colors.black87),
               ),
-            ),
+            ) : Container(),
 
-            Row(
+            hasAddress() ? Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "住所",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Expanded(
                   child: Text(
-                    "〒100-0005 東京都千代田区丸の内１丁目９−１",
-                    style: GoogleFonts.zenKakuGothicAntique(
-                        fontSize: 20,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black87),
+                    "${reimburseInfo["address"]}",
+                    style: contentStyle,
                   ),
                 ),
               ],
-            ),
-            Row(
+            ) : Container(),
+
+            hasPhone() ? Row(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 Text(
                   "電話",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
-                  "03-1234-5678",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  "${reimburseInfo["telNo"]}",
+                  style: contentStyle,
                 ),
               ],
-            ),
+            ) : Container(),
           ],
-        ));
+        )));
   }
 
   Widget reimburseInfoArea() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
-      child: Column(
+      child:
+      Directionality(
+      textDirection: TextDirection.ltr,
+      child:
+      Column(
         children: [
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -160,10 +164,7 @@ class ReimbursePrintView extends StatelessWidget {
             children: [
               Text(
                 "取引時間",
-                style: GoogleFonts.zenKakuGothicAntique(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black87),
+                style: contentStyle,
               ),
               SizedBox(
                 width: 10,
@@ -171,10 +172,7 @@ class ReimbursePrintView extends StatelessWidget {
               Text(
                 _getCurrentTime()
                 ,
-                style: GoogleFonts.zenKakuGothicAntique(
-                    fontSize: 20,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black87),
+                style: contentStyle,
               ),
             ],
           ),
@@ -184,20 +182,14 @@ class ReimbursePrintView extends StatelessWidget {
                   children: [
                     Text(
                       "注文番号",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
                       "${reimburseInfo["orderIdStr"]}",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                   ],
                 )
@@ -208,20 +200,14 @@ class ReimbursePrintView extends StatelessWidget {
                   children: [
                     Text(
                       "お客様番号",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
                       "${reimburseInfo["serialNumber"]}",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                   ],
                 )
@@ -232,20 +218,14 @@ class ReimbursePrintView extends StatelessWidget {
                   children: [
                     Text(
                       "決済時間",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
                       "${reimburseInfo["payTime"]}",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                   ],
                 ) : Container(),
@@ -256,39 +236,36 @@ class ReimbursePrintView extends StatelessWidget {
                   children: [
                     Text(
                       "決済方法",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                     SizedBox(
                       width: 10,
                     ),
                     Text(
                       "${reimburseInfo["payChannel"]}",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 20,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
+                      style: contentStyle,
                     ),
                   ],
                 ) : Container(),
         ],
-      ),
+      )),
     );
   }
   //
 
   String _getCurrentTime() {
     DateTime now = DateTime.now();
-    String formattedDate = "${now.year}/${now.month}/${now.day} ${now.hour}:${now.minute}:${now.second}";
+    String formattedDate = "${now.year}/${now.month}/${now.day} ${now.hour}:${now.minute}";
     return formattedDate;
   }
 
   Widget amountInfoArea() {
     return Container(
         margin: EdgeInsets.only(top: 10, bottom: 10),
-        child: Column(
+        child: Directionality(
+        textDirection: TextDirection.ltr,
+        child:
+        Column(
           children: [
             hasPayAmount() ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -296,20 +273,14 @@ class ReimbursePrintView extends StatelessWidget {
               children: [
                 Text(
                   "決済金額",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
                   "¥ ${reimburseInfo["payAmount"]}",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
               ],
             ) : Container(),
@@ -319,25 +290,19 @@ class ReimbursePrintView extends StatelessWidget {
               children: [
                 Text(
                   "返金金額",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
                 SizedBox(
                   width: 10,
                 ),
                 Text(
                   "¥ ${reimburseInfo["amount"]}",
-                  style: GoogleFonts.zenKakuGothicAntique(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w300,
-                      color: Colors.black87),
+                  style: contentStyle,
                 ),
               ],
             ) : Container(),
           ],
-        ));
+        )));
   }
 
   bool _hasOrderId() {
@@ -369,6 +334,22 @@ class ReimbursePrintView extends StatelessWidget {
     return reimburseInfo["payChannel"] != null &&
         reimburseInfo["payChannel"].toString().length > 0;
   }
+
+  bool hasPhone() {
+    return reimburseInfo["telNo"] != null &&
+        reimburseInfo["telNo"].toString().length > 0;
+  }
+
+  bool hasAddress() {
+    return reimburseInfo["address"] != null &&
+        reimburseInfo["address"].toString().length > 0;
+  }
+
+  bool hasShopName() {
+    return reimburseInfo["shopName"] != null &&
+        reimburseInfo["shopName"].toString().length > 0;
+  }
+
 }
 
 
