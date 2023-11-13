@@ -595,7 +595,7 @@ LogUtil.d(response);
     String base64Image = base64Encode(imageBytes);
     await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", "");//printLogoImage.value
     Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("1");
+      await FlutterPluginMsprinter.sendPrintCut("0");
     });
   }
 
