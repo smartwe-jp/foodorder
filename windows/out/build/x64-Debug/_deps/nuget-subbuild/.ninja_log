@@ -1,0 +1,24 @@
+# ninja log v5
+2	58	7216562480008134	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir	83b4c0d17f82ef22
+2	58	7216562480008134	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-mkdir	83b4c0d17f82ef22
+59	1636	7216562495792022	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download	20004ebbbca7a362
+59	1636	7216562495792022	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-download	20004ebbbca7a362
+1636	1687	7216562496306005	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update	73315291617940b3
+1636	1687	7216562496306005	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-update	73315291617940b3
+1687	1737	7216562496795098	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch	606573bdcfaeea1f
+1687	1737	7216562496795098	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-patch	606573bdcfaeea1f
+1737	1801	7216562497435484	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile	d8071804fef50dcb
+1737	1801	7216562497435484	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-src/nuget.exe	d8071804fef50dcb
+1737	1801	7216562497435484	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-copyfile	d8071804fef50dcb
+1801	1852	7216562497950156	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure	25dda3ad73a89d32
+1801	1852	7216562497950156	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-configure	25dda3ad73a89d32
+1852	1904	7216562498461391	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build	85c1f1ea4241d932
+1852	1904	7216562498461391	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-build	85c1f1ea4241d932
+1904	1958	7216562499005092	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install	a510cbd6acde4665
+1904	1958	7216562499005092	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-install	a510cbd6acde4665
+1958	2012	7216562499539409	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test	d8fe0279802c8bed
+1958	2012	7216562499539409	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-test	d8fe0279802c8bed
+2013	2088	7216562500299588	CMakeFiles/nuget-populate-complete	16257c8c11b82034
+2013	2088	7216562500299588	nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-done	16257c8c11b82034
+2013	2088	7216562500299588	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/CMakeFiles/nuget-populate-complete	16257c8c11b82034
+2013	2088	7216562500299588	C:/Users/Administrator/foodorder/windows/out/build/x64-Debug/_deps/nuget-subbuild/nuget-populate-prefix/src/nuget-populate-stamp/nuget-populate-done	16257c8c11b82034
