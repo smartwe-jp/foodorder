@@ -1,10 +1,19 @@
-
-
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SQLService {
-   Database? db;
+  Database? db;
+
+  SQLService() {
+    sqfliteFfiInit();
+    databaseFactory = databaseFactoryFfi;
+    init();
+  }
+
+  Future<void> init() async {
+    await openDB();
+  }
 
   Future openDB() async {
     try {
@@ -50,24 +59,25 @@ class SQLService {
     }
   }
 
-
   Future getCartList() async {
     try {
-      var list = await db?.rawQuery('SELECT * FROM cart_list ORDER BY id DESC', []);
+      var list =
+          await db?.rawQuery('SELECT * FROM cart_list ORDER BY id DESC', []);
       return list ?? [];
     } catch (e) {
       return Future.error(e);
     }
   }
 
-   Future getAscCartList() async {
-     try {
-       var list = await db?.rawQuery('SELECT * FROM cart_list ORDER BY id ASC', []);
-       return list ?? [];
-     } catch (e) {
-       return Future.error(e);
-     }
-   }
+  Future getAscCartList() async {
+    try {
+      var list =
+          await db?.rawQuery('SELECT * FROM cart_list ORDER BY id ASC', []);
+      return list ?? [];
+    } catch (e) {
+      return Future.error(e);
+    }
+  }
 
   Future getCartListPrice() async {
     var query = "SELECT SUM(currentPrice) AS totalPrice FROM cart_list";
@@ -75,14 +85,15 @@ class SQLService {
   }
 
   Future getCartItemNum(String menuCode) async {
-    var query = "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list where menuCode = ${menuCode}";
+    var query =
+        "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list where menuCode = ${menuCode}";
     return await this.db?.rawQuery(query);
   }
 
-   Future getCartItemNewId(String menuCode) async {
-     var query = "SELECT id FROM cart_list where menuCode = ${menuCode}";
-     return await this.db?.rawQuery(query);
-   }
+  Future getCartItemNewId(String menuCode) async {
+    var query = "SELECT id FROM cart_list where menuCode = ${menuCode}";
+    return await this.db?.rawQuery(query);
+  }
 
   Future getCartTotalNum() async {
     var query = "SELECT SUM(goodsNum) AS totalGoodsNum FROM cart_list";
@@ -110,7 +121,8 @@ class SQLService {
 
   Future updateToCartNum(data) async {
     await this.db?.transaction((txn) async {
-      var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
+      var query =
+          "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where menuCode = '${data["menuCode"]}'";
       int id2 = await txn.rawUpdate(query);
       return id2;
     });
@@ -120,12 +132,14 @@ class SQLService {
   }
 
   Future addToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where id = '${data["cartId"]}'";
+    var query =
+        "UPDATE cart_list SET goodsNum=goodsNum+${data["goodsNum"]},currentPrice=currentPrice+${data["unitPrice"]} where id = '${data["cartId"]}'";
     return await this.db?.rawUpdate(query);
   }
 
   Future reduceToCartNum(data) async {
-    var query = "UPDATE cart_list SET goodsNum=goodsNum-${data["goodsNum"]},currentPrice=currentPrice-${data["unitPrice"]} where id = '${data["cartId"]}'";
+    var query =
+        "UPDATE cart_list SET goodsNum=goodsNum-${data["goodsNum"]},currentPrice=currentPrice-${data["unitPrice"]} where id = '${data["cartId"]}'";
     return await this.db?.rawUpdate(query);
   }
 

@@ -3,9 +3,9 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  cash_changer
   charset_converter
   connectivity_plus
-  firebase_core
   permission_handler_windows
 )
 
