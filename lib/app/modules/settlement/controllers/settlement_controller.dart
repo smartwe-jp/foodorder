@@ -763,7 +763,7 @@ class SettlementController extends GetxController with StateMixin {
             }
           }else{
             if(resultData["result"] == true){
-              doPrintOrderMenu("1");
+              doPrintOrderMenu(receiptPrintType.value);
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -841,7 +841,7 @@ class SettlementController extends GetxController with StateMixin {
             if (response['code'] == 200 && response['data'] == true) {
               //退出关闭
               ConfirmTimer?.cancel();
-              doPrintOrderMenu("1");
+              doPrintOrderMenu(receiptPrintType.value);
             }
           });
         });
@@ -855,7 +855,7 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         _showScanCodeTimeOutDialog();
       }
@@ -1197,7 +1197,7 @@ class SettlementController extends GetxController with StateMixin {
       var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
@@ -1242,6 +1242,12 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
+
+    //判断全局设置是否强制打印小票
+    if (is_allow_receipt.value == "1") {
+        printType = "1";
+    }
+
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
