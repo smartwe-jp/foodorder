@@ -190,7 +190,6 @@ class SettlementController extends GetxController with StateMixin {
     putMoneyCurrencytimer?.cancel();
     ScanCodeConfirmTimer?.cancel();
     showCashTimer?.cancel();
-    Get.delete<CheckoutPageController>(); // 手动删除控制器实例
     super.onClose();
   }
 
@@ -1043,29 +1042,30 @@ class SettlementController extends GetxController with StateMixin {
               }
             }
           }
-        } else {
+        }
+        else {
           //Charge Error
-          var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
-          var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
-              + "transaction_type:${transaction_type} " + "resultString:${resultString} "
-              + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
-
+          // var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
+          // var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
+          //     + "transaction_type:${transaction_type} " + "resultString:${resultString} "
+          //     + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
+          var reportData = "${orderId.value}:${machineCode.value}";
           FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
-            "reportInfo":reportInfo,
+            "reportInfo":reportData,
           });
-          CreditCardPayReport(reportInfo);
-          Get.dialog(
-              DialogUtils.alert("Error Message：${reportInfo}",
-                  title: "POS Charge Error",
-                  canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
-                  confirm: () {
-                    Get.back();
-                  },
-                  cancle: () {
-                    Get.back();
-                  }),
-              barrierDismissible: false
-          );
+
+          // Get.dialog(
+          //     DialogUtils.alert("Error Message：${reportInfo}",
+          //         title: "POS Charge Error",
+          //         canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
+          //         confirm: () {
+          //           Get.back();
+          //         },
+          //         cancle: () {
+          //           Get.back();
+          //         }),
+          //     barrierDismissible: false
+          // );
         }
       },
         onDone: () {

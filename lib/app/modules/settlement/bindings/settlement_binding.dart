@@ -7,7 +7,6 @@ class SettlementBinding extends Bindings {
   void dependencies() {
     Get.lazyPut<SettlementController>(
       () => SettlementController(),
-      fenix: true,
     );
   }
 }
