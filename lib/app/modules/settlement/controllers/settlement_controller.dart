@@ -190,7 +190,7 @@ class SettlementController extends GetxController with StateMixin {
     putMoneyCurrencytimer?.cancel();
     ScanCodeConfirmTimer?.cancel();
     showCashTimer?.cancel();
-
+    Get.delete<CheckoutPageController>(); // 手动删除控制器实例
     super.onClose();
   }
 
