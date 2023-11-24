@@ -163,7 +163,9 @@ LogUtil.d(response);
   }
 
   refoundOrder() async {
-    if (refundInfo.value["payChannel"] =="Cash"){
+    if (refundInfo.value["payChannel"] =="Edy") {
+      refundFailedAlert();
+    } else if (refundInfo.value["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
       //调用插件的监听
@@ -205,7 +207,7 @@ LogUtil.d(response);
       var response = json.decode(value.toString());
       if(response['code'] == 200 &&  response['data']["executeMark"] == true){
         EasyLoading.dismiss();
-
+        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功",
                 title: "お知らせ",
