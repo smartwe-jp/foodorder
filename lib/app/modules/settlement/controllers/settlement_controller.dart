@@ -1302,8 +1302,12 @@ class SettlementController extends GetxController with StateMixin {
               Get.find<OrderHomeController>().clearCartList();
               //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
               //Get.find<MenuPageController>().getBookingBootMenu();
-            }else if(machineMode.value == "3"){
+            } else if (machineMode.value == "3"){
               Get.find<SelfCheckoutscanningcodeController>().clearCartList();
+            } else if (machineMode.value == "2") {
+              if (Get.find<MenuPageController>().mealType.value) {
+                Get.find<MenuPageController>().clearCartList();
+              }
             }
 
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -1345,7 +1349,12 @@ class SettlementController extends GetxController with StateMixin {
               },
               cancle: () {
                 Get.back();
-                gotonewMyhome();
+                //gotonewMyhome();
+                if (payment_method_num.value == "1") {
+                  nextOper();
+                } else {
+                  gotonewMyhome();
+                }
               })
       );
     }
