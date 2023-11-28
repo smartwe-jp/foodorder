@@ -215,7 +215,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();;
+                              controller.CancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -228,9 +228,6 @@ class SettlementView extends GetView {
                                     "imgpublic", "settlement_edy"),
                                 width: ScreenAdapter.width(50),
                                 fit: BoxFit.fitWidth,
-                              ),
-                              SizedBox(
-                                width: ScreenAdapter.width(15),
                               ),
                               Text(
                                 GString.getToString(controller.checkLanguage.value,
@@ -826,18 +823,19 @@ class SettlementView extends GetView {
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
-                    child: FadeInImage(
-                      placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
-                      image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posEdy_${controller.checkLanguage.value}")),
-                      width: ScreenAdapter.width(820),
-                      fit: BoxFit.fitHeight,
-                      // [占位符] 的淡出动画时间
-                      fadeOutDuration: Duration(milliseconds: 100),
-                      // [图像] 的渐入动画曲线
-                      fadeInCurve: Curves.easeIn,
-                      // [图像] 的渐入动画时间
-                      fadeInDuration: Duration(milliseconds: 100),
-                    ),
+                    child:
+                        FadeInImage(
+                          placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
+                          image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_posEdy_${controller.checkLanguage.value}")),
+                          width: ScreenAdapter.width(820),
+                          fit: BoxFit.fitHeight,
+                          // [占位符] 的淡出动画时间
+                          fadeOutDuration: Duration(milliseconds: 100),
+                          // [图像] 的渐入动画曲线
+                          fadeInCurve: Curves.easeIn,
+                          // [图像] 的渐入动画时间
+                          fadeInDuration: Duration(milliseconds: 100),
+                        ),
                   ),
                 if (controller.payment_method_num.value == "6")
                   Container(
@@ -934,13 +932,39 @@ class SettlementView extends GetView {
                       fit: BoxFit.fitWidth,
                     ),
                   ),*/
+                if (controller.payment_method_num.value == "5" ||
+                    controller.payment_method_num.value == "6" ||
+                    controller.payment_method_num.value == "7" ||
+                    controller.payment_method_num.value == "8" ||
+                    controller.payment_method_num.value == "9" ||
+                    controller.payment_method_num.value == "10")
+                  Container(
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.only(
+                      top: ScreenAdapter.height(20),
+                      bottom: ScreenAdapter.height(100),
+                      left: ScreenAdapter.width(150),
+                      right: ScreenAdapter.width(150),
+                    ),
+                    //width: ScreenAdapter.width(820),
+
+                    child: Text(
+                      GString.getToString(controller.checkLanguage.value,
+                          "settlement_posPay_tips_title"),
+                      style: TextStyle(
+                          color: ColorsUtil.hexToColor("#FF0000"),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(28.0)),
+
+                    ),
+                  ),
                 Container(
                   height: ScreenAdapter.height(5),
                   color: ColorsUtil.hexToColor("#D8D8D8"),
                 ),
                 Expanded(
                   child: Container(
-                    //width: ScreenAdapter.width(240),
+
                     //height: ScreenAdapter.height(220),
                     // margin: EdgeInsets.only(left: ScreenAdapter.width(60),top: ScreenAdapter.width(50)),
                     padding: EdgeInsets.only(

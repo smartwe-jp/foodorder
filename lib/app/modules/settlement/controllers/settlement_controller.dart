@@ -960,11 +960,13 @@ class SettlementController extends GetxController with StateMixin {
         String transaction_type = eventReportString.value.substring(3, 6);
         String resultString = eventReportString.value.substring(10, 13);
         String resultMPFSString = eventReportString.value.substring(13, 16);
+        //String errorString = eventReportString.value.substring(130, 133);
         print("FirstString==${FirstString}");
         print("SecondString==${SecondString}");
         print("transaction_type==${transaction_type}");
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
+        //print("errorString==${errorString}");
         print(eventReportString.value.length);
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
