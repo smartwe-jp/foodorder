@@ -12,7 +12,7 @@ class GFontSize{
   static const double cartListTitleCount = 28;
   static const double cartListTitleTag = 20;
 
-  static const double menuTwoListTitle = 24;
+  static const double menuTwoListTitle = 26;
   static const double menuTwopriceLift = 25;
   static const double menuTwoprice = 34;
   static const double menuTwopriceRight = 17;

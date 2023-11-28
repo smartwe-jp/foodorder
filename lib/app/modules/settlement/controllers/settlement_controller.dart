@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -52,6 +53,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
   RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
   RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
+  RxString receiptPrintType = "2".obs;//1 打印  2 不打印
   RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
@@ -188,7 +190,6 @@ class SettlementController extends GetxController with StateMixin {
     putMoneyCurrencytimer?.cancel();
     ScanCodeConfirmTimer?.cancel();
     showCashTimer?.cancel();
-
     super.onClose();
   }
 
@@ -199,6 +200,7 @@ class SettlementController extends GetxController with StateMixin {
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
     isAllowPos.value = Get.arguments['isAllowPos'];
+    receiptPrintType.value = Get.arguments['receiptPrintType'];
     pos_ip.value = Get.arguments['posIp'];
     pos_port.value = Get.arguments['posPort'];
     payment_method_num.value = Get.arguments['paymentMethod'];
@@ -760,7 +762,7 @@ class SettlementController extends GetxController with StateMixin {
             }
           }else{
             if(resultData["result"] == true){
-              doPrintOrderMenu("1");
+              doPrintOrderMenu(receiptPrintType.value);
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -838,7 +840,7 @@ class SettlementController extends GetxController with StateMixin {
             if (response['code'] == 200 && response['data'] == true) {
               //退出关闭
               ConfirmTimer?.cancel();
-              doPrintOrderMenu("1");
+              doPrintOrderMenu(receiptPrintType.value);
             }
           });
         });
@@ -852,7 +854,7 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         _showScanCodeTimeOutDialog();
       }
@@ -1041,6 +1043,30 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
         }
+        else {
+          //Charge Error
+          // var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
+          // var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
+          //     + "transaction_type:${transaction_type} " + "resultString:${resultString} "
+          //     + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
+          var reportData = "${orderId.value}:${machineCode.value}";
+          FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
+            "reportInfo":reportData,
+          });
+
+          // Get.dialog(
+          //     DialogUtils.alert("Error Message：${reportInfo}",
+          //         title: "POS Charge Error",
+          //         canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
+          //         confirm: () {
+          //           Get.back();
+          //         },
+          //         cancle: () {
+          //           Get.back();
+          //         }),
+          //     barrierDismissible: false
+          // );
+        }
       },
         onDone: () {
           socketState.value = false;
@@ -1171,7 +1197,7 @@ class SettlementController extends GetxController with StateMixin {
       var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
@@ -1216,6 +1242,12 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
+
+    //判断全局设置是否强制打印小票
+    if (is_allow_receipt.value == "1") {
+        printType = "1";
+    }
+
     var printStatus = await FlutterPluginMsprinter.getPrintStatus();
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
@@ -1270,8 +1302,12 @@ class SettlementController extends GetxController with StateMixin {
               Get.find<OrderHomeController>().clearCartList();
               //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
               //Get.find<MenuPageController>().getBookingBootMenu();
-            }else if(machineMode.value == "3"){
+            } else if (machineMode.value == "3"){
               Get.find<SelfCheckoutscanningcodeController>().clearCartList();
+            } else if (machineMode.value == "2") {
+              if (Get.find<MenuPageController>().mealType.value) {
+                Get.find<MenuPageController>().clearCartList();
+              }
             }
 
             //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
@@ -1313,7 +1349,12 @@ class SettlementController extends GetxController with StateMixin {
               },
               cancle: () {
                 Get.back();
-                gotonewMyhome();
+                //gotonewMyhome();
+                if (payment_method_num.value == "1") {
+                  nextOper();
+                } else {
+                  gotonewMyhome();
+                }
               })
       );
     }
@@ -2843,6 +2884,14 @@ class SettlementController extends GetxController with StateMixin {
     categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
 
     categoryMenus.add(SizedBox(height: 5,));
+
+    //电话
+    if (printData["telNo"] != null && printData["telNo"] != "") {
+      addRowHight += 38;
+      categoryMenus.add(_publicOneColumnTxtNew("電話番号:${printData["telNo"]}", 26.0, FontWeight.w300));
+      categoryMenus.add(SizedBox(height: 5,));
+    }
+
     //登录番号
     if(printData["ntaNo"] != null && printData["ntaNo"] != ""){
       addRowHight += 38;

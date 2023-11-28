@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/reimburseOrder/views/reimbruse_order_print_view.dart';
 import 'package:foodorder/app/services/formatMoney.dart';
 
 import 'package:get/get.dart';
@@ -14,6 +15,7 @@ import '../controllers/reimburse_order_controller.dart';
 class ReimburseOrderView extends GetView<ReimburseOrderController> {
   final ReimburseOrderController controller = Get.put(ReimburseOrderController());
   ReimburseOrderView({Key? key}) : super(key: key);
+  final GlobalKey containerKey = GlobalKey();
 
   showOrderInfo(){
     return controller.orderList.value.length >0 ?ListView.builder(
@@ -39,6 +41,17 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
             ),
             child: Row(
               children: [
+                Container(//退款小票信息，计算大小用，不显示。
+                  child: Offstage(
+                    offstage: true,//不显示
+                    child: Container(
+                      key: containerKey,
+                      alignment: Alignment.centerRight,
+                      child: ReimbursePrintView(reimburseInfo: itemDetail),
+                    ),
+                  ),
+                ),
+                //_construtReceiptView(itemDetail),
                 Container(
                   width: ScreenAdapter.width(470),
                   child: Table(
@@ -222,7 +235,19 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                     child: InkWell(
                       enableFeedback: false,
                       onTap: () {
-                        controller.refoundOrderAlert(itemDetail);
+                        final RenderBox box = containerKey.currentContext?.findRenderObject() as RenderBox;
+                        final size = box.size;
+                        //showDialog(context: context, builder: (context) => ReimbursePrintView(reimburseInfo: itemDetail));
+                        // showDialog(
+                        //   context: context,
+                        //   builder: (BuildContext context) {
+                        //     return AlertDialog(
+                        //       content: ReimbursePrintView(reimburseInfo: itemDetail),
+                        //     );
+                        //   },
+                        // );
+                        controller.refoundOrderAlert(itemDetail, ReimbursePrintView(reimburseInfo: itemDetail), size );
+
                       },
                       child: Container(
                         width: ScreenAdapter.width(160),
@@ -250,6 +275,16 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
             ),
           );
         }): Container(height: 0,);
+  }
+
+  _construtReceiptView(itemDetail) {
+    Offstage(
+      offstage: true,
+      child: Container(
+        key: containerKey,
+        child: ReimbursePrintView(reimburseInfo: itemDetail),
+      ),
+    );
   }
 
   @override
@@ -380,17 +415,17 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                       },
                       // do something with the input numbers
                       onSubmit: () {
-                      if(controller.orderIdController.text.length <6){
-                        showToast("注文番号の後ろ六桁を入力してください");
-                        return;
-                      }
-                      if(controller.orderIdController.text.length >6){
-                        showToast("最大6位");
-                        controller.orderIdController.text = controller.orderIdController.text.substring(0, 5);
-                        return;
-                      }
+                        if(controller.orderIdController.text.length <6){
+                          showToast("注文番号の後ろ六桁を入力してください");
+                          return;
+                        }
+                        if(controller.orderIdController.text.length >6){
+                          showToast("最大6位");
+                          controller.orderIdController.text = controller.orderIdController.text.substring(0, 5);
+                          return;
+                        }
 
-                      controller.queryOrder();
+                        controller.queryOrder();
 
                       },
                     ),

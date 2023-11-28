@@ -8,14 +8,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
+import 'package:widget_to_image/widget_to_image.dart';
 
 import '../../../config/imageData.dart';
+import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../widget/DialogUtils.dart';
+import '../views/reimbruse_order_print_view.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
@@ -25,6 +28,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
   RxList orderList = [].obs;
   RxMap refundInfo = {}.obs;
+  RxString printLogoImage = "".obs;
 
   Timer? allowtimer;
   Timer? stoptimer;
@@ -54,7 +58,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   RxInt socketNumberTimes = 0.obs;
 
-
+  late ReimbursePrintView reimbursePrintView;
+  late Size reimbursePrintViewSize;
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -76,7 +81,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     isAllowPos.value = systemSettingInfo['isAllowPos'];
     _getPosSettingInfo();
-
+    _getPrintLogoImageData();
   }
 
   _getPosSettingInfo() async {
@@ -105,11 +110,13 @@ class ReimburseOrderController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 LogUtil.d(response);
-      if (response['code'] == 200 && response['data'] !=null) {
+      if (response['code'] == 200 && response['data'] !=null && response['data'].length > 0) {
 
         orderList.value = response['data'];
         //print(orderId.value);
         //goToSettlement();
+      } else {
+        noOrderAlsert();
       }
 
       update();
@@ -118,7 +125,26 @@ LogUtil.d(response);
 
   }
 
-  refoundOrderAlert(orderinfo){
+  noOrderAlsert() {
+    Get.dialog(
+        DialogUtils.alertOneButton("指定した取引は存在しません。",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
+  }
+
+  refoundOrderAlert(orderinfo, refoundView, viewSize) {
+    reimbursePrintView = refoundView;
+    reimbursePrintViewSize = viewSize;
     Get.dialog(
         DialogUtils.alert("この注文をキャンセルして返金しますか？",
             title: "お知らせ",
@@ -137,17 +163,38 @@ LogUtil.d(response);
   }
 
   refoundOrder() async {
-    if(refundInfo.value["payChannel"] =="Cash"){
+    if (refundInfo.value["payChannel"] =="Edy") {
+      refundFailedAlert();
+    } else if (refundInfo.value["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
       //调用插件的监听
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
 
-    }else{
+    } else if (refundInfo.value["payChannel"] =="CreditCard") {
+      showPosEasyLoading();
+      refundCreditCard();
+    } else{
       showPosEasyLoading();
       refundScanCodePay();
     }
+  }
+
+  refundCreditCard() {
+    var formData = {
+      "machineCode": machineCode.value,
+      "orderId": refundInfo.value["orderId"],
+    };
+    request('webBootReimburseExecute', method: 'POST', parameters: formData)
+        .then((value) {
+      var response = json.decode(value.toString());
+      if(response['code'] == 200 && response['data']["executeMark"] == true && response['data']["requestMessage"] !=""){
+        payconnectSocker(questData: response['data']["requestMessage"]);
+      } else {
+        refundFailedAlert();
+      }
+    });
   }
 
   refundScanCodePay(){
@@ -160,7 +207,7 @@ LogUtil.d(response);
       var response = json.decode(value.toString());
       if(response['code'] == 200 &&  response['data']["executeMark"] == true){
         EasyLoading.dismiss();
-
+        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功",
                 title: "お知らせ",
@@ -180,19 +227,41 @@ LogUtil.d(response);
         //showPosEasyLoading();
         payconnectSocker(questData: response['data']["requestMessage"]);
       }else{
-        Get.dialog(
-            DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  //orderIdController.text = "";
-                  //queryOrder();
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
+        refundFailedAlert();
       }
     });
+  }
+
+  //refund failed alert
+  refundFailedAlert(){
+    Get.dialog(
+        DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              //orderIdController.text = "";
+              //queryOrder();
+              Get.back();
+            }),
+        barrierDismissible: false
+    );
+  }
+
+  hadRefundAlert(){
+    Get.dialog(
+        DialogUtils.alertOneButton("指定した取引は既に取消されています。",
+            title: "お知らせ",
+            confirmtitle: "はい",
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
   }
 
   //pos机相关
@@ -233,13 +302,15 @@ LogUtil.d(response);
     //判断socket请求次数
     socketNumberTimes.value++;
     if(socketNumberTimes.value>20){
+      socketNumberTimes.value = 0;
+      EasyLoading.dismiss();
       Get.dialog(
           DialogUtils.alertOneButton("セルフレジは端末に接続されてません、スタフに聞いてお願いします。",
               title: "お知らせ",
               confirmtitle: "はい",
               confirm: () {
                 Get.back();
-              })
+              }),
       );
       return;
     }
@@ -305,42 +376,23 @@ LogUtil.d(response);
         }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             reportChange(eventReportString.value);
-
           } else {
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
 
-              Get.dialog(
-                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                      title: "お知らせ",
-                      confirmtitle: "はい",
-                      confirm: () {
-
-                        Get.back();
-
-                      })
-              );
+              refundFailedAlert();
             }
           }
         }else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             String reportString = eventString.substring(0, 169);
             reportChange(reportString);
-
+            EasyLoading.dismiss();
           } else {
             EasyLoading.dismiss();
             if(resultString.trim() != ""){
 
-              Get.dialog(
-                  DialogUtils.alertOneButton("返金失敗です。他の方法で返金を試してください",
-                      title: "お知らせ",
-                      confirmtitle: "はい",
-                      confirm: () {
-
-                        Get.back();
-
-                      })
-              );
+              refundFailedAlert();
             }
           }
         }
@@ -471,6 +523,7 @@ LogUtil.d(response);
       var response = json.decode(value.toString());
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
+        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
                 title: "お知らせ",
@@ -527,7 +580,34 @@ LogUtil.d(response);
     });
   }
 
+  _printReimburseReceipt(Size size, Widget widget) async {
+    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+      width: size.width.toDouble(),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
+      height: size.height.toDouble(),
+      color: Colors.white,
+      child: widget,
+      ),
+      size: size,
+    );
 
+    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    String base64Image = base64Encode(imageBytes);
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", "");//printLogoImage.value
+    Future.delayed(Duration(milliseconds: 300), () async {
+      await FlutterPluginMsprinter.sendPrintCut("0");
+    });
+  }
+
+  _getPrintLogoImageData() async {
+    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+    if(logoImageInfo != "" && logoImageInfo != null){
+      printLogoImage.value = logoImageInfo;
+    }
+
+    change(null, status: RxStatus.success());
+  }
 
 
 }

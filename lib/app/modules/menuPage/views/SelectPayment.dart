@@ -1,5 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -8,6 +10,7 @@ import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
+import '../controllers/menu_page_controller.dart';
 
 
 class SelectPaymentPage extends StatefulWidget {
@@ -18,6 +21,7 @@ class SelectPaymentPage extends StatefulWidget {
         required this.menuCount,
         //this.mealType,
         required this.isAllowPos,
+        required this.isAllowReceipt,
         required this.payment_method_num,
         required this.showCash,
         required this.showWechat,
@@ -48,6 +52,7 @@ class SelectPaymentPage extends StatefulWidget {
   final String checkLanguage;
   //final bool mealType;
   final String isAllowPos;
+  final String isAllowReceipt;
   final String payment_method_num;
   final int menuCount;
   final bool showCash;
@@ -73,7 +78,7 @@ class SelectPaymentPage extends StatefulWidget {
   final bool showDinersClub;
   final String shopCartTotalPrice;
   final String tableNum;
-  final Function(String, String) onConfrimClick;
+  final Function(String, String, String) onConfrimClick;
   final Function(String) onCancelClick;
 
   @override
@@ -88,7 +93,6 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   String _shopCartTotalPrice="0"; //合计总价
   String _tableNum = "";
   int _menuCount =0;
-
   var _showWechat = false;
   var _showAlipay = false;
   var _showPayPay = false;
@@ -112,6 +116,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   var _showUnionPay = false;
   var _showAmericanExpress = false;
   var _showDinersClub = false;
+  var _receiptPrintType = "2"; //1 打印 2 不打印
+  var _showReceiptPage = false;
 
   @override
   void initState() {
@@ -149,6 +155,9 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showAmericanExpress = widget.showAmericanExpress;
     _showDinersClub = widget.showDinersClub;
 
+    //初始化领收书显示变量
+    _receiptPrintType = widget.isAllowReceipt;
+    _showReceiptPage = widget.isAllowReceipt == "1" ? false : true;
 
   }
 
@@ -156,6 +165,137 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     setState(() {
       _showCash = false;
     });
+  }
+
+  Widget selectPrintType() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        SizedBox(
+          height: ScreenAdapter.height(80),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: <Widget>[
+
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _receiptPrintType = "1";
+                  _showReceiptPage = false;
+                });
+              },
+              child: Container(
+                width: ScreenAdapter.width(320),
+                height: ScreenAdapter.height(225),
+                padding: EdgeInsets.only(
+                    top: ScreenAdapter.height(2)),
+                //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                decoration: BoxDecoration(
+                  //设置边框
+                  border: new Border.all(
+                      color: ColorsUtil.hexToColor("#9e9e9e"),
+                      width: 2.0),
+                  //背景颜色
+                  color: ColorsUtil.hexToColor("#F3F3F3"),
+                  //设置圆角
+                  //borderRadius: new BorderRadius.circular((5.0)),
+                  borderRadius:
+                  new BorderRadius.circular((16.0)),
+                  //设置阴影
+                  //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#9e9e9e"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
+                ),
+                alignment: Alignment.center,
+                child:
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      GString.getToString(
+                          this._checkLanguage, "settlement_receipt_title"),
+                      style: TextStyle(
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(34.0)),
+                    ),
+                    Text(
+                      GString.getToString(
+                          this._checkLanguage, "settlement_receipt_yes"),
+                      style: TextStyle(
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(54.0)),
+                    )
+                  ],
+                ),
+              ),
+            ),
+
+            InkWell(
+              onTap: () {
+                setState(() {
+                  _receiptPrintType = "2";
+                  _showReceiptPage = false;
+                });
+              },
+              child: Container(
+                width: ScreenAdapter.width(320),
+                height: ScreenAdapter.height(225),
+                padding: EdgeInsets.only(
+                    top: ScreenAdapter.height(2)),
+                //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                decoration: BoxDecoration(
+                  //设置边框
+                  border: new Border.all(
+                      color: ColorsUtil.hexToColor("#9e9e9e"),
+                      width: 2.0),
+                  //背景颜色
+                  color: ColorsUtil.hexToColor("#F3F3F3"),
+                  //设置圆角
+                  //borderRadius: new BorderRadius.circular((5.0)),
+                  borderRadius:
+                  new BorderRadius.circular((16.0)),
+                  //设置阴影
+                  //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#9e9e9e"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
+                ),
+                alignment: Alignment.center,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      GString.getToString(
+                          this._checkLanguage, "settlement_receipt_title"),
+                      style: TextStyle(
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(34.0)),
+                    ),
+                    Text(
+                      GString.getToString(
+                          this._checkLanguage, "settlement_receipt_no"),
+                      style: TextStyle(
+                          color: ColorsUtil.hexToColor(
+                              Gcolor.mainTitleColor),
+                          fontWeight: FontWeight.w600,
+                          fontSize: ScreenAdapter.fontSize(54.0)),
+                    )
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+        SizedBox(
+          height: ScreenAdapter.height(60),
+        ),
+      ],
+
+    );
   }
 
   @override
@@ -179,7 +319,9 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                     padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(25),right: ScreenAdapter.width(20),bottom: ScreenAdapter.height(30)),
                     //width: ScreenAdapter.width(650),
 
-                    child: Column(
+                    child:
+                    _showReceiptPage ? selectPrintType() :
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Text(
@@ -201,7 +343,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   _payment_method_num = "1";
                                 });
                                 //Navigator.pop(pcontext);
-                                widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                               },
                               child: Container(
@@ -270,7 +412,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                     _payment_method_num = "2";
                                   });
                                   //Navigator.pop(pcontext);
-                                  widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                  widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                 },
                                 child: Container(
@@ -466,7 +608,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   _payment_method_num = "3";
                                 });
                                 //Navigator.pop(pcontext);
-                                widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                               },
                               child: Container(
@@ -684,7 +826,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "5";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(
@@ -728,7 +870,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "6";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(
@@ -772,7 +914,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "7";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(
@@ -816,7 +958,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "8";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(
@@ -860,7 +1002,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "9";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(
@@ -904,7 +1046,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             _payment_method_num = "10";
                                           });
                                           //Navigator.pop(pcontext);
-                                          widget.onConfrimClick(_isAllowPos,_payment_method_num);
+                                          widget.onConfrimClick(_isAllowPos,_payment_method_num, _receiptPrintType);
 
                                         },
                                         child: Container(

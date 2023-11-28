@@ -44,6 +44,8 @@ class MenuPageController extends GetxController with StateMixin {
   RxBool mealType = false.obs;//用于判断下单
   RxString dining_type = "1".obs; //1 堂食  2 外袋  3两种都可以支付
   RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
+  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
+  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
   RxString pos_ip = "".obs;
   RxString pos_port = "".obs;
   RxString payment_method_num = "0".obs; //支付类型选择
@@ -146,6 +148,7 @@ class MenuPageController extends GetxController with StateMixin {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     dining_type.value = systemSettingInfo['diningType'];
     isAllowPos.value = systemSettingInfo['isAllowPos'];
+    isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
     _getMachineActivateInfo();
 
   }
@@ -1205,6 +1208,7 @@ print("加1了");
             menuCount: showCartTotalGoodsNum.value,
             //mealType:_mealType.value,
             isAllowPos:isAllowPos.value,
+            isAllowReceipt:isAllowReceipt.value,
             payment_method_num:payment_method_num.value,
             showCash: showCash.value,
             showWechat: showWechat.value,
@@ -1229,10 +1233,11 @@ print("加1了");
             showDinersClub: showDinersClub.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
-            onConfrimClick: (String isAllowPosString, String payment_method_num_string) {
+            onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptTypeString) {
 
               isAllowPos.value = isAllowPosString;
               payment_method_num.value = payment_method_num_string;
+              receiptPrintType.value = receiptTypeString;
               showOpenPayment.value = true;
               //230629点击弹出支付方式后，需要重新请求下后台获得orderid
 
@@ -1258,6 +1263,7 @@ print("加1了");
 
     var formData = {
       "orderId": doSubmitOrderId.value,
+      "machineCode": machineCode.value,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
@@ -1305,6 +1311,7 @@ print("加1了");
           "totalPrice" : shopCartTotalPrice.value,
           "machineMode":"1",
           "isAllowPos":isAllowPos.value,
+          "receiptPrintType": receiptPrintType.value,
           "posIp":pos_ip.value,
           "posPort":pos_port.value,
           "paymentMethod":payment_method_num.value,

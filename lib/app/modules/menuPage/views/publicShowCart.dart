@@ -19,7 +19,12 @@ class publicShowCartView extends GetView {
     if (controller.showCartItems.length == 0) {
       return Center(
         child: Text(GString.getToString(
-            controller.checkLanguage.value, "cart_tag")),
+            controller.checkLanguage.value, "cart_tag"),
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(18),
+            color: ColorsUtil.hexToColor("#000000"),
+          ),
+        ),
       );
     }
     return ListView(
