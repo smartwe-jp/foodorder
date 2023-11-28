@@ -1304,9 +1304,13 @@ class SettlementController extends GetxController with StateMixin {
               //Get.find<MenuPageController>().getBookingBootMenu();
             } else if (machineMode.value == "3"){
               Get.find<SelfCheckoutscanningcodeController>().clearCartList();
-            } else if (machineMode.value == "2") {
-              if (Get.find<MenuPageController>().mealType.value) {
-                Get.find<MenuPageController>().clearCartList();
+            }
+            else if (machineMode.value == "2") {
+              if (Get.isRegistered<MenuPageController>()) {
+                MenuPageController controller = Get.find<MenuPageController>();
+                if (controller.mealType.value) {
+                  controller.clearCartList();
+                }
               }
             }
 
