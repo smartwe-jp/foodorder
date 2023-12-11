@@ -205,7 +205,7 @@ LogUtil.d(response);
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
-      if(response['code'] == 200 &&  response['data']["executeMark"] == true){
+      if(response['code'] == 200 &&  response['data']["executeMark"] == true && response['data']["requestMessage"] ==""){
         EasyLoading.dismiss();
         _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
@@ -226,6 +226,9 @@ LogUtil.d(response);
       }else if(response['code'] == 200 && response['data']["executeMark"] == false && response['data']["requestMessage"] !=""){
         //showPosEasyLoading();
         payconnectSocker(questData: response['data']["requestMessage"]);
+      }else if(response['code'] == 200 && response['data']["executeMark"] == true && response['data']["requestMessage"] !=""){
+      //showPosEasyLoading();
+      payconnectSocker(questData: response['data']["requestMessage"]);
       }else{
         refundFailedAlert();
       }
