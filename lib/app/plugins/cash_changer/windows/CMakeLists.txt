@@ -56,6 +56,8 @@ set(cash_changer_bundled_libraries
   PARENT_SCOPE
 )
 
+target_compile_options(${PLUGIN_NAME} PRIVATE "/utf-8")
+
 # === Tests ===
 # These unit tests can be run from a terminal after building the example, or
 # from Visual Studio after opening the generated solution file.
@@ -77,7 +79,7 @@ set(gtest_force_shared_crt ON CACHE BOOL "" FORCE)
 # Disable install commands for gtest so it doesn't end up in the bundle.
 set(INSTALL_GTEST OFF CACHE BOOL "Disable installation of googletest" FORCE)
 FetchContent_MakeAvailable(googletest)
-
+# target_compile_options(${PLUGIN_NAME} PRIVATE "/utf-8")
 # The plugin's C API is not very useful for unit testing, so build the sources
 # directly into the test binary rather than using the DLL.
 add_executable(${TEST_RUNNER}

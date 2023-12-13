@@ -11,7 +11,20 @@ class MethodChannelCashChanger extends CashChangerPlatform {
 
   @override
   Future<String?> getPlatformVersion() async {
-    final version = await methodChannel.invokeMethod<String>('getPlatformVersion');
+    final version =
+        await methodChannel.invokeMethod<String>('getPlatformVersion');
     return version;
+  }
+
+  @override
+  Future<int?> openCashChanger() async {
+    final result = await methodChannel.invokeMethod<int>('openCashChanger');
+    return result;
+  }
+
+  @override
+  Future<int?> closeCashChanger() async {
+    final result = await methodChannel.invokeMethod<int>('closeCashChanger');
+    return result;
   }
 }

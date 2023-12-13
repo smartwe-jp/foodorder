@@ -26,4 +26,14 @@ abstract class CashChangerPlatform extends PlatformInterface {
   Future<String?> getPlatformVersion() {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
+
+  //Open cash change
+  Future<int?> openCashChanger() {
+    throw UnimplementedError('openCashChanger() has not been implemented.');
+  }
+
+  //Close cash change
+  Future<int?> closeCashChanger() {
+    throw UnimplementedError('closeCashChanger() has not been implemented.');
+  }
 }

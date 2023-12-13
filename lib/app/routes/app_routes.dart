@@ -7,6 +7,7 @@ abstract class Routes {
   static const TRANSIT_PAGE = _Paths.TRANSIT_PAGE;
   static const ACTIVATION = _Paths.ACTIVATION;
   static const ORDER_HOME = _Paths.ORDER_HOME;
+  static const OPOS_APG = _Paths.OPOS_APG;
   static const SELFSERVICE_PAGE = _Paths.SELFSERVICE_PAGE;
   static const CHECKOUT_PAGE = _Paths.CHECKOUT_PAGE;
   static const SCANCODE_PAGE = _Paths.SCANCODE_PAGE;
@@ -27,6 +28,7 @@ abstract class _Paths {
   static const TRANSIT_PAGE = '/transit-page';
   static const ACTIVATION = '/activation';
   static const ORDER_HOME = '/order-home';
+  static const OPOS_APG = '/opos-apg';
   static const SELFSERVICE_PAGE = '/selfservice-page';
   static const CHECKOUT_PAGE = '/checkout-page';
   static const SCANCODE_PAGE = '/scancode-page';

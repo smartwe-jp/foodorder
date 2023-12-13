@@ -5,7 +5,10 @@
 #include <flutter/plugin_registrar_windows.h>
 
 #include <memory>
-//#import "OPOSCashChanger.ocx" named_guids
+#include "64OPOSCashChanger.tlh"
+
+using namespace OposCashChanger_CCO;
+using namespace std;
 
 namespace cash_changer {
 
@@ -25,6 +28,12 @@ class CashChangerPlugin : public flutter::Plugin {
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+    private:
+        
+      IOPOSCashChangerPtr pCashChanger;
+
+        
 };
 
 }  // namespace cash_changer

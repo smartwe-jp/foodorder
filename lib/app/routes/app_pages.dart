@@ -30,6 +30,7 @@ import '../modules/settlement/bindings/settlement_binding.dart';
 import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
+import '../modules/OrderHome/views/opos_apg.dart';
 
 part 'app_routes.dart';
 
@@ -57,6 +58,11 @@ class AppPages {
     GetPage(
       name: _Paths.ORDER_HOME,
       page: () => OrderHomeView(),
+      binding: OrderHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.OPOS_APG,
+      page: () => OPOSAPGView(),
       binding: OrderHomeBinding(),
     ),
     GetPage(
