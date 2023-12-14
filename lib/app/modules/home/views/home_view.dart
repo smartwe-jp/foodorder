@@ -83,7 +83,69 @@ class HomeView extends GetView {
                       ),
                     ),
                   ],
-                )
+                ),
+                SizedBox(height: ScreenAdapter.height(30)),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    InkWell(
+                      onTap: () {
+                        controller.GetCashBalanceInfo();
+                      },
+                      child: Container(
+                        width: ScreenAdapter.width(217),
+                        height: ScreenAdapter.height(90),
+                        margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                        decoration: BoxDecoration(
+                          //color: Color(0x11111111),
+                          image: DecorationImage(
+                              //alignment: Alignment.topCenter,
+                              image: AssetImage(GImage.getImageString(
+                                  "imgpublic", "home_button")),
+                              fit: BoxFit.fill),
+                        ),
+                        child: Center(
+                          //加上Center让文字居中
+                          child: Text(
+                            '在高',
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(36.0),
+                                color: ColorsUtil.hexToColor("#F9F9F9"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ),
+                    InkWell(
+                      onTap: () {
+                        controller.startDeposit();
+                      },
+                      child: Container(
+                        width: ScreenAdapter.width(217),
+                        height: ScreenAdapter.height(90),
+                        margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
+                        decoration: BoxDecoration(
+                          //color: Color(0x11111111),
+                          image: DecorationImage(
+                              //alignment: Alignment.topCenter,
+                              image: AssetImage(GImage.getImageString(
+                                  "imgpublic", "home_button")),
+                              fit: BoxFit.fill),
+                        ),
+                        child: Center(
+                          //加上Center让文字居中
+                          child: Text(
+                            'Deposit',
+                            style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(36.0),
+                                color: ColorsUtil.hexToColor("#F9F9F9"),
+                                fontWeight: FontWeight.w600),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ],
             ),
           ),
@@ -98,8 +160,8 @@ class HomeView extends GetView {
                 textStyle: const TextStyle(fontSize: 20),
               ),
               onPressed: () {
-                controller.getPlatformVersion();
-                //controller.isShowTest.value = false;
+                controller.isShowTest.value = false;
+                controller.requestPermission();
               },
               child: const Text('Dismiss'),
             ),

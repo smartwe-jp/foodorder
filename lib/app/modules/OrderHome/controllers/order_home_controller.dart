@@ -25,8 +25,6 @@ class OrderHomeController extends GetxController with StateMixin {
   RxBool machineLanguages_EN = false.obs;
   RxBool machineLanguages_KO = false.obs;
 
-  RxBool isShowTest = false.obs;
-
   RxList homeList = [].obs;
 
   @override
@@ -48,68 +46,20 @@ class OrderHomeController extends GetxController with StateMixin {
 
   //获取机器信息
   _getMachineInfo() async {
-    // var machineCodeString = await HomeServices.getMachineInfo();
-    // if (machineCodeString != "") {
-    //machineCode.value = machineCodeString;
-    //}
-    machineCode.value = "X3V9YPJABVZGAELIZ9";
+    var machineCodeString = await HomeServices.getMachineInfo();
+    if (machineCodeString != "") {
+      machineCode.value = machineCodeString;
+    }
     //首页图片
     _getHomeImageList();
   }
 
   _getHomeImageList() async {
-    // var homeimageList = await HomeServices.getSmartweHomeImagesData();
+    var homeimageList = await HomeServices.getSmartweHomeImagesData();
 
-    // homeList.value = homeimageList;
+    homeList.value = homeimageList;
 
     getSystemSettingInfo();
-  }
-
-  void openCashChange() async {
-    debugPrint("  openCashChange  ");
-    int? resultCode = await CashChanger.openCashChanger;
-    debugPrint("open CashChanger resultCode:  " + resultCode.toString());
-
-    Get.dialog(
-        DialogUtils.alert(
-            "open CashChanger resultCode:  " + resultCode.toString(),
-            title: "CashChanger",
-            canceltitle: "Sure", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
-
-  void getPlatformVersion() async {
-    debugPrint("  getPlatformVersion  ");
-    String? version = await CashChanger.getPlatformVersion;
-    debugPrint("windows version:" + version!);
-    Get.dialog(
-        DialogUtils.alert("windows version:" + version!,
-            title: "CashChanger Error", canceltitle: "Sure", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
-
-  void closeCashChange() async {
-    debugPrint("  closeCashChange  ");
-    int? resultCode = await CashChanger.closeCashChanger;
-    debugPrint("close CashChanger resultCode:  " + resultCode.toString());
-    Get.dialog(
-        DialogUtils.alert(
-            "close CashChanger resultCode:  " + resultCode.toString(),
-            title: "CashChanger",
-            canceltitle: "Sure", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
   }
 
   getSystemSettingInfo() async {

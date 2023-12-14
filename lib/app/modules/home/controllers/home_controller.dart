@@ -45,22 +45,29 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    //_goMain();
-    //requestPermission();
+    if (isShowTest.value == false) {
+      requestPermission();
+    }
+
     //getIsFirstOpen();
     //checkInterNetStatus();
 
-    // EasyLoading.instance
-    //   ..indicatorType = EasyLoadingIndicatorType.fadingCircle
-    //   ..progressColor = Colors.grey
-    //   ..backgroundColor = Colors.white
-    //   ..indicatorColor = Colors.transparent
-    //   ..textColor = Colors.transparent
-    //   ..loadingStyle = EasyLoadingStyle.custom;
+    EasyLoading.instance
+      ..indicatorType = EasyLoadingIndicatorType.fadingCircle
+      ..progressColor = Colors.grey
+      ..backgroundColor = Colors.white
+      ..indicatorColor = Colors.transparent
+      ..textColor = Colors.transparent
+      ..loadingStyle = EasyLoadingStyle.custom;
   }
 
   @override
   void onReady() {
+    if (isShowTest.value) {
+      return;
+    } else {
+      requestPermission();
+    }
     super.onReady();
   }
 
@@ -77,7 +84,6 @@ class HomeController extends GetxController {
     //获取Windows版本
     String? windowsVersion = await CashChanger.getPlatformVersion;
     debugPrint("windowsVersion:$windowsVersion");
-    showToast("windowsVersion:$windowsVersion");
 
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
@@ -88,14 +94,12 @@ class HomeController extends GetxController {
         //print("权限申请被拒绝");
       } else {
         debugPrint("requestPermission 1");
-        showToast("requestPermission 1");
         checkInterNetStatus();
         //第一步，链接现金机，并打开现金机
         //OpenPayCube();
       }
     } else {
       debugPrint("requestPermission 2");
-      showToast("requestPermission 2");
       checkInterNetStatus();
       //OpenPayCube();
     }
@@ -111,11 +115,9 @@ class HomeController extends GetxController {
         connectivityResult == ConnectivityResult.wifi ||
         connectivityResult == ConnectivityResult.ethernet) {
       debugPrint("checkInterNetStatus有网络");
-      showToast("checkInterNetStatus有网络");
       OpenPayCube();
     } else {
       print("没有网络");
-      showToast("没有网络");
       // I am not connected to any network.
       Get.dialog(DialogUtils.alertOneButton(
           "セルフレジはインターネットに接続されてません。\r\n先に、インターネットの接続のご確認をお願いします。",
@@ -175,6 +177,34 @@ class HomeController extends GetxController {
         barrierDismissible: false);
   }
 
+  void GetCashBalanceInfo() async {
+    debugPrint("  GetCashBalanceInfo  ");
+    String? resultCode = await CashChanger.getCashBalance;
+    debugPrint("GetCashBalanceInfo result:  " + resultCode!);
+    Get.dialog(
+        DialogUtils.alert("GetCashBalanceInfo result:  " + resultCode,
+            title: "CashChanger", confirm: () {
+          Get.back();
+        }, cancle: () {
+          Get.back();
+        }),
+        barrierDismissible: false);
+  }
+
+  void startDeposit() async {
+    debugPrint("  StartDeposit  ");
+    int? resultCode = await CashChanger.startDeposit;
+    debugPrint("StartDeposit result:  " + resultCode.toString());
+    Get.dialog(
+        DialogUtils.alert("StartDeposit result:  " + resultCode.toString(),
+            title: "CashChanger", confirm: () {
+          Get.back();
+        }, cancle: () {
+          Get.back();
+        }),
+        barrierDismissible: false);
+  }
+
 //倒计时
   _countDownTimer() {
     showCashTimer?.cancel();
@@ -193,7 +223,6 @@ class HomeController extends GetxController {
 
   //打开现金机
   OpenPayCube() async {
-    showToast("OpenPayCube 1");
     debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
@@ -215,7 +244,6 @@ class HomeController extends GetxController {
   Starttoubi() async {
     //入金开始
     debugPrint("Starttoubi 1");
-    showToast("Starttoubi 1");
     int connectCount = 0;
 
     prohibitOneCash();
@@ -324,12 +352,14 @@ class HomeController extends GetxController {
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
+    if (isShowTest.value) {
+      return;
+    }
+
     debugPrint("getIsFirstOpen 1");
-    showToast("getIsFirstOpen 1");
     var isFirst = await HomeServices.getOpenFirstState();
     if (isFirst == true) {
       debugPrint("getIsFirstOpen 2");
-      showToast("getIsFirstOpen 2");
       goMain();
     } else {
       _goActivation();
