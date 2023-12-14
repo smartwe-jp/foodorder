@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 // import 'package:firebase_core/firebase_core.dart';
@@ -103,6 +104,7 @@ void main() {
           ),
         ),
       ));
+      HttpOverrides.global = MyHttpOverrides();
     });
 
     //隐藏状态栏导航栏
@@ -111,4 +113,12 @@ void main() {
     print('runZonedGuarded: Caught error in my root zone.');
     //FirebaseCrashlytics.instance.recordError(error, stackTrace);
   });
+}
+
+class MyHttpOverrides extends HttpOverrides {
+  @override
+  HttpClient createHttpClient(SecurityContext? context) {
+    return super.createHttpClient(context)
+      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+  }
 }

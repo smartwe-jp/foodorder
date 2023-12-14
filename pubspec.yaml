@@ -14,7 +14,7 @@ dependencies:
   package_info: ^2.0.2
   fluttertoast: ^8.2.2
   sqflite: ^2.0.2
-  cached_network_image: ^3.2.0
+  cached_network_image: ^3.3.0
   event_bus: ^2.0.0
   flutter_easyloading: ^3.0.5
   permission_handler: ^10.0.0
