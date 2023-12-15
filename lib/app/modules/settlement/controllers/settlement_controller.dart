@@ -3170,56 +3170,62 @@ class SettlementController extends GetxController with StateMixin {
       _publicSplitLine(),
     );
 
-    //8%
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "8%対象",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == true) ? "${formatMoney(printData["price"])}" : "0",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "　  (内    消費税",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == true) ? "${formatMoney(printData["tax"])})" : "0)",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
 
-    //10%
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "10%対象",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == false) ? "${formatMoney(printData["price"])}" : "0",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "　  (内    消費税",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == false) ? "${formatMoney(printData["tax"])})" : "0)",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
+    if (hidePrintTax()) {
+      addRowHight -= 152;
+    } else {
+      //8%
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "8%対象",
+            24.0,
+            FontWeight.w100,
+            (printData["takeOut"] == true) ? "${formatMoney(printData["price"])}" : "0",
+            24.0,
+            FontWeight.w100,
+            true),
+      );
+      //内消费税
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "　  (内    消費税",
+            24.0,
+            FontWeight.w100,
+            (printData["takeOut"] == true) ? "${formatMoney(printData["tax"])})" : "0)",
+            24.0,
+            FontWeight.w100,
+            true),
+      );
+
+      //10%
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "10%対象",
+            24.0,
+            FontWeight.w100,
+            (printData["takeOut"] == false) ? "${formatMoney(printData["price"])}" : "0",
+            24.0,
+            FontWeight.w100,
+            true),
+      );
+      //内消费税
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "　  (内    消費税",
+            24.0,
+            FontWeight.w100,
+            (printData["takeOut"] == false) ? "${formatMoney(printData["tax"])})" : "0)",
+            24.0,
+            FontWeight.w100,
+            true),
+      );
 
 
-    categoryMenus.add(
-      _publicSplitLine(),
-    );
+      categoryMenus.add(
+        _publicSplitLine(),
+      );
+    }
+
     if(printData["payMethod"] != "現金支払"){
       lineZeng += 33;
       categoryMenus.add(
@@ -3346,6 +3352,14 @@ class SettlementController extends GetxController with StateMixin {
     });
     //});
 
+  }
+
+  //后续会移除该判断 直接返回true即可
+  bool hidePrintTax() {
+    if(machineCode.value == "Gtf2AnqKxZJUH6jP93") {
+      return true;
+    }
+    return false;
   }
 
 
