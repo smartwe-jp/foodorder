@@ -72,7 +72,7 @@ class TransitPageController extends GetxController {
       "version": local_version.value
     };
     print(formData);
-    request('webBootActivatev3', method: 'POST', parameters: formData)
+    request('webBootActivatev4', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
       LogUtil.d(response);
