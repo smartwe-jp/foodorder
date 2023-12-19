@@ -256,11 +256,11 @@ void CashChangerPlugin::HandleMethodCall(
         result->Error("Cash Changer not initialized");
     }
     auto arguments = method_call.arguments();
-    if (!arguments || !arguments->IsMap()) {
+    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->MapValue();
+    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
     int intSuc = 0;
     // Accessing a value in the map
     auto it = mapValue.find(flutter::EncodableValue("param"));
@@ -297,11 +297,11 @@ void CashChangerPlugin::HandleMethodCall(
 
     int lngChange = 0;
     auto arguments = method_call.arguments();
-    if (!arguments || !arguments->IsMap()) {
+    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->MapValue();
+    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
     int intSuc = 0;
     // Accessing a value in the map
     auto it = mapValue.find(flutter::EncodableValue("param"));
@@ -332,7 +332,7 @@ void CashChangerPlugin::HandleMethodCall(
         result->Error("Cash Changer not initialized");
     }
 
-    long lngRet = pCashChanger->DepositRepay(ChanDepositrepay);
+    long lngRet = pCashChanger->EndDeposit(ChanDepositrepay);
 
     if (lngRet == OposSuccess) {
 
@@ -353,23 +353,23 @@ void CashChangerPlugin::HandleMethodCall(
   if (method_call.method_name().compare("errorRestore")) {
     std::cerr << "errorRestore called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+    // if (pCashChanger == nullptr) {
+    //     result->Error("Cash Changer not initialized");
+    // }
 
-    long lngRet = pCashChanger->ClearOutput();
+    // long lngRet = pCashChanger->ClearInput();
 
-    if (lngRet == OposSuccess) {
+    // if (lngRet == OposSuccess) {
 
-      result->Success(flutter::EncodableValue(lngRet));
+    //   result->Success(flutter::EncodableValue(lngRet));
 
-    } else {
-      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
-        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
-      } else {
-        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-      }
-    }
+    // } else {
+    //   if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+    //     result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+    //   } else {
+    //     result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+    //   }
+    // }
     return;
   }
 
@@ -388,11 +388,11 @@ void CashChangerPlugin::HandleMethodCall(
 
     int lngChange = 0;
     auto arguments = method_call.arguments();
-    if (!arguments || !arguments->IsMap()) {
+    if (!arguments || !arguments->!flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->MapValue();
+    const auto& mapValue = std::get<flutter::EncodableMap>(*arguments);
     // Accessing a value in the map
     auto it = mapValue.find(flutter::EncodableValue("Bill"));
     if (it != mapValue.end() && it->second.IsInt()) {
@@ -472,11 +472,11 @@ void CashChangerPlugin::HandleMethodCall(
 
     int mode = 1;
     auto arguments = method_call.arguments();
-    if (!arguments || !arguments->IsMap()) {
+    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
         std::cerr << "checkErrorCode param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->MapValue();
+    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
     // Accessing a value in the map
     auto it = mapValue.find(flutter::EncodableValue("mode"));
     if (it != mapValue.end() && it->second.IsInt()) {
