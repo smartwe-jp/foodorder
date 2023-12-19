@@ -218,34 +218,34 @@ void CashChangerPlugin::HandleMethodCall(
   }
 
 
-  // 获取入金金额
-  if(method_call.method_name().compare("depositAmount") == 0) {
+  // // 获取入金金额
+  // if(method_call.method_name().compare("depositAmount") == 0) {
 
-    std::cerr << "DepositAmount called 。。" << std::endl;
+  //   std::cerr << "DepositAmount called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
 
-    any logAmount;
-    int lngRet;
-    //int lngChange;
-    //short intSuc;
+  //   any logAmount;
+  //   int lngRet;
+  //   //int lngChange;
+  //   //short intSuc;
 
-    lngRet = pCashChanger->FixDeposit();
+  //   lngRet = pCashChanger->FixDeposit();
 
-    if (lngRet == OposSuccess) {
-        // 获取入金金额
-        logAmount = pCashChanger->DepositAmount;
-        result->Success(flutter::EncodableValue(logAmount));
-    } else {
+  //   if (lngRet == OposSuccess) {
+  //       // 获取入金金额
+  //       logAmount = pCashChanger->DepositAmount;
+  //       result->Success(flutter::EncodableValue(logAmount));
+  //   } else {
         
-        result->Error("Cash Changer ResultCode = " + to_string(lngRet));
-        //result->Success(flutter::EncodableValue("Error in ending deposit counting: " + to_string(lngRet)));
-    }
+  //       result->Error("Cash Changer ResultCode = " + to_string(lngRet));
+  //       //result->Success(flutter::EncodableValue("Error in ending deposit counting: " + to_string(lngRet)));
+  //   }
 
-    return;
-  }
+  //   return;
+  // }
 
   // 设置结束入金
   // if(method_call.method_name().compare("endDeposit") == 0) {
