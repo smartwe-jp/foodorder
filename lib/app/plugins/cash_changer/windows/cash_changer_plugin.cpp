@@ -236,8 +236,8 @@ void CashChangerPlugin::HandleMethodCall(
 
     if (lngRet == OposSuccess) {
         // 获取入金金额
-        lngAmount = pCashChanger->DepositAmount;
-        result->Success(flutter::EncodableValue(lngAmount));
+        logAmount = pCashChanger->DepositAmount;
+        result->Success(flutter::EncodableValue(logAmount));
     } else {
         
         result->Error("Cash Changer ResultCode = " + to_string(lngRet));
@@ -410,15 +410,15 @@ void CashChangerPlugin::HandleMethodCall(
         return;
     }
 
-    if (blnBill != null && blnBill) {
+    if (blnBill != NULL && blnBill) {
         lngData = lngData | 0x3;
     }
-    if (blnCoin != null && blnCoin) {
+    if (blnCoin != NULL && blnCoin) {
         lngData = lngData | 0x70000;
     }
-
+    BSTR bstr = SysAllocString(L"");
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
-    lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, lngData, "");
+    lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, &lngData, &bstr);
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
 
     switch (pCashChanger->ResultCode) {
@@ -471,13 +471,18 @@ void CashChangerPlugin::HandleMethodCall(
     std::string strTemp;
 
     int mode = 1;
+    auto arguments = method_call.arguments();
+    if (!arguments || !arguments->IsMap()) {
+        std::cerr << "checkErrorCode param error 。。1" << std::endl;
+        return;
+    }
     const auto& mapValue = arguments->MapValue();
     // Accessing a value in the map
     auto it = mapValue.find(flutter::EncodableValue("mode"));
     if (it != mapValue.end() && it->second.IsInt()) {
         mode = it->second.IntValue();
     } else {
-        std::cerr << "endDeposit param error 。。2" << std::endl;
+        std::cerr << "checkErrorCode param error 。。2" << std::endl;
         return;
     }
 
@@ -489,14 +494,14 @@ void CashChangerPlugin::HandleMethodCall(
         lngData = 0x1; // 硬貨単体接続
     }
 
-    strTemp = "";
-
+    //strTemp = "";
+    BSTR strTemp = SysAllocString(L"");
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
-    lngRet = OPOSCashChanger1.DirectIO(CHAN_DI_STATUSREAD, lngData, strTemp);
+    lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
 
     if (lngRet == OposSuccess) {
-        if (RAD_RT.Checked) {
+        if (mode == 1) {
             checkErrorCode = std::stoi(strTemp.substr(39, 4));
             if (checkErrorCode < 1) {
                 checkErrorCode = std::stoi(strTemp.substr(0, 4));
