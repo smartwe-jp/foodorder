@@ -10,6 +10,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<WindowsTestController>(
+        init: Get.put(WindowsTestController()),
         builder: (controller) {
           return controller.obx((state) => Center(
                 child: Row(
