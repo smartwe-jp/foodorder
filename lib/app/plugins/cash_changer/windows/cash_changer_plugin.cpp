@@ -466,7 +466,7 @@ void CashChangerPlugin::HandleMethodCall(
         result->Error("Cash Changer not initialized");
     }
 
-    int lngData;
+    long lngData;
     int lngRet;
     // std::string strTemp;
 
