@@ -256,16 +256,16 @@ void CashChangerPlugin::HandleMethodCall(
         result->Error("Cash Changer not initialized");
     }
     auto arguments = method_call.arguments();
-    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
+    if (!arguments) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
+    const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
     int intSuc = 0;
     // Accessing a value in the map
-    auto it = mapValue.find(flutter::EncodableValue("param"));
-    if (it != mapValue.end() && it->second.IsInt()) {
-        intSuc = it->second.IntValue();
+    auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
+    if (it != mapValue->end()) {
+        intSuc = get<int>(it->second);
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
@@ -297,16 +297,16 @@ void CashChangerPlugin::HandleMethodCall(
 
     int lngChange = 0;
     auto arguments = method_call.arguments();
-    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
+    if (!arguments) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
+    const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
     int intSuc = 0;
     // Accessing a value in the map
-    auto it = mapValue.find(flutter::EncodableValue("param"));
-    if (it != mapValue.end() && it->second.IsInt()) {
-        lngChange = it->second.IntValue();
+    auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
+    if (it != mapValue->end()) {
+        lngChange = get<int>(it->second);
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
@@ -388,23 +388,23 @@ void CashChangerPlugin::HandleMethodCall(
 
     int lngChange = 0;
     auto arguments = method_call.arguments();
-    if (!arguments || !arguments->!flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
+    if (!arguments) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = std::get<flutter::EncodableMap>(*arguments);
+    const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
     // Accessing a value in the map
-    auto it = mapValue.find(flutter::EncodableValue("Bill"));
-    if (it != mapValue.end() && it->second.IsInt()) {
-        lngChange = it->second.IntValue() == 1 ? true : false;
+    auto it = mapValue->find(flutter::EncodableValue("Bill"));
+    if (it != mapValue->end()) {
+        lngChange = get<int>(it->second) == 1 ? true : false;
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
     }
 
-    auto it1 = mapValue.find(flutter::EncodableValue("Coin"));
-    if (it1 != mapValue.end() && it1->second.IsInt()) {
-        lngData = it1->second.IntValue() == 1 ? true : false;
+    auto it1 = mapValue->find(flutter::EncodableValue("Coin"));
+    if (it1 != mapValue->end()) {
+        lngData = get<int>(it1->second) == 1 ? true : false;
     } else {
         std::cerr << "endDeposit param error 。。3" << std::endl;
         return;
@@ -472,15 +472,15 @@ void CashChangerPlugin::HandleMethodCall(
 
     int mode = 1;
     auto arguments = method_call.arguments();
-    if (!arguments || !flutter::TypeIs<flutter::EncodableMap>(*arguments)) {
+    if (!arguments) {
         std::cerr << "checkErrorCode param error 。。1" << std::endl;
         return;
     }
-    const auto& mapValue = arguments->std::get<flutter::EncodableMap>(*arguments);
+    const auto *mapValue = std::ge_if<flutter::EncodableMap>(arguments);
     // Accessing a value in the map
-    auto it = mapValue.find(flutter::EncodableValue("mode"));
-    if (it != mapValue.end() && it->second.IsInt()) {
-        mode = it->second.IntValue();
+    auto it = mapValue->find(flutter::EncodableValue("mode"));
+    if (it != mapValue->end()) {
+        mode = get<int>(it->second);
     } else {
         std::cerr << "checkErrorCode param error 。。2" << std::endl;
         return;
