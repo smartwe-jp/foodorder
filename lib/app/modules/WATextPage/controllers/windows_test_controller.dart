@@ -11,16 +11,21 @@ class WindowsTestController extends GetxController with StateMixin {
 
   @override
   void onInit() {
+    debugPrint("  WindowsTestController onInit  ");
     super.onInit();
   }
 
   @override
   void onReady() {
+    debugPrint("  WindowsTestController onReady  ");
     super.onReady();
   }
 
   @override
-  void onClose() {}
+  void onClose() {
+    debugPrint("  WindowsTestController onClose  ");
+    super.onClose();
+  }
 
   void openCashChange() async {
     debugPrint("  openCashChange  ");
