@@ -382,7 +382,7 @@ void CashChangerPlugin::HandleMethodCall(
     }
 
     int lngRet;
-    int lngData = 0;
+    long lngData = 0;
     bool blnBill = false;
     bool blnCoin = false;
 
@@ -468,7 +468,7 @@ void CashChangerPlugin::HandleMethodCall(
 
     int lngData;
     int lngRet;
-    std::string strTemp;
+    // std::string strTemp;
 
     int mode = 1;
     auto arguments = method_call.arguments();
@@ -501,14 +501,14 @@ void CashChangerPlugin::HandleMethodCall(
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
 
     if (lngRet == OposSuccess) {
-        if (mode == 1) {
-            checkErrorCode = std::stoi(strTemp.substr(39, 4));
-            if (checkErrorCode < 1) {
-                checkErrorCode = std::stoi(strTemp.substr(0, 4));
-            }
-        } else {
-            checkErrorCode = std::stoi(strTemp.substr(0, 4));
-        }
+        // if (mode == 1) {
+        //     checkErrorCode = std::stoi(strTemp.substr(39, 4));
+        //     if (checkErrorCode < 1) {
+        //         checkErrorCode = std::stoi(strTemp.substr(0, 4));
+        //     }
+        // } else {
+        //     checkErrorCode = std::stoi(strTemp.substr(0, 4));
+        // }
     }
 
     result->Success(flutter::EncodableValue(checkErrorCode));
@@ -519,18 +519,19 @@ void CashChangerPlugin::HandleMethodCall(
 
 
   if (method_call.method_name().compare("getPlatformVersion") == 0) {
-    std::ostringstream version_stream;
-    version_stream << "Windows ";
-    if (IsWindows10OrGreater()) {
-      version_stream << "10+";
-    } else if (IsWindows8OrGreater()) {
-      version_stream << "8";
-    } else if (IsWindows7OrGreater()) {
-      version_stream << "7";
-    }
-    result->Success(flutter::EncodableValue(version_stream.str()));
-  } else {
-    result->NotImplemented();
+        std::ostringstream version_stream;
+        version_stream << "Windows ";
+        if (IsWindows10OrGreater()) {
+          version_stream << "10+";
+        } else if (IsWindows8OrGreater()) {
+          version_stream << "8";
+        } else if (IsWindows7OrGreater()) {
+          version_stream << "7";
+        }
+        result->Success(flutter::EncodableValue(version_stream.str()));
+      } else {
+        result->NotImplemented();
+      }
   }
   
 
