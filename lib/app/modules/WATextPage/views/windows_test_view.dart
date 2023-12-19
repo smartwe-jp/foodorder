@@ -234,7 +234,12 @@ class WindewsTestView extends GetView<WindowsTestController> {
                                   padding: const EdgeInsets.all(16.0),
                                   textStyle: const TextStyle(fontSize: 20),
                                 ),
-                                onPressed: () {},
+                                onPressed: () {
+                                  //to home page
+                                  Future.delayed(Duration(milliseconds: 200), () {
+                                    Get.toNamed("/home");
+                                  });
+                                },
                                 child: const Text('終了'),
                               ),
                             ),

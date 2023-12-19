@@ -31,6 +31,7 @@ import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../modules/OrderHome/views/opos_apg.dart';
+import '../modules/WATextPage/views/windows_test_view.dart';
 
 part 'app_routes.dart';
 
@@ -63,6 +64,11 @@ class AppPages {
     GetPage(
       name: _Paths.OPOS_APG,
       page: () => OPOSAPGView(),
+      binding: OrderHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.MW_TEST,
+      page: () => WindewsTestView(),
       binding: OrderHomeBinding(),
     ),
     GetPage(
