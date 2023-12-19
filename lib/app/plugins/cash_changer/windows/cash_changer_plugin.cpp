@@ -248,298 +248,298 @@ void CashChangerPlugin::HandleMethodCall(
   }
 
   // 设置结束入金
-  if(method_call.method_name().compare("endDeposit") == 0) {
+  // if(method_call.method_name().compare("endDeposit") == 0) {
 
-    std::cerr << "endDeposit called 。。" << std::endl;
+  //   std::cerr << "endDeposit called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
-    // auto arguments = method_call.arguments();
-    // if (!arguments) {
-    //     std::cerr << "endDeposit param error 。。1" << std::endl;
-    //     return;
-    // }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
+  //   // auto arguments = method_call.arguments();
+  //   // if (!arguments) {
+  //   //     std::cerr << "endDeposit param error 。。1" << std::endl;
+  //   //     return;
+  //   // }
     
-    int intSuc = 0;
-    // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
-    // auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
-    // if (it != mapValue->end()) {
-    //     auto intValue = std::get_if<int>(&it->second);
-    //     if (intValue != nullptr) {
-    //         intSuc = *intValue;
-    //     } else {
-    //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
-    //         return;
-    //     }
-    // } else {
-    //     std::cerr << "endDeposit param error 。。2" << std::endl;
-    //     return;
-    // }
+  //   int intSuc = 0;
+  //   // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+  //   // auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
+  //   // if (it != mapValue->end()) {
+  //   //     auto intValue = std::get_if<int>(&it->second);
+  //   //     if (intValue != nullptr) {
+  //   //         intSuc = *intValue;
+  //   //     } else {
+  //   //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
+  //   //         return;
+  //   //     }
+  //   // } else {
+  //   //     std::cerr << "endDeposit param error 。。2" << std::endl;
+  //   //     return;
+  //   // }
 
-    long lngRet = pCashChanger->EndDeposit(intSuc);
+  //   long lngRet = pCashChanger->EndDeposit(intSuc);
 
-    if (lngRet == OposSuccess) {
+  //   if (lngRet == OposSuccess) {
 
-      result->Success(flutter::EncodableValue(lngRet));
+  //     result->Success(flutter::EncodableValue(lngRet));
 
-    } else {
-      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
-        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
-      } else {
-        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-      }
-    }
-    return;
-  }
+  //   } else {
+  //     if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+  //       result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+  //     } else {
+  //       result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+  //     }
+  //   }
+  //   return;
+  // }
 
-  // 出钞找钱
-  if (method_call.method_name().compare("dispenseChange")) {
-    std::cerr << "dispenseChange called 。。" << std::endl;
+  // // 出钞找钱
+  // if (method_call.method_name().compare("dispenseChange")) {
+  //   std::cerr << "dispenseChange called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
 
-    int lngChange = 0;
-    // auto arguments = method_call.arguments();
-    // if (!arguments) {
-    //     std::cerr << "endDeposit param error 。。1" << std::endl;
-    //     return;
-    // }
-    // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
-    // //int intSuc = 0;
-    // // Accessing a value in the map
-    // auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
-    // if (it != mapValue->end()) {
-    //     auto intValue = std::get_if<int>(&it->second);
-    //     if (intValue != nullptr) {
-    //         lngChange = *intValue;
-    //     } else {
-    //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
-    //         return;
-    //     }
-    // } else {
-    //     std::cerr << "endDeposit param error 。。2" << std::endl;
-    //     return;
-    // }
+  //   int lngChange = 0;
+  //   // auto arguments = method_call.arguments();
+  //   // if (!arguments) {
+  //   //     std::cerr << "endDeposit param error 。。1" << std::endl;
+  //   //     return;
+  //   // }
+  //   // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+  //   // //int intSuc = 0;
+  //   // // Accessing a value in the map
+  //   // auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
+  //   // if (it != mapValue->end()) {
+  //   //     auto intValue = std::get_if<int>(&it->second);
+  //   //     if (intValue != nullptr) {
+  //   //         lngChange = *intValue;
+  //   //     } else {
+  //   //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
+  //   //         return;
+  //   //     }
+  //   // } else {
+  //   //     std::cerr << "endDeposit param error 。。2" << std::endl;
+  //   //     return;
+  //   // }
 
-    long lngRet = pCashChanger->DispenseChange(lngChange);
+  //   long lngRet = pCashChanger->DispenseChange(lngChange);
 
-    if (lngRet == OposSuccess) {
-        // 成功出钞
-        result->Success(flutter::EncodableValue(lngRet));
-    } else {
-        // 其他错误
-        result->Success(flutter::EncodableValue(lngRet));
-    }
-    return;
-  }
+  //   if (lngRet == OposSuccess) {
+  //       // 成功出钞
+  //       result->Success(flutter::EncodableValue(lngRet));
+  //   } else {
+  //       // 其他错误
+  //       result->Success(flutter::EncodableValue(lngRet));
+  //   }
+  //   return;
+  // }
 
-  // 退还所有入 
-  if (method_call.method_name().compare("depositRepay")) {
-    std::cerr << "depositRepay called 。。" << std::endl;
+  // // 退还所有入 
+  // if (method_call.method_name().compare("depositRepay")) {
+  //   std::cerr << "depositRepay called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
 
-    long lngRet = pCashChanger->EndDeposit(ChanDepositrepay);
+  //   long lngRet = pCashChanger->EndDeposit(ChanDepositrepay);
 
-    if (lngRet == OposSuccess) {
+  //   if (lngRet == OposSuccess) {
 
-      result->Success(flutter::EncodableValue(lngRet));
+  //     result->Success(flutter::EncodableValue(lngRet));
 
-    } else {
-      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
-        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
-      } else {
-        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-      }
-    }
-    return;
-  }
+  //   } else {
+  //     if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+  //       result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+  //     } else {
+  //       result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+  //     }
+  //   }
+  //   return;
+  // }
 
-  //エラー解除ガイダンスを起動する
+  // //エラー解除ガイダンスを起動する
 
-  if (method_call.method_name().compare("errorRestore")) {
-    std::cerr << "errorRestore called 。。" << std::endl;
+  // if (method_call.method_name().compare("errorRestore")) {
+  //   std::cerr << "errorRestore called 。。" << std::endl;
 
-    // if (pCashChanger == nullptr) {
-    //     result->Error("Cash Changer not initialized");
-    // }
+  //   // if (pCashChanger == nullptr) {
+  //   //     result->Error("Cash Changer not initialized");
+  //   // }
 
-    // long lngRet = pCashChanger->ClearInput();
+  //   // long lngRet = pCashChanger->ClearInput();
 
-    // if (lngRet == OposSuccess) {
+  //   // if (lngRet == OposSuccess) {
 
-    //   result->Success(flutter::EncodableValue(lngRet));
+  //   //   result->Success(flutter::EncodableValue(lngRet));
 
-    // } else {
-    //   if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
-    //     result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
-    //   } else {
-    //     result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-    //   }
-    // }
-    return;
-  }
+  //   // } else {
+  //   //   if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+  //   //     result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+  //   //   } else {
+  //   //     result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+  //   //   }
+  //   // }
+  //   return;
+  // }
 
-  // collect all
-  if (method_call.method_name().compare("collectAll")) {
-    std::cerr << "collectAll called 。。" << std::endl;
+  // // collect all
+  // if (method_call.method_name().compare("collectAll")) {
+  //   std::cerr << "collectAll called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
 
-    int lngRet;
-    long lngData = 0;
-    bool blnBill = false;
-    bool blnCoin = false;
+  //   int lngRet;
+  //   long lngData = 0;
+  //   bool blnBill = false;
+  //   bool blnCoin = false;
 
-    //int lngChange = 0;
-    // auto arguments = method_call.arguments();
-    // if (!arguments) {
-    //     std::cerr << "endDeposit param error 。。1" << std::endl;
-    //     return;
-    // }
-    // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
-    // // Accessing a value in the map
-    // auto it = mapValue->find(flutter::EncodableValue("Bill"));
-    // if (it != mapValue->end()) {
-    //     auto intValue = std::get_if<int>(&it->second);
-    //     if (intValue != nullptr) {
-    //         blnBill = *intValue == 1 ? true : false;
-    //     } else {
-    //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
-    //         return;
-    //     }
+  //   //int lngChange = 0;
+  //   // auto arguments = method_call.arguments();
+  //   // if (!arguments) {
+  //   //     std::cerr << "endDeposit param error 。。1" << std::endl;
+  //   //     return;
+  //   // }
+  //   // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+  //   // // Accessing a value in the map
+  //   // auto it = mapValue->find(flutter::EncodableValue("Bill"));
+  //   // if (it != mapValue->end()) {
+  //   //     auto intValue = std::get_if<int>(&it->second);
+  //   //     if (intValue != nullptr) {
+  //   //         blnBill = *intValue == 1 ? true : false;
+  //   //     } else {
+  //   //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
+  //   //         return;
+  //   //     }
         
-    // } else {
-    //     std::cerr << "endDeposit param error 。。2" << std::endl;
-    //     return;
-    // }
+  //   // } else {
+  //   //     std::cerr << "endDeposit param error 。。2" << std::endl;
+  //   //     return;
+  //   // }
 
-    // auto it1 = mapValue->find(flutter::EncodableValue("Coin"));
-    // if (it1 != mapValue->end()) {
-    //     lngData = get<int>(it1->second) == 1 ? true : false;
-    //     auto intValue = std::get_if<int>(&it->second);
-    //     if (intValue != nullptr) {
-    //         blnCoin = *intValue == 1 ? true : false;
-    //     } else {
-    //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
-    //         return;
-    //     }
-    // } else {
-    //     std::cerr << "endDeposit param error 。。3" << std::endl;
-    //     return;
-    // }
+  //   // auto it1 = mapValue->find(flutter::EncodableValue("Coin"));
+  //   // if (it1 != mapValue->end()) {
+  //   //     lngData = get<int>(it1->second) == 1 ? true : false;
+  //   //     auto intValue = std::get_if<int>(&it->second);
+  //   //     if (intValue != nullptr) {
+  //   //         blnCoin = *intValue == 1 ? true : false;
+  //   //     } else {
+  //   //         std::cerr << "checkErrorCode param error 。。2" << std::endl;
+  //   //         return;
+  //   //     }
+  //   // } else {
+  //   //     std::cerr << "endDeposit param error 。。3" << std::endl;
+  //   //     return;
+  //   // }
 
-    if (blnBill != NULL && blnBill) {
-        lngData = lngData | 0x3;
-    }
-    if (blnCoin != NULL && blnCoin) {
-        lngData = lngData | 0x70000;
-    }
-    BSTR bstr = SysAllocString(L"");
-    //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
-    lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, &lngData, &bstr);
-    //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
+  //   if (blnBill != NULL && blnBill) {
+  //       lngData = lngData | 0x3;
+  //   }
+  //   if (blnCoin != NULL && blnCoin) {
+  //       lngData = lngData | 0x70000;
+  //   }
+  //   BSTR bstr = SysAllocString(L"");
+  //   //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
+  //   lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, &lngData, &bstr);
+  //   //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
 
-    switch (pCashChanger->ResultCode) {
-        case OposSuccess:
+  //   switch (pCashChanger->ResultCode) {
+  //       case OposSuccess:
   
-            result->Success(flutter::EncodableValue(OposSuccess));
-            break;
-        case OposEExtended:
-            switch (pCashChanger->ResultCodeExtended) {
-                case OPOS_ECHAN_OVERDISPENSE:
-                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_NOCHANGE;
-                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
-                    break;
-                case OPOS_ECHAN_OVER:
-                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_OVER;
-                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
-                    break;
-                case OPOS_ECHAN_SETERROR:
-                case OPOS_ECHAN_ERROR:
-                case OPOS_ECHAN_BUSY:
-                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_CHANGER;
-                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+  //           result->Success(flutter::EncodableValue(OposSuccess));
+  //           break;
+  //       case OposEExtended:
+  //           switch (pCashChanger->ResultCodeExtended) {
+  //               case OPOS_ECHAN_OVERDISPENSE:
+  //                   //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_NOCHANGE;
+  //                   result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
+  //                   break;
+  //               case OPOS_ECHAN_OVER:
+  //                   //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_OVER;
+  //                   result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
+  //                   break;
+  //               case OPOS_ECHAN_SETERROR:
+  //               case OPOS_ECHAN_ERROR:
+  //               case OPOS_ECHAN_BUSY:
+  //                   //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_CHANGER;
+  //                   result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
 
-                    break;
-                default:
-                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
-                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
+  //                   break;
+  //               default:
+  //                   result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+  //                   //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
 
-            }
-            break;
-        default:
-            result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
-            //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
-    }
-    return;
-  }
+  //           }
+  //           break;
+  //       default:
+  //           result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+  //           //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
+  //   }
+  //   return;
+  // }
 
 
-  // check error code
+  // // check error code
 
-  if (method_call.method_name().compare("checkErrorCode")) {
-    std::cerr << "checkErrorCode called 。。" << std::endl;
+  // if (method_call.method_name().compare("checkErrorCode")) {
+  //   std::cerr << "checkErrorCode called 。。" << std::endl;
 
-    if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
-    }
+  //   if (pCashChanger == nullptr) {
+  //       result->Error("Cash Changer not initialized");
+  //   }
 
-    long lngData;
-    int lngRet;
-    // std::string strTemp;
+  //   long lngData;
+  //   int lngRet;
+  //   // std::string strTemp;
 
-    int mode = 1;
-    // auto arguments = method_call.arguments();
-    // if (!arguments) {
-    //     std::cerr << "checkErrorCode param error 。。1" << std::endl;
-    //     return;
-    // }
-    // const auto *mapValue = std::get_if<flutter::EncodableMap>(arguments);
-    // // Accessing a value in the map
-    // auto it = mapValue->find(flutter::EncodableValue("mode"));
-    // if (it != mapValue->end()) {
-    //     mode = get<int>(it->second);
-    // } else {
-    //     std::cerr << "checkErrorCode param error 。。2" << std::endl;
-    //     return;
-    // }
+  //   int mode = 1;
+  //   // auto arguments = method_call.arguments();
+  //   // if (!arguments) {
+  //   //     std::cerr << "checkErrorCode param error 。。1" << std::endl;
+  //   //     return;
+  //   // }
+  //   // const auto *mapValue = std::get_if<flutter::EncodableMap>(arguments);
+  //   // // Accessing a value in the map
+  //   // auto it = mapValue->find(flutter::EncodableValue("mode"));
+  //   // if (it != mapValue->end()) {
+  //   //     mode = get<int>(it->second);
+  //   // } else {
+  //   //     std::cerr << "checkErrorCode param error 。。2" << std::endl;
+  //   //     return;
+  //   // }
 
-    short checkErrorCode = 0;
+  //   short checkErrorCode = 0;
 
-    if (mode == 1) {
-        lngData = 0x80; // 紙幣・硬貨両接続
-    } else {
-        lngData = 0x1; // 硬貨単体接続
-    }
+  //   if (mode == 1) {
+  //       lngData = 0x80; // 紙幣・硬貨両接続
+  //   } else {
+  //       lngData = 0x1; // 硬貨単体接続
+  //   }
 
-    //strTemp = "";
-    BSTR strTemp = SysAllocString(L"");
-    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
-    lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
-    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
+  //   //strTemp = "";
+  //   BSTR strTemp = SysAllocString(L"");
+  //   //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
+  //   lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
+  //   //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
 
-    if (lngRet == OposSuccess) {
-        // if (mode == 1) {
-        //     checkErrorCode = std::stoi(strTemp.substr(39, 4));
-        //     if (checkErrorCode < 1) {
-        //         checkErrorCode = std::stoi(strTemp.substr(0, 4));
-        //     }
-        // } else {
-        //     checkErrorCode = std::stoi(strTemp.substr(0, 4));
-        // }
-    }
+  //   if (lngRet == OposSuccess) {
+  //       // if (mode == 1) {
+  //       //     checkErrorCode = std::stoi(strTemp.substr(39, 4));
+  //       //     if (checkErrorCode < 1) {
+  //       //         checkErrorCode = std::stoi(strTemp.substr(0, 4));
+  //       //     }
+  //       // } else {
+  //       //     checkErrorCode = std::stoi(strTemp.substr(0, 4));
+  //       // }
+  //   }
 
-    result->Success(flutter::EncodableValue(checkErrorCode));
-    return;
-  }
+  //   result->Success(flutter::EncodableValue(checkErrorCode));
+  //   return;
+  // }
 
   
 
