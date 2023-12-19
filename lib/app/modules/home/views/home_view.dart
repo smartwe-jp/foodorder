@@ -177,9 +177,8 @@ class HomeView extends GetView {
       body: Center(
         child: Stack(
           children: [
-            Obx(() => (controller.isShowTest.value)
-                ? testView()
-                : Container(
+            Obx(() => 
+                Container(
                     width: ScreenAdapter.width(550),
                     height: ScreenAdapter.height(450),
                     padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
