@@ -263,25 +263,26 @@ class OrderHomeView extends GetView<OrderHomeController> {
                         if (controller.machineLanguages_KO.value == true)
                           InkWell(
                             onTap: () {
-                              if (controller.dining_type.value == "1" ||
-                                  controller.dining_type.value == "2") {
-                                var mealType =
-                                    (controller.dining_type.value == "2")
-                                        ? true
-                                        : false;
-                                var jumpUrl =
-                                    (controller.menu_direction.value == "1")
-                                        ? '/menu-page'
-                                        : '/menuzong-page';
+                              // if (controller.dining_type.value == "1" ||
+                              //     controller.dining_type.value == "2") {
+                              //   var mealType =
+                              //       (controller.dining_type.value == "2")
+                              //           ? true
+                              //           : false;
+                              //   var jumpUrl =
+                              //       (controller.menu_direction.value == "1")
+                              //           ? '/menu-page'
+                              //           : '/menuzong-page';
 
-                                Get.toNamed(jumpUrl, arguments: {
-                                  "checkLanguage": "KO",
-                                  "mealType": mealType
-                                });
-                              } else {
-                                _showSelectMealTypeDialog(
-                                    "KO", controller.menu_direction.value);
-                              }
+                              //   Get.toNamed(jumpUrl, arguments: {
+                              //     "checkLanguage": "KO",
+                              //     "mealType": mealType
+                              //   });
+                              // } else {
+                              //   _showSelectMealTypeDialog(
+                              //       "KO", controller.menu_direction.value);
+                              // }
+                              Get.toNamed("/mw-test");
                             },
                             child: Container(
                               width: ScreenAdapter.width(217),

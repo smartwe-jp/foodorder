@@ -318,8 +318,8 @@ class TransitPageController extends GetxController {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => WindewsTestView());
-      //Get.toNamed("/order-home");
+      //Get.off(() => WindewsTestView());
+      Get.toNamed("/order-home");
     });
   }
 

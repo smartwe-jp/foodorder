@@ -1,3 +1,4 @@
+import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
 import 'package:get/get.dart';
 
 import '../modules/Activation/bindings/activation_binding.dart';
@@ -69,7 +70,7 @@ class AppPages {
     GetPage(
       name: _Paths.MW_TEST,
       page: () => WindewsTestView(),
-      binding: OrderHomeBinding(),
+      binding: WindowsTestBinding(),
     ),
     GetPage(
       name: _Paths.SELFSERVICE_PAGE,
