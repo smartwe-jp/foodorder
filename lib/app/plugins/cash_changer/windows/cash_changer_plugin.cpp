@@ -255,11 +255,11 @@ void CashChangerPlugin::HandleMethodCall(
     if (pCashChanger == nullptr) {
         result->Error("Cash Changer not initialized");
     }
-    auto arguments = method_call.arguments();
-    if (!arguments) {
-        std::cerr << "endDeposit param error 。。1" << std::endl;
-        return;
-    }
+    // auto arguments = method_call.arguments();
+    // if (!arguments) {
+    //     std::cerr << "endDeposit param error 。。1" << std::endl;
+    //     return;
+    // }
     
     int intSuc = 0;
     // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
@@ -497,20 +497,20 @@ void CashChangerPlugin::HandleMethodCall(
     // std::string strTemp;
 
     int mode = 1;
-    auto arguments = method_call.arguments();
-    if (!arguments) {
-        std::cerr << "checkErrorCode param error 。。1" << std::endl;
-        return;
-    }
-    const auto *mapValue = std::get_if<flutter::EncodableMap>(arguments);
-    // Accessing a value in the map
-    auto it = mapValue->find(flutter::EncodableValue("mode"));
-    if (it != mapValue->end()) {
-        mode = get<int>(it->second);
-    } else {
-        std::cerr << "checkErrorCode param error 。。2" << std::endl;
-        return;
-    }
+    // auto arguments = method_call.arguments();
+    // if (!arguments) {
+    //     std::cerr << "checkErrorCode param error 。。1" << std::endl;
+    //     return;
+    // }
+    // const auto *mapValue = std::get_if<flutter::EncodableMap>(arguments);
+    // // Accessing a value in the map
+    // auto it = mapValue->find(flutter::EncodableValue("mode"));
+    // if (it != mapValue->end()) {
+    //     mode = get<int>(it->second);
+    // } else {
+    //     std::cerr << "checkErrorCode param error 。。2" << std::endl;
+    //     return;
+    // }
 
     short checkErrorCode = 0;
 
