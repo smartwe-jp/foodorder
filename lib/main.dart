@@ -104,7 +104,7 @@ void main() {
           ),
         ),
       ));
-      HttpOverrides.global = MyHttpOverrides();
+      //HttpOverrides.global = MyHttpOverrides();flutter
     });
 
     //隐藏状态栏导航栏

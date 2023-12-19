@@ -229,8 +229,8 @@ void CashChangerPlugin::HandleMethodCall(
 
     any logAmount;
     int lngRet;
-    int lngChange;
-    short intSuc;
+    //int lngChange;
+    //short intSuc;
 
     lngRet = pCashChanger->FixDeposit();
 
@@ -265,7 +265,13 @@ void CashChangerPlugin::HandleMethodCall(
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
     if (it != mapValue->end()) {
-        intSuc = get<int>(it->second);
+        auto intValue = std::get_if<int>(&it->second);
+        if (intValue != nullptr) {
+            intSuc = *intValue;
+        } else {
+            std::cerr << "checkErrorCode param error 。。2" << std::endl;
+            return;
+        }
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
@@ -302,11 +308,17 @@ void CashChangerPlugin::HandleMethodCall(
         return;
     }
     const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
-    int intSuc = 0;
+    //int intSuc = 0;
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
     if (it != mapValue->end()) {
-        lngChange = get<int>(it->second);
+        auto intValue = std::get_if<int>(&it->second);
+        if (intValue != nullptr) {
+            lngChange = *intValue;
+        } else {
+            std::cerr << "checkErrorCode param error 。。2" << std::endl;
+            return;
+        }
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
@@ -386,7 +398,7 @@ void CashChangerPlugin::HandleMethodCall(
     bool blnBill = false;
     bool blnCoin = false;
 
-    int lngChange = 0;
+    //int lngChange = 0;
     auto arguments = method_call.arguments();
     if (!arguments) {
         std::cerr << "endDeposit param error 。。1" << std::endl;
@@ -396,7 +408,14 @@ void CashChangerPlugin::HandleMethodCall(
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("Bill"));
     if (it != mapValue->end()) {
-        lngChange = get<int>(it->second) == 1 ? true : false;
+        auto intValue = std::get_if<int>(&it->second);
+        if (intValue != nullptr) {
+            blnBill = *intValue == 1 ? true : false;
+        } else {
+            std::cerr << "checkErrorCode param error 。。2" << std::endl;
+            return;
+        }
+        
     } else {
         std::cerr << "endDeposit param error 。。2" << std::endl;
         return;
@@ -405,6 +424,13 @@ void CashChangerPlugin::HandleMethodCall(
     auto it1 = mapValue->find(flutter::EncodableValue("Coin"));
     if (it1 != mapValue->end()) {
         lngData = get<int>(it1->second) == 1 ? true : false;
+        auto intValue = std::get_if<int>(&it->second);
+        if (intValue != nullptr) {
+            blnCoin = *intValue == 1 ? true : false;
+        } else {
+            std::cerr << "checkErrorCode param error 。。2" << std::endl;
+            return;
+        }
     } else {
         std::cerr << "endDeposit param error 。。3" << std::endl;
         return;
