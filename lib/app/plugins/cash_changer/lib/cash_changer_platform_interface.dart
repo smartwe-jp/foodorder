@@ -46,4 +46,14 @@ abstract class CashChangerPlatform extends PlatformInterface {
   Future<int?> startDeposit() {
     throw UnimplementedError('startDeposit() has not been implemented.');
   }
+
+  //Deposit Amount
+  Future<int?> depositAmount() {
+    throw UnimplementedError('depositAmount() has not been implemented.');
+  }
+
+  //Stop Deposit
+  Future<int?> stopDeposit() {
+    throw UnimplementedError('stopDeposit() has not been implemented.');
+  }
 }

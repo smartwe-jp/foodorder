@@ -57,7 +57,7 @@ CashChangerPlugin::~CashChangerPlugin() {
 void CashChangerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
-
+ // 打开设备
  if (method_call.method_name().compare("openCashChanger") == 0) {
     std::cerr << "openCashChange called 。。" << std::endl;
         // 创建 OPOSCashChanger 接口指针
@@ -100,7 +100,7 @@ void CashChangerPlugin::HandleMethodCall(
         }
     return;
   }
-
+  // 关闭设备
   if (method_call.method_name().compare("closeCashChanger") == 0) {
     std::cerr << "closeCashChanger called 。。" << std::endl;
 
@@ -132,7 +132,7 @@ void CashChangerPlugin::HandleMethodCall(
 
     return;
   }
-
+  // 获取现金信息
   if (method_call.method_name().compare("getCashBalance") == 0) {
     std::cerr << "getCashBalance called 。。" << std::endl;
     if (pCashChanger == nullptr) {
@@ -180,6 +180,7 @@ void CashChangerPlugin::HandleMethodCall(
     return;
   }
 
+  // 开始入金
   if(method_call.method_name().compare("startDeposit") == 0) {
     std::cerr << "dispenseCash called 。。" << std::endl;
 
@@ -195,10 +196,10 @@ void CashChangerPlugin::HandleMethodCall(
     } else if (lngRet == OposEIllegal) {
         // 特定错误处理
         switch (pCashChanger->ResultCodeExtended) {
-            case 225:
+            case OPOS_ECHAN_DEPOSIT:
             
                result->Success(flutter::EncodableValue("Already in deposit counting 225"));
-            case 226:
+            case OPOS_ECHAN_PAUSEDEPOSIT:
                 // 已在计数中
 
                 result->Success(flutter::EncodableValue("Already in deposit counting 226"));
@@ -217,6 +218,236 @@ void CashChangerPlugin::HandleMethodCall(
   }
 
 
+  // 获取入金金额
+  if(method_call.method_name().compare("depositAmount") == 0) {
+
+    std::cerr << "DepositAmount called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    any logAmount;
+    int lngRet;
+    int lngChange;
+    short intSuc;
+
+    lngRet = pCashChanger->FixDeposit();
+
+    if (lngRet == OposSuccess) {
+        // 获取入金金额
+        lngAmount = pCashChanger->DepositAmount;
+        result->Success(flutter::EncodableValue(lngAmount));
+    } else {
+        
+        result->Error("Cash Changer ResultCode = " + to_string(lngRet));
+        //result->Success(flutter::EncodableValue("Error in ending deposit counting: " + to_string(lngRet)));
+    }
+
+    return;
+  }
+
+  // 设置结束入金
+  if(method_call.method_name().compare("endDeposit") == 0) {
+
+    std::cerr << "endDeposit called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+    int intSuc = method_call.arguments();
+
+    long lngRet = pCashChanger->EndDeposit(intSuc);
+
+    if (lngRet == OposSuccess) {
+
+      result->Success(flutter::EncodableValue(lngRet));
+
+    } else {
+      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+      } else {
+        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+      }
+    }
+    return;
+  }
+
+  // 出钞找钱
+  if (method_call.method_name().compare("dispenseChange")) {
+    std::cerr << "dispenseChange called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    int lngChange = method_call.arguments();
+
+    long lngRet = pCashChanger->DispenseChange(lngChange);
+
+    if (lngRet == OposSuccess) {
+        // 成功出钞
+        result->Success(flutter::EncodableValue(lngRet));
+    } else {
+        // 其他错误
+        result->Success(flutter::EncodableValue(lngRet));
+    }
+    return;
+  }
+
+  // 退还所有入 
+  if (method_call.method_name().compare("depositRepay")) {
+    std::cerr << "depositRepay called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    long lngRet = pCashChanger->DepositRepay(ChanDepositrepay);
+
+    if (lngRet == OposSuccess) {
+
+      result->Success(flutter::EncodableValue(lngRet));
+
+    } else {
+      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+      } else {
+        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+      }
+    }
+    return;
+  }
+
+  //エラー解除ガイダンスを起動する
+
+  if (method_call.method_name().compare("errorRestore")) {
+    std::cerr << "errorRestore called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    long lngRet = pCashChanger->ClearOutput();
+
+    if (lngRet == OposSuccess) {
+
+      result->Success(flutter::EncodableValue(lngRet));
+
+    } else {
+      if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
+        result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+      } else {
+        result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+      }
+    }
+    return;
+  }
+
+  // collect all
+  if (method_call.method_name().compare("collectAll")) {
+    std::cerr << "collectAll called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    int lngRet;
+    int lngData = 0;
+    bool blnBill = method_call.arguments()[0];
+    bool blnCoin = method_call.arguments()[1];
+
+    if (blnBill != null && blnBill) {
+        lngData = lngData | 0x3;
+    }
+    if (blnCoin != null && blnCoin) {
+        lngData = lngData | 0x70000;
+    }
+
+    //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
+    lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, lngData, "");
+    //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
+
+    switch (pCashChanger->ResultCode) {
+        case OposSuccess:
+  
+            result->Success(flutter::EncodableValue(OposSuccess));
+            break;
+        case OposEExtended:
+            switch (pCashChanger->ResultCodeExtended) {
+                case OPOS_ECHAN_OVERDISPENSE:
+                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_NOCHANGE;
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
+                    break;
+                case OPOS_ECHAN_OVER:
+                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_OVER;
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
+                    break;
+                case OPOS_ECHAN_SETERROR:
+                case OPOS_ECHAN_ERROR:
+                case OPOS_ECHAN_BUSY:
+                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_CHANGER;
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+
+                    break;
+                default:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+                    //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
+
+            }
+            break;
+        default:
+            result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+            //modFunc.menmErrStatus = GE_CASHCHANGER_ERROR_ELSE;
+    }
+    return;
+  }
+
+
+  // check error code
+
+  if (method_call.method_name().compare("checkErrorCode")) {
+    std::cerr << "checkErrorCode called 。。" << std::endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    int lngData;
+    int lngRet;
+    std::string strTemp;
+
+    int mode = method_call.arguments();
+
+    short checkErrorCode = 0;
+
+    if (mode == 1) {
+        lngData = 0x80; // 紙幣・硬貨両接続
+    } else {
+        lngData = 0x1; // 硬貨単体接続
+    }
+
+    strTemp = "";
+
+    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
+    lngRet = OPOSCashChanger1.DirectIO(CHAN_DI_STATUSREAD, lngData, strTemp);
+    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + std::to_string(lngRet), "ClassName", "", "");
+
+    if (lngRet == OposSuccess) {
+        if (RAD_RT.Checked) {
+            checkErrorCode = std::stoi(strTemp.substr(39, 4));
+            if (checkErrorCode < 1) {
+                checkErrorCode = std::stoi(strTemp.substr(0, 4));
+            }
+        } else {
+            checkErrorCode = std::stoi(strTemp.substr(0, 4));
+        }
+    }
+
+    result->Success(flutter::EncodableValue(checkErrorCode));
+    return;
+  }
+
   
 
 
@@ -234,6 +465,7 @@ void CashChangerPlugin::HandleMethodCall(
   } else {
     result->NotImplemented();
   }
-}
+  
+
 
 }  // namespace cash_changer

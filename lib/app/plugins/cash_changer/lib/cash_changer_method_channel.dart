@@ -39,4 +39,16 @@ class MethodChannelCashChanger extends CashChangerPlatform {
     final result = await methodChannel.invokeMethod<int>('startDeposit');
     return result;
   }
+
+  @override
+  Future<int?> depositAmount() async {
+    final result = await methodChannel.invokeMethod<int>('depositAmount');
+    return result;
+  }
+
+  @override
+  Future<int?> stopDeposit() async {
+    final result = await methodChannel.invokeMethod<int>('stopDeposit');
+    return result;
+  }
 }
