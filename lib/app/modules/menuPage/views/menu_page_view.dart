@@ -694,7 +694,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
 
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
@@ -812,7 +812,7 @@ class MenuPageView extends GetView {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0),
+                            publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0),
                             (item['optionGroupVoList']?.length > 0)
                                 ? Expanded(child: publicShowThreeMenuOptionGroupWidget(
                                 item['menuCode'], menuindex,item['qtyBounds']))
@@ -1345,7 +1345,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:260.0, imgHeight: 380.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:260.0, imgHeight: 380.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         SizedBox(
                           height: ScreenAdapter.height(8),
@@ -1476,7 +1476,7 @@ class MenuPageView extends GetView {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 400.0, imgHeight: 260.0),
+                            publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 400.0, imgHeight: 260.0),
                             (item['optionGroupVoList']?.length > 0)
                                 ? Expanded(
                                 child: publicShowFiveMenuOptionGroupWidget(
@@ -1999,7 +1999,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -2115,7 +2115,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 350.0, imgHeight: 440.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -2541,7 +2541,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 350.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 350.0, imgHeight: 350.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         Container(
                           //width: ScreenAdapter.width(20),
@@ -2959,7 +2959,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         Container(
                           width: ScreenAdapter.width(530),
