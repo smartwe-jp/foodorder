@@ -160,7 +160,6 @@ class HomeView extends GetView {
                 textStyle: const TextStyle(fontSize: 20),
               ),
               onPressed: () {
-                controller.isShowTest.value = false;
                 controller.requestPermission();
               },
               child: const Text('Dismiss'),

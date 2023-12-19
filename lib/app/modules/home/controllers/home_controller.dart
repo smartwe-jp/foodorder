@@ -36,7 +36,6 @@ class HomeController extends GetxController {
   RxInt seconds = 60.obs;
   RxBool _isCashState = true.obs;
   RxInt checkSteeps = 1.obs; //自检步骤
-  RxBool isShowTest = true.obs;
 
   var _allowStatus;
   var _stopStatus;
@@ -45,10 +44,7 @@ class HomeController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    if (isShowTest.value == false) {
-      requestPermission();
-    }
-
+    requestPermission();
     //getIsFirstOpen();
     //checkInterNetStatus();
 
@@ -63,11 +59,6 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
-    if (isShowTest.value) {
-      return;
-    } else {
-      requestPermission();
-    }
     super.onReady();
   }
 
@@ -352,10 +343,6 @@ class HomeController extends GetxController {
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
   getIsFirstOpen() async {
-    if (isShowTest.value) {
-      return;
-    }
-
     debugPrint("getIsFirstOpen 1");
     var isFirst = await HomeServices.getOpenFirstState();
     if (isFirst == true) {
