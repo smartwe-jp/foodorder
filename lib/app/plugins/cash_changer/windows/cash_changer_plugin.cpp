@@ -476,7 +476,7 @@ void CashChangerPlugin::HandleMethodCall(
         std::cerr << "checkErrorCode param error 。。1" << std::endl;
         return;
     }
-    const auto *mapValue = std::ge_if<flutter::EncodableMap>(arguments);
+    const auto *mapValue = std::get_if<flutter::EncodableMap>(arguments);
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("mode"));
     if (it != mapValue->end()) {
