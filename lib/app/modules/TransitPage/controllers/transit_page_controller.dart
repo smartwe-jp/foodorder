@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/modules/WATextPage/views/windows_test_view.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 
@@ -318,7 +317,7 @@ class TransitPageController extends GetxController {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => WindewsTestView());
+      Get.off(() => OrderHomeView());
       //Get.toNamed("/order-home");
     });
   }
