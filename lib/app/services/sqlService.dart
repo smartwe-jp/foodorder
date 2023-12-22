@@ -4,7 +4,6 @@ import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class SQLService {
   Database? db;
-
   SQLService() {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;

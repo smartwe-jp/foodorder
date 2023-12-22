@@ -24,6 +24,7 @@ class CustomToggleButton extends StatelessWidget {
           }
       },
       child: Container(
+        width: 150,
         padding: EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         decoration: BoxDecoration(
           border: Border.all(
@@ -33,6 +34,7 @@ class CustomToggleButton extends StatelessWidget {
           //borderRadius: BorderRadius.circular(0),
         ),
         child: Text(text,
+            textAlign: TextAlign.center,
             style: TextStyle(
                 color: isActived ? Colors.black : Colors.grey, fontSize: 16)),
       ),

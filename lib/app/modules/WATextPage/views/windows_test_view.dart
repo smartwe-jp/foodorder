@@ -10,8 +10,8 @@ import 'package:get/get.dart';
 
 class WindewsTestView extends GetView<WindowsTestController> {
 
-  // final WindowsTestController controller = Get.find<WindowsTestController>();
-  // WindewsTestView({Key? key}) : super(key: key);
+  final WindowsTestController controller = Get.put(WindowsTestController());
+  WindewsTestView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +31,18 @@ class WindewsTestView extends GetView<WindowsTestController> {
                         Container(
                           //padding: EdgeInsets.only(top: 4),
                           child: Wrap(
-                            alignment: WrapAlignment.start,
-                            spacing: 15,
+                            direction: Axis.horizontal,
+                            //runAlignment: WrapAlignment.spaceAround,
+                            alignment: WrapAlignment.center,
+                            spacing: 10,
                             runSpacing: 20,
                             children: [
                               CustomToggleButton(
                                 text: "開局処理",
                                 isSelected: false,
-                                isActived: !false,
+                                isActived: !controller.openSuccess.value,
                                 onToggle: (newState) {
+                                  debugPrint("  開局処理 touch ");
                                   controller.openCashChange();
                                 },
                               ),
@@ -48,6 +51,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
                                 isSelected: false,
                                 isActived: true,
                                 onToggle: (newState) {
+                                  debugPrint("  閉局処理 touch ");
                                   controller.closeCashChange();
                                 },
                               ),
@@ -67,7 +71,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               CustomToggleButton(
                                 text: "スキャン開始",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
                                   controller.startDeposit();
                                 },
@@ -75,7 +79,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               CustomToggleButton(
                                 text: "小計",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
                                   //controller.openCashChange();
                                 },
@@ -83,7 +87,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               CustomToggleButton(
                                 text: "現計",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
                                   controller.getDepositAmount();
                                 },
@@ -91,15 +95,16 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               CustomToggleButton(
                                 text: "キャンセル",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
-                                  controller.stopDeposit();
+                                  //controller.stopDeposit();
+                                  controller.depositRepay();
                                 },
                               ),
                               CustomToggleButton(
                                 text: "返品処理",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
                                   //controller.;
                                 },
@@ -120,23 +125,23 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               CustomToggleButton(
                                 text: "在高表示",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
-                                  //controller.openCashChange();
+                                  controller.GetCashBalanceInfo();
                                 },
                               ),
                               CustomToggleButton(
                                 text: "全回収",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
-                                  //controller.openCashChange();
+                                  //controller.depositRepay();
                                 },
                               ),
                               CustomToggleButton(
                                 text: "エラー解除",
                                 isSelected: false,
-                                isActived: false,
+                                isActived: controller.openSuccess.value,
                                 onToggle: (newState) {
                                   //controller.openCashChange();
                                 },
@@ -149,107 +154,118 @@ class WindewsTestView extends GetView<WindowsTestController> {
               ),
               Expanded(
                   flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: Text(
-                                "商品合計",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText: controller.totalPrice.value,
+                  child: Container(
+                      padding: EdgeInsets.all(20),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    "商品合計",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ]),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: Text(
-                                "預かり金額",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                    border: OutlineInputBorder(),
-                                    labelText:
-                                        controller.depositAmount.value),
-                              ),
-                            ),
-                          ]),
-                      Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: Text(
-                                "お釣り",
-                                style: TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold),
-                              ),
-                            ),
-                            Container(
-                              padding: EdgeInsets.only(right: 20),
-                              child: TextField(
-                                textAlign: TextAlign.center,
-                                keyboardType: TextInputType.number,
-                                decoration: InputDecoration(
-                                  border: OutlineInputBorder(),
-                                  labelText:
-                                      controller.changeAmount.value,
+                                Expanded (child: 
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: TextField(
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.end,
+                                      onChanged: (value) {
+                                        debugPrint("value:  " + value);
+                                      },
+                                      decoration: InputDecoration(hintText: "0"),
+                                      style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                                    ),
+                                  ),
+                                )
+                              ]),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.end,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    "預かり金額",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
                                 ),
-                              ),
-                            ),
-                          ]),
-                      SizedBox(
-                        height: 40,
-                      ),
-                      Container(
-                        child: TextButton(
-                          style: TextButton.styleFrom(
-                            foregroundColor:
-                                Color.fromARGB(255, 11, 87, 100),
-                            padding: const EdgeInsets.all(16.0),
-                            textStyle: const TextStyle(fontSize: 20),
+                                Expanded(child: 
+                                  Container(
+                                    padding: EdgeInsets.all(5),
+                                    child: TextField(
+                                      keyboardType: TextInputType.number,
+                                      textAlign: TextAlign.end,
+                                      onChanged: (value) {
+                                        debugPrint("value:  " + value);
+                                      },
+                                      decoration: InputDecoration(hintText: controller.depositAmount.value),
+                                      style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                                    ),
+                                  ),
+                                )
+                                
+                              ]),
+                          Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                Container(
+                                  padding: EdgeInsets.only(right: 20),
+                                  child: Text(
+                                    "お釣り",
+                                    style: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold),
+                                  ),
+                                ),
+                                Expanded (child: 
+                                  Container(
+                                    padding: EdgeInsets.only(right: 20),
+                                    child: 
+                                      Text(
+                                        controller.changeAmount.value,
+                                        style: TextStyle(
+                                            fontSize: 20,
+                                            color: Colors.black,
+                                            fontWeight: FontWeight.bold),
+                                      ),
+                                    )
+                                  ),
+                              ]),
+                          SizedBox(
+                            height: 40,
                           ),
-                          onPressed: () {
-                            //to home page
-                            Future.delayed(Duration(milliseconds: 200), () {
-                              Get.toNamed("/order-home");
-                            });
-                          },
-                          child: const Text('終了'),
-                        ),
+                          Container(
+                            child: TextButton(
+                              style: TextButton.styleFrom(
+                                foregroundColor:
+                                    Color.fromARGB(255, 11, 87, 100),
+                                padding: const EdgeInsets.all(16.0),
+                                textStyle: const TextStyle(fontSize: 20),
+                              ),
+                              onPressed: () {
+                                //to home page
+                                Future.delayed(Duration(milliseconds: 200), () {
+                                  Get.toNamed("/home");
+                                });
+                              },
+                              child: const Text('終了'),
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
                   )),
             ],
           ),

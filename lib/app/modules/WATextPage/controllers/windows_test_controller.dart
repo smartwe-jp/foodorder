@@ -6,7 +6,7 @@ import 'package:get/get.dart';
 class WindowsTestController extends GetxController with StateMixin {
   RxString totalPrice = "".obs;
   RxString depositAmount = "".obs;
-  RxString changeAmount = "".obs;
+  RxString changeAmount = "0".obs;
   RxBool openSuccess = false.obs;
 
   @override
@@ -55,8 +55,17 @@ class WindowsTestController extends GetxController with StateMixin {
     if (resultCode == 0) {
       openSuccess.value = false;
     } else {
-      openSuccess.value = true;
+      openSuccess.value = false;
     }
+    Get.dialog(
+        DialogUtils.alert(
+            "close CashChanger resultCode:  " + resultCode.toString(),
+            title: "CashChanger", confirm: () {
+          Get.back();
+        }, cancle: () {
+          Get.back();
+        }),
+        barrierDismissible: false);
   }
 
   void GetCashBalanceInfo() async {
@@ -89,7 +98,7 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void stopDeposit() async {
     debugPrint("  StopDeposit  ");
-    int? resultCode = await CashChanger.stopDeposit;
+    int? resultCode = await CashChanger.endDeposit;
     debugPrint("StopDeposit result:  " + resultCode.toString());
     Get.dialog(
         DialogUtils.alert("StopDeposit result:  " + resultCode.toString(),
@@ -105,7 +114,7 @@ class WindowsTestController extends GetxController with StateMixin {
     debugPrint("  DepositAmount  ");
     int? resultCode = await CashChanger.depositAmount;
     debugPrint("DepositAmount result:  " + resultCode.toString());
-
+    
     depositAmount.value = resultCode.toString();
   }
 
@@ -119,9 +128,32 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void stopDepositAndChange() async {
     debugPrint("  stopDepositAndChange  ");
-    int? resultCode = await CashChanger.stopDeposit;
+    int? resultCode = await CashChanger.endDeposit;
     debugPrint("stopDepositAndChange result:  " + resultCode.toString());
 
     changeAmount.value = resultCode.toString();
+  }
+
+  // void dispenseChange() async {
+  //   debugPrint("  dispenseChange  ");
+  //   int? resultCode = await CashChanger.dispenseChange;
+  //   debugPrint("dispenseChange result:  " + resultCode.toString());
+  //   Get.dialog(
+  //       DialogUtils.alert("dispenseChange result:  " + resultCode.toString(),
+  //           title: "CashChanger", confirm: () {
+  //         Get.back();
+  //       }, cancle: () {
+  //         Get.back();
+  //       }),
+  //       barrierDismissible: false);
+  // }
+
+  void depositRepay() async {
+    debugPrint("  depositRepay  ");
+    int? resultCode = await CashChanger.depositRepay;
+    if (resultCode == 0) {
+      depositAmount.value = "0";
+    }
+    debugPrint("depositRepay result:  " + resultCode.toString());
   }
 }

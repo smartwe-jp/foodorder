@@ -43,6 +43,7 @@ class HomeController extends GetxController {
 
   @override
   void onInit() {
+    debugPrint("home onInit");
     super.onInit();
     requestPermission();
     //getIsFirstOpen();
@@ -59,12 +60,14 @@ class HomeController extends GetxController {
 
   @override
   void onReady() {
+    debugPrint("home onReady");
     super.onReady();
   }
 
   @override
   void onClose() {
     //Paycube.stopListening();
+    debugPrint("home onClose");
     super.onClose();
   }
 
@@ -78,6 +81,7 @@ class HomeController extends GetxController {
 
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
+    debugPrint("storageStatus:$storageStatus");
     if (storageStatus != PermissionStatus.granted) {
       storageStatus = await Permission.storage.request();
       if (storageStatus != PermissionStatus.granted) {
@@ -139,19 +143,6 @@ class HomeController extends GetxController {
         barrierDismissible: false);
   }
 
-  void getPlatformVersion() async {
-    debugPrint("  getPlatformVersion  ");
-    String? version = await CashChanger.getPlatformVersion;
-    debugPrint("windows version:" + version!);
-    Get.dialog(
-        DialogUtils.alert("windows version:" + version!, title: "CashChanger",
-            confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
 
   void closeCashChange() async {
     debugPrint("  closeCashChange  ");
@@ -168,33 +159,6 @@ class HomeController extends GetxController {
         barrierDismissible: false);
   }
 
-  void GetCashBalanceInfo() async {
-    debugPrint("  GetCashBalanceInfo  ");
-    String? resultCode = await CashChanger.getCashBalance;
-    debugPrint("GetCashBalanceInfo result:  " + resultCode!);
-    Get.dialog(
-        DialogUtils.alert("GetCashBalanceInfo result:  " + resultCode,
-            title: "CashChanger", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
-
-  void startDeposit() async {
-    debugPrint("  StartDeposit  ");
-    int? resultCode = await CashChanger.startDeposit;
-    debugPrint("StartDeposit result:  " + resultCode.toString());
-    Get.dialog(
-        DialogUtils.alert("StartDeposit result:  " + resultCode.toString(),
-            title: "CashChanger", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
 
 //倒计时
   _countDownTimer() {
@@ -218,15 +182,15 @@ class HomeController extends GetxController {
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
-    //String checkStatus = await Paycube.CheckPayCubeStatus;
-    // debugPrint("OpenPayCube 2");
-    // //如果检测现金机打开错误，则重新打开一下
-    // if (checkStatus == "openError") {
-    //   String openStatus = await Paycube.openPayCube;
-    //   //print("机器未打开lib未null，重新打开并连接了");
-    // } else {
-    //   await Paycube.setReceiveEvent;
-    // }
+    String checkStatus = await Paycube.CheckPayCubeStatus;
+    debugPrint("OpenPayCube 2");
+    //如果检测现金机打开错误，则重新打开一下
+    if (checkStatus == "openError") {
+      String openStatus = await Paycube.openPayCube;
+      //print("机器未打开lib未null，重新打开并连接了");
+    } else {
+      await Paycube.setReceiveEvent;
+    }
 
     Starttoubi();
   }
@@ -237,9 +201,9 @@ class HomeController extends GetxController {
     debugPrint("Starttoubi 1");
     int connectCount = 0;
 
-    prohibitOneCash();
-    getIsFirstOpen();
-    return;
+    // prohibitOneCash();
+    // getIsFirstOpen();
+    // return;
 
     String strartPayCube = await Paycube.strartPayCube;
     //调用插件的监听
@@ -336,9 +300,9 @@ class HomeController extends GetxController {
     Storage.setString('isCashState', json.encode(cashShowData));
     GetxStorage.setData('isCashState', json.encode(cashShowData));
     //判断是否第一次打开
-    // Future.delayed(Duration(milliseconds: 300), () {
-    //   getIsFirstOpen();
-    // });
+    Future.delayed(Duration(milliseconds: 300), () {
+      getIsFirstOpen();
+    });
   }
 
   //判断是否第一次打开 true为以经激活,下载最新数据保存到本地数据库
@@ -354,10 +318,10 @@ class HomeController extends GetxController {
   }
 
   goMain() async {
+    debugPrint("goMain 1");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => TransitPageView());
       Get.toNamed("/transit-page");
-      //Get.toNamed("/mw-test");
     });
   }
 

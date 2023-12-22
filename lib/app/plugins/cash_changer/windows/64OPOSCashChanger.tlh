@@ -625,7 +625,7 @@ extern "C" const GUID __declspec(selectany) IID_IOPOSCashChanger =
 // Wrapper method implementations
 //
 
-#include "C:\Users\SED\Desktop\64ocx\64OPOSCashChanger.tli"
+#include "64OPOSCashChanger.tli"
 
 } // namespace OposCashChanger_CCO
 

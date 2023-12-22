@@ -39,6 +39,7 @@ class TransitPageController extends GetxController {
   }
 
   getIsShowCashInfo() async {
+    debugPrint("transit  getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
 
     _isCashState.value = systemSettingInfo['isCash'];
@@ -47,6 +48,7 @@ class TransitPageController extends GetxController {
   }
 
   _getMachineInfo() async {
+    debugPrint("transit  getMachineInfo");
     var machineCode = await HomeServices.getMachineInfo();
     if (machineCode != "") {
       _machineCode.value = machineCode;
@@ -60,6 +62,7 @@ class TransitPageController extends GetxController {
 
   //获取版本号
   _getPackageInfo() async {
+    debugPrint("transit  getPackageInfo");
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
 
@@ -72,10 +75,13 @@ class TransitPageController extends GetxController {
       "version": local_version.value
     };
     print(formData);
+    
     request('webBootActivatev4', method: 'POST', parameters: formData)
         .then((val) {
+      debugPrint("webBootActivatev4");
       var response = json.decode(val.toString());
-      LogUtil.d(response);
+      debugPrint("webBootActivatev4: "+response.toString());
+      //LogUtil.d("getMachineActivate"+response);
       if (response['code'] == 200) {
         var shopData = response['data'];
         //_shopCode = shopData["shopCode"];
@@ -207,6 +213,7 @@ class TransitPageController extends GetxController {
   }
 
   _getSmartweSystemSettingInfo() async {
+    debugPrint("transit  getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     var checkmachineMode = "1";
@@ -316,6 +323,7 @@ class TransitPageController extends GetxController {
   }
 
   void _goMain() async {
+    debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => WindewsTestView());
       Get.toNamed("/order-home");

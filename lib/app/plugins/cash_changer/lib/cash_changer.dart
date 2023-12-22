@@ -32,8 +32,18 @@ class CashChanger {
     return CashChangerPlatform.instance.depositAmount();
   }
 
-  //Stop Deposit
-  static Future<int?> get stopDeposit async {
-    return CashChangerPlatform.instance.stopDeposit();
+  //end Deposit
+  static Future<int?> get endDeposit async {
+    return CashChangerPlatform.instance.endDeposit();
+  }
+
+  //Dispense Change
+  static Future<int?> get dispenseChange async {
+    return CashChangerPlatform.instance.dispenseChange();
+  }
+
+  //Deposit Repay
+  static Future<int?> get depositRepay async {
+    return CashChangerPlatform.instance.depositRepay();
   }
 }
