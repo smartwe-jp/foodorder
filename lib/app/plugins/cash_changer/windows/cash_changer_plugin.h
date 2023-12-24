@@ -6,7 +6,6 @@
 
 #include <memory>
 #include "64OPOSCashChanger.tlh"
-#include "CashChangerEvents.h"
 
 using namespace OposCashChanger_CCO;
 using namespace std;
@@ -29,10 +28,10 @@ class CashChangerPlugin : public flutter::Plugin {
   void HandleMethodCall(
       const flutter::MethodCall<flutter::EncodableValue> &method_call,
       std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
-
-    private:
-        
-      IOPOSCashChangerPtr pCashChanger;
+      
+  private:
+      
+    IOPOSCashChangerPtr pCashChanger;
 };
 
 }  // namespace cash_changer

@@ -43,6 +43,47 @@ CashChangerPlugin::CashChangerPlugin() {
         //result->Error("COM_ERROR", "创建 COM 实例失败");
         //return;
     }
+
+    // 假设 pCashChanger 是你已经初始化的 IOPOSCashChanger 接口指针
+    // IConnectionPointContainer* pCPC = nullptr;
+    // IConnectionPoint* pCP = nullptr;
+    // DWORD dwCookie = 0;
+
+    // 获取 IConnectionPointContainer 接口
+    // hr = pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
+    // cerr << "QueryInterface IID_IConnectionPointContainer" << hr << endl;
+    // if (SUCCEEDED(hr)) {
+    //     cerr << "QueryInterface IID_IConnectionPointContainer SUCCEEDED" << endl;
+    //     // 获取特定事件接口的 IConnectionPoint
+    //     hr = pCPC->FindConnectionPoint(__uuidof(_IOPOSCashChangerEvents), &pCP);
+    //     assert(pCP != nullptr);
+    //     if (SUCCEEDED(hr)) {
+    //         cerr << "FindConnectionPoint _IOPOSCashChangerEvents" << endl;
+    //         // 创建事件处理器实例
+    //         CashChangerEvents* pEventHandler = new CashChangerEvents(pCashChanger);
+    //         assert(pEventHandler != nullptr);
+    //         // 注册事件处理器
+    //         hr = pCP->Advise(static_cast<IUnknown*>(pEventHandler), &dwCookie);
+    //         cerr << "Advise _IOPOSCashChangerEvents :" << hr << endl;
+
+    //         if (FAILED(hr)) {
+    //             cerr << "注册事件处理器失败" << endl;
+    //             // 处理错误
+    //             pEventHandler->Release();
+    //         }
+    //         // 保持 pCP 和 dwCookie 以便以后注销
+            
+    //         // 当不再需要监听事件时，注销事件处理器
+    //         // pCP->Unadvise(dwCookie);
+    //         // pCP->Release();
+    //     }
+    //     pCPC->Release();
+    // }
+
+
+
+
+
 }
 
 CashChangerPlugin::~CashChangerPlugin() {

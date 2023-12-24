@@ -76,8 +76,8 @@ class HomeController extends GetxController {
     //霸屏隐藏状态栏导航栏
     //await Appset.hideBullyScreen; //隐藏状态栏暂时不用
     //获取Windows版本
-    String? windowsVersion = await CashChanger.getPlatformVersion;
-    debugPrint("windowsVersion:$windowsVersion");
+    // String? windowsVersion = await CashChanger.getPlatformVersion;
+    // debugPrint("windowsVersion:$windowsVersion");
 
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
@@ -182,15 +182,15 @@ class HomeController extends GetxController {
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
-    String checkStatus = await Paycube.CheckPayCubeStatus;
-    debugPrint("OpenPayCube 2");
-    //如果检测现金机打开错误，则重新打开一下
-    if (checkStatus == "openError") {
-      String openStatus = await Paycube.openPayCube;
-      //print("机器未打开lib未null，重新打开并连接了");
-    } else {
-      await Paycube.setReceiveEvent;
-    }
+    // String checkStatus = await Paycube.CheckPayCubeStatus;
+    // debugPrint("OpenPayCube 2");
+    // //如果检测现金机打开错误，则重新打开一下
+    // if (checkStatus == "openError") {
+    //   String openStatus = await Paycube.openPayCube;
+    //   //print("机器未打开lib未null，重新打开并连接了");
+    // } else {
+    //   await Paycube.setReceiveEvent;
+    // }
 
     Starttoubi();
   }
@@ -205,15 +205,16 @@ class HomeController extends GetxController {
     // getIsFirstOpen();
     // return;
 
-    String strartPayCube = await Paycube.strartPayCube;
-    //调用插件的监听
-    Paycube.getPayCubeListener();
+    // String strartPayCube = await Paycube.strartPayCube;
+    // //调用插件的监听
+    // Paycube.getPayCubeListener();
 
-    await Paycube.setReceiveEvent;
+    // await Paycube.setReceiveEvent;
     allowtimer?.cancel();
     allowtimer =
         Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
-      _allowStatus = await Paycube.getPayCubeAllowCashStatus;
+      //_allowStatus = await Paycube.getPayCubeAllowCashStatus;
+      _allowStatus = "AllowSuccess";
       connectCount++;
       if (connectCount > 50) {
         //退出关闭
@@ -229,13 +230,13 @@ class HomeController extends GetxController {
         stopPaycube();
         allowt.cancel();
       } else if (_allowStatus == "Error-F0--16") {
-        await Paycube.endTrade;
+        //await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
-        await Paycube.strartPayCube;
+        //await Paycube.strartPayCube;
       } else if (_allowStatus == "Error-A0--02") {
         //sleep(Duration(milliseconds: 300));
       } else {
-        await Paycube.strartPayCube;
+        //await Paycube.strartPayCube;
         //print("_allowStatus:$_allowStatus");
       }
     });
@@ -243,12 +244,13 @@ class HomeController extends GetxController {
 
   stopPaycube() async {
     checkSteeps.value = 3;
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
+    //await Paycube.setReceiveEvent;
+    //var endStatus = await Paycube.endPayCube;
     stopChecktimer?.cancel();
     stopChecktimer =
         Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
-      _stopStatus = await Paycube.getPayCubeStopCashStatus;
+      //_stopStatus = await Paycube.getPayCubeStopCashStatus;
+      _stopStatus = "StopSuccess";
       // 循环一定要记得设置取消条件，手动取消
       if (_stopStatus == "StopSuccess") {
         //倒计时，一定时间不开启现金机则继续执行下一步
@@ -259,9 +261,9 @@ class HomeController extends GetxController {
       } else if (_stopStatus == "Error-A0--02") {
         //处理中
         sleep(Duration(milliseconds: 200));
-        await Paycube.endPayCube;
+        //await Paycube.endPayCube;
       } else {
-        await Paycube.endPayCube;
+        //await Paycube.endPayCube;
       }
     });
   }
@@ -269,12 +271,13 @@ class HomeController extends GetxController {
   closePaycube() async {
     checkSteeps.value = 4;
     //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    await Paycube.setReceiveEvent;
+    //var endTrade = await Paycube.endTrade;
+    //await Paycube.setReceiveEvent;
     closetimer?.cancel();
     closetimer =
         Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
-      _closeStatus = await Paycube.getPayCubeEndTradeStatus;
+      //_closeStatus = await Paycube.getPayCubeEndTradeStatus;
+      _closeStatus = "EndSuccess";
       // 循环一定要记得设置取消条件，手动取消
       if (_closeStatus == "EndSuccess") {
         showCashTimer?.cancel();
@@ -285,7 +288,7 @@ class HomeController extends GetxController {
 
         closecheck.cancel();
       } else {
-        await Paycube.endTrade;
+        //await Paycube.endTrade;
       }
     });
   }

@@ -76,5 +76,6 @@
         "xutility": "cpp"
     },
     "cmake.sourceDirectory": "C:/Users/Administrator/foodorder/windows",
-    "C_Cpp.default.compilerPath": "cl.exe"
+    "C_Cpp.default.compilerPath": "cl.exe",
+    "C_Cpp.errorSquiggles": "disabled"
 }
