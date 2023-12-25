@@ -1,6 +1,7 @@
 
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 class FlutterPluginMsprinter {
@@ -13,6 +14,7 @@ class FlutterPluginMsprinter {
   }
 
   static Future<String> getPrintStatus() async {
+    debugPrint("getPrintStatus");
     final String printStatus = await _channel.invokeMethod('getPrintStatus');
     return printStatus;
   }

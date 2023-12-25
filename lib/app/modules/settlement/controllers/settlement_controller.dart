@@ -8,6 +8,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -178,7 +179,7 @@ class SettlementController extends GetxController with StateMixin {
     if (socketState.value == true) {
       this._socket?.close();
     }
-    Paycube.stopListening();
+    //Paycube.stopListening();
     allowtimer?.cancel();
     timer?.cancel();
     stoptimer?.cancel();
@@ -1283,7 +1284,9 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    debugPrint("doPrintOrderMenu");
+    var printStatus = "8"; //await FlutterPluginMsprinter.getPrintStatus();
+    debugPrint("printStatus==${printStatus}");
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
         "orderId": orderId.value,
@@ -1307,7 +1310,7 @@ class SettlementController extends GetxController with StateMixin {
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
-        //LogUtil.d(response);
+        LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
           if (response['data']["printInfoMapStruct"] != null &&
@@ -1391,16 +1394,20 @@ class SettlementController extends GetxController with StateMixin {
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
     //入金开始
-    String strartPayCube = await Paycube.strartPayCube;
-    await Paycube.setReceiveEvent;
-    //调用插件的监听
-    Paycube.getPayCubeListener();
+    // String strartPayCube = await Paycube.strartPayCube;
+    // await Paycube.setReceiveEvent;
+    // //调用插件的监听
+    // Paycube.getPayCubeListener();
+    int? resultCode = await CashChanger.startDeposit;
 
     allowtimer?.cancel();
     allowtimer =
         Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
-      allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
+      allowStatus.value = await CashChanger.checkChangerStatus == 0
+          ? "AllowSuccess"
+          : "Error-F0--16";
       // 循环一定要记得设置取消条件，手动取消
+
       if (allowStatus.value == "AllowSuccess") {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
@@ -1411,36 +1418,39 @@ class SettlementController extends GetxController with StateMixin {
 
         allowt.cancel();
       } else if (allowStatus.value == "Error-F0--16") {
-        await Paycube.endTrade;
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.strartPayCube;
+        await CashChanger.depositRepay;
+        sleep(Duration(milliseconds: 200));
+        await CashChanger.startDeposit;
       } else if (allowStatus.value == "Error-A0--02") {
         //sleep(Duration(milliseconds: 300));
       } else {
-        await Paycube.strartPayCube;
+        await CashChanger.startDeposit;
       }
     });
   }
 
   //获取投入金额
   getPutInMoney() async {
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
+    debugPrint("getPutInMoney");
     timer?.cancel();
-    timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
-      var result = await Paycube.getPayCubeMoney;
-      if (int.parse(result) > 0) {
-        getPutMoney.value = result;
+    timer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
+      debugPrint("timer getPutInMoney");
+      int? result = await CashChanger.depositAmount;
+      if (result != null && result > 0) {
+        timer?.cancel();
+        getPutMoney.value = result.toString();
         scanQrCodeFocusNode.unfocus();
         int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
         //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
-        if (int.parse(result) >= totalPriceResult) {
+        if (result >= totalPriceResult) {
           if (isCancel.value == false) {
             showPrintButton.value = true;
           } else {
             showPrintButton.value = false;
           }
 
-          var outMoney = int.parse(result) - int.parse(totalPrice.value); //找零金额
+          var outMoney = result - int.parse(totalPrice.value); //找零金额
           showOutMoney.value = outMoney.toString(); //找零金额
         } else {
           showOutMoney.value = "0"; //找零金额
@@ -1452,16 +1462,20 @@ class SettlementController extends GetxController with StateMixin {
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
   Endtoubi() async {
+    debugPrint("Endtoubi");
     sleep(Duration(milliseconds: 300));
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
+    //await Paycube.setReceiveEvent;
+    //var endStatus = await Paycube.endPayCube;
+    var depositAmount = await CashChanger.depositAmount;
+    getPutMoney.value = depositAmount.toString();
     //开启倒计时
     _countDownTimer("2");
 
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+      //stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+      stopStatus.value == "StopSuccess";
       // 循环一定要记得设置取消条件，手动取消
       if (stopStatus.value == "StopSuccess") {
         showCashTimer?.cancel();
@@ -1486,23 +1500,27 @@ class SettlementController extends GetxController with StateMixin {
 
         stopt.cancel();
       } else {
-        await Paycube.endPayCube;
+        await CashChanger.depositRepay; //temp modify
       }
     });
   }
 
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
+    debugPrint("nextOper");
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
-    await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
+    //await Paycube.setReceiveEvent;
+    //var endStatus = await Paycube.endPayCube;
+    // var depositAmount = await CashChanger.depositAmount;
+    // getPutMoney.value = depositAmount.toString();
     //开启倒计时
     _countDownTimer("3");
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 450), (Timer stopt) async {
-      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+      stopStatus.value =
+          "StopSuccess"; //await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (stopStatus.value == "StopSuccess") {
         showCashTimer?.cancel();
@@ -1525,23 +1543,27 @@ class SettlementController extends GetxController with StateMixin {
 
       }*/
       else {
-        await Paycube.endPayCube;
+        //await Paycube.endPayCube;
+        await CashChanger.depositRepay;
       }
     });
   }
 
   startOutPutMoney(outMoney) async {
+    debugPrint("startOutPutMoney");
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
 
-    String outResult = await Paycube.outPayCubeMoney(outStringMoney.value);
+    //String outResult = await Paycube.outPayCubeMoney(outStringMoney.value);
+    var resultCode =
+        await CashChanger.dispenseChange(int.parse(outStringMoney.value));
     _countDownTimer("6");
-
+    outStatus.value = resultCode == 0 ? "OutSuccess" : "Error-A0--02";
     outmoneytimer?.cancel();
     outmoneytimer =
         Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
-      outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
+      outStatus.value = "OutSuccess"; //await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (outStatus.value == "OutSuccess") {
         //如果打开了现金机，则去掉倒计时监听
@@ -1558,7 +1580,7 @@ class SettlementController extends GetxController with StateMixin {
         //await Paycube.getPayCubeOutMoneyStatus;
         //print("_outStatus处理中:$_outStatus");
       } else {
-        await Paycube.outPayCubeMoney(outStringMoney.value);
+        await await CashChanger.dispenseChange(int.parse(outStringMoney.value));
       }
     });
   }
@@ -1566,13 +1588,14 @@ class SettlementController extends GetxController with StateMixin {
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
     OutMoneytimer?.cancel();
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
     _countDownTimer("7");
 
     var queryTimes = 0;
     // 循环一定要记得设置取消条件，手动取消
     //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-
+    reportOutMoney();
+    return;
     OutMoneytimer =
         Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
       if (queryTimes > 150) {
@@ -1588,8 +1611,8 @@ class SettlementController extends GetxController with StateMixin {
 
       if (getOutMoneyString.value == true) {
         // 循环一定要记得设置取消条件，手动取消
-        String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-        if (currencyStringresult.trim().length > 50) {
+        String? currencyStringresult = await CashChanger.getCashBalance;
+        if (currencyStringresult != null && currencyStringresult.length > 0) {
           var outtotalAmount =
               MoneyParser.calculateTotalAmount(currencyStringresult.trim());
           //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
@@ -1622,18 +1645,18 @@ class SettlementController extends GetxController with StateMixin {
   payCubeCloseTransaction() async {
     if (int.parse(getPutMoney.value) > 0) {
       //汇报入金币种
-      _getPayCubePutMoneyCurrency();
+      //_getPayCubePutMoneyCurrency();
     }
     CashStep.value = 4;
     //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
+    //var endTrade = await Paycube.endTrade;
     //开启倒计时
     _countDownTimer("5");
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer =
         Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-      endStatus.value = await Paycube.getPayCubeEndTradeStatus;
+      endStatus.value = "EndSuccess"; //await Paycube.getPayCubeEndTradeStatus;
       // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
@@ -1648,7 +1671,8 @@ class SettlementController extends GetxController with StateMixin {
         endtradet.cancel();
       } else {
         //sleep(Duration(milliseconds: 200));
-        await Paycube.endTrade;
+        //await Paycube.endTrade;
+        await CashChanger.depositRepay;
       }
     });
   }
@@ -2885,6 +2909,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _tpPrintReceipt(printData) async {
+    debugPrint("打印小票来了-开始打印小票lalala：${DateTime.now()}");
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
     var lineHight = 580;

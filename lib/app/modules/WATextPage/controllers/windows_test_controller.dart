@@ -98,7 +98,7 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void stopDeposit() async {
     debugPrint("  StopDeposit  ");
-    int? resultCode = await CashChanger.endDeposit;
+    int? resultCode = await CashChanger.endDeposit(2);
     debugPrint("StopDeposit result:  " + resultCode.toString());
     Get.dialog(
         DialogUtils.alert("StopDeposit result:  " + resultCode.toString(),
@@ -128,7 +128,7 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void stopDepositAndChange() async {
     debugPrint("  stopDepositAndChange  ");
-    int? resultCode = await CashChanger.endDeposit;
+    int? resultCode = await CashChanger.endDeposit(2);
     debugPrint("stopDepositAndChange result:  " + resultCode.toString());
 
     changeAmount.value = resultCode.toString();

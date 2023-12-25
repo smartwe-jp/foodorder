@@ -99,7 +99,8 @@ void main() {
         child: Scaffold(
           body: PrintImageGenerateWidget(
             contentBuilder: (context) {
-              return WindewsTestView();
+              return HomeView();
+              //return WindewsTestView();
             },
             onPictureGenerated: _onPictureGenerated,
           ),
