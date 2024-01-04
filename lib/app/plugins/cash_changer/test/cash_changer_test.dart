@@ -10,6 +10,60 @@ class MockCashChangerPlatform
 
   @override
   Future<String?> getPlatformVersion() => Future.value('42');
+  
+  @override
+  Future<int?> checkChangerStatus() {
+    // TODO: implement checkChangerStatus
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> closeCashChanger() {
+    // TODO: implement closeCashChanger
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> depositAmount() {
+    // TODO: implement depositAmount
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> depositRepay() {
+    // TODO: implement depositRepay
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> dispenseChange(int change) {
+    // TODO: implement dispenseChange
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> endDeposit(int status) {
+    // TODO: implement endDeposit
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<String?> getCashBalance() {
+    // TODO: implement getCashBalance
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> openCashChanger() {
+    // TODO: implement openCashChanger
+    throw UnimplementedError();
+  }
+  
+  @override
+  Future<int?> startDeposit() {
+    // TODO: implement startDeposit
+    throw UnimplementedError();
+  }
 }
 
 void main() {

@@ -6,32 +6,52 @@
 
 #include <memory>
 #include "64OPOSCashChanger.tlh"
+//#include "ICashChangerEventsDelegate.h"
+#include "CashChangerEvents.h"
+#include <cassert>
 
 using namespace OposCashChanger_CCO;
 using namespace std;
 
 namespace cash_changer {
 
-class CashChangerPlugin : public flutter::Plugin {
+class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDelegate {
  public:
-  static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
+    static void RegisterWithRegistrar(flutter::PluginRegistrarWindows *registrar);
 
-  CashChangerPlugin();
+    CashChangerPlugin();
 
-  virtual ~CashChangerPlugin();
+    virtual ~CashChangerPlugin();
 
-  // Disallow copy and assign.
-  CashChangerPlugin(const CashChangerPlugin&) = delete;
-  CashChangerPlugin& operator=(const CashChangerPlugin&) = delete;
+    // Disallow copy and assign.
+    CashChangerPlugin(const CashChangerPlugin&) = delete;
+    CashChangerPlugin& operator=(const CashChangerPlugin&) = delete;
 
-  // Called when a method is called on this plugin's channel from Dart.
-  void HandleMethodCall(
-      const flutter::MethodCall<flutter::EncodableValue> &method_call,
-      std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+    // Called when a method is called on this plugin's channel from Dart.
+    void HandleMethodCall(
+        const flutter::MethodCall<flutter::EncodableValue> &method_call,
+        std::unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result);
+
+    void InitCashChangerEvents();
+
+    // ICashChangerEventsDelegate
+    void DataEvent(long Status) override;
+    void DirectIOEvent(long EventNumber, long *pData, BSTR *pString) override;
+    void StatusUpdateEvent(long Data) override;
       
   private:
       
     IOPOSCashChangerPtr pCashChanger;
+
+    IConnectionPointContainer* pCPC = nullptr;
+    IConnectionPoint* pCP = nullptr;
+    IConnectionPointContainer* pEvents = nullptr;
+    CashChangerEvents* pHandler = NULL;
+    
+    // 存储入金金额
+    long amount;
+    
+
 };
 
 }  // namespace cash_changer

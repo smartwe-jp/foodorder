@@ -1194,7 +1194,7 @@ class SettlementView extends GetView {
                           ),
                         ),
                         //SizedBox(width: ScreenAdapter.width(80)),
-                        controller.showPrintButton.value == true
+                        true
                             ? (
                             // controller.is_allow_receipt.value == "1"
                             //     ?

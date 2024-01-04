@@ -14,6 +14,7 @@
 #include <sstream>
 #include "opos_all.h"
 
+
 namespace cash_changer {
 // static
 void CashChangerPlugin::RegisterWithRegistrar(
@@ -40,59 +41,122 @@ CashChangerPlugin::CashChangerPlugin() {
     HRESULT hr = pCashChanger.CreateInstance(__uuidof(OPOSCashChanger));
     if (FAILED(hr)) {
         cerr << "创建 COM 实例失败" << endl;
-        //result->Error("COM_ERROR", "创建 COM 实例失败");
-        //return;
+        return;
     }
+    // 初始化事件
+    InitCashChangerEvents();
+}
 
-    // 假设 pCashChanger 是你已经初始化的 IOPOSCashChanger 接口指针
-    // IConnectionPointContainer* pCPC = nullptr;
-    // IConnectionPoint* pCP = nullptr;
-    // DWORD dwCookie = 0;
+void CashChangerPlugin::InitCashChangerEvents () {
+    cerr << "InitCashChangerEvents" << endl;
+    
+    HRESULT hr = pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
 
-    // 获取 IConnectionPointContainer 接口
-    // hr = pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
-    // cerr << "QueryInterface IID_IConnectionPointContainer" << hr << endl;
-    // if (SUCCEEDED(hr)) {
-    //     cerr << "QueryInterface IID_IConnectionPointContainer SUCCEEDED" << endl;
-    //     // 获取特定事件接口的 IConnectionPoint
-    //     hr = pCPC->FindConnectionPoint(__uuidof(_IOPOSCashChangerEvents), &pCP);
-    //     assert(pCP != nullptr);
-    //     if (SUCCEEDED(hr)) {
-    //         cerr << "FindConnectionPoint _IOPOSCashChangerEvents" << endl;
-    //         // 创建事件处理器实例
-    //         CashChangerEvents* pEventHandler = new CashChangerEvents(pCashChanger);
-    //         assert(pEventHandler != nullptr);
-    //         // 注册事件处理器
-    //         hr = pCP->Advise(static_cast<IUnknown*>(pEventHandler), &dwCookie);
-    //         cerr << "Advise _IOPOSCashChangerEvents :" << hr << endl;
+    if (SUCCEEDED(hr)) {
+        
+        hr = pCPC->FindConnectionPoint(DIID__IOPOSCashChangerEvents, &pCP);
+        cerr << "FindConnectionPoint" << hr << endl;
 
-    //         if (FAILED(hr)) {
-    //             cerr << "注册事件处理器失败" << endl;
-    //             // 处理错误
-    //             pEventHandler->Release();
-    //         }
-    //         // 保持 pCP 和 dwCookie 以便以后注销
+        if (SUCCEEDED(hr)) {
+            pHandler = new CashChangerEvents(); // 事件处理对象
+            pHandler->setDelegate(this);
             
-    //         // 当不再需要监听事件时，注销事件处理器
-    //         // pCP->Unadvise(dwCookie);
-    //         // pCP->Release();
-    //     }
-    //     pCPC->Release();
-    // }
+            assert(pHandler != nullptr);
+            
+            hr = pHandler->QueryInterface(DIID__IOPOSCashChangerEvents, (void**)&pEvents);
+            if (SUCCEEDED(hr)) {
+                // pHandler 实现了 _IOPOSCashChangerEvents 接口
+                cerr << "pHandler 实现了 _IOPOSCashChangerEvents 接口" << hr << endl;
+            } else {
+                // pHandler 没有实现 _IOPOSCashChangerEvents 接口
+                cerr << "pHandler 没有实现 _IOPOSCashChangerEvents 接口 failed" << hr << endl;
+            }
+            DWORD dwAdvise = 0;
+            hr = pCP->Advise(pHandler, &dwAdvise);
+            if (SUCCEEDED(hr)) {
+                cerr << "Advise success: " << hr <<endl;
+            } else {
+                cerr << "Advise failed: " << hr << endl;
+            }
+        }
+    }
+    /*
+    // 创建事件处理器对象
+    CashChangerEvents* pEventHandler = new CashChangerEvents();
 
+    IUnknown* pUnk;
+    CoCreateInstance(CLSID_OPOSCashChanger, NULL, CLSCTX_INPROC_SERVER, IID_IUnknown, (void**)&pUnk);
 
+    // 获取事件源接口
+    pUnk->QueryInterface(IID_IOPOSCashChanger, (void**)&pCashChanger);
 
+    // 获取连接点
+    IConnectionPointContainer* pCPC;
+    pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
+
+    // 查找事件连接点
+    IConnectionPoint* pCP;
+    pCPC->FindConnectionPoint(DIID__IOPOSCashChangerEvents, &pCP);
+
+    // 注册事件处理器
+    DWORD dwCookie;
+    HRESULT hr = pCP->Advise(pEventHandler, &dwCookie);
+    if (SUCCEEDED(hr)) {
+        cerr << "Advise success: " << hr <<endl;
+    } else {
+        cerr << "Advise failed: " << hr << endl;
+    }
+    */
 
 
 }
 
 CashChangerPlugin::~CashChangerPlugin() {
     cerr << "CashChangerPlugin destruct" << endl;
+
     // 释放 COM 对象
     if (pCashChanger) {
         pCashChanger->Release();
         pCashChanger = NULL;
     }
+
+    // 释放事件连接点
+    if (pCP) {
+        pCP->Release();
+        pCP = NULL;
+    }
+
+    // 释放连接点容器
+    if (pCPC) {
+        pCPC->Release();
+        pCPC = NULL;
+    }
+
+    // 释放事件源
+    if (pEvents) {
+        pEvents->Release();
+        pEvents = NULL;
+    }
+
+
+}
+
+// Implements ICashChangerEventsDelegate
+void CashChangerPlugin::DataEvent(long Status) {
+    cerr << "------ CashChangerPlugin::DataEvent ------" << endl;
+    cerr << "------ Status: " << Status << endl;
+}
+
+void CashChangerPlugin::DirectIOEvent(long EventNumber, long *pData, BSTR *pString) {
+    cerr << "------ CashChangerPlugin::DirectIOEvent ------" << endl;
+    cerr << "------ EventNumber: " << EventNumber << endl;
+    cerr << "------ pData: " << pData << endl;
+    cerr << "------ pString: " << pString << endl;
+}
+
+void CashChangerPlugin::StatusUpdateEvent(long Data) {
+    cerr << "------ CashChangerPlugin::StatusUpdateEvent ------" << endl;
+    cerr << "------ Data: " << Data << endl;
 }
 
 void CashChangerPlugin::HandleMethodCall(
@@ -119,11 +183,12 @@ void CashChangerPlugin::HandleMethodCall(
                 pCashChanger->DataEventEnabled = VARIANT_TRUE;
                 pCashChanger->FreezeEvents = VARIANT_FALSE;
 
-                // 执行 DirectIO (根据您的需要可能需要修改参数)
+                // 执行 DirectIO 
                 long data = 0;
                 BSTR bstr = SysAllocString(L"");
-                lngRet = pCashChanger->DirectIO(18, &data, &bstr);
+                lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
                 SysFreeString(bstr);
+                //InitCashChangerEvents();
                 result->Success(flutter::EncodableValue(lngRet));
             } else {
                 cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
@@ -161,9 +226,6 @@ void CashChangerPlugin::HandleMethodCall(
     lngRet = pCashChanger->Close();
 
     if (lngRet == OposSuccess) {
-        // 释放 COM 对象
-        // pCashChanger->Release();
-        // pCashChanger = NULL;
         result->Success(flutter::EncodableValue(lngRet));
     } else {
         cerr << "关闭设备失败，错误码：" << lngRet << endl;
@@ -238,14 +300,18 @@ void CashChangerPlugin::HandleMethodCall(
         // 特定错误处理
         switch (pCashChanger->ResultCodeExtended) {
             case OPOS_ECHAN_DEPOSIT:
-            
-               result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
+                // 已在计数中
+                cerr << "OPOS_ECHAN_DEPOSIT" << endl;
+               result->Success(flutter::EncodableValue(0));
+               break;
             case OPOS_ECHAN_PAUSEDEPOSIT:
                 // 已在计数中
-
+                cerr << "OPOS_ECHAN_PAUSEDEPOSIT" << endl;
                 result->Success(flutter::EncodableValue(OPOS_ECHAN_PAUSEDEPOSIT));
+                break;
             default:
                 // 其他错误
+                cerr << "其他错误:" << pCashChanger->ResultCodeExtended << endl;
                 result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
                 
         }
@@ -305,19 +371,12 @@ void CashChangerPlugin::HandleMethodCall(
     int intSuc = 0;
     const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
     auto it = mapValue->find(flutter::EncodableValue("end_deposit"));
-    if (it != mapValue->end()) {
-        auto intValue = get_if<int>(&it->second);
-        if (intValue != nullptr) {
-            intSuc = *intValue;
-        } else {
-            cerr << "checkErrorCode param error 。。2" << endl;
-            return;
-        }
-    } else {
+    if (it == mapValue->end()) {
         cerr << "endDeposit param error 。。2" << endl;
         return;
     }
 
+    intSuc = get<int>(it->second);
     long lngRet = pCashChanger->EndDeposit(intSuc);
 
     if (lngRet == OposSuccess) {

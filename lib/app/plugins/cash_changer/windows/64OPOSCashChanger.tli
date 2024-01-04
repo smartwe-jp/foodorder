@@ -12,19 +12,19 @@
 //
 
 inline HRESULT _IOPOSCashChangerEvents::DataEvent ( long Status ) {
-    printf("DataEvent\n");
+    printf("IOPOSCashChangerEvents DataEvent\n");
     return _com_dispatch_method(this, 0x1, DISPATCH_METHOD, VT_EMPTY, NULL, 
         L"\x0003", Status);
 }
 
 inline HRESULT _IOPOSCashChangerEvents::DirectIOEvent ( long EventNumber, long * pData, BSTR * pString ) {
-    printf("DirectIOEvent\n");
+    printf("IOPOSCashChangerEvents DirectIOEvent\n");
     return _com_dispatch_method(this, 0x2, DISPATCH_METHOD, VT_EMPTY, NULL, 
         L"\x0003\x4003\x4008", EventNumber, pData, pString);
 }
 
 inline HRESULT _IOPOSCashChangerEvents::StatusUpdateEvent ( long Data ) {
-    printf("StatusUpdateEvent\n");
+    printf("IOPOSCashChangerEvents StatusUpdateEvent\n");
     return _com_dispatch_method(this, 0x5, DISPATCH_METHOD, VT_EMPTY, NULL, 
         L"\x0003", Data);
 }
@@ -34,35 +34,38 @@ inline HRESULT _IOPOSCashChangerEvents::StatusUpdateEvent ( long Data ) {
 //
 
 inline HRESULT IOPOSCashChanger_1_5::SOData ( long Status ) {
-    printf("SOData\n");
+    printf("IOPOSCashChanger_1_5 SOData\n");
+    printf("Status: %d\n", Status);
     HRESULT _hr = raw_SOData(Status);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
     return _hr;
 }
 
 inline HRESULT IOPOSCashChanger_1_5::SODirectIO ( long EventNumber, long * pData, BSTR * pString ) {
-    printf("SODirectIO\n");
+    printf("IOPOSCashChanger_1_5 SODirectIO\n");
+    printf("EventNumber: %d\n", EventNumber);
+    printf("pData: %d\n", *pData);
+    printf("pString: %ls\n", *pString);
     HRESULT _hr = raw_SODirectIO(EventNumber, pData, pString);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
     return _hr;
 }
 
 inline HRESULT IOPOSCashChanger_1_5::SOErrorDummy ( long ResultCode, long ResultCodeExtended, long ErrorLocus, long * pErrorResponse ) {
-    printf("SOErrorDummy\n");
     HRESULT _hr = raw_SOErrorDummy(ResultCode, ResultCodeExtended, ErrorLocus, pErrorResponse);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
     return _hr;
 }
 
 inline HRESULT IOPOSCashChanger_1_5::SOOutputCompleteDummy ( long OutputID ) {
-    printf("SOOutputCompleteDummy\n");
     HRESULT _hr = raw_SOOutputCompleteDummy(OutputID);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
     return _hr;
 }
 
 inline HRESULT IOPOSCashChanger_1_5::SOStatusUpdate ( long Data ) {
-    printf("SOStatusUpdate\n");
+    printf("IOPOSCashChanger_1_5 SOStatusUpdate\n");
+    printf("Data: %d\n", Data);
     HRESULT _hr = raw_SOStatusUpdate(Data);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
     return _hr;
@@ -76,7 +79,6 @@ inline long IOPOSCashChanger_1_5::SOProcessID ( ) {
 }
 
 inline long IOPOSCashChanger_1_5::GetOpenResult ( ) {
-    printf("GetOpenResult\n");
     long _result = 0;
     HRESULT _hr = get_OpenResult(&_result);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
@@ -218,7 +220,10 @@ inline long IOPOSCashChanger_1_5::Close ( ) {
 }
 
 inline long IOPOSCashChanger_1_5::DirectIO ( long Command, long * pData, BSTR * pString ) {
-    printf("DirectIO\n");
+    printf("IOPOSCashChanger_1_5 DirectIO\n");
+    printf("Command: %d\n", Command);
+    printf("pData: %d\n", *pData);
+    printf("pString: %ls\n", *pString);
     long _result = 0;
     HRESULT _hr = raw_DirectIO(Command, pData, pString, &_result);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));
@@ -226,6 +231,7 @@ inline long IOPOSCashChanger_1_5::DirectIO ( long Command, long * pData, BSTR * 
 }
 
 inline long IOPOSCashChanger_1_5::Open ( _bstr_t DeviceName ) {
+    printf("IOPOSCashChanger_1_5 Open\n");
     long _result = 0;
     HRESULT _hr = raw_Open(DeviceName, &_result);
     if (FAILED(_hr)) _com_issue_errorex(_hr, this, __uuidof(this));

@@ -24,22 +24,25 @@ class TransitPageController extends GetxController {
 
   @override
   void onInit() {
+    debugPrint("transit onInit");
     getIsShowCashInfo();
     super.onInit();
   }
 
   @override
   void onReady() {
+    debugPrint("transit onReady");
     super.onReady();
   }
 
   @override
   void onClose() {
+    debugPrint("transit onClose");
     super.onClose();
   }
 
   getIsShowCashInfo() async {
-    debugPrint("transit  getIsShowCashInfo");
+    debugPrint("transit getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
 
     _isCashState.value = systemSettingInfo['isCash'];

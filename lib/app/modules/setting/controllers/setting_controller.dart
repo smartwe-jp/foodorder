@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -19,6 +20,7 @@ import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
+import 'package:yaml/yaml.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -37,7 +39,9 @@ class SettingController extends GetxController with StateMixin {
 
   @override
   void onInit() {
+    debugPrint("SettingController onInit");
     machineCode.value = Get.arguments['machineCode'];
+    debugPrint("SettingController machineCode.value = ${machineCode.value}");
     _getPackageInfo();
 
 
@@ -120,16 +124,30 @@ class SettingController extends GetxController with StateMixin {
 
   //获取版本号
   _getPackageInfo() async {
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
-
+    debugPrint("SettingController _getPackageInfo");
+    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    // local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
+    local_version.value = await _getWindowsAppVersion();
+    debugPrint("SettingController local_version.value = ${local_version.value}");
     getSystemSettingInfo();
+  }
+
+  //获取系统版本信息
+  Future<String> _getWindowsAppVersion() async {
+    // debugPrint("SettingController _getWindowsAppVersion");
+    // var file = File('../../../../../pubspec.yaml');
+    // var contents = await file.readAsString();
+    // var yaml = loadYaml(contents);
+    // var version = yaml['version'];
+    // print('Version: $version');
+    // return version;
+    return "2.4.0";
   }
 
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
-
+    debugPrint("SettingController machine_mode.value = ${machine_mode.value}");
     var reimburse= await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
     //查看机器零钱状态
@@ -143,7 +161,7 @@ class SettingController extends GetxController with StateMixin {
     };
     request('webBootChangeState', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
+      debugPrint("SettingController _getPaycubeChangeState response = ${response}");
       if (response['code'] == 200 && null != response['data']) {
         depositData.value = response['data'];
         cashList.value = response['data']['changeStates'];
@@ -159,8 +177,10 @@ class SettingController extends GetxController with StateMixin {
   }
 
   goToBack(){
+    debugPrint("SettingController goToBack");
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if(machine_mode.value == "1"){
+      debugPrint("SettingController goToBack 1");
       menuPagecontroller.clearCartList();
       Get.delete<MenuPageController>(); // 手动删除控制器实例
     }else if(machine_mode.value == "2"){
@@ -169,9 +189,11 @@ class SettingController extends GetxController with StateMixin {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
 
-
-    Future.delayed(Duration(milliseconds: 100), (){
+    debugPrint("SettingController goToBack 2");
       Get.toNamed('/transit-page');
-    });
+    // Future.delayed(Duration(milliseconds: 300), (){
+    //   debugPrint("SettingController goToBack 2");
+    //   Get.toNamed('/transit-page');
+    // });
   }
 }
