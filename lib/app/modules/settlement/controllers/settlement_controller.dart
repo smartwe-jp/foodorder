@@ -180,6 +180,7 @@ class SettlementController extends GetxController with StateMixin {
       this._socket?.close();
     }
     //Paycube.stopListening();
+    CashChanger.removeEventsListener();
     allowtimer?.cancel();
     timer?.cancel();
     stoptimer?.cancel();
@@ -1412,8 +1413,7 @@ class SettlementController extends GetxController with StateMixin {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         seconds.value = 120;
-
-        //getPutInMoney();
+        getPutInMoney();
         //getPayCubeBackDataInfo();
 
         allowt.cancel();
@@ -1430,35 +1430,60 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //获取投入金额
-  // getPutInMoney() async {
-  //   //await Paycube.setReceiveEvent;
-  //   debugPrint("getPutInMoney");
-  //   timer?.cancel();
-  //   timer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
-  //     debugPrint("timer getPutInMoney");
-  //     int? result = await CashChanger.depositAmount;
-  //     if (result != null && result > 0) {
-  //       timer?.cancel();
-  //       getPutMoney.value = result.toString();
-  //       scanQrCodeFocusNode.unfocus();
-  //       int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
-  //       //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
-  //       if (result >= totalPriceResult) {
-  //         if (isCancel.value == false) {
-  //           showPrintButton.value = true;
-  //         } else {
-  //           showPrintButton.value = false;
-  //         }
+  getPutInMoney() async {
+    //await Paycube.setReceiveEvent;
+    debugPrint("getPutInMoney");
+    CashChanger.setEventsListener();
+    CashChanger.onGetPutMoneyStringChange = (int result) {
+      debugPrint("onGetPutMoneyStringChange");
+      if (result > 0) {
+        timer?.cancel();
+        getPutMoney.value = result.toString();
+        scanQrCodeFocusNode.unfocus();
+        int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+        //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
+        if (result >= totalPriceResult) {
+          if (isCancel.value == false) {
+            showPrintButton.value = true;
+          } else {
+            showPrintButton.value = false;
+          }
 
-  //         var outMoney = result - int.parse(totalPrice.value); //找零金额
-  //         showOutMoney.value = outMoney.toString(); //找零金额
-  //       } else {
-  //         showOutMoney.value = "0"; //找零金额
-  //       }
-  //       update();
-  //     }
-  //   });
-  // }
+          var outMoney = result - int.parse(totalPrice.value); //找零金额
+          showOutMoney.value = outMoney.toString(); //找零金额
+        } else {
+          showOutMoney.value = "0"; //找零金额
+        }
+        update();
+      }
+    };
+    
+    // timer?.cancel();
+    // timer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
+    //   debugPrint("timer getPutInMoney");
+    //   int? result = await CashChanger.depositAmount;
+    //   if (result != null && result > 0) {
+    //     timer?.cancel();
+    //     getPutMoney.value = result.toString();
+    //     scanQrCodeFocusNode.unfocus();
+    //     int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+    //     //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
+    //     if (result >= totalPriceResult) {
+    //       if (isCancel.value == false) {
+    //         showPrintButton.value = true;
+    //       } else {
+    //         showPrintButton.value = false;
+    //       }
+
+    //       var outMoney = result - int.parse(totalPrice.value); //找零金额
+    //       showOutMoney.value = outMoney.toString(); //找零金额
+    //     } else {
+    //       showOutMoney.value = "0"; //找零金额
+    //     }
+    //     update();
+    //   }
+    // });
+  }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
   Endtoubi() async {

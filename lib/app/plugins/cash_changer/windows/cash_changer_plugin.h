@@ -38,9 +38,11 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
     void DataEvent(long Status) override;
     void DirectIOEvent(long EventNumber, long *pData, BSTR *pString) override;
     void StatusUpdateEvent(long Data) override;
+
+    
       
   private:
-      
+   
     IOPOSCashChangerPtr pCashChanger;
 
     IConnectionPointContainer* pCPC = nullptr;
@@ -49,7 +51,7 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
     CashChangerEvents* pHandler = NULL;
     
     // 存储入金金额
-    long amount;
+    //long amount;
     
 
 };

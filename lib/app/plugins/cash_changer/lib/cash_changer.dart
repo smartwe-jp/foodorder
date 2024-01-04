@@ -1,6 +1,48 @@
 import 'package:cash_changer/cash_changer_platform_interface.dart';
+import 'package:flutter/foundation.dart';
 
 class CashChanger {
+  static int? putMoney = 0;
+  static String putCurrency = "";
+  static String currencyString = ""; //币种 截取0B 81的43位开始
+
+  //监听几种状态
+  static String payCubeStopCashStatus = "Error";
+  static String payCubeOutMoneyStatus = "Error";
+  static String payCubeEndTradeStatus = "Error";
+
+  static Function(int)? onGetPutMoneyStringChange;
+
+
+  //set event listener
+  static Future<void> setEventsListener() async {
+    CashChangerPlatform.instance.setEvenstListener((call) async {
+
+      debugPrint('Cash Changer Event: ${call.method} ${call.arguments}');
+      switch (call.method) {
+        case 'DirectIOEvent':
+          
+          break;
+        case 'DataEvent':
+          putMoney = call.arguments;
+          onGetPutMoneyStringChange?.call(putMoney ?? 0);
+          break;
+        case 'StatusUpdateEvent':
+          
+          break;
+        default:
+          debugPrint('No method found');
+      }
+      
+    });
+  }
+
+  //remove event listener
+  static Future<void> removeEventsListener() async {
+    CashChangerPlatform.instance.removeEvenstListener();
+  }
+
+
   static Future<String?> get getPlatformVersion async {
     return CashChangerPlatform.instance.getPlatformVersion();
   }

@@ -10,6 +10,20 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   final methodChannel = const MethodChannel('cash_changer');
 
   @override
+  Future<void> setEvenstListener(Future<void> Function(MethodCall) events) async {
+    methodChannel.setMethodCallHandler(events);
+  }
+
+  @override
+  Future<void> removeEvenstListener() async {
+    try {
+      methodChannel.setMethodCallHandler(null);
+    } catch (e) {
+      print('停止监听失败: $e');
+    }
+  }
+
+  @override
   Future<String?> getPlatformVersion() async {
     final version =
         await methodChannel.invokeMethod<String>('getPlatformVersion');

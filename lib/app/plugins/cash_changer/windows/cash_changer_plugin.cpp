@@ -16,10 +16,11 @@
 
 
 namespace cash_changer {
+static unique_ptr<flutter::MethodChannel<flutter::EncodableValue>> channel = nullptr;
 // static
 void CashChangerPlugin::RegisterWithRegistrar(
     flutter::PluginRegistrarWindows *registrar) {
-  auto channel =
+  channel =
       make_unique<flutter::MethodChannel<flutter::EncodableValue>>(
           registrar->messenger(), "cash_changer",
           &flutter::StandardMethodCodec::GetInstance());
@@ -145,6 +146,8 @@ CashChangerPlugin::~CashChangerPlugin() {
 void CashChangerPlugin::DataEvent(long Status) {
     cerr << "------ CashChangerPlugin::DataEvent ------" << endl;
     cerr << "------ Status: " << Status << endl;
+    long depositAmount = pCashChanger->DepositAmount;
+    channel->InvokeMethod("DataEvent", std::make_unique<flutter::EncodableValue>(depositAmount));
 }
 
 void CashChangerPlugin::DirectIOEvent(long EventNumber, long *pData, BSTR *pString) {
@@ -152,11 +155,14 @@ void CashChangerPlugin::DirectIOEvent(long EventNumber, long *pData, BSTR *pStri
     cerr << "------ EventNumber: " << EventNumber << endl;
     cerr << "------ pData: " << pData << endl;
     cerr << "------ pString: " << pString << endl;
+
+    channel->InvokeMethod("DirectIOEvent", std::make_unique<flutter::EncodableValue>(pData[0]));
 }
 
 void CashChangerPlugin::StatusUpdateEvent(long Data) {
     cerr << "------ CashChangerPlugin::StatusUpdateEvent ------" << endl;
     cerr << "------ Data: " << Data << endl;
+    channel->InvokeMethod("StatusUpdateEvent", std::make_unique<flutter::EncodableValue>(Data));
 }
 
 void CashChangerPlugin::HandleMethodCall(

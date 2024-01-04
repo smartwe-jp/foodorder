@@ -1,6 +1,8 @@
+import 'package:flutter/services.dart';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 
 import 'cash_changer_method_channel.dart';
+
 
 abstract class CashChangerPlatform extends PlatformInterface {
   /// Constructs a CashChangerPlatform.
@@ -70,6 +72,16 @@ abstract class CashChangerPlatform extends PlatformInterface {
   //Check Changer Status
   Future<int?> checkChangerStatus() {
     throw UnimplementedError('checkChangerStatus() has not been implemented.');
+  }
+
+  //Set Event Listener
+  Future<void> setEvenstListener(Future<void> Function(MethodCall) events) {
+    throw UnimplementedError('setEvenstListener() has not been implemented.');
+  }
+
+  //Remove Event Listener
+  Future<void> removeEvenstListener() {
+    throw UnimplementedError('removeEvenstListener() has not been implemented.');
   }
 
 }
