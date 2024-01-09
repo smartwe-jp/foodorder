@@ -430,19 +430,19 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           shopCartTotalPrice.value = response['data']["total"].toString();
 
           //只有现金，并且其余都为false的时候，直接跳转支付
-          if(showCash.value == true &&
-              isAllowPos.value == "0" &&
-              showAlipay.value == false &&
-              showWechat.value == false &&
-              showPayPay.value == false
-          ){
-            payment_method_num.value = "1";
-            //postNewOrderId();
-            gotoSettlement();
-          }else{
-            showSelectMealTypeAndPaymentMethodDialog();
-          }
-
+          // if(showCash.value == true &&
+          //     isAllowPos.value == "0" &&
+          //     showAlipay.value == false &&
+          //     showWechat.value == false &&
+          //     showPayPay.value == false
+          // ){
+          //   payment_method_num.value = "1";
+          //   //postNewOrderId();
+          //   gotoSettlement();
+          // }else{
+          //   showSelectMealTypeAndPaymentMethodDialog();
+          // }
+          showSelectMealTypeAndPaymentMethodDialog();
 
 
         }else{
