@@ -1457,7 +1457,7 @@ class SettlementController extends GetxController with StateMixin {
         update();
       }
     };
-    
+
     // timer?.cancel();
     // timer = Timer.periodic(Duration(seconds: 10), (Timer t) async {
     //   debugPrint("timer getPutInMoney");
@@ -1616,49 +1616,79 @@ class SettlementController extends GetxController with StateMixin {
     //await Paycube.setReceiveEvent;
     _countDownTimer("7");
 
-    var queryTimes = 0;
+    //var queryTimes = 0;
     // 循环一定要记得设置取消条件，手动取消
     //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
+
+    debugPrint("_getPayCubeOutMoney");
+    //获取硬币入金出金币种
+    String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
+    debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
+
+    String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);
+    debugPrint("currencyCashStringresult==${currencyCashStringresult}");
+
+    var putMoneyCurrency = "";
+    var currency = "";
+
+    if (currencyCoinStringresult != null &&
+        currencyCoinStringresult.length > 36) {
+      putMoneyCurrency = currencyCoinStringresult.substring(0, 18); //入金
+      currency = currencyCoinStringresult.substring(18, 36); //出金
+    }
+
+    if (currencyCashStringresult != null &&
+        currencyCashStringresult.length > 24) {
+      putMoneyCurrency += currencyCashStringresult.substring(0, 12);
+      currency += currencyCashStringresult.substring(12, 24);
+    }
+
+    getPutMoneyCurrency.value =
+        MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+    currencyString.value = MoneyParser.migrationGloryToHexString(currency);
+
+    getOutMoneyString.value == false;
+
     reportOutMoney();
-    return;
-    OutMoneytimer =
-        Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
-      if (queryTimes > 150) {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        getOutMoneyString.value == false;
 
-        OutMoneytimer?.cancel();
-        //汇报出金币种
-        reportOutMoney();
-      }
+    // OutMoneytimer =
+    //     Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
+    //   if (queryTimes > 150) {
+    //     //如果打开了现金机，则去掉倒计时监听
+    //     showCashTimer?.cancel();
+    //     seconds.value = 180;
+    //     getOutMoneyString.value == false;
 
-      if (getOutMoneyString.value == true) {
-        // 循环一定要记得设置取消条件，手动取消
-        String? currencyStringresult = await CashChanger.getCashBalance;
-        if (currencyStringresult != null && currencyStringresult.length > 0) {
-          var outtotalAmount =
-              MoneyParser.calculateTotalAmount(currencyStringresult.trim());
-          //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
-          //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
+    //     OutMoneytimer?.cancel();
+    //     //汇报出金币种
+    //     reportOutMoney();
+    //   }
 
-          if (outtotalAmount == int.parse(outStringMoney.value)) {
-            //如果打开了现金机，则去掉倒计时监听
-            showCashTimer?.cancel();
-            seconds.value = 180;
-            currencyString.value = currencyStringresult;
-            getOutMoneyString.value == false;
+    //   if (getOutMoneyString.value == true) {
+    //     // 循环一定要记得设置取消条件，手动取消
+    //     String? currencyStringresult = await CashChanger.getCashBalance;
+    //     if (currencyStringresult != null && currencyStringresult.length > 0) {
+    //       var outtotalAmount =
+    //           MoneyParser.calculateTotalAmount(currencyStringresult.trim());
+    //       //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
+    //       //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
-            OutMoneytimer?.cancel();
-            //汇报出金币种
-            reportOutMoney();
-          }
-        }
-      }
-      outMonyNum.value++;
-      queryTimes++;
-    });
+    //       if (outtotalAmount == int.parse(outStringMoney.value)) {
+    //         //如果打开了现金机，则去掉倒计时监听
+    //         showCashTimer?.cancel();
+    //         seconds.value = 180;
+    //         currencyString.value = currencyStringresult;
+    //         getOutMoneyString.value == false;
+
+    //         OutMoneytimer?.cancel();
+    //         //汇报出金币种
+    //         reportOutMoney();
+    //       }
+    //     }
+    //   }
+    //   outMonyNum.value++;
+    //   queryTimes++;
+    // });
   }
 
   //汇报出金币种,请求后台
@@ -1670,7 +1700,7 @@ class SettlementController extends GetxController with StateMixin {
   payCubeCloseTransaction() async {
     if (int.parse(getPutMoney.value) > 0) {
       //汇报入金币种
-      //_getPayCubePutMoneyCurrency();
+      _getPayCubePutMoneyCurrency();
     }
     CashStep.value = 4;
     //取引终了结束交易
@@ -1705,7 +1735,7 @@ class SettlementController extends GetxController with StateMixin {
   _getPayCubePutMoneyCurrency() async {
     //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
     putMoneyCurrencytimer?.cancel();
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
     _countDownTimer("8");
     var putQueryNum = 0;
     putMoneyCurrencytimer = Timer.periodic(Duration(milliseconds: 350),
@@ -1719,7 +1749,8 @@ class SettlementController extends GetxController with StateMixin {
       }
       if (getputMoneyString.value == true) {
         // 循环一定要记得设置取消条件，手动取消
-        String putcurrencyString = await Paycube.getPayCubePutMoneyCurrency;
+        String putcurrencyString = getPutMoneyCurrency
+            .value; //await Paycube.getPayCubePutMoneyCurrency;
         if (putcurrencyString.trim().length > 60) {
           var totalAmount =
               MoneyParser.calculateTotalAmount(putcurrencyString.trim());

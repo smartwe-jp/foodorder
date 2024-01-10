@@ -84,4 +84,9 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('removeEvenstListener() has not been implemented.');
   }
 
+  //Changer DI Status
+  Future<String?> changerDIStatus(int pData) {
+    throw UnimplementedError('changerDIStatus() has not been implemented.');
+  }
+
 }

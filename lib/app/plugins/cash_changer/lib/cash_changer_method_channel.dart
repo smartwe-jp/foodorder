@@ -87,4 +87,12 @@ class MethodChannelCashChanger extends CashChangerPlatform {
     final result = await methodChannel.invokeMethod<int>('checkChangerStatus');
     return result;
   }
+
+  @override
+  Future<String?> changerDIStatus(int pData) async {
+    final result = await methodChannel.invokeMethod<String>('changer_di_status', <String, dynamic>{
+        'pData': pData,
+    });
+    return result;
+  }
 }

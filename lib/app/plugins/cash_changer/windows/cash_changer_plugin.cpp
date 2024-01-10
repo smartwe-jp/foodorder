@@ -13,6 +13,8 @@
 #include <memory>
 #include <sstream>
 #include "opos_all.h"
+#include <locale>
+#include <codecvt>
 
 
 namespace cash_changer {
@@ -155,7 +157,9 @@ void CashChangerPlugin::DirectIOEvent(long EventNumber, long *pData, BSTR *pStri
     cerr << "------ EventNumber: " << EventNumber << endl;
     cerr << "------ pData: " << pData << endl;
     cerr << "------ pString: " << pString << endl;
-
+    // _bstr_t bstrCashCounts(pString, false);
+    // string str = (const char*)bstrCashCounts;
+    // cerr << "str : " << str << endl;
     channel->InvokeMethod("DirectIOEvent", std::make_unique<flutter::EncodableValue>(pData[0]));
 }
 
@@ -607,8 +611,8 @@ void CashChangerPlugin::HandleMethodCall(
 
   // check error code
 
-  if (method_call.method_name().compare("checkErrorCode") == 0) {
-    cerr << "checkErrorCode called 。。" << endl;
+  if (method_call.method_name().compare("changer_di_status") == 0) {
+    cerr << "changer_di_status called 。。" << endl;
 
     if (pCashChanger == nullptr) {
         result->Error("Cash Changer not initialized");
@@ -621,33 +625,36 @@ void CashChangerPlugin::HandleMethodCall(
     int mode = 1;
     auto arguments = method_call.arguments();
     if (!arguments) {
-        cerr << "checkErrorCode param error 。。1" << endl;
+        cerr << "changer_di_status param error 。。1" << endl;
         return;
     }
     const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
     // Accessing a value in the map
-    auto it = mapValue->find(flutter::EncodableValue("mode"));
+    auto it = mapValue->find(flutter::EncodableValue("pData"));
     if (it != mapValue->end()) {
         mode = get<int>(it->second);
     } else {
-        cerr << "checkErrorCode param error 。。2" << endl;
+        cerr << "changer_di_status param error 。。2" << endl;
         return;
     }
 
-    short checkErrorCode = 0;
+    //short checkErrorCode = 0;
+    lngData = mode;
 
-    if (mode == 1) {
-        lngData = 0x80; // 紙幣・硬貨両接続
-    } else {
-        lngData = 0x1; // 硬貨単体接続
-    }
+    // if (mode == 1) {
+    //     lngData = 0x80; // 紙幣・硬貨両接続
+    // } else {
+    //     lngData = 0x1; // 硬貨単体接続
+    // }
 
     //strTemp = "";
     BSTR strTemp = SysAllocString(L"");
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
     lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
-
+    cerr << "-- DirectIO CHAN_DI_STATUSREAD end --" << lngRet << endl;
+    cerr << "strTemp " << lngData << " : " << strTemp << endl;
+    //000001F3AA222A18
     if (lngRet == OposSuccess) {
         // if (mode == 1) {
         //     checkErrorCode = stoi(strTemp.substr(39, 4));
@@ -657,12 +664,22 @@ void CashChangerPlugin::HandleMethodCall(
         // } else {
         //     checkErrorCode = stoi(strTemp.substr(0, 4));
         // }
+        // Convert BSTR to std::wstring
+        // std::wstring wstr(strTemp, SysStringLen(strTemp));
+        // 将 BSTR 转换为 string
+        _bstr_t bstrCashCounts(strTemp, false);
+        string str = (const char*)bstrCashCounts;
+        cerr << "str : " << str << endl;
+
+        result->Success(flutter::EncodableValue(str));
+    } else {
+        //result->Success(flutter::EncodableValue(lngRet));
+        result->Error("Cash Changer Status no response");
     }
 
-    result->Success(flutter::EncodableValue(checkErrorCode));
+    
     return;
   }
-  
   
 
 

@@ -93,4 +93,9 @@ class CashChanger {
   static Future<int?> get checkChangerStatus async {
     return CashChangerPlatform.instance.checkChangerStatus();
   }
+
+  //changer di status
+  static Future<String?> changerDIStatus(int pData) async {
+    return CashChangerPlatform.instance.changerDIStatus(pData);
+  }
 }
