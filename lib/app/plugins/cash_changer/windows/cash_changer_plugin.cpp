@@ -453,12 +453,13 @@ void CashChangerPlugin::HandleMethodCall(
     }
 
     long lngRet = pCashChanger->EndDeposit(ChanDepositrepay);
-
+    cerr << "depositRepay result 。。 " << lngRet << endl;
     if (lngRet == OposSuccess) {
 
       result->Success(flutter::EncodableValue(lngRet));
 
     } else {
+      cerr << "depositRepay error .." << pCashChanger->ResultCodeExtended << endl;
       if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
         result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
       } else {

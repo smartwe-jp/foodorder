@@ -1,13 +1,10 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
-import 'package:foodorder/app/services/showToast.dart';
+import 'package:foodorder/app/modules/home/controllers/home_controller_extension.dart';
 import 'package:get/get.dart';
 import 'package:appset/appset.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -75,9 +72,6 @@ class HomeController extends GetxController {
     debugPrint("requestPermission 0");
     //霸屏隐藏状态栏导航栏
     //await Appset.hideBullyScreen; //隐藏状态栏暂时不用
-    //获取Windows版本
-    // String? windowsVersion = await CashChanger.getPlatformVersion;
-    // debugPrint("windowsVersion:$windowsVersion");
 
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
@@ -110,7 +104,14 @@ class HomeController extends GetxController {
         connectivityResult == ConnectivityResult.wifi ||
         connectivityResult == ConnectivityResult.ethernet) {
       debugPrint("checkInterNetStatus有网络");
-      OpenPayCube();
+      if (Platform.isAndroid) {
+        OpenPayCube();
+      } else if (Platform.isWindows) {
+        debugPrint("check is windows");
+        openCashChanger();
+      } else {
+        OpenPayCube();
+      }
     } else {
       print("没有网络");
       // I am not connected to any network.
@@ -127,36 +128,6 @@ class HomeController extends GetxController {
     }
   }
 
-  void openCashChange() async {
-    debugPrint("  openCashChange  ");
-    int? resultCode = await CashChanger.openCashChanger;
-    debugPrint("open CashChanger resultCode:  " + resultCode.toString());
-
-    Get.dialog(
-        DialogUtils.alert(
-            "open CashChanger resultCode:  " + resultCode.toString(),
-            title: "CashChanger", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
-
-  void closeCashChange() async {
-    debugPrint("  closeCashChange  ");
-    int? resultCode = await CashChanger.closeCashChanger;
-    debugPrint("close CashChanger resultCode:  " + resultCode.toString());
-    Get.dialog(
-        DialogUtils.alert(
-            "close CashChanger resultCode:  " + resultCode.toString(),
-            title: "CashChanger", confirm: () {
-          Get.back();
-        }, cancle: () {
-          Get.back();
-        }),
-        barrierDismissible: false);
-  }
 
 //倒计时
   _countDownTimer() {
@@ -177,206 +148,114 @@ class HomeController extends GetxController {
 
   //打开现金机
   OpenPayCube() async {
-    debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
-    // String checkStatus = await Paycube.CheckPayCubeStatus;
-    // debugPrint("OpenPayCube 2");
-    // //如果检测现金机打开错误，则重新打开一下
-    // if (checkStatus == "openError") {
-    //   String openStatus = await Paycube.openPayCube;
-    //   //print("机器未打开lib未null，重新打开并连接了");
-    // } else {
-    //   await Paycube.setReceiveEvent;
-    // }
-    int? resultCode = await CashChanger.checkChangerStatus;
+    String checkStatus = await Paycube.CheckPayCubeStatus;
 
-    if (resultCode != 0) {
-      // if (resultCode == 113 || resultCode == 101) {
-      //   sleep(Duration(milliseconds: 200));
-      //   await CashChanger.depositAmount;
-      //   sleep(Duration(milliseconds: 200));
-      //   await CashChanger.depositRepay;
-      //   sleep(Duration(milliseconds: 200));
-      //   showCashTimer?.cancel();
-      //   Starttoubi();
-
-      //   return;
-      // }
-
-      debugPrint("OpenPayCube 2");
-      //如果检测现金机打开错误，则重新打开一下
-      int? openStatus = await CashChanger.openCashChanger;
-      if (openStatus == 0 || openStatus == 110 || openStatus == 106 || openStatus == 101) {
-        debugPrint("OpenPayCube 3");
-        //print("机器未打开lib未null，重新打开并连接了");
-
-        sleep(Duration(milliseconds: 200));
-        Starttoubi();
-      } else {
-        debugPrint("Open CashChanger resultCode:  " + resultCode.toString());
-        //await CashChanger.checkChangerStatus;
-      }
-      showCashTimer?.cancel();
-    } else {
-      debugPrint("OpenPayCube 4");
-      await CashChanger.endDeposit(3);
-      if (resultCode == 0) {
-        debugPrint("OpenPayCube 5");
-        sleep(Duration(milliseconds: 200));
-        Starttoubi();
-      } else {
-        debugPrint("Open CashChanger resultCode:  " + resultCode.toString());
-        //await CashChanger.checkChangerStatus;
-      }
-      //sleep(Duration(milliseconds: 200));
-      //await CashChanger.depositRepay;
-      //await CashChanger.checkChangerStatus;
+    //如果检测现金机打开错误，则重新打开一下
+    if(checkStatus == "openError"){
+      String openStatus = await Paycube.openPayCube;
+      //print("机器未打开lib未null，重新打开并连接了");
+    }else{
+      await Paycube.setReceiveEvent;
     }
+
+    Starttoubi();
   }
 
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
+
     //入金开始
-    debugPrint("Starttoubi 1");
     int connectCount = 0;
+    String strartPayCube = await Paycube.strartPayCube;
+    //调用插件的监听
+    Paycube.getPayCubeListener();
 
-    // String strartPayCube = await Paycube.strartPayCube;
-    // //调用插件的监听
-    // Paycube.getPayCubeListener();
-
-    int? resultCode = 0; //await CashChanger.startDeposit;
-
-    // await Paycube.setReceiveEvent;
+    await Paycube.setReceiveEvent;
     allowtimer?.cancel();
-    allowtimer =
-        Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
-      resultCode = await CashChanger.startDeposit;
+    allowtimer = Timer.periodic(Duration(milliseconds: 150), (Timer allowt) async {
+      _allowStatus =  await Paycube.getPayCubeAllowCashStatus;
       connectCount++;
-      if (connectCount > 50) {
+      if(connectCount > 50){
         //退出关闭
         //exit(0);
-        debugPrint("Starttoubi getIsFirstOpen");
         getIsFirstOpen();
       }
       //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消
-      if (resultCode == 0) {
-        seconds.value = 60;
+      if (_allowStatus == "AllowSuccess") {
+        seconds.value=60;
         _countDownTimer();
-        sleep(Duration(milliseconds: 200));
-        _calculateAmount();
+
+        stopPaycube();
         allowt.cancel();
-      } else if (resultCode == 106) {
-        await CashChanger.endDeposit;
-        //await Paycube.endTrade;
-        sleep(Duration(milliseconds: 200));
-        //await Paycube.strartPayCube;
-        await CashChanger.startDeposit;
-      } else if (resultCode == 114) {
-        sleep(Duration(milliseconds: 300));
-      } else {
-        await CashChanger.startDeposit;
+
+      }else if (_allowStatus == "Error-F0--16") {
+        await Paycube.endTrade;
+        //sleep(Duration(milliseconds: 200));
+        await Paycube.strartPayCube;
+      }else if (_allowStatus == "Error-A0--02") {
+        //sleep(Duration(milliseconds: 300));
+      }else{
+
+        await Paycube.strartPayCube;
         //print("_allowStatus:$_allowStatus");
+
       }
+
     });
-  }
 
-  //计算投币金额
-  void _calculateAmount() async {
-    debugPrint("CalculateAmount 1");
-    //int connectCount = 0;
-    //计算投币金额
-    int? resultCode = await CashChanger.depositAmount;
-    // depositAmounttimer =
-    //     Timer.periodic(Duration(microseconds: 150), (Timer allowt) async {
-    //   resultCode = await CashChanger.depositAmount;
-    //   connectCount++;
-    //   if (connectCount > 50) {
-    //     //退出关闭
-    //     //exit(0);
-    //     getIsFirstOpen();
-    //   }
-    //print("链接次数${}");
-    // 循环一定要记得设置取消条件，手动取消
-    // if (resultCode == 0) {
-    //  seconds.value = 60;
-    //  _countDownTimer();
-    sleep(Duration(milliseconds: 200));
-    stopPaycube();
-    //allowt.cancel();
-    // } else if (resultCode == 106) {
-    //   await CashChanger.depositAmount;
-    //   //await Paycube.endTrade;
-    //   sleep(Duration(milliseconds: 200));
-    //   //await Paycube.strartPayCube;
-    //   await CashChanger.depositAmount;
-    // } else if (resultCode == 114) {
-    //   sleep(Duration(milliseconds: 300));
-    // } else {
-    //   await CashChanger.depositAmount;
-    //   //print("_allowStatus:$_allowStatus");
-    // }
-    // });
-  }
 
+  }
   stopPaycube() async {
-    debugPrint("stopPaycube 1");
     checkSteeps.value = 3;
-    //await Paycube.setReceiveEvent;
-    //var endStatus = await Paycube.endPayCube;
-    int? resultCode = 0; //await CashChanger.endDeposit;
+    await Paycube.setReceiveEvent;
+    var endStatus = await Paycube.endPayCube;
     stopChecktimer?.cancel();
-    stopChecktimer =
-        Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
-      resultCode = await CashChanger.depositRepay;
+    stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
+      _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
-      if (resultCode == 0) {
+      if (_stopStatus == "StopSuccess") {
         //倒计时，一定时间不开启现金机则继续执行下一步
-        seconds.value = 60;
+        seconds.value=60;
         _countDownTimer();
-        sleep(Duration(milliseconds: 200));
         closePaycube();
         stopcheck.cancel();
-      } else if (_stopStatus == 106) {
+
+      }else if(_stopStatus == "Error-A0--02"){
         //处理中
         sleep(Duration(milliseconds: 200));
-        //await Paycube.endPayCube;
-        await CashChanger.depositRepay;
-      } else {
-        //await Paycube.endPayCube;
-        await CashChanger.depositRepay;
+        await Paycube.endPayCube;
+      }else{
+        await Paycube.endPayCube;
       }
     });
   }
 
   closePaycube() async {
-    debugPrint("closePaycube 1");
     checkSteeps.value = 4;
     //取引终了结束交易
-    //var endTrade = await Paycube.endTrade;
-    //await Paycube.setReceiveEvent;
-    int? resultCode = 0; //await CashChanger.closeCashChanger;
+    var endTrade = await Paycube.endTrade;
+    await Paycube.setReceiveEvent;
+    closetimer?.cancel();
+    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
+      _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
+      // 循环一定要记得设置取消条件，手动取消
+      if (_closeStatus == "EndSuccess" ) {
+        showCashTimer?.cancel();
+        seconds.value=60;
 
-    // closetimer?.cancel();
-    // closetimer =
-    //     Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
-    //   resultCode = await CashChanger.closeCashChanger;
-    // 循环一定要记得设置取消条件，手动取消
-    if (resultCode == 0) {
-      showCashTimer?.cancel();
-      //seconds.value = 60;
+        //现金机打开一次后，判断是否第一次打开
+        prohibitOneCash();
 
-      //现金机打开一次后，判断是否第一次打开
-      prohibitOneCash();
+        closecheck.cancel();
+      }else{
 
-      //closecheck.cancel();
-    } else {
-      //await Paycube.endTrade;
-      await CashChanger.closeCashChanger;
-    }
-    // });
+        await Paycube.endTrade;
+      }
+    });
   }
 
   //禁用一元入金和出金
