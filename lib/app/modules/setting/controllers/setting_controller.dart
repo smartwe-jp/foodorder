@@ -177,10 +177,8 @@ class SettingController extends GetxController with StateMixin {
   }
 
   goToBack(){
-    debugPrint("SettingController goToBack");
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if(machine_mode.value == "1"){
-      debugPrint("SettingController goToBack 1");
       menuPagecontroller.clearCartList();
       Get.delete<MenuPageController>(); // 手动删除控制器实例
     }else if(machine_mode.value == "2"){
@@ -190,10 +188,9 @@ class SettingController extends GetxController with StateMixin {
     }
 
     debugPrint("SettingController goToBack 2");
-      Get.toNamed('/transit-page');
-    // Future.delayed(Duration(milliseconds: 300), (){
-    //   debugPrint("SettingController goToBack 2");
-    //   Get.toNamed('/transit-page');
-    // });
+    Future.delayed(Duration(milliseconds: 300), (){
+      //Get.toNamed('/transit-page');
+      Get.back();
+    });
   }
 }
