@@ -98,4 +98,9 @@ class CashChanger {
   static Future<String?> changerDIStatus(int pData) async {
     return CashChangerPlatform.instance.changerDIStatus(pData);
   }
+
+  //dispense cash
+  static Future<int?> dispenseCash(String cashCounts) async {
+    return CashChangerPlatform.instance.dispenseCash(cashCounts);
+  }
 }

@@ -89,4 +89,9 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('changerDIStatus() has not been implemented.');
   }
 
+  //Dispense Cash
+  Future<int?> dispenseCash(String cashCounts) {
+    throw UnimplementedError('dispenseCash() has not been implemented.');
+  }
+
 }

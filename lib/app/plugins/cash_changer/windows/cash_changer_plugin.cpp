@@ -682,6 +682,42 @@ void CashChangerPlugin::HandleMethodCall(
     return;
   }
   
+  if (method_call.method_name().compare("dispenseCash")) {
+    cerr << "dispenseCash called 。。" << endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    
+    BSTR cashCounts = SysAllocString(L"");
+    auto arguments = method_call.arguments();
+    if (!arguments) {
+        cerr << "dispenseCash param error 。。1" << endl;
+        return;
+    }
+    const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+    auto it = mapValue->find(flutter::EncodableValue("cashCounts"));
+    if (it != mapValue->end()) {
+        string str = get<string>(it->second);
+        cerr << "cashCounts : " << str << endl;
+        _bstr_t bstr(str.c_str());
+        cashCounts = bstr;
+    } else {
+        cerr << "dispenseCash param error 。。2" << endl;
+        return;
+    }
+
+    long lngRet = pCashChanger->DispenseCash(cashCounts);
+    cerr << "DispenseCash end 。。 " << lngRet << endl;
+    if (lngRet == OposSuccess) {
+        result->Success(flutter::EncodableValue(OposSuccess));
+    } else {
+        result->Success(flutter::EncodableValue(lngRet));
+    }
+
+    return;
+  }
 
 
   if (method_call.method_name().compare("getPlatformVersion") == 0) {

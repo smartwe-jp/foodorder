@@ -241,7 +241,12 @@ class SettlementController extends GetxController with StateMixin {
     if (payment_method_num.value == "0" || payment_method_num.value == "1") {
       //打开现金机
       _countDownTimer("1");
-      Starttoubi();
+      if (Platform.isAndroid) {
+        Starttoubi();
+      } else {
+        startDeposit();
+      }
+      
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();

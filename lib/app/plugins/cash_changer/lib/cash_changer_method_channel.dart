@@ -95,4 +95,12 @@ class MethodChannelCashChanger extends CashChangerPlatform {
     });
     return result;
   }
+
+  @override
+  Future<int?> dispenseCash(String cashCounts) async {
+    final result = await methodChannel.invokeMethod<int>('dispenseCash', <String, dynamic>{
+        'cashCounts': cashCounts,
+    });
+    return result;
+  }
 }

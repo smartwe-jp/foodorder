@@ -10,12 +10,7 @@ extension SettlementControllerExtension on SettlementController {
 
   startDeposit() async {
     //入金开始
-    // String strartPayCube = await Paycube.strartPayCube;
-    // await Paycube.setReceiveEvent;
-    // //调用插件的监听
-    // Paycube.getPayCubeListener();
-    int? resultCode = await CashChanger.startDeposit;
-
+    await CashChanger.startDeposit;
     allowtimer?.cancel();
     allowtimer =
         Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
@@ -80,15 +75,18 @@ extension SettlementControllerExtension on SettlementController {
     sleep(Duration(milliseconds: 300));
     var depositAmount = await CashChanger.depositAmount;
     getPutMoney.value = depositAmount.toString();
+    sleep(Duration(milliseconds: 300));
+
+
     //开启倒计时
     //_countDownTimer("2");
 
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      //stopStatus.value = await Paycube.getPayCubeStopCashStatus;
-      stopStatus.value == "StopSuccess";
-      // 循环一定要记得设置取消条件，手动取消
+          final result = await CashChanger.endDeposit(2);
+      stopStatus.value = result == 0 ? "StopSuccess":"error";
+      debugPrint("stopStatus.value :${stopStatus.value}");
       if (stopStatus.value == "StopSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
@@ -112,6 +110,7 @@ extension SettlementControllerExtension on SettlementController {
 
         stopt.cancel();
       } else {
+        debugPrint("endDeposit 1");
         await CashChanger.depositRepay; //temp modify
       }
     });
@@ -154,6 +153,7 @@ extension SettlementControllerExtension on SettlementController {
       }*/
       else {
         //await Paycube.endPayCube;
+        debugPrint("endDeposit 3");
         await CashChanger.depositRepay;
       }
     });
@@ -245,6 +245,7 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   _payCubeCloseTransaction() async {
+    debugPrint("payCubeCloseTransaction");
     if (int.parse(getPutMoney.value) > 0) {
       //汇报入金币种
       _getPayCubePutMoneyCurrency();
@@ -274,6 +275,7 @@ extension SettlementControllerExtension on SettlementController {
       } else {
         //sleep(Duration(milliseconds: 200));
         //await Paycube.endTrade;
+        debugPrint("endDeposit 2");
         await CashChanger.depositRepay;
       }
     });

@@ -57,7 +57,7 @@ class MoneyParser {
 
 
   static String migrationGloryToHexString(String input) {
-    debugPrint("input = ${input}");
+    debugPrint("glory = ${input}");
     if (input.length % 3 != 0 || input.length < 30) {
       throw Exception('Invalid input');
     }

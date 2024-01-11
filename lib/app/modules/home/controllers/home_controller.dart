@@ -71,7 +71,7 @@ class HomeController extends GetxController {
   Future requestPermission() async {
     debugPrint("requestPermission 0");
     //霸屏隐藏状态栏导航栏
-    //await Appset.hideBullyScreen; //隐藏状态栏暂时不用
+    await Appset.hideBullyScreen; //隐藏状态栏
 
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
