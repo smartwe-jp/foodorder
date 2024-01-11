@@ -3,6 +3,7 @@
 #
 
 list(APPEND FLUTTER_PLUGIN_LIST
+  appset
   cash_changer
   charset_converter
   connectivity_plus
