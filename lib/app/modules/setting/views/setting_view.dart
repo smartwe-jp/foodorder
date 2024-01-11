@@ -50,24 +50,29 @@ class SettingView extends GetView<SettingController> {
                         //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                       )),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Container(
-                        width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text("預り金",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
+                      Expanded(
+                        child:
+                        Container(
+                          //width: ScreenAdapter.width(200),
+                          height: ScreenAdapter.height(45),
+                          margin: EdgeInsets.only(
+                              left: ScreenAdapter.width(5),
+                              right: ScreenAdapter.width(5)),
+                          alignment: Alignment.center,
+                          child: Text("預り金",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(20),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              )),
+                        ),
                       ),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -80,8 +85,11 @@ class SettingView extends GetView<SettingController> {
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
+                      ),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -94,8 +102,11 @@ class SettingView extends GetView<SettingController> {
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
+                      ),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -108,8 +119,11 @@ class SettingView extends GetView<SettingController> {
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
+                      ),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -122,6 +136,7 @@ class SettingView extends GetView<SettingController> {
                               color: ColorsUtil.hexToColor("#000000"),
                             )),
                       ),
+                      )
                     ],
                   ),
                 ),
@@ -136,11 +151,13 @@ class SettingView extends GetView<SettingController> {
                         //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                       )),
                   child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
+                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -167,10 +184,11 @@ class SettingView extends GetView<SettingController> {
                                 ),
                               ]),
                         ),
-                      ),
-
+                      )),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -197,9 +215,11 @@ class SettingView extends GetView<SettingController> {
                                 ),
                               ]),
                         ),
-                      ),
+                      )),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -226,9 +246,11 @@ class SettingView extends GetView<SettingController> {
                                 ),
                               ]),
                         ),
-                      ),
+                      )),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -255,9 +277,11 @@ class SettingView extends GetView<SettingController> {
                                 ),
                               ]),
                         ),
-                      ),
+                      )),
+                      Expanded(
+                        child:
                       Container(
-                        width: ScreenAdapter.width(200),
+                        //width: ScreenAdapter.width(200),
                         height: ScreenAdapter.height(45),
                         margin: EdgeInsets.only(
                             left: ScreenAdapter.width(5),
@@ -284,7 +308,7 @@ class SettingView extends GetView<SettingController> {
                                 ),
                               ]),
                         ),
-                      ),
+                      )),
                     ],
                   ),
                 ),
