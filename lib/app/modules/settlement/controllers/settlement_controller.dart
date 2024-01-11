@@ -23,7 +23,7 @@ import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
-import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';

@@ -43,7 +43,7 @@ dependencies:
   paycube: 
     path: ./lib/app/plugins/paycube
   flutter_plugin_msprinter: 
-    path: ./lib/app/plugins/flutter_plugin_msprint
+    path: ./lib/app/plugins/flutter_plugin_msprinter
   appset: 
     path: ./lib/app/plugins/appset
   cash_changer: 

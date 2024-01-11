@@ -11,7 +11,7 @@ import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 import '../../../config/imageData.dart';
-import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';

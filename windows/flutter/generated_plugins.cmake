@@ -7,6 +7,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   cash_changer
   charset_converter
   connectivity_plus
+  flutter_plugin_msprinter
   permission_handler_windows
 )
 
