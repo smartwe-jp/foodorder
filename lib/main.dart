@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -55,10 +55,13 @@ Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
-    //await Firebase.initializeApp();
     await GetStorage.init();
 
-    //FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    if (Platform.isAndroid) { //Firebase is not full supported on windows
+      await Firebase.initializeApp();
+      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    } 
+
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
@@ -113,7 +116,9 @@ void main() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
     print('runZonedGuarded: Caught error in my root zone.');
-    //FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    if (Platform.isAndroid) {
+      FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    }
   });
 }
 

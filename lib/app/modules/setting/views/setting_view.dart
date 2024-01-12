@@ -726,7 +726,9 @@ class SettingView extends GetView<SettingController> {
                         InkWell(
                           onTap: () {
                             controller.ordersqlcontroller.removeAllFromCart();
-                            controller.showBullyScreen();
+                            if (Platform.isAndroid) {
+                              controller.showBullyScreen();
+                            }
                             sleep(Duration(milliseconds: 1500));
                             Get.back();
                             //退出关闭
