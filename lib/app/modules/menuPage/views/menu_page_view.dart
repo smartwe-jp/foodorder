@@ -2700,7 +2700,7 @@ class MenuPageView extends GetView {
                         child: Column(
                           children: [
                             Container(
-                              height: ScreenAdapter.height(412),
+                              //height: ScreenAdapter.height(412),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
@@ -2786,7 +2786,7 @@ class MenuPageView extends GetView {
                                   )),
                             ),
                             Container(
-                              height: ScreenAdapter.height(412),
+                              //height: ScreenAdapter.height(412),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
