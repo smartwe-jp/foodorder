@@ -76,6 +76,39 @@ void AppsetPlugin::HandleMethodCall(
     return;
   }
 
+  if (method_call.method_name().compare("playAudio") == 0) {
+
+    auto arguments = method_call.arguments();
+    if (!arguments) {
+        cerr << "playAudio param error 。。1" << endl;
+        return;
+    }
+    // const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+    // auto audio_it = mapValue->find(flutter::EncodableValue("audio"));
+    // if (audio_it != mapValue->end()) {
+    //   std::string audioName = std::get<std::string>(audio_it->second);
+      
+    //   // 将 std::string 转换为 LPCWSTR
+    //   int size_needed = MultiByteToWideChar(CP_UTF8, 0, &audioName[0], (int)audioName.size(), NULL, 0);
+    //   std::wstring wideAudioName(size_needed, 0);
+    //   MultiByteToWideChar(CP_UTF8, 0, &audioName[0], (int)audioName.size(), &wideAudioName[0], size_needed);
+
+    //   // 使用 PlaySound 播放音频
+    //   if (!PlaySound(wideAudioName.c_str(), NULL, SND_FILENAME | SND_ASYNC)) {
+    //     result->Error("Audio Playback Failed", "Could not play the audio file");
+    //     return;
+    //   }
+
+    //   result->Success(flutter::EncodableValue(0));  // Assuming 0 as success status code
+    // } else {
+    //   result->Error("No Audio Provided", "No audio file name provided");
+    // }
+
+    
+    
+    return;
+  }
+
   if (method_call.method_name().compare("getPlatformVersion") == 0) {
     std::ostringstream version_stream;
     version_stream << "Windows ";

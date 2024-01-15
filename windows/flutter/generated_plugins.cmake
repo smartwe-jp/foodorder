@@ -4,6 +4,7 @@
 
 list(APPEND FLUTTER_PLUGIN_LIST
   appset
+  audioplayers_windows
   cash_changer
   charset_converter
   connectivity_plus

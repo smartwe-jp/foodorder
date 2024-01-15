@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -99,11 +100,13 @@ class MenuPageController extends GetxController with StateMixin {
   //如果下单时候报错，则查看是否因为库存不足
   RxMap menuLackMap = {}.obs;
   RxString doSubmitOrderId = "".obs;
+  final player = AudioPlayer();
 
   @override
   void onInit() {
     readyQueryData();
     super.onInit();
+    player.setVolume(0.3);
   }
 
   @override
@@ -888,19 +891,23 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   playQRScannerSound() async {
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/14428.wav"),
-      autoStart: true,
-      volume: 0.3,
-    );
+    // AssetsAudioPlayer.newPlayer().open(
+    //   Audio("assets/audios/14428.wav"),
+    //   autoStart: true,
+    //   volume: 0.3,
+    // );
+    
+   player.play(AssetSource("audios/14428.wav"));
+
   }
 
   deleteItemSound() async {
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/697.wav"),
-      autoStart: true,
-      volume: 0.8,
-    );
+    // AssetsAudioPlayer.newPlayer().open(
+    //   Audio("assets/audios/697.wav"),
+    //   autoStart: true,
+    //   volume: 0.8,
+    // );
+    player.play(AssetSource("audios/697.wav"));
   }
 
   changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {

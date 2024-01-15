@@ -7,6 +7,7 @@
 #include "generated_plugin_registrant.h"
 
 #include <appset/appset_plugin_c_api.h>
+#include <audioplayers_windows/audioplayers_windows_plugin.h>
 #include <cash_changer/cash_changer_plugin_c_api.h>
 #include <charset_converter/charset_converter_plugin.h>
 #include <connectivity_plus/connectivity_plus_windows_plugin.h>
@@ -17,6 +18,8 @@
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AppsetPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("AppsetPluginCApi"));
+  AudioplayersWindowsPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("AudioplayersWindowsPlugin"));
   CashChangerPluginCApiRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("CashChangerPluginCApi"));
   CharsetConverterPluginRegisterWithRegistrar(
