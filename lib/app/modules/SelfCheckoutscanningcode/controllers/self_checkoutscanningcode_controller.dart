@@ -144,8 +144,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   getCartPriceTotal() async {
-
-    ordersqlcontroller.getCardList();
+    await ordersqlcontroller.getCardList();
     var total = await ordersqlcontroller.getCartAllPrice();
     if(total != null){
       shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
@@ -159,7 +158,15 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     update();
     change(null, status: RxStatus.success());
+    _resetScanQrCode();
+    scrollToBottom();
+  }
 
+  _resetScanQrCode(){
+    scanQrCodeController.text = "";
+    //所有流程执行完成后才能获取焦点
+    scanQrCodeFocusNode.requestFocus();
+    EasyLoading.dismiss();
   }
 
   deleteItemSound() async {
@@ -200,30 +207,31 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   doScanQrCodeQuery(){
-  if(scanQrCodeController.text !=""){
+    showOrderEasyLoading();//扫描后显示加载框
+    if(scanQrCodeController.text !=""){
+      var formData = {
+        "language": checkLanguage.value,
+        "machineCode": machineCode.value,
+        "barCode":scanQrCodeController.text
+      };
 
-    var formData = {
-      "language": checkLanguage.value,
-      "machineCode": machineCode.value,
-      "barCode":scanQrCodeController.text
-    };
+      request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
+        var response = json.decode(val.toString());
+        //EasyLoading.dismiss();
+        //scanQrCodeController.text = "";
+        //scanQrCodeFocusNode.requestFocus();     // 获取焦点
+        debugPrint("---- doScanQrCodeQuery ---- $response");
+        //print(response);
+        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
 
-    request('webBootBarCodeQuery', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
-      //EasyLoading.dismiss();
-      scanQrCodeController.text = "";
-      scanQrCodeFocusNode.requestFocus();     // 获取焦点
+          publicAddCart(response["data"]);
 
-      //print(response);
-      if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-
-        publicAddCart(response["data"]);
-
-      }else{
-        print("未查询出来");
-      }
-    });
-  }
+        }else{
+          print("未查询出来");
+          _resetScanQrCode();
+        }
+      });
+    }
   }
 
   publicAddCart(item) async {
@@ -249,7 +257,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     var result = false;
     try {
     await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
-
     publicScanAddToCart(cartItem);
 
       //ordersqlcontroller.getCardList();
@@ -278,20 +285,28 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     if(processData == false){
       var queryResult = await ordersqlcontroller.getCartItemNewId(cartItem['menuCode']);
       cartItem["id"] = queryResult;
-
       showScanCartItems.value.add(cartItem);
 
     }
 
-    scrollToBottom();
+    //scrollToBottom();
   }
 
   void scrollToBottom() {
-    itemscrollController.animateTo(
-      itemscrollController.position.maxScrollExtent+200,
-      duration: Duration(milliseconds: 100),
-      curve: Curves.easeOut,
-    );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (itemscrollController.hasClients) {
+        itemscrollController.animateTo(
+          itemscrollController.position.maxScrollExtent+200,
+          duration: Duration(milliseconds: 100),
+          curve: Curves.easeOut,
+        );
+      }
+    });
+    // itemscrollController.animateTo(
+    //   itemscrollController.position.maxScrollExtent,
+    //   duration: Duration(milliseconds: 200),
+    //   curve: Curves.easeOut,
+    // );
   }
 
   //公共购物车加减
