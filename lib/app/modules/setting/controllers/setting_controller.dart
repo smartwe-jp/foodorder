@@ -186,11 +186,9 @@ class SettingController extends GetxController with StateMixin {
     }else if(machine_mode.value == "3"){
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
-
-    debugPrint("SettingController goToBack 2");
+    
     Future.delayed(Duration(milliseconds: 300), (){
-      //Get.toNamed('/transit-page');
-      Get.back();
+      Get.toNamed('/transit-page');
     });
   }
 }
