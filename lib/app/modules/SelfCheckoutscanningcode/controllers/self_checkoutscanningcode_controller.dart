@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -70,6 +71,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool showDinersClub = false.obs;
 
   RxString doSubmitOrderId = "".obs;
+
+  final player = AudioPlayer();
 
   @override
   void onInit() {
