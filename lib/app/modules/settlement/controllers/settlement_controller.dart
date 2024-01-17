@@ -244,6 +244,7 @@ class SettlementController extends GetxController with StateMixin {
       if (Platform.isAndroid) {
         Starttoubi();
       } else {
+        CashChanger.setEventsListener();
         startDeposit();
       }
       

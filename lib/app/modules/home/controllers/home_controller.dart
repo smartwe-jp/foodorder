@@ -108,7 +108,7 @@ class HomeController extends GetxController {
         OpenPayCube();
       } else if (Platform.isWindows) {
         debugPrint("check is windows");
-        openCashChanger();
+        checkChangerStatus();
       } else {
         OpenPayCube();
       }
@@ -261,7 +261,7 @@ class HomeController extends GetxController {
   //禁用一元入金和出金
   prohibitOneCash() async {
     //var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
-
+    debugPrint("prohibitOneCash 1");
     var cashShowData = {
       "isCash": _isCashState.value,
     };

@@ -83,35 +83,6 @@ void CashChangerPlugin::InitCashChangerEvents () {
             }
         }
     }
-    /*
-    // 创建事件处理器对象
-    CashChangerEvents* pEventHandler = new CashChangerEvents();
-
-    IUnknown* pUnk;
-    CoCreateInstance(CLSID_OPOSCashChanger, NULL, CLSCTX_INPROC_SERVER, IID_IUnknown, (void**)&pUnk);
-
-    // 获取事件源接口
-    pUnk->QueryInterface(IID_IOPOSCashChanger, (void**)&pCashChanger);
-
-    // 获取连接点
-    IConnectionPointContainer* pCPC;
-    pCashChanger->QueryInterface(IID_IConnectionPointContainer, (void**)&pCPC);
-
-    // 查找事件连接点
-    IConnectionPoint* pCP;
-    pCPC->FindConnectionPoint(DIID__IOPOSCashChangerEvents, &pCP);
-
-    // 注册事件处理器
-    DWORD dwCookie;
-    HRESULT hr = pCP->Advise(pEventHandler, &dwCookie);
-    if (SUCCEEDED(hr)) {
-        cerr << "Advise success: " << hr <<endl;
-    } else {
-        cerr << "Advise failed: " << hr << endl;
-    }
-    */
-
-
 }
 
 CashChangerPlugin::~CashChangerPlugin() {
@@ -175,8 +146,6 @@ void CashChangerPlugin::HandleMethodCall(
  // 打开设备
  if (method_call.method_name().compare("openCashChanger") == 0) {
     cerr << "openCashChange called 。。" << endl;
-        // 创建 OPOSCashChanger 接口指针
-        //IOPOSCashChangerPtr pCashChanger;
         // 打开现金机
         long lngRet = pCashChanger->Open("CashChanger");
         // 检查是否已经打开
@@ -184,36 +153,58 @@ void CashChangerPlugin::HandleMethodCall(
             lngRet = OposSuccess;
         }
         if (lngRet == OposSuccess) {
-          if (pCashChanger->Claimed == VARIANT_FALSE) {
+            if (pCashChanger->Claimed == VARIANT_FALSE) {
             // 获取排他访问权限
-            lngRet = pCashChanger->ClaimDevice(10000);
-          if (lngRet == 0) {
-                // 设置设备属性
+                lngRet = pCashChanger->ClaimDevice(10000);
+                if (lngRet == 0) {
+                    // 设置设备属性
+                    pCashChanger->DeviceEnabled = VARIANT_TRUE;
+                    pCashChanger->DataEventEnabled = VARIANT_TRUE;
+                    pCashChanger->FreezeEvents = VARIANT_FALSE;
+
+                    // 执行 DirectIO x
+                    long data = 0;
+                    BSTR bstr = SysAllocString(L"");
+                    lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
+                    SysFreeString(bstr);
+                    result->Success(flutter::EncodableValue(lngRet));
+                } else {
+                    
+                    cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
+                    result->Success(flutter::EncodableValue(lngRet));
+                }
+            } else {
+                // 设备已被声明，设置属性
                 pCashChanger->DeviceEnabled = VARIANT_TRUE;
                 pCashChanger->DataEventEnabled = VARIANT_TRUE;
                 pCashChanger->FreezeEvents = VARIANT_FALSE;
-
-                // 执行 DirectIO 
-                long data = 0;
-                BSTR bstr = SysAllocString(L"");
-                lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
-                SysFreeString(bstr);
-                //InitCashChangerEvents();
                 result->Success(flutter::EncodableValue(lngRet));
-            } else {
-                cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
             }
-          } else {
-              // 设备已被声明，设置属性
-              pCashChanger->DeviceEnabled = VARIANT_TRUE;
-              pCashChanger->DataEventEnabled = VARIANT_TRUE;
-              pCashChanger->FreezeEvents = VARIANT_FALSE;
-          }
         } else {
-            cerr << "打开设备失败，错误码：" << lngRet << endl;
-            //result->Error("OPEN_FAILURE", "打开设备失败");
-            result->Success(flutter::EncodableValue(lngRet));
+
+            if (lngRet == OposENoservice) {
+                result->Success(flutter::EncodableValue(pCashChanger->OpenResult));
+                cerr << "Open 失败，错误码：" << pCashChanger->OpenResult << endl;
+            } else {
+                result->Success(flutter::EncodableValue(lngRet));
+                cerr << "Open 失败，错误码：" << lngRet << endl;
+            }
         }
+    return;
+  }
+
+  if (method_call.method_name().compare("claimDevice") == 0) {
+    cerr << "claimDevice called 。。" << endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    long lngRet = pCashChanger->ClaimDevice(10000);
+    cerr << "ClaimDevice result 。。 " << lngRet << endl;
+
+    result->Success(flutter::EncodableValue(lngRet));
+    
     return;
   }
   // 关闭设备
@@ -437,8 +428,32 @@ void CashChangerPlugin::HandleMethodCall(
         // 成功出钞
         result->Success(flutter::EncodableValue(lngRet));
     } else {
-        // 其他错误
-        result->Success(flutter::EncodableValue(lngRet));
+
+        if (lngRet == OposEExtended) {
+            switch (pCashChanger->ResultCodeExtended) {
+                case OPOS_ECHAN_OVERDISPENSE:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
+                    cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
+                    pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_OVER:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
+                    cerr << "OPOS_ECHAN_OVER" << endl;
+                    pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_SETERROR:
+                case OPOS_ECHAN_ERROR:
+                case OPOS_ECHAN_BUSY:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+
+                    break;
+                default:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+
+            }
+        } else {
+            result->Success(flutter::EncodableValue(lngRet));
+        }
     }
     
     return;
@@ -555,7 +570,7 @@ void CashChangerPlugin::HandleMethodCall(
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
     lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, &lngData, &bstr);
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
-
+    SysFreeString(bstr);
     switch (pCashChanger->ResultCode) {
         case OposSuccess:
   
@@ -655,6 +670,7 @@ void CashChangerPlugin::HandleMethodCall(
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
     cerr << "-- DirectIO CHAN_DI_STATUSREAD end --" << lngRet << endl;
     cerr << "strTemp " << lngData << " : " << strTemp << endl;
+    SysFreeString(strTemp);
     //000001F3AA222A18
     if (lngRet == OposSuccess) {
         // if (mode == 1) {
