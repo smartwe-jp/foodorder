@@ -707,6 +707,93 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
+  posTest(posIp, posPort) async {
+    _showEasyLoading();
+    debugPrint("--- posTest ---");
+    request('webBootPosTest', method: 'POST')
+        .then((val) {
+      var response = json.decode(val.toString());
+      debugPrint("webBootPosTest: " + response.toString());
+      if (response['code'] == 200) {
+        payconnectSocker(response['data'], posIp, posPort);
+      } else {
+        EasyLoading.dismiss();
+        showTestResultDialog("Server Error");
+      }
+    });
+
+
+  }
+  RxInt socketNumberTimes = 0.obs;
+  Socket? _socket; //socket对象
+
+  payconnectSocker(questData, pos_ip, pos_port) async {
+
+    //判断socket请求次数
+    socketNumberTimes.value++;
+    if(socketNumberTimes.value>20){
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Connection Failed");
+      return;
+    }
+    debugPrint("POS机连接${socketNumberTimes.value}");
+    Socket.connect(
+      pos_ip,
+      int.parse(pos_port),
+      //timeout: Duration(seconds: 5),
+    ).then((Socket socket) {
+      debugPrint("POS机连接成功");
+      this._socket = socket;
+
+      this._socket?.write(questData);
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Test Success");
+
+      this._socket?.listen((List<int> event) {
+        showTestResultDialog("POS Test All Success");
+        EasyLoading.dismiss();
+      },
+        onDone: () {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Done");
+          print("pos机done了");
+        },
+        onError: (e) {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Failed");
+          print("pos机错误了");
+          //_close();
+        },
+      );
+
+    }).catchError((e) {
+      EasyLoading.dismiss();
+      print("Unable to connect: $e");
+      print("POS机连接${socketNumberTimes.value}");
+      Future.delayed(Duration(seconds: 1), () {
+        payconnectSocker(questData, pos_ip, pos_port);
+      });
+    });
+
+  }
+
+  showTestResultDialog(content) {
+    Get.dialog(
+        AlertDialog(
+          title: Text("POS Test Result"),
+          content: Text(content),
+          actions: <Widget>[
+            TextButton(
+              child: Text("OK"),
+              onPressed: () {
+                Get.back();
+              },
+            ),
+          ],
+        )
+    );
+  }
+
   //printType=0 receipt 1label
   printTest(printIp,printPort,{printType=0}) async {
 
@@ -907,7 +994,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
+        child:InkWell(
+            onLongPress: () {
+              EasyLoading.dismiss();
+            },
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _showTag,
@@ -918,7 +1009,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
               child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
             ),
           ],
-        ),
+        )),
       ),
       maskType: EasyLoadingMaskType.black,
     );

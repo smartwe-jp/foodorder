@@ -1,5 +1,5 @@
-const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-//const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
+const base_url = "https://waiter-sit.smartwe.co.jp/";  //测试环境地址
 
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
@@ -65,4 +65,8 @@ const servicePath = {
   'webBootReimburseQuery': base_url + 'pad/web/boot/reimburse/query', //通过领収书注文番号开始查询
   'webBootReimburseExecute': base_url + 'pad/web/boot/reimburse/execute', //扫码支付的退款开始执行
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
+
+  //Pos测试接口
+  'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
+
 };

@@ -741,22 +741,78 @@ class SystemSettingPageView extends GetView {
           if (controller.pos_ip.value != "" && controller.pos_port.value != "")
           Container(
             margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-            child: Row(
-              children: [
-                Text(
-                    "${controller.pos_ip.value}:",
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(22),
-                    )
+            child:
+            InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.posTest(controller.pos_ip.value,controller.pos_port.value);
+              },
+              child: Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
                 ),
-                Text(
-                    "${controller.pos_port.value}",
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(22),
-                    )
-                )
-              ],
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.pos_ip.value}:",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                        Text(
+                            "${controller.pos_port.value}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        )
+                      ],
+                    ),
+                    Text("テスト Pos",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
             ),
+            // Row(
+            //   children: [
+            //     Text(
+            //         "${controller.pos_ip.value}:",
+            //         style: TextStyle(
+            //           fontSize: ScreenAdapter.fontSize(22),
+            //         )
+            //     ),
+            //     Text(
+            //         "${controller.pos_port.value}",
+            //         style: TextStyle(
+            //           fontSize: ScreenAdapter.fontSize(22),
+            //         )
+            //     )
+            //   ],
+            // ),
           ),
 
         ],
