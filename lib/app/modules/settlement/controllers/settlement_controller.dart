@@ -67,6 +67,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString showOutMoney = "0".obs; //展示应出金金额
   RxBool allowClick = true.obs;
   RxBool isReportCash = false.obs; //是否已汇报过现金
+  RxBool get801Flag = false.obs; //是否已获取801
 
   RxBool getOutMoneyString = true.obs; //是否允许获取出金金额字符串
   RxInt outMonyNum = 0.obs;
@@ -564,6 +565,12 @@ class SettlementController extends GetxController with StateMixin {
         alignment: Alignment(0, 0),
       );
       _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
+
+      if (resultString.contains("L10")) {
+        gotonewMyhome();
+        return;
+      }
+
     }
     Get.dialog(
         DialogUtils.alertOneButton(_showTagContent+"[${resultString}-${resultPFSString}]",
@@ -968,6 +975,32 @@ class SettlementController extends GetxController with StateMixin {
         print("resultMPFSString==${resultMPFSString}");
         //print("errorString==${errorString}");
         print(eventReportString.value.length);
+        
+        // if (errorString == "801") {
+        //   if (get801Flag.value == false) {
+        //     LogUtil.d("Get 801 Send 491");
+        //     get801Flag.value = true;
+        //     showCheckLoading();
+        //     this._socket?.write(create491Message());
+        //   } else {
+        //     EasyLoading.dismiss();
+        //     _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),payType: "pos");
+        //   }
+        //
+        //   return;
+        // } else if (errorString == "803" || errorString == "802") {
+        //
+        //   Get.dialog(
+        //       DialogUtils.alertOneButton("取引が不明な状態で終了しました（コード${errorString}）。端末の指示に従って操作してください。",
+        //           title: GString.getToString(checkLanguage.value, "tag_title"),
+        //           confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+        //           confirm: () {
+        //             Get.back();
+        //           })
+        //   );
+        //   return;
+        // }
+
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
@@ -1095,6 +1128,57 @@ class SettlementController extends GetxController with StateMixin {
       //_showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
     });
 
+  }
+
+  showCheckLoading(){
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+                "取引が不明な状態で終了しました（コード801）。決済結果を確認中ですのでお待ちください。",
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(25),
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                )),
+            InkWell(
+              onLongPress: (){
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+
+  }
+
+  create491Message() {
+    var _queryString =       "2104910001       00497                  000000010231130162425";
+    for(var i=0;i<72;i++){
+      _queryString += " ";
+    }
+    var querycode = "0006";
+    _queryString += querycode; //
+
+    for(var i=0;i<400;i++){
+      _queryString += " ";
+    }
+
+    return _queryString;
   }
 
   _getPaymentPosData() {
@@ -1791,7 +1875,7 @@ class SettlementController extends GetxController with StateMixin {
 
       categoryMenus.add(
         _publicGoodsTwoColumnsTxt("${lineItem["mainTitle"]}", print_menu_txt_size,
-            FontWeight.w200, "${lineItem["qty"]}", print_menu_txt_size, FontWeight.w200),
+            FontWeight.w100, "${lineItem["qty"]}", print_menu_txt_size, FontWeight.w100),
       );
       if (optionVoList != null && optionVoList.isNotEmpty) {
         optionVoList.forEach((key, value) {
@@ -1834,7 +1918,7 @@ class SettlementController extends GetxController with StateMixin {
                                   style: TextStyle(
                                     fontSize: print_menu_txt_size,
                                     fontWeight: FontWeight.w100,
-                                    fontFamily: 'ZenKakuGothicAntique',
+                                    fontFamily: 'NotoSensJapanese',
                                     color: ColorsUtil.hexToColor("#000000"),
                                   ))
                           )
@@ -1859,7 +1943,7 @@ class SettlementController extends GetxController with StateMixin {
                                 style: TextStyle(
                                   fontSize: print_menu_txt_size,
                                   fontWeight: FontWeight.w100,
-                                  fontFamily: 'ZenKakuGothicAntique',
+                                  fontFamily: 'NotoSensJapanese',
                                   color: ColorsUtil.hexToColor("#000000"),
                                 )),
                           )),
@@ -1886,7 +1970,7 @@ class SettlementController extends GetxController with StateMixin {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: 'ZenKakuGothicAntique',
+                            fontFamily: 'NotoSensJapanese',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))
                   ),
@@ -1898,7 +1982,7 @@ class SettlementController extends GetxController with StateMixin {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: 'ZenKakuGothicAntique',
+                            fontFamily: 'NotoSensJapanese',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))),
                 ],
@@ -1929,7 +2013,7 @@ class SettlementController extends GetxController with StateMixin {
                             style: TextStyle(
                               fontSize: print_menu_txt_size,
                               fontWeight: FontWeight.w100,
-                              fontFamily: 'ZenKakuGothicAntique',
+                              fontFamily: 'NotoSensJapanese',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
                             ))),
@@ -2731,7 +2815,7 @@ class SettlementController extends GetxController with StateMixin {
                             ),
                             child: AutoSizeText(
                               "${orderprintData["printTitleText"]}",
-                              style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
+                              style: printMenu3Font,//GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
                               maxLines: 2,
                               textAlign: TextAlign.left,
                               overflow: TextOverflow.ellipsis,
@@ -2759,7 +2843,7 @@ class SettlementController extends GetxController with StateMixin {
                           ),*/
                               child: Text(
                                 orderprintData["printText"],
-                                style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
+                                style: printMenuFont,//GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
                                 maxLines: 4,
                                 textAlign: TextAlign.left,
                                 overflow: TextOverflow.ellipsis,
@@ -2858,6 +2942,36 @@ class SettlementController extends GetxController with StateMixin {
     );*/
   }
 
+  final printTitleFont = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black,
+    fontSize: 50,
+    fontWeight: FontWeight.w300,
+  );
+  final printMenuFont = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black87,
+    fontSize: 24,
+    fontWeight: FontWeight.w200,
+  );
+
+  final printMenu2Font = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black87,
+    fontSize: 26,
+    fontWeight: FontWeight.w100,
+  );
+
+  final printMenu3Font = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black87,
+    fontSize: 28,
+    fontWeight: FontWeight.w200,
+  );
+
+// 　//GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87)
+//   //GoogleFonts.zenKakuGothicAntique(fontSize: 28,fontWeight: FontWeight.w300,color: Colors.black87)
+
   _tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
@@ -2894,7 +3008,7 @@ class SettlementController extends GetxController with StateMixin {
     //电话
     if (printData["telNo"] != null && printData["telNo"] != "") {
       addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew("電話番号:${printData["telNo"]}", 26.0, FontWeight.w300));
+      categoryMenus.add(_publicOneColumnTxtNew("電話番号:${printData["telNo"]}", 26.0, FontWeight.w100));
       categoryMenus.add(SizedBox(height: 5,));
     }
 
@@ -2911,12 +3025,12 @@ class SettlementController extends GetxController with StateMixin {
       child: Directionality(
           textDirection: TextDirection.ltr,
           child: Text("${printData["orderDate"]}",
-            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+            style: printMenuFont,
           )),
     ));
     if (machineMode.value == "1" || machineMode.value == "3") {
       addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew("${printData["numberTip"]}${printData["serialNumber"]}", 26.0, FontWeight.w300));
+      categoryMenus.add(_publicOneColumnTxtNew("${printData["numberTip"]}${printData["serialNumber"]}", 26.0, FontWeight.w100));
     }
     //注文番号
     categoryMenus.add(_publicOneColumnTxtNew(
@@ -2983,7 +3097,7 @@ class SettlementController extends GetxController with StateMixin {
                 ),
               ),
               child: Text("領 収 書",
-                style: GoogleFonts.zenKakuGothicAntique(fontSize: 50,color: Colors.black,),
+                style: printTitleFont,
 
               ),
             )),
@@ -3026,7 +3140,7 @@ class SettlementController extends GetxController with StateMixin {
                               child: Text("${lineVosList["menuName"]}",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
-                                style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                                style: printMenuFont,
 
                               ),
                             )
@@ -3036,7 +3150,7 @@ class SettlementController extends GetxController with StateMixin {
                             child: Text("${takeoutTag}",
                               overflow: TextOverflow.ellipsis,
                               maxLines: 1,
-                              style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                              style: printMenuFont,
 
                             )
                         ):Container(width: 0,),
@@ -3053,7 +3167,7 @@ class SettlementController extends GetxController with StateMixin {
                               width: ScreenAdapter.width(30),
                               alignment: Alignment.centerRight,
                               child: Text("${lineVosList["menuQty"]}",
-                                style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                                style: printMenuFont,
 
                               ),
                             )
@@ -3064,7 +3178,7 @@ class SettlementController extends GetxController with StateMixin {
                               width: ScreenAdapter.width(105),
                               alignment: Alignment.centerRight,
                               child: Text("￥${formatMoney(lineVosList["price"])}",
-                                style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                                style: printMenuFont,//GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
 
                               ),
                             )
@@ -3093,7 +3207,7 @@ class SettlementController extends GetxController with StateMixin {
                         textDirection: TextDirection.ltr,
                         child: Expanded(
                           child: Text("${lineVosList["menuName"]}${takeoutTag}",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                         )
@@ -3104,7 +3218,7 @@ class SettlementController extends GetxController with StateMixin {
                           width: ScreenAdapter.width(30),
                           alignment: Alignment.centerRight,
                           child: Text("${lineVosList["menuQty"]}",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                         )
@@ -3115,7 +3229,7 @@ class SettlementController extends GetxController with StateMixin {
                           width: ScreenAdapter.width(105),
                           alignment: Alignment.centerRight,
                           child: Text("￥${formatMoney(lineVosList["price"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                         )
@@ -3145,7 +3259,7 @@ class SettlementController extends GetxController with StateMixin {
                     textDirection: TextDirection.ltr,
                     child: Expanded(
                       child: Text("合計",
-                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 28,fontWeight: FontWeight.w300,color: Colors.black87),
+                        style: printMenu2Font,
 
                       ),
                     )
@@ -3156,7 +3270,7 @@ class SettlementController extends GetxController with StateMixin {
                       width: ScreenAdapter.width(130),
                       alignment: Alignment.centerRight,
                       child: Text("￥${formatMoney(printData["price"])}",
-                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                        style: printMenuFont,
 
                       ),
                     )
@@ -3274,7 +3388,7 @@ class SettlementController extends GetxController with StateMixin {
                   child: Container(
                     width: ScreenAdapter.width(180),
                     child: Text("*軽減税率対象",
-                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                      style: printMenuFont,
 
                     ),
                   ),
@@ -3289,11 +3403,11 @@ class SettlementController extends GetxController with StateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("お預り",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                           Text("￥${formatMoney(printData["payPrice"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                         ],
@@ -3305,11 +3419,11 @@ class SettlementController extends GetxController with StateMixin {
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text("お釣",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                           Text("￥${formatMoney(printData["change"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                            style: printMenuFont,
 
                           ),
                         ],
@@ -3322,7 +3436,7 @@ class SettlementController extends GetxController with StateMixin {
     );
 
     //お明細は上記のとおりです。
-    categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w300));
+    categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
     var totalHight = lineZeng + lineHight+addRowHight;
 
@@ -3376,7 +3490,7 @@ class SettlementController extends GetxController with StateMixin {
             children: [
               Expanded(
                   child: Text("${txtContext}",
-                    style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                    style: printMenuFont,
                   )
               ),
             ],
@@ -3400,7 +3514,7 @@ class SettlementController extends GetxController with StateMixin {
                   textDirection: TextDirection.ltr,
                   child: Expanded(
                     child: Text("${leftTxtContext}",
-                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                      style: printMenuFont,
 
                     ),
                   )),
@@ -3413,11 +3527,11 @@ class SettlementController extends GetxController with StateMixin {
                     child: RichText(
                       text: TextSpan(
                           text: "￥",
-                          style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                          style: printMenuFont,
                           children: [
                             TextSpan(
                               text: "${rightTxtContext}",
-                              style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                              style: printMenuFont,
 
                             ),
                           ]),
@@ -3429,7 +3543,7 @@ class SettlementController extends GetxController with StateMixin {
                     width: ScreenAdapter.width(120),
                     alignment: Alignment.centerRight,
                     child: Text("${rightTxtContext}",
-                      style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                      style: printMenuFont,
 
                     ),
                   )),
@@ -3452,7 +3566,7 @@ class SettlementController extends GetxController with StateMixin {
               Directionality(
                   textDirection: TextDirection.ltr,
                   child: Text("${leftTxtContext}",
-                    style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                    style: printMenuFont,
 
                   )),
               Directionality(
@@ -3462,7 +3576,7 @@ class SettlementController extends GetxController with StateMixin {
                       width: ScreenAdapter.width(120),
                       alignment: Alignment.centerRight,
                       child: Text("${rightTxtContext}",
-                        style: GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
+                        style: printMenuFont,
 
                       ),
                     ),
@@ -3490,7 +3604,7 @@ class SettlementController extends GetxController with StateMixin {
                         style: TextStyle(
                           fontSize: leftTxtFontSize,
                           fontWeight: leftTxtFontWeight,
-                          fontFamily: 'ZenKakuGothicAntique',
+                          fontFamily: 'NotosansJapanese',
                           color: ColorsUtil.hexToColor("#000000"),
                         )),
                   )),
@@ -3501,7 +3615,7 @@ class SettlementController extends GetxController with StateMixin {
                       style: TextStyle(
                         fontSize: rightTxtFontSize,
                         fontWeight: rightTxtFontWeight,
-                        fontFamily: 'ZenKakuGothicAntique',
+                        fontFamily: 'NotosansJapanese',
                         color: ColorsUtil.hexToColor("#000000"),
                         //fontWeight: FontWeight.w600
                       ))),
