@@ -75,7 +75,7 @@ class TransitPageController extends GetxController {
       var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200) {
         var shopData = response['data'];
-        //_shopCode = shopData["shopCode"];
+        var _shopCode = shopData["shopCode"];
         var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
@@ -130,6 +130,7 @@ class TransitPageController extends GetxController {
         Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
         Storage.setString('smartwe_logoImage', shopData["logoImage"]);
         Storage.setString('smartwe_reimburse', reimburse);
+        Storage.setString('smartwe_shopCode', _shopCode);
 
         GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
         GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));

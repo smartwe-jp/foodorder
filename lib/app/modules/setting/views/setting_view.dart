@@ -9,6 +9,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../TransitPage/views/transit_page_view.dart';
 import '../controllers/setting_controller.dart';
+import 'CashSettingView.dart';
 
 class SettingView extends GetView<SettingController> {
   final SettingController controller = Get.put(SettingController());
@@ -296,6 +297,88 @@ class SettingView extends GetView<SettingController> {
     );
   }
 
+  rePrintArea() {
+    return Container(
+      child:
+      Row (
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Column (
+            children: [
+              Text("レシート再印刷",
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(22),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor("#000000"),
+                  )),
+              InkWell(
+                highlightColor: Colors.transparent, // 透明色
+                splashColor: Colors.transparent, // 透明色
+                onTap: (){
+                  controller.printPreviewReceipt();
+
+                },
+                child: Container(
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  //设置 child 居中
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(65),
+                  width: ScreenAdapter.width(160),
+                  //边框设置
+                  decoration: new BoxDecoration(
+                    //背景
+                    color: ColorsUtil.hexToColor("#409eff"),
+                    //设置四周圆角 角度
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                    //设置四周边框
+                    //border: new Border.all(width: 1, color: Colors.red),
+                  ),
+                  child: Text(
+                      "再印刷する",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(24),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#FFFFFF"),
+                      )
+                  ),
+                ),
+              )
+            ],
+
+          ),
+          SizedBox(width: ScreenAdapter.width(10)),
+          if(controller.is_reimburse.value == "1")
+            InkWell(
+              onTap: () {
+                Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
+
+              },
+              child: Container(
+                margin: EdgeInsets.only(
+                    left: ScreenAdapter.width(10),
+                    right: ScreenAdapter.width(10)),
+                width: ScreenAdapter.width(180),
+                height: ScreenAdapter.height(65),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: ColorsUtil.hexToColor("#A61C1C"),
+                  //设置圆角
+                  borderRadius: new BorderRadius.circular((16.0)),
+                ),
+                child: Text("返金",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(24),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                    )),
+              ),
+            ),
+        ],
+      )
+
+    );
+  }
+
   getCashListShow() {
     return controller.cashList.value.length > 0
         ? Container(
@@ -416,6 +499,22 @@ class SettingView extends GetView<SettingController> {
                                   "#000000"),
                             )),
                       )),
+                      Expanded(child: Container(
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(45),
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        child: Text("補充/削减",
+                            style: TextStyle(
+                              fontSize:
+                              ScreenAdapter.fontSize(18),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  "#000000"),
+                            )),
+                      )),
                     ],
                   ),
                 ),
@@ -513,6 +612,37 @@ class SettingView extends GetView<SettingController> {
                                     color: ColorsUtil.hexToColor(_textColor),
                                   )),
                             )),
+                            InkWell(
+                              highlightColor: Colors.transparent, // 透明色
+                              splashColor: Colors.transparent, // 透明色
+                              onTap: (){
+                               // controller.showCashDetail(_detail);
+
+                                  },
+                              child: Container(
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                //设置 child 居中
+                                alignment: Alignment(0, 0),
+                                height: ScreenAdapter.height(60),
+                                width: ScreenAdapter.width(160),
+                                //边框设置
+                                decoration: new BoxDecoration(
+                                  //背景
+                                  color: ColorsUtil.hexToColor("#409eff"),
+                                  //设置四周圆角 角度
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  //设置四周边框
+                                  //border: new Border.all(width: 1, color: Colors.red),
+                                ),
+                                child: Text(
+                                    "補充/削减",
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(22),
+                                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                                    )
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -754,32 +884,7 @@ class SettingView extends GetView<SettingController> {
                                 )),
                           ),
                         ),
-                        if(controller.is_reimburse.value == "1")
-                          InkWell(
-                            onTap: () {
-                              Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
 
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(180),
-                              height: ScreenAdapter.height(65),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#A61C1C"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              child: Text("返金",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(24),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
-                            ),
-                          ),
 
                       ],
                     ),
@@ -823,11 +928,30 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  getCashListShow(),
+                  CashSettingView(cashInfoList: controller.cashInfoList.value,
+                    recycleCash: () {
+                      controller.recycleCash();
+                    }, adjustCash: (type , number ) {
+                      controller.adjustCash(type, number);
+                    },
+                    setOutset: (type, number) {
+                      controller.setCashSenOutset(type, number);
+                    },
+                    adjustCashFromDeposit: (catVal , number , deposit , qty ) {
+                      controller.adjustCashFromDeposit(catVal , number , deposit , qty);
+                    },
+                    resetCash: () {
+                      controller.recycleCash();
+                    },),
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
 
+                  rePrintArea(),
+                  // SizedBox(
+                  //   height: ScreenAdapter.height(20),
+                  // ),
+                  // CashSettingView(),
 
 
                 ],
