@@ -305,12 +305,12 @@ class SettingView extends GetView<SettingController> {
         children: [
           Column (
             children: [
-              Text("レシート再印刷",
-                  style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(22),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor("#000000"),
-                  )),
+              // Text("レシート再印刷",
+              //     style: TextStyle(
+              //       fontSize: ScreenAdapter.fontSize(22),
+              //       fontWeight: FontWeight.w600,
+              //       color: ColorsUtil.hexToColor("#000000"),
+              //     )),
               InkWell(
                 highlightColor: Colors.transparent, // 透明色
                 splashColor: Colors.transparent, // 透明色

@@ -150,7 +150,7 @@ class CashSettingViewState extends State<CashSettingView> {
           Container(
             margin: EdgeInsets.only(bottom: ScreenAdapter.height(20)),
             //padding: EdgeInsets.only(bottom: ScreenAdapter.width(20)),
-            child: Text("お釣り状態",
+            child: Text("お預り金/釣り状態",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(22),
                   fontWeight: FontWeight.w600,
