@@ -45,7 +45,7 @@ class _SegmentControlState extends State<SegmentControl> {
       fillColor: ColorsUtil.hexToColor("#dca550"),
       children: widget.values.map((item) {
         return Padding(
-          padding: EdgeInsets.symmetric(horizontal: 16.0),
+          padding: EdgeInsets.symmetric(horizontal: 10.0),
           child: Text(item),
         );
       }).toList(),
