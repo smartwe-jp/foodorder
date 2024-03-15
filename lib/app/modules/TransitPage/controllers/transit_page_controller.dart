@@ -73,9 +73,12 @@ class TransitPageController extends GetxController {
     };print(formData);
     request('webBootActivatev3', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());LogUtil.d(response);
-      if (response['code'] == 200) {
+      if (response['code'] == 200 && response['data'] != null) {
         var shopData = response['data'];
-        var _shopCode = shopData["shopCode"];
+        var _shopCode = "";
+        if (shopData["shopCode"] != null) {
+          _shopCode = shopData["shopCode"];
+        }
         var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
         var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;

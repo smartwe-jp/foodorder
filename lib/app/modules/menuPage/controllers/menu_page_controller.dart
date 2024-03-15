@@ -1184,7 +1184,9 @@ print("加1了");
 
         }else{
           //getBookingBootMenu();
-          menuLackMap.value = response['data']["menuLackMap"];
+          if (response['data'] != null && response['data']["menuLackMap"] != null) {
+            menuLackMap.value = response['data']["menuLackMap"];
+          }
           //showToast(response['data']["message"]);
           Get.dialog(
               DialogUtils.alertOneButton(response['data']["message"],

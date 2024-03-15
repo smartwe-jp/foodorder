@@ -197,10 +197,12 @@ class SettingController extends GetxController with StateMixin {
     request('webBootChangeInfo', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
-      if (response['code'] == 200 && null != response['data']) {
+      if (response != null && response['code'] == 200 && null != response['data']) {
         cashInfoList.value = response['data'];
         update();
-      } else {}
+      } else {
+        showToast('获取失败');
+      }
       change(null, status: RxStatus.success());
     });
 
