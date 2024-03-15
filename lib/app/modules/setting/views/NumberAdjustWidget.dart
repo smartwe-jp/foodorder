@@ -6,11 +6,13 @@ class NumberAdjustWidget extends StatefulWidget {
   final int initialNumber;
   final Function(int) onNumberChanged;
   final int? maxNumber;
+  final int? minNumber;
 
   NumberAdjustWidget({Key? key,
     required this.initialNumber,
     required this.onNumberChanged,
-    this.maxNumber}) : super(key: key);
+    this.maxNumber,
+    this.minNumber}) : super(key: key);
 
   @override
   _NumberAdjustWidgetState createState() => _NumberAdjustWidgetState();
@@ -19,12 +21,14 @@ class NumberAdjustWidget extends StatefulWidget {
 class _NumberAdjustWidgetState extends State<NumberAdjustWidget> {
   late int _currentNumber;
   int? _maxNumber;
+  int? _minNumber;
 
   @override
   void initState() {
     super.initState();
     _currentNumber = widget.initialNumber;
     _maxNumber = widget.maxNumber;
+    _minNumber = widget.minNumber;
   }
 
   @override
@@ -33,6 +37,7 @@ class _NumberAdjustWidgetState extends State<NumberAdjustWidget> {
     super.didUpdateWidget(oldWidget);
     _currentNumber = widget.initialNumber;
     _maxNumber = widget.maxNumber;
+    _minNumber = widget.minNumber;
   }
 
   void _increment() {
@@ -47,6 +52,9 @@ class _NumberAdjustWidgetState extends State<NumberAdjustWidget> {
 
   void _decrement() {
     setState(() {
+      if (_minNumber != null && _currentNumber <= _minNumber!) {
+        return;
+      }
       _currentNumber--;
       widget.onNumberChanged(_currentNumber);
     });

@@ -199,7 +199,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                 children: [
                                   Container(
 
-                                    child: NumberAdjustWidget(initialNumber: int.tryParse(_value) ?? 0, onNumberChanged: (int number){
+                                    child: NumberAdjustWidget(initialNumber: int.tryParse(_value) ?? 0, minNumber: 0, onNumberChanged: (int number){
                                       setState(() {
                                         _value = number.toString();
                                       });
