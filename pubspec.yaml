@@ -36,7 +36,6 @@ dependencies:
   badges: ^3.1.1
   connectivity_plus: ^4.0.2
   get: 4.6.5
-  intl: ^0.17.0
   flutter: 
     sdk: flutter
   paycube: 
@@ -69,14 +68,14 @@ flutter:
       fonts: 
         - asset: assets/fonts/Work_Sans/NotoSansJP-Thin.otf
           weight: 100
-        - asset: assets/fonts/Work_Sans/NotoSansJP-ExtraLight.ttf
-          weight: 200
         - asset: assets/fonts/Work_Sans/NotoSansJP-Light.otf
           weight: 300
         - asset: assets/fonts/Work_Sans/NotoSansJP-Regular.otf
           weight: 400
         - asset: assets/fonts/Work_Sans/NotoSansJP-Medium.ttf
           weight: 500
+        - asset: assets/fonts/Work_Sans/NotoSansJP-SemiBold.ttf
+          weight: 600
     - family: UbuntuMonoRegular
       fonts: 
         - asset: assets/fonts/Work_Sans/UbuntuMono-Regular.ttf

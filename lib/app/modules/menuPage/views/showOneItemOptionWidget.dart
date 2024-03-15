@@ -497,6 +497,7 @@ class showOneItemOptionWidgetView extends GetView {
                                               GString.getToString(
                                                   controller.checkLanguage.value, "add_option_cart"),
                                               style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(40),
                                                 fontWeight: FontWeight.w500,
                                                 color: ColorsUtil.hexToColor(

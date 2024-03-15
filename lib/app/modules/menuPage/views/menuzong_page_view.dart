@@ -371,6 +371,7 @@ class MenuzongPageView extends GetView {
                                     GString.getToString(
                                         controller.checkLanguage.value, "add_option_cart"),
                                     style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
                                       fontSize: ScreenAdapter.fontSize(34),
                                       fontWeight: FontWeight.w600,
                                       color: ColorsUtil.hexToColor(
@@ -1017,6 +1018,7 @@ class MenuzongPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1672,6 +1674,7 @@ class MenuzongPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
