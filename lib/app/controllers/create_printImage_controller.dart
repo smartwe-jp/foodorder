@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -21,27 +22,27 @@ class CreatePrintImageController extends GetxController {
   RxString printLogoImage = "".obs;
 
   final printTitleFont = TextStyle(
-    fontFamily: 'NotoSansJP',
+    fontFamily: GFont.getFontFamily(),
     color: Colors.black,
     fontSize: 50,
     fontWeight: FontWeight.w300,
   );
   final printMenuFont = TextStyle(
-    fontFamily: 'NotoSansJP',
+    fontFamily: GFont.getFontFamily(),
     color: Colors.black87,
     fontSize: 24,
     fontWeight: FontWeight.w200,
   );
 
   final printMenu2Font = TextStyle(
-    fontFamily: 'NotoSansJP',
+    fontFamily: GFont.getFontFamily(),
     color: Colors.black87,
     fontSize: 26,
     fontWeight: FontWeight.w100,
   );
 
   final printMenu3Font = TextStyle(
-    fontFamily: 'NotoSansJP',
+    fontFamily: GFont.getFontFamily(),
     color: Colors.black87,
     fontSize: 28,
     fontWeight: FontWeight.w200,
@@ -106,7 +107,7 @@ class CreatePrintImageController extends GetxController {
             child: Text("${printData["numberTip"]}",
                 style: TextStyle(
                   fontSize: 28,
-                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontFamily: GFont.getFontFamily(),
                   fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
@@ -120,7 +121,7 @@ class CreatePrintImageController extends GetxController {
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
                   fontSize: 32,
-                  //fontFamily: 'JetBrainsMonoRegular',
+                  fontFamily: GFont.getFontFamily(),
                   fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
@@ -184,7 +185,7 @@ class CreatePrintImageController extends GetxController {
                                   style: TextStyle(
                                     fontSize: print_menu_txt_size,
                                     fontWeight: FontWeight.w100,
-                                    fontFamily: 'NotoSensJapanese',
+                                    fontFamily: GFont.getFontFamily(),
                                     color: ColorsUtil.hexToColor("#000000"),
                                   ))
                           )
@@ -209,7 +210,7 @@ class CreatePrintImageController extends GetxController {
                                 style: TextStyle(
                                   fontSize: print_menu_txt_size,
                                   fontWeight: FontWeight.w100,
-                                  fontFamily: 'NotoSensJapanese',
+                                  fontFamily: GFont.getFontFamily(),
                                   color: ColorsUtil.hexToColor("#000000"),
                                 )),
                           )),
@@ -236,7 +237,7 @@ class CreatePrintImageController extends GetxController {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: 'NotoSensJapanese',
+                            fontFamily: GFont.getFontFamily(),
                             color: ColorsUtil.hexToColor("#000000"),
                           ))
                   ),
@@ -248,7 +249,7 @@ class CreatePrintImageController extends GetxController {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: 'NotoSensJapanese',
+                            fontFamily: GFont.getFontFamily(),
                             color: ColorsUtil.hexToColor("#000000"),
                           ))),
                 ],

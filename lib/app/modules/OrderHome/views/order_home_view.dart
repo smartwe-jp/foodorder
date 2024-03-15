@@ -112,7 +112,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-
+                              var locale = Locale('jp', 'JP');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "JP",
                                 "mealType":mealType
@@ -141,6 +142,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                                 '日本語',
                                 style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(36.0),
+                                    fontFamily: "NotoSansJP",
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
                               ),
@@ -155,7 +157,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-
+                              var locale = Locale('zh', 'CH');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "CH",
                                 "mealType":mealType
@@ -181,6 +184,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                                 '中文',
                                 style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(36.0),
+                                    fontFamily: "NotoSansCN",
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
                               ),
@@ -194,7 +198,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-
+                              var locale = Locale('en', 'US');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "EN",
                                 "mealType":mealType
@@ -220,6 +225,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                                 'English',
                                 style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(36.0),
+                                    fontFamily: "NotoSans",
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
                               ),
@@ -233,7 +239,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-
+                              var locale = Locale('kr', 'KR');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "KO",
                                 "mealType":mealType
@@ -258,6 +265,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                                 '한국말',
                                 style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(36.0),
+                                    fontFamily: "NotoSansKR",
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
                               ),

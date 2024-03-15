@@ -1,6 +1,7 @@
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:get/get.dart';
 
 import '../../../config/colorsUtil.dart';
@@ -163,6 +164,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                     child: Text("最初枚数/残り枚数調整($_field)",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(22),
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
                         )),
@@ -188,6 +190,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                               child: Text("$_field最初枚数調整：",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(20),
+                                    fontFamily: GFont.getFontFamily(),
                                     fontWeight: FontWeight.w400,
                                     color: Colors.grey[700],
                                   )),
@@ -209,6 +212,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   Text("*調整後の枚数を入力してください",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(16),
+                                        fontFamily: GFont.getFontFamily(),
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
                                       )),

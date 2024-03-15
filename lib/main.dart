@@ -85,6 +85,8 @@ void main() {
                 home: child,
                 //initialRoute: AppPages.INITIAL,
                 //配置ios动画
+                locale: Locale('en', 'US'), // 默认语言
+                fallbackLocale: Locale('en', 'US'), // 备用语言
                 defaultTransition:Transition.fadeIn,
                 getPages: AppPages.routes,
                 builder: (context, widget) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 
 
@@ -81,6 +82,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                   //height: ScreenAdapter.height(90),
                   child: Text("IPアドレスとポートの設定",style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(30),
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w600,
                   )),
                 ),
@@ -100,7 +102,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                               });
                             },
                             decoration: InputDecoration(hintText: "IPアドレス"),
-                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0),fontFamily: GFont.getFontFamily(),),
                           ),
                         ),
                         flex: 3),
@@ -117,7 +119,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                               });
                             },
                             decoration: InputDecoration(hintText: "ポート"),
-                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0),fontFamily: GFont.getFontFamily(),),
                           ),
                         ),
                         flex:2),
@@ -191,6 +193,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                       "はい",
                       style: TextStyle(
                           color: Colors.white,
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(32.0)),
                     ),
                     onPressed: () async {

@@ -14,6 +14,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
@@ -165,7 +166,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
               ),
               title: Align(
                   alignment: Alignment.center,
-                  child:  Text("アップデートのお知らせ",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                  child:  Text("アップデートのお知らせ",style: TextStyle(fontSize:
+                  ScreenAdapter.fontSize(28),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600))
               ),
               children: <Widget>[
                 Container(
@@ -198,6 +202,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 "キャンセル",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
                               onPressed: () {
@@ -222,6 +227,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 "アップデート",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
                               onPressed: () async {
@@ -831,7 +837,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))
             ),
@@ -842,7 +848,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -866,7 +872,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))
             ),
@@ -877,7 +883,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -985,6 +991,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _showTag = Text("Uploading……",
         style: TextStyle(
           fontSize: ScreenAdapter.fontSize(25),
+          fontFamily: GFont.getFontFamily(),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));

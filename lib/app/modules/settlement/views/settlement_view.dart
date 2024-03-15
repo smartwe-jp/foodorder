@@ -6,6 +6,7 @@ import 'package:get/get.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -1211,6 +1212,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value, "settlement_back"),
                                 style: TextStyle(
                                     color: ColorsUtil.hexToColor("#2D2D2D"),
+                                    fontFamily: GFont.getFontFamily(),
                                     fontWeight: FontWeight.w500,
                                     fontSize: ScreenAdapter.fontSize(34.0)),
                               ),
@@ -1489,6 +1491,7 @@ class SettlementView extends GetView {
                               GString.getToString(controller.checkLanguage.value, "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#2D2D2D"),
+                                  fontFamily: GFont.getFontFamily(),
                                   fontWeight: FontWeight.w500,
                                   fontSize: ScreenAdapter.fontSize(34.0)),
                             ),

@@ -18,6 +18,7 @@ import 'package:google_fonts/google_fonts.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
@@ -407,6 +408,7 @@ class SettlementController extends GetxController with StateMixin {
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
+            fontFamily: GFont.getFontFamily(),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
@@ -416,6 +418,7 @@ class SettlementController extends GetxController with StateMixin {
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
+            fontFamily: GFont.getFontFamily(),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));

@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/string.dart';
 import '../../../models/ItemModel.dart';
@@ -487,12 +489,16 @@ class publicShowCartView extends GetView {
                             child: Text(
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_button"),
-                                style: TextStyle(
+                                style:
+
+                                TextStyle(
                                   fontSize: ScreenAdapter.fontSize(48),
+                                  fontFamily: GFont.getFontFamily(),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor(
                                       Gcolor.settlementBtnColor),
-                                )),
+                                )
+                            ),
                           ),
                         ),
                       ],

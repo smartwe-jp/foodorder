@@ -15,6 +15,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -549,6 +550,7 @@ class MenuPageController extends GetxController with StateMixin {
       overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
       maxLines: 2,
       style: TextStyle(
+          fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(mainTitleFontSize),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(mainTitleFontColor)),
@@ -571,6 +573,7 @@ class MenuPageController extends GetxController with StateMixin {
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                     fontWeight: FontWeight.w500,
+                    fontFamily: GFont.getFontFamily(),
                     color: ColorsUtil.hexToColor("#485460"),
                     //decoration: TextDecoration.lineThrough, // 添加中划线
                     //decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色

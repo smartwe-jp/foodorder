@@ -86,7 +86,26 @@ class _NumberAdjustWidgetState extends State<NumberAdjustWidget> {
               TableCell(
                 verticalAlignment: TableCellVerticalAlignment.middle,
                 child: Center(
-                  child: Text('$_currentNumber', style: TextStyle(fontSize: 20)),
+                  child: TextField(
+                    controller: TextEditingController(text: '$_currentNumber'),
+                    textAlign: TextAlign.center,
+                    keyboardType: TextInputType.number,
+                    onChanged: (value) {
+                      if (value.isEmpty) {
+                        return;
+                      }
+                      int number = int.parse(value);
+                      if (_maxNumber != null && number > _maxNumber!) {
+                        number = _maxNumber!;
+                      }
+                      if (_minNumber != null && number < _minNumber!) {
+                        number = _minNumber!;
+                      }
+                      _currentNumber = number;
+                      widget.onNumberChanged(_currentNumber);
+                    },
+                  ),
+                  //Text('$_currentNumber', style: TextStyle(fontSize: 20)),
                 ),
               ),
               TableCell(

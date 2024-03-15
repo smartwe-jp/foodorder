@@ -10,6 +10,7 @@ import 'package:package_info/package_info.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -76,6 +77,7 @@ class SettingController extends GetxController with StateMixin {
     _showTag = Text("Uploading……",
         style: TextStyle(
           fontSize: ScreenAdapter.fontSize(25),
+          fontFamily: GFont.getFontFamily(),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));
@@ -176,7 +178,7 @@ class SettingController extends GetxController with StateMixin {
     request('webBootChangeState', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
-      if (response['code'] == 200 && null != response['data']) {
+      if (response != null && response['code'] == 200 && null != response['data']) {
         depositData.value = response['data'];
         cashList.value = response['data']['changeStates'];
         lastTotalList.value = response['data']['last7daysTotal'];

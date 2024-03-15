@@ -5,6 +5,7 @@ import 'package:badges/badges.dart' as badges;
 import 'package:get/get.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -58,6 +59,7 @@ class showOneItemOptionWidgetView extends GetView {
                     //GString.getToString(this._checkLanguage, "show_price_front"),
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(24.0),
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w500,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                     ),
@@ -66,6 +68,7 @@ class showOneItemOptionWidgetView extends GetView {
                         text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(18.0),
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w200,
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                         ),
@@ -102,6 +105,7 @@ class showOneItemOptionWidgetView extends GetView {
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(20),
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -184,6 +188,7 @@ class showOneItemOptionWidgetView extends GetView {
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
                                 fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(24.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                               ),
@@ -338,6 +343,7 @@ class showOneItemOptionWidgetView extends GetView {
                                         GString.getToString(controller.checkLanguage.value, "settlement_back"),
                                         style: TextStyle(
                                             color: ColorsUtil.hexToColor("#000000"),
+                                            fontFamily: GFont.getFontFamily(),
                                             fontWeight: FontWeight.w500,
                                             fontSize: ScreenAdapter.fontSize(34.0)),
                                       ),
@@ -362,6 +368,7 @@ class showOneItemOptionWidgetView extends GetView {
                                                 text: "¥",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                                                 style: TextStyle(
                                                   fontSize: ScreenAdapter.fontSize(50),
+                                                  fontFamily: GFont.getFontFamily(),
                                                   fontWeight: FontWeight.w600,
                                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                                   textBaseline: TextBaseline.alphabetic,
@@ -372,6 +379,7 @@ class showOneItemOptionWidgetView extends GetView {
                                                     text: formatMoney((controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']]).toString()),
                                                     style: TextStyle(
                                                       fontSize: ScreenAdapter.fontSize(70),
+                                                      fontFamily: GFont.getFontFamily(),
                                                       fontWeight: FontWeight.w600,
                                                       color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                                       textBaseline: TextBaseline.alphabetic,
@@ -381,6 +389,7 @@ class showOneItemOptionWidgetView extends GetView {
                                                     text: "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）",
                                                     style: TextStyle(
                                                       fontSize: ScreenAdapter.fontSize(70)/2.5,
+                                                      fontFamily: GFont.getFontFamily(),
                                                       fontWeight: FontWeight.w600,
                                                       color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                                       textBaseline: TextBaseline.alphabetic,
@@ -497,7 +506,7 @@ class showOneItemOptionWidgetView extends GetView {
                                               GString.getToString(
                                                   controller.checkLanguage.value, "add_option_cart"),
                                               style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(40),
                                                 fontWeight: FontWeight.w500,
                                                 color: ColorsUtil.hexToColor(

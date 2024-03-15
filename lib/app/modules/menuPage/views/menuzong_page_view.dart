@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 
 import 'package:get/get.dart';
@@ -68,6 +69,7 @@ class MenuzongPageView extends GetView {
                         item['categoryName'],
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(28),
+                          fontFamily: GFont.getFontFamily(),
                           //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                           color: ColorsUtil.hexToColor("#282828"),
                           fontWeight: FontWeight.w600,
@@ -78,6 +80,7 @@ class MenuzongPageView extends GetView {
                         item['categoryName'],
                         style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(28),
+                            fontFamily: GFont.getFontFamily(),
                             //color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                             color: ColorsUtil.hexToColor("#282828"),
                             fontWeight: FontWeight.w600),
