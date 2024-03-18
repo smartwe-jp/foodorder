@@ -29,6 +29,7 @@ class CashSettingView extends StatefulWidget {
   final String? allDepositSum;
   final String? outSetSum;
   final String? remainingSum;
+  final String  machineCode;
   CashSettingView({Key? key,
     required this.cashInfoList,
     required this.recycleCash,
@@ -38,7 +39,8 @@ class CashSettingView extends StatefulWidget {
     this.outSetSum,
     this.remainingSum,
     required this.adjustCashFromDeposit,
-    required this.resetCash}) : super(key: key);
+    required this.resetCash,
+    required this.machineCode}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -150,7 +152,7 @@ class CashSettingViewState extends State<CashSettingView> {
           Container(
             margin: EdgeInsets.only(bottom: ScreenAdapter.height(20)),
             //padding: EdgeInsets.only(bottom: ScreenAdapter.width(20)),
-            child: Text("お預り金/釣り状態",
+            child: Text("お預り金/釣り状態(NO.${widget.machineCode})",
                 style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(22),
                   fontWeight: FontWeight.w600,

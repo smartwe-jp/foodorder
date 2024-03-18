@@ -1382,7 +1382,7 @@ class SettlementController extends GetxController with StateMixin {
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(response['data']);
+              createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
 

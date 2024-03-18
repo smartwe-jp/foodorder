@@ -319,11 +319,12 @@ class SettingView extends GetView<SettingController> {
 
                 },
                 child: Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.height(10), right: ScreenAdapter.height(10)),
                   margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                   //设置 child 居中
                   alignment: Alignment(0, 0),
                   height: ScreenAdapter.height(65),
-                  width: ScreenAdapter.width(160),
+                  //width: ScreenAdapter.width(160),
                   //边框设置
                   decoration: new BoxDecoration(
                     //背景
@@ -334,7 +335,7 @@ class SettingView extends GetView<SettingController> {
                     //border: new Border.all(width: 1, color: Colors.red),
                   ),
                   child: Text(
-                      "再印刷する",
+                      "領収書を再印刷する",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(24),
                         fontWeight: FontWeight.w600,
@@ -928,7 +929,9 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  CashSettingView(cashInfoList: controller.cashInfoList.value,
+                  CashSettingView(cashInfoList:
+                  controller.cashInfoList.value,
+                    machineCode: controller.machineCode.value,
                     recycleCash: () {
                       controller.recycleCash();
                     }, adjustCash: (type , number ) {

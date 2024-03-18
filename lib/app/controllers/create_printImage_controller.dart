@@ -22,27 +22,27 @@ class CreatePrintImageController extends GetxController {
   RxString printLogoImage = "".obs;
 
   final printTitleFont = TextStyle(
-    fontFamily: GFont.getFontFamily(),
+    fontFamily: 'NotoSansJP',
     color: Colors.black,
     fontSize: 50,
     fontWeight: FontWeight.w300,
   );
   final printMenuFont = TextStyle(
-    fontFamily: GFont.getFontFamily(),
+    fontFamily: 'NotoSansJP',
     color: Colors.black87,
     fontSize: 24,
     fontWeight: FontWeight.w200,
   );
 
   final printMenu2Font = TextStyle(
-    fontFamily: GFont.getFontFamily(),
+    fontFamily: 'NotoSansJP',
     color: Colors.black87,
     fontSize: 26,
     fontWeight: FontWeight.w100,
   );
 
   final printMenu3Font = TextStyle(
-    fontFamily: GFont.getFontFamily(),
+    fontFamily: 'NotoSansJP',
     color: Colors.black87,
     fontSize: 28,
     fontWeight: FontWeight.w200,
@@ -73,7 +73,7 @@ class CreatePrintImageController extends GetxController {
   tpPrintnew(print_paper_txt_size, printData, printType) async {
     var categoryVos = printData["printInfoListStruct"];
     if (categoryVos == null || categoryVos.length == 0) {
-      tpPrintReceipt(printData);
+      tpPrintReceipt(print_paper_txt_size, printData);
       return;
     }
     var print_menu_txt_size = 28.0;
@@ -106,8 +106,8 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: 28,
-                  fontFamily: GFont.getFontFamily(),
+                  fontSize: print_menu_txt_size,
+                  fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
@@ -120,8 +120,8 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
-                  fontSize: 32,
-                  fontFamily: GFont.getFontFamily(),
+                  fontSize: print_menu_txt_size,
+                  fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w200,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
@@ -185,7 +185,7 @@ class CreatePrintImageController extends GetxController {
                                   style: TextStyle(
                                     fontSize: print_menu_txt_size,
                                     fontWeight: FontWeight.w100,
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     color: ColorsUtil.hexToColor("#000000"),
                                   ))
                           )
@@ -210,7 +210,7 @@ class CreatePrintImageController extends GetxController {
                                 style: TextStyle(
                                   fontSize: print_menu_txt_size,
                                   fontWeight: FontWeight.w100,
-                                  fontFamily: GFont.getFontFamily(),
+                                  fontFamily: 'NotoSansJP',
                                   color: ColorsUtil.hexToColor("#000000"),
                                 )),
                           )),
@@ -237,7 +237,7 @@ class CreatePrintImageController extends GetxController {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: GFont.getFontFamily(),
+                            fontFamily: 'NotoSansJP',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))
                   ),
@@ -249,7 +249,7 @@ class CreatePrintImageController extends GetxController {
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
                             fontWeight: FontWeight.w100,
-                            fontFamily: GFont.getFontFamily(),
+                            fontFamily: 'NotoSansJP',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))),
                 ],
@@ -280,7 +280,7 @@ class CreatePrintImageController extends GetxController {
                             style: TextStyle(
                               fontSize: print_menu_txt_size,
                               fontWeight: FontWeight.w100,
-                              fontFamily: 'NotoSensJapanese',
+                              fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
                             ))),
@@ -354,7 +354,7 @@ class CreatePrintImageController extends GetxController {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
       Future.delayed(Duration(milliseconds: 300), () async {
         await FlutterPluginMsprinter.sendPrintCut("1");
-        tpPrintReceipt(printData);
+        tpPrintReceipt(print_paper_txt_size, printData);
       });
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
@@ -366,7 +366,7 @@ class CreatePrintImageController extends GetxController {
     //});
   }
 
-  tpPrintReceipt(printData) async {
+  tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
     var menuVos = printData["details"];
     var lineHight = 580;
@@ -937,7 +937,7 @@ class CreatePrintImageController extends GetxController {
                         style: TextStyle(
                           fontSize: leftTxtFontSize,
                           fontWeight: leftTxtFontWeight,
-                          fontFamily: 'NotosansJapanese',
+                          fontFamily: 'NotoSansJP',
                           color: ColorsUtil.hexToColor("#000000"),
                         )),
                   )),
@@ -948,7 +948,7 @@ class CreatePrintImageController extends GetxController {
                       style: TextStyle(
                         fontSize: rightTxtFontSize,
                         fontWeight: rightTxtFontWeight,
-                        fontFamily: 'NotosansJapanese',
+                        fontFamily: 'NotoSansJP',
                         color: ColorsUtil.hexToColor("#000000"),
                         //fontWeight: FontWeight.w600
                       ))),
