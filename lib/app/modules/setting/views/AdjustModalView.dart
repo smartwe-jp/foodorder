@@ -279,6 +279,9 @@ class _AdjustModalViewState extends State<AdjustModalView> {
 
                                           setState(() {
                                             _switchValue = value;
+                                            if (value) {
+                                              _selectNumber = 0;
+                                            }
                                           });
 
                                         },
@@ -318,13 +321,23 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   values: _segmentData,
                                   onValueChanged: (value){
                                     setState(() {
+
                                       _depositCatVal = value;
                                       _depositValue = _getDepositCatVal(value);
-                                      // if (_getMaxDepositQty(value) < 1) {
-                                      //   _depositQty = 0;
-                                      // } else {
-                                      //   _depositQty = 1;
-                                      // }
+                                      if (_depositQty > 0) {
+                                        if (_getMaxDepositQty(value) < 1) {
+                                          _depositQty = 0;
+                                        } else {
+
+                                          if (_depositQty > _getMaxDepositQty(value)) {
+                                            _depositQty =
+                                                _getMaxDepositQty(value);
+                                          }
+                                        }
+                                      }
+
+                                      _selectNumber = _getSelectNumberValue();
+
                                     });
                                   },
                                   initialValue: _field,
@@ -360,6 +373,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                     onNumberChanged: (int number){
                                   setState(() {
                                     _depositQty = number;
+                                    _selectNumber = _getSelectNumberValue();
                                   });
                                 })
                             )
@@ -394,7 +408,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                 children: [
                                   Container(
                                       alignment: Alignment.centerLeft,
-                                      child: NumberAdjustWidget(initialNumber: _getSelectNumberValue(), onNumberChanged: (int number){
+                                      child: NumberAdjustWidget(initialNumber: _selectNumber, onNumberChanged: (int number){
                                         setState(() {
                                           _selectNumber = number;
                                         });
