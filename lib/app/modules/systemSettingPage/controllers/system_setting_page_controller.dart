@@ -24,6 +24,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../settlement/views/label_constrained_box.dart';
@@ -714,7 +715,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   posTest(posIp, posPort) async {
-    _showEasyLoading();
+    _showEasyLoading("POS Test Start");
     debugPrint("--- posTest ---");
     request('webBootPosTest', method: 'POST')
         .then((val) {
@@ -785,19 +786,18 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   showTestResultDialog(content) {
     Get.dialog(
-        AlertDialog(
-          title: Text("POS Test Result"),
-          content: Text(content),
-          actions: <Widget>[
-            TextButton(
-              child: Text("OK"),
-              onPressed: () {
-                Get.back();
-              },
-            ),
-          ],
-        )
+        DialogUtils.alertOneButton(content,
+            title: "POS Test Result",
+            confirmtitle: "はい",
+            confirm: () {
+
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
     );
+
+
   }
 
   //printType=0 receipt 1label
@@ -960,7 +960,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //上传现金机log
   uploadErrorLog() async {
-    _showEasyLoading();
+    _showEasyLoading("Uploading...");
     var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
@@ -986,9 +986,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
-  _showEasyLoading(){
+  _showEasyLoading(text){
     var _showTag;
-    _showTag = Text("Uploading……",
+    _showTag = Text(text,
         style: TextStyle(
           fontSize: ScreenAdapter.fontSize(25),
           fontFamily: GFont.getFontFamily(),

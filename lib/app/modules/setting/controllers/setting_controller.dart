@@ -18,6 +18,7 @@ import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
@@ -73,14 +74,14 @@ class SettingController extends GetxController with StateMixin {
   }
 
   _showEasyLoading(){
-    var _showTag;
-    _showTag = Text("Uploading……",
-        style: TextStyle(
-          fontSize: ScreenAdapter.fontSize(25),
-          fontFamily: GFont.getFontFamily(),
-          fontWeight: FontWeight.w600,
-          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-        ));
+    //var _showTag;
+    // _showTag = Text("Uploading……",
+    //     style: TextStyle(
+    //       fontSize: ScreenAdapter.fontSize(25),
+    //       fontFamily: GFont.getFontFamily(),
+    //       fontWeight: FontWeight.w600,
+    //       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+    //     ));
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
@@ -90,7 +91,7 @@ class SettingController extends GetxController with StateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _showTag,
+            //_showTag,
             Container(
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
@@ -161,11 +162,22 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       EasyLoading.dismiss();
-      if (response['code'] == 200) {
+      if (response['code'] == 200 && null != response['data']) {
         //createPrintImageController.tpPrintReceipt(response['data']);
         createPrintImageController.tpPrintnew(RxInt(1), response['data'], 1);
+
       } else {
-        showToast('打印失败!');
+        //showToast('打印失败!');
+        Get.dialog(
+            DialogUtils.alertOneButton("最近のご注文はキャンセルされており、領収書は発行できません。",
+                title: "ご注意",
+                confirmtitle: "はい",
+                confirm: () {
+                  Get.back();
+                  update();
+                }),
+            barrierDismissible: false
+        );
       }
     });
   }

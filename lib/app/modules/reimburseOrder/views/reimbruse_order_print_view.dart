@@ -279,11 +279,30 @@ class ReimbursePrintView extends StatelessWidget {
                   width: 10,
                 ),
                 Text(
-                  "¥ ${reimburseInfo["payAmount"]}",
+                  "¥ ${reimburseInfo["amount"]}",
                   style: contentStyle,
                 ),
               ],
             ) : Container(),
+
+            // hasChange() ? Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Text(
+            //       "お釣り金額",
+            //       style: contentStyle,
+            //     ),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Text(
+            //       "¥ -${reimburseInfo["change"]}",
+            //       style: contentStyle,
+            //     ),
+            //   ],
+            // ) : Container(),
+
             hasAmount() ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,6 +342,11 @@ class ReimbursePrintView extends StatelessWidget {
   bool hasPayAmount() {
     return reimburseInfo["payAmount"] != null &&
         reimburseInfo["payAmount"].toString().length > 0;
+  }
+
+  bool hasChange() {
+    return reimburseInfo["change"] != null &&
+        reimburseInfo["change"].toString().length > 0;
   }
 
   bool hasAmount() {
