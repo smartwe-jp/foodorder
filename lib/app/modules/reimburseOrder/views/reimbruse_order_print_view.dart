@@ -255,7 +255,8 @@ class ReimbursePrintView extends StatelessWidget {
 
   String _getCurrentTime() {
     DateTime now = DateTime.now();
-    String formattedDate = "${now.year}/${now.month}/${now.day} ${now.hour}:${now.minute}";
+    DateTime tokyoTime = now.add(Duration(hours: 9 - now.timeZoneOffset.inHours));
+    String formattedDate = "${tokyoTime.year}/${tokyoTime.month}/${tokyoTime.day} ${tokyoTime.hour}:${tokyoTime.minute}";
     return formattedDate;
   }
 

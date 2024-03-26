@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
-import 'package:get/get.dart' hide Response,FormData,MultipartFile;
+import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:package_info/package_info.dart';
 
@@ -28,11 +28,12 @@ class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MenuPageController menuPagecontroller = Get.put(MenuPageController());
-  CreatePrintImageController createPrintImageController = Get.put(CreatePrintImageController());
+  CreatePrintImageController createPrintImageController =
+      Get.put(CreatePrintImageController());
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
-  RxString machine_mode = "1".obs;//1 普通点餐券卖机  2 精算机（结账机）
-  RxString is_reimburse = "0".obs;//是否展示退款按钮， 0 不展示 1 展示
+  RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
+  RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
 
   RxList cashList = [].obs;
   RxMap cashInfoList = {}.obs;
@@ -41,7 +42,6 @@ class SettingController extends GetxController with StateMixin {
 
   RxBool switchValue = false.obs;
 
-
   RxString local_version = "".obs; //本appversion
   var progressValue = 0.0;
 
@@ -49,7 +49,6 @@ class SettingController extends GetxController with StateMixin {
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
     _getPackageInfo();
-
 
     super.onInit();
   }
@@ -73,7 +72,7 @@ class SettingController extends GetxController with StateMixin {
     switchValue.value = value; // 更新值
   }
 
-  _showEasyLoading(){
+  _showEasyLoading() {
     //var _showTag;
     // _showTag = Text("Uploading……",
     //     style: TextStyle(
@@ -96,7 +95,9 @@ class SettingController extends GetxController with StateMixin {
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
               height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+              child: Image.asset(
+                  GImage.getImageString("imgpublic", "printticketloading"),
+                  fit: BoxFit.fitHeight),
             ),
           ],
         ),
@@ -108,35 +109,29 @@ class SettingController extends GetxController with StateMixin {
   //上传现金机log
   uploadErrorLog() async {
     _showEasyLoading();
-    var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
       "file": await MultipartFile.fromFile(logfile),
     });
 
-    request(
-        'webBootLogUpload',
-        method: 'POST',
-        parameters: formData
-    ).then((val) {
+    request('webBootLogUpload', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-
         showToast('上传成功~~');
       } else {
         showToast('上传失败!');
       }
     });
-
-
   }
 
   //获取版本号
   _getPackageInfo() async {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
+    local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
 
     getSystemSettingInfo();
   }
@@ -145,7 +140,7 @@ class SettingController extends GetxController with StateMixin {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
 
-    var reimburse= await HomeServices.getSmartweReimburseData();
+    var reimburse = await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
 
     shopCode.value = await HomeServices.getShopCode();
@@ -158,26 +153,23 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode.value,
     };
-    request('webBootToRetryPrint', method: 'POST', parameters: formData).then((val) {
+    request('webBootToRetryPrint', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       EasyLoading.dismiss();
       if (response['code'] == 200 && null != response['data']) {
         //createPrintImageController.tpPrintReceipt(response['data']);
         createPrintImageController.tpPrintnew(RxInt(1), response['data'], 1);
-
       } else {
         //showToast('打印失败!');
         Get.dialog(
             DialogUtils.alertOneButton("最近のご注文はキャンセルされており、領収書は発行できません。",
-                title: "ご注意",
-                confirmtitle: "はい",
-                confirm: () {
-                  Get.back();
-                  update();
-                }),
-            barrierDismissible: false
-        );
+                title: "ご注意", confirmtitle: "はい", confirm: () {
+              Get.back();
+              update();
+            }),
+            barrierDismissible: false);
       }
     });
   }
@@ -187,10 +179,13 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode.value,
     };
-    request('webBootChangeState', method: 'POST', parameters: formData).then((val) {
+    request('webBootChangeState', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
-      if (response != null && response['code'] == 200 && null != response['data']) {
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
         depositData.value = response['data'];
         cashList.value = response['data']['changeStates'];
         lastTotalList.value = response['data']['last7daysTotal'];
@@ -208,21 +203,24 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode.value,
     };
-    request('webBootChangeInfo', method: 'POST', parameters: formData).then((val) {
+    request('webBootChangeInfo', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
-      if (response != null && response['code'] == 200 && null != response['data']) {
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
         cashInfoList.value = response['data'];
+        debugPrint("cashInfoList.value:" + cashInfoList.value.toString());
         update();
       } else {
         showToast('获取失败');
       }
       change(null, status: RxStatus.success());
     });
-
   }
 
-  setCashSenOutset(type,number) {
+  setCashSenOutset(type, number) {
     var formData = {
       "currencyInfoVo": {
         "catVal": _getCatVal(type),
@@ -233,7 +231,8 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "shopCode": shopCode.value,
     };
-    request('webBootChangeSet', method: 'PUT', parameters: formData).then((val) {
+    request('webBootChangeSet', method: 'PUT', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
@@ -258,7 +257,8 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "shopCode": shopCode.value,
     };
-    request('webBootChangeSet', method: 'PUT', parameters: formData).then((val) {
+    request('webBootChangeSet', method: 'PUT', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
@@ -282,7 +282,8 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "shopCode": shopCode.value,
     };
-    request('webBootChangeSet', method: 'PUT', parameters: formData).then((val) {
+    request('webBootChangeSet', method: 'PUT', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
@@ -299,7 +300,8 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "shopCode": shopCode.value,
     };
-    request('webBootChangeReset', method: 'POST', parameters: formData).then((val) {
+    request('webBootChangeReset', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
@@ -359,19 +361,18 @@ class SettingController extends GetxController with StateMixin {
     }
   }
 
-  goToBack(){
+  goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
-    if(machine_mode.value == "1"){
+    if (machine_mode.value == "1") {
       menuPagecontroller.clearCartList();
       Get.delete<MenuPageController>(); // 手动删除控制器实例
-    }else if(machine_mode.value == "2"){
+    } else if (machine_mode.value == "2") {
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
-    }else if(machine_mode.value == "3"){
+    } else if (machine_mode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
-
-
-    Future.delayed(Duration(milliseconds: 100), (){
+    Get.delete<SettingController>(); // 手动删除控制器实例
+    Future.delayed(Duration(milliseconds: 100), () {
       Get.toNamed('/transit-page');
     });
   }
