@@ -14,6 +14,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../systemSettingPage/views/SetPassword.dart';
 
@@ -154,6 +155,7 @@ class CashSettingViewState extends State<CashSettingView> {
             //padding: EdgeInsets.only(bottom: ScreenAdapter.width(20)),
             child: Text("お預り金/釣り状態(NO.${widget.machineCode})",
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                   fontSize: ScreenAdapter.fontSize(22),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -184,6 +186,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     height: 80,
                     child: Text("預り金",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -194,6 +197,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("お釣り（枚）",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -230,6 +234,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("枚",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -240,6 +245,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("合計",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -251,6 +257,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("最初",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -261,6 +268,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("最小",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -271,6 +279,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.center,
                     child: Text("残り",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(20),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -306,6 +315,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${element.key}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -317,6 +327,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${element.value['deposit']}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -328,6 +339,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${formatSum(element.value['depositSum'])}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -339,6 +351,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${element.value['outset']}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -350,6 +363,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${element.value['limit']}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -361,6 +375,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       alignment: Alignment.center,
                       child: Text("${element.value['remaining']}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -394,6 +409,7 @@ class CashSettingViewState extends State<CashSettingView> {
                           child: Text(
                               "補充/削减",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                               )
@@ -440,6 +456,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       color: Colors.grey[300],
                       child: Text("$_allDepositSum",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -452,6 +469,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       color: Colors.grey[300],
                       child: Text("$_outSetSum",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -469,6 +487,7 @@ class CashSettingViewState extends State<CashSettingView> {
                       color: Colors.grey[300],
                       child: Text("$_remainingSum",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(20),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -529,6 +548,7 @@ class CashSettingViewState extends State<CashSettingView> {
                             child: Text(
                                 "預り金回収",
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(22),
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )
@@ -568,6 +588,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.topLeft,
                     child: Text("ご注意",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(22),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -579,6 +600,7 @@ class CashSettingViewState extends State<CashSettingView> {
                     alignment: Alignment.centerLeft,
                     child: Text("預り金回収してもよろしいですか？",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(22),
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
@@ -601,6 +623,7 @@ class CashSettingViewState extends State<CashSettingView> {
                           TextButton(
                             child: Text("キャンセル",
                             style: TextStyle(
+                              fontFamily:GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(18),
                             fontWeight: FontWeight.w400,
                             color: ColorsUtil.hexToColor("#000000"),
@@ -622,6 +645,7 @@ class CashSettingViewState extends State<CashSettingView> {
                         TextButton(
                           child: Text("確認",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(18),
                                   fontWeight: FontWeight.w400,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),

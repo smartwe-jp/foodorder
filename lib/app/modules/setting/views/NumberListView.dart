@@ -3,6 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 
+import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 
 class NumberListView extends StatefulWidget {
@@ -52,6 +53,7 @@ class _NumberListViewState extends State<NumberListView> {
                     child: Text(
                       e.toString() + widget.measureUnit,
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(20),
                         color: ColorsUtil.hexToColor("#dca550"),
                       ),

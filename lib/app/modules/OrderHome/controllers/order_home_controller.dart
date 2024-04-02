@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
@@ -21,9 +22,9 @@ class OrderHomeController extends GetxController with StateMixin {
   RxList homeList = [].obs;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     EasyLoading.dismiss();
-    _getMachineInfo();
+    await _getMachineInfo();
 
     super.onInit();
   }
@@ -40,21 +41,23 @@ class OrderHomeController extends GetxController with StateMixin {
 
   //获取机器信息
   _getMachineInfo() async {
+    debugPrint("获取机器信息");
     var machineCodeString = await HomeServices.getMachineInfo();
     if (machineCodeString != "") {
       machineCode.value = machineCodeString;
 
     }
     //首页图片
-    _getHomeImageList();
+    await _getHomeImageList();
   }
 
   _getHomeImageList() async {
+    debugPrint("获取首页图片");
     var homeimageList = await HomeServices.getSmartweHomeImagesData();
 
     homeList.value = homeimageList;
 
-    getSystemSettingInfo();
+    await getSystemSettingInfo();
 
   }
 
@@ -65,11 +68,12 @@ class OrderHomeController extends GetxController with StateMixin {
       dining_type.value = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
 
 
-    getmenchineLanguages();
+    await getmenchineLanguages();
 
   }
 
   getmenchineLanguages() async {
+    debugPrint("获取机器语言");
     var languageJP = false;
     var languageCH = false;
     var languageEN = false;
@@ -91,7 +95,7 @@ class OrderHomeController extends GetxController with StateMixin {
     machineLanguages_CH.value = languageCH;
     machineLanguages_EN.value = languageEN;
     machineLanguages_KO.value = languageKO;
-
+    debugPrint("获取机器语言结束");
     update();
     change(null, status: RxStatus.success());
 

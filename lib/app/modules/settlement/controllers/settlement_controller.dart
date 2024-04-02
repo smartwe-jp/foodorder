@@ -1376,7 +1376,7 @@ class SettlementController extends GetxController with StateMixin {
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
-
+            //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
             createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
           }else{
@@ -1387,33 +1387,9 @@ class SettlementController extends GetxController with StateMixin {
           }
 
 
+          //打印完成后进行下一步操作
 
-          Future.delayed(Duration(milliseconds: 300),() async {
-            if (machineMode.value == "1") {
-              //eventBus.fire(new clearCartEvent('支付成功...'));
-              Get.find<OrderHomeController>().clearCartList();
-              //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
-              //Get.find<MenuPageController>().getBookingBootMenu();
-            } else if (machineMode.value == "3"){
-              Get.find<SelfCheckoutscanningcodeController>().clearCartList();
-            }
-            else if (machineMode.value == "2") {
-              if (Get.isRegistered<MenuPageController>()) {
-                MenuPageController controller = Get.find<MenuPageController>();
-                if (controller.mealType.value) {
-                  controller.clearCartList();
-                }
-              }
-            }
 
-            //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-            if (payment_method_num.value == "1") {
-              nextOper();
-            } else {
-              gotonewMyhome();
-            }
-
-          });
 
         } else {
           //错误后重新调用一次
@@ -1422,6 +1398,12 @@ class SettlementController extends GetxController with StateMixin {
 
         }
       });
+      //     .timeout(Duration(seconds: 30), onTimeout: () {
+      //   //超时后直接跳过
+      //   _printGoNext();
+      //
+      // }
+      // );
     } else {
       EasyLoading.dismiss();
 
@@ -1454,6 +1436,38 @@ class SettlementController extends GetxController with StateMixin {
               })
       );
     }
+
+    _printGoNext();
+  }
+
+  //
+  _printGoNext() {
+    Future.delayed(Duration(milliseconds: 300),() async {
+      if (machineMode.value == "1") {
+        //eventBus.fire(new clearCartEvent('支付成功...'));
+        Get.find<OrderHomeController>().clearCartList();
+        //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
+        //Get.find<MenuPageController>().getBookingBootMenu();
+      } else if (machineMode.value == "3"){
+        Get.find<SelfCheckoutscanningcodeController>().clearCartList();
+      }
+      else if (machineMode.value == "2") {
+        if (Get.isRegistered<MenuPageController>()) {
+          MenuPageController controller = Get.find<MenuPageController>();
+          if (controller.mealType.value) {
+            controller.clearCartList();
+          }
+        }
+      }
+
+      //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+      if (payment_method_num.value == "1") {
+        nextOper();
+      } else {
+        gotonewMyhome();
+      }
+
+    });
   }
 
 

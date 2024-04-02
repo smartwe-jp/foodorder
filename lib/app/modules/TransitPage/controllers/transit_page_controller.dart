@@ -24,8 +24,8 @@ class TransitPageController extends GetxController {
   RxString local_version = "".obs; //本appversion
 
   @override
-  void onInit() {
-    getIsShowCashInfo();
+  Future<void> onInit() async {
+    await getIsShowCashInfo();
     super.onInit();
   }
 
@@ -41,11 +41,12 @@ class TransitPageController extends GetxController {
 
 
   getIsShowCashInfo() async {
+    debugPrint("getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
 
     _isCashState.value = systemSettingInfo['isCash'];
 
-    _getMachineInfo();
+    await _getMachineInfo();
   }
 
   _getMachineInfo() async {
@@ -54,24 +55,26 @@ class TransitPageController extends GetxController {
       _machineCode.value = machineCode;
 
       //_getSystemSettingInfo();
-      _getPackageInfo();
+      await _getPackageInfo();
     }
   }
 
   //获取版本号
   _getPackageInfo() async {
+    debugPrint("getPackageInfo");
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
 
-    _getMachineActivate();
+    await _getMachineActivate();
   }
 
-  _getMachineActivate(){
+  _getMachineActivate() async{
+    debugPrint("getMachineActivate");
     var formData = {
       "machineCode": _machineCode.value,
       "version":local_version.value
     };print(formData);
-    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) {
+    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
       var response = json.decode(val.toString());LogUtil.d(response);
       if (response['code'] == 200 && response['data'] != null) {
         var shopData = response['data'];
@@ -152,11 +155,12 @@ class TransitPageController extends GetxController {
         _actuarial.value = shopData["actuarial"];
       }
 
-      _getSmartweSystemSettingInfo();
+      await _getSmartweSystemSettingInfo();
     });
   }
 
   _getSmartweSystemSettingInfo() async {
+    debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     var checkmachineMode = "1";

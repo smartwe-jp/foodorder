@@ -230,6 +230,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                     child: TextButton(
                                       child: Text("保存",
                                           style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
                                             fontSize: ScreenAdapter.fontSize(18),
                                             fontWeight: FontWeight.w400,
                                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -261,6 +262,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金から：",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -308,6 +310,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金からの金種：",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -358,6 +361,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金からの枚数：",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -396,6 +400,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                             flex: 1,
                             child: Text("$_field補充/削减枚数：",
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(20),
                                   fontWeight: FontWeight.w400,
                                   color: Colors.grey[700],
@@ -417,6 +422,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   SizedBox(height: 10),
                                   Text("*減らす場合は負数を入力してください",
                                       style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(16),
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
@@ -432,6 +438,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   SizedBox(height: 10),
                                   Text("*上記のタグをクリックすると補充枚数自動的に入力されます",
                                       style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(16),
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
@@ -470,6 +477,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                             child: TextButton(
                               child: Text("保存",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w400,
                                     color: ColorsUtil.hexToColor("#FFFFFF"),

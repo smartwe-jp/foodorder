@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/fontSize.dart';
@@ -184,7 +185,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         ),
                         child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
+                            (optionVolistSon['currentPrice'] > 0) ?"+${formatSum(optionVolistSon['currentPrice']).toString()}":"${formatSum(optionVolistSon['currentPrice']).toString()}",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(20),
                               fontFamily: GFont.getFontFamily(),
@@ -242,6 +243,10 @@ class showOneItemOptionWidgetVOneView extends GetView {
     return options;
   }
 
+  String formatSum(int sum) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(sum);
+  }
 
   @override
   Widget build(BuildContext context) {
