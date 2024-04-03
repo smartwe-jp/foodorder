@@ -1183,42 +1183,46 @@ class SettlementView extends GetView {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Container(
-                          width: ScreenAdapter.width(360),
-                          alignment: Alignment.bottomLeft,
-                          padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
-                          child: InkWell(
-                            onTap: () {
-                              //try {
+                        Visibility(
+                          visible: !controller.showPrintButton.value,
+                          child:Container(
+                            width: ScreenAdapter.width(360),
+                            alignment: Alignment.bottomLeft,
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(40),bottom: ScreenAdapter.height(30)),
+                            child: InkWell(
+                              onTap: () {
+                                //try {
                                 if(controller.isPrintClick.value == false){
                                   controller.isCancelClick.value = true;
                                   controller.allowClick.value = false;
                                   controller.showCashAlert();
                                 }
 
-                              //} catch (_) {}
-                            },
-                            child: Container(
-                              alignment: Alignment.center,
-                              width: ScreenAdapter.width(180),
-                              height: ScreenAdapter.height(80),
-                              //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#FFFFFF"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((5.0)),
-                              ),
-                              child: Text(
-                                GString.getToString(controller.checkLanguage.value, "settlement_back"),
-                                style: TextStyle(
-                                    color: ColorsUtil.hexToColor("#2D2D2D"),
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontWeight: FontWeight.w500,
-                                    fontSize: ScreenAdapter.fontSize(34.0)),
+                                //} catch (_) {}
+                              },
+                              child: Container(
+                                alignment: Alignment.center,
+                                width: ScreenAdapter.width(180),
+                                height: ScreenAdapter.height(80),
+                                //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
+                                decoration: BoxDecoration(
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  //设置圆角
+                                  borderRadius: new BorderRadius.circular((5.0)),
+                                ),
+                                child: Text(
+                                  GString.getToString(controller.checkLanguage.value, "settlement_back"),
+                                  style: TextStyle(
+                                      color: ColorsUtil.hexToColor("#2D2D2D"),
+                                      fontFamily: GFont.getFontFamily(),
+                                      fontWeight: FontWeight.w500,
+                                      fontSize: ScreenAdapter.fontSize(34.0)),
+                                ),
                               ),
                             ),
                           ),
                         ),
+
                         //SizedBox(width: ScreenAdapter.width(80)),
                         controller.showPrintButton.value == true
                             ? (
