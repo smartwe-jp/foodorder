@@ -900,6 +900,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -933,6 +934,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -941,6 +943,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（単票）",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -976,6 +979,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -984,6 +988,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（連票）",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1025,6 +1030,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1032,6 +1038,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1040,6 +1047,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1086,6 +1094,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1119,6 +1128,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1127,6 +1137,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1175,6 +1186,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1182,6 +1194,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1190,6 +1203,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1260,6 +1274,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1293,6 +1308,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1301,6 +1317,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（単票）",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1335,6 +1352,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1343,6 +1361,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（連票）",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1384,6 +1403,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip_Two.value}:",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1391,6 +1411,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port_Two.value}",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1399,6 +1420,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1467,6 +1489,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("使えない",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1497,6 +1520,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("使える",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1541,6 +1565,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("トップページに戻る",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_backhome.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1571,6 +1596,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("メニューリストに戻る",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_backhome.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1643,6 +1669,7 @@ class SystemSettingPageView extends GetView {
                       ),
                       child: Text("戻る",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1670,6 +1697,7 @@ class SystemSettingPageView extends GetView {
                           ),
                           child: Text("パスワード",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(24),
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1698,6 +1726,7 @@ class SystemSettingPageView extends GetView {
                               ),
                               child: Text("アップデート",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(24),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1714,6 +1743,7 @@ class SystemSettingPageView extends GetView {
                               child: Text(
                                 "バージョン：${controller.local_version.value}",
                                 style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     color: Colors.grey[500],
                                     fontSize: ScreenAdapter.fontSize(20.0)),
                               ),
@@ -1747,6 +1777,7 @@ class SystemSettingPageView extends GetView {
                     child: Text(
                       "セルフレジを設置",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(26),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -1776,6 +1807,7 @@ class SystemSettingPageView extends GetView {
                                   child: Text(
                                     "一般設定",
                                     style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500
                                     ),
@@ -1805,6 +1837,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "モード",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1822,6 +1855,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "予約サービス",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1838,6 +1872,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "店内・テイクアウト",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1854,6 +1889,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "カテゴリ様式",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1870,6 +1906,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "領収書",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1888,6 +1925,7 @@ class SystemSettingPageView extends GetView {
                                               Text(
                                                 "レシート字体",
                                                 style: TextStyle(
+                                                    fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -1895,6 +1933,7 @@ class SystemSettingPageView extends GetView {
                                               Text(
                                                 "（セルフレジから）",
                                                 style: TextStyle(
+                                                  fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(18),
                                                     fontWeight: FontWeight.w500,
                                                   color: ColorsUtil.hexToColor("#d90000"),
@@ -1914,6 +1953,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "オーダーシート",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1930,6 +1970,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "一円",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1946,6 +1987,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "会計完了",
                                             style: TextStyle(
+                                                fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1973,6 +2015,7 @@ class SystemSettingPageView extends GetView {
                                   child: Text(
                                     "プリンタ│",
                                     style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500
                                     ),
@@ -2005,6 +2048,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "キッチン",
                                                 style: TextStyle(
+                                                    fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2022,6 +2066,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "キッチン（ラベル）",
                                                 style: TextStyle(
+                                                    fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2050,6 +2095,7 @@ class SystemSettingPageView extends GetView {
                                               alignment: Alignment.centerLeft,
                                               child: Text("注：「キッチンプリンター」か「キッチン（ラベル）プリンター」かどちらか１台のご利用となります。",
                                                   style: TextStyle(
+                                                    fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(17),
                                                     fontWeight: FontWeight.w400,
                                                     color: ColorsUtil.hexToColor("#d90000"),
@@ -2078,6 +2124,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "カウンター",
                                                 style: TextStyle(
+                                                    fontFamily: GFont.getFontFamily(),
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2114,6 +2161,7 @@ class SystemSettingPageView extends GetView {
                                 child: Text(
                                   "キャッシュレス端末",
                                   style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(22),
                                       fontWeight: FontWeight.w500
                                   ),

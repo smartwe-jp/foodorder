@@ -435,6 +435,7 @@ class SettlementController extends GetxController with StateMixin {
             _showTag,
             InkWell(
               onLongPress: () {
+                isPrintClick.value = false;
                 EasyLoading.dismiss();
               },
               child: Container(
@@ -1333,7 +1334,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType) async {
-
+    debugPrint("doPrintOrderMenu");
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
         printType = "1";
@@ -1361,6 +1362,7 @@ class SettlementController extends GetxController with StateMixin {
 
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
+        debugPrint("doPrintOrderMenu==val");
         var response = json.decode(val.toString());
         //LogUtil.d(response);
         if (response['code'] == 200) {
@@ -1386,24 +1388,12 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
 
-
-          //打印完成后进行下一步操作
-
-
-
         } else {
           //错误后重新调用一次
           doPrintOrderMenu(printType);
           //EasyLoading.dismiss();
-
         }
       });
-      //     .timeout(Duration(seconds: 30), onTimeout: () {
-      //   //超时后直接跳过
-      //   _printGoNext();
-      //
-      // }
-      // );
     } else {
       EasyLoading.dismiss();
 
@@ -1436,12 +1426,11 @@ class SettlementController extends GetxController with StateMixin {
               })
       );
     }
-
-    _printGoNext();
   }
 
   //
-  _printGoNext() {
+  printGoNext() async {
+    debugPrint("printGoNext");
     Future.delayed(Duration(milliseconds: 300),() async {
       if (machineMode.value == "1") {
         //eventBus.fire(new clearCartEvent('支付成功...'));
@@ -2674,26 +2663,27 @@ class SettlementController extends GetxController with StateMixin {
 //   //GoogleFonts.zenKakuGothicAntique(fontSize: 28,fontWeight: FontWeight.w300,color: Colors.black87)
 
 
-  showCashAlert(){print("现金取消");
-  Future.delayed(Duration(milliseconds: 50),() async {
-    Get.dialog(
-        DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
-            confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
-            confirm: () {
-              Get.back();
-              showBackEasyLoading();
-              CancelOrder();
-            },
-            cancle: () {
-              allowClick.value = true;
-              Get.back();
-            }),
-        barrierDismissible: false
-    );
+  showCashAlert(){
+    print("现金取消");
+    Future.delayed(Duration(milliseconds: 50),() async {
+      Get.dialog(
+          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
+              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
+              confirm: () {
+                Get.back();
+                showBackEasyLoading();
+                CancelOrder();
+              },
+              cancle: () {
+                allowClick.value = true;
+                Get.back();
+              }),
+          barrierDismissible: false
+      );
 
-  });
+    });
   }
 
 

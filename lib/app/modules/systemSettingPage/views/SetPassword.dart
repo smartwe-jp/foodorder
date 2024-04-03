@@ -81,8 +81,9 @@ class _SetPasswordPageState extends State<SetPasswordPage> {
                                   controller: _myPassWordController,
                                   textAlign: TextAlign.center,
                                   showCursor: false,
-                                  style: const TextStyle(
-                                      fontSize: 40,
+                                  style:  TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: 40,
                                       //fontFamily: GFont.getFontFamily(),
                                   ),
                                   // Disable the default soft keybaord

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/system_setting_page_controller.dart';
@@ -31,6 +32,7 @@ class showSpeedView extends GetView {
                 children: [
                   Text("アップデート中……",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(25),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -38,6 +40,7 @@ class showSpeedView extends GetView {
                   Obx(() => Text(
                       '${(controller.downloadProgress.value * 100).toStringAsFixed(2)}%',//Download Progress:
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(25),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#000000"),

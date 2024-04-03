@@ -3,6 +3,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
@@ -102,7 +103,7 @@ class showOneItemOptionWidgetView extends GetView {
               child: badges.Badge(
                 showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
                 badgeContent: Text(
-                    (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}":"${optionVolistSon['currentPrice'].toString()}",
+                    (optionVolistSon['currentPrice'] > 0) ?"+${formatSum(optionVolistSon['currentPrice']).toString()}":"${formatSum(optionVolistSon['currentPrice']).toString()}",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(20),
                       fontFamily: GFont.getFontFamily(),
@@ -222,6 +223,11 @@ class showOneItemOptionWidgetView extends GetView {
     }
 
     return options;
+  }
+
+  String formatSum(int sum) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(sum);
   }
 
   @override
