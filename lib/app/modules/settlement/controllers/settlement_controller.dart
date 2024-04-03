@@ -435,7 +435,6 @@ class SettlementController extends GetxController with StateMixin {
             _showTag,
             InkWell(
               onLongPress: () {
-                isPrintClick.value = false;
                 EasyLoading.dismiss();
               },
               child: Container(
