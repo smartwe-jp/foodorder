@@ -138,6 +138,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showmPay = widget.showmPay;
     _showCreditCard = widget.showCreditCard;
     _showCash = widget.showCash;
+    debugPrint("---showCash:"+_showCash.toString());
     _tableNum = widget.tableNum;
 
     _showPosEdy = widget.showPosEdy;
@@ -162,6 +163,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   }
 
   updateCashShow(){
+    debugPrint("updateCashShow");
     setState(() {
       _showCash = false;
     });

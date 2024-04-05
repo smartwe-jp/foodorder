@@ -7,6 +7,7 @@ import '../modules/CheckoutPage/bindings/checkout_page_binding.dart';
 import '../modules/CheckoutPage/views/ScanCode.dart';
 import '../modules/CheckoutPage/views/checkout_page_view.dart';
 import '../modules/OrderHome/bindings/order_home_binding.dart';
+import '../modules/OrderHome/views/entry_home_view.dart';
 import '../modules/OrderHome/views/order_home_view.dart';
 import '../modules/SelfCheckoutscanningcode/bindings/self_checkoutscanningcode_binding.dart';
 import '../modules/SelfCheckoutscanningcode/views/self_checkoutscanningcode_view.dart';
@@ -60,6 +61,11 @@ class AppPages {
     GetPage(
       name: _Paths.ORDER_HOME,
       page: () => OrderHomeView(),
+      binding: OrderHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.ENTRY_HOME,
+      page: () => EntryHomeView(),
       binding: OrderHomeBinding(),
     ),
     GetPage(

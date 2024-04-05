@@ -72,7 +72,7 @@ class HomeController extends GetxController {
     debugPrint("requestPermission 0");
     //霸屏隐藏状态栏导航栏
     await Appset.hideBullyScreen; //隐藏状态栏
-
+    debugPrint("requestPermission 0.1");
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
     debugPrint("storageStatus:$storageStatus");
@@ -130,7 +130,7 @@ class HomeController extends GetxController {
 
 
 //倒计时
-  _countDownTimer() {
+  countDownTimer() {
     showCashTimer?.cancel();
     showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) {
       seconds.value--;
@@ -138,6 +138,12 @@ class HomeController extends GetxController {
       if (this.seconds == 0) {
         //如果60秒未接收返回正确通知，则进行下一步操作
         _isCashState.value = false;
+        var cashShowData = {
+          "isCash": _isCashState.value,
+        };
+        debugPrint("countDownTimer ### _isCashState = ${_isCashState.value}");
+        Storage.setString('isCashState', json.encode(cashShowData));
+        GetxStorage.setData('isCashState', json.encode(cashShowData));
         debugPrint("_countDownTimer getIsFirstOpen");
         getIsFirstOpen();
 
@@ -150,7 +156,7 @@ class HomeController extends GetxController {
   OpenPayCube() async {
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
-    _countDownTimer();
+    countDownTimer();
     String checkStatus = await Paycube.CheckPayCubeStatus;
 
     //如果检测现金机打开错误，则重新打开一下
@@ -187,7 +193,7 @@ class HomeController extends GetxController {
       // 循环一定要记得设置取消条件，手动取消
       if (_allowStatus == "AllowSuccess") {
         seconds.value=60;
-        _countDownTimer();
+        countDownTimer();
 
         stopPaycube();
         allowt.cancel();
@@ -220,7 +226,7 @@ class HomeController extends GetxController {
       if (_stopStatus == "StopSuccess") {
         //倒计时，一定时间不开启现金机则继续执行下一步
         seconds.value=60;
-        _countDownTimer();
+        countDownTimer();
         closePaycube();
         stopcheck.cancel();
 
@@ -261,7 +267,7 @@ class HomeController extends GetxController {
   //禁用一元入金和出金
   prohibitOneCash() async {
     //var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
-    debugPrint("prohibitOneCash 1");
+    debugPrint("prohibitOneCash 1 _isCashState = ${_isCashState.value}");
     var cashShowData = {
       "isCash": _isCashState.value,
     };

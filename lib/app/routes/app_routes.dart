@@ -7,6 +7,7 @@ abstract class Routes {
   static const TRANSIT_PAGE = _Paths.TRANSIT_PAGE;
   static const ACTIVATION = _Paths.ACTIVATION;
   static const ORDER_HOME = _Paths.ORDER_HOME;
+  static const ENTRY_HOME = _Paths.ENTRY_HOME;
   static const OPOS_APG = _Paths.OPOS_APG;
   static const MW_TEST = _Paths.MW_TEST;
   static const SELFSERVICE_PAGE = _Paths.SELFSERVICE_PAGE;
@@ -29,6 +30,7 @@ abstract class _Paths {
   static const TRANSIT_PAGE = '/transit-page';
   static const ACTIVATION = '/activation';
   static const ORDER_HOME = '/order-home';
+  static const ENTRY_HOME = '/entry-home';
   static const OPOS_APG = '/opos-apg';
   static const MW_TEST = '/mw-test';
   static const SELFSERVICE_PAGE = '/selfservice-page';

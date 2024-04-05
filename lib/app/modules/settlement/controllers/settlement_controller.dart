@@ -378,7 +378,7 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       print("过来删除menu了");
       Get.delete<MenuPageController>(); // 手动删除控制器实例
-      Get.toNamed("/order-home");
+      Get.toNamed("/entry-home");
       //Navigator.pushNamed(context, '/home');
     }
   }
@@ -391,7 +391,7 @@ class SettlementController extends GetxController with StateMixin {
     if (machineMode.value == "1") {
       if (is_back_home.value == "0") {
         Get.delete<MenuPageController>(); // 手动删除控制器实例
-        Get.toNamed("/order-home");
+        Get.toNamed("/entry-home");
         //Navigator.pushNamed(context, '/home');
       } else {
         // eventBus.fire(new clearCartEvent('支付成功...'));

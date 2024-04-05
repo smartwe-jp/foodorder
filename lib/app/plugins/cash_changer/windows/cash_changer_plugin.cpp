@@ -15,6 +15,7 @@
 #include "opos_all.h"
 #include <locale>
 #include <codecvt>
+//#include <thread>
 
 
 namespace cash_changer {
@@ -148,6 +149,7 @@ void CashChangerPlugin::HandleMethodCall(
     cerr << "openCashChange called 。。" << endl;
         // 打开现金机
         long lngRet = pCashChanger->Open("CashChanger");
+        cerr << "Open result 。。 " << lngRet << endl;
         // 检查是否已经打开
         if (lngRet == OposEIllegal) {
             lngRet = OposSuccess;
@@ -155,26 +157,33 @@ void CashChangerPlugin::HandleMethodCall(
         if (lngRet == OposSuccess) {
             if (pCashChanger->Claimed == VARIANT_FALSE) {
             // 获取排他访问权限
-                lngRet = pCashChanger->ClaimDevice(10000);
-                if (lngRet == 0) {
-                    // 设置设备属性
-                    pCashChanger->DeviceEnabled = VARIANT_TRUE;
-                    pCashChanger->DataEventEnabled = VARIANT_TRUE;
-                    pCashChanger->FreezeEvents = VARIANT_FALSE;
+                //thread([&lngRet, &result, pCashChanger = this->pCashChanger]() {
+                    lngRet = pCashChanger->ClaimDevice(6000);
+                    cerr << "ClaimDevice result 。。 " << lngRet << endl;
+                    if (lngRet == 0) {
+                        cerr << "ClaimDevice 成功" << endl;
+                        // 设置设备属性
+                        pCashChanger->DeviceEnabled = VARIANT_TRUE;
+                        pCashChanger->DataEventEnabled = VARIANT_TRUE;
+                        pCashChanger->FreezeEvents = VARIANT_FALSE;
 
-                    // 执行 DirectIO x
-                    long data = 0;
-                    BSTR bstr = SysAllocString(L"");
-                    lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
-                    SysFreeString(bstr);
-                    result->Success(flutter::EncodableValue(lngRet));
-                } else {
-                    
-                    cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
-                    result->Success(flutter::EncodableValue(lngRet));
-                }
+                        // 执行 DirectIO x
+                        long data = 0;
+                        BSTR bstr = SysAllocString(L"");
+                        lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
+                        cerr << "DirectIO result 。。 " << lngRet << endl;
+                        SysFreeString(bstr);
+                        result->Success(flutter::EncodableValue(lngRet));
+                    } else {
+                        cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
+                        result->Success(flutter::EncodableValue(lngRet));
+                        //channel->InvokeMethod("ClaimDeviceResult", std::make_unique<flutter::EncodableValue>(lngRet));
+                    }
+                //}).detach();
+                
             } else {
                 // 设备已被声明，设置属性
+                cerr << "设备已被声明，设置属性" << endl;
                 pCashChanger->DeviceEnabled = VARIANT_TRUE;
                 pCashChanger->DataEventEnabled = VARIANT_TRUE;
                 pCashChanger->FreezeEvents = VARIANT_FALSE;
@@ -434,7 +443,7 @@ void CashChangerPlugin::HandleMethodCall(
                 case OPOS_ECHAN_OVERDISPENSE:
                     result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
                     cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
-                    pCashChanger->EndDeposit(ChanDepositrepay);
+                    //pCashChanger->EndDeposit(ChanDepositrepay);
                     break;
                 case OPOS_ECHAN_OVER:
                     result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));

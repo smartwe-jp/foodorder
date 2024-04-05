@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 
@@ -44,7 +45,7 @@ class TransitPageController extends GetxController {
   getIsShowCashInfo() async {
     debugPrint("transit getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
-
+    debugPrint("systemSettingInfo = ${systemSettingInfo}");
     _isCashState.value = systemSettingInfo['isCash'];
 
     _getMachineInfo();
@@ -78,12 +79,12 @@ class TransitPageController extends GetxController {
       "version": local_version.value
     };
     print(formData);
-    
+
     request('webBootActivatev4', method: 'POST', parameters: formData)
         .then((val) {
       debugPrint("webBootActivatev4");
       var response = json.decode(val.toString());
-      debugPrint("webBootActivatev4: "+response.toString());
+      debugPrint("webBootActivatev4: " + response.toString());
       //LogUtil.d("getMachineActivate"+response);
       if (response['code'] == 200) {
         var shopData = response['data'];
@@ -328,7 +329,7 @@ class TransitPageController extends GetxController {
   void _goMain() async {
     debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => OrderHomeView());
+      Get.off(() => EntryHomeView());
       //Get.toNamed("/order-home");
     });
   }

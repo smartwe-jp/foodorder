@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -11,6 +12,9 @@ extension HomeControllerExtension on HomeController {
 
   checkChangerStatus() async {
     debugPrint("checkChangerStatus 1");
+
+    countDownTimer();
+
     int? resultCode = await CashChanger.checkChangerStatus;
     debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
     if (resultCode == null) {
@@ -21,7 +25,9 @@ extension HomeControllerExtension on HomeController {
     if (resultCode == 0) {
       resultCode = 100;
     }
-    HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode-100];
+    HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode - 100];
+    debugPrint(
+        "checkChangerStatus resultCodeEnum:  " + resultCodeEnum.toString());
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
@@ -33,7 +39,7 @@ extension HomeControllerExtension on HomeController {
         await openCashChanger();
         break;
       case HealthResultCode.OPOS_E_BUSY:
-        sleep(Duration(seconds: 5));
+        await Future.delayed(Duration(seconds: 5));
         await checkChangerStatus();
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
@@ -52,11 +58,12 @@ extension HomeControllerExtension on HomeController {
     debugPrint("OpenPayCube 2");
     //如果检测现金机打开错误，则重新打开一下
     int? retCode = await CashChanger.openCashChanger;
+    debugPrint("OpenPayCube 3");
     await CashChanger.openChangerNext(
         openResult: retCode,
-        onSuccess: () {
+        onSuccess: () async {
           debugPrint("OpenPayCube 6");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           startDeposit();
         },
         onRetry: () {
@@ -84,14 +91,14 @@ extension HomeControllerExtension on HomeController {
     int? result = await CashChanger.startDeposit;
     await CashChanger.changerResultNext(
         resultCode: result,
-        onSuccess: () {
+        onSuccess: () async {
           debugPrint("Starttoubi success");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           _calculateAmount();
         },
-        onRetry: () {
+        onRetry: () async {
           debugPrint("Starttoubi retry");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           startDeposit();
         },
         showError: (String error) {
@@ -107,9 +114,9 @@ extension HomeControllerExtension on HomeController {
     final result = await CashChanger.depositAmount;
     await CashChanger.changerResultNext(
         resultCode: result,
-        onSuccess: () {
+        onSuccess: () async {
           debugPrint("CalculateAmount 2");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           stopCashChanger(DepositAction.repay.index, true);
         },
         onRetry: () {
@@ -130,14 +137,14 @@ extension HomeControllerExtension on HomeController {
         resultCode: result,
         onSuccess: () async {
           debugPrint("stopPaycube 3");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           if (next) {
             closeCashChanger();
           }
         },
         onRetry: () async {
           debugPrint("stopPaycube 4");
-          sleep(Duration(milliseconds: 200));
+          await Future.delayed(Duration(milliseconds: 200));
           stopCashChanger(action, true);
         },
         showError: (String error) async {
@@ -148,6 +155,7 @@ extension HomeControllerExtension on HomeController {
   closeCashChanger() async {
     debugPrint("closePaycube 1");
     checkSteeps.value = 4;
+    showCashTimer?.cancel();
     prohibitOneCash();
   }
 }

@@ -156,6 +156,7 @@ class MenuPageController extends GetxController with StateMixin {
   _getMachineActivateInfo() async {
     Map systemSettingInfo = await HomeServices.getMachineActivateData();
     showCash.value = systemSettingInfo['showCash'];
+    debugPrint("MenuPageController showCash:${showCash.value}");
     showWechat.value = systemSettingInfo['showWechat'];
     showAlipay.value = systemSettingInfo['showAlipay'];
     showPayPay.value = systemSettingInfo['showPayPay'];

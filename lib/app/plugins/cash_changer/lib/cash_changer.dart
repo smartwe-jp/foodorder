@@ -5,7 +5,7 @@ import 'package:flutter/foundation.dart';
 class CashChanger {
   static int? putMoney = 0;
   static String putCurrency = "";
-  static String currencyString = ""; //币种 
+  static String currencyString = ""; //币种
 
   //监听几种状态
   static String payCubeStopCashStatus = "Error";
@@ -18,23 +18,19 @@ class CashChanger {
   //set event listener
   static Future<void> setEventsListener() async {
     CashChangerPlatform.instance.setEvenstListener((call) async {
-
       debugPrint('Cash Changer Event: ${call.method} ${call.arguments}');
       switch (call.method) {
         case 'DirectIOEvent':
-          
           break;
         case 'DataEvent':
           putMoney = call.arguments;
           onGetPutMoneyStringChange?.call(putMoney ?? 0);
           break;
         case 'StatusUpdateEvent':
-          
           break;
         default:
           debugPrint('No method found');
       }
-      
     });
   }
 
@@ -42,7 +38,6 @@ class CashChanger {
   static Future<void> removeEventsListener() async {
     CashChangerPlatform.instance.removeEvenstListener();
   }
-
 
   static Future<String?> get getPlatformVersion async {
     return CashChangerPlatform.instance.getPlatformVersion();
@@ -103,21 +98,24 @@ class CashChanger {
     return CashChangerPlatform.instance.dispenseCash(cashCounts);
   }
 
-
-
   static getOposResult(int? result) {
     if (result == null) {
-      return OposResult(resultCode:HealthResultCode.NONE, resultCodeExtended:ResultCodeExtended.NONE);
+      return OposResult(
+          resultCode: HealthResultCode.NONE,
+          resultCodeExtended: ResultCodeExtended.NONE);
     }
     if (result > 200) {
-       HealthResultCode resultCode = HealthResultCode.OPOS_E_EXTENDED;
-       ResultCodeExtended? resultExtended = ResultCodeExtended.values.fromIndex(result-200);
-       return OposResult(resultCode:resultCode, 
-                        resultCodeExtended:resultExtended ?? ResultCodeExtended.NONE);
+      HealthResultCode resultCode = HealthResultCode.OPOS_E_EXTENDED;
+      ResultCodeExtended? resultExtended =
+          ResultCodeExtended.values.fromIndex(result - 200);
+      return OposResult(
+          resultCode: resultCode,
+          resultCodeExtended: resultExtended ?? ResultCodeExtended.NONE);
     } else {
       HealthResultCode? resultCode = HealthResultCode.values.fromIndex(result);
-      return OposResult(resultCode:resultCode ?? HealthResultCode.NONE, 
-                        resultCodeExtended:ResultCodeExtended.NONE);
+      return OposResult(
+          resultCode: resultCode ?? HealthResultCode.NONE,
+          resultCodeExtended: ResultCodeExtended.NONE);
     }
   }
 
@@ -125,8 +123,9 @@ class CashChanger {
       {required int? resultCode,
       required Function onSuccess,
       required Function onRetry,
-      required Function(String) showError}) async {    
+      required Function(String) showError}) async {
     OposResult result = getOposResult(resultCode);
+    debugPrint("changerResultNext: ${result.resultCode}");
     switch (result.resultCode) {
       case HealthResultCode.OPOS_SUCCESS:
         onSuccess();
@@ -163,9 +162,11 @@ class CashChanger {
       required Function onSuccess,
       required Function onRetry,
       required Function(String) showError}) async {
-
+    debugPrint("changerResultExtendedNext: $resultCodeExtended");
     switch (resultCodeExtended) {
       case ResultCodeExtended.OPOS_ECHAN_OVERDISPENSE:
+      case ResultCodeExtended.OPOS_ECHAN_TOTALOVER:
+        showError("超出找零范围 请补充足够零钱");
         break;
       case ResultCodeExtended.OPOS_ECHAN_OVER:
         break;
@@ -198,11 +199,12 @@ class CashChanger {
       required Function onSuccess,
       Function? onRetry,
       required Function(String) showError}) async {
-        if (openResult == null) {
-          showError("UNKNOWN ERROR");
-          return;
-        }
-        OpenChangerResult result = OpenChangerResult.values.fromIndex(openResult) ?? OpenChangerResult.NONE;
+    if (openResult == null) {
+      showError("UNKNOWN ERROR");
+      return;
+    }
+    OpenChangerResult result = OpenChangerResult.values.fromIndex(openResult) ??
+        OpenChangerResult.NONE;
     switch (result) {
       case OpenChangerResult.OPEN_SUCCESS:
       case OpenChangerResult.OPOS_OR_ALREADYOPEN:
@@ -246,5 +248,4 @@ class CashChanger {
         break;
     }
   }
-
 }

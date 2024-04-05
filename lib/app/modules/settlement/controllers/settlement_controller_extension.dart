@@ -1,14 +1,17 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
+import 'package:get/get.dart';
 
 import 'settlement_controller.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 
 extension SettlementControllerExtension on SettlementController {
-
   startDeposit() async {
     debugPrint("startDeposit");
 
@@ -25,6 +28,7 @@ extension SettlementControllerExtension on SettlementController {
         },
         showError: (String error) {
           debugPrint("startDeposit error: $error");
+          errorHandleDialog(error);
         });
   }
 
@@ -93,7 +97,7 @@ extension SettlementControllerExtension on SettlementController {
     };
   }
 
-  //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
+  //入金开始-入金结束-交易结束-出金开始-交易结束  
   endDeposit() async {
     debugPrint("endDeposit");
     sleep(Duration(milliseconds: 300));
@@ -128,10 +132,11 @@ extension SettlementControllerExtension on SettlementController {
         showError: (String error) {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
+          errorHandleDialog(error);
         });
   }
 
-  //打印小票之后在关闭现金机，所以不考虑_isPrint
+  //打印小票之后在关闭现金机
   gloryNextOper() async {
     debugPrint("nextOper");
     CashStep.value = 2;
@@ -168,6 +173,7 @@ extension SettlementControllerExtension on SettlementController {
         },
         showError: (String error) {
           debugPrint("startOutPutMoney error: $error");
+          errorHandleDialog(error);
         });
   }
 
@@ -232,8 +238,8 @@ extension SettlementControllerExtension on SettlementController {
 
     if (getputMoneyString.value == true) {
       // 循环一定要记得设置取消条件，手动取消
-      String putcurrencyString = getPutMoneyCurrency
-          .value; //await Paycube.getPayCubePutMoneyCurrency;
+      String putcurrencyString =
+          getPutMoneyCurrency.value; //await Paycube.getPayCubePutMoneyCurrency;
       if (putcurrencyString.trim().length > 60) {
         var totalAmount =
             MoneyParser.calculateTotalAmount(putcurrencyString.trim());
@@ -247,5 +253,18 @@ extension SettlementControllerExtension on SettlementController {
         }
       }
     }
+  }
+
+  errorHandleDialog(String error) {
+    EasyLoading.dismiss();
+    debugPrint("errorHandleDialog: $error");
+    Get.dialog(DialogUtils.alertOneButton(error,
+        title: GString.getToString(checkLanguage.value, "tag_title"),
+        confirmtitle:
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        confirm: () {
+        allowClick.value == true;
+        Get.back();
+    }));
   }
 }
