@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 //import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -14,11 +13,10 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:android_usb_printer/android_usb_printer.dart';
+
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -27,13 +25,11 @@ import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
-import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
-import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../../widget/NumberCircle.dart';
@@ -165,7 +161,6 @@ class SettlementController extends GetxController with StateMixin {
   RxInt CashStep = 1.obs;
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
-  RxMap usbDevice = {}.obs;
 
   bool posTest = true;
 
@@ -317,7 +312,6 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
 
-    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
 
     _getPrintLogoImageData();
   }
@@ -1643,6 +1637,12 @@ class SettlementController extends GetxController with StateMixin {
 
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
+
+    if (Platform.isWindows) {
+      await gloryNextOper();
+      return;
+    }
+
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
     await Paycube.setReceiveEvent;
@@ -1895,38 +1895,6 @@ class SettlementController extends GetxController with StateMixin {
         } else {}
       });
     }
-  }
-
-  UsbDeviceInfo? get curUsbPrinter {
-    if (usbDevice.value.isEmpty) {
-      print("usbDevice is empty");
-      return null;
-    }
-
-    // ignore: invalid_use_of_protected_member
-    print("usbDevice.value:${usbDevice.value}");
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
-  }
-
-  _sendToUsePrinter(widget) {
-    print("_sendToUsePrinter 打印lalala：${DateTime.now()}");
-    final printWidget = ReceiptConstrainedBox(widget);
-    PictureGeneratorProvider.instance.addPicGeneratorTask(
-      PicGenerateTask<PrinterInfo>(
-        tempWidget: printWidget as ATempWidget,
-        printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(usbDevice: curUsbPrinter),
-      ),
-    );
-    // PictureGeneratorProvider.instance.addPicGeneratorTask(
-    //   PicGenerateTask<PrinterInfo>(
-    //     tempWidget: organizeData(
-    //             serialNumber, printData, takeOut, orderTime, printer_ip)
-    //         as ATempWidget,
-    //     printTypeEnum: PrintTypeEnum.receipt,
-    //     params: PrinterInfo(ip: printer_ip),
-    //   ),
-    // );
   }
 
   _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){

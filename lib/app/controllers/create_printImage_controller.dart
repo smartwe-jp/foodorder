@@ -1,12 +1,12 @@
 
 import 'dart:convert';
 import 'dart:typed_data';
-import 'dart:ui';
-
+import 'package:foodorder/app/config/printer_info.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
+import 'package:android_usb_printer/android_usb_printer.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
@@ -21,6 +21,7 @@ class CreatePrintImageController extends GetxController {
   RxString machineCode = "".obs;
   RxString machineMode = "1".obs;
   RxString printLogoImage = "".obs;
+  RxMap usbDevice = {}.obs;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -66,9 +67,31 @@ class CreatePrintImageController extends GetxController {
 
       machineMode.value = systemSettingInfo["machineMode"];
     }
-
+    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();  
     machineCode.value = await HomeServices.getMachineInfo();
+    
     //change(null, status: RxStatus.success());
+  }
+
+  UsbDeviceInfo? get curUsbPrinter {
+    if (usbDevice.value.isEmpty) {
+      print("usbDevice is empty");
+      return null;
+    }
+    print("usbDevice.value:${usbDevice.value}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
+  }
+
+  _sendToUsePrinter(widget) {
+    print("_sendToUsePrinter 打印lalala：${DateTime.now()}");
+    final printWidget = ReceiptConstrainedBox(widget);
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: printWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(usbDevice: curUsbPrinter),
+      ),
+    );
   }
 
   tpPrintnew(print_paper_txt_size, printData, printType) async {
@@ -329,7 +352,28 @@ class CreatePrintImageController extends GetxController {
     if (menuNum == 1) {
       totalHight += 15;
     }
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+    // ByteData byteData = await WidgetToImage.widgetToImage(Container(
+    //   width: 385,
+    //   height: totalHight.toDouble(),
+    //   padding: EdgeInsets.only(left: 0.5, right: 0.5),
+    //   color: Colors.white,
+    //   alignment: Alignment.topCenter,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     textDirection: TextDirection.rtl,
+    //     children: categoryMenus,
+    //   ),
+    // ),
+    //     size: Size(385, totalHight.toDouble())
+    // );
+
+    // List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    //Future.delayed(Duration(milliseconds: 50), () async {
+    // String base64Image = base64Encode(imageBytes);
+    //LogUtil.d(base64Image);
+    final printWidget = Container(
       width: 385,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
@@ -341,27 +385,22 @@ class CreatePrintImageController extends GetxController {
         textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
-    ),
-        size: Size(385, totalHight.toDouble())
     );
-
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    //Future.delayed(Duration(milliseconds: 50), () async {
-    String base64Image = base64Encode(imageBytes);
-    //LogUtil.d(base64Image);
+    
     if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
+      _sendToUsePrinter(printWidget);
+      //await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
       Future.delayed(Duration(milliseconds: 300), () async {
-        await FlutterPluginMsprinter.sendPrintCut("1");
+        //await FlutterPluginMsprinter.sendPrintCut("1");
         tpPrintReceipt(print_paper_txt_size, printData);
       });
     } else {
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
-      Future.delayed(Duration(milliseconds: 300), () async {
-        await FlutterPluginMsprinter.sendPrintCut("0");
-      });
+      _sendToUsePrinter(printWidget);
+      // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
+      // Future.delayed(Duration(milliseconds: 300), () async {
+      //   await FlutterPluginMsprinter.sendPrintCut("0");
+      // });
     }
 
     //});
@@ -774,7 +813,28 @@ class CreatePrintImageController extends GetxController {
 
     var totalHight = lineZeng + lineHight+addRowHight;
 
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+    // ByteData byteData = await WidgetToImage.widgetToImage(Container(
+    //   width: 385,
+    //   padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
+    //   height: totalHight.toDouble(),
+    //   color: Colors.white,
+    //   //alignment: Alignment.topCenter,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     //crossAxisAlignment: CrossAxisAlignment.start,
+    //     textDirection: TextDirection.rtl,
+    //     children: categoryMenus,
+    //   ),
+    // ),
+    //     size: Size(385, totalHight.toDouble())
+    // );
+
+    // List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
+    // //Future.delayed(Duration(milliseconds: 200), () async {
+    // String base64Image = base64Encode(imageBytes);
+    // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",printLogoImage.value);
+    final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
       height: totalHight.toDouble(),
@@ -786,17 +846,10 @@ class CreatePrintImageController extends GetxController {
         textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
-    ),
-        size: Size(385, totalHight.toDouble())
     );
-
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    //Future.delayed(Duration(milliseconds: 200), () async {
-    String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",printLogoImage.value);
     Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("1");
+      //await FlutterPluginMsprinter.sendPrintCut("1");
+      _sendToUsePrinter(printWidget);
     });
     //});
 
