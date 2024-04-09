@@ -11,6 +11,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   firebase_core
   flutter_plugin_msprinter
   permission_handler_windows
+  r_get_ip
 )
 
 list(APPEND FLUTTER_FFI_PLUGIN_LIST

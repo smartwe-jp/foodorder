@@ -102,6 +102,12 @@
 @import permission_handler_apple;
 #endif
 
+#if __has_include(<r_get_ip/RGetIpPlugin.h>)
+#import <r_get_ip/RGetIpPlugin.h>
+#else
+@import r_get_ip;
+#endif
+
 #if __has_include(<shared_preferences_foundation/SharedPreferencesPlugin.h>)
 #import <shared_preferences_foundation/SharedPreferencesPlugin.h>
 #else
@@ -133,6 +139,7 @@
   [PathProviderPlugin registerWithRegistrar:[registry registrarForPlugin:@"PathProviderPlugin"]];
   [PaycubePlugin registerWithRegistrar:[registry registrarForPlugin:@"PaycubePlugin"]];
   [PermissionHandlerPlugin registerWithRegistrar:[registry registrarForPlugin:@"PermissionHandlerPlugin"]];
+  [RGetIpPlugin registerWithRegistrar:[registry registrarForPlugin:@"RGetIpPlugin"]];
   [SharedPreferencesPlugin registerWithRegistrar:[registry registrarForPlugin:@"SharedPreferencesPlugin"]];
   [SqflitePlugin registerWithRegistrar:[registry registrarForPlugin:@"SqflitePlugin"]];
 }

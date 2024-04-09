@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 
 import 'package:get/get.dart';
 
@@ -786,6 +787,115 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+
+  //设置USB打印机
+  
+
+  setUSBPrint() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+            InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              //controller.checkIsAllowWlanPrint("0");
+              Get.dialog(
+                PrinterListPage(
+                  searchType:SearchType.usb, 
+                  currentPrinter: controller.curUsbPrinter?.id,
+                  onPrinterSelected: (device) => {
+                  controller.setUsbPrinter(usbPrinter:device.usbDevice)
+                },)
+              );
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("スキャン",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+           SizedBox(width: ScreenAdapter.width(20)),
+           controller.usbDevice.isEmpty ? Container() :
+
+           InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                //controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+                controller.printTest(SearchType.usb ,controller.usbDevice["productName"] ?? "productName", controller.usbDevice["sId"] ?? "sId");
+              },
+              child: Container(
+                padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                //width: ScreenAdapter.width(220),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: ColorsUtil.hexToColor("#409eff"),
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                            "${controller.usbDevice["sId"]}",
+                            style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(22),
+                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                            )
+                        ),
+                    
+                      ],
+                    ),
+                    Text("テスト印刷",
+                        style: TextStyle(
+                          fontWeight: FontWeight.w400,
+                          fontSize: ScreenAdapter.fontSize(20.0),
+                          color: ColorsUtil.hexToColor("#FFFFFF"),
+                        )
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ]
+      )
+    );
+  }
+
   //设置是否开启打印机
   setIsAllowWlanPrint() {
     return Container(
@@ -916,7 +1026,7 @@ class SystemSettingPageView extends GetView {
               highlightColor: Colors.transparent, // 透明色
               splashColor: Colors.transparent, // 透明色
               onTap: (){
-                controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+                controller.printTest(SearchType.net ,controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
               },
               child: Container(
                 margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -1066,7 +1176,7 @@ class SystemSettingPageView extends GetView {
               highlightColor: Colors.transparent, // 透明色
               splashColor: Colors.transparent, // 透明色
               onTap: (){
-                controller.printTest(controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+                controller.printTest(SearchType.net, controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
               },
               child: Container(
                 margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -1275,7 +1385,7 @@ class SystemSettingPageView extends GetView {
               highlightColor: Colors.transparent, // 透明色
               splashColor: Colors.transparent, // 透明色
               onTap: (){
-                controller.printTest(controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
+                controller.printTest(SearchType.net, controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
               },
               child: Container(
                 margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
@@ -1914,6 +2024,24 @@ class SystemSettingPageView extends GetView {
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
+
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "USBプリンター",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                            ),
+                                            setUSBPrint(),//usb打印机
+
+                                          ]
+                                      ),
 
                                       TableRow(
                                           children: <Widget>[

@@ -14,6 +14,7 @@
 #include <firebase_core/firebase_core_plugin_c_api.h>
 #include <flutter_plugin_msprinter/flutter_plugin_msprinter_plugin_c_api.h>
 #include <permission_handler_windows/permission_handler_windows_plugin.h>
+#include <r_get_ip/r_get_ip_plugin.h>
 
 void RegisterPlugins(flutter::PluginRegistry* registry) {
   AppsetPluginCApiRegisterWithRegistrar(
@@ -32,4 +33,6 @@ void RegisterPlugins(flutter::PluginRegistry* registry) {
       registry->GetRegistrarForPlugin("FlutterPluginMsprinterPluginCApi"));
   PermissionHandlerWindowsPluginRegisterWithRegistrar(
       registry->GetRegistrarForPlugin("PermissionHandlerWindowsPlugin"));
+  RGetIpPluginRegisterWithRegistrar(
+      registry->GetRegistrarForPlugin("RGetIpPlugin"));
 }

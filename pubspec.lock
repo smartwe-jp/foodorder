@@ -423,10 +423,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_printer_plus
-      sha256: "65e5f29764bab4e2860e0e79625ff6be7ed466194f8fb3cbc758a83c8136a2ef"
+      sha256: "62250a33813cda0061ff4a2bb6d4bda5c0f95ab2822b49fc180c3076dca58b2a"
       url: "https://pub.dev"
     source: hosted
-    version: "0.0.2+2"
+    version: "1.0.0+1"
   flutter_screenutil:
     dependency: "direct main"
     description:
@@ -780,6 +780,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.2"
+  r_get_ip:
+    dependency: transitive
+    description:
+      name: r_get_ip
+      sha256: b8ae439bcd6cd3dcd332043bb0181e629293c1b79107e906483d8ff9547faf69
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.1.3"
   rxdart:
     dependency: transitive
     description:
@@ -993,6 +1001,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "4.1.4"
+  windows_usb_printer:
+    dependency: transitive
+    description:
+      name: windows_usb_printer
+      sha256: "6e147dcd987a9cadda274b4b8f708f73dd6a2bb9c2c4aeeaf31accf03638236a"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.0.2+4"
   xdg_directories:
     dependency: transitive
     description:

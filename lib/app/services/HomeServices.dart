@@ -97,6 +97,20 @@ class HomeServices{
     return printSettingInfo;
   }
 
+  //usb print机多参数设置
+  static getUsbPrintSettingInfo() async{
+    Map? printSettingInfo;
+    try {
+      var printSettingDatatmp = await Storage.getString('smartwe_usbPrintSetting');
+      Map? printSettingData = json.decode(printSettingDatatmp!);
+      GetxStorage.setData('smartwe_usbPrintSetting', json.encode(printSettingData));
+      printSettingInfo = printSettingData;
+    } catch (e) {
+      printSettingInfo = {};
+    }
+    return printSettingInfo;
+  }
+
   static getWlanPrintSettingTwoInfo() async{
     Map printSettingInfo;
     try {

@@ -16,6 +16,7 @@ import 'package:get_storage/get_storage.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:android_usb_printer/android_usb_printer.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -159,6 +160,7 @@ class SettlementController extends GetxController with StateMixin {
   RxInt CashStep = 1.obs;
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
+  RxMap usbDevice = {}.obs;
 
   @override
   void onInit() {
@@ -247,7 +249,6 @@ class SettlementController extends GetxController with StateMixin {
         CashChanger.setEventsListener();
         startDeposit();
       }
-      
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();
@@ -309,6 +310,7 @@ class SettlementController extends GetxController with StateMixin {
         wlan_print_port_two.value = wlanPrintSettingTwoInfo['wlanPrintPort'];
       }
     }
+    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
 
     _getPrintLogoImageData();
   }
@@ -1323,6 +1325,8 @@ class SettlementController extends GetxController with StateMixin {
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
         LogUtil.d(response);
+
+        //LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
           if (response['data']["printInfoMapStruct"] != null &&
@@ -1342,11 +1346,14 @@ class SettlementController extends GetxController with StateMixin {
           }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
+          debugPrint("doPrintOrderMenu==val");
           if (response['data']["orderType"] == 1 &&
               is_allow_receipt_menu.value == "1") {
+            debugPrint("doPrintOrderMenu==val2");
             _tpPrintnew(response['data'], printType);
           } else {
             if (printType == "1") {
+              debugPrint("doPrintOrderMenu==val3");
               _tpPrintReceipt(response['data']);
             }
           }
@@ -2028,43 +2035,83 @@ class SettlementController extends GetxController with StateMixin {
     if (menuNum == 1) {
       totalHight += 15;
     }
-    ByteData byteData = await WidgetToImage.widgetToImage(
-        Container(
-          width: 385,
-          height: totalHight.toDouble(),
-          padding: EdgeInsets.only(left: 0.5, right: 0.5),
-          color: Colors.white,
-          alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            textDirection: TextDirection.rtl,
-            children: categoryMenus,
-          ),
-        ),
-        size: Size(385, totalHight.toDouble()));
+    final printWidget = Container(
+      width: 385,
+      height: totalHight.toDouble(),
+      padding: EdgeInsets.only(left: 0.5, right: 0.5),
+      color: Colors.white,
+      alignment: Alignment.topCenter,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        textDirection: TextDirection.rtl,
+        children: categoryMenus,
+      ),
+    );
+    // ByteData byteData = await WidgetToImage.widgetToImage(
+    //     printWidget,
+    //     size: Size(385, totalHight.toDouble()));
 
-    List<int> imageBytes = byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    // List<int> imageBytes = byteData.buffer
+    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //Future.delayed(Duration(milliseconds: 50), () async {
-    String base64Image = base64Encode(imageBytes);
+    //String base64Image = base64Encode(imageBytes);
     //LogUtil.d(base64Image);
     if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", " ");
-      Future.delayed(Duration(milliseconds: 300), () async {
-        await FlutterPluginMsprinter.sendPrintCut("1");
-        _tpPrintReceipt(printData);
-      });
+      _sendToUsePrinter(
+        printWidget,
+      );
+      _tpPrintReceipt(printData);
+      // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", " ");
+      // Future.delayed(Duration(milliseconds: 300), () async {
+      //   await FlutterPluginMsprinter.sendPrintCut("1");
+      //   _tpPrintReceipt(printData);
+      // });
     } else {
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");
-      Future.delayed(Duration(milliseconds: 300), () async {
-        await FlutterPluginMsprinter.sendPrintCut("0");
-      });
+      // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");
+      // Future.delayed(Duration(milliseconds: 300), () async {
+      //   await FlutterPluginMsprinter.sendPrintCut("0");
+      // });
+      _sendToUsePrinter(
+        printWidget,
+      );
     }
 
     //});
+  }
+
+  UsbDeviceInfo? get curUsbPrinter {
+    if (usbDevice.value.isEmpty) {
+      print("usbDevice is empty");
+      return null;
+    }
+
+    // ignore: invalid_use_of_protected_member
+    print("usbDevice.value:${usbDevice.value}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
+  }
+
+  _sendToUsePrinter(widget) {
+    print("_sendToUsePrinter 打印lalala：${DateTime.now()}");
+    final printWidget = ReceiptConstrainedBox(widget);
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: printWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(usbDevice: curUsbPrinter),
+      ),
+    );
+    // PictureGeneratorProvider.instance.addPicGeneratorTask(
+    //   PicGenerateTask<PrinterInfo>(
+    //     tempWidget: organizeData(
+    //             serialNumber, printData, takeOut, orderTime, printer_ip)
+    //         as ATempWidget,
+    //     printTypeEnum: PrintTypeEnum.receipt,
+    //     params: PrinterInfo(ip: printer_ip),
+    //   ),
+    // );
   }
 
   _wifiNetworkPrintData(serialNumber, extendPrintVo, takeOut, orderTime) {
@@ -3443,33 +3490,36 @@ class SettlementController extends GetxController with StateMixin {
 
     var totalHight = lineZeng + lineHight + addRowHight;
 
-    ByteData byteData = await WidgetToImage.widgetToImage(
-        Container(
-          width: 385,
-          padding: EdgeInsets.only(
-              left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
-          height: totalHight.toDouble(),
-          color: Colors.white,
-          //alignment: Alignment.topCenter,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            //crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: TextDirection.rtl,
-            children: categoryMenus,
-          ),
-        ),
-        size: Size(385, totalHight.toDouble()));
+    final printWidget = Container(
+      width: 385,
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
+      height: totalHight.toDouble(),
+      color: Colors.white,
+      //alignment: Alignment.topCenter,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        //crossAxisAlignment: CrossAxisAlignment.start,
+        textDirection: TextDirection.rtl,
+        children: categoryMenus,
+      ),
+    );
+    _sendToUsePrinter(printWidget);
+    // ByteData byteData = await WidgetToImage.widgetToImage(
+    //     printWidget,
+    //     size: Size(385, totalHight.toDouble()));
 
-    List<int> imageBytes = byteData.buffer
-        .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    // List<int> imageBytes = byteData.buffer
+    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //Future.delayed(Duration(milliseconds: 200), () async {
-    String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(
-        base64Image, "1", "1", printLogoImage.value);
-    Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("1");
-    });
+    // String base64Image = base64Encode(imageBytes);
+    // await FlutterPluginMsprinter.sendPrintImgNew(
+    //     base64Image, "1", "1", printLogoImage.value);
+    // Future.delayed(Duration(milliseconds: 300), () async {
+    //   await FlutterPluginMsprinter.sendPrintCut("1");
+    // });
+
     //});
   }
 

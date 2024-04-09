@@ -7,6 +7,7 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/WATextPage/views/windows_test_view.dart';
 
@@ -27,6 +28,7 @@ Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
 
   //指定的打印机
   final printerInfo = printTask.params as PrinterInfo;
+  print('printerInfo: $printerInfo');
   //打印票据类型（标签、小票）
   final printTypeEnum = printTask.printTypeEnum;
 
@@ -46,9 +48,20 @@ Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
       argbHeightPx: argbHeight,
     );
 
-    // 网络 打印
-    final conn = printerPlus.NetConn(printerInfo.ip!);
-    conn.writeMultiBytes(printData);
+    if (printerInfo.isUsbPrinter) {
+      // usb 打印
+      print('usb 打印');
+      final conn = UsbConn(printerInfo.usbDevice!);
+      conn.writeMultiBytes(printData, 1024 * 8);
+    } else if (printerInfo.isNetPrinter) {
+      // 网络 打印
+      final conn = NetConn(printerInfo.ip!);
+      conn.writeMultiBytes(printData);
+    }
+
+    // // 网络 打印
+    // final conn = printerPlus.NetConn(printerInfo.ip!);
+    // conn.writeMultiBytes(printData);
   }
 }
 
@@ -57,10 +70,11 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
     await GetStorage.init();
 
-    if (Platform.isAndroid) { //Firebase is not full supported on windows
+    if (Platform.isAndroid) {
+      //Firebase is not full supported on windows
       await Firebase.initializeApp();
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    } 
+    }
 
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -126,6 +140,7 @@ class MyHttpOverrides extends HttpOverrides {
   @override
   HttpClient createHttpClient(SecurityContext? context) {
     return super.createHttpClient(context)
-      ..badCertificateCallback = (X509Certificate cert, String host, int port) => true;
+      ..badCertificateCallback =
+          (X509Certificate cert, String host, int port) => true;
   }
 }

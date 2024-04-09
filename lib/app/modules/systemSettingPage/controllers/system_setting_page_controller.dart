@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
@@ -11,6 +12,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
+import 'package:android_usb_printer/android_usb_printer.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -74,6 +76,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   RxDouble downloadProgress = 0.0.obs;
 
+  RxMap usbDevice = {}.obs;
+
   @override
   void onInit() {
     debugPrint("SystemSettingPageController init");
@@ -111,6 +115,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
+    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
 
     dining_type.value = systemSettingInfo['diningType'];
     if (dining_type.value == "1") {
@@ -616,7 +621,37 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  checkIsAllowWlanPrint(checkedType) async {
+  UsbDeviceInfo? get curUsbPrinter {
+    if (usbDevice.value.isEmpty) {
+      return null;
+    }
+
+    // ignore: invalid_use_of_protected_member
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
+  }
+
+  setUsbPrinter({UsbDeviceInfo? usbPrinter}) async {
+    if (usbPrinter == null) {
+      return;
+    }
+
+    Map<String, dynamic> data = {
+      'productName': usbPrinter.productName,
+      'vId': usbPrinter.vId,
+      'pId': usbPrinter.pId,
+      'sId': usbPrinter.sId,
+      'position': usbPrinter.position,
+    };
+
+    usbDevice.value = data;
+
+    Storage.setString('smartwe_usbPrintSetting', json.encode(data));
+    GetxStorage.setData('smartwe_usbPrintSetting', json.encode(data));
+
+    update();
+  }
+
+  _checkType(checkedType) async {
     var systemSettingData = {
       "diningType": dining_type.value, //1堂食 2外带
       "menuDirection": menu_direction.value, //1顶部横向 2左侧竖
@@ -639,6 +674,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
     GetxStorage.setData(
         'smartwe_systemSetting', json.encode(systemSettingData));
+  }
+
+  checkIsAllowWlanPrint(checkedType) async {
+    _checkType(checkedType);
 
     var wlanPrintSettingData;
     if (checkedType == "1") {
@@ -715,13 +754,17 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   //printType=0 receipt 1label
-  printTest(printIp, printPort, {printType = 0}) async {
+  printTest(type, printIp, printPort, {printType = 0}) async {
+
+    // ignore: invalid_use_of_protected_member
+    final printerInfo = type == SearchType.net ? PrinterInfo(ip: printIp):PrinterInfo(usbDevice: UsbDeviceInfo.fromMap(usbDevice.value as Map<String, dynamic>));
+
     if (printType == 0) {
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
           tempWidget: testReceipt(printIp) as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
-          params: PrinterInfo(ip: printIp),
+          params: printerInfo,
         ),
       );
     } else {
