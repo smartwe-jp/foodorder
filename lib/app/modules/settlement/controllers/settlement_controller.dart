@@ -162,6 +162,7 @@ class SettlementController extends GetxController with StateMixin {
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
 
+  bool posTest = true;
 
   @override
   void onInit() {
@@ -972,39 +973,44 @@ class SettlementController extends GetxController with StateMixin {
         String transaction_type = eventReportString.value.substring(3, 6);
         String resultString = eventReportString.value.substring(10, 13);
         String resultMPFSString = eventReportString.value.substring(13, 16);
-        //String errorString = eventReportString.value.substring(130, 133);
+        //
         print("FirstString==${FirstString}");
         print("SecondString==${SecondString}");
         print("transaction_type==${transaction_type}");
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
-        //print("errorString==${errorString}");
         print(eventReportString.value.length);
-        
-        // if (errorString == "801") {
-        //   if (get801Flag.value == false) {
-        //     LogUtil.d("Get 801 Send 491");
-        //     get801Flag.value = true;
-        //     showCheckLoading();
-        //     this._socket?.write(create491Message());
-        //   } else {
-        //     EasyLoading.dismiss();
-        //     _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),payType: "pos");
-        //   }
-        //
-        //   return;
-        // } else if (errorString == "803" || errorString == "802") {
-        //
-        //   Get.dialog(
-        //       DialogUtils.alertOneButton("取引が不明な状態で終了しました（コード${errorString}）。端末の指示に従って操作してください。",
-        //           title: GString.getToString(checkLanguage.value, "tag_title"),
-        //           confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-        //           confirm: () {
-        //             Get.back();
-        //           })
-        //   );
-        //   return;
-        // }
+
+
+        if (posTest) {
+          String errorString = eventReportString.value.substring(130, 133);
+          print("errorString==${errorString}");
+          if (errorString == "801") {
+            if (get801Flag.value == false) {
+              LogUtil.d("Get 801 Send 491");
+              get801Flag.value = true;
+              showCheckLoading();
+              this._socket?.write(create491Message());
+            } else {
+              EasyLoading.dismiss();
+              _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),payType: "pos");
+            }
+
+            return;
+          } else if (errorString == "803" || errorString == "802") {
+
+            Get.dialog(
+                DialogUtils.alertOneButton("取引が不明な状態で終了しました（コード${errorString}）。端末の指示に従って操作してください。",
+                    title: GString.getToString(checkLanguage.value, "tag_title"),
+                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    confirm: () {
+                      Get.back();
+                    })
+            );
+            return;
+          }
+        }
+
 
         //支付成功 打印，返回首页 除了成功都取消
         if (transaction_type == "900") {
