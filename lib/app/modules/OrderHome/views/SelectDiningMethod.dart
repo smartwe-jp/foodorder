@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -238,6 +239,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
                         ),

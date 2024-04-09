@@ -255,7 +255,8 @@ class ReimbursePrintView extends StatelessWidget {
 
   String _getCurrentTime() {
     DateTime now = DateTime.now();
-    String formattedDate = "${now.year}/${now.month}/${now.day} ${now.hour}:${now.minute}";
+    DateTime tokyoTime = now.add(Duration(hours: 9 - now.timeZoneOffset.inHours));
+    String formattedDate = "${tokyoTime.year}/${tokyoTime.month}/${tokyoTime.day} ${tokyoTime.hour}:${tokyoTime.minute}";
     return formattedDate;
   }
 
@@ -279,11 +280,30 @@ class ReimbursePrintView extends StatelessWidget {
                   width: 10,
                 ),
                 Text(
-                  "¥ ${reimburseInfo["payAmount"]}",
+                  "¥ ${reimburseInfo["amount"]}",
                   style: contentStyle,
                 ),
               ],
             ) : Container(),
+
+            // hasChange() ? Row(
+            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //   crossAxisAlignment: CrossAxisAlignment.start,
+            //   children: [
+            //     Text(
+            //       "お釣り金額",
+            //       style: contentStyle,
+            //     ),
+            //     SizedBox(
+            //       width: 10,
+            //     ),
+            //     Text(
+            //       "¥ -${reimburseInfo["change"]}",
+            //       style: contentStyle,
+            //     ),
+            //   ],
+            // ) : Container(),
+
             hasAmount() ? Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -323,6 +343,11 @@ class ReimbursePrintView extends StatelessWidget {
   bool hasPayAmount() {
     return reimburseInfo["payAmount"] != null &&
         reimburseInfo["payAmount"].toString().length > 0;
+  }
+
+  bool hasChange() {
+    return reimburseInfo["change"] != null &&
+        reimburseInfo["change"].toString().length > 0;
   }
 
   bool hasAmount() {

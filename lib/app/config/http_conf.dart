@@ -32,14 +32,15 @@ const servicePath = {
   'webBootToPrintV5':
       base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
-  'webBootToPrintV7':
-      base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
-  'webBootChangeReset': base_url + 'pad/web/boot/change/reset', //重置机器零钱状态
-  'webBootLinePayConfirm':
-      base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
+  'webBootChangeInfo': base_url + 'pad/web/boot/information', //机器零钱状态
+  'webBootChangeReset': base_url + 'pad/web/boot/reset', //重置机器零钱状态
+  'webBootChangeSet': base_url + 'pad/web/boot/change/add', //设置机器零钱状态
+  'webBootLinePayConfirm': base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
 
   'webBootCreditCard': base_url + 'pad/web/boot/creditCard', //请求刷卡返回的字符串
   'webBootCreditCardCancel':
@@ -75,4 +76,10 @@ const servicePath = {
   'webBootReimburseExecute':
       base_url + 'pad/web/boot/reimburse/execute', //扫码支付的退款开始执行
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
+
+
+  //Pos测试接口
+  'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
+
 };
+

@@ -28,6 +28,17 @@ class HomeServices{
     return machineinfo;
   }
 
+  static getShopCode() async{
+    String? shopCode;
+    try {
+      String? shopCodeData = await Storage.getString('smartwe_shopCode');
+      shopCode = shopCodeData;
+    } catch (e) {
+      shopCode = "";
+    }
+    return shopCode;
+  }
+
   //菜单方向
   static getMenuDirectionInfo() async{
     String? menuDirectionInfo;

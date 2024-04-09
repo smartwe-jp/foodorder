@@ -1,5 +1,5 @@
 name: foodorder
-version: 2.2.1+83
+version: 2.4.4+98
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 
@@ -39,6 +39,7 @@ dependencies:
   connectivity_plus: ^4.0.2
   audioplayers: ^5.2.1
   get: 4.6.5
+  intl: ^0.17.0
   flutter: 
     sdk: flutter
   paycube: 
@@ -69,11 +70,58 @@ flutter:
     - family: KoruriLightNew
       fonts: 
         - asset: assets/fonts/Work_Sans/Koruri-Light-new.ttf
+
     - family: NotoSansJP
       fonts: 
-        - asset: assets/fonts/Work_Sans/NotoSansJP-Thin.otf
-        - asset: assets/fonts/Work_Sans/NotoSansJP-Light.otf
-        - asset: assets/fonts/Work_Sans/NotoSansJP-Regular.otf
+        - asset: assets/fonts/Work_Sans/JP/NotoSansJP-Thin.otf
+          weight: 100
+        - asset: assets/fonts/Work_Sans/JP/NotoSansJP-Light.otf
+          weight: 300
+        - asset: assets/fonts/Work_Sans/JP/NotoSansJP-Regular.otf
+          weight: 400
+        - asset: assets/fonts/Work_Sans/JP/NotoSansJP-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Work_Sans/JP/NotoSansJP-SemiBold.ttf
+          weight: 600
+
+    - family: NotoSansCN
+      fonts:
+        - asset: assets/fonts/Work_Sans/CN/NotoSansSC-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Work_Sans/CN/NotoSansSC-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Work_Sans/CN/NotoSansSC-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Work_Sans/CN/NotoSansSC-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Work_Sans/CN/NotoSansSC-SemiBold.ttf
+          weight: 600
+
+    - family: NotoSans
+      fonts:
+      - asset: assets/fonts/Work_Sans/EN/NotoSans-Thin.ttf
+        weight: 100
+      - asset: assets/fonts/Work_Sans/EN/NotoSans-Light.ttf
+        weight: 300
+      - asset: assets/fonts/Work_Sans/EN/NotoSans-Regular.ttf
+        weight: 400
+      - asset: assets/fonts/Work_Sans/EN/NotoSans-Medium.ttf
+        weight: 500
+      - asset: assets/fonts/Work_Sans/EN/NotoSans-SemiBold.ttf
+        weight: 600
+    - family: NotoSansKR
+      fonts:
+        - asset: assets/fonts/Work_Sans/KR/NotoSansKR-Thin.ttf
+          weight: 100
+        - asset: assets/fonts/Work_Sans/KR/NotoSansKR-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Work_Sans/KR/NotoSansKR-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Work_Sans/KR/NotoSansKR-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Work_Sans/KR/NotoSansKR-SemiBold.ttf
+          weight: 600
+
     - family: UbuntuMonoRegular
       fonts: 
         - asset: assets/fonts/Work_Sans/UbuntuMono-Regular.ttf

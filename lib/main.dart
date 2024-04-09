@@ -96,21 +96,23 @@ void main() {
                   primarySwatch: Colors.white,
                   //fontFamily: "IBMPlexSansJP",
                 ),*/
-            theme: ThemeData(
-              primaryColor: Gcolor.primaryColor, // 设置主体颜色
-            ),
-            home: child,
-            //initialRoute: AppPages.INITIAL,
-            //配置ios动画
-            defaultTransition: Transition.fadeIn,
-            getPages: AppPages.routes,
-            builder: (context, widget) {
-              return MediaQuery(
-                ///设置文字大小不随系统设置改变
-                data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                child: FlutterEasyLoading(child: widget),
-              );
-            },
+                theme: ThemeData(
+                  primaryColor: Gcolor.primaryColor,  // 设置主体颜色
+                ),
+                home: child,
+                //initialRoute: AppPages.INITIAL,
+                //配置ios动画
+                locale: Locale('jp', 'JP'), // 默认语言
+                fallbackLocale: Locale('jp', 'JP'), // 备用语言
+                defaultTransition:Transition.fadeIn,
+                getPages: AppPages.routes,
+                builder: (context, widget) {
+                  return MediaQuery(
+                    ///设置文字大小不随系统设置改变
+                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                    child: FlutterEasyLoading(child:widget),
+                  );
+                },
           );
         },
         child: Scaffold(

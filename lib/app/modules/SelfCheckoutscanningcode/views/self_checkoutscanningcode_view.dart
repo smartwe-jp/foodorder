@@ -5,6 +5,7 @@ import 'package:badges/badges.dart' as badges;
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -521,6 +522,7 @@ class SelfCheckoutscanningcodeView
                             GString.getToString(controller.checkLanguage.value, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w500,
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
@@ -606,6 +608,7 @@ class SelfCheckoutscanningcodeView
                                         "settlement_button"),
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(48),
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w600,
                                       color: ColorsUtil.hexToColor(
                                           Gcolor.settlementBtnColor),

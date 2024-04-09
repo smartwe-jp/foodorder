@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,6 +22,7 @@ import 'package:android_usb_printer/android_usb_printer.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
@@ -44,6 +47,7 @@ import '../views/receipt_constrained_box.dart';
 class SettlementController extends GetxController with StateMixin {
   //TODO: Implement SettlementController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  CreatePrintImageController createPrintImageController = Get.put(CreatePrintImageController());
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
@@ -70,6 +74,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString showOutMoney = "0".obs; //展示应出金金额
   RxBool allowClick = true.obs;
   RxBool isReportCash = false.obs; //是否已汇报过现金
+  RxBool get801Flag = false.obs; //是否已获取801
 
   RxBool getOutMoneyString = true.obs; //是否允许获取出金金额字符串
   RxInt outMonyNum = 0.obs;
@@ -115,8 +120,8 @@ class SettlementController extends GetxController with StateMixin {
   RxString wlan_print_port_two = "".obs;
   RxString is_allow_wlanPrint_Two_continuous =
       "0".obs; //0 单票  1 连票  Print Continuous
-
   RxString printLogoImage = "".obs;
+
 
   //顶部展示支付类型
   RxBool showWechat = false.obs;
@@ -162,6 +167,8 @@ class SettlementController extends GetxController with StateMixin {
   RxBool socketPosCancel = false.obs;
   RxMap usbDevice = {}.obs;
 
+  bool posTest = true;
+
   @override
   void onInit() {
     readyQueryData();
@@ -198,7 +205,6 @@ class SettlementController extends GetxController with StateMixin {
     putMoneyCurrencytimer?.cancel();
     ScanCodeConfirmTimer?.cancel();
     showCashTimer?.cancel();
-
     super.onClose();
   }
 
@@ -310,6 +316,7 @@ class SettlementController extends GetxController with StateMixin {
         wlan_print_port_two.value = wlanPrintSettingTwoInfo['wlanPrintPort'];
       }
     }
+
     usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
 
     _getPrintLogoImageData();
@@ -322,7 +329,9 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     change(null, status: RxStatus.success());
+
   }
+
 
   //倒计时
   _countDownTimer(stepState) {
@@ -433,6 +442,7 @@ class SettlementController extends GetxController with StateMixin {
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
+            fontFamily: GFont.getFontFamily(),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
@@ -442,6 +452,7 @@ class SettlementController extends GetxController with StateMixin {
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
+            fontFamily: GFont.getFontFamily(),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
@@ -588,8 +599,22 @@ class SettlementController extends GetxController with StateMixin {
             style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
-      _showTagContent =
-          GString.getToString(checkLanguage.value, "settlement_posPay_error");
+
+      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
+
+      if (resultString.contains("L10")) {
+        gotonewMyhome(); //返回首页
+        return;
+      }
+
+      if (resultPFSString.contains("101")
+          ||resultPFSString.contains("110")
+          ||resultPFSString.contains("118")
+      ) {
+        CancelOrder(); //取消订单
+        return;
+      }
+
     }
     Get.dialog(DialogUtils.alertOneButton(
         _showTagContent + "[${resultString}-${resultPFSString}]",
@@ -797,11 +822,11 @@ class SettlementController extends GetxController with StateMixin {
             } else {
               _showScanCodeNoOpenDialog(3, resultData["exceptionMessage"]);
             }
-          } else {
-            if (resultData["result"] == true) {
-              doPrintOrderMenu("1");
-            } else {
-              _showScanCodeNoOpenDialog(3, resultData["exceptionMessage"]);
+          }else{
+            if(resultData["result"] == true){
+              doPrintOrderMenu(receiptPrintType.value);
+            }else{
+              _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
           }
         } else {
@@ -869,14 +894,13 @@ class SettlementController extends GetxController with StateMixin {
       request('webBootLinePayConfirm', method: 'POST', parameters: formData)
           .then((val) {
         var response = json.decode(val.toString());
-
-        if (response['code'] == 200 && response['data'] == true) {
-          //退出关闭
-          ConfirmTimer?.cancel();
-          doPrintOrderMenu("1");
-        }
-      });
-    });
+            if (response['code'] == 200 && response['data'] == true) {
+              //退出关闭
+              ConfirmTimer?.cancel();
+              doPrintOrderMenu(receiptPrintType.value);
+            }
+          });
+        });
   }
 
   _doScanCodeTimeOutLastQuery() {
@@ -887,7 +911,7 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         _showScanCodeTimeOutDialog();
       }
@@ -1000,6 +1024,36 @@ class SettlementController extends GetxController with StateMixin {
           print("resultString==${resultString}");
           print("resultMPFSString==${resultMPFSString}");
           print(eventReportString.value.length);
+
+          if (posTest) {
+            String errorString = eventReportString.value.substring(130, 133);
+            print("errorString==${errorString}");
+            if (errorString == "801") {
+              if (get801Flag.value == false) {
+                LogUtil.d("Get 801 Send 491");
+                get801Flag.value = true;
+                showCheckLoading();
+                this._socket?.write(create491Message());
+              } else {
+                EasyLoading.dismiss();
+                _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),payType: "pos");
+              }
+
+              return;
+            } else if (errorString == "803" || errorString == "802") {
+
+              Get.dialog(
+                  DialogUtils.alertOneButton("取引が不明な状態で終了しました（コード${errorString}）。端末の指示に従って操作してください。",
+                      title: GString.getToString(checkLanguage.value, "tag_title"),
+                      confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                      confirm: () {
+                        Get.back();
+                      })
+              );
+              return;
+            }
+          }
+
           //支付成功 打印，返回首页 除了成功都取消
           if (transaction_type == "900") {
             if (FirstString == "3" &&
@@ -1055,6 +1109,7 @@ class SettlementController extends GetxController with StateMixin {
               }*/
               }
             }
+
           } else if (transaction_type != "900" &&
               transaction_type != "600" &&
               transaction_type != "601") {
@@ -1091,34 +1146,31 @@ class SettlementController extends GetxController with StateMixin {
                 }
               }
             }
-          } else {
-            //Charge Error
-            var orderInfo = "orderId: ${orderId.value}\n" +
-                "machineCode:${machineCode.value}\n";
-            var reportInfo = orderInfo +
-                "FirstString: ${FirstString} " +
-                "SecondString:${SecondString} " +
-                "transaction_type:${transaction_type} " +
-                "resultString:${resultString} " +
-                "resultMPFSString:${resultMPFSString}\n" +
-                "eventReportString:${eventReportString.value}\n";
+          }  else {
+          //Charge Error
+          // var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
+          // var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
+          //     + "transaction_type:${transaction_type} " + "resultString:${resultString} "
+          //     + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
+          var reportData = "${orderId.value}:${machineCode.value}";
+          FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
+            "reportInfo":reportData,
+          });
 
-            // FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
-            //   "reportInfo":reportInfo,
-            // });
-            CreditCardPayReport(reportInfo);
-            Get.dialog(
-                DialogUtils.alert("Error Message：${reportInfo}",
-                    title: "POS Charge Error",
-                    canceltitle: GString.getToString(
-                        checkLanguage.value, "add_option_cart"), confirm: () {
-                  Get.back();
-                }, cancle: () {
-                  Get.back();
-                }),
-                barrierDismissible: false);
-          }
-        },
+          // Get.dialog(
+          //     DialogUtils.alert("Error Message：${reportInfo}",
+          //         title: "POS Charge Error",
+          //         canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
+          //         confirm: () {
+          //           Get.back();
+          //         },
+          //         cancle: () {
+          //           Get.back();
+          //         }),
+          //     barrierDismissible: false
+          // );
+        }
+      },
         onDone: () {
           socketState.value = false;
           print("pos机done了");
@@ -1141,6 +1193,57 @@ class SettlementController extends GetxController with StateMixin {
       });
       //_showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
     });
+  }
+
+  showCheckLoading(){
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+                "取引が不明な状態で終了しました（コード801）。決済結果を確認中ですのでお待ちください。",
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(25),
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                )),
+            InkWell(
+              onLongPress: (){
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+              ),
+            ),
+          ],
+        ),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+
+  }
+
+  create491Message() {
+    var _queryString =       "2104910001       00497                  000000010231130162425";
+    for(var i=0;i<72;i++){
+      _queryString += " ";
+    }
+    var querycode = "0006";
+    _queryString += querycode; //
+
+    for(var i=0;i<400;i++){
+      _queryString += " ";
+    }
+
+    return _queryString;
   }
 
   _getPaymentPosData() {
@@ -1253,7 +1356,7 @@ class SettlementController extends GetxController with StateMixin {
       var response = json.decode(val.toString()); //print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu("1");
+        doPrintOrderMenu(receiptPrintType.value);
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
@@ -1301,6 +1404,10 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint("doPrintOrderMenu");
     var printStatus = "8"; //await FlutterPluginMsprinter.getPrintStatus();
     debugPrint("printStatus==${printStatus}");
+    //判断全局设置是否强制打印小票
+    if (is_allow_receipt.value == "1") {
+        printType = "1";
+    }
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
         "orderId": orderId.value,
@@ -1323,6 +1430,7 @@ class SettlementController extends GetxController with StateMixin {
       queryUrl = "webBootToPrintV7"; //230704新修改小票
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
+        debugPrint("doPrintOrderMenu==val");
         var response = json.decode(val.toString());
         LogUtil.d(response);
 
@@ -1347,38 +1455,17 @@ class SettlementController extends GetxController with StateMixin {
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           debugPrint("doPrintOrderMenu==val");
-          if (response['data']["orderType"] == 1 &&
-              is_allow_receipt_menu.value == "1") {
-            debugPrint("doPrintOrderMenu==val2");
-            _tpPrintnew(response['data'], printType);
-          } else {
+          if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
+            //debugPrint("response['data']====${response['data']}");
+            //_tpPrintnew(response['data'], printType);
+            createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
+          }else{
             if (printType == "1") {
-              debugPrint("doPrintOrderMenu==val3");
-              _tpPrintReceipt(response['data']);
+              //_tpPrintReceipt(response['data']);
+              createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
-
-          Future.delayed(Duration(milliseconds: 300), () async {
-            if (machineMode.value == "1") {
-              //eventBus.fire(new clearCartEvent('支付成功...'));
-              Get.find<OrderHomeController>().clearCartList();
-              //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
-              //Get.find<MenuPageController>().getBookingBootMenu();
-            } else if (machineMode.value == "3") {
-              Get.find<SelfCheckoutscanningcodeController>().clearCartList();
-            }
-
-            //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-            if (payment_method_num.value == "1") {
-              if (Platform.isAndroid) {
-                nextOper();
-              } else {
-                gloryNextOper();
-              }
-            } else {
-              gotonewMyhome();
-            }
-          });
+          printGoNext();
         } else {
           //错误后重新调用一次
           doPrintOrderMenu(printType);
@@ -1397,20 +1484,57 @@ class SettlementController extends GetxController with StateMixin {
             checkLanguage.value, "tag_print_content_paper_error");
       }
       //小票状态
-      Get.dialog(DialogUtils.alert(show_dialog_content,
-          title: GString.getToString(checkLanguage.value, "tag_title"),
-          canceltitle:
-              GString.getToString(checkLanguage.value, "tag_print_button_no"),
-          confirmtitle:
-              GString.getToString(checkLanguage.value, "tag_print_button_yes"),
-          confirm: () {
-        Get.back();
-        doPrintOrderMenu(printType);
-      }, cancle: () {
-        Get.back();
-        gotonewMyhome();
-      }));
+      Get.dialog(
+          DialogUtils.alert(show_dialog_content,
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value,"tag_print_button_no"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_print_button_yes"),
+              confirm: () {
+                Get.back();
+                doPrintOrderMenu(printType);
+              },
+              cancle: () {
+                Get.back();
+                //gotonewMyhome();
+                if (payment_method_num.value == "1") {
+                  nextOper();
+                } else {
+                  gotonewMyhome();
+                }
+              })
+      );
     }
+  }
+
+  //
+  printGoNext() async {
+    debugPrint("printGoNext");
+    Future.delayed(Duration(milliseconds: 300),() async {
+      if (machineMode.value == "1") {
+        //eventBus.fire(new clearCartEvent('支付成功...'));
+        Get.find<OrderHomeController>().clearCartList();
+        //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
+        //Get.find<MenuPageController>().getBookingBootMenu();
+      } else if (machineMode.value == "3"){
+        Get.find<SelfCheckoutscanningcodeController>().clearCartList();
+      }
+      else if (machineMode.value == "2") {
+        if (Get.isRegistered<MenuPageController>()) {
+          MenuPageController controller = Get.find<MenuPageController>();
+          if (controller.mealType.value) {
+            controller.clearCartList();
+          }
+        }
+      }
+
+      //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
+      if (payment_method_num.value == "1") {
+        nextOper();
+      } else {
+        gotonewMyhome();
+      }
+
+    });
   }
 
   //现金及支付
@@ -1773,315 +1897,6 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  //打印甘蘭
-  _tpPrintnew(printData, printType) async {
-    var categoryVos = printData["printInfoListStruct"];
-    var print_menu_txt_size = 28.0;
-    var wrapNum = 10;
-    int oneRowHeight = 48;
-    if (print_paper_txt_size.value == "1") {
-      print_menu_txt_size = 28.0;
-      wrapNum = 12;
-      oneRowHeight = 38;
-    } else if (print_paper_txt_size.value == "2") {
-      print_menu_txt_size = 33.0;
-      wrapNum = 10;
-      oneRowHeight = 44;
-    } else if (print_paper_txt_size.value == "3") {
-      print_menu_txt_size = 40.0;
-      wrapNum = 8;
-      oneRowHeight = 55;
-    }
-
-    List<Widget> categoryMenus = [];
-    var lineHight = 125;
-    var menuNum = 0;
-    var optionNum = 0;
-    var addRowHight = 0;
-
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["numberTip"]}",
-                style: TextStyle(
-                  fontSize: 28,
-                  //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w200,
-                  color: ColorsUtil.hexToColor("#000000"),
-                ))),
-      ),
-    );
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["serialNumber"]}",
-                style: TextStyle(
-                  fontSize: 32,
-                  //fontFamily: 'JetBrainsMonoRegular',
-                  fontWeight: FontWeight.w200,
-                  color: ColorsUtil.hexToColor("#000000"),
-                ))),
-      ),
-    );
-
-    int categoryNum = categoryVos.length;
-    int categoryshowNum = 0;
-
-    for (var m = 0; m < categoryVos.length; m++) {
-      var lineItem = categoryVos[m];
-      var optionVoList = lineItem["optionVoListMsgMap"];
-      // 计算菜品标题长度
-      var menuLength = lineItem["mainTitle"].length;
-      var menuLine = menuLength / wrapNum;
-      int menuRowNum = menuLine.ceil();
-      optionNum = 0;
-
-      categoryMenus.add(
-        _publicGoodsTwoColumnsTxt(
-            "${lineItem["mainTitle"]}",
-            print_menu_txt_size,
-            FontWeight.w200,
-            "${lineItem["qty"]}",
-            print_menu_txt_size,
-            FontWeight.w200),
-      );
-      if (optionVoList != null && optionVoList.isNotEmpty) {
-        optionVoList.forEach((key, value) {
-          // 计算菜品标题长度
-          var groupNameLength = key.length;
-          var optionNameLength = value[0].length;
-          var optionLine = (groupNameLength + optionNameLength) / wrapNum;
-          var countLine = 0; //optionLine.ceil();
-
-          //处理option 开始-----------
-          if ((key.length + value[0].length) > (wrapNum - 2)) {
-            var newLineNum = 0.0;
-            //if(groupNameLength >wrapNum){
-            newLineNum = groupNameLength / (wrapNum - 2);
-            //}
-            countLine += newLineNum.ceil();
-            optionLine += newLineNum;
-            //if(optionNameLength >wrapNum){
-            var newLineNumLength = 0.0;
-            newLineNumLength = optionNameLength / (wrapNum - 2);
-            //}
-            countLine += newLineNumLength.ceil();
-            optionLine += newLineNum;
-
-            categoryMenus.add(Column(
-              textDirection: TextDirection.rtl,
-              children: [
-                Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(
-                              child: Text("${key}",
-                                  softWrap: true,
-                                  style: TextStyle(
-                                    fontSize: print_menu_txt_size,
-                                    fontWeight: FontWeight.w100,
-                                    fontFamily: 'ZenKakuGothicAntique',
-                                    color: ColorsUtil.hexToColor("#000000"),
-                                  )))),
-                    ],
-                  ),
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
-                  child: Row(
-                    mainAxisAlignment: (value[0].length > (wrapNum - 2))
-                        ? MainAxisAlignment.start
-                        : MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(
-                            child: Text("${value[0]}",
-                                softWrap: true,
-                                textAlign: (value[0].length > (wrapNum - 2))
-                                    ? TextAlign.left
-                                    : TextAlign.right,
-                                style: TextStyle(
-                                  fontSize: print_menu_txt_size,
-                                  fontWeight: FontWeight.w100,
-                                  fontFamily: 'ZenKakuGothicAntique',
-                                  color: ColorsUtil.hexToColor("#000000"),
-                                )),
-                          )),
-                    ],
-                  ),
-                ),
-              ],
-            ));
-          } else {
-            countLine += 1;
-
-            categoryMenus.add(Container(
-              height: oneRowHeight.toDouble(),
-              padding: EdgeInsets.only(left: ScreenAdapter.width(30)),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                textDirection: TextDirection.ltr,
-                children: [
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("${key}",
-                          softWrap: true,
-                          style: TextStyle(
-                            fontSize: print_menu_txt_size,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'ZenKakuGothicAntique',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          ))),
-                  Directionality(
-                      textDirection: TextDirection.rtl,
-                      child: Text("${value[0]}",
-                          softWrap: true,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: print_menu_txt_size,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'ZenKakuGothicAntique',
-                            color: ColorsUtil.hexToColor("#000000"),
-                          ))),
-                ],
-              ),
-            ));
-          }
-
-          var newOptionSonLine = 0.0;
-          if (value.length > 1) {
-            List<Widget> optionSons = [];
-            for (var j = 1; j < value.length; j++) {
-              //print(value[j]);
-              newOptionSonLine += value[j].length / (wrapNum - 2);
-              var oneOptionlength = 0.0;
-              oneOptionlength = value[j].length / (wrapNum - 2);
-              countLine += oneOptionlength.ceil();
-
-              optionSons.add(Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
-                child: Row(
-                  mainAxisAlignment: (value[j].length > (wrapNum - 2))
-                      ? MainAxisAlignment.start
-                      : MainAxisAlignment.end,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Expanded(
-                        child: Text("${value[j]}",
-                            textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length > (wrapNum - 2))
-                                ? TextAlign.left
-                                : TextAlign.right,
-                            style: TextStyle(
-                              fontSize: print_menu_txt_size,
-                              fontWeight: FontWeight.w100,
-                              fontFamily: 'ZenKakuGothicAntique',
-                              color: ColorsUtil.hexToColor("#000000"),
-                              //fontWeight: FontWeight.w600
-                            ))),
-                  ],
-                ),
-              ));
-            }
-
-            categoryMenus.add(Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              textDirection: TextDirection.rtl,
-              children: optionSons,
-            ));
-          }
-
-          //处理option结束-----------
-          var optionRowNum = 0.0;
-          optionRowNum = optionLine + newOptionSonLine;
-          //addRowHight += 52 * optionRowNum;
-          addRowHight += oneRowHeight * countLine + (countLine - 1) * 10;
-          menuNum += optionRowNum.ceil();
-          optionNum++;
-        });
-
-        addRowHight += oneRowHeight * menuRowNum + (menuRowNum - 1) * 10;
-        menuNum += menuRowNum;
-      } else {
-        addRowHight += oneRowHeight * menuRowNum + (menuRowNum - 1) * 10;
-        menuNum += menuRowNum;
-      }
-
-      //分割线
-      if (machineMode.value == "1" || machineMode.value == "3") {
-        addRowHight += 20;
-        categoryMenus.add(
-          _publicSplitLine(),
-        );
-      }
-    }
-    //print("总行数${menuNum}");
-    var totalHight = addRowHight + lineHight;
-    if (menuNum == 1) {
-      totalHight += 15;
-    }
-    final printWidget = Container(
-      width: 385,
-      height: totalHight.toDouble(),
-      padding: EdgeInsets.only(left: 0.5, right: 0.5),
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        textDirection: TextDirection.rtl,
-        children: categoryMenus,
-      ),
-    );
-    // ByteData byteData = await WidgetToImage.widgetToImage(
-    //     printWidget,
-    //     size: Size(385, totalHight.toDouble()));
-
-    // List<int> imageBytes = byteData.buffer
-    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    //Future.delayed(Duration(milliseconds: 50), () async {
-    //String base64Image = base64Encode(imageBytes);
-    //LogUtil.d(base64Image);
-    if (printType == "1") {
-      // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
-      _sendToUsePrinter(
-        printWidget,
-      );
-      _tpPrintReceipt(printData);
-      // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", " ");
-      // Future.delayed(Duration(milliseconds: 300), () async {
-      //   await FlutterPluginMsprinter.sendPrintCut("1");
-      //   _tpPrintReceipt(printData);
-      // });
-    } else {
-      // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");
-      // Future.delayed(Duration(milliseconds: 300), () async {
-      //   await FlutterPluginMsprinter.sendPrintCut("0");
-      // });
-      _sendToUsePrinter(
-        printWidget,
-      );
-    }
-
-    //});
-  }
-
   UsbDeviceInfo? get curUsbPrinter {
     if (usbDevice.value.isEmpty) {
       print("usbDevice is empty");
@@ -2114,7 +1929,7 @@ class SettlementController extends GetxController with StateMixin {
     // );
   }
 
-  _wifiNetworkPrintData(serialNumber, extendPrintVo, takeOut, orderTime) {
+  _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
     var printData = [];
     extendPrintVo.forEach((k, v) {
       printData = [];
@@ -2948,763 +2763,6 @@ class SettlementController extends GetxController with StateMixin {
           ),
         )
     );*/
-  }
-
-  _tpPrintReceipt(printData) async {
-    debugPrint("打印小票来了-开始打印小票lalala：${DateTime.now()}");
-    List<Widget> categoryMenus = [];
-    var menuVos = printData["details"];
-    var lineHight = 580;
-    var lineZeng = 0;
-    int addRowHight = 0;
-
-    //店铺标题
-    /*categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Text("${printData["shopName"]}",
-              style: GoogleFonts.zenKakuGothicAntique(fontSize: 34,fontWeight: FontWeight.w400,color: Colors.black87),
-
-            )),
-      ),
-    );*/
-
-    //日期 地址 电话
-    //地址
-    // 计算菜品标题长度
-    var newAddress = printData["address"].replaceAll("%%", "\n");
-    var addressLength = printData["address"]
-        .length; //print(printData["address"]);//print(newAddress);
-    var addressLine = addressLength / 15;
-    var addressRowNum = 0;
-    addressRowNum = addressLine.ceil();
-    addRowHight += addressRowNum * 33 + (addressRowNum - 1) * 10;
-    categoryMenus
-        .add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
-
-    categoryMenus.add(SizedBox(
-      height: 5,
-    ));
-
-    //电话
-    if (printData["telNo"] != null && printData["telNo"] != "") {
-      addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew(
-          "電話番号:${printData["telNo"]}", 26.0, FontWeight.w300));
-      categoryMenus.add(SizedBox(
-        height: 5,
-      ));
-    }
-
-    //登录番号
-    if (printData["ntaNo"] != null && printData["ntaNo"] != "") {
-      addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew(
-          "登録番号:${printData["ntaNo"]}", 26.0, FontWeight.w300));
-      categoryMenus.add(SizedBox(
-        height: 5,
-      ));
-    }
-    categoryMenus.add(Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.only(bottom: 3),
-      child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Text(
-            "${printData["orderDate"]}",
-            style: GoogleFonts.zenKakuGothicAntique(
-                fontSize: 26,
-                fontWeight: FontWeight.w300,
-                color: Colors.black87),
-          )),
-    ));
-    if (machineMode.value == "1" || machineMode.value == "3") {
-      addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew(
-          "${printData["numberTip"]}${printData["serialNumber"]}",
-          26.0,
-          FontWeight.w300));
-    }
-    //注文番号
-    categoryMenus.add(_publicOneColumnTxtNew(
-        "注文番号:${printData["order"]}", 26.0, FontWeight.w300));
-    /*categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          textDirection: TextDirection.ltr,
-          children: [
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child: Container(
-                  width: ScreenAdapter.width(160),
-                  child: Expanded(
-                    child: Text("${printData["orderDate"]}",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'NotoSansJP',
-                            color: ColorsUtil.hexToColor("#000000"))),
-                  ),
-                )),
-            Expanded(child: Column(
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("${printData["shopAddress"]}",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'NotoSansJP',
-                            color: ColorsUtil.hexToColor("#000000")))),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("登録番号 T12356757656",
-                        style: TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.w100,
-                            fontFamily: 'NotoSansJP',
-                            color: ColorsUtil.hexToColor("#000000")))),
-              ],
-            )),
-          ],
-        ),
-      ),
-    );*/
-    //领収书标题
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: Container(
-              padding: EdgeInsets.only(
-                  top: ScreenAdapter.height(5.0),
-                  bottom: ScreenAdapter.height(5.0),
-                  left: ScreenAdapter.width(20.0),
-                  right: ScreenAdapter.width(20.0)),
-              decoration: BoxDecoration(
-                border: Border(
-                  top: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                  left: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                  bottom: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                  right: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 0.5),
-                ),
-              ),
-              child: Text(
-                "領 収 書",
-                style: GoogleFonts.zenKakuGothicAntique(
-                  fontSize: 50,
-                  color: Colors.black,
-                ),
-              ),
-            )),
-      ),
-    );
-
-    int categoryNum = menuVos.length;
-    int linNum = 0;
-    for (var i = 0; i < menuVos.length; i++) {
-      var lineVosList = menuVos[i];
-
-      // 计算菜品标题长度
-      var groupNameLength = lineVosList["menuName"].length;
-      var menuLine = groupNameLength / 10;
-      var menuRowNum = menuLine.ceil();
-      //linNum+=menuRowNum;
-      var takeoutTag = (printData["takeOut"] == true) ? "*" : "";
-      if (groupNameLength > 10) {
-        linNum += 2;
-        addRowHight += 76;
-        categoryMenus.add(
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child: Container(
-                height: 76,
-                //margin: EdgeInsets.only(bottom: 3),
-                child: Column(
-                  textDirection: TextDirection.rtl,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Expanded(
-                              child: Text(
-                                "${lineVosList["menuName"]}",
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
-                                style: GoogleFonts.zenKakuGothicAntique(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black87),
-                              ),
-                            )),
-                        (printData["takeOut"] == true)
-                            ? Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: Text(
-                                  "${takeoutTag}",
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: GoogleFonts.zenKakuGothicAntique(
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87),
-                                ))
-                            : Container(
-                                width: 0,
-                              ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Container(
-                              width: ScreenAdapter.width(30),
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "${lineVosList["menuQty"]}",
-                                style: GoogleFonts.zenKakuGothicAntique(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black87),
-                              ),
-                            )),
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Container(
-                              width: ScreenAdapter.width(105),
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "￥${formatMoney(lineVosList["price"])}",
-                                style: GoogleFonts.zenKakuGothicAntique(
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.w300,
-                                    color: Colors.black87),
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
-                ),
-              )),
-        );
-      } else {
-        addRowHight += 33;
-        linNum += 1;
-        categoryMenus.add(
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child: Container(
-                height: 33,
-                //margin: EdgeInsets.only(bottom: 3),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(
-                          child: Text(
-                            "${lineVosList["menuName"]}${takeoutTag}",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                        )),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          width: ScreenAdapter.width(30),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "${lineVosList["menuQty"]}",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                        )),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          width: ScreenAdapter.width(105),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "￥${formatMoney(lineVosList["price"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                        )),
-                  ],
-                ),
-              )),
-        );
-      }
-    }
-    //print("总行数${menuNum}");
-    //addRowHight += 33 * linNum;
-    categoryMenus.add(SizedBox(
-      height: 10,
-    ));
-//合计
-    categoryMenus.add(
-      Directionality(
-          textDirection: TextDirection.ltr,
-          child: Container(
-            margin: EdgeInsets.only(bottom: 3),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Expanded(
-                      child: Text(
-                        "合計",
-                        style: GoogleFonts.zenKakuGothicAntique(
-                            fontSize: 28,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black87),
-                      ),
-                    )),
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Container(
-                      width: ScreenAdapter.width(130),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "￥${formatMoney(printData["price"])}",
-                        style: GoogleFonts.zenKakuGothicAntique(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black87),
-                      ),
-                    )),
-              ],
-            ),
-          )),
-    );
-
-    categoryMenus.add(
-      _publicSplitLine(),
-    );
-
-    //8%
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "8%対象",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == true)
-              ? "${formatMoney(printData["price"])}"
-              : "0",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "　  (内    消費税",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == true)
-              ? "${formatMoney(printData["tax"])})"
-              : "0)",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-
-    //10%
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "10%対象",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == false)
-              ? "${formatMoney(printData["price"])}"
-              : "0",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-    //内消费税
-    categoryMenus.add(
-      _publicTwoColumnsTxtNew(
-          "　  (内    消費税",
-          24.0,
-          FontWeight.w100,
-          (printData["takeOut"] == false)
-              ? "${formatMoney(printData["tax"])})"
-              : "0)",
-          24.0,
-          FontWeight.w100,
-          true),
-    );
-
-    categoryMenus.add(
-      _publicSplitLine(),
-    );
-    if (printData["payMethod"] != "現金支払") {
-      lineZeng += 33;
-      categoryMenus.add(
-        _publicTwoColumnsTxtNew(
-            printData["payMethod"],
-            26.0,
-            FontWeight.w200,
-            "${formatMoney(printData["payPrice"])}",
-            26.0,
-            FontWeight.w200,
-            true),
-      );
-    }
-
-    if (printData["memberNo"] != null && printData["memberNo"] != "") {
-      lineZeng += 76;
-      categoryMenus.add(
-        _publicTwoColumnsTxtNewLine("カード番号", 26.0, FontWeight.w200,
-            printData["memberNo"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(
-        _publicTwoColumnsTxtNewLine("日期", 26.0, FontWeight.w200,
-            printData["payDate"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(_publicSplitLine());
-    }
-    if (printData["serialNo"] != null && printData["serialNo"] != "") {
-      lineZeng += 76;
-      categoryMenus.add(
-        _publicTwoColumnsTxtNewLine("カード取引通番", 26.0, FontWeight.w200,
-            printData["serialNo"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(
-        _publicTwoColumnsTxtNewLine("取引日時", 26.0, FontWeight.w200,
-            printData["payDate"], 26.0, FontWeight.w100, false),
-      );
-      categoryMenus.add(_publicSplitLine());
-    }
-
-    //轻减税率对象
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 3),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.end,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          textDirection: TextDirection.ltr,
-          children: [
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child: Expanded(
-                  child: Container(
-                    width: ScreenAdapter.width(180),
-                    child: Text(
-                      "*軽減税率対象",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
-                    ),
-                  ),
-                )),
-            Expanded(
-                child: Column(
-              children: [
-                if (printData["payMethod"] == "現金支払")
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "お預り",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                          Text(
-                            "￥${formatMoney(printData["payPrice"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                        ],
-                      )),
-                if (printData["payMethod"] == "現金支払" &&
-                    printData["change"] != null)
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "お釣",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                          Text(
-                            "￥${formatMoney(printData["change"])}",
-                            style: GoogleFonts.zenKakuGothicAntique(
-                                fontSize: 26,
-                                fontWeight: FontWeight.w300,
-                                color: Colors.black87),
-                          ),
-                        ],
-                      )),
-              ],
-            )),
-          ],
-        ),
-      ),
-    );
-
-    //お明細は上記のとおりです。
-    categoryMenus
-        .add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w300));
-
-    var totalHight = lineZeng + lineHight + addRowHight;
-
-    final printWidget = Container(
-      width: 385,
-      padding: EdgeInsets.only(
-          left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
-      height: totalHight.toDouble(),
-      color: Colors.white,
-      //alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        //crossAxisAlignment: CrossAxisAlignment.start,
-        textDirection: TextDirection.rtl,
-        children: categoryMenus,
-      ),
-    );
-    _sendToUsePrinter(printWidget);
-    // ByteData byteData = await WidgetToImage.widgetToImage(
-    //     printWidget,
-    //     size: Size(385, totalHight.toDouble()));
-
-    // List<int> imageBytes = byteData.buffer
-    //     .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    //Future.delayed(Duration(milliseconds: 200), () async {
-    // String base64Image = base64Encode(imageBytes);
-    // await FlutterPluginMsprinter.sendPrintImgNew(
-    //     base64Image, "1", "1", printLogoImage.value);
-    // Future.delayed(Duration(milliseconds: 300), () async {
-    //   await FlutterPluginMsprinter.sendPrintCut("1");
-    // });
-
-    //});
-  }
-
-  //单列文字
-  _publicOneColumnTxtNew(txtContext, txtFontSize, txtFontWeight) {
-    return Container(
-      alignment: Alignment.centerLeft,
-      margin: EdgeInsets.only(bottom: 3),
-      child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.start,
-            textDirection: TextDirection.ltr,
-            children: [
-              Expanded(
-                  child: Text(
-                "${txtContext}",
-                style: GoogleFonts.zenKakuGothicAntique(
-                    fontSize: 26,
-                    fontWeight: FontWeight.w300,
-                    color: Colors.black87),
-              )),
-            ],
-          )),
-    );
-  }
-
-  //两列文字
-  _publicTwoColumnsTxtNew(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
-      rightTxtContext, rightTxtFontSize, rightTxtFontWeight, isMoney) {
-    return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Container(
-          margin: EdgeInsets.only(bottom: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Expanded(
-                    child: Text(
-                      "${leftTxtContext}",
-                      style: GoogleFonts.zenKakuGothicAntique(
-                          fontSize: 26,
-                          fontWeight: FontWeight.w300,
-                          color: Colors.black87),
-                    ),
-                  )),
-              (isMoney == true)
-                  ? Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        width: ScreenAdapter.width(120),
-                        alignment: Alignment.centerRight,
-                        child: RichText(
-                          text: TextSpan(
-                              text: "￥",
-                              style: GoogleFonts.zenKakuGothicAntique(
-                                  fontSize: 26,
-                                  fontWeight: FontWeight.w300,
-                                  color: Colors.black87),
-                              children: [
-                                TextSpan(
-                                  text: "${rightTxtContext}",
-                                  style: GoogleFonts.zenKakuGothicAntique(
-                                      fontSize: 26,
-                                      fontWeight: FontWeight.w300,
-                                      color: Colors.black87),
-                                ),
-                              ]),
-                        ),
-                      ))
-                  : Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        width: ScreenAdapter.width(120),
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "${rightTxtContext}",
-                          style: GoogleFonts.zenKakuGothicAntique(
-                              fontSize: 26,
-                              fontWeight: FontWeight.w300,
-                              color: Colors.black87),
-                        ),
-                      )),
-            ],
-          ),
-        ));
-  }
-
-  _publicTwoColumnsTxtNewLine(
-      leftTxtContext,
-      leftTxtFontSize,
-      leftTxtFontWeight,
-      rightTxtContext,
-      rightTxtFontSize,
-      rightTxtFontWeight,
-      isMoney) {
-    return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Container(
-          margin: EdgeInsets.only(bottom: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text(
-                    "${leftTxtContext}",
-                    style: GoogleFonts.zenKakuGothicAntique(
-                        fontSize: 26,
-                        fontWeight: FontWeight.w300,
-                        color: Colors.black87),
-                  )),
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Expanded(
-                    child: Container(
-                      width: ScreenAdapter.width(120),
-                      alignment: Alignment.centerRight,
-                      child: Text(
-                        "${rightTxtContext}",
-                        style: GoogleFonts.zenKakuGothicAntique(
-                            fontSize: 26,
-                            fontWeight: FontWeight.w300,
-                            color: Colors.black87),
-                      ),
-                    ),
-                  )),
-            ],
-          ),
-        ));
-  }
-
-  //商品双列
-  _publicGoodsTwoColumnsTxt(leftTxtContext, leftTxtFontSize, leftTxtFontWeight,
-      rightTxtContext, rightTxtFontSize, rightTxtFontWeight) {
-    return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Container(
-          margin: EdgeInsets.only(bottom: 3),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            children: [
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Expanded(
-                    child: Text("${leftTxtContext}",
-                        softWrap: true,
-                        style: TextStyle(
-                          fontSize: leftTxtFontSize,
-                          fontWeight: leftTxtFontWeight,
-                          fontFamily: 'ZenKakuGothicAntique',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  )),
-              //Expanded(child: Container()),
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text("${rightTxtContext}",
-                      style: TextStyle(
-                        fontSize: rightTxtFontSize,
-                        fontWeight: rightTxtFontWeight,
-                        fontFamily: 'ZenKakuGothicAntique',
-                        color: ColorsUtil.hexToColor("#000000"),
-                        //fontWeight: FontWeight.w600
-                      ))),
-            ],
-          ),
-        ));
-  }
-
-  //分割线
-  _publicSplitLine() {
-    return Directionality(
-        textDirection: TextDirection.ltr,
-        child: Container(
-          margin: EdgeInsets.only(top: 5, bottom: 5),
-          height: 0.5,
-          color: ColorsUtil.hexToColor("#000000"),
-          width: 375,
-        ));
   }
 
   showCashAlert() {

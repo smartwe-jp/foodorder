@@ -12,6 +12,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -62,6 +63,7 @@ class MenuPageView extends GetView {
                     "${item['categoryName']}",
                     style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(30),
+                        fontFamily: GFont.getFontFamily(),
                         color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
                         fontWeight: FontWeight.w600
                     ),
@@ -387,10 +389,11 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(34),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor(
-                                        Gcolor.settlementBtnColor),
+                                          fontFamily: 'NotoSansJP',
+                                          color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                          fontSize: 34,
+                                          fontWeight: FontWeight.w600,
+
                                   )),
                             ),
                           ),
@@ -978,6 +981,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1645,6 +1649,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(

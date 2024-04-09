@@ -5,6 +5,7 @@ import 'package:get/get_core/src/get_main.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -217,6 +218,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       GString.getToString(
                           this._checkLanguage, "settlement_receipt_title"),
                       style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(
                               Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
@@ -226,6 +228,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       GString.getToString(
                           this._checkLanguage, "settlement_receipt_yes"),
                       style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(
                               Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
@@ -272,6 +275,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       GString.getToString(
                           this._checkLanguage, "settlement_receipt_title"),
                       style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(
                               Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
@@ -281,6 +285,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                       GString.getToString(
                           this._checkLanguage, "settlement_receipt_no"),
                       style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(
                               Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
@@ -330,6 +335,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                           //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
                           GString.getToString(this._checkLanguage, "select_payment_type_title"),
                           style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               fontWeight: FontWeight.w600,
                               fontSize: ScreenAdapter.fontSize(34.0)),
@@ -397,6 +403,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //"现金",
                                             GString.getToString(this._checkLanguage, "settlement_top_title_cash"),
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: ScreenAdapter.fontSize(34.0)),
@@ -584,6 +591,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             //"扫码",
                                             GString.getToString(this._checkLanguage, "settlement_top_title_qr"),
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                                 color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: ScreenAdapter.fontSize(34.0)),
@@ -637,6 +645,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                       GString.getToString(this._checkLanguage, "settlement_top_title_card"),
                                       style: TextStyle(
                                           color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                          fontFamily: GFont.getFontFamily(),
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(34.0)),
                                     ),
@@ -811,6 +820,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   GString.getToString(this._checkLanguage, "settlement_top_title_wallet"),
                                   style: TextStyle(
                                       color:ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w600,
                                       fontSize: ScreenAdapter.fontSize(34.0)),
                                 ),
@@ -1106,6 +1116,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               "${GString.getToString(this._checkLanguage, "show_check_tableno")}${_tableNum}    ",
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  fontFamily: GFont.getFontFamily(),
                                   fontWeight: FontWeight.w600,
                                   fontSize: ScreenAdapter.fontSize(40.0)),
                             ),
@@ -1113,6 +1124,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                             GString.getToString(this._checkLanguage, "settlement_total_price"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(40.0)),
                           ),
@@ -1121,6 +1133,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               "  ${_menuCount.toString()}  ${GString.getToString(this._checkLanguage, "show_selectPay_point")}",
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                  fontFamily: GFont.getFontFamily(),
                                   fontWeight: FontWeight.w600,
                                   fontSize: ScreenAdapter.fontSize(40.0)),
                             ),
@@ -1140,6 +1153,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                               //GString.getToString(this._checkLanguage, "show_price_front"),
                               style: TextStyle(
                                 fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceLeft),
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               ),
@@ -1148,6 +1162,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   text: formatMoney(_shopCartTotalPrice.toString()),
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPrice),
+                                    fontFamily: GFont.getFontFamily(),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                   ),
@@ -1157,6 +1172,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                   "（${GString.getToString(this._checkLanguage, "show_price_front")}）", //" 円",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceRight),
+                                    fontFamily: GFont.getFontFamily(),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                   ),
@@ -1198,6 +1214,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                             GString.getToString(this._checkLanguage, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w500,
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),

@@ -16,6 +16,7 @@ import 'package:android_usb_printer/android_usb_printer.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
@@ -25,6 +26,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../services/showToast.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../settlement/views/label_constrained_box.dart';
@@ -178,24 +180,28 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   showDownloadingAlert() {
     //支付状态
-    Get.dialog(Container(
-      width: ScreenAdapter.width(950),
-      child: SimpleDialog(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(5),
-          ),
-          title: Align(
-              alignment: Alignment.center,
-              child: Text("アップデートのお知らせ",
-                  style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(28),
-                      fontWeight: FontWeight.w600))),
-          children: <Widget>[
-            Container(
-              width: ScreenAdapter.width(650),
-              child: Column(
-                children: <Widget>[
-                  /*SizedBox(
+
+    Get.dialog(
+        Container(
+          width: ScreenAdapter.width(950),
+          child: SimpleDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(5),
+              ),
+              title: Align(
+                  alignment: Alignment.center,
+                  child:  Text("アップデートのお知らせ",style: TextStyle(fontSize:
+                  ScreenAdapter.fontSize(28),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600))
+              ),
+              children: <Widget>[
+                Container(
+                  width: ScreenAdapter.width(650),
+
+                  child: Column(
+                    children: <Widget>[
+                      /*SizedBox(
                           height: 10,
                         ),
                         Align(
@@ -236,25 +242,61 @@ class SystemSettingPageController extends GetxController with StateMixin {
                           decoration: BoxDecoration(color: Colors.black12),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(right: 70.0),
-                        child: TextButton(
-                          child: Text(
-                            "アップデート",
-                            style: TextStyle(
-                                color: Colors.lightBlue,
-                                fontSize: ScreenAdapter.fontSize(32.0)),
+                      Divider(
+                        thickness: 1.0,
+                        color: Colors.black12,
+                      ),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                "キャンセル",
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () {
+                                //sleep(Duration(milliseconds: 3000));
+                                Get.back();
+
+                              },
+                            ),
                           ),
-                          onPressed: () async {
-                            //widget.confirmCallback('确定');
-                            Get.back();
-                            Get.dialog(showSpeedView());
-                            //https://app.gutingjun.com/kanran-release.apk
-                            downloadAndroid(
-                                "https://app.gutingjun.com/smartwe_ticket_machine.apk");
-                          },
-                        ),
-                      )
+                          //垂直分割线
+                          SizedBox(
+                            width: 1,
+                            height: 40,
+                            child: DecoratedBox(
+                              decoration: BoxDecoration(color: Colors.black12),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 70.0),
+                            child: TextButton(
+                              child: Text(
+                                "アップデート",
+                                style: TextStyle(
+                                    color: Colors.lightBlue,
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: ScreenAdapter.fontSize(32.0)),
+                              ),
+                              onPressed: () async {
+                                //widget.confirmCallback('确定');
+                                Get.back();
+                                Get.dialog(
+                                    showSpeedView()
+                                );
+                                //https://app.gutingjun.com/kanran-release.apk
+                                downloadAndroid("https://app.gutingjun.com/smartwe_ticket_machine.apk");
+                              },
+                            ),
+                          )
+                        ],
+                      ),
                     ],
                   ),
                 ],
@@ -753,6 +795,92 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
+  posTest(posIp, posPort) async {
+    _showEasyLoading("POS Test Start");
+    debugPrint("--- posTest ---");
+    request('webBootPosTest', method: 'POST')
+        .then((val) {
+      var response = json.decode(val.toString());
+      debugPrint("webBootPosTest: " + response.toString());
+      if (response['code'] == 200) {
+        payconnectSocker(response['data'], posIp, posPort);
+      } else {
+        EasyLoading.dismiss();
+        showTestResultDialog("Server Error");
+      }
+    });
+
+
+  }
+  RxInt socketNumberTimes = 0.obs;
+  Socket? _socket; //socket对象
+
+  payconnectSocker(questData, pos_ip, pos_port) async {
+
+    //判断socket请求次数
+    socketNumberTimes.value++;
+    if(socketNumberTimes.value>20){
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Connection Failed");
+      return;
+    }
+    debugPrint("POS机连接${socketNumberTimes.value}");
+    Socket.connect(
+      pos_ip,
+      int.parse(pos_port),
+      //timeout: Duration(seconds: 5),
+    ).then((Socket socket) {
+      debugPrint("POS机连接成功");
+      this._socket = socket;
+
+      this._socket?.write(questData);
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Test Success");
+
+      this._socket?.listen((List<int> event) {
+        showTestResultDialog("POS Test All Success");
+        EasyLoading.dismiss();
+      },
+        onDone: () {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Done");
+          print("pos机done了");
+        },
+        onError: (e) {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Failed");
+          print("pos机错误了");
+          //_close();
+        },
+      );
+
+    }).catchError((e) {
+      EasyLoading.dismiss();
+      print("Unable to connect: $e");
+      print("POS机连接${socketNumberTimes.value}");
+      Future.delayed(Duration(seconds: 1), () {
+        payconnectSocker(questData, pos_ip, pos_port);
+      });
+    });
+
+  }
+
+  showTestResultDialog(content) {
+    Get.dialog(
+        DialogUtils.alertOneButton(content,
+            title: "POS Test Result",
+            confirmtitle: "はい",
+            confirm: () {
+
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
+
+
+  }
+
   //printType=0 receipt 1label
   printTest(type, printIp, printPort, {printType = 0}) async {
 
@@ -794,7 +922,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
             Directionality(
@@ -804,7 +932,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -829,7 +957,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
             Directionality(
@@ -839,7 +967,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: 'JetBrainsMonoRegular',
+                      fontFamily: GFont.getFontFamily(),
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -913,8 +1041,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //上传现金机log
   uploadErrorLog() async {
-    _showEasyLoading();
-    var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    _showEasyLoading("Uploading...");
+    var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
@@ -933,11 +1061,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
     });
   }
 
-  _showEasyLoading() {
+
+  _showEasyLoading(text){
     var _showTag;
-    _showTag = Text("Uploading……",
+    _showTag = Text(text,
         style: TextStyle(
           fontSize: ScreenAdapter.fontSize(25),
+          fontFamily: GFont.getFontFamily(),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));
@@ -947,7 +1077,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
+        child:InkWell(
+            onLongPress: () {
+              EasyLoading.dismiss();
+            },
+            child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             _showTag,
@@ -960,7 +1094,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                   fit: BoxFit.fitHeight),
             ),
           ],
-        ),
+        )),
       ),
       maskType: EasyLoadingMaskType.black,
     );

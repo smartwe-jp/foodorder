@@ -7,6 +7,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -110,6 +111,7 @@ class ScanCodeView extends GetView {
                             style: TextStyle(
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
                         ],
@@ -161,6 +163,7 @@ class ScanCodeView extends GetView {
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(34.0)),
                           ),
                         ),

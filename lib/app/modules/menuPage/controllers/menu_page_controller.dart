@@ -15,6 +15,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -567,6 +568,7 @@ class MenuPageController extends GetxController with StateMixin {
       overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
       maxLines: 2,
       style: TextStyle(
+          fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(mainTitleFontSize),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(mainTitleFontColor)),
@@ -600,6 +602,7 @@ class MenuPageController extends GetxController with StateMixin {
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(priceFontSize) / 2.2,
                     fontWeight: FontWeight.w500,
+                    fontFamily: GFont.getFontFamily(),
                     color: ColorsUtil.hexToColor("#485460"),
                     //decoration: TextDecoration.lineThrough, // 添加中划线
                     //decorationColor: ColorsUtil.hexToColor("#485460"), // 可以设置中划线的颜色
@@ -1197,20 +1200,25 @@ print("加1了");
           shopCartTotalPrice.value = response['data']["total"].toString();
 
           //只有现金，并且其余都为false的时候，直接跳转支付
-          if (showCash.value == true &&
-              isAllowPos.value == "0" &&
-              showAlipay.value == false &&
-              showWechat.value == false &&
-              showPayPay.value == false) {
-            payment_method_num.value = "1";
-            //postNewOrderId();
-            gotoSettlement();
-          } else {
-            showSelectMealTypeAndPaymentMethodDialog();
-          }
-        } else {
+
+          // if(showCash.value == true &&
+          //     isAllowPos.value == "0" &&
+          //     showAlipay.value == false &&
+          //     showWechat.value == false &&
+          //     showPayPay.value == false
+          // ){
+          //   payment_method_num.value = "1";
+          //   //postNewOrderId();
+          //   gotoSettlement();
+          // }else{
+          //   showSelectMealTypeAndPaymentMethodDialog();
+          // }
+          showSelectMealTypeAndPaymentMethodDialog();
+        }else{
           //getBookingBootMenu();
-          menuLackMap.value = response['data']["menuLackMap"];
+          if (response['data'] != null && response['data']["menuLackMap"] != null) {
+            menuLackMap.value = response['data']["menuLackMap"];
+          }
           //showToast(response['data']["message"]);
           Get.dialog(DialogUtils.alertOneButton(response['data']["message"],
               title: GString.getToString(checkLanguage.value, "tag_title"),

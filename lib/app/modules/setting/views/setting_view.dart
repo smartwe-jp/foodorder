@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import 'package:get/get.dart';
 
@@ -9,6 +10,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../TransitPage/views/transit_page_view.dart';
 import '../controllers/setting_controller.dart';
+import 'CashSettingView.dart';
 
 class SettingView extends GetView<SettingController> {
   final SettingController controller = Get.put(SettingController());
@@ -25,6 +27,7 @@ class SettingView extends GetView<SettingController> {
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
+                fontFamily: GFont.getFontFamily(),
                 color: ColorsUtil.hexToColor("#000000"),
               )),
           Container(
@@ -52,6 +55,7 @@ class SettingView extends GetView<SettingController> {
                   child: Row(
                     //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
+
                       Expanded(
                         child:
                         Container(
@@ -63,11 +67,28 @@ class SettingView extends GetView<SettingController> {
                           alignment: Alignment.center,
                           child: Text("預り金",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor("#000000"),
                               )),
                         ),
+// =======
+//                       Container(
+//                         width: ScreenAdapter.width(200),
+//                         height: ScreenAdapter.height(45),
+//                         margin: EdgeInsets.only(
+//                             left: ScreenAdapter.width(5),
+//                             right: ScreenAdapter.width(5)),
+//                         alignment: Alignment.center,
+//                         child: Text("預り金",
+//                             style: TextStyle(
+//                               fontFamily: GFont.getFontFamily(),
+//                               fontSize: ScreenAdapter.fontSize(20),
+//                               fontWeight: FontWeight.w600,
+//                               color: ColorsUtil.hexToColor("#000000"),
+//                             )),
+// >>>>>>> 2.3.0-dev
                       ),
                       Expanded(
                         child:
@@ -80,6 +101,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("現金",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -97,6 +119,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("Alipay",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -114,6 +137,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("PayPay",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -131,6 +155,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("WechatPay",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -167,6 +192,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_payment'].toString(),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -175,6 +201,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -198,6 +225,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_crash'].toString(),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -206,6 +234,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -229,6 +258,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_alipay'].toString(),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -237,6 +267,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -260,6 +291,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_paypay'].toString(),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -268,6 +300,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -291,6 +324,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_wechat'].toString(),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -299,6 +333,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -320,6 +355,91 @@ class SettingView extends GetView<SettingController> {
     );
   }
 
+  rePrintArea() {
+    return Container(
+      child:
+      Row (
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          Column (
+            children: [
+              // Text("レシート再印刷",
+              //     style: TextStyle(
+              //       fontSize: ScreenAdapter.fontSize(22),
+              //       fontWeight: FontWeight.w600,
+              //       color: ColorsUtil.hexToColor("#000000"),
+              //     )),
+              InkWell(
+                highlightColor: Colors.transparent, // 透明色
+                splashColor: Colors.transparent, // 透明色
+                onTap: (){
+                  controller.printPreviewReceipt();
+
+                },
+                child: Container(
+                  padding: EdgeInsets.only(left: ScreenAdapter.height(10), right: ScreenAdapter.height(10)),
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  //设置 child 居中
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(65),
+                  //width: ScreenAdapter.width(160),
+                  //边框设置
+                  decoration: new BoxDecoration(
+                    //背景
+                    color: ColorsUtil.hexToColor("#409eff"),
+                    //设置四周圆角 角度
+                    borderRadius: BorderRadius.all(Radius.circular(16)),
+                    //设置四周边框
+                    //border: new Border.all(width: 1, color: Colors.red),
+                  ),
+                  child: Text(
+                      "領収書を再印刷する",
+                      style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(24),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#FFFFFF"),
+                      )
+                  ),
+                ),
+              )
+            ],
+
+          ),
+          SizedBox(width: ScreenAdapter.width(10)),
+          if(controller.is_reimburse.value == "1")
+            InkWell(
+              onTap: () {
+                Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
+
+              },
+              child: Container(
+                margin: EdgeInsets.only(
+                    left: ScreenAdapter.width(10),
+                    right: ScreenAdapter.width(10)),
+                width: ScreenAdapter.width(180),
+                height: ScreenAdapter.height(65),
+                alignment: Alignment.center,
+                decoration: BoxDecoration(
+                  color: ColorsUtil.hexToColor("#A61C1C"),
+                  //设置圆角
+                  borderRadius: new BorderRadius.circular((16.0)),
+                ),
+                child: Text("返金",
+                    style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(24),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                    )),
+              ),
+            ),
+        ],
+      )
+
+    );
+  }
+
   getCashListShow() {
     return controller.cashList.value.length > 0
         ? Container(
@@ -328,6 +448,7 @@ class SettingView extends GetView<SettingController> {
         children: [
           Text("お釣り状態(NO.${controller.machineCode.value})",
               style: TextStyle(
+                fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor("#000000"),
@@ -368,6 +489,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("币种",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -384,6 +506,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("初期枚数",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -400,6 +523,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("最小枚数",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -417,6 +541,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("使った枚数",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -433,6 +558,24 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("残り枚数",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
+                              fontSize:
+                              ScreenAdapter.fontSize(18),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor(
+                                  "#000000"),
+                            )),
+                      )),
+                      Expanded(child: Container(
+                        width: ScreenAdapter.width(120),
+                        height: ScreenAdapter.height(45),
+                        alignment: Alignment.center,
+                        margin: EdgeInsets.only(
+                            left: ScreenAdapter.width(5),
+                            right: ScreenAdapter.width(5)),
+                        child: Text("補充/削减",
+                            style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -475,6 +618,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['name'],
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -489,6 +633,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['standard'].toString(),
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -503,6 +648,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['warm'].toString(),
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -518,6 +664,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['used'].toString(),
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -532,11 +679,44 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['remainder'].toString(),
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
                                   )),
                             )),
+                            InkWell(
+                              highlightColor: Colors.transparent, // 透明色
+                              splashColor: Colors.transparent, // 透明色
+                              onTap: (){
+                               // controller.showCashDetail(_detail);
+
+                                  },
+                              child: Container(
+                                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                                //设置 child 居中
+                                alignment: Alignment(0, 0),
+                                height: ScreenAdapter.height(60),
+                                width: ScreenAdapter.width(160),
+                                //边框设置
+                                decoration: new BoxDecoration(
+                                  //背景
+                                  color: ColorsUtil.hexToColor("#409eff"),
+                                  //设置四周圆角 角度
+                                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                                  //设置四周边框
+                                  //border: new Border.all(width: 1, color: Colors.red),
+                                ),
+                                child: Text(
+                                    "補充/削减",
+                                    style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
+                                      fontSize: ScreenAdapter.fontSize(22),
+                                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                                    )
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       );
@@ -580,6 +760,7 @@ class SettingView extends GetView<SettingController> {
               alignment: Alignment.center,
               child: Text(_detail['day'],
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(20),
                     fontWeight: FontWeight.w500,
                     color: ColorsUtil.hexToColor("#000000"),
@@ -605,6 +786,7 @@ class SettingView extends GetView<SettingController> {
                     child: AutoSizeText(
                       "${_detail['total'].toString()}",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(22),
                         fontWeight: FontWeight.w400,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -630,6 +812,7 @@ class SettingView extends GetView<SettingController> {
         children: [
           Text("一週間売上報告(円)",
               style: TextStyle(
+                fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor("#000000"),
@@ -716,6 +899,7 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("戻る",
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -748,6 +932,7 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("ログアウト",
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -774,38 +959,14 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("システム設定",
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )),
                           ),
                         ),
-                        if(controller.is_reimburse.value == "1")
-                          InkWell(
-                            onTap: () {
-                              Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
 
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  left: ScreenAdapter.width(10),
-                                  right: ScreenAdapter.width(10)),
-                              width: ScreenAdapter.width(180),
-                              height: ScreenAdapter.height(65),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#A61C1C"),
-                                //设置圆角
-                                borderRadius: new BorderRadius.circular((16.0)),
-                              ),
-                              child: Text("返金",
-                                  style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(24),
-                                    fontWeight: FontWeight.w600,
-                                    color: ColorsUtil.hexToColor("#FFFFFF"),
-                                  )),
-                            ),
-                          ),
 
                       ],
                     ),
@@ -820,6 +981,7 @@ class SettingView extends GetView<SettingController> {
                       child: Text(
                         "Version：${controller.local_version.value}",
                         style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             color: Colors.grey[500],
                             fontSize: ScreenAdapter.fontSize(20.0)),
                       ),
@@ -849,11 +1011,32 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
-                  getCashListShow(),
+                  CashSettingView(cashInfoList:
+                  controller.cashInfoList.value,
+                    machineCode: controller.machineCode.value,
+                    recycleCash: () {
+                      controller.recycleCash();
+                    }, adjustCash: (type , number ) {
+                      controller.adjustCash(type, number);
+                    },
+                    setOutset: (type, number) {
+                      controller.setCashSenOutset(type, number);
+                    },
+                    adjustCashFromDeposit: (catVal , number , deposit , qty ) {
+                      controller.adjustCashFromDeposit(catVal , number , deposit , qty);
+                    },
+                    resetCash: () {
+                      controller.recycleCash();
+                    },),
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
 
+                  rePrintArea(),
+                  // SizedBox(
+                  //   height: ScreenAdapter.height(20),
+                  // ),
+                  // CashSettingView(),
 
 
                 ],

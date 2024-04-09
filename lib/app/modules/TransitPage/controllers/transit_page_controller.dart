@@ -24,9 +24,8 @@ class TransitPageController extends GetxController {
   RxString local_version = "".obs; //本appversion
 
   @override
-  void onInit() {
-    debugPrint("transit onInit");
-    getIsShowCashInfo();
+  Future<void> onInit() async {
+    await getIsShowCashInfo();
     super.onInit();
   }
 
@@ -48,7 +47,7 @@ class TransitPageController extends GetxController {
     debugPrint("systemSettingInfo = ${systemSettingInfo}");
     _isCashState.value = systemSettingInfo['isCash'];
 
-    _getMachineInfo();
+    await _getMachineInfo();
   }
 
   _getMachineInfo() async {
@@ -59,8 +58,9 @@ class TransitPageController extends GetxController {
 
       //_getSystemSettingInfo();
       _getMachineActivate();
-      return;
-      _getPackageInfo();
+
+      await _getPackageInfo();
+
     }
   }
 
@@ -70,52 +70,33 @@ class TransitPageController extends GetxController {
     PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
 
-    _getMachineActivate();
+    await _getMachineActivate();
   }
 
-  _getMachineActivate() {
+
+  _getMachineActivate() async{
+    debugPrint("getMachineActivate");
     var formData = {
       "machineCode": _machineCode.value,
-      "version": local_version.value
-    };
-    print(formData);
-
-    request('webBootActivatev4', method: 'POST', parameters: formData)
-        .then((val) {
-      debugPrint("webBootActivatev4");
-      var response = json.decode(val.toString());
-      debugPrint("webBootActivatev4: " + response.toString());
-      //LogUtil.d("getMachineActivate"+response);
-      if (response['code'] == 200) {
+      "version":local_version.value
+    };print(formData);
+    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
+      var response = json.decode(val.toString());LogUtil.d(response);
+      if (response['code'] == 200 && response['data'] != null) {
         var shopData = response['data'];
-        //_shopCode = shopData["shopCode"];
-        var _showCash = shopData["linePayChannelMap"]["Cash"] != null
-            ? shopData["linePayChannelMap"]["Cash"]
-            : false;
-        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
-            ? shopData["linePayChannelMap"]["Wechat"]
-            : false;
-        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null
-            ? shopData["linePayChannelMap"]["Alipay"]
-            : false;
-        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null
-            ? shopData["linePayChannelMap"]["PayPay"]
-            : false;
-        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null
-            ? shopData["linePayChannelMap"]["POS"]
-            : false;
-        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null
-            ? shopData["linePayChannelMap"]["au_Pay"]
-            : false;
-        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null
-            ? shopData["linePayChannelMap"]["d_Pay"]
-            : false;
-        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null
-            ? shopData["linePayChannelMap"]["R_Pay"]
-            : false;
-        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null
-            ? shopData["linePayChannelMap"]["m_Pay"]
-            : false;
+        var _shopCode = "";
+        if (shopData["shopCode"] != null) {
+          _shopCode = shopData["shopCode"];
+        }
+        var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
+        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
+        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
+        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
+        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
+        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
+        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
+        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
+        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
 
         var _posEdy = shopData["linePayChannelMap"]["Edy"] != null
             ? shopData["linePayChannelMap"]["Edy"]
@@ -189,6 +170,7 @@ class TransitPageController extends GetxController {
             'smartwe_homeImages', json.encode(shopData["homeImages"]));
         Storage.setString('smartwe_logoImage', shopData["logoImage"]);
         Storage.setString('smartwe_reimburse', reimburse);
+        Storage.setString('smartwe_shopCode', _shopCode);
 
         GetxStorage.setData(
             'smartwe_machineActivateData', json.encode(machineActivateData));
@@ -212,7 +194,7 @@ class TransitPageController extends GetxController {
         _actuarial.value = shopData["actuarial"];
       }
 
-      _getSmartweSystemSettingInfo();
+      await _getSmartweSystemSettingInfo();
     });
   }
 
