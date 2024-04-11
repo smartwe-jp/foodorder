@@ -50,7 +50,7 @@ class SettlementView extends GetView {
                               border: InputBorder.none,
                               isDense: true,
                             ),
-                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                            style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(30.0)),
                             obscureText: false,
                             onChanged: (value) {
                               //print(value);
@@ -109,6 +109,7 @@ class SettlementView extends GetView {
                               GString.getToString(
                                   controller.checkLanguage.value, "settlement_top_title_cash"),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w600,
                                   fontSize: ScreenAdapter.fontSize(36.0)),
@@ -134,6 +135,7 @@ class SettlementView extends GetView {
                               GString.getToString(
                                   controller.checkLanguage.value, "settlement_top_title_qr"),
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w600,
                                   fontSize: ScreenAdapter.fontSize(36.0)),
@@ -168,6 +170,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_card"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -203,6 +206,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_nfc"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -234,6 +238,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_edy"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -268,6 +273,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_iD"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -302,6 +308,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_nanaco"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -336,6 +343,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_WAON"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -370,6 +378,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_QUICPay"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -405,6 +414,7 @@ class SettlementView extends GetView {
                                 GString.getToString(controller.checkLanguage.value,
                                     "settlement_top_title_IC"),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                     fontWeight: FontWeight.w600,
                                     fontSize: ScreenAdapter.fontSize(36.0)),
@@ -953,6 +963,7 @@ class SettlementView extends GetView {
                       GString.getToString(controller.checkLanguage.value,
                           "settlement_posPay_tips_title"),
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor("#FF0000"),
                           fontWeight: FontWeight.w600,
                           fontSize: ScreenAdapter.fontSize(28.0)),
@@ -1001,6 +1012,7 @@ class SettlementView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "settlement_orderPrice"),
                                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor(
@@ -1014,6 +1026,7 @@ class SettlementView extends GetView {
                                       text: formatMoney(controller.totalPrice.value),
                                       //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                                       style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(52),
                                         fontWeight: FontWeight.w600,
                                         color: ColorsUtil.hexToColor("#9A5718"),
@@ -1022,6 +1035,7 @@ class SettlementView extends GetView {
                                         TextSpan(
                                           text: " 円", //" 円",
                                           style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
                                             fontSize: ScreenAdapter.fontSize(28),
                                             fontWeight: FontWeight.w600,
                                             color: ColorsUtil.hexToColor("#000000"),
@@ -1056,6 +1070,7 @@ class SettlementView extends GetView {
                                     GString.getToString(
                                         controller.checkLanguage.value, "settlement_putMoney"),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(32),
                                       fontWeight: FontWeight.w600,
                                       color: ColorsUtil.hexToColor(
@@ -1069,6 +1084,7 @@ class SettlementView extends GetView {
                                         text: formatMoney(controller.getPutMoney.value),
                                         //" 円",
                                         style: TextStyle(
+                                          fontFamily: GFont.getFontFamily(),
                                           fontSize: ScreenAdapter.fontSize(52),
                                           fontWeight: FontWeight.w600,
                                           color: (int.parse(controller.getPutMoney.value) > 0)
@@ -1079,6 +1095,7 @@ class SettlementView extends GetView {
                                           TextSpan(
                                             text: " 円", //" 円",
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                               fontSize: ScreenAdapter.fontSize(28),
                                               fontWeight: FontWeight.w600,
                                               color:
@@ -1118,6 +1135,7 @@ class SettlementView extends GetView {
                                     GString.getToString(
                                         controller.checkLanguage.value, "settlement_outMoney"),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(32),
                                       fontWeight: FontWeight.w600,
                                       color: ColorsUtil.hexToColor(
@@ -1131,6 +1149,7 @@ class SettlementView extends GetView {
                                         text: formatMoney(controller.showOutMoney.value),
                                         //" 円",
                                         style: TextStyle(
+                                          fontFamily: GFont.getFontFamily(),
                                           fontSize: ScreenAdapter.fontSize(52),
                                           fontWeight: FontWeight.w600,
                                           color: (int.parse(controller.showOutMoney.value) > 0)
@@ -1141,6 +1160,7 @@ class SettlementView extends GetView {
                                           TextSpan(
                                             text: " 円", //" 円",
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                               fontSize: ScreenAdapter.fontSize(28),
                                               fontWeight: FontWeight.w600,
                                               color:
@@ -1265,8 +1285,8 @@ class SettlementView extends GetView {
                                               controller.checkLanguage.value,
                                               "settlement_confirmButton"),
                                           style: TextStyle(
-                                            fontSize:
-                                            ScreenAdapter.fontSize(32),
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontSize:ScreenAdapter.fontSize(32),
                                             fontWeight: FontWeight.w600,
                                             color: ColorsUtil.hexToColor(
                                                 Gcolor.settlementBtnColor),

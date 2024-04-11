@@ -387,7 +387,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                          fontFamily: 'NotoSansJP',
+                                     fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                                           fontSize: 34,
                                           fontWeight: FontWeight.w600,
@@ -443,6 +443,7 @@ class MenuPageView extends GetView {
                   text: "${optionGroupVoList[i]['groupName']}",
                   //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(24.0),
                     fontWeight: FontWeight.w500,
                     color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -451,6 +452,7 @@ class MenuPageView extends GetView {
                     TextSpan(
                       text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                       style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(18.0),
                         fontWeight: FontWeight.w200,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -486,6 +488,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -591,6 +594,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -868,6 +872,7 @@ class MenuPageView extends GetView {
                                           child: Text(
                                             '${subtitle}',
                                             style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(
                                                     GFontSize
                                                         .menuThreeListFoodSubtitle),
@@ -1026,7 +1031,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1069,6 +1074,7 @@ class MenuPageView extends GetView {
                     text: "${optionGroupVoList[i]['groupName']}",
                     //GString.getToString(this._checkLanguage, "show_price_front"),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(24.0),
                       fontWeight: FontWeight.w500,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1077,6 +1083,7 @@ class MenuPageView extends GetView {
                       TextSpan(
                         text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18.0),
                           fontWeight: FontWeight.w200,
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1116,6 +1123,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -1222,6 +1230,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -1529,6 +1538,7 @@ class MenuPageView extends GetView {
                                           child: Text(
                                             '${subtitle}',
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(
                                                     GFontSize.menuThreeListFoodSubtitle),
                                                 fontWeight: FontWeight.w600,
@@ -1685,7 +1695,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1728,6 +1738,7 @@ class MenuPageView extends GetView {
                     text: "${optionGroupVoList[i]['groupName']}",
                     //GString.getToString(this._checkLanguage, "show_price_front"),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(24.0),
                       fontWeight: FontWeight.w500,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1736,6 +1747,7 @@ class MenuPageView extends GetView {
                       TextSpan(
                         text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18.0),
                           fontWeight: FontWeight.w200,
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1776,6 +1788,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -1882,6 +1895,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),

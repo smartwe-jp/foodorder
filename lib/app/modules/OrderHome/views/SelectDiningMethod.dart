@@ -76,6 +76,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                           //"堂食",
                           GString.getToString(this._checkLanguage, "select_payment_dining_title"),
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               fontWeight: FontWeight.w600,
                               fontSize: ScreenAdapter.fontSize(34.0)),
@@ -133,6 +134,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                       //"堂食",
                                       GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
                                       style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(34.0)),
@@ -194,6 +196,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                       //"外卖",
                                       GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
                                       style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(34.0)),

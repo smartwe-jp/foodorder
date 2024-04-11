@@ -344,7 +344,9 @@ class SettlementController extends GetxController with StateMixin {
     if(machineMode.value == "2") {
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
-      Get.toNamed("/checkout-page");
+      Future.delayed(Duration(milliseconds: 100), () {
+        Get.toNamed("/checkout-page");
+      });
       //Navigator.pushNamed(context, '/checkOutPage');
     }else if(machineMode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
@@ -393,9 +395,12 @@ class SettlementController extends GetxController with StateMixin {
       }
 
     } else {
-      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      Get.delete<CheckoutPageController>();
+      Get.delete<MenuPageController>();// 手动删除控制器实例
       //精算页面
-      Get.toNamed("/checkout-page");
+      Future.delayed(Duration(milliseconds: 100), () {
+        Get.toNamed("/checkout-page");
+      });
       //Navigator.pushNamed(context, '/checkOutPage');
     }
   }
@@ -461,6 +466,7 @@ class SettlementController extends GetxController with StateMixin {
     _showTag =
         Text(GString.getToString(checkLanguage.value, "payment_success_title"),
             style: TextStyle(
+              fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(25),
               fontWeight: FontWeight.w600,
               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -501,6 +507,7 @@ class SettlementController extends GetxController with StateMixin {
     var _showTag =
     Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
         style: TextStyle(
+          fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(25),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -543,6 +550,7 @@ class SettlementController extends GetxController with StateMixin {
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
             style: TextStyle(
+              fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
@@ -551,6 +559,7 @@ class SettlementController extends GetxController with StateMixin {
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
             style: TextStyle(
+              fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
@@ -559,6 +568,7 @@ class SettlementController extends GetxController with StateMixin {
       _showTag = Align(
         child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
             style: TextStyle(
+              fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
@@ -605,6 +615,7 @@ class SettlementController extends GetxController with StateMixin {
           GString.getToString(
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
+            fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -614,6 +625,7 @@ class SettlementController extends GetxController with StateMixin {
           GString.getToString(
               checkLanguage.value, "settlement_print_loading_tag"),
           style: TextStyle(
+            fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
             fontWeight: FontWeight.w600,
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -681,6 +693,7 @@ class SettlementController extends GetxController with StateMixin {
                     GString.getToString(checkLanguage.value,
                         "settlement_posPay_loadint_title"),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(36),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor("#000000"),
@@ -1154,6 +1167,7 @@ class SettlementController extends GetxController with StateMixin {
             Text(
                 "取引が不明な状態で終了しました（コード801）。決済結果を確認中ですのでお待ちください。",
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                   fontSize: ScreenAdapter.fontSize(25),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),

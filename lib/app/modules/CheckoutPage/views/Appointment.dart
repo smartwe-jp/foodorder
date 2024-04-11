@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 
@@ -86,6 +87,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   Text(
                     'お席のタイプ',
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(36.0),
                         //color: ColorsUtil.hexToColor("#F9F9F9"),
                         fontWeight: FontWeight.w600),
@@ -100,6 +102,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   Text(
                     '何名様',
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(36.0),
                         //color: ColorsUtil.hexToColor("#F9F9F9"),
                         fontWeight: FontWeight.w600),
@@ -140,6 +143,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                             child: Text(
                                 "${GString.getToString(this._checkLanguage,"tag_button_no")}",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
                             ),
@@ -164,6 +168,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                             child: Text(
                               "${GString.getToString(this._checkLanguage,"tag_button_yes")}",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                   color: Colors.white,
                                   fontSize: ScreenAdapter.fontSize(32.0)),
                             ),
@@ -278,6 +283,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontWeight: FontWeight.w500,
                       fontSize: ScreenAdapter.fontSize(30.0),
                       color: (tableType == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -360,6 +366,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
               alignment: Alignment.center,
               child: Text("${showPeople}",
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                   fontSize: ScreenAdapter.fontSize(32),
                   color: (showNum == _selectManyPeople) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
                 ),
@@ -422,7 +429,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   ),
                   title: Align(
                       alignment: Alignment.center,
-                      child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                      child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
                   ),
                   children: <Widget>[
                     Container(
@@ -435,7 +442,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                           ),
                           Align(
                             child: Text(show_dialog_content,
-                                style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
+                                style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(28))),
                             alignment: Alignment(0, 0),
                           ),
                           SizedBox(
@@ -454,6 +461,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   child: Text(
                                     GString.getToString(this._checkLanguage, "tag_print_button_no"),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                         color: Colors.lightBlue,
                                         fontSize: ScreenAdapter.fontSize(32.0)),
                                   ),
@@ -477,6 +485,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                                   child: Text(
                                     GString.getToString(this._checkLanguage, "tag_print_button_yes"),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                         color: Colors.lightBlue,
                                         fontSize: ScreenAdapter.fontSize(32.0)),
                                   ),

@@ -23,6 +23,7 @@ class publicShowCartView extends GetView {
         child: Text(GString.getToString(
             controller.checkLanguage.value, "cart_tag"),
           style: TextStyle(
+            fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(18),
             color: ColorsUtil.hexToColor("#000000"),
           ),
@@ -75,6 +76,7 @@ class publicShowCartView extends GetView {
                       children: [
                         Text(d.mainTitle,
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                               fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(tipColor)
@@ -84,6 +86,7 @@ class publicShowCartView extends GetView {
                         (d.optionVoListMsg != "")? Text(
                           "${d.optionVoListMsg}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(
                                 GFontSize.cartListTitleTag),
                             color: ColorsUtil.hexToColor(
@@ -103,6 +106,7 @@ class publicShowCartView extends GetView {
               child: Text(
                 formatMoney(d.currentPrice.toString()),
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(GFontSize.mainPriceRight),
                     fontWeight: FontWeight.w600,
                     color: ColorsUtil.hexToColor(tipColor)),
@@ -177,6 +181,7 @@ class publicShowCartView extends GetView {
                     child: Text(
                       "${d.goodsNum}",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                           fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                           fontWeight: FontWeight.w500,
                           color: ColorsUtil.hexToColor(tipColor)
@@ -420,6 +425,7 @@ class publicShowCartView extends GetView {
                                     text: "¥",
                                     //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(GFontSize
                                           .menusettlementBottomPriceLeft),
                                       fontWeight: FontWeight.w600,
@@ -430,6 +436,7 @@ class publicShowCartView extends GetView {
                                       TextSpan(
                                         text: formatMoney(controller.shopCartTotalPrice.value),
                                         style: TextStyle(
+                                          fontFamily: GFont.getFontFamily(),
                                           fontSize: ScreenAdapter.fontSize(
                                               GFontSize
                                                   .menusettlementBottomPrice),
@@ -442,6 +449,7 @@ class publicShowCartView extends GetView {
                                         text:
                                         "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
                                         style: TextStyle(
+                                          fontFamily: GFont.getFontFamily(),
                                           fontSize: ScreenAdapter.fontSize(
                                               GFontSize
                                                   .menusettlementBottomPriceRight),

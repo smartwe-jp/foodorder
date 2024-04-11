@@ -185,7 +185,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
                           borderRadius: BorderRadius.all(Radius.circular(5.0)),
                         ),
                         child: Text(
-                            (optionVolistSon['currentPrice'] > 0) ?"+${formatSum(optionVolistSon['currentPrice']).toString()}":"${formatSum(optionVolistSon['currentPrice']).toString()}",
+                            (optionVolistSon['currentPrice'] > 0) ?"¥${formatSum(optionVolistSon['currentPrice']).toString()}":"¥${formatSum(optionVolistSon['currentPrice']).toString()}",
                             style: TextStyle(
                               fontSize: ScreenAdapter.fontSize(20),
                               fontFamily: GFont.getFontFamily(),

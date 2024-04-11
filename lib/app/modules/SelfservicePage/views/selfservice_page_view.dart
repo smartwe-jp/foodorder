@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import 'package:get/get.dart';
 
@@ -134,6 +135,7 @@ class SelfservicePageView extends GetView {
                               child: Text(
                                 '日本語',
                                 style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(36.0),
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
@@ -175,6 +177,7 @@ class SelfservicePageView extends GetView {
                               child: Text(
                                 '中文',
                                 style: TextStyle(
+                                    fontFamily: 'NotoSansCN',
                                     fontSize: ScreenAdapter.fontSize(36.0),
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
@@ -216,6 +219,7 @@ class SelfservicePageView extends GetView {
                               child: Text(
                                 'English',
                                 style: TextStyle(
+                                    fontFamily: 'NotoSans',
                                     fontSize: ScreenAdapter.fontSize(36.0),
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),
@@ -256,6 +260,7 @@ class SelfservicePageView extends GetView {
                               child: Text(
                                 '한국말',
                                 style: TextStyle(
+                                    fontFamily: 'NotoSansKR',
                                     fontSize: ScreenAdapter.fontSize(36.0),
                                     color: ColorsUtil.hexToColor("#F9F9F9"),
                                     fontWeight: FontWeight.w600),

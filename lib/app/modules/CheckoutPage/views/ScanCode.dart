@@ -47,7 +47,7 @@ class ScanCodeView extends GetView {
                               border: InputBorder.none,
                               isDense: true,
                             ),
-                            style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
+                            style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(11.0)),
                             onChanged: (value) {
                               //print(value);
                               if(value.length==1){

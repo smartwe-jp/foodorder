@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import 'package:get/get.dart';
 
@@ -28,6 +29,7 @@ class HomeView extends GetView {
                 children: [
                   Text("テスト中です、しばらくお待ちください。",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(25),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -36,6 +38,7 @@ class HomeView extends GetView {
                     margin: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5)),
                     child: Text("1、インターネットをテスト。",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(25),
                           fontWeight: FontWeight.w600,
                           color: (controller.checkSteeps.value == 1)? ColorsUtil.hexToColor(Gcolor.mainTitleColor) :((controller.checkSteeps.value > 1)?ColorsUtil.hexToColor("#009c12"):Colors.black26),
@@ -45,6 +48,7 @@ class HomeView extends GetView {
                     margin: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5)),
                     child: Text("2、釣銭機を開けています。",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(25),
                           fontWeight: FontWeight.w600,
                           color: (controller.checkSteeps.value == 2)? ColorsUtil.hexToColor(Gcolor.mainTitleColor) :((controller.checkSteeps.value > 2)?ColorsUtil.hexToColor("#009c12"):Colors.black26),
@@ -54,6 +58,7 @@ class HomeView extends GetView {
                     margin: EdgeInsets.only(top: ScreenAdapter.height(5),bottom: ScreenAdapter.height(5)),
                     child: Text("3、現金機を閉じています。",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(25),
                           fontWeight: FontWeight.w600,
                           color: (controller.checkSteeps.value == 3)? ColorsUtil.hexToColor(Gcolor.mainTitleColor) :((controller.checkSteeps.value > 3)?ColorsUtil.hexToColor("#009c12"):Colors.black26),

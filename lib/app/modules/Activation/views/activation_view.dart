@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import 'package:get/get.dart';
 
@@ -26,6 +27,7 @@ class ActivationView extends GetView<ActivationController> {
                 margin: EdgeInsets.only(top: ScreenAdapter.height(30),bottom: ScreenAdapter.height(40)),
                 child: Text("コードを入力してください",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: 28,
                       color: ColorsUtil.hexToColor("#7b7b7b"),
                     )),
@@ -48,7 +50,7 @@ class ActivationView extends GetView<ActivationController> {
                   border: InputBorder.none,
                   isDense: true,
                 ),
-                style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0)),
+                style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(30.0)),
                 obscureText: false,
                 onChanged: (value) {
                   //print(value);
@@ -78,6 +80,7 @@ class ActivationView extends GetView<ActivationController> {
                       child: Text(
                         "確 認",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                             color: Colors.lightBlue,
                             fontSize: ScreenAdapter.fontSize(32.0)),
                       ),

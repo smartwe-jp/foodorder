@@ -95,8 +95,8 @@ class MenuPageController extends GetxController with StateMixin {
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
 
-  RxInt optionMaxNum = 12.obs;
-  RxInt optionGroupMaxNum = 10.obs;
+  RxInt optionMaxNum = 120.obs;
+  RxInt optionGroupMaxNum = 100.obs;
 
   //如果下单时候报错，则查看是否因为库存不足
   RxMap menuLackMap = {}.obs;
@@ -584,6 +584,7 @@ class MenuPageController extends GetxController with StateMixin {
                     TextSpan(
                       text: "¥",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                         fontWeight: FontWeight.w500,
                         color: ColorsUtil.hexToColor("#485460"),
@@ -596,6 +597,7 @@ class MenuPageController extends GetxController with StateMixin {
                     TextSpan(
                       text: formatMoney(originalPrice.toString()),
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(priceFontSize)/1.8,
                         fontWeight: FontWeight.w500,
                         color: ColorsUtil.hexToColor("#485460"),
@@ -608,6 +610,7 @@ class MenuPageController extends GetxController with StateMixin {
                     TextSpan(
                       text: "",
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                         fontWeight: FontWeight.w500,
                         color: ColorsUtil.hexToColor("#485460"),
@@ -628,6 +631,7 @@ class MenuPageController extends GetxController with StateMixin {
             text: TextSpan(
                 text: "¥",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                   fontSize: ScreenAdapter.fontSize(priceFrontFontSize),
                   fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor(priceFrontFontColor),
@@ -638,6 +642,7 @@ class MenuPageController extends GetxController with StateMixin {
                   TextSpan(
                     text: formatMoney(currentPrice.toString()),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(priceFontSize),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(priceFontColor),
@@ -647,6 +652,7 @@ class MenuPageController extends GetxController with StateMixin {
                   TextSpan(
                     text: "（${GString.getToString(checkLanguage.value, "show_price_front")}）",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor(priceFontColor),
@@ -675,6 +681,7 @@ class MenuPageController extends GetxController with StateMixin {
 
         child: Text(subtitle,
           style: TextStyle(
+            fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
               color: ColorsUtil.hexToColor("#000000")),
           maxLines: 1,
@@ -724,6 +731,7 @@ class MenuPageController extends GetxController with StateMixin {
             child: Text(
                 "${showString}",
                 style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(24),
                     color: ColorsUtil.hexToColor("#FFFFFF"))
             ),
@@ -1082,6 +1090,7 @@ print("加1了");
   _showOrderEasyLoading(){
     var _showTag =Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
         style: TextStyle(
+          fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(25),
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),

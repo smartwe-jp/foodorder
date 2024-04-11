@@ -3,6 +3,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import '../config/colorsUtil.dart';
 import '../config/fontSize.dart';
@@ -42,6 +43,7 @@ class publicShowMenuImage  extends StatelessWidget{
               Expanded(
                   child: Text(subtitle,
                 style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(20),
                     color: ColorsUtil.hexToColor("#000000")),
                 maxLines: 2,

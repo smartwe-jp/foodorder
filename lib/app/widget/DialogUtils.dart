@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
+import '../config/font.dart';
 import '../config/imageData.dart';
 import '../services/ScreenAdapter.dart';
 /// 封装自定义弹框
@@ -39,6 +40,7 @@ class DialogUtils {
                     child: Text(
                         "${title}          ",
                         style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(34),
                             fontWeight: FontWeight.w600)),
                   ),
@@ -59,6 +61,7 @@ class DialogUtils {
                           child: Align(
                             child: Text(content,
                                 style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32))),
                             alignment: Alignment(0, 0),
                           ),
@@ -81,13 +84,14 @@ class DialogUtils {
               children: [
                 InkWell(
                   child: Container(
-                    padding: EdgeInsets.only(left: 70.0),
+                    //padding: EdgeInsets.only(left: 70.0),
                     width: ScreenAdapter.width(400),
                     height: ScreenAdapter.height(75),
                     alignment: Alignment.center,
                     child: Text(canceltitle,
                       style: TextStyle(
                         //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
                           fontWeight: FontWeight.w600,
                           fontSize: ScreenAdapter.fontSize(34.0)
                       ),
@@ -109,13 +113,14 @@ class DialogUtils {
                 ),
                 InkWell(
                   child: Container(
-                    padding: EdgeInsets.only(right: 70.0),
+                    //padding: EdgeInsets.only(right: 70.0),
                     width: ScreenAdapter.width(400),
                     height: ScreenAdapter.height(75),
                     alignment: Alignment.center,
                     child: Text(confirmtitle,
                       style: TextStyle(
                         //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(34.0),
                           fontWeight: FontWeight.w600
                       ),
@@ -164,6 +169,7 @@ class DialogUtils {
                     child: Text(
                         "${title}          ",
                         style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(34),
                             fontWeight: FontWeight.w600)),
                   ),
@@ -195,6 +201,7 @@ class DialogUtils {
                                 child: Text(content,
                                     textAlign: TextAlign.center,
                                     style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
                                         fontSize: ScreenAdapter.fontSize(32)))
                             ),
                           ],
@@ -221,6 +228,7 @@ class DialogUtils {
                     child: Text(confirmtitle,
                       style: TextStyle(
                         //color: Colors.lightBlue,
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(34.0),
                           fontWeight: FontWeight.w600
                       ),
