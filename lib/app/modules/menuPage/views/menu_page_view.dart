@@ -651,7 +651,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.74),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryTwoItemOne(items[index],context,popupType:popupType);
         },
@@ -1308,7 +1308,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(7),
             crossAxisCount: 4,
-            childAspectRatio: 0.53),
+            childAspectRatio: 0.52),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryFourItemOne(items[index],context,popupType:popupType);
         },
@@ -1970,7 +1970,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 2,
-            childAspectRatio: 0.83),
+            childAspectRatio: 0.82),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySixItemOne(items[index],context,popupType:popupType);
         },
@@ -2085,7 +2085,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.64),
+            childAspectRatio: 0.63),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySevenItemOne(items[index],context,popupType:popupType);
         },
@@ -2511,7 +2511,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.74),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryEightItemOne(items[index],context,popupType:popupType);
         },
@@ -2719,7 +2719,7 @@ class MenuPageView extends GetView {
                         child: Column(
                           children: [
                             Container(
-                              height: ScreenAdapter.height(412),
+                              //height: ScreenAdapter.height(412),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
@@ -2805,7 +2805,7 @@ class MenuPageView extends GetView {
                                   )),
                             ),
                             Container(
-                              height: ScreenAdapter.height(412),
+                              //height: ScreenAdapter.height(412),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                               margin: EdgeInsets.only(
                                   left: ScreenAdapter.width(5), top: ScreenAdapter.height(10), right: ScreenAdapter.width(5)),
@@ -2928,7 +2928,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(5),
             crossAxisCount: 2,
-            childAspectRatio: 0.83),
+            childAspectRatio: 0.82),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryNineItemOne(items[index],context,popupType:popupType);
         },
