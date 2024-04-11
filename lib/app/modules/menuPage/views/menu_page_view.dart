@@ -2,9 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodorder/app/modules/menuPage/views/GridItemView.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
-import 'package:foodorder/app/services/formatMoney.dart';
 
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
@@ -74,26 +72,26 @@ class MenuPageView extends GetView {
                 ),
               ),
             ),
-            // (controller.classTag.value == item['categoryCode'])
-            //     ? Positioned.fill(
-            //   child: Align(
-            //     alignment: Alignment.bottomCenter,
-            //     child: Container(
-            //       padding: EdgeInsets.zero,
-            //       //width: ScreenAdapter.width(10),
-            //       //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            //         child: Image.asset(
-            //           GImage.getImageString("imgpublic", "menu_up"),
-            //           height: ScreenAdapter.width(20),
-            //           fit: BoxFit.fitHeight,
-            //           color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-            //         )
-            //     ),
-            //   ),
-            // )
-            //     : Container(
-            //   height: 0,
-            // ),
+            (controller.classTag.value == item['categoryCode'])
+                ? Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                  padding: EdgeInsets.zero,
+                  //width: ScreenAdapter.width(10),
+                  //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    child: Image.asset(
+                      GImage.getImageString("imgpublic", "menu_up"),
+                      height: ScreenAdapter.width(20),
+                      fit: BoxFit.fitHeight,
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    )
+                ),
+              ),
+            )
+                : Container(
+              height: 0,
+            ),
           ],
         ),
       ));
@@ -389,7 +387,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                          fontFamily: 'NotoSansJP',
+                                     fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                                           fontSize: 34,
                                           fontWeight: FontWeight.w600,
@@ -445,6 +443,7 @@ class MenuPageView extends GetView {
                   text: "${optionGroupVoList[i]['groupName']}",
                   //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                   style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(24.0),
                     fontWeight: FontWeight.w500,
                     color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -453,6 +452,7 @@ class MenuPageView extends GetView {
                     TextSpan(
                       text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                       style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(18.0),
                         fontWeight: FontWeight.w200,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -488,6 +488,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -593,6 +594,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -638,64 +640,111 @@ class MenuPageView extends GetView {
   }
 
   showCategoryTwoItemList(items,context,{popupType:"old"}) {
-    // return Padding(
-    //   padding: EdgeInsets.only(
-    //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-    //   child: GridView.builder(
-    //     padding: EdgeInsets.zero,
-    //     shrinkWrap: true,
-    //     addAutomaticKeepAlives:true,
-    //     //addRepaintBoundaries:false,
-    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //         mainAxisSpacing: ScreenAdapter.height(40),
-    //         crossAxisSpacing: ScreenAdapter.width(20),
-    //         crossAxisCount: 3,
-    //         childAspectRatio: 0.76),
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return showCategoryTwoItemOne(items[index],context,popupType:popupType);
-    //     },
-    //     itemCount: items.length,
-    //   ),
-    // );
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item,context,popupType:popupType));
-    }
-
-    return GridMenuView(children: children);
-    
-
+    return Padding(
+      padding: EdgeInsets.only(
+          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      child: GridView.builder(
+        padding: EdgeInsets.zero,
+        shrinkWrap: true,
+        addAutomaticKeepAlives:true,
+        //addRepaintBoundaries:false,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            mainAxisSpacing: ScreenAdapter.height(10),
+            crossAxisCount: 3,
+            childAspectRatio: 0.74),
+        itemBuilder: (BuildContext context, int index) {
+          return showCategoryTwoItemOne(items[index],context,popupType:popupType);
+        },
+        itemCount: items.length,
+      ),
+    );
   }
 
-  menuItemView(item,context,{popupType:"old"}) {
-    return GridItemView(
-      title: item['mainTitle'], 
-      subtitle: "¥${item['price']}円", 
-      image: CachedNetworkImageProvider(item['homeImageHttp']), 
-      option: "选规格",
-      onTap: () async {
-        if (item['qtyBounds'] == 0) {
-          return;
-        } else if (item['qtyBounds'] > 0) {
-          //请求限定接口
-          controller.checkQtyBoundsCount(item, "",popupType,context);
+  showCategoryTwoItemOne(item,context,{popupType:"old"}) {
+    Offset temp;
+    return Container(
+      padding: EdgeInsets.only(
+          left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
+      child: InkWell(
+          enableFeedback: false,
 
-        }else{
-          //如果option 存在，则弹出option
-          if(item['optionGroupVoList']?.length > 0){
-            if(popupType == "v1"){
-              controller.publicShowOneItemWidgetv1(item);
+          onTap: () async {
+
+            if (item['qtyBounds'] == 0) {
+              return;
+            } else if (item['qtyBounds'] > 0) {
+              //请求限定接口
+              controller.checkQtyBoundsCount(item, "",popupType,context);
+
             }else{
-              controller.publicShowOneItemWidget(item);
+              //如果option 存在，则弹出option
+              if(item['optionGroupVoList']?.length > 0){
+                if(popupType == "v1"){
+                  controller.publicShowOneItemWidgetv1(item);
+                }else{
+                  controller.publicShowOneItemWidget(item);
+                }
+
+              }else{
+                controller.publicAddCart(context,item);
+              }
             }
 
-          }else{
-            controller.publicAddCart(context,item);
-          }
-        }
-      },
-      cover: controller.publicShowMenuSellOut(item['qtyBounds']),
-      );
+
+          },
+          child: Material(
+            child: Stack(
+              children: [
+                Container(
+                  //height: ScreenAdapter.height(280),
+                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
+
+                        Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
+
+                        Container(
+                          //width: ScreenAdapter.width(20),
+                          height: ScreenAdapter.height(70),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)),
+                          child: controller.publicShowMenuTitle(
+                              item['mainTitle'],
+                              GFontSize.menuTwoListTitle,
+                              Gcolor.mainTitleColor),
+                        ),
+                        /*SizedBox(
+                          height: ScreenAdapter.height(8),
+                        ),*/
+                        Container(
+                          //width: ScreenAdapter.width(125),
+                          //height: ScreenAdapter.height(315),
+                          alignment: Alignment.centerRight,
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(15),
+                              right: ScreenAdapter.width(10)),
+                          child: controller.publicShowMenuPrice(
+                              item['currentPrice'],
+                              item['price'],
+                              GFontSize.menuTwopriceLift,
+                              Gcolor.mainTitleColor,
+                              GFontSize.menuTwoprice,
+                              Gcolor.priceColor,
+                              GFontSize.menuTwopriceRight,
+                              Gcolor.mainTitleColor),
+                        ),
+                      ],
+                    )),
+                //绝对定位 盖章
+                controller.publicShowMenuSellOut(item['qtyBounds']),
+              ],
+            ),
+          )),
+    );
   }
 
   //第三个分类 定食
@@ -770,7 +819,7 @@ class MenuPageView extends GetView {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: <Widget>[
-                            publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0),
+                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth:350.0, imgHeight:350.0),
                             (item['optionGroupVoList']?.length > 0)
                                 ? Expanded(child: publicShowThreeMenuOptionGroupWidget(
                                 item['menuCode'], menuindex,item['qtyBounds']))
@@ -823,6 +872,7 @@ class MenuPageView extends GetView {
                                           child: Text(
                                             '${subtitle}',
                                             style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(
                                                     GFontSize
                                                         .menuThreeListFoodSubtitle),
@@ -981,7 +1031,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1024,6 +1074,7 @@ class MenuPageView extends GetView {
                     text: "${optionGroupVoList[i]['groupName']}",
                     //GString.getToString(this._checkLanguage, "show_price_front"),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(24.0),
                       fontWeight: FontWeight.w500,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1032,6 +1083,7 @@ class MenuPageView extends GetView {
                       TextSpan(
                         text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18.0),
                           fontWeight: FontWeight.w200,
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1071,6 +1123,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -1177,6 +1230,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -1240,15 +1294,6 @@ class MenuPageView extends GetView {
   }
 
   showCategoryFourItemList(items,context,{popupType:"old"}) {
-
-    List<Widget> children = [];
-    for (var item in items) {
-      children.add(menuItemView(item,context,popupType:popupType));
-    }
-
-    return GridMenuView(children: children, crossAxisCount:2);
-
-
     return Padding(
       padding: EdgeInsets.only(
         top: ScreenAdapter.height(8),
@@ -1263,7 +1308,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(7),
             crossAxisCount: 4,
-            childAspectRatio: 0.53),
+            childAspectRatio: 0.52),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryFourItemOne(items[index],context,popupType:popupType);
         },
@@ -1313,7 +1358,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:260.0, imgHeight: 380.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth:260.0, imgHeight: 380.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         SizedBox(
                           height: ScreenAdapter.height(8),
@@ -1444,7 +1489,7 @@ class MenuPageView extends GetView {
                         child: Row(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 400.0, imgHeight: 260.0),
+                            publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 400.0, imgHeight: 260.0),
                             (item['optionGroupVoList']?.length > 0)
                                 ? Expanded(
                                 child: publicShowFiveMenuOptionGroupWidget(
@@ -1493,6 +1538,7 @@ class MenuPageView extends GetView {
                                           child: Text(
                                             '${subtitle}',
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                                 fontSize: ScreenAdapter.fontSize(
                                                     GFontSize.menuThreeListFoodSubtitle),
                                                 fontWeight: FontWeight.w600,
@@ -1649,7 +1695,7 @@ class MenuPageView extends GetView {
                                   GString.getToString(
                                       controller.checkLanguage.value, "add_option_cart"),
                                   style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
+                                    fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(
@@ -1692,6 +1738,7 @@ class MenuPageView extends GetView {
                     text: "${optionGroupVoList[i]['groupName']}",
                     //GString.getToString(this._checkLanguage, "show_price_front"),
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(24.0),
                       fontWeight: FontWeight.w500,
                       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1700,6 +1747,7 @@ class MenuPageView extends GetView {
                       TextSpan(
                         text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
                         style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
                           fontSize: ScreenAdapter.fontSize(18.0),
                           fontWeight: FontWeight.w200,
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -1740,6 +1788,7 @@ class MenuPageView extends GetView {
                 badgeContent: Text(
                     (optionVolistSon['currentPrice'] > 0) ?"+${optionVolistSon['currentPrice'].toString()}円":"${optionVolistSon['currentPrice'].toString()}円",
                     style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(16),
                       color: ColorsUtil.hexToColor(
                           Gcolor.optionBtnColor),
@@ -1846,6 +1895,7 @@ class MenuPageView extends GetView {
                             child: AutoSizeText(
                               optionVolistSon['mainTitle'],
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontWeight: FontWeight.w600,
                                 fontSize: ScreenAdapter.fontSize(28.0),
                                 color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -1920,7 +1970,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 2,
-            childAspectRatio: 0.83),
+            childAspectRatio: 0.82),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySixItemOne(items[index],context,popupType:popupType);
         },
@@ -1968,7 +2018,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -2035,7 +2085,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.64),
+            childAspectRatio: 0.63),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySevenItemOne(items[index],context,popupType:popupType);
         },
@@ -2084,7 +2134,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 350.0, imgHeight: 440.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
@@ -2461,7 +2511,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 3,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.74),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryEightItemOne(items[index],context,popupType:popupType);
         },
@@ -2510,7 +2560,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 350.0, imgHeight: 350.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 350.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         Container(
                           //width: ScreenAdapter.width(20),
@@ -2878,7 +2928,7 @@ class MenuPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(5),
             crossAxisCount: 2,
-            childAspectRatio: 0.83),
+            childAspectRatio: 0.82),
         itemBuilder: (BuildContext context, int index) {
           return showCategoryNineItemOne(items[index],context,popupType:popupType);
         },
@@ -2928,7 +2978,7 @@ class MenuPageView extends GetView {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
+                        publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 530.0, imgHeight: 530.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
                         Container(
                           width: ScreenAdapter.width(530),
@@ -2982,223 +3032,38 @@ class MenuPageView extends GetView {
               //顶部导航
               Container(
                 width: ScreenAdapter.getScreenWidth(),
-                height: ScreenAdapter.height(400),
+                height: ScreenAdapter.height(95),
                 padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
                 alignment: Alignment.center,
-                  decoration: BoxDecoration(
-                    //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                    image: new DecorationImage(
-                          image: AssetImage('assets/images/gongcha/home2.png'),
-                          fit: BoxFit.cover,
-                        ),
+                decoration: BoxDecoration(
+                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                  /*image: new DecorationImage(
+                alignment: Alignment.centerRight,
+                fit: BoxFit.fitHeight,
+                image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
+              ),*/
                 ),
+                child: showTopCategoryMenu(),
               ),
-              SizedBox(height: ScreenAdapter.height(30)),
+
               Expanded(
-                child: 
-                Row(
-                  children: [
-                    //侧栏
-                    Container(
-                      padding: EdgeInsets.only(left: ScreenAdapter.width(30), 
-                                              right: ScreenAdapter.width(10),
-                                              top: ScreenAdapter.height(20)),
-                      width: ScreenAdapter.width(200),
-                      decoration: BoxDecoration(
-                        color: Color.fromARGB(255, 244, 240, 240),
-                        borderRadius: BorderRadius.only(
-                          topRight: Radius.circular(40),
-                        ),
-                      ),
-                      child: 
-                      Column(  
-                      children: [
-                        Expanded(
-                          child:
-                            ListView.builder(
-                              itemCount: controller.topMenu.value.length,
-                              itemBuilder: (context, index){
-                              var item = controller.topMenu.value[index];
-
-                              return Column(
-                                  children: [
-                                    SizedBox(height: ScreenAdapter.height(20),),
-                                    InkWell(
-                                      onTap: () {
-                                        controller.changeCategory(item['categoryCode']);
-                                      },
-                                      child: Container(
-                                        margin: EdgeInsets.only(right: ScreenAdapter.width(6),top: ScreenAdapter.height(5)),
-                                        padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                                        width: ScreenAdapter.width(165),
-                                        //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
-                                        //height: ScreenAdapter.height(90),
-                                        alignment: Alignment.center,
-                                        // decoration: BoxDecoration(
-                                        //   //背景颜色
-                                        //   color: ColorsUtil.hexToColor(item['showColor']),
-                                        //   borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-                                        // ),
-                                        child: Container(
-                                          //加上Center让文字居中
-                                          alignment: Alignment.centerLeft,
-                                          child: ConstrainedBox(
-                                            constraints: BoxConstraints(
-                                              minWidth: ScreenAdapter.width(20),
-                                              maxWidth: ScreenAdapter.width(165),
-                                              minHeight: ScreenAdapter.height(30),
-                                              maxHeight: ScreenAdapter.height(65),
-                                            ),
-                                            child: AutoSizeText(
-                                              "${item['categoryName']}",
-                                              style: TextStyle(
-                                                  fontSize: ScreenAdapter.fontSize(30),
-                                                  color: item['categoryCode'] == controller.classTag.value ? Colors.black : Color.fromARGB(255, 139, 137, 137), //ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                                  fontWeight: FontWeight.w600
-                                              ),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                    SizedBox(height: ScreenAdapter.height(20),),
-                                  ],
-                              );
-                              
-                              
-                            }),
-                        ),
-                        //Spacer(),
-                        Row(
-                          children: [
-                            InkWell(
-                              onTap: () {
-                                controller.gotoLanguageHome();
-                              },
-                              child:Column(
-                                children: [
-                                  Container(
-                                    width: ScreenAdapter.width(60),
-                                    height: ScreenAdapter.height(60),
-                                    alignment: Alignment.center,
-                                    decoration: BoxDecoration(
-                                      image: DecorationImage(
-                                        image: AssetImage('assets/images/public/home_icon.png'),
-                                        fit: BoxFit.contain,
-                                      ),
-                                    ),
-                                  ),
-                                  Text("首页",style: TextStyle(fontSize: 24,color: Color.fromARGB(255, 3, 139, 114)),)
-                                ],
-                              ),
-                            ),
-                            Spacer(),
-                          ],
-                        ),
-                        SizedBox(height: ScreenAdapter.height(50),),
-                      ],
+                  child: RepaintBoundary(
+                    child: Container(
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                      height: ScreenAdapter.height(1480),
+                      alignment: Alignment.center,
+                      child: showMiddleMenuList(context),
                     ),
-                    ),
-                    
-                    //Spacer(),
-                    Expanded(
-                      child: Column(
-                        children: [
+                  )),
 
-                          Expanded(
-                            child: RepaintBoundary(
-                              child: Container(
-                                  //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                                  //height: ScreenAdapter.height(1480),
-                                  padding: EdgeInsets.only(left: ScreenAdapter.width(20), right: ScreenAdapter.width(20)),
-                                  alignment: Alignment.topCenter,
-                                  child: showMiddleMenuList(context),
-                                ),
-                              )
-                            ),
-
-                          Container(
-                              height: ScreenAdapter.height(200),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.grey.withOpacity(0.3),
-                                    spreadRadius: 3,
-                                    blurRadius: 3,
-                                    offset: Offset(0, 1), // changes position of shadow
-                                  ),
-                                ],
-                              ),
-                              //child: publicShowCartView()
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.end,
-                                children: [
-                                  SizedBox(width: ScreenAdapter.width(200),),
-                                  Expanded(
-                                    child: Container(
-                                      height: ScreenAdapter.height(150),
-                                      margin: EdgeInsets.only(top: ScreenAdapter.width(25), bottom: ScreenAdapter.width(25), right: ScreenAdapter.width(40)),
-                                      decoration: BoxDecoration(
-                                        color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-                                        borderRadius: BorderRadius.circular(75),
-                                      ),
-                                      child: Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                        children: [
-                                          SizedBox(width: ScreenAdapter.width(40),),
-                                          Container(
-                                            width: ScreenAdapter.width(100),  
-                                            height: ScreenAdapter.height(100),
-                                            padding: EdgeInsets.all(30),
-                                            alignment: Alignment.center,
-                                            decoration: BoxDecoration(
-                                              image: DecorationImage(
-                                                image: AssetImage('assets/images/public/shopping.png'),
-                                                fit: BoxFit.cover,
-                                              ),
-                                            ),
-                                          ),
-                                          SizedBox(width: ScreenAdapter.width(20),),
-                                          Text("共计",style: TextStyle(fontSize: 32,color: Colors.white,)),
-                                          SizedBox(width: ScreenAdapter.width(20),),
-                                          Text("¥${formatMoney(controller.shopCartTotalPrice.value)}",
-                                          style: TextStyle(fontSize: 32,color: Colors.white,)),
-                                          Spacer(),
-                                          InkWell(
-                                            onTap: () {
-                                                if (int.parse(controller.shopCartTotalPrice.value) <=0) {
-                                                  return;
-                                                }
-
-                                              
-                                                controller.doSubmitOrder();
-                                          }, 
-                                          child: Text("去结算",style: TextStyle(fontSize: 40, color: Colors.white, fontWeight:FontWeight.w600))),
-                                          SizedBox(width: ScreenAdapter.width(40),),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                          ),
-
-                          ],
-                        )
-                      ),
-                    
-                    ],
-                  ),
-
-              )
-
-                ],
+              Container(
+                  height: ScreenAdapter.height(330),
+                  child: publicShowCartView()
               ),
+
+            ],
           ),
+        ),
           onLoading: Center(
             child: CircularProgressIndicator(
               strokeWidth:6,

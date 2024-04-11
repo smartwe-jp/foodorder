@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../services/HomeServices.dart';
@@ -81,7 +82,7 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text("管理パスワードを入力",style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600)),
+                        Text("管理パスワードを入力",style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600)),
                         SizedBox(
                           height: 10,
                         ),
@@ -94,11 +95,11 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                                   controller: _myPassWordController,
                                   textAlign: TextAlign.center,
                                   showCursor: false,
-                                  style: const TextStyle(fontSize: 40),
+                                  style:  TextStyle(fontFamily: GFont.getFontFamily(),fontSize: 40),
                                   // Disable the default soft keybaord
                                   keyboardType: TextInputType.none,
                                   decoration: InputDecoration(
-                                    hintStyle: TextStyle(fontSize: ScreenAdapter.fontSize(24)),
+                                    hintStyle: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(24)),
                                     hintText: "4桁のパスワードを入力してください",
                                     //border: InputBorder.none
                                   ),

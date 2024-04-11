@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/reimburseOrder/views/reimbruse_order_print_view.dart';
 import 'package:foodorder/app/services/formatMoney.dart';
 
@@ -73,6 +74,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerLeft,
                                 child: Text("注文番号:",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -86,6 +88,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerRight,
                                 child: Text("${itemDetail["orderIdStr"]}",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -105,6 +108,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerLeft,
                                 child: Text("支払時間:",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -118,6 +122,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerRight,
                                 child: Text("${itemDetail["payTime"]}",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -137,6 +142,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerLeft,
                                 child: Text("支払金額:",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -150,6 +156,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerRight,
                                 child: Text(formatMoney(itemDetail["amount"]),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -169,6 +176,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerLeft,
                                 child: Text("支払方法:",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -182,6 +190,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerRight,
                                 child: Text("${itemDetail["payChannel"]}",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w400,
                                       fontSize: ScreenAdapter.fontSize(26.0),
                                       color: ColorsUtil.hexToColor("#000000"),
@@ -201,6 +210,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerLeft,
                                 child: Text("返金額:",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w500,
                                       fontSize: ScreenAdapter.fontSize(32.0),
                                       color: ColorsUtil.hexToColor("#A61C1C"),
@@ -214,6 +224,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                                 alignment: Alignment.centerRight,
                                 child: Text(formatMoney(itemDetail["amount"]),
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                       fontWeight: FontWeight.w500,
                                       fontSize: ScreenAdapter.fontSize(32.0),
                                       color: ColorsUtil.hexToColor("#A61C1C"),
@@ -263,6 +274,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                         child: Text(
                             "返金",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(28),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(
@@ -340,6 +352,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                       ),
                       child: Text("戻る",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -370,6 +383,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                     child: Text(
                       controller.reimburseText.value,
                       style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(26),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -390,7 +404,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                             // Disable the default soft keybaord
                             keyboardType: TextInputType.none,
                             decoration: InputDecoration(
-                              hintStyle: TextStyle(fontSize: ScreenAdapter.fontSize(24)),
+                              hintStyle: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(24)),
                               hintText: "注文番号の後ろ六桁を入力してください",
                               //border: InputBorder.none
                             ),

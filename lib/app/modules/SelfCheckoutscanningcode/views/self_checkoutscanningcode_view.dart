@@ -89,6 +89,7 @@ class SelfCheckoutscanningcodeView
                             children: [
                               Text(item["mainTitle"],
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                     fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitle),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor(tipColor)
@@ -153,6 +154,7 @@ class SelfCheckoutscanningcodeView
                             child: Text(
                               "－",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                                 fontWeight: FontWeight.w600,
                                 color: Colors.black,
@@ -174,6 +176,7 @@ class SelfCheckoutscanningcodeView
                           child: Text(
                             "${item['goodsNum']}",
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                                 fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor(tipColor)
@@ -209,6 +212,7 @@ class SelfCheckoutscanningcodeView
                             child: Text(
                               "＋",
                               style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
                                 fontSize:ScreenAdapter.fontSize(GFontSize.cartListTitleCount),
                                 fontWeight: FontWeight.w600,
                                 color: (item["goodsNum"]==item["qtyBounds"])?Colors.black12:Colors.black,
@@ -230,6 +234,7 @@ class SelfCheckoutscanningcodeView
                         text: TextSpan(
                             text: "¥",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                             style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(30),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -240,6 +245,7 @@ class SelfCheckoutscanningcodeView
                               TextSpan(
                                 text: formatMoney(item["currentPrice"].toString()),
                                 style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
                                   fontSize: ScreenAdapter.fontSize(40),
                                   fontWeight: FontWeight.w400,
                                   //color: ColorsUtil.hexToColor(Gcolor.priceColor),
@@ -415,6 +421,7 @@ class SelfCheckoutscanningcodeView
                         child: Text(
                           "  ${controller.showCartTotalGoodsNum.value.toString()}  ${GString.getToString(controller.checkLanguage.value, "show_selectPay_point")}",
                           style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                               fontWeight: FontWeight.w600,
                               fontSize: ScreenAdapter.fontSize(40.0)),
@@ -437,6 +444,7 @@ class SelfCheckoutscanningcodeView
                                   child: Text(
                                     "${GString.getToString(controller.checkLanguage.value, "settlement_total_price")}",
                                     style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
                                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                                         fontWeight: FontWeight.w600,
                                         fontSize: ScreenAdapter.fontSize(40.0)),
@@ -451,6 +459,7 @@ class SelfCheckoutscanningcodeView
                                             text: "¥",
                                             //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                                             style: TextStyle(
+                                              fontFamily: GFont.getFontFamily(),
                                               fontSize: ScreenAdapter.fontSize(GFontSize
                                                   .menusettlementBottomPriceLeft),
                                               fontWeight: FontWeight.w600,
@@ -461,6 +470,7 @@ class SelfCheckoutscanningcodeView
                                               TextSpan(
                                                 text: formatMoney(controller.shopCartTotalPrice.value),
                                                 style: TextStyle(
+                                                  fontFamily: GFont.getFontFamily(),
                                                   fontSize: ScreenAdapter.fontSize(
                                                       GFontSize
                                                           .menusettlementBottomPrice),
@@ -473,6 +483,7 @@ class SelfCheckoutscanningcodeView
                                                 text:
                                                 "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
                                                 style: TextStyle(
+                                                  fontFamily: GFont.getFontFamily(),
                                                   fontSize: ScreenAdapter.fontSize(
                                                       GFontSize
                                                           .menusettlementBottomPriceRight),

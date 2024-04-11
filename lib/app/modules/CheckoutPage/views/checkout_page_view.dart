@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+import 'package:foodorder/app/config/font.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -50,6 +51,7 @@ class CheckoutPageView extends GetView {
             child: Text(
               '${item["name"]}',
               style: TextStyle(
+                fontFamily: GFont.getFontFamily(),
                   fontSize: ScreenAdapter.fontSize(36.0),
                   color: ColorsUtil.hexToColor("#F9F9F9"),
                   fontWeight: FontWeight.w600),
@@ -111,6 +113,7 @@ class CheckoutPageView extends GetView {
                 child: Text(
                   "${item["name"]}",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(36.0),
                       color: ColorsUtil.hexToColor("#F9F9F9"),
                       fontWeight: FontWeight.w600),
@@ -164,6 +167,7 @@ class CheckoutPageView extends GetView {
               ),
               child: Text("番号札発行 / Booking",
                   style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(36),
                     fontWeight: FontWeight.w600,
                     color: ColorsUtil.hexToColor(
@@ -214,7 +218,7 @@ class CheckoutPageView extends GetView {
                                   border: InputBorder.none,
                                   isDense: true,
                                 ),
-                                style: TextStyle(fontSize: ScreenAdapter.fontSize(11.0)),
+                                style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(11.0)),
                                 onChanged: (value) {
                                   //print(value);
                                   if(value.length==1){

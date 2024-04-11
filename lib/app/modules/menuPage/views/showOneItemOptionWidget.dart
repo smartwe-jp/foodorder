@@ -103,7 +103,7 @@ class showOneItemOptionWidgetView extends GetView {
               child: badges.Badge(
                 showBadge: (optionVolistSon['currentPrice'] != 0) ? true : false,
                 badgeContent: Text(
-                    (optionVolistSon['currentPrice'] > 0) ?"+${formatSum(optionVolistSon['currentPrice']).toString()}":"${formatSum(optionVolistSon['currentPrice']).toString()}",
+                    (optionVolistSon['currentPrice'] > 0) ?"¥${formatSum(optionVolistSon['currentPrice']).toString()}":"-¥${formatSum(-optionVolistSon['currentPrice']).toString()}",
                     style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(20),
                       fontFamily: GFont.getFontFamily(),
