@@ -8,6 +8,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/models/ItemModel.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -101,6 +102,7 @@ class MenuPageController extends GetxController with StateMixin {
   //如果下单时候报错，则查看是否因为库存不足
   RxMap menuLackMap = {}.obs;
   RxString doSubmitOrderId = "".obs;
+  RxBool showShopCart = false.obs;
 
 
   @override
@@ -532,11 +534,13 @@ class MenuPageController extends GetxController with StateMixin {
     var total = await ordersqlcontroller.getCartAllPrice();
     if(total != null){
       shopCartTotalPrice.value = total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+      if (shopCartTotalPrice.value == "0") {
+        showShopCart.value = false;
+      } 
     }
 
     var totalNum = await ordersqlcontroller.getCartTotalNum();
     showCartTotalGoodsNum.value = totalNum;
-
 
     showCartItems.value = ordersqlcontroller.cartItems;
 
@@ -802,6 +806,47 @@ class MenuPageController extends GetxController with StateMixin {
 
 
     });
+  }
+
+  //
+  publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
+    var cartItem = {
+      "cartId": d.id,
+      "menuCode": d.menuCode,
+      "unitPrice": d.unitPrice,
+      "goodsNum": 1,
+      "qtyBounds":d.qtyBounds
+    };
+    if(d.goodsNum <=1 && isAdd == false){
+      Get.dialog(
+        DialogUtils.alert(GString.getToString(checkLanguage.value, "show_del_cart_item_tag"),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            canceltitle: GString.getToString(checkLanguage.value,"show_del_cart_item_no"),
+            confirmtitle: GString.getToString(checkLanguage.value,"show_del_cart_item_yes"),
+            confirm: () {
+              //widget.confirmCallback('确定');
+              ordersqlcontroller.removeFromCart(d.id ?? 0);
+              //print("Item removed from cart successfully");
+              //删除商品声音
+              deleteItemSound();
+              ordersqlcontroller.getCardList();
+              //更改显示购物车价格
+              getCartPriceTotal();
+
+              Get.back();
+            },
+            cancle: () {
+              Get.back();
+            })
+    );
+    }else{
+      final action = isAdd ? "add" : "reduce";
+      publicChangeCartMenuCount(cartItem,action).then((val) {
+
+        //更改显示购物车价格
+        getCartPriceTotal();
+      });
+    }
   }
 
   //公共购物车加减

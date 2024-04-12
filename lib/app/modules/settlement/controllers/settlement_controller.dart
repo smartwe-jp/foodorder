@@ -4,17 +4,19 @@ import 'dart:io';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -23,7 +25,7 @@ import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
-import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+// import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
@@ -183,7 +185,12 @@ class SettlementController extends GetxController with StateMixin {
     if (socketState.value == true) {
       this._socket?.close();
     }
-    Paycube.stopListening();
+    if (Platform.isAndroid) {
+      Paycube.stopListening();
+    } else {
+      CashChanger.removeEventsListener();
+    }
+
     allowtimer?.cancel();
     timer?.cancel();
     stoptimer?.cancel();
@@ -1586,6 +1593,10 @@ class SettlementController extends GetxController with StateMixin {
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
     CashStep.value = 2;
+    if (Platform.isWindows) {
+      await gloryNextOper();
+      return;
+    }
     //sleep(Duration(milliseconds: 50));
     await Paycube.setReceiveEvent;
     var endStatus = await Paycube.endPayCube;

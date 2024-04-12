@@ -52,10 +52,10 @@ class GridItemView extends StatelessWidget {
 class RectangleImageView extends StatelessWidget {
   final ImageProvider image;
   final double radius;
-  final Function onTap;
+  final Function? onTap;
 
   RectangleImageView(
-      {Key? key, required this.image, this.radius = 10.0, required this.onTap});
+      {Key? key, required this.image, this.radius = 10.0, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -188,13 +188,15 @@ class GridMenuView extends StatelessWidget {
   final double? mainAxisSpacing;
   final double? crossAxisSpacing;
   final int? crossAxisCount;
+  final double? childAspectRatio;
 
   GridMenuView({
     Key? key,
     required this.children,
     this.mainAxisSpacing,
     this.crossAxisSpacing,
-    this.crossAxisCount,
+    this.crossAxisCount, 
+    this.childAspectRatio,
   });
 
   @override
@@ -211,7 +213,7 @@ class GridMenuView extends StatelessWidget {
             mainAxisSpacing: mainAxisSpacing ?? ScreenAdapter.height(40),
             crossAxisSpacing: crossAxisSpacing ?? ScreenAdapter.width(20),
             crossAxisCount: crossAxisCount ?? 3,
-            childAspectRatio: 0.76),
+            childAspectRatio: childAspectRatio ?? 0.76),
         itemBuilder: (BuildContext context, int index) {
           return children[index];
         },
