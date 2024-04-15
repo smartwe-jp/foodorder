@@ -16,8 +16,7 @@ class LanguageButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: InkWell(
+      return GestureDetector(
           onTap: () => onTap?.call(),
           child: AspectRatio(
             aspectRatio: 3,
@@ -56,7 +55,7 @@ class LanguageButton extends StatelessWidget {
               ],
             ),
           )),
-          )
+          
     );
   }
 }

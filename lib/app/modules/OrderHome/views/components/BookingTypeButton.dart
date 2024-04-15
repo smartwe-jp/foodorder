@@ -18,8 +18,7 @@ class BookingTypeButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: InkWell(
+    return GestureDetector(
           onTap: () => onTap?.call(),
           child: AspectRatio(
             aspectRatio: 2.5,
@@ -54,9 +53,6 @@ class BookingTypeButton extends StatelessWidget {
               ],
             ),
           )),
-          )
-
- 
     );
   }
 }

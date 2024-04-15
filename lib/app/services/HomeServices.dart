@@ -1,6 +1,8 @@
 
 
 import 'dart:convert';
+import 'package:flutter/material.dart';
+
 import 'GetxStorage.dart';
 import 'Storage.dart';
 class HomeServices{
@@ -78,6 +80,10 @@ class HomeServices{
       systemSettingInfo = {};
     }
     return systemSettingInfo;
+  }
+
+  static updateSystemSettingInfo(Map systemSettingData) async{
+    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
   }
 
   //pos机多参数设置
@@ -188,6 +194,25 @@ class HomeServices{
       machineLanguages = ["JP"];
     }
     return machineLanguages;
+  }
+
+  static getSettingLanguage() async{
+    var settingLanguge;
+    try {
+      var language = await Storage.getString('smartwe_settingLanguage');
+      if (language == null) {
+        language = "JP";
+        GetxStorage.setData('smartwe_settingLanguage', language);
+      }
+      settingLanguge = language;
+    } catch (e) {
+      settingLanguge = "JP";
+    }
+    return settingLanguge;
+  }
+
+  static updateSettingLanguage(String language) async{
+    GetxStorage.setData('smartwe_settingLanguage', language);
   }
 
   //首图

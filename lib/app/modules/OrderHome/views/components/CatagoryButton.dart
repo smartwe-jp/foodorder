@@ -12,8 +12,7 @@ class CatagoryButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return RepaintBoundary(
-      child: InkWell(
+    return GestureDetector(
           onTap: () => onTap?.call(),
           child:  Container(
                   padding: EdgeInsets.only(
@@ -61,8 +60,6 @@ class CatagoryButton extends StatelessWidget {
                     ],
                   )
                 )
-
-            ),
     );
   }
 }

@@ -1,8 +1,13 @@
-
 // import 'dart:io';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
+import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
 // import 'package:foodorder/app/config/string.dart';
 // import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 // import 'package:foodorder/app/services/showToast.dart';
@@ -25,6 +30,10 @@ class OrderHomeController extends GetxController with StateMixin {
   RxBool machineLanguages_CH = false.obs;
   RxBool machineLanguages_EN = false.obs;
   RxBool machineLanguages_KO = false.obs;
+
+  RxBool isLoading = true.obs;
+
+  RxString settingLanguage = "JP".obs;
 
   RxList homeList = [].obs;
 
@@ -52,6 +61,7 @@ class OrderHomeController extends GetxController with StateMixin {
     if (machineCodeString != "") {
       machineCode.value = machineCodeString;
     }
+    await _getSettingLanguage();
     //首页图片
     await _getHomeImageList();
   }
@@ -76,6 +86,14 @@ class OrderHomeController extends GetxController with StateMixin {
         ? SystemSettingInfo["diningType"]
         : "1";
     await getmenchineLanguages();
+  }
+
+  updateDingType(String type) async {
+    dining_type.value = type;
+    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+    SystemSettingInfo["diningType"] = type;
+    await HomeServices.updateSystemSettingInfo(SystemSettingInfo);
+    await getBookingBootIndexCagegory();
   }
 
   getmenchineLanguages() async {
@@ -104,6 +122,114 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("获取机器语言结束");
     update();
     change(null, status: RxStatus.success());
+
+    await getBookingBootIndexCagegory();
+  }
+
+  _getSettingLanguage() async {
+    debugPrint("获取设置语言");
+    var language = await HomeServices.getSettingLanguage();
+    settingLanguage.value = language;
+    debugPrint("获取设置语言done");
+  }
+
+  updateSettingLanguage(String language) async {
+    await HomeServices.updateSettingLanguage(language);
+    settingLanguage.value = language;
+    //reload catagory...
+    await getBookingBootIndexCagegory();
+    
+  }
+
+  get showCatagory {
+  if (homeList.length == 0) {
+    debugPrint("homeList.length == 0");
+    return [];
+  }
+  debugPrint("homeList.length > 4");
+  if (homeList.length > 4) {
+    // 获取前5个
+    var newList = List.from(homeList.sublist(0, 5));
+    newList.add({
+      "categoryCode": homeList.first["categoryCode"],
+      "categoryName": "更多",
+      "showType": "1"
+    });
+    return newList;
+  } else {
+    var newList = List.from(homeList);
+    newList.add({
+      "categoryCode": homeList.first["categoryCode"],
+      "categoryName": "更多",
+      "showType": "1"
+    });
+    return newList;
+  }
+}
+
+  //获取页面分类
+  getBookingBootIndexCagegory() async {
+    debugPrint("获取页面分类");
+    isLoading.value = true;
+    homeList.value = [];
+    var queryTakeout = "2";
+    //queryTakeout 0外卖 1都可 2店内
+    switch (dining_type.value) {
+      case "1":
+        queryTakeout = "2";
+        break;
+      case "2":
+        queryTakeout = "0";
+        break;
+      case "3":
+//        if(mealType.value == true){
+        queryTakeout = "0";
+        // }else{
+        //   queryTakeout = "2";
+        // }
+        break;
+      default:
+        queryTakeout = "2";
+    }
+    var formData = {
+      "machineCode": machineCode.value,
+      "language": settingLanguage.value,
+      "takeout": queryTakeout,
+    };
+    request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+      isLoading.value = false;
+      if (response['code'] == 200) {
+        List myList = response['data']['categoryVoList'];
+        for (var i = 0; i < myList.length; i++) {
+          //if(menuIndex >=5) menuIndex = 0;
+          var categoryVoList = myList[i];
+          //配置顶部菜单
+          homeList.value.add({
+            "categoryCode": categoryVoList['categoryCode'],
+            "categoryName": categoryVoList['categoryName'],
+            "showType": categoryVoList['showType'],
+            //"showColor":MenuColor[menuIndex]
+          });
+        }
+        update();
+      } else {
+        //showToast(response['msg']);
+        Get.dialog(DialogUtils.alertOneButton(response['msg'],
+            title: GString.getToString(settingLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(settingLanguage.value, "tag_button_yes"),
+            confirm: () {
+          getBookingBootIndexCagegory();
+        }));
+        Future.delayed(Duration(milliseconds: 2000), () {
+          getBookingBootIndexCagegory();
+        });
+
+        //Get.back();
+      }
+    });
   }
 
   clearCartList() {

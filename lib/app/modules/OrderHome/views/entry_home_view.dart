@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/color.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/OrderHome/controllers/order_home_controller.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/CatagoryButton.dart';
@@ -34,71 +37,109 @@ class EntryHomeView extends GetView<OrderHomeController> {
     ));
   }
 
+  _catagoryLoading() {
+    return Center(
+      // 使用CircularProgressIndicator创建旋转进度条
+      child: CircularProgressIndicator(
+        strokeWidth: 10, // 设置进度条的粗细
+        backgroundColor: Colors.grey[300], // 进度条的背景颜色
+        valueColor: AlwaysStoppedAnimation<Color>(Colors.blue), // 进度条的前景色
+      ),
+    );
+  }
+
+  _showEasyLoading(text) {
+    var _showTag;
+    _showTag = Text(text,
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontFamily: GFont.getFontFamily(),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
+    EasyLoading.show(
+      //status: 'loading...',
+      indicator: Container(
+        width: ScreenAdapter.width(550),
+        height: ScreenAdapter.height(480),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
+        child: InkWell(
+            onLongPress: () {
+              EasyLoading.dismiss();
+            },
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                _showTag,
+                Container(
+                  //width: ScreenAdapter.width(400),
+                  margin: EdgeInsets.only(top: 60),
+                  height: ScreenAdapter.height(200),
+                  child: Image.asset(
+                      GImage.getImageString("imgpublic", "printticketloading"),
+                      fit: BoxFit.fitHeight),
+                ),
+              ],
+            )),
+      ),
+      maskType: EasyLoadingMaskType.black,
+    );
+  }
+
   languageSelectView() {
     final languages = [
       {
         "language": "JP",
+        "text": "日本語",
         "selected": controller.machineLanguages_JP.value,
-        "icon": AssetImage("assets/images/public/shopping_car.png"),
+        "icon": AssetImage("assets/images/public/language_Japanese.png"),
       },
       {
         "language": "CH",
+        "text": "中文",
         "selected": controller.machineLanguages_CH.value,
-        "icon": AssetImage("assets/images/public/shopping_car.png"),
+        "icon": AssetImage("assets/images/public/language_Chinese.png"),
       },
       {
         "language": "EN",
+        "text": "English",
         "selected": controller.machineLanguages_EN.value,
-        "icon": AssetImage("assets/images/public/shopping_car.png"),
+        "icon": AssetImage("assets/images/public/language_English.png"),
       },
       {
         "language": "KO",
+        "text": "한국어",
         "selected": controller.machineLanguages_KO.value,
-        "icon": AssetImage("assets/images/public/shopping_car.png"),
+        "icon": AssetImage("assets/images/public/language_Korean.png"),
       }
     ];
 
     final buttonList = languages.map((e) {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,
-        title: e["language"] as String,
-        selected: false,
+        title: e["text"] as String,
+        selected: e["language"] == controller.settingLanguage.value,
         onTap: () {
-          if (controller.dining_type.value == "1" ||
-              controller.dining_type.value == "2") {
-            var mealType = (controller.dining_type.value == "2") ? true : false;
-            var jumpUrl = (controller.menu_direction.value == "1")
-                ? '/menu-page'
-                : '/menuzong-page';
-
-            Get.toNamed(jumpUrl,
-                arguments: {"checkLanguage": e["language"], "mealType": mealType});
-          } else {
-            _showSelectMealTypeDialog(e["language"], controller.menu_direction.value);
-          }
+          controller.updateSettingLanguage(e["language"] as String);
         },
       );
     }).toList();
 
     return Container(
-      alignment: Alignment.center,
-      padding: EdgeInsets.only(
-        top: ScreenAdapter.height(20),
-        left: ScreenAdapter.width(70),
-        right: ScreenAdapter.width(70),
-        bottom: ScreenAdapter.height(20),
-      ),
-      child:
-       GridMenuView(
-        children: buttonList,
-        crossAxisCount: 4,
-        mainAxisSpacing: ScreenAdapter.width(20),
-        crossAxisSpacing: ScreenAdapter.height(20),
-        childAspectRatio: 3,
-      )
-       
-       
-    );
+        alignment: Alignment.center,
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(20),
+          left: ScreenAdapter.width(70),
+          right: ScreenAdapter.width(70),
+          bottom: ScreenAdapter.height(20),
+        ),
+        child: GridMenuView(
+          children: buttonList,
+          crossAxisCount: 4,
+          mainAxisSpacing: ScreenAdapter.width(20),
+          crossAxisSpacing: ScreenAdapter.height(20),
+          childAspectRatio: 3,
+        ));
   }
 
   settingButton() {
@@ -134,15 +175,33 @@ class EntryHomeView extends GetView<OrderHomeController> {
     );
   }
 
+  get eatInShopImage => controller.dining_type.value == "1"
+      ? AssetImage("assets/images/public/shopping-light.png")
+      : AssetImage("assets/images/public/shopping-dark.png");
+
+  get eatOutImage => controller.dining_type.value == "2"
+      ? AssetImage("assets/images/public/shopping-light.png")
+      : AssetImage("assets/images/public/shopping-dark.png");
+
   catagoryGridView() {
-    final catagory = ["推荐", "拉面", "蔬菜", "酒", "甜品", "更多"];
-    final buttonList = catagory
-        .map(
+    List<Widget> buttonList = controller.showCatagory
+        .map<Widget>(
           (e) => CatagoryButton(
-            icon: AssetImage("assets/images/public/shopping_car.png"),
-            title: e,
+            icon: AssetImage("assets/images/public/food-catagory.png"),
+            title: e["categoryName"] as String,
             onTap: () {
-              print("点击了$e");
+              var mealType =
+                  (controller.dining_type.value == "2") ? true : false;
+              var jumpUrl = (controller.menu_direction.value == "1")
+                  ? '/menu-page'
+                  : '/menuzong-page';
+
+              Get.toNamed(jumpUrl, arguments: {
+                "classTag": e["categoryCode"] as String,
+                "menuList": controller.homeList.value,
+                "checkLanguage": controller.settingLanguage.value,
+                "mealType": mealType
+              });
             },
           ),
         )
@@ -192,11 +251,12 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             ),
                             Expanded(
                               child: BookingTypeButton(
-                                icon: AssetImage(
-                                    "assets/images/public/shopping_car.png"),
+                                icon: eatInShopImage,
                                 title: "堂食",
-                                selected: true,
-                                onTap: () {},
+                                selected: controller.dining_type.value == "1",
+                                onTap: () {
+                                  controller.updateDingType("1");
+                                },
                               ),
                             ),
                             SizedBox(
@@ -204,11 +264,12 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             ),
                             Expanded(
                               child: BookingTypeButton(
-                                icon: AssetImage(
-                                    "assets/images/public/shopping_car.png"),
+                                icon: eatOutImage,
                                 title: "外带",
-                                selected: false,
-                                onTap: () {},
+                                selected: controller.dining_type.value == "2",
+                                onTap: () {
+                                  controller.updateDingType("2");
+                                },
                               ),
                             ),
                             SizedBox(
@@ -231,7 +292,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                           decoration: BoxDecoration(
                             color: Color.fromARGB(255, 235, 233, 233),
                           ),
-                          child: catagoryGridView(),
+                          child: controller.isLoading.value ? _catagoryLoading() : catagoryGridView(),
                         )),
                     Expanded(
                       flex: 2,

@@ -1,18 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -25,9 +19,6 @@ import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
-import '../../../services/logUtil.dart';
-import '../../../services/showImage.dart';
-import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
 import '../views/showOneItemOptionWidget.dart';
@@ -127,7 +118,8 @@ class MenuPageController extends GetxController with StateMixin {
     if(Get.arguments != null){
       checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
       mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
-
+      classTag.value = (Get.arguments["classTag"]!=null)?Get.arguments["classTag"]:"";
+      topMenu.value = (Get.arguments["menuList"]!=null)?Get.arguments["menuList"]:[];
     }
 
     _getMachineInfo();
@@ -184,7 +176,8 @@ class MenuPageController extends GetxController with StateMixin {
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     //getBookingBootMenu();
-    getBookingBootIndexCagegory(); //新版新获取分类
+    //getBookingBootIndexCagegory(); //新版新获取分类
+    getBookingBootIndexMenu(classTag.value);
   }
 
   //获取菜单
@@ -1419,7 +1412,7 @@ print("加1了");
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
-    classTag.value = topMenu.value[0]["categoryCode"];
+    classTag.value = topMenu.value.first["categoryCode"];
     menuLackMap.value = {};
     getCartPriceTotal();
   }
