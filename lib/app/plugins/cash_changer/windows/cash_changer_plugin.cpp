@@ -159,7 +159,7 @@ void CashChangerPlugin::HandleMethodCall(
             // 获取排他访问权限
                 //thread([&lngRet, &result, pCashChanger = this->pCashChanger]() {
                     lngRet = pCashChanger->ClaimDevice(6000);
-                    cerr << "ClaimDevice result 。。 " << lngRet << endl;
+                    cerr << "ClaimDevice result lngRet = " << lngRet << endl;
                     if (lngRet == 0) {
                         cerr << "ClaimDevice 成功" << endl;
                         // 设置设备属性
@@ -175,6 +175,7 @@ void CashChangerPlugin::HandleMethodCall(
                         SysFreeString(bstr);
                         result->Success(flutter::EncodableValue(lngRet));
                     } else {
+                        cerr << "開局処理に失敗しました。接続状態を確認して下さい。" << endl;
                         cerr << "ClaimDevice 失败，错误码：" << lngRet << endl;
                         result->Success(flutter::EncodableValue(lngRet));
                         //channel->InvokeMethod("ClaimDeviceResult", std::make_unique<flutter::EncodableValue>(lngRet));
@@ -190,14 +191,14 @@ void CashChangerPlugin::HandleMethodCall(
                 result->Success(flutter::EncodableValue(lngRet));
             }
         } else {
-
-            if (lngRet == OposENoservice) {
+            cerr << "開局処理に失敗しました。接続状態を確認して下さい。" << endl;
+//            if (lngRet == OposENoservice) {
                 result->Success(flutter::EncodableValue(pCashChanger->OpenResult));
-                cerr << "Open 失败，错误码：" << pCashChanger->OpenResult << endl;
-            } else {
-                result->Success(flutter::EncodableValue(lngRet));
-                cerr << "Open 失败，错误码：" << lngRet << endl;
-            }
+                cerr << "Open 失败, 错误码：" << pCashChanger->OpenResult << endl;
+            // } else {
+            //     result->Success(flutter::EncodableValue(lngRet));
+            //     cerr << "Open 失败，错误码：" << lngRet << endl;
+            // }
         }
     return;
   }

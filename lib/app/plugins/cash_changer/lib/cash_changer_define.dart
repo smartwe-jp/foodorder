@@ -79,6 +79,8 @@ enum ResultCodeExtended {
 // }
 enum OpenChangerResult {
   OPEN_SUCCESS,
+  OPOS_OPEN_ERR,
+  OPOS_OPEN_ERR_SO,//SO库无法使用 提醒处理 重新初始化
   OPOS_OR_ALREADYOPEN, //已经打开 跳过
   OPOS_OR_REGBADNAME, //打开名称不正确 提醒处理 打开设置工具
   OPOS_OR_REGPROGID,
@@ -86,11 +88,13 @@ enum OpenChangerResult {
   OPOS_OR_BADIF, //SO库无法使用 提醒处理 重新初始化
   OPOS_ORS_CONFIG, //配置文件有问题 提醒处理 重新初始化
   OPOS_ORS_NOPORT, //端口设置有问题 提醒处理 打开设置工具
+  OPOS_ORS_NOPORTED, //端口设置有问题 提醒处理 打开设置工具
   OPOS_ORS_SENSETHREAD, //线程有问题 暂无法处理 上报记录
   OPOS_ORS_EVENTTHRREAD, //事件处理有问题 暂无法处理 上报记录
   OPOS_ORS_EVENTCLASS, //事件处理程序有问题 暂无法处理 上报记录
   OPOS_ORS_FAILEDOPEN, //SO库无法使用 提醒处理 重新初始化
   OPOS_ORS_BADVERSION, //SO版本不正确 提醒处理 重新初始化
+  OPOS_SPECIFIC,
   NONE,
 }
 

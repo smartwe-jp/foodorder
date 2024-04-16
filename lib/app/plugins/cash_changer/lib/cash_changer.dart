@@ -140,9 +140,14 @@ class CashChanger {
         break;
       case HealthResultCode.OPOS_E_ILLEGAL:
         break;
+      case HealthResultCode.OPOS_E_NOSERVICE:
+        showError("NO SERVICE");
+        break;
       case HealthResultCode.OPOS_E_BUSY:
+        showError("BUSY");
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
+        showError("NO HARDWARE");
         break;
       case HealthResultCode.OPOS_E_EXTENDED:
         changerResultExtendedNext(
@@ -194,6 +199,22 @@ class CashChanger {
     }
   }
 
+  static Map<int, OpenChangerResult> openChangerResultValues = {
+  300: OpenChangerResult.OPOS_OPEN_ERR,
+  301: OpenChangerResult.OPOS_OR_ALREADYOPEN,
+  302: OpenChangerResult.OPOS_OR_REGBADNAME,
+  303: OpenChangerResult.OPOS_OR_REGPROGID,
+  304: OpenChangerResult.OPOS_OR_CREATE,
+  305: OpenChangerResult.OPOS_OR_BADIF,
+  306: OpenChangerResult.OPOS_ORS_FAILEDOPEN,
+  307: OpenChangerResult.OPOS_ORS_BADVERSION,
+  400: OpenChangerResult.OPOS_OPEN_ERR_SO,
+  401: OpenChangerResult.OPOS_ORS_NOPORT,
+  402: OpenChangerResult.OPOS_ORS_NOPORTED,
+  403: OpenChangerResult.OPOS_ORS_CONFIG,
+  450: OpenChangerResult.OPOS_SPECIFIC,
+};
+
   static Future openChangerNext(
       {required int? openResult,
       required Function onSuccess,
@@ -203,12 +224,16 @@ class CashChanger {
       showError("UNKNOWN ERROR");
       return;
     }
-    OpenChangerResult result = OpenChangerResult.values.fromIndex(openResult) ??
+
+    OpenChangerResult result = openChangerResultValues[openResult] ??
         OpenChangerResult.NONE;
     switch (result) {
       case OpenChangerResult.OPEN_SUCCESS:
       case OpenChangerResult.OPOS_OR_ALREADYOPEN:
         onSuccess();
+        break;
+      case OpenChangerResult.OPOS_OPEN_ERR:
+        showError("打开失败 请重试");
         break;
       case OpenChangerResult.OPOS_OR_REGBADNAME:
         showError("打开名称不正确 提醒处理 打开设置工具");
@@ -243,8 +268,17 @@ class CashChanger {
       case OpenChangerResult.OPOS_ORS_BADVERSION:
         showError("打开名称不正确 提醒处理 打开设置工具");
         break;
+      case OpenChangerResult.OPOS_OPEN_ERR_SO:
+        showError("SO库无法使用 提醒处理 重新初始化");
+        break;
+      case OpenChangerResult.OPOS_ORS_NOPORTED:
+        showError("端口设置有问题 提醒处理 打开设置工具");
+        break;
+      case OpenChangerResult.OPOS_SPECIFIC:
+        showError("打开名称不正确 提醒处理 打开设置工具");
+        break;
       default:
-        showError("UNKNOWN ERROR");
+        showError("UNKNOWN ERROR $openResult");
         break;
     }
   }
