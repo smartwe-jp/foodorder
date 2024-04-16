@@ -811,27 +811,27 @@ class MenuPageController extends GetxController with StateMixin {
       "qtyBounds":d.qtyBounds
     };
     if(d.goodsNum <=1 && isAdd == false){
-      Get.dialog(
-        DialogUtils.alert(GString.getToString(checkLanguage.value, "show_del_cart_item_tag"),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            canceltitle: GString.getToString(checkLanguage.value,"show_del_cart_item_no"),
-            confirmtitle: GString.getToString(checkLanguage.value,"show_del_cart_item_yes"),
-            confirm: () {
-              //widget.confirmCallback('确定');
-              ordersqlcontroller.removeFromCart(d.id ?? 0);
-              //print("Item removed from cart successfully");
-              //删除商品声音
-              deleteItemSound();
-              ordersqlcontroller.getCardList();
-              //更改显示购物车价格
-              getCartPriceTotal();
+        Get.dialog(
+          DialogUtils.alert(GString.getToString(checkLanguage.value, "show_del_cart_item_tag"),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              canceltitle: GString.getToString(checkLanguage.value,"show_del_cart_item_no"),
+              confirmtitle: GString.getToString(checkLanguage.value,"show_del_cart_item_yes"),
+              confirm: () {
+                //widget.confirmCallback('确定');
+                ordersqlcontroller.removeFromCart(d.id ?? 0);
+                //print("Item removed from cart successfully");
+                //删除商品声音
+                deleteItemSound();
+                ordersqlcontroller.getCardList();
+                //更改显示购物车价格
+                getCartPriceTotal();
 
-              Get.back();
-            },
-            cancle: () {
-              Get.back();
-            })
-    );
+                Get.back();
+              },
+              cancle: () {
+                Get.back();
+              })
+        );
     }else{
       final action = isAdd ? "add" : "reduce";
       publicChangeCartMenuCount(cartItem,action).then((val) {

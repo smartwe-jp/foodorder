@@ -58,7 +58,7 @@ extension HomeControllerExtension on HomeController {
     debugPrint("OpenPayCube 2");
     //如果检测现金机打开错误，则重新打开一下
     int? retCode = await CashChanger.openCashChanger;
-    debugPrint("OpenPayCube 3");
+    //debugPrint("OpenPayCube 3");
     await CashChanger.openChangerNext(
         openResult: retCode,
         onSuccess: () async {

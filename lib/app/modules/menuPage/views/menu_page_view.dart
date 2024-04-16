@@ -110,24 +110,27 @@ class MenuPageView extends GetView {
   menuItemView(item, context, {popupType: "old"}) {
     return GridItemView(
       title: item['mainTitle'],
-      subtitle: "¥${item['price']}円",
+      subtitle: "${item['price']}",
       image: CachedNetworkImageProvider(item['homeImageHttp']),
-      option: "选规格",
+      option: item['optionGroupVoList']?.length > 0 ? "选规格" : "",
       onTap: () async {
         if (item['qtyBounds'] == 0) {
-          return;
+              return;
         } else if (item['qtyBounds'] > 0) {
           //请求限定接口
-          controller.checkQtyBoundsCount(item, "", popupType, context);
-        } else {
+          controller.checkQtyBoundsCount(item, "",popupType,context);
+
+        }else{
           //如果option 存在，则弹出option
-          if (item['optionGroupVoList']?.length > 0) {
-            if (popupType == "v1") {
+          if(item['optionGroupVoList']?.length > 0){
+            if(popupType == "v1"){
               controller.publicShowOneItemWidgetv1(item);
+            }else{
               controller.publicShowOneItemWidget(item);
-            } else {
-              controller.publicAddCart(context, item);
             }
+
+          }else{
+            controller.publicAddCart(context,item);
           }
         }
       },
@@ -166,7 +169,6 @@ class MenuPageView extends GetView {
       children: controller.showCartItems
           .map((d) => CarItemView(
               title: d.mainTitle,
-              subtitle: "XXX/XXX/XXX",
               image: CachedNetworkImageProvider(d.image),
               onReduce: (value) {
                   controller.publicChangeCartItemCreate(d,false);
@@ -175,7 +177,7 @@ class MenuPageView extends GetView {
                   controller.publicChangeCartItemCreate(d,true);
               },
               price: "${d.unitPrice}",
-              quantity: 1))
+              quantity: d.goodsNum,))
           .toList(),
     );
   }
@@ -251,7 +253,7 @@ class MenuPageView extends GetView {
                   Positioned(
                     height: ScreenAdapter.height(200),
                     width: ScreenAdapter.getScreenWidth() -
-                        ScreenAdapter.width(200),
+                        ScreenAdapter.width(180),
                     child: checkOutButton(),
                     right: ScreenAdapter.width(0),
                     bottom: ScreenAdapter.height(0),

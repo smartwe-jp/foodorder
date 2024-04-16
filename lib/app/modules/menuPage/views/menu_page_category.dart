@@ -1346,7 +1346,7 @@ extension MenuPageCategory on MenuPageView {
     }
   }
 
-    showCategoryFourItemOne(item, context, {popupType: "old"}) {
+  showCategoryFourItemOne(item, context, {popupType: "old"}) {
     Offset temp;
 
     return Container(

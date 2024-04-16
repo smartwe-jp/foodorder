@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
 class GridItemView extends StatelessWidget {
@@ -123,9 +124,10 @@ class MainTitle extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(32),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+            fontSize: ScreenAdapter.fontSize(25),
+            fontWeight: FontWeight.w500,
+            fontFamily: GFont.getFontFamily(),
+            color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
           ),
         ));
   }
@@ -140,14 +142,32 @@ class SubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(24),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-          ),
-        ));
+        child: 
+        Row(
+          children: [
+            Text(
+            "¥",
+            style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(22),
+              fontWeight: FontWeight.w500,
+              fontFamily: GFont.getFontFamily(),
+              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+            )
+            ),
+            SizedBox(width: ScreenAdapter.width(5),),
+            Text(
+            title,
+            style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(28),
+              fontWeight: FontWeight.w500,
+              fontFamily: GFont.getFontFamily(),
+              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+            ),
+            )
+          ]
+        ),
+        
+        );
   }
 }
 
@@ -173,8 +193,9 @@ class OptionButton extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(18),
-            fontWeight: FontWeight.w600,
+            fontSize: ScreenAdapter.fontSize(16),
+            fontFamily: GFont.getFontFamily(),
+            fontWeight: FontWeight.w400,
             color: Colors.white,
           ),
         ),
@@ -203,7 +224,7 @@ class GridMenuView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Padding(
       padding: EdgeInsets.only(
-          top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+          top: ScreenAdapter.height(0), bottom: ScreenAdapter.height(0)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
         shrinkWrap: true,

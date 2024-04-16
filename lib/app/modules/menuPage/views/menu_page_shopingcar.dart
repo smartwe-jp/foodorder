@@ -17,7 +17,6 @@ extension Shoppingcar on MenuPageView {
                 children: [
                   GestureDetector(
                     onTap: () {
-                      print("点击了全屏蒙版");
                       controller.showShopCart.value = false;
                       controller.update();
                     },
@@ -41,10 +40,14 @@ extension Shoppingcar on MenuPageView {
                                 minWidth: ScreenAdapter.width(500),
                                 //minHeight: ScreenAdapter.height(500),
                               ),
-                              padding: EdgeInsets.all(20),
+                              padding: EdgeInsets.only(
+                                        left: ScreenAdapter.width(10), 
+                                        right: ScreenAdapter.width(10), 
+                                        top: ScreenAdapter.width(14), 
+                                        bottom: ScreenAdapter.width(14)),
                               decoration: BoxDecoration(
                                 color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
+                                borderRadius: BorderRadius.circular(15),
                               ),
                               child: publicCartView(),
                             ),

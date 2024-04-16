@@ -1,16 +1,15 @@
-//
 
-import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/color.dart';
+import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
-import 'package:get/get.dart';
 
-class CarItemView extends StatefulWidget {
+class CarItemView extends StatelessWidget {
   final String title;
-  final String subtitle;
+  final String? subtitle;
   final String price;
   final ImageProvider image;
   final double imageRadius;
@@ -21,7 +20,7 @@ class CarItemView extends StatefulWidget {
   CarItemView({
     Key? key,
     required this.title,
-    required this.subtitle,
+    this.subtitle,
     required this.image,
     required this.onReduce,
     required this.onIncrease,
@@ -31,28 +30,17 @@ class CarItemView extends StatefulWidget {
   });
 
   @override
-  _CarItemViewState createState() => _CarItemViewState();
-}
-
-class _CarItemViewState extends State<CarItemView> {
-  var _quantity = 0;
-
-  @override
-  void initState() {
-    // TODO: implement initState
-
-    super.initState();
-    _quantity = widget.quantity;
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Container(
-      height: ScreenAdapter.height(200),
-      padding: EdgeInsets.all(10),
+      height: ScreenAdapter.height(180),
+      padding: EdgeInsets.only(
+                    left: ScreenAdapter.width(10), 
+                    right: ScreenAdapter.width(10), 
+                    top: ScreenAdapter.width(14), 
+                    bottom: ScreenAdapter.width(14)),
       child: Row(
         children: [
-          RectangleImageView(image: widget.image, radius: widget.imageRadius),
+          RectangleImageView(image: image, radius: imageRadius),
           SizedBox(width: ScreenAdapter.width(20)),
           Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -60,36 +48,47 @@ class _CarItemViewState extends State<CarItemView> {
             children: [
               //title
               Text(
-                widget.title,
+                title,
                 maxLines: 2,
                 style: TextStyle(
                   fontFamily: GFont.getFontFamily(),
-                  fontSize: 20,
+                  fontSize: 38,
                   fontWeight: FontWeight.bold,
                 ),
               ),
               //subtitle
+              if (subtitle != null)
               Text(
-                widget.subtitle,
+                subtitle ?? "",
                 maxLines: 2,
                 style: TextStyle(
                   fontFamily: GFont.getFontFamily(),
-                  fontSize: 15,
+                  fontSize: 32,
                   color: Colors.grey,
                 ),
               ),
               SizedBox(
                 height: 10,
               ),
-              //price
-              Text(
-                widget.price,
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: 20,
-                  color: Color.fromARGB(255, 70, 69, 69),
+              RichText(
+                text: TextSpan(
+                  children: <TextSpan>[
+                    TextSpan(text: '￥', style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: 28,
+                      fontWeight: FontWeight.w400,
+                      color: Color.fromARGB(255, 96,98,102),
+                    ),),
+                    TextSpan(text: price,style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: 38,
+                      fontWeight: FontWeight.w400,
+                      color: Color.fromARGB(255, 96,98,102),
+                    ),),
+                  ],
                 ),
-              ),
+              )
+              
             ],
           ),
           Spacer(),
@@ -98,37 +97,54 @@ class _CarItemViewState extends State<CarItemView> {
               alignment: Alignment.bottomCenter,
               //margin: EdgeInsets.only(right: 50),
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  IconButton(
-                    icon: Icon(Icons.remove),
-                    onPressed: () {
-                      setState(() {
-                        if (_quantity > 0) {
-                          _quantity--;
-                        }
-                      });
-                      widget.onReduce(1);
-                    },
-                  ),
-                  Text(
-                    "$_quantity",
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: 20,
-                      color: Color.fromARGB(255, 70, 69, 69),
+                  Container(
+                    alignment: Alignment.center,
+                    width: ScreenAdapter.width(36),
+                    height: ScreenAdapter.width(36),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(18),
+                      border: Border.all(color: Colors.grey.withOpacity(0.5)),
                     ),
+                    child: IconButton(
+                      padding: EdgeInsets.all(0),
+                      icon: Icon(Icons.remove, color: Colors.grey.withOpacity(0.5),),
+                      onPressed: () {
+                        onReduce(1);   
+                      },
                   ),
-                  IconButton(
-                    icon: Icon(Icons.add),
+                ),
+                SizedBox(width: ScreenAdapter.width(20)),  
+                Text(
+                  "$quantity",
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: 20,
+                    color: Color.fromARGB(255, 70, 69, 69),
+                  ),
+                ),
+                SizedBox(width: ScreenAdapter.width(20)),  
+                Container(
+                  alignment: Alignment.center,
+                  width: ScreenAdapter.width(36),
+                  height: ScreenAdapter.width(36),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(18),
+                    color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                  ),
+                  child: IconButton(
+                    padding: EdgeInsets.all(0),
+                    icon: Icon(Icons.add, 
+                                color: Colors.white),
                     onPressed: () {
-                      setState(() {
-                        _quantity++;
-                      });
-                      widget.onIncrease(1);
+                      onIncrease(1);
                     },
                   ),
-                ],
-              )),
+                )
+                  
+              ],
+            )),
         ],
       ),
     );

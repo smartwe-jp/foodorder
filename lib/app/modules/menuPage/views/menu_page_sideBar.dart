@@ -1,20 +1,20 @@
 
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/color.dart';
+import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
 extension MenuPageSideBar on MenuPageView {
   sideBarMenu() {
     return Container(
-      padding: EdgeInsets.only(
-          left: ScreenAdapter.width(30),
-          right: ScreenAdapter.width(10),
-          top: ScreenAdapter.height(20)),
       width: ScreenAdapter.width(200),
       decoration: BoxDecoration(
-        color: Color.fromARGB(255, 244, 240, 240),
+        color: Color.fromARGB(255, 245,247,247),
         borderRadius: BorderRadius.only(
           topRight: Radius.circular(40),
         ),
@@ -29,29 +29,26 @@ extension MenuPageSideBar on MenuPageView {
 
                   return Column(
                     children: [
-                      SizedBox(
-                        height: ScreenAdapter.height(20),
-                      ),
-                      InkWell(
+                      GestureDetector(
                         onTap: () {
                           controller.changeCategory(item['categoryCode']);
                         },
                         child: Container(
-                          margin: EdgeInsets.only(
-                              right: ScreenAdapter.width(6),
-                              top: ScreenAdapter.height(5)),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),
-                              right: ScreenAdapter.width(5)),
-                          width: ScreenAdapter.width(165),
-                          //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
-                          //height: ScreenAdapter.height(90),
                           alignment: Alignment.center,
-                          // decoration: BoxDecoration(
-                          //   //背景颜色
-                          //   color: ColorsUtil.hexToColor(item['showColor']),
-                          //   borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
-                          // ),
+                          decoration: BoxDecoration(
+                              color: item['categoryCode'] ==
+                                      controller.classTag.value
+                                  ? ColorsUtil.hexToColor(Gcolor.greenThemeColor)
+                                  : Color.fromARGB(255, 245,247,247),
+                              borderRadius: BorderRadius.only(topRight: Radius.circular(index == 0 ? 40:0 )),
+                            ),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(30),
+                              right: ScreenAdapter.width(20),
+                              top: ScreenAdapter.height(30),
+                              bottom: ScreenAdapter.height(30)
+                              ),
+                          
                           child: Container(
                             //加上Center让文字居中
                             alignment: Alignment.centerLeft,
@@ -68,10 +65,9 @@ extension MenuPageSideBar on MenuPageView {
                                     fontSize: ScreenAdapter.fontSize(30),
                                     color: item['categoryCode'] ==
                                             controller.classTag.value
-                                        ? Colors.black
-                                        : Color.fromARGB(255, 139, 137,
-                                            137), //ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                    fontWeight: FontWeight.w600),
+                                        ? Colors.white
+                                        : Color.fromARGB(255, 144,147,153), //ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                                    fontWeight: FontWeight.w500),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.center,
@@ -80,51 +76,57 @@ extension MenuPageSideBar on MenuPageView {
                           ),
                         ),
                       ),
-                      SizedBox(
-                        height: ScreenAdapter.height(20),
-                      ),
                     ],
                   );
                 }),
           ),
+
           //Spacer(),
-          Row(
-            children: [
-              InkWell(
-                onTap: () {
-                  controller.gotoLanguageHome();
-                },
-                child: Column(
+
+          InkWell(
+            onTap: () {
+              controller.gotoLanguageHome();
+            },
+            child: Container(
+              alignment: Alignment.center,
+              child: 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Container(
-                      width: ScreenAdapter.width(60),
-                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(50),
+                      height: ScreenAdapter.height(50),
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         image: DecorationImage(
                           image:
-                              AssetImage('assets/images/public/home_icon.png'),
+                              AssetImage('assets/images/public/home_icon copy.png'),
                           fit: BoxFit.contain,
                         ),
                       ),
                     ),
+                    SizedBox(width: ScreenAdapter.width(10),),
                     Text(
                       "首页",
                       style: TextStyle(
-                          fontSize: 24,
-                          color: Color.fromARGB(255, 3, 139, 114)),
+                          fontSize: 30,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GFont.getFontFamily(),
+                          color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
                     )
                   ],
-                ),
-              ),
-              Spacer(),
-            ],
+                )),
           ),
+
           SizedBox(
             height: ScreenAdapter.height(50),
           ),
+
         ],
       ),
+          
+      
     );
   }
 }

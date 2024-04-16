@@ -176,12 +176,12 @@ class EntryHomeView extends GetView<OrderHomeController> {
   }
 
   get eatInShopImage => controller.dining_type.value == "1"
-      ? AssetImage("assets/images/public/shopping-light.png")
-      : AssetImage("assets/images/public/shopping-dark.png");
+      ? AssetImage("assets/images/public/eat_in_on.png")
+      : AssetImage("assets/images/public/eat_in_off.png");
 
   get eatOutImage => controller.dining_type.value == "2"
-      ? AssetImage("assets/images/public/shopping-light.png")
-      : AssetImage("assets/images/public/shopping-dark.png");
+      ? AssetImage("assets/images/public/eat_out_on.png")
+      : AssetImage("assets/images/public/eat_out_off.png");
 
   catagoryGridView() {
     List<Widget> buttonList = controller.showCatagory
@@ -290,7 +290,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             bottom: ScreenAdapter.height(70),
                           ),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 235, 233, 233),
+                            color: Color.fromARGB(255, 243,243,243),
                           ),
                           child: controller.isLoading.value ? _catagoryLoading() : catagoryGridView(),
                         )),
