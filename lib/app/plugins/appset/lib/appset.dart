@@ -21,4 +21,10 @@ class Appset {
     final String status = await _channel.invokeMethod('hideBullyScreen');
     return status;
   }
+
+  //restart
+  static Future<String> get restartApp async {
+    final String status = await _channel.invokeMethod('restartApp');
+    return status;
+  }
 }

@@ -3,6 +3,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/order_sql_controller.dart';
+import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
 
 class OrderHomeController extends GetxController with StateMixin {
@@ -59,6 +60,12 @@ class OrderHomeController extends GetxController with StateMixin {
 
     await getSystemSettingInfo();
 
+  }
+
+  reStartApp() async {
+    print("重启app");
+   final result =  await Appset.restartApp;
+    debugPrint("重启app返回结果：$result");
   }
 
   getSystemSettingInfo() async {
