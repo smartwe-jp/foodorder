@@ -168,6 +168,7 @@ LogUtil.d(response);
     } else if (refundInfo.value["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
+      debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
@@ -442,12 +443,15 @@ LogUtil.d(response);
     });
   }
 
+
+
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     var outStringMoney = outMoney.toString();
     await Paycube.setReceiveEvent;
 
     String outResult = await Paycube.outPayCubeMoney(outStringMoney);
+    debugPrint("出金结果 ${outResult}");
     _countDownTimer("6");
 
     outmoneytimer?.cancel();
@@ -464,7 +468,12 @@ LogUtil.d(response);
         outmoneyt?.cancel();
       } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
 
-      } else {
+      } else if (outStatus.value == "Error-F0--16") {
+          debugPrint("出金失败 Reason:Error-F0--16, retry");
+          await Paycube.endTrade;
+          await startOutPutMoney(outStringMoney);
+      }
+      else {
         await Paycube.outPayCubeMoney(outStringMoney);
       }
     });
@@ -524,6 +533,7 @@ LogUtil.d(response);
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
+      isReportCash.value = false;
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
         _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
@@ -563,6 +573,7 @@ LogUtil.d(response);
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
+    debugPrint("取引终了结束交易${endTrade}");
     //开启倒计时
     _countDownTimer("5");
     await Paycube.setReceiveEvent;
@@ -573,7 +584,6 @@ LogUtil.d(response);
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
-
         reportChange(cashOutString);
         endtradet.cancel();
       }else {
