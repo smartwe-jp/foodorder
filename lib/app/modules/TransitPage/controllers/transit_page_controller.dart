@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -45,6 +46,7 @@ class TransitPageController extends GetxController {
     Map systemSettingInfo = await HomeServices.getIsShowCash();
 
     _isCashState.value = systemSettingInfo['isCash'];
+    debugPrint("isCashState: ${_isCashState.value}");
 
     await _getMachineInfo();
   }
@@ -203,8 +205,23 @@ class TransitPageController extends GetxController {
 
     //这里判断是否禁用1元
     if(systemSettingData["isAllowOneYen"] == "0"){
-      var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+      try {
+        var prohibitOneCashStatus = await Paycube.prohibitOneCash.timeout(
+            Duration(seconds: 10));
+        _goNext(checkmachineMode);
+      } on TimeoutException catch (e) {
+        print('Timeout: $e');
+        _goNext(checkmachineMode);
+      } catch (e) {
+        print('Error: $e');
+        _goNext(checkmachineMode);
+      }
+
     }
+
+  }
+
+  void _goNext(checkmachineMode) async {
     if(checkmachineMode == "2"){
       _goCheckOut();
     }else if(checkmachineMode == "3"){
@@ -213,6 +230,7 @@ class TransitPageController extends GetxController {
       _goMain();
     }
   }
+
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 200), () {

@@ -1484,6 +1484,7 @@ class SettlementController extends GetxController with StateMixin {
   Starttoubi() async {
     //入金开始
     String strartPayCube = await Paycube.strartPayCube;
+    debugPrint("strartPayCube==${strartPayCube}");
     await Paycube.setReceiveEvent;
     //调用插件的监听
     Paycube.getPayCubeListener();
@@ -1508,6 +1509,8 @@ class SettlementController extends GetxController with StateMixin {
       } else if (allowStatus.value == "Error-A0--02") {
         //sleep(Duration(milliseconds: 300));
       } else {
+        //上报错误。。。
+        await Paycube.endTrade;
         await Paycube.strartPayCube;
       }
     });

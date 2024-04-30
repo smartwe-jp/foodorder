@@ -82,12 +82,18 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         if (call.method.equals("getPlatformVersion")) {
             result.success("Android " + android.os.Build.VERSION.RELEASE);
         } else if (call.method.equals("startOpenPayCube")) {
+            System.out.println("---startOpenPayCube---");
             String operEvent = call.argument("operEvent");
+            System.out.println(operEvent);
             if (operEvent.equals("openPayCube")) {
                 try {
                     if (lib == null) {
                         lib = new COMLibImpl();
                         lib.open("/dev/ttyS4");
+                        result.success("openSuccess");
+                    } else {
+                        lib.open("/dev/ttyS4");
+                        result.success("openSuccess");
                     }
 
                     //Log.logger.info("-----------------现金机 open开始 注册监听器------------------ ");
@@ -98,6 +104,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                 @Override
                                 public void run() {
                                     byte[] arraye = (byte[]) event.getReceiveData();
+                                    System.out.println("---ReceiveData:");
+                                    System.out.println(Arrays.toString(arraye));
                                     events.add(event);
                                     /*获取机器通信*/
                                     StringBuffer stringBuffero = new StringBuffer();
@@ -137,6 +145,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             }
                                             //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                             // 当监听的服务发生变化时，调用_sendToFlutter向Flutter端发送通知
+                                            Log.logger.info("入金禁止监听状态");
                                             _sendToFlutter("onEndServiceChange",_payCubeStopCashStatus);
 
                                         }else if(event.getReceiveData()[3] == (byte) 0x03){
@@ -355,8 +364,11 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                         }
                     });
 
-                    result.success("success");
+
                 } catch (Exception e) {
+                    result.success("openError");
+                    System.out.println("现金机打开Exception");
+                    e.printStackTrace();
                     Log.logger.error("现金机打开Exception", e);
                 }
                 
@@ -380,9 +392,9 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 _payCubeEndTradeStatus = "Error";
                 // 入金許可
                 byte[] seqNo = getSeqNo();
-                doBeginDeposit(seqNo);
+                doBeginDeposit(seqNo,result);
 
-                result.success("startSuccess");
+                //result.success("startSuccess");
             } else if (operEvent.equals("getPayCubeAllowCashStatus")) {
                 //入金许可监听
                 result.success(_payCubeAllowCashStatus);
@@ -615,7 +627,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         //}
     }
 
-    private void doBeginDeposit(byte[] seqNo) {
+    private void doBeginDeposit(byte[] seqNo,@NonNull Result result) {
         try {
             if (lib == null) {
                 Log.logger.info("doBeginDeposit lib is null");
@@ -630,8 +642,12 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             buf.put((byte) 0x01);
             lib.write(buf.array());
             Log.logger.info("入金開始設置完了");
+            result.success("startSuccess");
         } catch (Exception e) {
+            System.out.println("doBeginDeposit Exception");
+            //e.printStackTrace();
             Log.logger.error("入金開始設置Exception", e);
+            result.success("startError");
         }
     }
 
