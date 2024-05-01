@@ -213,7 +213,7 @@ class TransitPageController extends GetxController {
         print('Timeout: $e');
         _goNext(checkmachineMode);
       } catch (e) {
-        print('Error: $e');
+        print('error: $e');
         _goNext(checkmachineMode);
       }
 

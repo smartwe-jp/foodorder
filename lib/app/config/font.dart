@@ -7,9 +7,9 @@ class GFont {
   static String getFontFamily() {
     var locale = Get.locale;
     switch (locale?.languageCode) {
-      case 'zh':
+      case 'ch':
         return 'NotoSansCN';
-      case 'kr':
+      case 'ko':
         return 'NotoSansKR';
       case 'en':
         return 'NotoSans';

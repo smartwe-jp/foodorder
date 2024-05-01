@@ -157,7 +157,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('zh', 'CH');
+                              var locale = Locale('ch', 'CH');
                               Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "CH",
@@ -239,7 +239,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('kr', 'KR');
+                              var locale = Locale('ko', 'KR');
                               Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "KO",

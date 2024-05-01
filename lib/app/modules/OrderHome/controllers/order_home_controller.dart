@@ -62,12 +62,6 @@ class OrderHomeController extends GetxController with StateMixin {
 
   }
 
-  reStartApp() async {
-    print("重启app");
-   final result =  await Appset.restartApp;
-    debugPrint("重启app返回结果：$result");
-  }
-
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 

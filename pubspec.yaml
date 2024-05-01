@@ -55,6 +55,7 @@ dev_dependencies:
 flutter: 
   assets: 
     - assets/images/public/
+    - assets/images/error/
     - assets/images/kanran/
     - assets/images/sanfeng/
     - assets/images/rijindoujin/

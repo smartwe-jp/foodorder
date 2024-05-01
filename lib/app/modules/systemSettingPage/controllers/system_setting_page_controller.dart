@@ -725,7 +725,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         payconnectSocker(response['data'], posIp, posPort);
       } else {
         EasyLoading.dismiss();
-        showTestResultDialog("Server Error");
+        showTestResultDialog("Server error");
       }
     });
 

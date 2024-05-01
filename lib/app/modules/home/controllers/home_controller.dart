@@ -225,11 +225,11 @@ class HomeController extends GetxController {
         stopPaycube();
         allowt.cancel();
 
-      }else if (_allowStatus == "Error-F0--16") {
+      }else if (_allowStatus == "error-F0--16") {
         await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
         await Paycube.strartPayCube;
-      }else if (_allowStatus == "Error-A0--02") {
+      }else if (_allowStatus == "error-A0--02") {
         //sleep(Duration(milliseconds: 300));
       }else{
 
@@ -259,7 +259,7 @@ class HomeController extends GetxController {
         closePaycube();
         stopcheck.cancel();
 
-      }else if(_stopStatus == "Error-A0--02"){
+      }else if(_stopStatus == "error-A0--02"){
         //处理中
         sleep(Duration(milliseconds: 200));
         await Paycube.endPayCube;

@@ -466,10 +466,10 @@ LogUtil.d(response);
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
 
-      } else if (outStatus.value == "Error-F0--16") {
-          debugPrint("出金失败 Reason:Error-F0--16, retry");
+      } else if (outStatus.value == "error-F0--16") {
+          debugPrint("出金失败 Reason:error-F0--16, retry");
           await Paycube.endTrade;
           await startOutPutMoney(outStringMoney);
       }
@@ -580,7 +580,7 @@ LogUtil.d(response);
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
       endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;

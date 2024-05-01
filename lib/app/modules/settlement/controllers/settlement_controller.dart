@@ -25,6 +25,7 @@ import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -1103,7 +1104,7 @@ class SettlementController extends GetxController with StateMixin {
           }
         }
         else {
-          //Charge Error
+          //Charge error
           // var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
           // var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
           //     + "transaction_type:${transaction_type} " + "resultString:${resultString} "
@@ -1114,8 +1115,8 @@ class SettlementController extends GetxController with StateMixin {
           });
 
           // Get.dialog(
-          //     DialogUtils.alert("Error Message：${reportInfo}",
-          //         title: "POS Charge Error",
+          //     DialogUtils.alert("error Message：${reportInfo}",
+          //         title: "POS Charge error",
           //         canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
           //         confirm: () {
           //           Get.back();
@@ -1483,8 +1484,26 @@ class SettlementController extends GetxController with StateMixin {
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
     //入金开始
-    String strartPayCube = await Paycube.strartPayCube;
-    debugPrint("strartPayCube==${strartPayCube}");
+    debugPrint("Starttoubi");
+    var _starCount = 0;
+    for (var i = 0; i < 5; i++) {
+      String strartPayCube = await Paycube.strartPayCube;
+      debugPrint("strartPayCube==${strartPayCube}");
+      _starCount++;
+      debugPrint("打开次数$_starCount");
+      if (strartPayCube == "startSuccess") {
+        break;
+      } else if (_starCount == 5) {
+        //打开失败
+        FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+          "machineCode":machineCode.value,
+          "orderId":orderId.value,
+        });
+        Get.toNamed(Routes.ERROR_PAGE);
+        return;
+      }
+    }
+    debugPrint("打开现金机成功");
     await Paycube.setReceiveEvent;
     //调用插件的监听
     Paycube.getPayCubeListener();
@@ -1502,14 +1521,26 @@ class SettlementController extends GetxController with StateMixin {
         //getPayCubeBackDataInfo();
 
         allowt.cancel();
-      } else if (allowStatus.value == "Error-F0--16") {
+      } else if (allowStatus.value == "error-F0--16") {
         await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
         await Paycube.strartPayCube;
-      } else if (allowStatus.value == "Error-A0--02") {
+      } else if (allowStatus.value == "error-A0--02") {
+
         //sleep(Duration(milliseconds: 300));
       } else {
-        //上报错误。。。
+
+        _starCount++;
+        if (_starCount == 10) {//10次打开失败 退出
+          allowt.cancel();
+          //上报错误。。。
+          FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+            "machineCode":machineCode.value,
+            "orderId":orderId.value,
+          });
+          Get.toNamed(Routes.ERROR_PAGE);
+          return;
+        }
         await Paycube.endTrade;
         await Paycube.strartPayCube;
       }
@@ -1614,7 +1645,7 @@ class SettlementController extends GetxController with StateMixin {
         }
 
         stopt.cancel();
-      }/* else if (stopStatus.value == "Error-A0--02") {
+      }/* else if (stopStatus.value == "error-A0--02") {
 
       }*/else {
         await Paycube.endPayCube;
@@ -1642,7 +1673,7 @@ class SettlementController extends GetxController with StateMixin {
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
         //await Paycube.setReceiveEvent;
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
@@ -1724,7 +1755,7 @@ class SettlementController extends GetxController with StateMixin {
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
       endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
