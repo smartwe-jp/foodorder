@@ -163,7 +163,7 @@ class SettlementController extends GetxController with StateMixin {
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
 
-  bool posTest = true;
+  bool posTest = false;
 
   @override
   void onInit() {
@@ -996,7 +996,7 @@ class SettlementController extends GetxController with StateMixin {
         print(eventReportString.value.length);
 
 
-        if (posTest) {
+        if (posTest) {//测试代码 发版时posTest必需为false
           String errorString = eventReportString.value.substring(130, 133);
           print("errorString==${errorString}");
           if (errorString == "801") {
