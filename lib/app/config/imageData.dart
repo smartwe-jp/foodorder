@@ -108,6 +108,7 @@ class GImage{
         "card_american":"assets/images/public/card_american.jpg",
         "card_unionp":"assets/images/public/card_unionp.png",
         "card_master":"assets/images/public/card_master.png",
+        "card_discover":"assets/images/public/card_discover.png",
 
         "settlement_top_lead_cash_JP":"assets/images/public/settlement_top_lead_cash_JP.png",
         "settlement_top_lead_cash_CH":"assets/images/public/settlement_top_lead_cash_CH.png",

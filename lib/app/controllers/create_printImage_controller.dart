@@ -71,6 +71,8 @@ class CreatePrintImageController extends GetxController {
   }
 
   tpPrintnew(print_paper_txt_size, printData, printType) async {
+    var takeOut = printData["takeOut"] ?? false;
+    var takeoutTag = (takeOut == true) ? "【T】":"";
     var categoryVos = printData["printInfoListStruct"];
     if (categoryVos == null || categoryVos.length == 0) {
       tpPrintReceipt(print_paper_txt_size, printData);
@@ -104,7 +106,7 @@ class CreatePrintImageController extends GetxController {
         margin: EdgeInsets.only(bottom: 3),
         child: Directionality(
             textDirection: TextDirection.ltr,
-            child: Text("${printData["numberTip"]}",
+            child: Text("$takeoutTag${printData["numberTip"]}",
                 style: TextStyle(
                   fontSize: print_menu_txt_size,
                   fontFamily: 'NotoSansJP',

@@ -743,6 +743,19 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                           ),
                                         ),
 
+                                        Container(
+                                          width: ScreenAdapter.width(110),
+                                          height: ScreenAdapter.height(90),
+                                          alignment: Alignment.center,
+                                          padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                          child: Image.asset(GImage.getImageString("imgpublic", "card_discover"),
+                                            width: ScreenAdapter.width(100),
+                                            //height: ScreenAdapter.height(100),
+                                            //color: Colors.lightGreen,
+                                            fit: BoxFit.fitWidth,
+                                          ),
+                                        ),
+
                                       ],
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),
