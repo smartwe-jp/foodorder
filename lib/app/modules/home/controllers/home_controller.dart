@@ -326,7 +326,7 @@ class HomeController extends GetxController {
 
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => TransitPageView());
-      Get.toNamed("/transit-page");
+      Get.toNamed("/transit-page", arguments: {"loadActive": true});
     });
 
   }

@@ -23,6 +23,7 @@ class TransitPageController extends GetxController {
   RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
+  RxBool _loadActiveInfo = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -44,7 +45,9 @@ class TransitPageController extends GetxController {
   getIsShowCashInfo() async {
     debugPrint("getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
-
+    if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
+      _loadActiveInfo.value = Get.arguments['loadActive'];
+    }
     _isCashState.value = systemSettingInfo['isCash'];
     debugPrint("isCashState: ${_isCashState.value}");
 
@@ -71,8 +74,12 @@ class TransitPageController extends GetxController {
   }
 
   _getMachineActivate() async{
-    var shouldActive = await _checkShouldActive();
-    if (!shouldActive) {
+    // var shouldActive = await _checkShouldActive();
+    // if (!shouldActive) {
+    //   await _getSmartweSystemSettingInfo();
+    //   return;
+    // }
+    if(_loadActiveInfo.value == false){
       await _getSmartweSystemSettingInfo();
       return;
     }
