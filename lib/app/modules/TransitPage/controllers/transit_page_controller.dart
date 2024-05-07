@@ -71,6 +71,11 @@ class TransitPageController extends GetxController {
   }
 
   _getMachineActivate() async{
+    var shouldActive = await _checkShouldActive();
+    if (!shouldActive) {
+      await _getSmartweSystemSettingInfo();
+      return;
+    }
     debugPrint("getMachineActivate");
     var formData = {
       "machineCode": _machineCode.value,
@@ -159,6 +164,24 @@ class TransitPageController extends GetxController {
 
       await _getSmartweSystemSettingInfo();
     });
+  }
+
+  _checkShouldActive() async {
+    var now = DateTime.now();
+    var lastActiveTime = await HomeServices.getActiveTimeInfo();
+    if (lastActiveTime != "" && lastActiveTime != null) {
+      var last = DateTime.parse(lastActiveTime);
+      var diff = now.difference(last).inDays;
+      if (diff > 1) {//超过一天 重新激活
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      //存储当前时间
+      Storage.setString('activeTimeInfo', now.toString());
+      return true;
+    }
   }
 
   _getSmartweSystemSettingInfo() async {
