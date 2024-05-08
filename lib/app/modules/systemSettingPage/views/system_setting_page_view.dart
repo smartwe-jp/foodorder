@@ -1031,7 +1031,7 @@ class SystemSettingPageView extends GetView {
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(22),
+                              fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
                         ),
@@ -1039,7 +1039,7 @@ class SystemSettingPageView extends GetView {
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(22),
+                              fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
                         )
@@ -1187,7 +1187,7 @@ class SystemSettingPageView extends GetView {
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(22),
+                              fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
                         ),
@@ -1195,7 +1195,7 @@ class SystemSettingPageView extends GetView {
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(22),
+                              fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
                         )
