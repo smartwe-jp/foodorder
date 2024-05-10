@@ -366,6 +366,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
 
                 } catch (Exception e) {
+                    lib = null;
                     result.success("openError");
                     System.out.println("现金机打开Exception");
                     e.printStackTrace();

@@ -519,8 +519,9 @@ LogUtil.d(response);
 
   //汇报出金币种,请求后台
   reportChange(changeString) {
+    debugPrint("reportChange isReportCash = ${isReportCash.value}");
     if(isReportCash.value == true){
-    return;
+      return;
     }
 
     isReportCash.value = true;

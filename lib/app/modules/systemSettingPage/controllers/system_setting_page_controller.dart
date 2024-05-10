@@ -238,7 +238,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                     showSpeedView()
                                 );
                                 //https://app.gutingjun.com/kanran-release.apk
-                                downloadAndroid("https://app.gutingjun.com/smartwe_ticket_machine.apk");
+                                downloadAndroid("https://app.smartwe.co.jp/smartwe_ticket_machine.apk");
                               },
                             ),
                           )

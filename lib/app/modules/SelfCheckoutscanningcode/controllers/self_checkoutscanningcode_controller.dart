@@ -68,6 +68,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool showUnionPay = false.obs;
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
+  RxBool showDiscover = false.obs;
 
   RxString doSubmitOrderId = "".obs;
 
@@ -508,6 +509,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             showUnionPay: showUnionPay.value,
             showAmericanExpress: showAmericanExpress.value,
             showDinersClub: showDinersClub.value,
+            showDiscover: showDiscover.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
             onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptPrintTypeString) {

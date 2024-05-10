@@ -34,10 +34,12 @@ class HomeController extends GetxController {
   RxInt seconds = 60.obs;
   RxBool _isCashState = true.obs;
   RxInt checkSteeps = 1.obs; //自检步骤
-
+   RxString _machineCode = "".obs;
   var _allowStatus;
   var _stopStatus;
   var _closeStatus;
+
+
 
   @override
   void onInit() {
@@ -68,11 +70,20 @@ class HomeController extends GetxController {
     super.onClose();
   }
 
+   _getMachineInfo() async {
+     var machineCode = await HomeServices.getMachineInfo();
+     if (machineCode != "") {
+       _machineCode.value = machineCode;
+     }
+   }
+
 
   Future requestPermission() async {
 
     //霸屏隐藏状态栏导航栏
-    await Appset.hideBullyScreen;
+    //await Appset.hideBullyScreen;
+
+    await _getMachineInfo();
     /// 权限检测
     PermissionStatus storageStatus = await Permission.storage.status;
     if (storageStatus != PermissionStatus.granted) {
@@ -102,7 +113,7 @@ class HomeController extends GetxController {
     if (connectivityResult == ConnectivityResult.mobile
     || connectivityResult == ConnectivityResult.wifi
     || connectivityResult == ConnectivityResult.ethernet) {
-    OpenPayCube();
+      OpenPayCube();
     } else {print("没有网络");
       // I am not connected to any network.
       Get.dialog(
@@ -127,16 +138,18 @@ class HomeController extends GetxController {
 //倒计时
   _countDownTimer() {
     showCashTimer?.cancel();
-    showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) {
+    showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
 
       seconds.value--;
 
       if (this.seconds == 0) {
         //如果60秒未接收返回正确通知，则进行下一步操作
           _isCashState.value = false;
-        //getIsFirstOpen();
-        prohibitOneCash();
-        showCashTimer?.cancel(); //清除定时器
+          showCashTimer?.cancel();
+          await _sendFailureEmail();
+          await prohibitOneCash();
+
+         //清除定时器
 
       }
     });
@@ -166,9 +179,10 @@ class HomeController extends GetxController {
         }
       }
       //send failure email
-      _sendFailureEmail();
+      showCashTimer?.cancel();
       _isCashState.value = false;
-      prohibitOneCash();
+      await _sendFailureEmail();
+      await prohibitOneCash();
       //print("机器未打开lib未null，重新打开并连接了");
     }else{
       await Paycube.setReceiveEvent;
@@ -178,12 +192,14 @@ class HomeController extends GetxController {
   }
 
   _sendFailureEmail() async {
-    //发送失败邮件
+    debugPrint("发送通知邮件");
+
     var formData = {
-      "machineCode": "",
+      "machineCode": _machineCode.value,
     };
     request("webBootTroubleNotify", method: "POST" ,parameters: formData).then((value) {
       var response = json.decode(value.toString());
+      debugPrint("发送通知邮件 response:$response");
       if (response != null && response['code'] == 200) {
         FirebaseAnalytics.instance.logEvent(name: 'send_trouble_email', parameters: {'sendTroubleEmail': 'true'});
       } else {
@@ -214,7 +230,12 @@ class HomeController extends GetxController {
         //退出关闭
         //exit(0);
         allowt.cancel();
-        getIsFirstOpen();
+        showCashTimer?.cancel();
+        _isCashState.value = false;
+        await _sendFailureEmail();
+        await prohibitOneCash();
+
+        //getIsFirstOpen();
       }
       //print("链接次数${}");
       // 循环一定要记得设置取消条件，手动取消

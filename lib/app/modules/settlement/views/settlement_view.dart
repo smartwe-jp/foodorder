@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 
 import 'package:get/get.dart';
 
@@ -704,6 +704,20 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
+                              if (controller.showDiscover.value)
+                                Container(
+                                  //color: Colors.red,
+                                  //width: ScreenAdapter.width(120),
+                                  //height: ScreenAdapter.height(90),
+                                  alignment: Alignment.topCenter,
+                                  padding: EdgeInsets.only(left: ScreenAdapter.width(5),top: ScreenAdapter.height(5),right: ScreenAdapter.width(5),bottom: ScreenAdapter.height(5)),
+                                  child: Image.asset(GImage.getImageString("imgpublic", "card_discover"),
+                                    width: ScreenAdapter.width(100),
+                                    //height: ScreenAdapter.height(100),
+                                    //color: Colors.lightGreen,
+                                    fit: BoxFit.fitWidth,
+                                  ),
+                                ),
                             ],
                           ),
                         )
@@ -1261,7 +1275,7 @@ class SettlementView extends GetView {
 
                                     controller.showEasyLoading();
 
-                                    controller.doPrintOrderMenu(controller.receiptPrintType.value);
+                                    controller.doPrintOrderMenu(controller.receiptPrintType.value, isCash: true);
                                   }
                                 },
                                 child: Container(

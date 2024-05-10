@@ -68,6 +68,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxBool showUnionPay = false.obs;
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
+  RxBool showDiscover = false.obs;
 
   RxString orderId = "".obs;
   RxString totlaPrice = "0".obs;
@@ -403,6 +404,7 @@ class CheckoutPageController extends GetxController with StateMixin {
             showUnionPay: showUnionPay.value,
             showAmericanExpress: showAmericanExpress.value,
             showDinersClub:showDinersClub.value,
+            showDiscover: showDiscover.value,
             shopCartTotalPrice:totlaPrice.value,
             tableNum: tableNum.value,
             onConfrimClick: (String isAllowPosstr, String payment_method_numcheck, String receiptPrintTypeString) {

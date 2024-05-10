@@ -45,6 +45,7 @@ class SelectPaymentPage extends StatefulWidget {
         required this.showUnionPay,
         required this.showAmericanExpress,
         required this.showDinersClub,
+        required this.showDiscover,
         required this.shopCartTotalPrice,
         required this.tableNum,
         required this.onConfrimClick,
@@ -77,6 +78,7 @@ class SelectPaymentPage extends StatefulWidget {
   final bool showUnionPay;
   final bool showAmericanExpress;
   final bool showDinersClub;
+  final bool showDiscover;
   final String shopCartTotalPrice;
   final String tableNum;
   final Function(String, String, String) onConfrimClick;
@@ -117,6 +119,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
   var _showUnionPay = false;
   var _showAmericanExpress = false;
   var _showDinersClub = false;
+  var _showDiscover = false;
   var _receiptPrintType = "2"; //1 打印 2 不打印
   var _showReceiptPage = false;
 
@@ -155,6 +158,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
     _showUnionPay = widget.showUnionPay;
     _showAmericanExpress = widget.showAmericanExpress;
     _showDinersClub = widget.showDinersClub;
+    _showDiscover = widget.showDiscover;
 
     //初始化领收书显示变量
     _receiptPrintType = widget.isAllowReceipt;
@@ -742,7 +746,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                             fit: BoxFit.fitWidth,
                                           ),
                                         ),
-
+                                        if(_showDiscover == true)
                                         Container(
                                           width: ScreenAdapter.width(110),
                                           height: ScreenAdapter.height(90),
