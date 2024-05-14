@@ -174,7 +174,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     showUnionPay.value = systemSettingInfo['show_unionPay'];
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
-
+    showDiscover.value = systemSettingInfo['show_discover'];
     update();
     change(null, status: RxStatus.success());
   }
@@ -511,6 +511,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           "showUnionPay": showUnionPay.value,
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
+          "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
   }

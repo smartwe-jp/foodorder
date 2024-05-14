@@ -80,6 +80,7 @@ class TransitPageController extends GetxController {
     //   return;
     // }
     if(_loadActiveInfo.value == false){
+      _actuarial.value = true;
       await _getSmartweSystemSettingInfo();
       return;
     }

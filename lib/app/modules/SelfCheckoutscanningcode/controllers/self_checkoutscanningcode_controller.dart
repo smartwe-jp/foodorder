@@ -140,6 +140,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     showUnionPay.value = systemSettingInfo['show_unionPay'];
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
+    showDiscover.value = systemSettingInfo['show_discover'];
 
     getCartPriceTotal(); //新版新获取分类
   }
@@ -611,6 +612,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           "showUnionPay": showUnionPay.value,
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
+          "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
   }

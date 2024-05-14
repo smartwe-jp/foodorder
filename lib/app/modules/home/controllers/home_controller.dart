@@ -72,7 +72,7 @@ class HomeController extends GetxController {
 
    _getMachineInfo() async {
      var machineCode = await HomeServices.getMachineInfo();
-     if (machineCode != "") {
+     if (machineCode != "" && machineCode != null) {
        _machineCode.value = machineCode;
      }
    }
