@@ -15,6 +15,7 @@ import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/order_sql_controller.dart';
+import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
 
 class OrderHomeController extends GetxController with StateMixin {

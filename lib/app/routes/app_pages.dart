@@ -6,6 +6,8 @@ import '../modules/Activation/views/activation_view.dart';
 import '../modules/CheckoutPage/bindings/checkout_page_binding.dart';
 import '../modules/CheckoutPage/views/ScanCode.dart';
 import '../modules/CheckoutPage/views/checkout_page_view.dart';
+import '../modules/ErrorPage/bindings/error_binding.dart';
+import '../modules/ErrorPage/views/error_view.dart';
 import '../modules/OrderHome/bindings/order_home_binding.dart';
 import '../modules/OrderHome/views/entry_home_view.dart';
 import '../modules/OrderHome/views/order_home_view.dart';
@@ -141,6 +143,11 @@ class AppPages {
       name: _Paths.REIMBURSE_ORDER,
       page: () => ReimburseOrderView(),
       binding: ReimburseOrderBinding(),
+    ),
+    GetPage(
+      name: _Paths.ERROR_PAGE,
+      page: () => ErrorPageView(),
+      binding: ErrorBinding(),
     ),
   ];
 }

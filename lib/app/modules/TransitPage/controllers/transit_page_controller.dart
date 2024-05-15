@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -22,6 +23,7 @@ class TransitPageController extends GetxController {
   RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
+  RxBool _loadActiveInfo = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -44,8 +46,11 @@ class TransitPageController extends GetxController {
   getIsShowCashInfo() async {
     debugPrint("transit getIsShowCashInfo");
     Map systemSettingInfo = await HomeServices.getIsShowCash();
-    debugPrint("systemSettingInfo = ${systemSettingInfo}");
+    if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
+      _loadActiveInfo.value = Get.arguments['loadActive'];
+    }
     _isCashState.value = systemSettingInfo['isCash'];
+    debugPrint("isCashState: ${_isCashState.value}");
 
     await _getMachineInfo();
   }
@@ -75,6 +80,16 @@ class TransitPageController extends GetxController {
 
 
   _getMachineActivate() async{
+    // var shouldActive = await _checkShouldActive();
+    // if (!shouldActive) {
+    //   await _getSmartweSystemSettingInfo();
+    //   return;
+    // }
+    if(_loadActiveInfo.value == false){
+      _actuarial.value = true;
+      await _getSmartweSystemSettingInfo();
+      return;
+    }
     debugPrint("getMachineActivate");
     var formData = {
       "machineCode": _machineCode.value,
@@ -116,48 +131,36 @@ class TransitPageController extends GetxController {
         var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null
             ? shopData["linePayChannelMap"]["nanaco"]
             : false;
-
-        var _visa = shopData["linePayChannelMap"]["VISA"] != null
-            ? shopData["linePayChannelMap"]["VISA"]
-            : false;
-        var _master = shopData["linePayChannelMap"]["MASTER"] != null
-            ? shopData["linePayChannelMap"]["MASTER"]
-            : false;
-        var _jcb = shopData["linePayChannelMap"]["JCB"] != null
-            ? shopData["linePayChannelMap"]["JCB"]
-            : false;
-        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null
-            ? shopData["linePayChannelMap"]["UnionPay"]
-            : false;
-        var _americanExpress =
-            shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null
-                ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"]
-                : false;
-        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null
-            ? shopData["linePayChannelMap"]["Diners_Club"]
-            : false;
+        var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
+        var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
+        var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
+        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
+        var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
+        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
+        var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
         var machineActivateData = {
-          "showCash": (_isCashState.value == true) ? _showCash : false,
-          "showWechat": _showWechat,
-          "showAlipay": _showAlipay,
-          "showPayPay": _showPayPay,
-          "showCreditCard": _showCreditCard,
-          "au_Pay": _auPay,
-          "d_Pay": _dPay,
-          "R_Pay": _rPay,
-          "m_Pay": _mPay,
-          "pos_Edy": _posEdy,
-          "pos_iD": _posiD,
-          "pos_IC": _posIC,
-          "pos_QUICPay": _posQUICPay,
-          "pos_WAON": _posWAON,
-          "pos_nanaco": _posnanaco,
-          "show_visa": _visa,
-          "show_master": _master,
-          "show_jcb": _jcb,
-          "show_unionPay": _unionPay,
-          "show_americanExpress": _americanExpress,
-          "show_dinersClub": _dinersClub,
+          "showCash":(_isCashState.value == true) ? _showCash :false,
+          "showWechat":_showWechat,
+          "showAlipay":_showAlipay,
+          "showPayPay":_showPayPay,
+          "showCreditCard":_showCreditCard,
+          "au_Pay":_auPay,
+          "d_Pay":_dPay,
+          "R_Pay":_rPay,
+          "m_Pay":_mPay,
+          "pos_Edy":_posEdy,
+          "pos_iD":_posiD,
+          "pos_IC":_posIC,
+          "pos_QUICPay":_posQUICPay,
+          "pos_WAON":_posWAON,
+          "pos_nanaco":_posnanaco,
+          "show_visa":_visa,
+          "show_master":_master,
+          "show_jcb":_jcb,
+          "show_unionPay":_unionPay,
+          "show_americanExpress":_americanExpress,
+          "show_dinersClub":_dinersClub,
+          "show_discover":_discover,
         };
         //是否允许退款 1展示退款按钮 0 不展示
         var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
@@ -196,6 +199,24 @@ class TransitPageController extends GetxController {
 
       await _getSmartweSystemSettingInfo();
     });
+  }
+
+  _checkShouldActive() async {
+    var now = DateTime.now();
+    var lastActiveTime = await HomeServices.getActiveTimeInfo();
+    if (lastActiveTime != "" && lastActiveTime != null) {
+      var last = DateTime.parse(lastActiveTime);
+      var diff = now.difference(last).inDays;
+      if (diff > 1) {//超过一天 重新激活
+        return true;
+      } else {
+        return false;
+      }
+    } else {
+      //存储当前时间
+      Storage.setString('activeTimeInfo', now.toString());
+      return true;
+    }
   }
 
   _getSmartweSystemSettingInfo() async {
@@ -296,10 +317,26 @@ class TransitPageController extends GetxController {
     }
 
     //这里判断是否禁用1元
-    if (systemSettingData["isAllowOneYen"] == "0") {
-      //var prohibitOneCashStatus = await Paycube.prohibitOneCash;
+
+    if(systemSettingData["isAllowOneYen"] == "0"){
+      try {
+        var prohibitOneCashStatus = await Paycube.prohibitOneCash.timeout(
+            Duration(seconds: 10));
+        _goNext(checkmachineMode);
+      } on TimeoutException catch (e) {
+        print('Timeout: $e');
+        _goNext(checkmachineMode);
+      } catch (e) {
+        print('error: $e');
+        _goNext(checkmachineMode);
+      }
+
     }
-    if (checkmachineMode == "2") {
+
+  }
+
+  void _goNext(checkmachineMode) async {
+    if(checkmachineMode == "2"){
       _goCheckOut();
     } else if (checkmachineMode == "3") {
       _goSelfService();
@@ -307,6 +344,7 @@ class TransitPageController extends GetxController {
       _goMain();
     }
   }
+
 
   void _goMain() async {
     debugPrint("transit  goMain");

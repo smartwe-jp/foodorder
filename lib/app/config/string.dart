@@ -114,6 +114,12 @@ class GString{
         "select_selfservice_bag_title":"请选择是否需要袋子",
         "select_selfservice_nobag_title":"不要",
 
+        "cash_change_error_title":"現金払い",
+        "cash_change_error_tips_up":"現在、現金機に通障害が発生しており、現金でのお支払いはご利用いただけません。",
+        "cash_change_error_tips_down":"キャッシュレスの支払い方法に変更するか、アプリを再起動してみてください。",
+        "reboot_app":"再起動",
+        "change_payment":"支払い方法を変更",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -221,6 +227,12 @@ class GString{
 
         "select_selfservice_bag_title":"请选择是否需要袋子",
         "select_selfservice_nobag_title":"不要",
+
+        "cash_change_error_title":"现金支付",
+        "cash_change_error_tips_up":"现金支付机故障，暂不支持现金支付，请选择其他支付方式。",
+        "cash_change_error_tips_down":"请切换到其他支付方式，或者重新启动应用。",
+        "reboot_app":"重新启动",
+        "change_payment":"更换支付方式",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -329,6 +341,12 @@ class GString{
 
         "select_selfservice_bag_title":"请选择是否需要袋子",
         "select_selfservice_nobag_title":"不要",
+
+        "cash_change_error_title":"Cash Payment",
+        "cash_change_error_tips_up":"Cash payment machine failure, cash payment is not available.",
+        "cash_change_error_tips_down":"Please switch to other payment methods or restart the application.",
+        "reboot_app":"Restart",
+        "change_payment":"Change payment method",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -437,6 +455,12 @@ class GString{
 
         "select_selfservice_bag_title":"请选择是否需要袋子",
         "select_selfservice_nobag_title":"不要",
+
+        "cash_change_error_title":"현금 결제",
+        "cash_change_error_tips_up":"현재 현금 결제기에 장애가 발생하여 현금 결제를 사용할 수 없습니다.",
+        "cash_change_error_tips_down":"다른 결제 방법으로 전환하거나 앱을 다시 시작하십시오.",
+        "reboot_app":"재시작",
+        "change_payment":"결제 방법 변경",
       };
     }
 

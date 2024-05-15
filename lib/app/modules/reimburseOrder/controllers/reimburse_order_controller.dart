@@ -168,6 +168,7 @@ LogUtil.d(response);
     } else if (refundInfo.value["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
+      debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
       Paycube.getPayCubeListener();
       startOutPutMoney(refundInfo.value["amount"]);
@@ -442,12 +443,15 @@ LogUtil.d(response);
     });
   }
 
+
+
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     var outStringMoney = outMoney.toString();
     await Paycube.setReceiveEvent;
 
     String outResult = await Paycube.outPayCubeMoney(outStringMoney);
+    debugPrint("出金结果 ${outResult}");
     _countDownTimer("6");
 
     outmoneytimer?.cancel();
@@ -462,9 +466,14 @@ LogUtil.d(response);
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
 
-      } else {
+      } else if (outStatus.value == "error-F0--16") {
+          debugPrint("出金失败 Reason:error-F0--16, retry");
+          await Paycube.endTrade;
+          await startOutPutMoney(outStringMoney);
+      }
+      else {
         await Paycube.outPayCubeMoney(outStringMoney);
       }
     });
@@ -510,8 +519,9 @@ LogUtil.d(response);
 
   //汇报出金币种,请求后台
   reportChange(changeString) {
+    debugPrint("reportChange isReportCash = ${isReportCash.value}");
     if(isReportCash.value == true){
-    return;
+      return;
     }
 
     isReportCash.value = true;
@@ -524,6 +534,7 @@ LogUtil.d(response);
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
+      isReportCash.value = false;
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
         _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
@@ -563,17 +574,17 @@ LogUtil.d(response);
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
     var endTrade = await Paycube.endTrade;
+    debugPrint("取引终了结束交易${endTrade}");
     //开启倒计时
     _countDownTimer("5");
     await Paycube.setReceiveEvent;
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
       endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
-
         reportChange(cashOutString);
         endtradet.cancel();
       }else {

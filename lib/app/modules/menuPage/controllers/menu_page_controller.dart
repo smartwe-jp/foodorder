@@ -86,6 +86,7 @@ class MenuPageController extends GetxController with StateMixin {
   RxBool showUnionPay = false.obs;
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
+  RxBool showDiscover = false.obs;
 
   RxInt optionMaxNum = 120.obs;
   RxInt optionGroupMaxNum = 100.obs;
@@ -175,6 +176,7 @@ class MenuPageController extends GetxController with StateMixin {
     showUnionPay.value = systemSettingInfo['show_unionPay'];
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
+    showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
     //getBookingBootIndexCagegory(); //新版新获取分类
     getBookingBootIndexMenu(classTag.value);
@@ -1283,6 +1285,7 @@ print("加1了");
             showUnionPay: showUnionPay.value,
             showAmericanExpress: showAmericanExpress.value,
             showDinersClub: showDinersClub.value,
+            showDiscover: showDiscover.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
             onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptTypeString) {
@@ -1387,6 +1390,7 @@ print("加1了");
           "showUnionPay": showUnionPay.value,
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
+          "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
   }

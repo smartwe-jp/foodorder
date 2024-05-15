@@ -1,46 +1,32 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
-import 'package:foodorder/app/plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
-import 'package:widget_to_image/widget_to_image.dart';
-import 'package:get/get.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
-import 'package:print_image_generate_tool/print_image_generate_tool.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:get/get.dart';
 
-
-import '../../../config/color.dart';
-import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
-import '../../../config/imageData.dart';
-import '../../../config/printer_info.dart';
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
-// import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import '../../../plugins/cash_changer/lib/cash_changer.dart';
+import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
-import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
-import '../../../services/formatMoney.dart';
 import '../../../services/logUtil.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../../widget/NumberCircle.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
-import '../views/label_constrained_box.dart';
-import '../views/receipt_constrained_box.dart';
+
 
 class SettlementController extends GetxController with StateMixin {
   //TODO: Implement SettlementController
@@ -145,6 +131,7 @@ class SettlementController extends GetxController with StateMixin {
   RxBool showUnionPay = false.obs;
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
+  RxBool showDiscover = false.obs;
 
   //用于控制返回是否多关闭页面
   RxBool showOpenPayment = false.obs;
@@ -164,7 +151,7 @@ class SettlementController extends GetxController with StateMixin {
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
 
-  bool posTest = true;
+  bool posTest = false;
 
   @override
   void onInit() {
@@ -239,7 +226,7 @@ class SettlementController extends GetxController with StateMixin {
     showUnionPay.value = Get.arguments["showUnionPay"];
     showAmericanExpress.value = Get.arguments["showAmericanExpress"];
     showDinersClub.value = Get.arguments["showDinersClub"];
-
+    showDiscover.value = Get.arguments["showDiscover"];
     showOpenPayment.value = Get.arguments['showOpenPayment'];
 
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
@@ -305,6 +292,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
 
+  /////////////////////////////////*********************************//////////////////////////////////////
   //倒计时
   _countDownTimer(stepState) {
     showCashTimer?.cancel();
@@ -318,7 +306,7 @@ class SettlementController extends GetxController with StateMixin {
         if (stepState == "1") {
           gotonewMenuPage();
         } else {
-          gotonewMyhome();
+          goToNewMyHome();
         }
       }
     });
@@ -343,7 +331,7 @@ class SettlementController extends GetxController with StateMixin {
     Get.back();
   }
 
-  gotonewMyhome() {
+  goToNewMyHome() {
     ordersqlcontroller.removeAllFromCart();
 
     EasyLoading.dismiss();
@@ -412,334 +400,8 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  showEasyLoading() {
-    var _showTag;
-    if (int.parse(showOutMoney.value) > 0) {
-      //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(25),
-            fontFamily: GFont.getFontFamily(),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-          ));
-    } else {
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(25),
-            fontFamily: GFont.getFontFamily(),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-          ));
-    }
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _showTag,
-            InkWell(
-              onLongPress: () {
-                EasyLoading.dismiss();
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "printticketloading"),
-                    fit: BoxFit.fitHeight),
-              ),
-            ),
 
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
 
-  showSuccessEasyLoading() {
-    var _showTag;
-
-    _showTag =
-        Text(GString.getToString(checkLanguage.value, "payment_success_title"),
-            style: TextStyle(
-              fontFamily: GFont.getFontFamily(),
-              fontSize: ScreenAdapter.fontSize(25),
-              fontWeight: FontWeight.w600,
-              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-            ));
-
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _showTag,
-            InkWell(
-              onLongPress: () {
-                EasyLoading.dismiss();
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "paymentSuccess"),
-                    fit: BoxFit.fitHeight),
-              ),
-            ),
-
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
-
-  showBackEasyLoading() {
-    var _showTag =
-    Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
-        style: TextStyle(
-          fontFamily: GFont.getFontFamily(),
-          fontSize: ScreenAdapter.fontSize(25),
-          fontWeight: FontWeight.w600,
-          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-        ));
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _showTag,
-            InkWell(
-              onLongPress: () {
-                EasyLoading.dismiss();
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "printticketloading"),
-                    fit: BoxFit.fitHeight),
-              ),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
-
-  _showPosCancelEasyLoading(resultString,{resultPFSString:""}) {
-    EasyLoading.dismiss();
-    var _showTag;
-    var _showTagContent = "";
-    if(resultString =="M10"){//需要从端末点击返回
-      _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
-            style: TextStyle(
-              fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
-    }else if(resultString =="L06"){//需要从端末点击返回
-      _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
-            style: TextStyle(
-              fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
-    }else{
-      _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
-            style: TextStyle(
-              fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
-
-      if (resultString.contains("L10")) {
-        gotonewMyhome(); //返回首页
-        return;
-      }
-
-      if (resultPFSString.contains("101")
-          ||resultPFSString.contains("110")
-          ||resultPFSString.contains("118")
-      ) {
-        CancelOrder(); //取消订单
-        return;
-      }
-
-    }
-    Get.dialog(
-        DialogUtils.alertOneButton(_showTagContent+"[${resultString}-${resultPFSString}]",
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-            confirm: () {
-              if(resultString !="M10" && resultString !="L06"){
-                getPaymentCancelPosData();
-              }
-
-              Get.back();
-              showEasyLoading();
-              Future.delayed(Duration(milliseconds: 1500),() async {
-                CancelOrder();
-              });
-            })
-    );
-
-  }
-
-  _showEasyLoadingScan() {
-    var _showTag;
-    if (int.parse(showOutMoney.value) > 0) {
-      //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
-          style: TextStyle(
-            fontFamily: GFont.getFontFamily(),
-            fontSize: ScreenAdapter.fontSize(25),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-          ));
-    } else {
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
-          style: TextStyle(
-            fontFamily: GFont.getFontFamily(),
-            fontSize: ScreenAdapter.fontSize(25),
-            fontWeight: FontWeight.w600,
-            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-          ));
-    }
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _showTag,
-            InkWell(
-              onLongPress: () {
-                ScanCodeConfirmTimer?.cancel();
-                _doScanCodeTimeOutLastQuery();
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "printticketloading"),
-                    fit: BoxFit.fitHeight),
-              ),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
-
-  showPosEasyLoading() {
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(840),
-        height: ScreenAdapter.height(790),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Container(height: 0,),//_showTag
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                InkWell(
-                  onLongPress: () {
-                    EasyLoading.dismiss();
-                  },
-                  child: Container(
-                    //width: ScreenAdapter.width(400),
-                    margin: EdgeInsets.only(right: ScreenAdapter.width(15)),
-                    height: ScreenAdapter.height(40),
-                    child: Image.asset(
-                        GImage.getImageString("imgpublic", "printticketloading"),
-                        fit: BoxFit.fitHeight),
-                  ),
-                ),
-                Text(
-                    GString.getToString(checkLanguage.value,
-                        "settlement_posPay_loadint_title"),
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(36),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor("#000000"),
-                    ))
-              ],
-            ),
-            Container(
-              margin: EdgeInsets.only(top: ScreenAdapter.height(10),bottom: ScreenAdapter.height(20)),
-              child: Divider(  // 这是一个分割线
-                color: Colors.black,  // 设置分割线的颜色
-                thickness: 2,  // 设置分割线的粗细
-                indent: 20,  // 设置分割线开始缩进的距离
-                endIndent: 20,  // 设置分割线结束缩进的距离
-              ),
-            ),
-            Container(
-              //width: ScreenAdapter.width(700),
-              alignment: Alignment.center,
-              //height: ScreenAdapter.height(940),
-              child: FadeInImage(
-                placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
-                image: AssetImage(GImage.getImageString("imgpublic", "settlement_pos_loading_${checkLanguage.value}")),
-                //width: ScreenAdapter.width(600),
-                height: ScreenAdapter.width(600),
-                fit: BoxFit.fitHeight,
-                // [占位符] 的淡出动画时间
-                fadeOutDuration: Duration(milliseconds: 100),
-                // [图像] 的渐入动画曲线
-                fadeInCurve: Curves.easeIn,
-                // [图像] 的渐入动画时间
-                fadeInDuration: Duration(milliseconds: 100),
-              ),
-            )
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-  }
 
   //扫码支付T
   doToPay() {
@@ -772,7 +434,7 @@ class SettlementController extends GetxController with StateMixin {
     //print(scanQrCodeController.text);
     if (machineCode.value != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
-      _showEasyLoadingScan();
+      showEasyLoadingScan();
       var formData = {
         "auth_code": scanQrCodeController.text,
         "machineCode": machineCode.value,
@@ -819,26 +481,26 @@ class SettlementController extends GetxController with StateMixin {
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode); // 获取焦点
     scanQrCodeFocusNode.requestFocus();
 
-    var show_dialog_content;
+    var showDialogContent;
 
     if (checknum == 1) {
-      show_dialog_content = GString.getToString(
+      showDialogContent = GString.getToString(
           checkLanguage.value, "settlement_scancodenoopen_error");
     } else if (checknum == 2) {
-      show_dialog_content = GString.getToString(
+      showDialogContent = GString.getToString(
           checkLanguage.value, "settlement_scancodenochange_error");
     } else if (checknum == 3) {
       if(showContent != null && showContent!=""){
-        show_dialog_content = showContent;
+        showDialogContent = showContent;
       }else{
-        show_dialog_content = GString.getToString(checkLanguage.value, "settlement_nopayment_error");
+        showDialogContent = GString.getToString(checkLanguage.value, "settlement_nopayment_error");
       }
 
     }
     //支付状态
 
     Get.dialog(
-        DialogUtils.alertOneButton(show_dialog_content,
+        DialogUtils.alertOneButton(showDialogContent,
             title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
@@ -855,11 +517,11 @@ class SettlementController extends GetxController with StateMixin {
     int queryCount = 0;
     ScanCodeConfirmTimer?.cancel();
     ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
-            (Timer ConfirmTimer) async {
+            (Timer confirmTimer) async {
           queryCount++;
           if (queryCount > 60) {
             //退出关闭
-            ConfirmTimer?.cancel();
+            confirmTimer.cancel();
             _showScanCodeTimeOutDialog();
           }
 
@@ -872,14 +534,14 @@ class SettlementController extends GetxController with StateMixin {
 
             if (response['code'] == 200 && response['data'] == true) {
               //退出关闭
-              ConfirmTimer?.cancel();
+              confirmTimer.cancel();
               doPrintOrderMenu(receiptPrintType.value);
             }
           });
         });
   }
 
-  _doScanCodeTimeOutLastQuery() {
+  doScanCodeTimeOutLastQuery() {
     var formData = {
       "orderId": orderId.value,
     };
@@ -903,12 +565,12 @@ class SettlementController extends GetxController with StateMixin {
     scanQrCodeFocusNode.requestFocus();
 
 
-    var show_dialog_content =
+    var showDialogContent =
     GString.getToString(checkLanguage.value, "settlement_nopayment_error");
 
 
     Get.dialog(
-        DialogUtils.alertOneButton(show_dialog_content,
+        DialogUtils.alertOneButton(showDialogContent,
             title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
@@ -990,19 +652,19 @@ class SettlementController extends GetxController with StateMixin {
         //print("event=====${eventString}=====");
         String FirstString = eventReportString.value.substring(0, 1);
         String SecondString = eventReportString.value.substring(1, 3);
-        String transaction_type = eventReportString.value.substring(3, 6);
+        String transactionType = eventReportString.value.substring(3, 6);
         String resultString = eventReportString.value.substring(10, 13);
         String resultMPFSString = eventReportString.value.substring(13, 16);
         //
         print("FirstString==${FirstString}");
         print("SecondString==${SecondString}");
-        print("transaction_type==${transaction_type}");
+        print("transaction_type==${transactionType}");
         print("resultString==${resultString}");
         print("resultMPFSString==${resultMPFSString}");
         print(eventReportString.value.length);
 
 
-        if (posTest) {
+        if (posTest) {//测试代码 发版时posTest必需为false
           String errorString = eventReportString.value.substring(130, 133);
           print("errorString==${errorString}");
           if (errorString == "801") {
@@ -1033,7 +695,7 @@ class SettlementController extends GetxController with StateMixin {
 
 
         //支付成功 打印，返回首页 除了成功都取消
-        if (transaction_type == "900") {
+        if (transactionType == "900") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
           CancelOrder();
             //showEasyLoading();
@@ -1043,10 +705,10 @@ class SettlementController extends GetxController with StateMixin {
             //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
             var posErrorCode = ["L06"];
             if (posErrorCode.contains(resultString) == true) {
-              _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
+              showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
             }
           }
-        }else if ((transaction_type == "600" || transaction_type == "601") && eventReportString.value.length >4800) {
+        }else if ((transactionType == "600" || transactionType == "601") && eventReportString.value.length >4800) {
           //print("eventReportString.value.length==${eventReportString.value.length}");
           if (FirstString == "3" && SecondString == "11" && resultString == "000" &&  resultMPFSString == "000") {// &&  resultMPFSString == "000"
             //除了扫码的才显示
@@ -1065,7 +727,7 @@ class SettlementController extends GetxController with StateMixin {
 
           } else {
             if(resultString.trim() != ""){
-              _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
+              showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               //T10 交通系等待时间超过30-40后自动返回
               /*var posErrorCode = ["L11","T10"];
               if (posErrorCode.contains(resultString) == true) {
@@ -1075,11 +737,11 @@ class SettlementController extends GetxController with StateMixin {
                 });
               }else{// if(resultString == "T10")
 
-                _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
+                showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               }*/
             }
           }
-        } else if (transaction_type != "900" &&transaction_type != "600" && transaction_type != "601") {
+        } else if (transactionType != "900" &&transactionType != "600" && transactionType != "601") {
           //除了扫码的才显示
           if(payment_method_num.value != "2"){
             showPosEasyLoading();
@@ -1104,34 +766,16 @@ class SettlementController extends GetxController with StateMixin {
                 gotonewMenuPage();
                 });
               }else{// if(resultString == "T10")
-                _showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
+                showPosCancelEasyLoading(resultString,resultPFSString:resultMPFSString);
               }
             }
           }
         }
         else {
-          //Charge Error
-          // var orderInfo = "orderId: ${orderId.value}\n" + "machineCode:${machineCode.value}\n";
-          // var reportInfo = orderInfo + "FirstString: ${FirstString} " + "SecondString:${SecondString} "
-          //     + "transaction_type:${transaction_type} " + "resultString:${resultString} "
-          //     + "resultMPFSString:${resultMPFSString}\n" + "eventReportString:${eventReportString.value}\n";
           var reportData = "${orderId.value}:${machineCode.value}";
           FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
             "reportInfo":reportData,
           });
-
-          // Get.dialog(
-          //     DialogUtils.alert("Error Message：${reportInfo}",
-          //         title: "POS Charge Error",
-          //         canceltitle: GString.getToString(checkLanguage.value, "add_option_cart"),
-          //         confirm: () {
-          //           Get.back();
-          //         },
-          //         cancle: () {
-          //           Get.back();
-          //         }),
-          //     barrierDismissible: false
-          // );
         }
       },
         onDone: () {
@@ -1159,58 +803,6 @@ class SettlementController extends GetxController with StateMixin {
       //_showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_posPay_connect_error"),payType: "pos");
     });
 
-  }
-
-  showCheckLoading(){
-    EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height: ScreenAdapter.height(480),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text(
-                "取引が不明な状態で終了しました（コード801）。決済結果を確認中ですのでお待ちください。",
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                )),
-            InkWell(
-              onLongPress: (){
-                EasyLoading.dismiss();
-              },
-              child: Container(
-                //width: ScreenAdapter.width(400),
-                margin: EdgeInsets.only(top: 60),
-                height: ScreenAdapter.height(200),
-                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
-              ),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );
-
-  }
-
-  create491Message() {
-    var _queryString =       "2104910001       00497                  000000010231130162425";
-    for(var i=0;i<72;i++){
-      _queryString += " ";
-    }
-    var querycode = "0006";
-    _queryString += querycode; //
-
-    for(var i=0;i<400;i++){
-      _queryString += " ";
-    }
-
-    return _queryString;
   }
 
   _getPaymentPosData() {
@@ -1319,7 +911,7 @@ class SettlementController extends GetxController with StateMixin {
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
-        _showPosCancelEasyLoading("900");
+        showPosCancelEasyLoading("900");
       }
     });
 
@@ -1359,8 +951,14 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //去打印小票
-  doPrintOrderMenu(printType) async {
+  doPrintOrderMenu(printType,{isCash = false}) async {
     debugPrint("doPrintOrderMenu");
+
+    if (isCash) {
+      //现金支付 次のステップに進みます
+      printGoNext();
+    }
+
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
         printType = "1";
@@ -1399,7 +997,7 @@ class SettlementController extends GetxController with StateMixin {
 
           //label打印
           if(showPrintType.value ==1 && wlan_print_ip.value !="" && response['data']["printInfoListStruct"].length>0){
-            _wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
+            wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
           }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -1413,7 +1011,10 @@ class SettlementController extends GetxController with StateMixin {
               createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
-          printGoNext();
+          if (!isCash) {
+            printGoNext();
+          }
+
         } else {
           //错误后重新调用一次
           doPrintOrderMenu(printType);
@@ -1423,17 +1024,17 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       EasyLoading.dismiss();
 
-      var show_dialog_content = "";
+      var showDialogContent = "";
       if (printStatus == "7") {
-        show_dialog_content = GString.getToString(
+        showDialogContent = GString.getToString(
             checkLanguage.value, "tag_print_content_paper_shortage");
       } else {
-        show_dialog_content = GString.getToString(
+        showDialogContent = GString.getToString(
             checkLanguage.value, "tag_print_content_paper_error");
       }
       //小票状态
       Get.dialog(
-          DialogUtils.alert(show_dialog_content,
+          DialogUtils.alert(showDialogContent,
               title: GString.getToString(checkLanguage.value, "tag_title"),
               canceltitle: GString.getToString(checkLanguage.value,"tag_print_button_no"),
               confirmtitle: GString.getToString(checkLanguage.value,"tag_print_button_yes"),
@@ -1443,11 +1044,11 @@ class SettlementController extends GetxController with StateMixin {
               },
               cancle: () {
                 Get.back();
-                //gotonewMyhome();
+                //goToNewMyHome();
                 if (payment_method_num.value == "1") {
                   nextOper();
                 } else {
-                  gotonewMyhome();
+                  goToNewMyHome();
                 }
               })
       );
@@ -1479,7 +1080,7 @@ class SettlementController extends GetxController with StateMixin {
       if (payment_method_num.value == "1") {
         nextOper();
       } else {
-        gotonewMyhome();
+        goToNewMyHome();
       }
 
     });
@@ -1490,7 +1091,26 @@ class SettlementController extends GetxController with StateMixin {
   //现金机开始 打开现金机，准备开始投币
   Starttoubi() async {
     //入金开始
-    String strartPayCube = await Paycube.strartPayCube;
+    debugPrint("Starttoubi");
+    var _startCount = 0;
+    for (var i = 0; i < 5; i++) {
+      String startPayCube = await Paycube.strartPayCube;
+      debugPrint("startPayCube==$startPayCube");
+      _startCount++;
+      debugPrint("打开次数$_startCount");
+      if (startPayCube == "startSuccess") {
+        break;
+      } else if (_startCount == 5) {
+        //打开失败
+        FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+          "machineCode":machineCode.value,
+          "orderId":orderId.value,
+        });
+        Get.toNamed(Routes.ERROR_PAGE);
+        return;
+      }
+    }
+    debugPrint("打开现金机成功");
     await Paycube.setReceiveEvent;
     //调用插件的监听
     Paycube.getPayCubeListener();
@@ -1508,13 +1128,27 @@ class SettlementController extends GetxController with StateMixin {
         //getPayCubeBackDataInfo();
 
         allowt.cancel();
-      } else if (allowStatus.value == "Error-F0--16") {
+      } else if (allowStatus.value == "error-F0--16") {
         await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
         await Paycube.strartPayCube;
-      } else if (allowStatus.value == "Error-A0--02") {
+      } else if (allowStatus.value == "error-A0--02") {
+
         //sleep(Duration(milliseconds: 300));
       } else {
+
+        _startCount++;
+        if (_startCount == 10) {//10次打开失败 退出
+          allowt.cancel();
+          //上报错误。。。
+          FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+            "machineCode":machineCode.value,
+            "orderId":orderId.value,
+          });
+          Get.toNamed(Routes.ERROR_PAGE);
+          return;
+        }
+        await Paycube.endTrade;
         await Paycube.strartPayCube;
       }
     });
@@ -1622,7 +1256,7 @@ class SettlementController extends GetxController with StateMixin {
         }
 
         stopt.cancel();
-      }/* else if (stopStatus.value == "Error-A0--02") {
+      }/* else if (stopStatus.value == "error-A0--02") {
 
       }*/else {
         await Paycube.endPayCube;
@@ -1650,7 +1284,7 @@ class SettlementController extends GetxController with StateMixin {
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
         //await Paycube.setReceiveEvent;
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
@@ -1732,7 +1366,7 @@ class SettlementController extends GetxController with StateMixin {
     endtimer?.cancel();
     endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
       endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "Error-A0--02"
+      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
       if (endStatus.value == "EndSuccess") {
         showCashTimer?.cancel();
         seconds.value = 180;
@@ -1876,9 +1510,9 @@ class SettlementController extends GetxController with StateMixin {
       if(wlan_print_ip.value != null && wlan_print_ip.value != ""){
         printerIpInfo = {"printer_ip":wlan_print_ip.value,"printer_port":wlan_print_port.value,};
         if(is_allow_wlanPrint_continuous.value =="1"){
-          _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
         }else{
-          _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
         }
 
       }else{
@@ -1888,10 +1522,10 @@ class SettlementController extends GetxController with StateMixin {
       if(wlan_print_ip_two.value != null && wlan_print_ip_two.value != ""){
         printerIpInfo = {"printer_ip":wlan_print_ip_two.value,"printer_port":wlan_print_port_two.value,};
         if(is_allow_wlanPrint_Two_continuous.value =="1"){
-          _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
 
         }else{
-          _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
         }
       }else{
         return;
@@ -1904,817 +1538,19 @@ class SettlementController extends GetxController with StateMixin {
 
   }
 
-  //单票
-  _wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
-    for(var i=0;i<printData.length;i++){
-      // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
-
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-        PicGenerateTask<PrinterInfo>(
-          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip) as ATempWidget,
-          printTypeEnum: PrintTypeEnum.receipt,
-          params: PrinterInfo(ip:printer_ip),
-        ),
-      );
-
+  create491Message() {
+    var _queryString =       "2104910001       00497                  000000010231130162425";
+    for(var i=0;i<72;i++){
+      _queryString += " ";
     }
-  }
-  Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
-    var lineHight = 120;
-    int menuNum = 0;
-    var optionNum = 0;
-    int addRowHight = 0;
+    var querycode = "0006";
+    _queryString += querycode; //
 
-    List<Widget> printMenus = [];
-    printMenus.add(
-      Container(
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 1.5),
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          textDirection: TextDirection.ltr,
-          children: [
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child:
-                RichText(
-                  text: TextSpan(
-                      text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
-                      style: TextStyle(
-                        fontSize: 50,
-                        fontFamily: 'JetBrainsMonoRegular',
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor("#000000"),
-                      ),
-                      children: [
-                        TextSpan(
-                          text: "${serialNumber.toString()}",
-                          style: TextStyle(
-                            fontSize: 50,
-                            fontFamily: 'JetBrainsMonoRegular',
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#000000"),
-                          ),
-                        ),
-                      ]),
-                )
-            ),
-            Directionality(
-                textDirection: TextDirection.ltr,
-                child: Text("${orderTime}",
-                    style: TextStyle(
-                      fontSize: 45,
-                      //fontFamily: 'JetBrainsMonoRegular',
-                      fontWeight: FontWeight.w500,
-                      color: ColorsUtil.hexToColor("#000000"),
-                    ))
-            ),
-          ],
-        ),
-      ),
-    );
-    printMenus.add(
-      Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        textDirection: TextDirection.ltr,
-        children: [
-          Directionality(
-              textDirection: TextDirection.ltr,
-              child: Expanded(
-                  child: Text("${orderprintData["mainTitle"]}",
-                      style: TextStyle(
-                        fontSize: 45,
-                        //fontFamily: 'JetBrainsMonoRegular',
-                        fontWeight: FontWeight.w500,
-                        color: ColorsUtil.hexToColor("#000000"),
-                      ))
-              )
-          ),
-          Container(
-            width: 50,
-            alignment: Alignment.centerRight,
-            child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: (int.parse(orderprintData["qtyBack"]) >1) ? NumberCircle(
-                  number: int.parse(orderprintData["qtyBack"]),
-                  circleColor: ColorsUtil.hexToColor("#000000"),
-                  circleSize: 50.0,
-                  numberStyle: TextStyle(
-                    fontSize: 42,
-                    fontFamily: 'JetBrainsMonoRegular',
-                    fontWeight: FontWeight.w400,
-                    color: ColorsUtil.hexToColor("#000000"),
-                  ),
-                ) :Text("${orderprintData["qty"]}",
-                    textAlign: TextAlign.right,//${printData["takeOut"]}
-                    style: TextStyle(
-                      fontSize: 42,
-                      fontFamily: 'JetBrainsMonoRegular',
-                      fontWeight: FontWeight.w400,
-                      color: ColorsUtil.hexToColor("#000000"),
-                    ))
-            ),
-          ),
-        ],
-      ),
-    );
-
-    var mainTitleLine = orderprintData["mainTitle"].length / 10;
-    int mainTitleRowNum = mainTitleLine.ceil();
-    optionNum = 0;
-
-
-    var optionVoListMap = orderprintData["optionVoListMsgMap"] ?? {};
-    if (optionVoListMap != null && optionVoListMap.isNotEmpty) {
-      optionVoListMap.forEach((key, value) {
-        // 计算菜品标题长度
-        var groupNameLength = key.length;
-        var optionNameLength = value[0].length;
-        var optionLine = (groupNameLength + optionNameLength) / 10;
-        var countLine = 0;
-
-        //处理option 开始-----------
-        if((key.length+value[0].length)>10){
-
-          printMenus.add(Column(
-            textDirection: TextDirection.rtl,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                textDirection: TextDirection.ltr,
-                children: [
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Expanded(
-                          child:Text("    ${key}",
-                              softWrap: true,
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontFamily: 'JetBrainsMonoRegular',
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ))
-                      )
-                  ),
-
-                ],
-              ),
-              Container(
-                padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
-                child: Row(
-                  mainAxisAlignment: (value[0].length >10 ) ? MainAxisAlignment.start : MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.rtl,
-                        child: Expanded(
-                          child: Text("${value[0]}",
-                              softWrap: true,
-                              textAlign: (value[0].length >10) ? TextAlign.left : TextAlign.right,
-                              style: TextStyle(
-                                fontSize: 40,
-                                fontFamily: 'JetBrainsMonoRegular',
-                                color: ColorsUtil.hexToColor("#000000"),
-                              )),
-                        )),
-                  ],
-                ),
-              ),
-            ],
-          ));
-        }else{
-          printMenus.add(Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            textDirection: TextDirection.ltr,
-            children: [
-              Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Text("    ${key}",
-                      softWrap: true,
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontFamily: 'JetBrainsMonoRegular',
-                        color: ColorsUtil.hexToColor("#000000"),
-                      ))
-              ),
-              Directionality(
-                  textDirection: TextDirection.rtl,
-                  child: Text("${value[0]}",
-                      softWrap: true,
-                      textAlign: TextAlign.right,
-                      style: TextStyle(
-                        fontSize: 40,
-                        fontFamily: 'JetBrainsMonoRegular',
-                        color: ColorsUtil.hexToColor("#000000"),
-                      ))),
-            ],
-          ));
-        }
-
-        var newOptionSonLine = 0.0;
-        if(value.length>1){
-          List<Widget> optionSons = [];
-          for (var j = 1; j < value.length; j++) {
-
-            optionSons.add(
-                Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
-                  child: Row(
-                    mainAxisAlignment: (value[j].length >10) ? MainAxisAlignment.start : MainAxisAlignment.end,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Expanded(child: Text("${value[j]}",
-                          textDirection: TextDirection.ltr,
-                          textAlign: (value[j].length >10) ? TextAlign.left : TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontFamily: 'JetBrainsMonoRegular',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w600
-                          ))),
-                    ],
-                  ),
-                )
-            );
-          }
-
-          printMenus.add(Column(
-            mainAxisAlignment: MainAxisAlignment.start,
-            crossAxisAlignment: CrossAxisAlignment.end,
-            textDirection: TextDirection.rtl,
-            children: optionSons,
-          ));
-        }
-
-      });
-
+    for(var i=0;i<400;i++){
+      _queryString += " ";
     }
 
-    // 生成打印图层任务，指定任务类型为标签
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: printMenus,
-    ));
-
-
-
+    return _queryString;
   }
-
-  //连票
-  _wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip){
-    PictureGeneratorProvider.instance.addPicGeneratorTask(
-      PicGenerateTask<PrinterInfo>(
-        tempWidget: organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) as ATempWidget,
-        printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(ip:printer_ip),
-      ),
-    );
-  }
-  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) {
-    var categoryVos = printData;
-    List<Widget> categoryMenus = [];
-    var lineHight = 230;
-    int menuNum = 0;
-    var optionNum = 0;
-    int addRowHight = 0;
-
-
-
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 5),
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child:
-            RichText(
-              text: TextSpan(
-                  text: (takeOut == true) ?"☆︎":"",//${printData["takeOut"]}
-                  style: TextStyle(
-                    fontSize: 50,
-                    fontFamily: 'JetBrainsMonoRegular',
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor("#000000"),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: "${serialNumber.toString()}",
-                      style: TextStyle(
-                        fontSize: 50,
-                        fontFamily: 'JetBrainsMonoRegular',
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor("#000000"),
-                      ),
-                    ),
-                  ]),
-            )
-        ),
-      ),
-    );
-
-    for(var i=0; i<categoryVos.length; i++){
-      var lineVos = categoryVos[i];
-      var optionVoList = categoryVos[i]["optionVoListMsgMap"] ?? {};
-
-      // 计算菜品标题长度
-      var mainTitleLength = lineVos["mainTitle"].length;
-      var mainTitleLine = mainTitleLength / 10;
-      int mainTitleRowNum = mainTitleLine.ceil();
-      optionNum = 0;
-
-      categoryMenus.add(
-        Directionality(
-            textDirection: TextDirection.ltr,
-            child: Container(
-              margin: EdgeInsets.only(bottom: 3),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.end,
-                children: [
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Expanded(
-                        child: Text("${lineVos["mainTitle"]}",
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontFamily: 'JetBrainsMonoRegular',
-                              color: ColorsUtil.hexToColor("#000000"),)),
-                      )
-                  ),
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Text("${lineVos["qty"]}",
-                          style: TextStyle(
-                            fontSize: 40,
-                            fontFamily: 'JetBrainsMonoRegular',
-                            color: ColorsUtil.hexToColor("#000000"),
-                            //fontWeight: FontWeight.w600
-                          )
-                      )
-                  ),
-                ],
-              ),
-            )),
-      );
-
-      if (optionVoList != null && optionVoList.isNotEmpty) {
-        optionVoList.forEach((key, value) {
-          // 计算菜品标题长度
-          var groupNameLength = key.length;
-          var optionNameLength = value[0].length;
-          var optionLine = (groupNameLength + optionNameLength) / 12;
-          var countLine = 0;
-
-
-          //处理option 开始-----------
-          if((key.length+value[0].length)>12){
-            var newLineNum = 0.0;
-            //if(groupNameLength >6){
-            newLineNum = groupNameLength / 12;
-            //}
-            countLine += newLineNum.ceil();
-            optionLine += newLineNum;
-            //if(optionNameLength >6){
-            newLineNum = optionNameLength / 12;
-            //}
-            countLine += newLineNum.ceil();
-            optionLine += newLineNum;
-
-            categoryMenus.add(Column(
-              textDirection: TextDirection.rtl,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(
-                            child:Text("    ${key}",
-                                softWrap: true,
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontFamily: 'JetBrainsMonoRegular',
-                                  color: ColorsUtil.hexToColor("#000000"),
-                                ))
-                        )
-                    ),
-
-                  ],
-                ),
-                Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
-                  child: Row(
-                    mainAxisAlignment: (value[0].length >10 ) ? MainAxisAlignment.start : MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.rtl,
-                          child: Expanded(
-                            child: Text("${value[0]}",
-                                softWrap: true,
-                                textAlign: (value[0].length >10) ? TextAlign.left : TextAlign.right,
-                                style: TextStyle(
-                                  fontSize: 40,
-                                  fontFamily: 'JetBrainsMonoRegular',
-                                  color: ColorsUtil.hexToColor("#000000"),
-                                )),
-                          )),
-                    ],
-                  ),
-                ),
-              ],
-            ));
-          }else{
-            countLine += 1;
-            categoryMenus.add(Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.ltr,
-              children: [
-                Directionality(
-                    textDirection: TextDirection.ltr,
-                    child: Text("    ${key}",
-                        softWrap: true,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontFamily: 'JetBrainsMonoRegular',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ))
-                ),
-                Directionality(
-                    textDirection: TextDirection.rtl,
-                    child: Text("${value[0]}",
-                        softWrap: true,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 40,
-                          fontFamily: 'JetBrainsMonoRegular',
-                          color: ColorsUtil.hexToColor("#000000"),
-                        ))),
-              ],
-            ));
-          }
-
-          var newOptionSonLine = 0.0;
-          if(value.length>1){
-            List<Widget> optionSons = [];
-            for (var j = 1; j < value.length; j++) {
-              // print(value[j]);
-              newOptionSonLine += value[j].length / 10;
-              var oneOptionlength = 0.0;
-              oneOptionlength = value[j].length / 10;
-              countLine += oneOptionlength.ceil();
-
-              optionSons.add(
-                  Container(
-                    padding: EdgeInsets.only(left: ScreenAdapter.width(70)),
-                    child: Row(
-                      mainAxisAlignment: (value[j].length >10) ? MainAxisAlignment.start : MainAxisAlignment.end,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Expanded(child: Text("${value[j]}",
-                            textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length >10) ? TextAlign.left : TextAlign.right,
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontFamily: 'JetBrainsMonoRegular',
-                              color: ColorsUtil.hexToColor("#000000"),
-                              //fontWeight: FontWeight.w600
-                            ))),
-                      ],
-                    ),
-                  )
-              );
-            }
-
-            categoryMenus.add(Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.end,
-              textDirection: TextDirection.rtl,
-              children: optionSons,
-            ));
-          }
-
-
-          //处理option结束-----------
-          var optionRowNum = 0.0;
-          optionRowNum = optionLine + newOptionSonLine;
-          //addRowHight += 52 * optionRowNum;
-          addRowHight += 66*countLine;
-          menuNum += optionRowNum.ceil();
-          optionNum++;
-        });
-
-        //addRowHight += 59 * mainTitleRowNum;
-        //menuNum += mainTitleRowNum;
-      } else {
-        addRowHight += 65 * mainTitleRowNum;
-        menuNum += mainTitleRowNum;
-      }
-
-      addRowHight += 10;
-      categoryMenus.add(
-        Directionality(
-            textDirection: TextDirection.ltr,
-            child:Container(
-              margin: EdgeInsets.only(top: 5,bottom: 5),
-              height: 2.5,
-              color:ColorsUtil.hexToColor("#000000"),
-              width: 550,
-            )
-        ),
-      );
-    }
-
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(bottom: 5),
-        alignment: Alignment.centerRight,
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child:
-            Text(
-              "${orderTime}",//${printData["takeOut"]}
-              style: TextStyle(
-                fontSize: 45,
-                fontFamily: 'JetBrainsMonoRegular',
-                fontWeight: FontWeight.w500,
-                color: ColorsUtil.hexToColor("#000000"),
-              ),
-            )
-        ),
-      ),
-    );
-
-    var totalHight = addRowHight+lineHight;
-    if(menuNum == 1){
-      totalHight +=15;
-    }
-
-    /*return Container(
-      width: 550,
-      height: totalHight.toDouble(),
-      padding: EdgeInsets.only(left: 0.5, right: 0.5),
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: categoryMenus,
-      ),
-    );*/
-
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: categoryMenus,
-    ));
-
-
-
-  }
-
-  //打印label
-  _wifiNetworkLabelPrintData(extendPrintVo){
-    var printData = [];
-    for(var i=0;i<extendPrintVo.length;i++){
-      // 生成打印图层任务，指定任务类型为标签
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-        PicGenerateTask<PrinterInfo>(
-          tempWidget: menuData(extendPrintVo[i]) as ATempWidget,
-          printTypeEnum: PrintTypeEnum.label,
-          params: PrinterInfo(ip:wlan_print_ip.value),
-        ),
-      );
-      /*QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-        return wifiNetPrintLabelnew(extendPrintVo[i]);
-      });*/
-    }
-  }
-
-  wifiNetPrintLabelnew(orderprintData) async {
-
-    Future.delayed(Duration(milliseconds: 1200),() async {
-      ByteData byteData = await WidgetToImage.widgetToImage(
-          menuData(orderprintData)
-      );
-
-      Uint8List imageBytes = byteData.buffer.asUint8List();
-      var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-        imgData: imageBytes,
-        printType: PrintTypeEnum.label,
-      );
-      // 网络 打印
-      final conn = printerPlus.NetConn(wlan_print_ip.value);
-      conn.writeMultiBytes(printData);
-
-    });
-
-  }
-
-  Widget menuData(orderprintData){
-    return LabelConstrainedBox(
-        Padding(
-          padding: const EdgeInsets.only(
-            //left: 5,
-            top: 2,
-            //right: 5,
-          ),
-          child: Container(
-
-            child: Column(
-              mainAxisAlignment:MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.ltr,
-              children: [
-
-                Container(
-                  decoration: BoxDecoration(
-                    //color: Colors.red,
-                    border: Border(
-                      bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 2),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment:MainAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: ScreenAdapter.width(20),
-                              maxWidth: ScreenAdapter.width(400),
-                              minHeight: ScreenAdapter.height(30),
-                              maxHeight: ScreenAdapter.height(75),
-                            ),
-                            child: AutoSizeText(
-                              "${orderprintData["printTitleText"]}",
-                              style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                    child: Row(
-                      mainAxisAlignment:MainAxisAlignment.start,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Expanded(child: Container(
-                              /*constraints: BoxConstraints(
-                            minWidth: ScreenAdapter.width(20),
-                            maxWidth: ScreenAdapter.width(400),
-                            minHeight: ScreenAdapter.height(30),
-                            maxHeight: ScreenAdapter.height(210),
-                          ),*/
-                              child: Text(
-                                orderprintData["printText"],
-                                style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
-                                maxLines: 4,
-                                textAlign: TextAlign.left,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                            )
-                        ),
-                      ],
-                    )
-                ),
-
-              ],
-            ),
-          ),
-        )
-    );
-    /*return LabelConstrainedBox(
-        Padding(
-          padding: const EdgeInsets.only(
-            //left: 5,
-            top: 5,
-            //right: 5,
-          ),
-          child: Container(
-
-            child: Column(
-              mainAxisAlignment:MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.ltr,
-              children: [
-
-                Container(
-                  decoration: BoxDecoration(
-                    //color: Colors.red,
-                    border: Border(
-                      bottom: BorderSide(color: ColorsUtil.hexToColor("#000000"), width: 2.5),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment:MainAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: ScreenAdapter.width(20),
-                              maxWidth: ScreenAdapter.width(400),
-                              minHeight: ScreenAdapter.height(30),
-                              maxHeight: ScreenAdapter.height(70),
-                            ),
-                            child: AutoSizeText(
-                              "${orderprintData["printTitleText"]}",
-                              style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-
-                Row(
-                  mainAxisAlignment:MainAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
-                  children: [
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Expanded(child: ConstrainedBox(
-                          constraints: BoxConstraints(
-                            minWidth: ScreenAdapter.width(20),
-                            maxWidth: ScreenAdapter.width(400),
-                            minHeight: ScreenAdapter.height(30),
-                            maxHeight: ScreenAdapter.height(210),
-                          ),
-                          child: AutoSizeText(
-                            orderprintData["printText"],
-                            style: GoogleFonts.zenKakuGothicAntique(fontSize: ScreenAdapter.fontSize(26),fontWeight: FontWeight.w500),
-                            maxLines: 4,
-                            textAlign: TextAlign.left,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        )
-                        )
-                    ),
-                  ],
-                ),
-
-              ],
-            ),
-          ),
-        )
-    );*/
-  }
-
-
-
-// 　//GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87)
-//   //GoogleFonts.zenKakuGothicAntique(fontSize: 28,fontWeight: FontWeight.w300,color: Colors.black87)
-
-
-  showCashAlert(){
-    print("现金取消");
-    Future.delayed(Duration(milliseconds: 50),() async {
-      Get.dialog(
-          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
-              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
-              confirm: () {
-                Get.back();
-                showBackEasyLoading();
-                CancelOrder();
-              },
-              cancle: () {
-                allowClick.value = true;
-                Get.back();
-              }),
-          barrierDismissible: false
-      );
-
-    });
-  }
-
 
 }

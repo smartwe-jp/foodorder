@@ -63,7 +63,7 @@ class OrderSqlController extends GetxController {
   getCartAllPrice() async {
     var result;
     result = await itemServices.getCartListPrice();
-    return result[0];
+    return result == null ? null : result[0];
   }
 
   getCartItemNum(menuCode) async {
@@ -91,7 +91,7 @@ class OrderSqlController extends GetxController {
   getCartTotalNum() async {
     var result;
     result = await itemServices.getCartTotalNumber();
-    if(result[0]["totalGoodsNum"] == null){
+    if(result == null || result[0]["totalGoodsNum"] == null){
       return 0;
     }else{
       return result[0]["totalGoodsNum"];

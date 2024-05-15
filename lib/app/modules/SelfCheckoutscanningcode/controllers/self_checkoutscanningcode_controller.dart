@@ -69,6 +69,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool showUnionPay = false.obs;
   RxBool showAmericanExpress = false.obs;
   RxBool showDinersClub = false.obs;
+  RxBool showDiscover = false.obs;
 
   RxString doSubmitOrderId = "".obs;
 
@@ -142,6 +143,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     showUnionPay.value = systemSettingInfo['show_unionPay'];
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
+    showDiscover.value = systemSettingInfo['show_discover'];
 
     getCartPriceTotal(); //新版新获取分类
   }
@@ -511,6 +513,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             showUnionPay: showUnionPay.value,
             showAmericanExpress: showAmericanExpress.value,
             showDinersClub: showDinersClub.value,
+            showDiscover: showDiscover.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
             onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptPrintTypeString) {
@@ -612,6 +615,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           "showUnionPay": showUnionPay.value,
           "showAmericanExpress": showAmericanExpress.value,
           "showDinersClub": showDinersClub.value,
+          "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
   }

@@ -1,65 +1,26 @@
 {
   "project_info": {
-    "project_number": "1013478066183",
-    "project_id": "kanran-booking-2834c",
-    "storage_bucket": "kanran-booking-2834c.appspot.com"
+    "project_number": "597237817242",
+    "project_id": "smartwe-foodorder",
+    "storage_bucket": "smartwe-foodorder.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1013478066183:android:b5e791e394195bf364c2a2",
+        "mobilesdk_app_id": "1:597237817242:android:398fb0b5f703a8d9d76423",
         "android_client_info": {
           "package_name": "com.fanxing.foodorder"
         }
       },
-      "oauth_client": [
-        {
-          "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
+      "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyCpWLucBlqeMFQPG_BTRIcNj4fapjsVhko"
+          "current_key": "AIzaSyABeFbB0dWX8TRLuwzoKxWm1bW8Y4Jdhl8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:1013478066183:android:2b86ffa09e94e16f64c2a2",
-        "android_client_info": {
-          "package_name": "com.fanxing.foodorderse"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyCpWLucBlqeMFQPG_BTRIcNj4fapjsVhko"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "1013478066183-hhrfpiols5hffk5lv0521cctd3tuv4sa.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
+          "other_platform_oauth_client": []
         }
       }
     }

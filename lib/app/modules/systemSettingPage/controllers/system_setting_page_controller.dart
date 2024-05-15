@@ -291,7 +291,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                     showSpeedView()
                                 );
                                 //https://app.gutingjun.com/kanran-release.apk
-                                downloadAndroid("https://app.gutingjun.com/smartwe_ticket_machine.apk");
+                                downloadAndroid("https://app.smartwe.co.jp/smartwe_ticket_machine.apk");
                               },
                             ),
                           )
@@ -806,7 +806,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         payconnectSocker(response['data'], posIp, posPort);
       } else {
         EasyLoading.dismiss();
-        showTestResultDialog("Server Error");
+        showTestResultDialog("Server error");
       }
     });
 

@@ -21,6 +21,9 @@ import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 //打印图层生成成功
 Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
   //final imageBytes = imgdata.data;
@@ -68,6 +71,11 @@ Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
 void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
+
+    await Firebase.initializeApp(
+      options: DefaultFirebaseOptions.currentPlatform,
+    );
+
     await GetStorage.init();
 
     if (Platform.isAndroid) {

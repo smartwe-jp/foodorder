@@ -30,6 +30,18 @@ class HomeServices{
     return machineinfo;
   }
 
+  static getActiveTimeInfo() async{
+    String? activeTimeInfo;
+    try {
+      String? machineInfoData = await Storage.getString('activeTimeInfo');
+      GetxStorage.setData('activeTimeInfo', machineInfoData);
+      activeTimeInfo = machineInfoData;
+    } catch (e) {
+      activeTimeInfo = "";
+    }
+    return activeTimeInfo;
+  }
+
   static getShopCode() async{
     String? shopCode;
     try {

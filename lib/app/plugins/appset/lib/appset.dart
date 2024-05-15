@@ -1,9 +1,11 @@
+
 import 'dart:async';
 
 import 'package:flutter/services.dart';
 
 class Appset {
-  static const MethodChannel _channel = const MethodChannel('appset');
+  static const MethodChannel _channel =
+      const MethodChannel('appset');
 
   static Future<String> get platformVersion async {
     final String version = await _channel.invokeMethod('getPlatformVersion');
@@ -20,11 +22,9 @@ class Appset {
     return status;
   }
 
-  static Future<int> playAudio(String audioName) async {
-    final int status = await _channel.invokeMethod('playAudio',  <String, dynamic>{
-        'audio': audioName,
-    });
+  //restart
+  static Future<String> get restartApp async {
+    final String status = await _channel.invokeMethod('restartApp');
     return status;
   }
-
 }
