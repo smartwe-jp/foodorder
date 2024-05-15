@@ -81,7 +81,7 @@ class HomeController extends GetxController {
   Future requestPermission() async {
 
     //霸屏隐藏状态栏导航栏
-    //await Appset.hideBullyScreen;
+    await Appset.hideBullyScreen;
 
     await _getMachineInfo();
     /// 权限检测
