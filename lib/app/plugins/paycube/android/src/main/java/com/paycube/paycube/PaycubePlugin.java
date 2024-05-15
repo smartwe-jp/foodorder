@@ -82,9 +82,9 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         if (call.method.equals("getPlatformVersion")) {
             result.success("Android " + android.os.Build.VERSION.RELEASE);
         } else if (call.method.equals("startOpenPayCube")) {
-            System.out.println("---startOpenPayCube---");
+            //System.out.println("---startOpenPayCube---");
             String operEvent = call.argument("operEvent");
-            System.out.println(operEvent);
+            //System.out.println(operEvent);
             if (operEvent.equals("openPayCube")) {
                 try {
                     if (lib == null) {
@@ -104,8 +104,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                 @Override
                                 public void run() {
                                     byte[] arraye = (byte[]) event.getReceiveData();
-                                    System.out.println("---ReceiveData:");
-                                    System.out.println(Arrays.toString(arraye));
+                                    //System.out.println("---ReceiveData:");
+                                    //System.out.println(Arrays.toString(arraye));
                                     events.add(event);
                                     /*获取机器通信*/
                                     StringBuffer stringBuffero = new StringBuffer();

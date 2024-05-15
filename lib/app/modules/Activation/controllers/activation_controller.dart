@@ -29,7 +29,7 @@ class ActivationController extends GetxController {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Get.toNamed("/transit-page");
+      Get.toNamed("/transit-page", arguments: {"loadActive": true});
     });
   }
 
