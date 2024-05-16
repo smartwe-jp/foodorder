@@ -1,7 +1,7 @@
+import 'dart:io';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -11,7 +11,6 @@ import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
-import '../controllers/menu_page_controller.dart';
 
 
 class SelectPaymentPage extends StatefulWidget {

@@ -55,9 +55,9 @@ extension HomeControllerExtension on HomeController {
   openCashChanger() async {
     debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
-    debugPrint("OpenPayCube 2");
     //如果检测现金机打开错误，则重新打开一下
     int? retCode = await CashChanger.openCashChanger;
+    debugPrint("OpenPayCube retCode: $retCode");
     //debugPrint("OpenPayCube 3");
     await CashChanger.openChangerNext(
         openResult: retCode,

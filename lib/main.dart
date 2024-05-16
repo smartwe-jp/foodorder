@@ -72,16 +72,17 @@ void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    await Firebase.initializeApp(
-      options: DefaultFirebaseOptions.currentPlatform,
-    );
+    
 
     await GetStorage.init();
 
     if (Platform.isAndroid) {
       //Firebase is not full supported on windows
-      await Firebase.initializeApp();
+      await Firebase.initializeApp(
+        options: DefaultFirebaseOptions.currentPlatform,
+      );
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+      
     }
 
     SystemUiOverlayStyle systemUiOverlayStyle =

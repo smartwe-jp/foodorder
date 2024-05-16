@@ -2,6 +2,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:foodorder/app/config/printer_info.dart';
+import 'package:get/get.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
@@ -76,6 +77,22 @@ class CreatePrintImageController extends GetxController {
   UsbDeviceInfo? get curUsbPrinter {
     if (usbDevice.value.isEmpty) {
       print("usbDevice is empty");
+      //弹出提示框，打印机未设置，请设置打印机或者联系管理员
+      Get.dialog(
+        AlertDialog(
+          title: Text("プリンター未設定"),
+          content: Text("プリンターを設定してください。"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+      
       return null;
     }
     print("usbDevice.value:${usbDevice.value}");

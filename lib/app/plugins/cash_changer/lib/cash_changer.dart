@@ -171,7 +171,7 @@ class CashChanger {
     switch (resultCodeExtended) {
       case ResultCodeExtended.OPOS_ECHAN_OVERDISPENSE:
       case ResultCodeExtended.OPOS_ECHAN_TOTALOVER:
-        showError("超出找零范围 请补充足够零钱");
+        showError("OVERDISPENSE");
         break;
       case ResultCodeExtended.OPOS_ECHAN_OVER:
         break;
@@ -200,6 +200,7 @@ class CashChanger {
   }
 
   static Map<int, OpenChangerResult> openChangerResultValues = {
+    0: OpenChangerResult.OPEN_SUCCESS,
   300: OpenChangerResult.OPOS_OPEN_ERR,
   301: OpenChangerResult.OPOS_OR_ALREADYOPEN,
   302: OpenChangerResult.OPOS_OR_REGBADNAME,

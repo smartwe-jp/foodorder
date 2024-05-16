@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
@@ -62,10 +63,12 @@ class TransitPageController extends GetxController {
       _machineCode.value = machineCode;
 
       //_getSystemSettingInfo();
-      _getMachineActivate();
 
-      await _getPackageInfo();
-
+      if (Platform.isWindows) {
+        await _getMachineActivate();
+      } else {
+        await _getPackageInfo();
+      }
     }
   }
 
@@ -78,40 +81,61 @@ class TransitPageController extends GetxController {
     await _getMachineActivate();
   }
 
-
-  _getMachineActivate() async{
+  _getMachineActivate() async {
     // var shouldActive = await _checkShouldActive();
     // if (!shouldActive) {
     //   await _getSmartweSystemSettingInfo();
     //   return;
     // }
-    if(_loadActiveInfo.value == false){
+    debugPrint("getMachineActivate");
+    if (_loadActiveInfo.value == false) {
       _actuarial.value = true;
       await _getSmartweSystemSettingInfo();
       return;
     }
-    debugPrint("getMachineActivate");
+    debugPrint("getMachineActivate with loadActive");
     var formData = {
       "machineCode": _machineCode.value,
-      "version":local_version.value
-    };print(formData);
-    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());LogUtil.d(response);
+      "version": local_version.value
+    };
+    print(formData);
+    request('webBootActivatev3', method: 'POST', parameters: formData)
+        .then((val) async {
+      var response = json.decode(val.toString());
+      LogUtil.d(response);
       if (response['code'] == 200 && response['data'] != null) {
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
           _shopCode = shopData["shopCode"];
         }
-        var _showCash = shopData["linePayChannelMap"]["Cash"] != null ? shopData["linePayChannelMap"]["Cash"] :false;
-        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null ? shopData["linePayChannelMap"]["Wechat"] :false;
-        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null ? shopData["linePayChannelMap"]["Alipay"] :false;
-        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null ? shopData["linePayChannelMap"]["PayPay"] :false;
-        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null ? shopData["linePayChannelMap"]["POS"] :false;
-        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null ? shopData["linePayChannelMap"]["au_Pay"] :false;
-        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null ? shopData["linePayChannelMap"]["d_Pay"] :false;
-        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null ? shopData["linePayChannelMap"]["R_Pay"] :false;
-        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null ? shopData["linePayChannelMap"]["m_Pay"] :false;
+        var _showCash = shopData["linePayChannelMap"]["Cash"] != null
+            ? shopData["linePayChannelMap"]["Cash"]
+            : false;
+        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
+            ? shopData["linePayChannelMap"]["Wechat"]
+            : false;
+        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null
+            ? shopData["linePayChannelMap"]["Alipay"]
+            : false;
+        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null
+            ? shopData["linePayChannelMap"]["PayPay"]
+            : false;
+        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null
+            ? shopData["linePayChannelMap"]["POS"]
+            : false;
+        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null
+            ? shopData["linePayChannelMap"]["au_Pay"]
+            : false;
+        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null
+            ? shopData["linePayChannelMap"]["d_Pay"]
+            : false;
+        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null
+            ? shopData["linePayChannelMap"]["R_Pay"]
+            : false;
+        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null
+            ? shopData["linePayChannelMap"]["m_Pay"]
+            : false;
 
         var _posEdy = shopData["linePayChannelMap"]["Edy"] != null
             ? shopData["linePayChannelMap"]["Edy"]
@@ -131,36 +155,51 @@ class TransitPageController extends GetxController {
         var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null
             ? shopData["linePayChannelMap"]["nanaco"]
             : false;
-        var _visa = shopData["linePayChannelMap"]["VISA"] != null ? shopData["linePayChannelMap"]["VISA"] :false;
-        var _master = shopData["linePayChannelMap"]["MASTER"] != null ? shopData["linePayChannelMap"]["MASTER"] :false;
-        var _jcb = shopData["linePayChannelMap"]["JCB"] != null ? shopData["linePayChannelMap"]["JCB"] :false;
-        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null ? shopData["linePayChannelMap"]["UnionPay"] :false;
-        var _americanExpress = shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] :false;
-        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
-        var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
+        var _visa = shopData["linePayChannelMap"]["VISA"] != null
+            ? shopData["linePayChannelMap"]["VISA"]
+            : false;
+        var _master = shopData["linePayChannelMap"]["MASTER"] != null
+            ? shopData["linePayChannelMap"]["MASTER"]
+            : false;
+        var _jcb = shopData["linePayChannelMap"]["JCB"] != null
+            ? shopData["linePayChannelMap"]["JCB"]
+            : false;
+        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null
+            ? shopData["linePayChannelMap"]["UnionPay"]
+            : false;
+        var _americanExpress =
+            shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null
+                ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"]
+                : false;
+        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null
+            ? shopData["linePayChannelMap"]["Diners_Club"]
+            : false;
+        var _discover = shopData["linePayChannelMap"]["Discover"] != null
+            ? shopData["linePayChannelMap"]["Discover"]
+            : false;
         var machineActivateData = {
-          "showCash":(_isCashState.value == true) ? _showCash :false,
-          "showWechat":_showWechat,
-          "showAlipay":_showAlipay,
-          "showPayPay":_showPayPay,
-          "showCreditCard":_showCreditCard,
-          "au_Pay":_auPay,
-          "d_Pay":_dPay,
-          "R_Pay":_rPay,
-          "m_Pay":_mPay,
-          "pos_Edy":_posEdy,
-          "pos_iD":_posiD,
-          "pos_IC":_posIC,
-          "pos_QUICPay":_posQUICPay,
-          "pos_WAON":_posWAON,
-          "pos_nanaco":_posnanaco,
-          "show_visa":_visa,
-          "show_master":_master,
-          "show_jcb":_jcb,
-          "show_unionPay":_unionPay,
-          "show_americanExpress":_americanExpress,
-          "show_dinersClub":_dinersClub,
-          "show_discover":_discover,
+          "showCash": (_isCashState.value == true) ? _showCash : false,
+          "showWechat": _showWechat,
+          "showAlipay": _showAlipay,
+          "showPayPay": _showPayPay,
+          "showCreditCard": _showCreditCard,
+          "au_Pay": _auPay,
+          "d_Pay": _dPay,
+          "R_Pay": _rPay,
+          "m_Pay": _mPay,
+          "pos_Edy": _posEdy,
+          "pos_iD": _posiD,
+          "pos_IC": _posIC,
+          "pos_QUICPay": _posQUICPay,
+          "pos_WAON": _posWAON,
+          "pos_nanaco": _posnanaco,
+          "show_visa": _visa,
+          "show_master": _master,
+          "show_jcb": _jcb,
+          "show_unionPay": _unionPay,
+          "show_americanExpress": _americanExpress,
+          "show_dinersClub": _dinersClub,
+          "show_discover": _discover,
         };
         //是否允许退款 1展示退款按钮 0 不展示
         var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
@@ -207,7 +246,8 @@ class TransitPageController extends GetxController {
     if (lastActiveTime != "" && lastActiveTime != null) {
       var last = DateTime.parse(lastActiveTime);
       var diff = now.difference(last).inDays;
-      if (diff > 1) {//超过一天 重新激活
+      if (diff > 1) {
+        //超过一天 重新激活
         return true;
       } else {
         return false;
@@ -318,10 +358,13 @@ class TransitPageController extends GetxController {
 
     //这里判断是否禁用1元
 
-    if(systemSettingData["isAllowOneYen"] == "0"){
+    if (systemSettingData["isAllowOneYen"] == "0") {
       try {
-        var prohibitOneCashStatus = await Paycube.prohibitOneCash.timeout(
-            Duration(seconds: 10));
+        if (Platform.isAndroid) {
+            var prohibitOneCashStatus =
+            await Paycube.prohibitOneCash.timeout(Duration(seconds: 10));
+        }
+        
         _goNext(checkmachineMode);
       } on TimeoutException catch (e) {
         print('Timeout: $e');
@@ -330,13 +373,11 @@ class TransitPageController extends GetxController {
         print('error: $e');
         _goNext(checkmachineMode);
       }
-
     }
-
   }
 
   void _goNext(checkmachineMode) async {
-    if(checkmachineMode == "2"){
+    if (checkmachineMode == "2") {
       _goCheckOut();
     } else if (checkmachineMode == "3") {
       _goSelfService();
@@ -344,7 +385,6 @@ class TransitPageController extends GetxController {
       _goMain();
     }
   }
-
 
   void _goMain() async {
     debugPrint("transit  goMain");

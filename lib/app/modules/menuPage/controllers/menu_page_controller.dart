@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 
 import 'package:get/get.dart';
 
@@ -178,8 +179,11 @@ class MenuPageController extends GetxController with StateMixin {
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
-    //getBookingBootIndexCagegory(); //新版新获取分类
-    getBookingBootIndexMenu(classTag.value);
+    if (classTag.value == "") {
+      getBookingBootIndexCagegory(); //新版新获取分类
+    } else {
+      getBookingBootIndexMenu(classTag.value);
+    }
   }
 
   //获取菜单
@@ -346,10 +350,12 @@ class MenuPageController extends GetxController with StateMixin {
       "language": checkLanguage.value,
       "takeout":queryTakeout,
     };
+    debugPrint("getBookingBootIndexCagegory formData: $formData");
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
+        debugPrint("getBookingBootIndexCagegory response: $response");
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
         //如果菜单为空则返回言语选择页面并给出提示
@@ -430,6 +436,7 @@ class MenuPageController extends GetxController with StateMixin {
       "takeout":queryTakeout,
       "categoryCode":queryCategoryCode
     };
+    debugPrint("formData:${formData}");
     request('webBootIndexMenuv3', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
@@ -1303,9 +1310,11 @@ print("加1了");
                   //postNewOrderId();
                   gotoSettlement();
                 }
-
             },
             onCancelClick: (String isBack){
+              if (Platform.isWindows) {
+                CashChanger.endDeposit(3);
+              }
               if(isBack == "back"){
                 CancelOrder();
               }
@@ -1416,7 +1425,11 @@ print("加1了");
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
-    classTag.value = topMenu.value.first["categoryCode"];
+    debugPrint("topMenu.value: ${topMenu.value}");
+    if (topMenu.value.length > 0) {
+      classTag.value = topMenu.value.first["categoryCode"];
+    }
+    //
     menuLackMap.value = {};
     getCartPriceTotal();
   }

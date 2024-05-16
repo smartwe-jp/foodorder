@@ -83,7 +83,7 @@ class HomeController extends GetxController {
     debugPrint("requestPermission 0");
     //霸屏隐藏状态栏导航栏
 
-    await Appset.hideBullyScreen; //隐藏状态栏
+    //await Appset.hideBullyScreen; //隐藏状态栏
     debugPrint("requestPermission 0.1");
 
     await _getMachineInfo();

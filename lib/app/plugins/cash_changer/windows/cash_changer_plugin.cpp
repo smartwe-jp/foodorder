@@ -444,7 +444,7 @@ void CashChangerPlugin::HandleMethodCall(
                 case OPOS_ECHAN_OVERDISPENSE:
                     result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
                     cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
-                    //pCashChanger->EndDeposit(ChanDepositrepay);
+                    pCashChanger->EndDeposit(ChanDepositrepay);
                     break;
                 case OPOS_ECHAN_OVER:
                     result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));

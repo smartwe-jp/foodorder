@@ -233,7 +233,13 @@ class SettlementController extends GetxController with StateMixin {
     if (payment_method_num.value == "0" || payment_method_num.value == "1") {
       //打开现金机
       _countDownTimer("1");
-      Starttoubi();
+      if (Platform.isAndroid) {
+        Starttoubi();
+      } else {
+        CashChanger.setEventsListener();
+        startDeposit();
+      }
+
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();
@@ -964,7 +970,15 @@ class SettlementController extends GetxController with StateMixin {
         printType = "1";
     }
 
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    //判断是否允许打印小票
+    var printStatus = "";
+    if (Platform.isWindows) {
+      printStatus = "8";
+    } else {
+      printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    }
+
+    
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
         "orderId": orderId.value,
