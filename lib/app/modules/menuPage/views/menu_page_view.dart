@@ -418,6 +418,7 @@ class MenuPageView extends GetView {
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: _getFirstOptionWidget(menuCode, setFirstMenuState),
       ),
     );
@@ -433,36 +434,39 @@ class MenuPageView extends GetView {
     for (var i = 0; i < optionGroupVoList.length; i++) {
       List<Widget> optionSons = [];
       var optionVoList = optionGroupVoList[i]['optionVoList'];
-      options.add(Container(
-        padding: EdgeInsets.only(
-            top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
-        child: Row(
-          children: [
-            RichText(
-              text: TextSpan(
-                  text: "${optionGroupVoList[i]['groupName']}",
-                  //GString.getToString(controller.checkLanguage.value, "show_price_front"),
-                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(24.0),
-                    fontWeight: FontWeight.w500,
-                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+      options.add(
+          Container(
+            padding: EdgeInsets.only(
+                top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(2)),
+            child: Row(
+              children: [
+                RichText(
+                  text: TextSpan(
+                      text: "${optionGroupVoList[i]['groupName']}",
+                      //GString.getToString(controller.checkLanguage.value, "show_price_front"),
                       style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                        fontSize: ScreenAdapter.fontSize(18.0),
-                        fontWeight: FontWeight.w200,
+                                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(24.0),
+                        fontWeight: FontWeight.w500,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                       ),
-                    ),
-                  ]),
-            )
-          ],
-        ),
-      ));
+                      children: [
+                        TextSpan(
+                          text: (optionGroupVoList[i]['remark'] !=null && optionGroupVoList[i]['remark']!="")?" ${optionGroupVoList[i]['remark']}":"",
+                          style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(18.0),
+                            fontWeight: FontWeight.w200,
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                          ),
+                        ),
+                      ]),
+                )
+              ],
+            ),
+           )
+         );
+
 
       for (var j = 0; j < optionVoList.length; j++) {
         var optionVolistSon = optionVoList[j];
@@ -471,6 +475,7 @@ class MenuPageView extends GetView {
           buttonColor = optionVolistSon['buttonColorValue'].split(',');
         }
         optionSons.add(Container(
+          width: ScreenAdapter.width(224),
           alignment: Alignment.center,
           padding: EdgeInsets.only(
               left: ScreenAdapter.width(12),
@@ -503,7 +508,6 @@ class MenuPageView extends GetView {
 
                 ),
                 child: Container(
-                    width: ScreenAdapter.width(224),
                     height: ScreenAdapter.height(60),
                     alignment: Alignment.center,
                     decoration: (optionVolistSon['checked'] == true)
@@ -611,13 +615,16 @@ class MenuPageView extends GetView {
           ),
         ));
       }
-      options.add(Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: optionSons,
-      ));
-
-
+      options.add(
+          Container(
+            padding: EdgeInsets.only(
+                 left: ScreenAdapter.height(80), right: ScreenAdapter.height(20)),
+            child: Wrap (
+              alignment: WrapAlignment.start,
+              children: optionSons,
+            ),
+          )
+      );
     }
 
     return options;
