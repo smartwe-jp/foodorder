@@ -169,7 +169,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                   alignment: Alignment.center,
                   child:  Text("アップデートのお知らせ",style: TextStyle(fontSize:
                   ScreenAdapter.fontSize(28),
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w600))
               ),
               children: <Widget>[
@@ -203,7 +203,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 "キャンセル",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
                               onPressed: () {
@@ -228,7 +228,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 "アップデート",
                                 style: TextStyle(
                                     color: Colors.lightBlue,
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(32.0)),
                               ),
                               onPressed: () async {
@@ -837,7 +837,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       color: ColorsUtil.hexToColor("#000000"),
                     ))
             ),
@@ -848,7 +848,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -872,7 +872,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     softWrap: true,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       color: ColorsUtil.hexToColor("#000000"),
                     ))
             ),
@@ -883,7 +883,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     textAlign: TextAlign.right,
                     style: TextStyle(
                       fontSize: 32,
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ],
@@ -991,7 +991,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _showTag = Text(text,
         style: TextStyle(
           fontSize: ScreenAdapter.fontSize(25),
-          fontFamily: GFont.getFontFamily(),
+          fontFamily: 'NotoSansJP',
           fontWeight: FontWeight.w600,
           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
         ));

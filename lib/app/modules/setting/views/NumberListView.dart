@@ -53,7 +53,7 @@ class _NumberListViewState extends State<NumberListView> {
                     child: Text(
                       e.toString() + widget.measureUnit,
                       style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
+                        fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(20),
                         color: ColorsUtil.hexToColor("#dca550"),
                       ),

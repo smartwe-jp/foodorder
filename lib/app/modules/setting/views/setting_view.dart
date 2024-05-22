@@ -27,7 +27,7 @@ class SettingView extends GetView<SettingController> {
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
-                fontFamily: GFont.getFontFamily(),
+                fontFamily: 'NotoSansJP',
                 color: ColorsUtil.hexToColor("#000000"),
               )),
           Container(
@@ -64,7 +64,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("預り金",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -79,7 +79,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("現金",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -94,7 +94,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("Alipay",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -109,7 +109,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("PayPay",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -124,7 +124,7 @@ class SettingView extends GetView<SettingController> {
                         alignment: Alignment.center,
                         child: Text("WechatPay",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               fontWeight: FontWeight.w600,
                               color: ColorsUtil.hexToColor("#000000"),
@@ -158,7 +158,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_payment'].toString(),
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -167,7 +167,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -190,7 +190,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_crash'].toString(),
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -199,7 +199,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -221,7 +221,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_alipay'].toString(),
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -230,7 +230,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -252,7 +252,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_paypay'].toString(),
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -261,7 +261,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -283,7 +283,7 @@ class SettingView extends GetView<SettingController> {
                           text: TextSpan(
                               text: controller.depositData.value['deposit_wechat'].toString(),
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(22),
                                 fontWeight: FontWeight.w500,
                                 color: ColorsUtil.hexToColor("#000000"),
@@ -292,7 +292,7 @@ class SettingView extends GetView<SettingController> {
                                 TextSpan(
                                   text: "円",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize:
                                     ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
@@ -354,7 +354,7 @@ class SettingView extends GetView<SettingController> {
                   child: Text(
                       "領収書を再印刷する",
                       style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
+                        fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(24),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -386,7 +386,7 @@ class SettingView extends GetView<SettingController> {
                 ),
                 child: Text("返金",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontSize: ScreenAdapter.fontSize(24),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -407,7 +407,7 @@ class SettingView extends GetView<SettingController> {
         children: [
           Text("お釣り状態(NO.${controller.machineCode.value})",
               style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
+                fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor("#000000"),
@@ -448,7 +448,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("币种",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -465,7 +465,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("初期枚数",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -482,7 +482,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("最小枚数",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -500,7 +500,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("使った枚数",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -517,7 +517,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("残り枚数",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -534,7 +534,7 @@ class SettingView extends GetView<SettingController> {
                             right: ScreenAdapter.width(5)),
                         child: Text("補充/削减",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize:
                               ScreenAdapter.fontSize(18),
                               fontWeight: FontWeight.w600,
@@ -577,7 +577,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['name'],
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -592,7 +592,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['standard'].toString(),
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -607,7 +607,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['warm'].toString(),
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -623,7 +623,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['used'].toString(),
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -638,7 +638,7 @@ class SettingView extends GetView<SettingController> {
                                   right: ScreenAdapter.width(5)),
                               child: Text(_detail['remainder'].toString(),
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(20),
                                     fontWeight: FontWeight.w500,
                                     color: ColorsUtil.hexToColor(_textColor),
@@ -669,7 +669,7 @@ class SettingView extends GetView<SettingController> {
                                 child: Text(
                                     "補充/削减",
                                     style: TextStyle(
-                                      fontFamily: GFont.getFontFamily(),
+                                      fontFamily: 'NotoSansJP',
                                       fontSize: ScreenAdapter.fontSize(22),
                                       color: ColorsUtil.hexToColor("#FFFFFF"),
                                     )
@@ -719,7 +719,7 @@ class SettingView extends GetView<SettingController> {
               alignment: Alignment.center,
               child: Text(_detail['day'],
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontSize: ScreenAdapter.fontSize(20),
                     fontWeight: FontWeight.w500,
                     color: ColorsUtil.hexToColor("#000000"),
@@ -745,7 +745,7 @@ class SettingView extends GetView<SettingController> {
                     child: AutoSizeText(
                       "${_detail['total'].toString()}",
                       style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
+                        fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(22),
                         fontWeight: FontWeight.w400,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -771,7 +771,7 @@ class SettingView extends GetView<SettingController> {
         children: [
           Text("一週間売上報告(円)",
               style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
+                fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
                 color: ColorsUtil.hexToColor("#000000"),
@@ -858,7 +858,7 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("戻る",
                                 style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
+                                  fontFamily: 'NotoSansJP',
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -889,7 +889,7 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("ログアウト",
                                 style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
+                                  fontFamily: 'NotoSansJP',
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -916,7 +916,7 @@ class SettingView extends GetView<SettingController> {
                             ),
                             child: Text("システム設定",
                                 style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
+                                  fontFamily: 'NotoSansJP',
                                   fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w600,
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -938,7 +938,7 @@ class SettingView extends GetView<SettingController> {
                       child: Text(
                         "Version：${controller.local_version.value}",
                         style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
+                            fontFamily: 'NotoSansJP',
                             color: Colors.grey[500],
                             fontSize: ScreenAdapter.fontSize(20.0)),
                       ),

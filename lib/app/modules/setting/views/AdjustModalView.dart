@@ -164,7 +164,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                     child: Text("最初枚数/残り枚数調整($_field)",
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(22),
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w600,
                           color: ColorsUtil.hexToColor("#000000"),
                         )),
@@ -190,7 +190,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                               child: Text("$_field最初枚数調整：",
                                   style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(20),
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontWeight: FontWeight.w400,
                                     color: Colors.grey[700],
                                   )),
@@ -212,7 +212,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   Text("*調整後の枚数を入力してください",
                                       style: TextStyle(
                                         fontSize: ScreenAdapter.fontSize(16),
-                                        fontFamily: GFont.getFontFamily(),
+                                        fontFamily: 'NotoSansJP',
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
                                       )),
@@ -230,7 +230,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                     child: TextButton(
                                       child: Text("保存",
                                           style: TextStyle(
-                                            fontFamily: GFont.getFontFamily(),
+                                            fontFamily: 'NotoSansJP',
                                             fontSize: ScreenAdapter.fontSize(18),
                                             fontWeight: FontWeight.w400,
                                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -262,7 +262,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金から：",
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -310,7 +310,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金からの金種：",
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -361,7 +361,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                           flex: 1,
                           child: Text("預り金からの枚数：",
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(20),
                                 fontWeight: FontWeight.w400,
                                 color: Colors.grey[700],
@@ -400,7 +400,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                             flex: 1,
                             child: Text("$_field補充/削减枚数：",
                                 style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
+                                  fontFamily: 'NotoSansJP',
                                   fontSize: ScreenAdapter.fontSize(20),
                                   fontWeight: FontWeight.w400,
                                   color: Colors.grey[700],
@@ -422,7 +422,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   SizedBox(height: 10),
                                   Text("*減らす場合は負数を入力してください",
                                       style: TextStyle(
-                                        fontFamily: GFont.getFontFamily(),
+                                        fontFamily: 'NotoSansJP',
                                         fontSize: ScreenAdapter.fontSize(16),
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
@@ -438,7 +438,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                   SizedBox(height: 10),
                                   Text("*上記のタグをクリックすると補充枚数自動的に入力されます",
                                       style: TextStyle(
-                                        fontFamily: GFont.getFontFamily(),
+                                        fontFamily: 'NotoSansJP',
                                         fontSize: ScreenAdapter.fontSize(16),
                                         fontWeight: FontWeight.w200,
                                         color: Colors.grey[700],
@@ -477,7 +477,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                             child: TextButton(
                               child: Text("保存",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(18),
                                     fontWeight: FontWeight.w400,
                                     color: ColorsUtil.hexToColor("#FFFFFF"),
