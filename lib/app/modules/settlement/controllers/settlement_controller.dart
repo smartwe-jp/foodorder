@@ -1087,6 +1087,7 @@ class SettlementController extends GetxController with StateMixin {
     //入金开始
     debugPrint("Starttoubi");
     var _startCount = 0;
+    var connectCount = 0;
     for (var i = 0; i < 5; i++) {
       String startPayCube = await Paycube.strartPayCube;
       debugPrint("startPayCube==$startPayCube");
@@ -1113,6 +1114,20 @@ class SettlementController extends GetxController with StateMixin {
     allowtimer = Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
       allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
       debugPrint("allowStatus==$allowStatus");
+
+      connectCount++;
+      debugPrint("打开次数$connectCount");
+      if(connectCount > 50){
+        allowt.cancel();
+        //上报错误。。。
+        FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+          "machineCode":machineCode.value,
+          "orderId":orderId.value,
+        });
+        Get.toNamed(Routes.ERROR_PAGE);
+        return;
+      }
+
       // 循环一定要记得设置取消条件，手动取消
       if (allowStatus.value == "AllowSuccess") {
         //如果打开了现金机，则去掉倒计时监听
