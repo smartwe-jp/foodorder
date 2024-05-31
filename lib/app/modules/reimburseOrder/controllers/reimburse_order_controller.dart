@@ -465,11 +465,12 @@ LogUtil.d(response);
         //如果取消不汇报，则出金后直接关闭 ？？？？？？
         _getPayCubeOutMoney();
 
-        outmoneyt?.cancel();
-      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
-
-      } else if (outStatus.value == "error-F0--16") {
+        outmoneyt.cancel();
+      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+        await Paycube.outPayCubeMoney(outStringMoney);
+      } else if (outStatus.value == "Error-F0--16") {
           debugPrint("出金失败 Reason:error-F0--16, retry");
+          outmoneyt.cancel();
           await Paycube.endTrade;
           await startOutPutMoney(outStringMoney);
       }
@@ -496,6 +497,7 @@ LogUtil.d(response);
         String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
         if (currencyStringresult.trim().length > 50) {
           var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringresult.trim());
+          debugPrint("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
@@ -534,7 +536,7 @@ LogUtil.d(response);
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());
-      isReportCash.value = false;
+
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
         _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
@@ -543,6 +545,7 @@ LogUtil.d(response);
                 title: "お知らせ",
                 confirmtitle: "はい",
                 confirm: () {
+                  isReportCash.value = false;
                   orderIdController.text = "";
                   orderList.value = [];
                   refundInfo.value = {};
@@ -608,7 +611,7 @@ LogUtil.d(response);
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", "");//printLogoImage.value
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
     Future.delayed(Duration(milliseconds: 300), () async {
       await FlutterPluginMsprinter.sendPrintCut("0");
     });

@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
@@ -372,8 +373,11 @@ class SettingController extends GetxController with StateMixin {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
     Get.delete<SettingController>(); // 手动删除控制器实例
-    Future.delayed(Duration(milliseconds: 100), () {
-      Get.toNamed('/transit-page');
+    FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
+      "machineCode":machineCode.value,
     });
+    //Future.delayed(Duration(milliseconds: 100), () {
+      Get.toNamed('/transit-page');
+    //});
   }
 }
