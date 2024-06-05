@@ -37,6 +37,7 @@ class OrderHomeController extends GetxController with StateMixin {
   RxString settingLanguage = "JP".obs;
 
   RxList homeList = [].obs;
+  RxList homeImages = [].obs;
 
   @override
   Future<void> onInit() async {
@@ -71,7 +72,7 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("获取首页图片");
     var homeimageList = await HomeServices.getSmartweHomeImagesData();
 
-    homeList.value = homeimageList;
+    homeImages.value = homeimageList;
     await getSystemSettingInfo();
   }
 

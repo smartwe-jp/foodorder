@@ -226,6 +226,15 @@ class CashChanger {
       return;
     }
 
+    if (openChangerResultValues[openResult] == null) {
+      changerResultExtendedNext(
+          resultCodeExtended: ResultCodeExtended.values.fromIndex(openResult) ??
+              ResultCodeExtended.NONE,
+          onSuccess: onSuccess,
+          onRetry: onRetry ?? () {},
+          showError: showError);
+    }
+
     OpenChangerResult result = openChangerResultValues[openResult] ??
         OpenChangerResult.NONE;
     switch (result) {

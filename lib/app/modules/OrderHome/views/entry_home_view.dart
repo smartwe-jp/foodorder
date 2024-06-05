@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,6 +10,9 @@ import 'package:foodorder/app/modules/OrderHome/views/components/CatagoryButton.
 import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:get/get.dart';
+import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+
+import '../../../services/showImage.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -228,18 +232,39 @@ class EntryHomeView extends GetView<OrderHomeController> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image:
-                                AssetImage('assets/images/gongcha/home3.png'),
-                            fit: BoxFit.cover,
+                    Container(
+                        height: ScreenAdapter.height(400),
+                        alignment: Alignment.center,
+                        child: Swiper(
+                            //itemHeight: 200,
+                            itemBuilder: (BuildContext context,int index){
+                              // 配置图片地址
+                              return Container(
+                                        decoration: BoxDecoration(
+                                          //color: Colors.green,
+                                          image: DecorationImage(
+                                            image: CachedNetworkImageProvider(
+                                                controller.homeImages.value[index]),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        //child: publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
+                                      );
+                            },
+                            // 配置图片数量
+                            itemCount: controller.homeImages.value.length,
+                            // 底部分页器
+                            //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                            // 左右箭头
+                            //control: new SwiperControl(),
+                            // 无限循环
+                            loop: (controller.homeImages.value.length >1) ?true :false,
+                            duration: 1000,
+                            autoplayDelay:12000,
+                            // 自动轮播
+                            autoplay: (controller.homeImages.value.length >1) ?true :false,
                           ),
-                        ),
                       ),
-                    ),
                     Expanded(
                       flex: 3,
                       child: Container(
@@ -290,9 +315,11 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             bottom: ScreenAdapter.height(70),
                           ),
                           decoration: BoxDecoration(
-                            color: Color.fromARGB(255, 243,243,243),
+                            color: Color.fromARGB(255, 243, 243, 243),
                           ),
-                          child: controller.isLoading.value ? _catagoryLoading() : catagoryGridView(),
+                          child: controller.isLoading.value
+                              ? _catagoryLoading()
+                              : catagoryGridView(),
                         )),
                     Expanded(
                       flex: 2,

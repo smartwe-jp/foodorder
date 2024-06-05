@@ -165,9 +165,9 @@ class showOneItemOptionWidgetView extends GetView {
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        (optionVolistSon['homeImageHttp'] != "" &&
-                            optionVolistSon['homeImageHttp'] != null)
-                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImageHttp'],
+                        (optionVolistSon['homeImage'] != "" &&
+                            optionVolistSon['homeImage'] != null)
+                            ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
                             width: ScreenAdapter.width(18),
                             height: ScreenAdapter.height(30),
                             color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
@@ -478,7 +478,7 @@ class showOneItemOptionWidgetView extends GetView {
                                           var cartItem = {
                                             "menuCode": item['menuCode'],
                                             "mainTitle": item['mainTitle'],
-                                            "image": item['homeImageHttp'],
+                                            "image": item['homeImage'],
                                             "currentPrice": currentPrice,
                                             "optionGroupVoList": optionCodeList,
                                             "optionVoListMsg": optionTitle,

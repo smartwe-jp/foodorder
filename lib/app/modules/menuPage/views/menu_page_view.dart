@@ -9,7 +9,9 @@ import 'package:foodorder/app/modules/menuPage/views/menu_page_shopingcar.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_sideBar.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
+import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 
+import '../../../services/showImage.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/menu_page_controller.dart';
@@ -111,7 +113,7 @@ class MenuPageView extends GetView {
     return GridItemView(
       title: item['mainTitle'],
       subtitle: "${item['price']}",
-      image: CachedNetworkImageProvider(item['homeImageHttp']),
+      image: CachedNetworkImageProvider(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0 ? "选规格" : "",
       onTap: () async {
         if (item['qtyBounds'] == 0) {
@@ -196,21 +198,37 @@ class MenuPageView extends GetView {
                     children: [
                       //顶部导航
                       Container(
-                        width: ScreenAdapter.getScreenWidth(),
                         height: ScreenAdapter.height(400),
-                        padding: EdgeInsets.only(
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(20)),
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                          image: new DecorationImage(
-                            image:
-                                AssetImage('assets/images/gongcha/home2.png'),
-                            fit: BoxFit.cover,
+                        child: Swiper(
+                            //itemHeight: 200,
+                            itemBuilder: (BuildContext context,int index){
+                              // 配置图片地址
+                              return Container(
+                                        decoration: BoxDecoration(
+                                          //color: Colors.green,
+                                          image: DecorationImage(
+                                            image: CachedNetworkImageProvider(
+                                                controller.homeImages.value[index]),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                        //child: publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
+                                      );
+                            },
+                            // 配置图片数量
+                            itemCount: controller.homeImages.value.length,
+                            // 底部分页器
+                            //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                            // 左右箭头
+                            //control: new SwiperControl(),
+                            // 无限循环
+                            loop: (controller.homeImages.value.length >1) ?true :false,
+                            duration: 1000,
+                            autoplayDelay:12000,
+                            // 自动轮播
+                            autoplay: (controller.homeImages.value.length >1) ?true :false,
                           ),
-                        ),
-                        //child: showTopCategoryMenu(),
                       ),
 
                       SizedBox(height: ScreenAdapter.height(30)),

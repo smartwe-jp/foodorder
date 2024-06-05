@@ -171,7 +171,10 @@ void CashChangerPlugin::HandleMethodCall(
                         long data = 0;
                         BSTR bstr = SysAllocString(L"");
                         lngRet = pCashChanger->DirectIO(CHAN_DI_DEPOSITMODE, &data, &bstr);
-                        cerr << "DirectIO result 。。 " << lngRet << endl;
+                        if (lngRet == 114) {
+                            lngRet = pCashChanger->ResultCodeExtended;
+                        }
+                        cerr << "DirectIO result 。。lngRet " << lngRet << endl;
                         SysFreeString(bstr);
                         result->Success(flutter::EncodableValue(lngRet));
                     } else {
@@ -389,12 +392,13 @@ void CashChangerPlugin::HandleMethodCall(
 
     intSuc = get<int>(it->second);
     long lngRet = pCashChanger->EndDeposit(intSuc);
-
+    cerr << "EndDeposit result 。。 " << lngRet << endl;
     if (lngRet == OposSuccess) {
 
       result->Success(flutter::EncodableValue(lngRet));
 
     } else {
+        cerr << "EndDeposit error .. ResultCodeExtended " << pCashChanger->ResultCodeExtended << endl;
       if (pCashChanger->ResultCodeExtended == OPOS_ECHAN_DEPOSIT) {
         result->Success(flutter::EncodableValue(OPOS_ECHAN_DEPOSIT));
       } else {

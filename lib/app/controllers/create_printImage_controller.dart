@@ -28,26 +28,26 @@ class CreatePrintImageController extends GetxController {
     fontFamily: 'NotoSansJP',
     color: Colors.black,
     fontSize: 50,
-    fontWeight: FontWeight.w300,
+    fontWeight: FontWeight.w500,
   );
   final printMenuFont = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
-    fontSize: 24,
-    fontWeight: FontWeight.w200,
+    fontSize: 30,
+    fontWeight: FontWeight.w400,
   );
 
   final printMenu2Font = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
-    fontSize: 26,
-    fontWeight: FontWeight.w100,
+    fontSize: 32,
+    fontWeight: FontWeight.w400,
   );
 
   final printMenu3Font = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
-    fontSize: 28,
+    fontSize: 30,
     fontWeight: FontWeight.w200,
   );
 
@@ -123,17 +123,17 @@ class CreatePrintImageController extends GetxController {
     var wrapNum = 10;
     int oneRowHeight = 48;
     if(print_paper_txt_size.value == "1"){
-      print_menu_txt_size = 28.0;
+      print_menu_txt_size = 34.0;
       wrapNum = 12;
-      oneRowHeight = 38;
+      oneRowHeight = 40;
     }else if(print_paper_txt_size.value == "2"){
-      print_menu_txt_size = 33.0;
+      print_menu_txt_size = 37.0;
       wrapNum = 10;
-      oneRowHeight = 44;
+      oneRowHeight = 46;
     }else if(print_paper_txt_size.value == "3"){
-      print_menu_txt_size = 40.0;
+      print_menu_txt_size = 44.0;
       wrapNum = 8;
-      oneRowHeight = 55;
+      oneRowHeight = 57;
     }
 
     List<Widget> categoryMenus = [];
@@ -151,7 +151,7 @@ class CreatePrintImageController extends GetxController {
                 style: TextStyle(
                   fontSize: print_menu_txt_size,
                   fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -165,7 +165,7 @@ class CreatePrintImageController extends GetxController {
                 style: TextStyle(
                   fontSize: print_menu_txt_size,
                   fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -185,7 +185,7 @@ class CreatePrintImageController extends GetxController {
 
       categoryMenus.add(
         _publicGoodsTwoColumnsTxt("${lineItem["mainTitle"]}", print_menu_txt_size,
-            FontWeight.w100, "${lineItem["qty"]}", print_menu_txt_size, FontWeight.w100),
+            FontWeight.w400, "${lineItem["qty"]}", print_menu_txt_size, FontWeight.w100),
       );
       if (optionVoList != null && optionVoList.isNotEmpty) {
         optionVoList.forEach((key, value) {
@@ -227,7 +227,7 @@ class CreatePrintImageController extends GetxController {
                                   softWrap: true,
                                   style: TextStyle(
                                     fontSize: print_menu_txt_size,
-                                    fontWeight: FontWeight.w100,
+                                    fontWeight: FontWeight.w400,
                                     fontFamily: 'NotoSansJP',
                                     color: ColorsUtil.hexToColor("#000000"),
                                   ))
@@ -252,7 +252,7 @@ class CreatePrintImageController extends GetxController {
                                 textAlign: (value[0].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
                                 style: TextStyle(
                                   fontSize: print_menu_txt_size,
-                                  fontWeight: FontWeight.w100,
+                                  fontWeight: FontWeight.w400,
                                   fontFamily: 'NotoSansJP',
                                   color: ColorsUtil.hexToColor("#000000"),
                                 )),
@@ -279,7 +279,7 @@ class CreatePrintImageController extends GetxController {
                           softWrap: true,
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
-                            fontWeight: FontWeight.w100,
+                            fontWeight: FontWeight.w400,
                             fontFamily: 'NotoSansJP',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))
@@ -291,7 +291,7 @@ class CreatePrintImageController extends GetxController {
                           textAlign: TextAlign.right,
                           style: TextStyle(
                             fontSize: print_menu_txt_size,
-                            fontWeight: FontWeight.w100,
+                            fontWeight: FontWeight.w400,
                             fontFamily: 'NotoSansJP',
                             color: ColorsUtil.hexToColor("#000000"),
                           ))),
@@ -322,7 +322,7 @@ class CreatePrintImageController extends GetxController {
                             textAlign: (value[j].length >(wrapNum-2)) ? TextAlign.left : TextAlign.right,
                             style: TextStyle(
                               fontSize: print_menu_txt_size,
-                              fontWeight: FontWeight.w100,
+                              fontWeight: FontWeight.w300,
                               fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
@@ -438,7 +438,7 @@ class CreatePrintImageController extends GetxController {
     var addressRowNum = 0;
     addressRowNum = addressLine.ceil();
     addRowHight += addressRowNum*33+(addressRowNum-1)*10;
-    categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w300));
+    categoryMenus.add(_publicOneColumnTxtNew("${newAddress}", 26.0, FontWeight.w400));
 
     categoryMenus.add(SizedBox(height: 5,));
 
@@ -856,7 +856,7 @@ class CreatePrintImageController extends GetxController {
     final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
-      height: totalHight.toDouble(),
+      height: totalHight.toDouble() + 100,
       color: Colors.white,
       //alignment: Alignment.topCenter,
       child: Column(

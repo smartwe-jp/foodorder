@@ -6,6 +6,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 
 import 'package:get/get.dart';
 
@@ -97,6 +98,8 @@ class MenuPageController extends GetxController with StateMixin {
   RxString doSubmitOrderId = "".obs;
   RxBool showShopCart = false.obs;
 
+  RxList homeImages = [].obs;
+
 
   @override
   void onInit() {
@@ -184,6 +187,7 @@ class MenuPageController extends GetxController with StateMixin {
     } else {
       getBookingBootIndexMenu(classTag.value);
     }
+    _getHomeImageList();
   }
 
   //获取菜单
@@ -321,6 +325,12 @@ class MenuPageController extends GetxController with StateMixin {
         Get.back();
       }
     });
+  }
+
+  _getHomeImageList() async {
+    debugPrint("获取首页图片");
+    var homeimageList = await HomeServices.getSmartweHomeImagesData();
+    homeImages.value = homeimageList;
   }
 
   //获取页面分类
@@ -1318,9 +1328,9 @@ print("加1了");
                   gotoSettlement();
                 }
             },
-            onCancelClick: (String isBack){
-              if (Platform.isWindows) {
-                CashChanger.endDeposit(3);
+            onCancelClick: (String isBack) async {
+              if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
+                await CashChanger.endDeposit(DepositAction.repay.index);
               }
               if(isBack == "back"){
                 CancelOrder();

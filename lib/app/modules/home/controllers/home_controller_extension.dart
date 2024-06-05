@@ -73,6 +73,9 @@ extension HomeControllerExtension on HomeController {
         },
         showError: (String error) {
           debugPrint("OpenPayCube error: $error");
+          if (retCode==225) {//已打开 
+            _calculateAmount();
+          }
         });
   }
 
