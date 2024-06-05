@@ -763,7 +763,21 @@ class SettlementController extends GetxController with StateMixin {
 
           } else {
             if(resultString.trim() != ""){
-
+              debugPrint("---Recorde error to firebase old---");
+              var reportData = "${orderId.value}:${machineCode.value}";
+              var errorString = "None";
+              if (eventReportString.value.length > 133) {
+                errorString = eventReportString.value.substring(130, 133);
+              }
+              FirebaseAnalytics.instance.logEvent(name: "pos_charge_error_old",parameters: {
+                "reportInfo":reportData,
+                "FirstString":FirstString,
+                "SecondString":SecondString,
+                "transactionType":transactionType,
+                "resultString":resultString,
+                "resultMPFSString":resultMPFSString,
+                "errorString":errorString,
+              });
               //T10 交通系等待时间超过30-40后自动返回
               var posErrorCode = ["L11","T10"];
               if (posErrorCode.contains(resultString) == true) {
@@ -778,9 +792,20 @@ class SettlementController extends GetxController with StateMixin {
           }
         }
         else {
+          debugPrint("---Recorde error to firebase---");
           var reportData = "${orderId.value}:${machineCode.value}";
+          var errorString = "None";
+          if (eventReportString.value.length > 133) {
+            errorString = eventReportString.value.substring(130, 133);
+          }
           FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
             "reportInfo":reportData,
+            "FirstString":FirstString,
+            "SecondString":SecondString,
+            "transactionType":transactionType,
+            "resultString":resultString,
+            "resultMPFSString":resultMPFSString,
+            "errorString":errorString,
           });
         }
       },
@@ -1107,6 +1132,7 @@ class SettlementController extends GetxController with StateMixin {
     //入金开始
     debugPrint("Starttoubi");
     var _startCount = 0;
+    var connectCount = 0;
     for (var i = 0; i < 5; i++) {
       String startPayCube = await Paycube.strartPayCube;
       debugPrint("startPayCube==$startPayCube");
@@ -1132,6 +1158,21 @@ class SettlementController extends GetxController with StateMixin {
     allowtimer?.cancel();
     allowtimer = Timer.periodic(Duration(milliseconds: 250), (Timer allowt) async {
       allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
+      debugPrint("allowStatus==$allowStatus");
+
+      connectCount++;
+      debugPrint("打开次数$connectCount");
+      if(connectCount > 50){
+        allowt.cancel();
+        //上报错误。。。
+        FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+          "machineCode":machineCode.value,
+          "orderId":orderId.value,
+        });
+        Get.toNamed(Routes.ERROR_PAGE);
+        return;
+      }
+
       // 循环一定要记得设置取消条件，手动取消
       if (allowStatus.value == "AllowSuccess") {
         //如果打开了现金机，则去掉倒计时监听
@@ -1142,12 +1183,18 @@ class SettlementController extends GetxController with StateMixin {
         //getPayCubeBackDataInfo();
 
         allowt.cancel();
-      } else if (allowStatus.value == "error-F0--16") {
+      } else if (allowStatus.value == "Error-F0--16") {
+        allowt.cancel();
         await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
-        await Paycube.strartPayCube;
-      } else if (allowStatus.value == "error-A0--02") {
-
+        await Future.delayed(Duration(milliseconds: 200));
+        Starttoubi();
+        // String startPayCube = await Paycube.strartPayCube;
+        // debugPrint("startPayCube--==$startPayCube");
+      } else if (allowStatus.value == "Error-A0--02" || "Error" == allowStatus.value) {
+         if (allowStatus.value == "Error") {
+           await Paycube.strartPayCube;
+         }
         //sleep(Duration(milliseconds: 300));
       } else {
 
@@ -1162,8 +1209,8 @@ class SettlementController extends GetxController with StateMixin {
           Get.toNamed(Routes.ERROR_PAGE);
           return;
         }
-        await Paycube.endTrade;
-        await Paycube.strartPayCube;
+        // await Paycube.endTrade;
+        // await Paycube.strartPayCube;
       }
     });
   }
@@ -1298,7 +1345,7 @@ class SettlementController extends GetxController with StateMixin {
         _getPayCubeOutMoney();
 
         outmoneyt?.cancel();
-      } else if (outStatus.value == "error-A0--02" || outStatus.value == "error") {
+      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
         //await Paycube.setReceiveEvent;
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;

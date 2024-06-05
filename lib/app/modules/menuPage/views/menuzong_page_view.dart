@@ -694,7 +694,7 @@ class MenuzongPageView extends GetView {
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
                         Container(
-                          height: ScreenAdapter.height(68),
+                          //height: ScreenAdapter.height(68),
                           margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
@@ -2012,7 +2012,7 @@ class MenuzongPageView extends GetView {
 
                         Container(
                           //width: ScreenAdapter.width(20),
-                          height: ScreenAdapter.height(68),
+                          //height: ScreenAdapter.height(68),
                           margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
@@ -2492,18 +2492,22 @@ class MenuzongPageView extends GetView {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 340.0, imgHeight: 340.0, subTitle: item["subtitle"],),
-                        Container(
-                          //width: ScreenAdapter.width(20),
-                          height: ScreenAdapter.height(68),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
-                              item['mainTitle'],
-                              GFontSize.menuTwoListTitle,
-                              Gcolor.mainTitleColor),
+                        Expanded(
+                            child:
+                            Container(
+                              //width: ScreenAdapter.width(20),
+                              //height: ScreenAdapter.height(68),
+                              margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                              padding: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10),
+                                  right: ScreenAdapter.width(10)),
+                              child: controller.publicShowMenuTitle(
+                                  item['mainTitle'],
+                                  GFontSize.menuTwoListTitle,
+                                  Gcolor.mainTitleColor),
+                            ),
                         ),
+
                         Container(
                           //width: ScreenAdapter.width(125),
                           //height: ScreenAdapter.height(315),

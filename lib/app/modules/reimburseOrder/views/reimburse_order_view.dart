@@ -16,7 +16,6 @@ import '../controllers/reimburse_order_controller.dart';
 class ReimburseOrderView extends GetView<ReimburseOrderController> {
   final ReimburseOrderController controller = Get.put(ReimburseOrderController());
   ReimburseOrderView({Key? key}) : super(key: key);
-  final GlobalKey containerKey = GlobalKey();
 
   showOrderInfo(){
     return controller.orderList.value.length >0 ?ListView.builder(
@@ -29,7 +28,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
         itemBuilder: (context, index) {
           var itemDetail = controller.orderList.value[index];
           //var showexecuteMarkText = (itemDetail["executeMark"] == true) ? "允许":"不允许";
-
+          GlobalKey containerKey = GlobalKey();
           return Container(
             //width: ScreenAdapter.width(800),
             //height: ScreenAdapter.height(200),
@@ -286,18 +285,18 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
               ],
             ),
           );
-        }): Container(height: 0,);
+        }): Container();
   }
 
-  _construtReceiptView(itemDetail) {
-    Offstage(
-      offstage: true,
-      child: Container(
-        key: containerKey,
-        child: ReimbursePrintView(reimburseInfo: itemDetail),
-      ),
-    );
-  }
+  // _construtReceiptView(itemDetail) {
+  //   Offstage(
+  //     offstage: true,
+  //     child: Container(
+  //       key: containerKey,
+  //       child: ReimbursePrintView(reimburseInfo: itemDetail),
+  //     ),
+  //   );
+  // }
 
   @override
   Widget build(BuildContext context) {

@@ -32,21 +32,21 @@ class CreatePrintImageController extends GetxController {
   );
   final printMenuFont = TextStyle(
     fontFamily: 'NotoSansJP',
-    color: Colors.black87,
+    color: Colors.black,
     fontSize: 24,
     fontWeight: FontWeight.w200,
   );
 
   final printMenu2Font = TextStyle(
     fontFamily: 'NotoSansJP',
-    color: Colors.black87,
+    color: Colors.black,
     fontSize: 26,
     fontWeight: FontWeight.w100,
   );
 
   final printMenu3Font = TextStyle(
     fontFamily: 'NotoSansJP',
-    color: Colors.black87,
+    color: Colors.black,
     fontSize: 28,
     fontWeight: FontWeight.w200,
   );

@@ -1219,7 +1219,7 @@ print("加1了");
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
 
-        if (response['code'] == 200) {
+        if (response['code'] == 200 && response != null) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
@@ -1243,7 +1243,10 @@ print("加1了");
 
         }else{
           //getBookingBootMenu();
-          if (response['data'] != null && response['data']["menuLackMap"] != null) {
+          // FirebaseAnalytics.instance.logEvent(name: "submit_order_fail",parameters: {
+          //   "machineCode":machineCode.value,
+          // });
+          if (response != null && response['data'] != null && response['data']["menuLackMap"] != null) {
             menuLackMap.value = response['data']["menuLackMap"];
           }
           //showToast(response['data']["message"]);
@@ -1257,6 +1260,10 @@ print("加1了");
           );
         }
       });
+    } else {
+      // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+      //   "machineCode":machineCode.value,
+      // });
     }
   }
 

@@ -55,7 +55,7 @@ class SettingView extends GetView<SettingController> {
                   child: Row(
                     //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-
+                      
                       Expanded(
                         child:
                         Container(
@@ -73,22 +73,6 @@ class SettingView extends GetView<SettingController> {
                                 color: ColorsUtil.hexToColor("#000000"),
                               )),
                         ),
-// =======
-//                       Container(
-//                         width: ScreenAdapter.width(200),
-//                         height: ScreenAdapter.height(45),
-//                         margin: EdgeInsets.only(
-//                             left: ScreenAdapter.width(5),
-//                             right: ScreenAdapter.width(5)),
-//                         alignment: Alignment.center,
-//                         child: Text("預り金",
-//                             style: TextStyle(
-//                               fontFamily: GFont.getFontFamily(),
-//                               fontSize: ScreenAdapter.fontSize(20),
-//                               fontWeight: FontWeight.w600,
-//                               color: ColorsUtil.hexToColor("#000000"),
-//                             )),
-// >>>>>>> 2.3.0-dev
                       ),
                       Expanded(
                         child:

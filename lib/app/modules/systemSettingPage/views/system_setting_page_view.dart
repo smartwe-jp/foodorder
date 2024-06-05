@@ -47,7 +47,7 @@ class SystemSettingPageView extends GetView {
               child: Text("店　内",
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.dining_type_one.value == true) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
@@ -78,7 +78,7 @@ class SystemSettingPageView extends GetView {
               child: Text("テイクアウト",
                   style: TextStyle(
                     fontWeight: FontWeight.w400,
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.dining_type_two.value == true) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
@@ -152,7 +152,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("上に横に",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.menu_direction.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -183,7 +183,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("左に縦に",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.menu_direction.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -228,7 +228,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("普　通",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.print_paper_txt_size.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -259,7 +259,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("大",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.print_paper_txt_size.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -290,7 +290,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("特　大",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.print_paper_txt_size.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -339,7 +339,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     child: Text("発　行",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(22.0),
                           color: (controller.is_allow_receipt.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -370,7 +370,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     child: Text("お客様選択",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(22.0),
                           color: (controller.is_allow_receipt.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -384,7 +384,7 @@ class SystemSettingPageView extends GetView {
           ),
           Text("注：現金でお支払いの場合の設定です。他のお支払い方法の場合は全て「発行」となります。",
               style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
+                fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(17),
                 fontWeight: FontWeight.w400,
                 color: ColorsUtil.hexToColor("#d90000"),
@@ -429,7 +429,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     child: Text("プリントしない",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(22.0),
                           color: (controller.is_allow_receipt_menu.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -460,7 +460,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     child: Text("プリントする",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(22.0),
                           color: (controller.is_allow_receipt_menu.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -474,7 +474,7 @@ class SystemSettingPageView extends GetView {
           ),
           Text("注：券売機モードはキッチンプリンターを設置した場合、プリントする必要はありません。",
               style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
+                fontFamily: 'NotoSansJP',
                 fontSize: ScreenAdapter.fontSize(17),
                 fontWeight: FontWeight.w400,
                 color: ColorsUtil.hexToColor("#d90000"),
@@ -515,7 +515,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("券売機",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -548,7 +548,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "精算機",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.machine_mode.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -557,7 +557,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（後払い）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -592,7 +592,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "精算機",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.machine_mode.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -601,7 +601,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（バーコード）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -647,7 +647,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("停 止",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.isReservation.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -678,7 +678,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("起 動",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.isReservation.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -723,7 +723,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("設置しない",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_pos.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -754,7 +754,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("設置",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_pos.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -797,7 +797,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.pos_ip.value}:",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -805,7 +805,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.pos_port.value}",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -814,7 +814,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト Pos",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(18.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1010,7 +1010,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1044,7 +1044,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1053,7 +1053,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（単票）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1089,7 +1089,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1098,7 +1098,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（連票）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1140,7 +1140,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1148,7 +1148,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1157,7 +1157,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1204,7 +1204,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1238,7 +1238,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==1) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1247,7 +1247,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1296,7 +1296,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip.value}:",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1304,7 +1304,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port.value}",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1313,7 +1313,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1384,7 +1384,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("オフ",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1418,7 +1418,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1427,7 +1427,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（単票）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1462,7 +1462,7 @@ class SystemSettingPageView extends GetView {
                 text: TextSpan(
                     text: "オン",
                     style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
+                      fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
                       color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1471,7 +1471,7 @@ class SystemSettingPageView extends GetView {
                       TextSpan(
                         text: "（連票）",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
                           color: ColorsUtil.hexToColor("#d90000"),
@@ -1513,7 +1513,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_ip_Two.value}:",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1521,7 +1521,7 @@ class SystemSettingPageView extends GetView {
                         Text(
                             "${controller.wlan_print_port_Two.value}",
                             style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
+                              fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(22),
                               color: ColorsUtil.hexToColor("#FFFFFF"),
                             )
@@ -1530,7 +1530,7 @@ class SystemSettingPageView extends GetView {
                     ),
                     Text("テスト印刷",
                         style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
+                          fontFamily: 'NotoSansJP',
                           fontWeight: FontWeight.w400,
                           fontSize: ScreenAdapter.fontSize(20.0),
                           color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1599,7 +1599,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("使えない",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1630,7 +1630,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("使える",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1675,7 +1675,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("トップページに戻る",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_backhome.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1706,7 +1706,7 @@ class SystemSettingPageView extends GetView {
               ),
               child: Text("メニューリストに戻る",
                   style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
+                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_backhome.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
@@ -1779,7 +1779,7 @@ class SystemSettingPageView extends GetView {
                       ),
                       child: Text("戻る",
                           style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
+                            fontFamily: 'NotoSansJP',
                             fontSize: ScreenAdapter.fontSize(24),
                             fontWeight: FontWeight.w600,
                             color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1807,7 +1807,7 @@ class SystemSettingPageView extends GetView {
                           ),
                           child: Text("パスワード",
                               style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
+                                fontFamily: 'NotoSansJP',
                                 fontSize: ScreenAdapter.fontSize(24),
                                 fontWeight: FontWeight.w600,
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1836,7 +1836,7 @@ class SystemSettingPageView extends GetView {
                               ),
                               child: Text("アップデート",
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     fontSize: ScreenAdapter.fontSize(24),
                                     fontWeight: FontWeight.w600,
                                     color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -1853,7 +1853,7 @@ class SystemSettingPageView extends GetView {
                               child: Text(
                                 "バージョン：${controller.local_version.value}",
                                 style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
+                                    fontFamily: 'NotoSansJP',
                                     color: Colors.grey[500],
                                     fontSize: ScreenAdapter.fontSize(20.0)),
                               ),
@@ -1887,7 +1887,7 @@ class SystemSettingPageView extends GetView {
                     child: Text(
                       "セルフレジを設置",
                       style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
+                        fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(26),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor("#000000"),
@@ -1917,7 +1917,7 @@ class SystemSettingPageView extends GetView {
                                   child: Text(
                                     "一般設定",
                                     style: TextStyle(
-                                        fontFamily: GFont.getFontFamily(),
+                                        fontFamily: 'NotoSansJP',
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500
                                     ),
@@ -1947,7 +1947,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "モード",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1965,7 +1965,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "予約サービス",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1982,7 +1982,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "店内・テイクアウト",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -1999,7 +1999,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "カテゴリ様式",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -2016,7 +2016,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "領収書",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -2035,7 +2035,7 @@ class SystemSettingPageView extends GetView {
                                               Text(
                                                 "レシート字体",
                                                 style: TextStyle(
-                                                    fontFamily: GFont.getFontFamily(),
+                                                    fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2043,7 +2043,7 @@ class SystemSettingPageView extends GetView {
                                               Text(
                                                 "（セルフレジから）",
                                                 style: TextStyle(
-                                                  fontFamily: GFont.getFontFamily(),
+                                                  fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(18),
                                                     fontWeight: FontWeight.w500,
                                                   color: ColorsUtil.hexToColor("#d90000"),
@@ -2063,7 +2063,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "オーダーシート",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -2080,7 +2080,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "一円",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -2097,7 +2097,7 @@ class SystemSettingPageView extends GetView {
                                           child: Text(
                                             "会計完了",
                                             style: TextStyle(
-                                                fontFamily: GFont.getFontFamily(),
+                                                fontFamily: 'NotoSansJP',
                                                 fontSize: ScreenAdapter.fontSize(22),
                                                 fontWeight: FontWeight.w500
                                             ),
@@ -2125,7 +2125,7 @@ class SystemSettingPageView extends GetView {
                                   child: Text(
                                     "プリンタ│",
                                     style: TextStyle(
-                                        fontFamily: GFont.getFontFamily(),
+                                        fontFamily: 'NotoSansJP',
                                         fontSize: ScreenAdapter.fontSize(24),
                                         fontWeight: FontWeight.w500
                                     ),
@@ -2176,7 +2176,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "キッチン",
                                                 style: TextStyle(
-                                                    fontFamily: GFont.getFontFamily(),
+                                                    fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2194,7 +2194,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "キッチン（ラベル）",
                                                 style: TextStyle(
-                                                    fontFamily: GFont.getFontFamily(),
+                                                    fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2223,7 +2223,7 @@ class SystemSettingPageView extends GetView {
                                               alignment: Alignment.centerLeft,
                                               child: Text("注：「キッチンプリンター」か「キッチン（ラベル）プリンター」かどちらか１台のご利用となります。",
                                                   style: TextStyle(
-                                                    fontFamily: GFont.getFontFamily(),
+                                                    fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(17),
                                                     fontWeight: FontWeight.w400,
                                                     color: ColorsUtil.hexToColor("#d90000"),
@@ -2252,7 +2252,7 @@ class SystemSettingPageView extends GetView {
                                               child: Text(
                                                 "カウンター",
                                                 style: TextStyle(
-                                                    fontFamily: GFont.getFontFamily(),
+                                                    fontFamily: 'NotoSansJP',
                                                     fontSize: ScreenAdapter.fontSize(22),
                                                     fontWeight: FontWeight.w500
                                                 ),
@@ -2289,7 +2289,7 @@ class SystemSettingPageView extends GetView {
                                 child: Text(
                                   "キャッシュレス端末",
                                   style: TextStyle(
-                                      fontFamily: GFont.getFontFamily(),
+                                      fontFamily: 'NotoSansJP',
                                       fontSize: ScreenAdapter.fontSize(22),
                                       fontWeight: FontWeight.w500
                                   ),

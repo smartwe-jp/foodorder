@@ -89,11 +89,13 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 try {
                     if (lib == null) {
                         lib = new COMLibImpl();
+                        System.out.println("现金机重新初始化开启");
                         lib.open("/dev/ttyS4");
-                        result.success("openSuccess");
+                        //result.success("openSuccess");
                     } else {
                         lib.open("/dev/ttyS4");
-                        result.success("openSuccess");
+                        System.out.println("现金机重新开启");
+                        //result.success("openSuccess");
                     }
 
                     //Log.logger.info("-----------------现金机 open开始 注册监听器------------------ ");
@@ -363,6 +365,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                             });
                         }
                     });
+                    result.success("openSuccess");
 
 
                 } catch (Exception e) {

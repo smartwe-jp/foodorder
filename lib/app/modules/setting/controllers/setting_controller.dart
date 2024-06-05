@@ -386,8 +386,11 @@ class SettingController extends GetxController with StateMixin {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
     }
     Get.delete<SettingController>(); // 手动删除控制器实例
-    Future.delayed(Duration(milliseconds: 100), () {
+    // FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
+    //   "machineCode":machineCode.value,
+    // });
+    //Future.delayed(Duration(milliseconds: 100), () {
       Get.toNamed('/transit-page');
-    });
+    //});
   }
 }

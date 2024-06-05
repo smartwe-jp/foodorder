@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
 import 'package:get/get.dart';
@@ -13,6 +14,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
+import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/views/checkout_page_view.dart';
 import '../../OrderHome/views/order_home_view.dart';
 import '../../SelfservicePage/views/selfservice_page_view.dart';
@@ -235,10 +237,34 @@ class TransitPageController extends GetxController {
 
         _actuarial.value = shopData["actuarial"];
       }
-
+      FirebaseAnalytics.instance.logEvent(name: 'machine_activate', parameters: {'machine_activate': '${_machineCode.value}'});
       await _getSmartweSystemSettingInfo();
+    })
+    .catchError((e) {
+      print(e);
+      _showErrorDialog(error: e);
+      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}' + e.toString()});
+    })
+    .timeout(Duration(seconds: 15), onTimeout: () {
+      print('timeout');
+      _showErrorDialog();
+      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
     });
   }
+
+  _showErrorDialog({error}) =>
+  Get.dialog(
+        DialogUtils.alertOneButton(error ?? ""  +  "インターネットの接続のご確認をお願いします,再度お試しください。",
+        title: "お知らせ",
+        confirmtitle: "はい",
+        confirm: () {
+        Future.delayed(Duration(milliseconds: 200), () {
+        Get.back();
+          _getMachineActivate();
+        });
+
+        })
+  );
 
   _checkShouldActive() async {
     var now = DateTime.now();
