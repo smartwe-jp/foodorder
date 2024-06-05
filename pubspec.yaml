@@ -1,5 +1,5 @@
 name: foodorder
-version: 2.5.1+104
+version: 2.5.4+107
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 
@@ -37,6 +37,7 @@ dependencies:
   connectivity_plus: ^4.0.2
   get: 4.6.5
   intl: ^0.17.0
+  transparent_image: ^2.0.1
   flutter: 
     sdk: flutter
   paycube: 

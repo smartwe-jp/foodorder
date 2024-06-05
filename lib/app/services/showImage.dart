@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:transparent_image/transparent_image.dart';
 
 import '../config/colorsUtil.dart';
 import '../config/fontSize.dart';
@@ -73,47 +74,74 @@ class publicShowMenuImage  extends StatelessWidget{
           decoration: new BoxDecoration(
             color: ColorsUtil.hexToColor("#FFFFFF"),
           ),
-          child: CachedNetworkImage(
-            imageUrl: imgPath,
-            //fit: BoxFit.contain,
-            fit: BoxFit.cover,
-            //fit: BoxFit.fitWidth,
-            width: ScreenAdapter.width(imgWidth),
-            height: ScreenAdapter.height(imgHeight),
-            maxWidthDiskCache: ScreenAdapter.width(imgWidth).toInt(),
-            maxHeightDiskCache: ScreenAdapter.height(imgHeight).toInt(),
-            //height: ScreenAdapter.width(imgWidth),
-            memCacheWidth: ScreenAdapter.width(imgWidth).toInt(),
-            memCacheHeight: ScreenAdapter.height(imgHeight).toInt(),
-            imageBuilder: (context, imageProvider) => Container(
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                    image: imageProvider,
-                    //fit: BoxFit.contain,
-                    fit: BoxFit.cover,
-                    //fit: BoxFit.fitWidth,
-                    colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+          child:
+          // Stack(
+          //   children: <Widget>[
+              //const Center(child: CircularProgressIndicator(strokeWidth: 2,)),
+              Container(
+                width: ScreenAdapter.width(imgWidth),
+                height: ScreenAdapter.height(imgHeight),
+                child: FadeInImage.memoryNetwork(
+                  placeholder: kTransparentImage,
+                  image: imgPath,
+                  fit: BoxFit.cover,
+                  // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+                  //   if (loadingProgress == null) return child;
+                  //   return Center(
+                  //     child: CircularProgressIndicator(
+                  //       value: loadingProgress.expectedTotalBytes != null
+                  //           ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                  //           : null,
+                  //       strokeWidth: 2,
+                  //     ),
+                  //   );
+                  // },
                 ),
-              ),
-            ),
-            placeholder: (context, url) => Container(
-              width: ScreenAdapter.width(200),
-              height: ScreenAdapter.height(200),
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                ),
-              ),
-            ),
-            errorWidget: (context, url, error) => Image.network(
-              imgPath,
-              //fit: BoxFit.contain,
-              fit: BoxFit.cover,
-              width: ScreenAdapter.width(imgWidth),
-              height: ScreenAdapter.height(imgHeight),
-              //height: ScreenAdapter.width(imgWidth)
-            ),
+            //   ),
+            // ],
           ),
+
+          // CachedNetworkImage(
+          //   imageUrl: imgPath,
+          //   //fit: BoxFit.contain,
+          //   fit: BoxFit.cover,
+          //   //fit: BoxFit.fitWidth,
+          //   width: ScreenAdapter.width(imgWidth),
+          //   height: ScreenAdapter.height(imgHeight),
+          //   maxWidthDiskCache: ScreenAdapter.width(imgWidth).toInt(),
+          //   maxHeightDiskCache: ScreenAdapter.height(imgHeight).toInt(),
+          //   //height: ScreenAdapter.width(imgWidth),
+          //   memCacheWidth: ScreenAdapter.width(imgWidth).toInt(),
+          //   memCacheHeight: ScreenAdapter.height(imgHeight).toInt(),
+          //   imageBuilder: (context, imageProvider) => Container(
+          //     decoration: BoxDecoration(
+          //       image: DecorationImage(
+          //           image: imageProvider,
+          //           //fit: BoxFit.contain,
+          //           fit: BoxFit.cover,
+          //           //fit: BoxFit.fitWidth,
+          //           colorFilter: ColorFilter.mode(Colors.white, BlendMode.colorBurn)
+          //       ),
+          //     ),
+          //   ),
+          //   placeholder: (context, url) => Container(
+          //     width: ScreenAdapter.width(200),
+          //     height: ScreenAdapter.height(200),
+          //     child: Center(
+          //       child: CircularProgressIndicator(
+          //         strokeWidth: 2,
+          //       ),
+          //     ),
+          //   ),
+          //   errorWidget: (context, url, error) => Image.network(
+          //     imgPath,
+          //     //fit: BoxFit.contain,
+          //     fit: BoxFit.cover,
+          //     width: ScreenAdapter.width(imgWidth),
+          //     height: ScreenAdapter.height(imgHeight),
+          //     //height: ScreenAdapter.width(imgWidth)
+          //   ),
+          // ),
         ),
         Positioned(
           left: ScreenAdapter.width(0),

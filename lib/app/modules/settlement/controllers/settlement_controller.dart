@@ -751,7 +751,21 @@ class SettlementController extends GetxController with StateMixin {
 
           } else {
             if(resultString.trim() != ""){
-
+              debugPrint("---Recorde error to firebase old---");
+              var reportData = "${orderId.value}:${machineCode.value}";
+              var errorString = "None";
+              if (eventReportString.value.length > 133) {
+                errorString = eventReportString.value.substring(130, 133);
+              }
+              FirebaseAnalytics.instance.logEvent(name: "pos_charge_error_old",parameters: {
+                "reportInfo":reportData,
+                "FirstString":FirstString,
+                "SecondString":SecondString,
+                "transactionType":transactionType,
+                "resultString":resultString,
+                "resultMPFSString":resultMPFSString,
+                "errorString":errorString,
+              });
               //T10 交通系等待时间超过30-40后自动返回
               var posErrorCode = ["L11","T10"];
               if (posErrorCode.contains(resultString) == true) {
@@ -766,9 +780,20 @@ class SettlementController extends GetxController with StateMixin {
           }
         }
         else {
+          debugPrint("---Recorde error to firebase---");
           var reportData = "${orderId.value}:${machineCode.value}";
+          var errorString = "None";
+          if (eventReportString.value.length > 133) {
+            errorString = eventReportString.value.substring(130, 133);
+          }
           FirebaseAnalytics.instance.logEvent(name: "pos_charge_error",parameters: {
             "reportInfo":reportData,
+            "FirstString":FirstString,
+            "SecondString":SecondString,
+            "transactionType":transactionType,
+            "resultString":resultString,
+            "resultMPFSString":resultMPFSString,
+            "errorString":errorString,
           });
         }
       },
