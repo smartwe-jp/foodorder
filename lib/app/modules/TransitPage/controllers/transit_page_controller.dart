@@ -237,18 +237,18 @@ class TransitPageController extends GetxController {
 
         _actuarial.value = shopData["actuarial"];
       }
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate', parameters: {'machine_activate': '${_machineCode.value}'});
+      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate', parameters: {'machine_activate': '${_machineCode.value}'});
       await _getSmartweSystemSettingInfo();
     })
     .catchError((e) {
       print(e);
       _showErrorDialog(error: e);
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}' + e.toString()});
+      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}' + e.toString()});
     })
     .timeout(Duration(seconds: 15), onTimeout: () {
       print('timeout');
       _showErrorDialog();
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
     });
   }
 

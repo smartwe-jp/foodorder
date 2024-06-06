@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
@@ -12,6 +14,7 @@ class GridItemView extends StatelessWidget {
   final String option;
   final Function onTap;
   final Widget cover;
+  final double aspectRatio;
 
   GridItemView(
       {Key? key,
@@ -21,6 +24,7 @@ class GridItemView extends StatelessWidget {
       required this.onTap,
       this.option = "",
       this.imageRadius = 10.0,
+      this.aspectRatio = 1.0,
       this.cover = const SizedBox()});
 
   @override
@@ -34,7 +38,7 @@ class GridItemView extends StatelessWidget {
                 child: Column(
                   children: [
                     RectangleImageView(
-                        image: image, radius: imageRadius, onTap: onTap),
+                        image: image, radius: imageRadius, onTap: onTap, aspectRatio: aspectRatio),
                     ItemInfoArea(
                         title: title,
                         subtitle: subtitle,
@@ -54,15 +58,16 @@ class RectangleImageView extends StatelessWidget {
   final ImageProvider image;
   final double radius;
   final Function? onTap;
+  final double aspectRatio;
 
   RectangleImageView(
-      {Key? key, required this.image, this.radius = 10.0, this.onTap});
+      {Key? key, required this.image, this.radius = 10.0, this.onTap, this.aspectRatio = 1.0});
 
   @override
   Widget build(BuildContext context) {
     return RepaintBoundary(
       child: AspectRatio(
-          aspectRatio: 1.0,
+          aspectRatio: aspectRatio,
           child: Container(
             decoration: BoxDecoration(
               //color: Colors.green,
@@ -227,6 +232,7 @@ class GridMenuView extends StatelessWidget {
           top: ScreenAdapter.height(0), bottom: ScreenAdapter.height(0)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
+        physics: new NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: true,
         //addRepaintBoundaries:false,

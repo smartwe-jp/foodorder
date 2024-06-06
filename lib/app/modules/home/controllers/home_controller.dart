@@ -205,9 +205,9 @@ class HomeController extends GetxController {
       var response = json.decode(value.toString());
       debugPrint("发送通知邮件 response:$response");
       if (response != null && response['code'] == 200) {
-        FirebaseAnalytics.instance.logEvent(name: 'send_trouble_email', parameters: {'sendTroubleEmail': 'true'});
+        //FirebaseAnalytics.instance.logEvent(name: 'send_trouble_email', parameters: {'sendTroubleEmail': 'true'});
       } else {
-        FirebaseAnalytics.instance.logEvent(name: 'send_trouble_email', parameters: {'sendTroubleEmail': 'false'});
+        //FirebaseAnalytics.instance.logEvent(name: 'send_trouble_email', parameters: {'sendTroubleEmail': 'false'});
       }
     });
 

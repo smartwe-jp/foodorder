@@ -67,11 +67,11 @@ class MenuPageView extends GetView {
         } else if (item['showType'] == "three_column") {
           //350.0, 440.0
           return showCategorySeven(
-              controller.showItem.value[controller.classTag.value]);
+              controller.showItem.value[controller.classTag.value], context);
         } else if (item['showType'] == "three_column_v1") {
           //350.0, 440.0
           return showCategorySeven(
-              controller.showItem.value[controller.classTag.value],
+              controller.showItem.value[controller.classTag.value],context,
               popupType: "v1");
         } else if (item['showType'] == "mixed_column") {
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
@@ -109,12 +109,13 @@ class MenuPageView extends GetView {
     return GridMenuView(children: children);
   }
 
-  menuItemView(item, context, {popupType: "old"}) {
+  menuItemView(item, context, {popupType: "old", aspectRatio:1.0}) {
     return GridItemView(
       title: item['mainTitle'],
       subtitle: "${item['price']}",
       image: CachedNetworkImageProvider(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0 ? "选规格" : "",
+      aspectRatio: aspectRatio,
       onTap: () async {
         if (item['qtyBounds'] == 0) {
               return;
