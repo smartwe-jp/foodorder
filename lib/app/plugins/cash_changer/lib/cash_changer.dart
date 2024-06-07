@@ -112,12 +112,13 @@ class CashChanger {
           resultCode: resultCode,
           resultCodeExtended: resultExtended ?? ResultCodeExtended.NONE);
     } else {
-      HealthResultCode? resultCode = HealthResultCode.values.fromIndex(result);
+      HealthResultCode? resultCode = HealthResultCode.values.fromIndex(result>100 ? result - 100 : result);
       return OposResult(
           resultCode: resultCode ?? HealthResultCode.NONE,
           resultCodeExtended: ResultCodeExtended.NONE);
     }
   }
+
 
   static Future changerResultNext(
       {required int? resultCode,
@@ -131,23 +132,28 @@ class CashChanger {
         onSuccess();
         break;
       case HealthResultCode.OPOS_E_CLOSED:
+        showError("cash_error_closed");
         break;
       case HealthResultCode.OPOS_E_CLAIMED:
+        showError("cash_error_claimed");
         break;
       case HealthResultCode.OPOS_E_NOTCLAIMED:
+        showError("cash_error_not_claimed");
         break;
       case HealthResultCode.OPOS_E_DISABLED:
+        showError("cash_error_disabled");
         break;
       case HealthResultCode.OPOS_E_ILLEGAL:
+        showError("cash_error_illegal");
         break;
       case HealthResultCode.OPOS_E_NOSERVICE:
-        showError("NO SERVICE");
+        showError("cash_error_no_service");
         break;
       case HealthResultCode.OPOS_E_BUSY:
-        showError("BUSY");
+        showError("cash_error_busy");
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
-        showError("NO HARDWARE");
+        showError("cash_error_no_hardware");
         break;
       case HealthResultCode.OPOS_E_EXTENDED:
         changerResultExtendedNext(
@@ -157,7 +163,7 @@ class CashChanger {
             showError: showError);
         break;
       default:
-        showError("UNKNOWN ERROR");
+        showError("cash_error_common");
         break;
     }
   }
@@ -171,30 +177,40 @@ class CashChanger {
     switch (resultCodeExtended) {
       case ResultCodeExtended.OPOS_ECHAN_OVERDISPENSE:
       case ResultCodeExtended.OPOS_ECHAN_TOTALOVER:
-        showError("OVERDISPENSE");
+        showError("cash_error_over_dispense");
         break;
       case ResultCodeExtended.OPOS_ECHAN_OVER:
+        showError("cash_error_over");
         break;
       case ResultCodeExtended.OPOS_ECHAN_IFERROR:
+        showError("cash_error_if_error");
         break;
       case ResultCodeExtended.OPOS_ECHAN_SETERROR:
+        showError("cash_error_set_error");
         break;
       case ResultCodeExtended.OPOS_ECHAN_CHARGING:
+        showError("cash_error_charging");
         break;
       case ResultCodeExtended.OPOS_ECHAN_FULL:
+        showError("cash_error_full");
         break;
       case ResultCodeExtended.OPOS_ECHAN_BUSY:
+        showError("cash_error_busy");
         break;
       case ResultCodeExtended.OPOS_ECHAN_CASSETTEWAIT:
+        showError("cash_error_cassette_wait");
         break;
       case ResultCodeExtended.OPOS_ECHAN_IMPOSSIBLE:
+        showError("cash_error_impossible");
         break;
       case ResultCodeExtended.OPOS_ECHAN_DEPOSIT:
+        showError("cash_error_deposit");
         break;
       case ResultCodeExtended.OPOS_ECHAN_PAUSEDEPOSIT:
+        showError("cash_error_pause_deposit");
         break;
       default:
-        showError("UNKNOWN ERROR");
+        showError("cash_error_common");
         break;
     }
   }
@@ -222,7 +238,7 @@ class CashChanger {
       Function? onRetry,
       required Function(String) showError}) async {
     if (openResult == null) {
-      showError("UNKNOWN ERROR");
+      showError("cash_error_common");
       return;
     }
 
@@ -243,52 +259,68 @@ class CashChanger {
         onSuccess();
         break;
       case OpenChangerResult.OPOS_OPEN_ERR:
+        showError("cash_error_open");
         showError("打开失败 请重试");
         break;
       case OpenChangerResult.OPOS_OR_REGBADNAME:
+        showError("cash_error_reg_bad_name");
         showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OR_REGPROGID:
+        showError("cash_error_reg_prog_id");
         showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OR_CREATE:
+        showError("cash_error_create");
         showError("初始化SO有问题 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_OR_BADIF:
+        showError("cash_error_bad_if");
         showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_NOPORT:
+        showError("cash_error_no_port");
         showError("端口设置有问题 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_ORS_SENSETHREAD:
+        showError("cash_error_sense_thread");
         showError("线程有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_CONFIG:
+        showError("cash_error_config");
         showError("配置文件有问题 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_EVENTTHRREAD:
+        showError("cash_error_event_thread");
         showError("事件处理有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_FAILEDOPEN:
+        showError("cash_error_failed_open");
         showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_EVENTCLASS:
+        showError("cash_error_event_class");
         showError("事件处理程序有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_BADVERSION:
+        showError("cash_error_bad_version");
         showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OPEN_ERR_SO:
+        showError("cash_error_open_so");
         showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_NOPORTED:
+        showError("cash_error_no_ported");
         showError("端口设置有问题 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_SPECIFIC:
+        showError("cash_error_specific");
         showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       default:
-        showError("UNKNOWN ERROR $openResult");
+        showError("cash_error_unknown");
+        //showError("UNKNOWN ERROR $openResult");
         break;
     }
   }

@@ -231,8 +231,8 @@ class SettlementController extends GetxController with StateMixin {
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
     if (payment_method_num.value == "0" || payment_method_num.value == "1") {
       //打开现金机
-      _countDownTimer("1");
       if (Platform.isAndroid) {
+        _countDownTimer("1");
         Starttoubi();
       } else {
         CashChanger.setEventsListener();

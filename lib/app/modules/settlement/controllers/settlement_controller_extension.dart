@@ -28,7 +28,7 @@ extension SettlementControllerExtension on SettlementController {
         },
         showError: (String error) {
           debugPrint("startDeposit error: $error");
-          errorHandleDialog(error);
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
@@ -132,7 +132,7 @@ extension SettlementControllerExtension on SettlementController {
         showError: (String error) {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
-          errorHandleDialog(error);
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
@@ -173,7 +173,7 @@ extension SettlementControllerExtension on SettlementController {
         },
         showError: (String error) {
           debugPrint("startOutPutMoney error: $error");
-          errorHandleDialog(error);
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
