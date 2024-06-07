@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -9,6 +10,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 
 import 'package:get/get.dart';
+import 'package:get/get_rx/get_rx.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -99,12 +101,15 @@ class MenuPageController extends GetxController with StateMixin {
   RxBool showShopCart = false.obs;
 
   RxList homeImages = [].obs;
+  RxBool canAddCart = true.obs;
 
+  late AudioPlayer player;
 
   @override
   void onInit() {
 
     readyQueryData();
+    player = AudioPlayer();
     super.onInit();
   }
 
@@ -116,6 +121,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   @override
   void onClose() {
+    player.dispose();
     super.onClose();
   }
 
@@ -809,11 +815,11 @@ class MenuPageController extends GetxController with StateMixin {
       "goodsNum": 1,
       "qtyBounds": item['qtyBounds']
     };
-    publicAddCartMenu(cartItem, true).then((val) {
+    publicAddCartMenu(cartItem, true).then((val) async {
       //更改显示购物车价格
       //getCartPriceTotal();
       if(val != false){
-        publicShowAddCartNew(context);
+        await publicShowAddCartNew(context);
       }
 
 
@@ -903,11 +909,17 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //公共展示加入购物车动画
-  publicShowAddCartNew(BuildContext context){
-    fToast = FToast();
-    fToast?.init(context);
+  publicShowAddCartNew(BuildContext context) async{
 
-    Widget toast = Container(
+    //_showOrderEasyLoading(tag: false);
+    if (canAddCart.value == false) {
+      return;
+    }
+    
+    fToast = FToast();
+    await fToast?.init(context);
+
+    Widget toast = await Container(
       color: Colors.transparent,
       child: Image.asset(GImage.getImageString("imgpublic", "checked_green"),width: ScreenAdapter.width(150),height: ScreenAdapter.height(150)),
     );
@@ -915,27 +927,48 @@ class MenuPageController extends GetxController with StateMixin {
     FToast().showToast(
       child: toast,
       gravity: ToastGravity.CENTER,
-      toastDuration: Duration(milliseconds: 500),
+      toastDuration: Duration(milliseconds: 300),
     );
-    playQRScannerSound();
 
+    await playQRScannerSound();
+
+    await Future.delayed(Duration(milliseconds: 500), () {
+      canAddCart.value = true;
+    });
+
+    
+    //EasyLoading.dismiss();
 
   }
 
   playQRScannerSound() async {
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/14428.wav"),
-      autoStart: true,
-      volume: 0.3,
-    );
+
+    if (Platform.isAndroid) {
+      await AssetsAudioPlayer.newPlayer().open(
+        Audio("assets/audios/14428.wav"),
+        autoStart: true,
+        volume: 0.3,
+      );
+    } else {
+      await player.setVolume(0.3);
+      await player.play(DeviceFileSource("assets/audios/14428.wav"));
+    }
+
+    
   }
 
   deleteItemSound() async {
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/697.wav"),
-      autoStart: true,
-      volume: 0.8,
-    );
+    if (Platform.isAndroid) {
+      await AssetsAudioPlayer.newPlayer().open(
+        Audio("assets/audios/697.wav"),
+        autoStart: true,
+        volume: 0.8,
+      );
+    } else {
+      await player.setVolume(0.9);
+      await player.play(DeviceFileSource("assets/audios/697.wav"));
+    }
+    
   }
   changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {
     //playQRScannerSound();
@@ -1037,6 +1070,11 @@ print("加1了");
 //限量商品请求接口
   checkQtyBoundsCount(item, optionCode,popupType,context) async {
 
+    if (canAddCart.value == false) {
+      return;
+    }
+    canAddCart.value = false;
+
     var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
 
     if(result>=item['qtyBounds']){
@@ -1061,7 +1099,7 @@ print("加1了");
           publicShowOneItemWidget(item);
         }
       }else{
-        publicAddCart(context,item);
+        await publicAddCart(context,item);
       }
     }
 
@@ -1144,7 +1182,7 @@ print("加1了");
   }
 
 
-  _showOrderEasyLoading(){
+  _showOrderEasyLoading({tag:true}){
     var _showTag =Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
         style: TextStyle(
           fontFamily: GFont.getFontFamily(),
@@ -1161,7 +1199,7 @@ print("加1了");
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            _showTag,
+            tag == true ? _showTag : Container(height: 0,),
             Container(
               //width: ScreenAdapter.width(400),
               margin: EdgeInsets.only(top: 60),
@@ -1329,9 +1367,9 @@ print("加1了");
                 }
             },
             onCancelClick: (String isBack) async {
-              if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
-                await CashChanger.endDeposit(DepositAction.repay.index);
-              }
+              // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
+              //   await CashChanger.endDeposit(DepositAction.repay.index);
+              // }
               if(isBack == "back"){
                 CancelOrder();
               }

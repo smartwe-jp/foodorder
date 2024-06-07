@@ -120,6 +120,50 @@ class GString{
         "reboot_app":"再起動",
         "change_payment":"支払い方法を変更",
 
+        "select_option":"選択",
+        "tag_checkout":"お会計",
+        "show_empty_cart_item_title":"カートが空です",
+        "tag_amount":"合計",
+
+        //Error handle message
+        "cash_error_no_hardware": "現金機が接続されていません。スタッフにお問い合わせください。",
+        "cash_error_busy": "処理中です。しばらくお待ちください。",
+        "cash_error_no_service": "サービスが利用できません。スタッフにお問い合わせください。",
+        "cash_error_illegal": "既に開いています。再度開く必要はありません。スタッフにお問い合わせください。",
+        "cash_error_no_claimed": "サービスが利用できません。スタッフにお問い合わせください。",
+        "cash_error_disabled": "デバイスが無効になっています。スタッフにお問い合わせください。",
+        "cash_error_claimed": "サービスが利用できません。スタッフにお問い合わせください。",
+        "cash_error_closed": "サービスが利用できません。スタッフにお問い合わせください。",
+        "cash_error_common": "エラーが発生しました。スタッフにお問い合わせください。",
+
+        "cash_error_over_dispense": "最大お釣り金額を超えました。注文をキャンセルし、お店に連絡してください。",
+        "cash_error_over": "指定された金額を超えるお釣りが発生しました。注文をキャンセルし、お店に連絡してください。",
+        "cash_error_if_error": "通信エラーが発生しました。もう一度お試しください。",
+        "cash_error_set_error": "オフライン状態です。スタッフにお問い合わせください。",
+        "cash_error_charging": "お釣りを計算中です。しばらくお待ちください。",
+        "cash_error_full": "お釣りが満杯です。お店に連絡してください。",
+        "cash_error_cassette_wait": "お釣りを取り出してください。",
+        "cash_error_impossible": "現在の操作を実行できません。スタッフにお問い合わせください。",
+        "cash_error_deposit": "計算中です。しばらくお待ちください。",
+        "cash_error_pause_deposit": "計算を一時停止しました。スタッフにお問い合わせください。",
+
+        "cash_error_open": "オープンエラー, スタッフに連絡してください。",
+        "cash_error_reg_bad_name": "デバイス名が間違っています。設定を確認してください。",
+        "cash_error_reg_prog_id": "プログラムIDが間違っています。設定を確認してください。",
+        "cash_error_create": "デバイスが作成できません。設定を確認してください。",
+        "cash_error_bad_if": "インターフェースが間違っています。設定を確認してください。",
+        "cash_error_no_port": "ポートが見つかりません。設定を確認してください。",
+        "cash_error_sense_thread": "センサースレッドが見つかりません。設定を確認してください。",
+        "cash_error_config": "設定が間違っています。設定を確認してください。",
+        "cash_error_event_thread": "イベントスレッドが見つかりません。設定を確認してください。",
+        "cash_error_failed_open": "オープンに失敗しました。設定を確認してください。",
+        "cash_error_event_class": "イベントクラスが見つかりません。設定を確認してください。",
+        "cash_error_bad_version": "バージョンが間違っています。設定を確認してください。",
+        "cash_error_open_so": "SOファイルが見つかりません。設定を確認してください。",
+        "cash_error_no_ported": "ポートが見つかりません。設定を確認してください。",
+        "cash_error_specific": "特定のエラーが発生しました。設定を確認してください。",
+        "cash_error_unknown": "不明なエラーが発生しました。設定を確認してください。",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -233,6 +277,53 @@ class GString{
         "cash_change_error_tips_down":"请切换到其他支付方式，或者重新启动应用。",
         "reboot_app":"重新启动",
         "change_payment":"更换支付方式",
+
+        "select_option":"选规格",
+        "tag_checkout":"去结算",
+        "show_empty_cart_item_title":"购物车空空如也",
+        "tag_amount":"共计",
+
+
+        //Error handle message
+        "cash_error_no_hardware": "现金机未连接，请联系工作人员。",
+        "cash_error_busy": "处理中，请稍后再试。",
+        "cash_error_no_service": "服务不可用，请联系工作人员。",
+        "cash_error_illegal": "已经打开，请勿重复打开。",
+        "cash_error_no_claimed": "服务不可用，请联系工作人员。",
+        "cash_error_disabled": "设备已禁用，请联系工作人员。",
+        "cash_error_claimed": "服务不可用，请联系工作人员。",
+        "cash_error_closed": "服务不可用，请联系工作人员。",
+        "cash_error_common": "发生错误，请联系工作人员。",
+
+        "cash_error_over_dispense": "找零金额超过最大限额，请取消订单并联系商家。",
+        "cash_error_over": "找零金额超过设定金额，请取消订单并联系商家。",
+        "cash_error_if_error": "通信异常，请重试。",
+        "cash_error_set_error": "脱机状态，请联系商家处理。",
+        "cash_error_charging": "正在找零中，请稍后。",
+        "cash_error_full": "找零箱已满，请联系商家。",
+        "cash_error_cassette_wait": "请取出找零。",
+        "cash_error_impossible": "当前状态无法执行操作，请联系商家。",
+        "cash_error_deposit": "计数中，请稍后再试。",
+        "cash_error_pause_deposit": "暂停计数，请联系商家处理。",
+
+        "cash_error_open": "打开错误，请联系工作人员。",
+        "cash_error_reg_bad_name": "设备名错误，请检查设备设置。",
+        "cash_error_reg_prog_id": "程序ID错误，请检查设备设置。",
+        "cash_error_create": "设备创建失败，请检查设备设置。",
+        "cash_error_bad_if": "接口错误，请检查设备设置。",
+        "cash_error_no_port": "端口未找到，请检查设备设置。",
+        "cash_error_sense_thread": "传感器线程未找到，请检查设备设置。",
+        "cash_error_config": "配置错误，请检查设备设置。",
+        "cash_error_event_thread": "事件线程未找到，请检查设备设置。",
+        "cash_error_failed_open": "打开失败，请检查设备设置。",
+        "cash_error_event_class": "事件类未找到，请检查设备设置。",
+        "cash_error_bad_version": "版本错误，请检查设备设置。",
+        "cash_error_open_so": "SO文件未找到，请检查设备设置。",
+        "cash_error_no_ported": "端口未找到，请检查设备设置。",
+        "cash_error_specific": "特定错误，请检查设备设置。",
+        "cash_error_unknown": "未知错误，请检查设备设置。",
+
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -347,6 +438,52 @@ class GString{
         "cash_change_error_tips_down":"Please switch to other payment methods or restart the application.",
         "reboot_app":"Restart",
         "change_payment":"Change payment method",
+
+        "select_option":"Option",
+        "tag_checkout":"Check Out",
+        "show_empty_cart_item_title":"The cart is empty",
+        "tag_amount":"Total",
+
+        //Error handle message
+        "cash_error_no_hardware": "Cash machine is not connected. Please contact our staff.",
+        "cash_error_busy": "Processing, please wait.",
+        "cash_error_no_service": "Service is not available. Please contact our staff.",
+        "cash_error_illegal": "Already open, no need to open again. Please contact our staff.",
+        "cash_error_no_claimed": "Service is not available. Please contact our staff.",
+        "cash_error_disabled": "Device is disabled. Please contact our staff.",
+        "cash_error_claimed": "Service is not available. Please contact our staff.",
+        "cash_error_closed": "Service is not available. Please contact our staff.",
+        "cash_error_common": "An error occurred. Please contact our staff.",
+
+        "cash_error_over_dispense": "Change amount exceeds the maximum limit. Please cancel the order and contact the store.",
+        "cash_error_over": "Change amount exceeds the set amount. Please cancel the order and contact the store.",
+        "cash_error_if_error": "Communication error occurred. Please try again.",
+        "cash_error_set_error": "Offline status. Please contact our staff.",
+        "cash_error_charging": "Calculating change, please wait.",
+        "cash_error_full": "Change box is full. Please contact the store.",
+        "cash_error_cassette_wait": "Please take out the change.",
+        "cash_error_impossible": "Current operation cannot be performed. Please contact our staff.",
+        "cash_error_deposit": "Calculating, please wait.",
+        "cash_error_pause_deposit": "Calculating paused. Please contact our staff.",
+
+        "cash_error_open": "Open error, please contact our staff.",
+        "cash_error_reg_bad_name": "Device name is incorrect. Please check the device settings.",
+        "cash_error_reg_prog_id": "Program ID is incorrect. Please check the device settings.",
+        "cash_error_create": "Device creation failed. Please check the device settings.",
+        "cash_error_bad_if": "Interface is incorrect. Please check the device settings.",
+        "cash_error_no_port": "Port not found. Please check the device settings.",
+        "cash_error_sense_thread": "Sensor thread not found. Please check the device settings.",
+        "cash_error_config": "Configuration is incorrect. Please check the device settings.",
+        "cash_error_event_thread": "Event thread not found. Please check the device settings.",
+        "cash_error_failed_open": "Open failed. Please check the device settings.",
+        "cash_error_event_class": "Event class not found. Please check the device settings.",
+        "cash_error_bad_version": "Version is incorrect. Please check the device settings.",
+        "cash_error_open_so": "SO file not found. Please check the device settings.",
+        "cash_error_no_ported": "Port not found. Please check the device settings.",
+        "cash_error_specific": "Specific error occurred. Please check the device settings.",
+        "cash_error_unknown": "Unknown error occurred. Please check the device settings.",
+
+
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -461,6 +598,52 @@ class GString{
         "cash_change_error_tips_down":"다른 결제 방법으로 전환하거나 앱을 다시 시작하십시오.",
         "reboot_app":"재시작",
         "change_payment":"결제 방법 변경",
+
+        "select_option":"옵션",
+        "tag_checkout":"계산",
+        "show_empty_cart_item_title":"장바구니가 비어 있습니다",
+        "tag_amount":"총액",
+
+
+        //Error handle message
+        "cash_error_no_hardware": "현금 결제기가 연결되어 있지 않습니다. 직원에게 문의하십시오.",
+        "cash_error_busy": "처리 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_no_service": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_illegal": "이미 열려 있습니다. 다시 열 필요가 없습니다. 직원에게 문의하십시오.",
+        "cash_error_no_claimed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_disabled": "장치가 비활성화되었습니다. 직원에게 문의하십시오.",
+        "cash_error_claimed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_closed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_common": "오류가 발생했습니다. 직원에게 문의하십시오.",
+
+        "cash_error_over_dispense": "거스름돈이 최대 한도를 초과했습니다. 주문을 취소하고 가게에 문의하십시오.",
+        "cash_error_over": "지정된 금액을 초과하는 거스름돈이 발생했습니다. 주문을 취소하고 가게에 문의하십시오.",
+        "cash_error_if_error": "통신 오류가 발생했습니다. 다시 시도하십시오.",
+        "cash_error_set_error": "오프라인 상태입니다. 직원에게 문의하십시오.",
+        "cash_error_charging": "거스름돈 계산 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_full": "거스름돈이 가득 찼습니다. 가게에 문의하십시오.",
+        "cash_error_cassette_wait": "거스름돈을 꺼내 주십시오.",
+        "cash_error_impossible": "현재 작업을 수행할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_deposit": "계산 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_pause_deposit": "계산을 일시 중지했습니다. 직원에게 문의하십시오.",
+
+        "cash_error_open": "열기 오류, 직원에게 문의하십시오.",
+        "cash_error_reg_bad_name": "장치 이름이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_reg_prog_id": "프로그램 ID가 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_create": "장치 생성에 실패했습니다. 장치 설정을 확인하십시오.",
+        "cash_error_bad_if": "인터페이스가 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_no_port": "포트를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_sense_thread": "센서 스레드를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_config": "구성이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_event_thread": "이벤트 스레드를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_failed_open": "열기 실패. 장치 설정을 확인하십시오.",
+        "cash_error_event_class": "이벤트 클래스를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_bad_version": "버전이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_open_so": "SO 파일을 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_no_ported": "포트를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_specific": "특정 오류가 발생했습니다. 장치 설정을 확인하십시오.",
+        "cash_error_unknown": "알 수 없는 오류가 발생했습니다. 장치 설정을 확인하십시오.",
+        
       };
     }
 

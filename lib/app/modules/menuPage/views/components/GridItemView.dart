@@ -215,6 +215,7 @@ class GridMenuView extends StatelessWidget {
   final double? crossAxisSpacing;
   final int? crossAxisCount;
   final double? childAspectRatio;
+  final bool canScroll;
 
   GridMenuView({
     Key? key,
@@ -223,6 +224,7 @@ class GridMenuView extends StatelessWidget {
     this.crossAxisSpacing,
     this.crossAxisCount, 
     this.childAspectRatio,
+    this.canScroll = true
   });
 
   @override
@@ -232,7 +234,7 @@ class GridMenuView extends StatelessWidget {
           top: ScreenAdapter.height(0), bottom: ScreenAdapter.height(0)),
       child: GridView.builder(
         padding: EdgeInsets.zero,
-        physics: new NeverScrollableScrollPhysics(),
+        physics: canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: true,
         //addRepaintBoundaries:false,

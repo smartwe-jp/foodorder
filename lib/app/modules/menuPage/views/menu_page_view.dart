@@ -2,6 +2,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_checkout.dart';
@@ -11,7 +12,6 @@ import 'package:get/get.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 
-import '../../../services/showImage.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/menu_page_controller.dart';
@@ -114,14 +114,16 @@ class MenuPageView extends GetView {
       title: item['mainTitle'],
       subtitle: "${item['price']}",
       image: CachedNetworkImageProvider(item['homeImage']),
-      option: item['optionGroupVoList']?.length > 0 ? "选规格" : "",
+      option: item['optionGroupVoList']?.length > 0 ? GString.getToString(
+                          controller.checkLanguage.value,"select_option") : "",
       aspectRatio: aspectRatio,
       onTap: () async {
         if (item['qtyBounds'] == 0) {
               return;
         } else if (item['qtyBounds'] > 0) {
           //请求限定接口
-          controller.checkQtyBoundsCount(item, "",popupType,context);
+          if (controller.canAddCart.value)
+          await controller.checkQtyBoundsCount(item, "",popupType,context);
 
         }else{
           //如果option 存在，则弹出option
@@ -133,6 +135,7 @@ class MenuPageView extends GetView {
             }
 
           }else{
+            if (controller.canAddCart.value)
             controller.publicAddCart(context,item);
           }
         }
@@ -243,8 +246,9 @@ class MenuPageView extends GetView {
                                 child: Column(
                               children: [
                                 menuItemListView(context),
-                                Container(
-                                  height: ScreenAdapter.height(200),
+                                AnimatedContainer(
+                                  duration: const Duration(milliseconds: 300),
+                                  height: controller.showCartTotalGoodsNum.value > 0 ? ScreenAdapter.height(200): 0,
                                   decoration: BoxDecoration(
                                     color: Colors.white,
                                     boxShadow: [
@@ -252,12 +256,28 @@ class MenuPageView extends GetView {
                                         color: Colors.grey.withOpacity(0.3),
                                         spreadRadius: 3,
                                         blurRadius: 3,
-                                        offset: Offset(
-                                            0, 1), // changes position of shadow
+                                        offset: Offset(0, 1), // changes position of shadow
                                       ),
                                     ],
                                   ),
-                                ),
+                                  
+                                )
+                                //if (controller.showCartTotalGoodsNum.value > 0)
+                                // Container(
+                                //   height: ScreenAdapter.height(200),
+                                //   decoration: BoxDecoration(
+                                //     color: Colors.white,
+                                //     boxShadow: [
+                                //       BoxShadow(
+                                //         color: Colors.grey.withOpacity(0.3),
+                                //         spreadRadius: 3,
+                                //         blurRadius: 3,
+                                //         offset: Offset(
+                                //             0, 1), // changes position of shadow
+                                //       ),
+                                //     ],
+                                //   ),
+                                // ),
                               ],
                             )),
                           ],
@@ -268,15 +288,20 @@ class MenuPageView extends GetView {
 
                   //购物车
                   shoppingCar(),
-
-                  Positioned(
-                    height: ScreenAdapter.height(200),
-                    width: ScreenAdapter.getScreenWidth() -
-                        ScreenAdapter.width(180),
-                    child: checkOutButton(),
+                  
+                  //if (controller.showCartTotalGoodsNum.value > 0)
+                  AnimatedPositioned(
+                    duration: const Duration(milliseconds: 300),
+                    height: controller.showCartTotalGoodsNum.value > 0
+                        ? ScreenAdapter.height(200)
+                        : 0,
+                    width: ScreenAdapter.getScreenWidth() - ScreenAdapter.width(180),
                     right: ScreenAdapter.width(0),
-                    bottom: ScreenAdapter.height(0),
-                  )
+                    bottom: controller.showCartTotalGoodsNum.value > 0
+                        ? ScreenAdapter.height(0)
+                        : -ScreenAdapter.height(200),
+                    child: checkOutButton(),
+                  ),
                 ],
               )),
           onLoading: Center(
