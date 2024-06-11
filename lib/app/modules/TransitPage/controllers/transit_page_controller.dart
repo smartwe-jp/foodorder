@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 
@@ -93,8 +95,10 @@ class TransitPageController extends GetxController {
     };
     print(formData);
     request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
-      var response = json.decode(val.toString());LogUtil.d(response);
-      if (response['code'] == 200 && response['data'] != null) {
+      var response = json.decode(val.toString());
+
+      if (response != null && response['code'] == 200 && response['data'] != null) {
+        LogUtil.d(response);
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
@@ -173,31 +177,38 @@ class TransitPageController extends GetxController {
         GetxStorage.setData('machineSettingData', json.encode(machineSettingBool));
 
         _actuarial.value = shopData["actuarial"];
+
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+        await _getSmartweSystemSettingInfo();
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
+        _showErrorDialog();
       }
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate', parameters: {'machine_activate': '${_machineCode.value}'});
-      await _getSmartweSystemSettingInfo();
+
     })
     .catchError((e) {
-      print(e);
+      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
+      //print("error: $e");
       _showErrorDialog(error: e);
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}' + e.toString()});
     })
     .timeout(Duration(seconds: 15), onTimeout: () {
-      print('timeout');
-      _showErrorDialog();
       FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+      //print('timeout');
+      _showErrorDialog();
     });
   }
 
   _showErrorDialog({error}) =>
   Get.dialog(
-        DialogUtils.alertOneButton(error ?? ""  +  "インターネットの接続のご確認をお願いします,再度お試しください。",
+        DialogUtils.alertOneButton("異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
         title: "お知らせ",
-        confirmtitle: "はい",
+        confirmtitle: "再度お起動",
         confirm: () {
         Future.delayed(Duration(milliseconds: 200), () {
-        Get.back();
-          _getMachineActivate();
+          Get.back();
+          //_getMachineActivate();
+          Appset.restartApp;
+          //exit(0);
         });
 
         })
