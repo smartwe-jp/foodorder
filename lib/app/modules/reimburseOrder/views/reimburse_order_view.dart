@@ -303,169 +303,170 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
     return Scaffold(
       //appBar: AppBar(title: Text("システム設定")),
       body: GetBuilder<ReimburseOrderController>(builder: (controller){
-        return controller.obx((state) => ListView(
-          children: <Widget>[
+        return controller.obx((state) =>
+            ListView(
+              children: <Widget>[
 
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              width: ScreenAdapter.width(820.0),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(30.0),
-              ),
-              alignment: Alignment.center,
-              padding: EdgeInsets.only(
-                top: ScreenAdapter.height(5.0),
-                left: ScreenAdapter.width(20.0),
-                right: ScreenAdapter.width(20.0),
-              ),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      /*Navigator.of(context).pushAndRemoveUntil(
-                        new MaterialPageRoute(
-                          builder: (BuildContext context) {
-                            return new HomePage();
-                          },
-                        ),
-                        (Route route) => false,
-                      );*/
-                      Get.back();
-                      /*Future.delayed(Duration(milliseconds: 100), () {
-                        Navigator.pushNamed(context, '/home');
-                      });*/
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(
-                          left: ScreenAdapter.width(10),
-                          right: ScreenAdapter.width(10)),
-                      width: ScreenAdapter.width(120),
-                      height: ScreenAdapter.height(65),
-                      alignment: Alignment.center,
-                      decoration: BoxDecoration(
-                        color: ColorsUtil.hexToColor("#67c23a"),
-                        //设置圆角
-                        borderRadius: new BorderRadius.circular((16.0)),
-                      ),
-                      child: Text("戻る",
-                          style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(24),
-                            fontWeight: FontWeight.w600,
-                            color: ColorsUtil.hexToColor("#FFFFFF"),
-                          )),
-                    ),
-                  ),
-
-                ],
-              ),
-            ),
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(10.0),
-              ),
-              padding: EdgeInsets.only(
-                  top: ScreenAdapter.height(5.0),
-                  left: ScreenAdapter.width(14.0),
-                  right: ScreenAdapter.width(14.0),
-                  bottom: ScreenAdapter.height(30)
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
                   Container(
-                    margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                    decoration: new BoxDecoration(color: Colors.white),
+                    width: ScreenAdapter.width(820.0),
+                    margin: EdgeInsets.only(
+                      top: ScreenAdapter.height(30.0),
+                    ),
                     alignment: Alignment.center,
-                    child: Text(
-                      controller.reimburseText.value,
-                      style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
-                        fontSize: ScreenAdapter.fontSize(26),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor("#000000"),
+                    padding: EdgeInsets.only(
+                      top: ScreenAdapter.height(5.0),
+                      left: ScreenAdapter.width(20.0),
+                      right: ScreenAdapter.width(20.0),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        InkWell(
+                          onTap: () {
+                            /*Navigator.of(context).pushAndRemoveUntil(
+                              new MaterialPageRoute(
+                                builder: (BuildContext context) {
+                                  return new HomePage();
+                                },
+                              ),
+                              (Route route) => false,
+                            );*/
+                            Get.back();
+                            /*Future.delayed(Duration(milliseconds: 100), () {
+                              Navigator.pushNamed(context, '/home');
+                            });*/
+                          },
+                          child: Container(
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(65),
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: ColorsUtil.hexToColor("#67c23a"),
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((16.0)),
+                            ),
+                            child: Text("戻る",
+                                style: TextStyle(
+                                  fontFamily: GFont.getFontFamily(),
+                                  fontSize: ScreenAdapter.fontSize(24),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )),
+                          ),
+                        ),
+
+                      ],
+                    ),
+                  ),
+                  Container(
+                      decoration: new BoxDecoration(color: Colors.white),
+                      margin: EdgeInsets.only(
+                        top: ScreenAdapter.height(10.0),
+                      ),
+                      padding: EdgeInsets.only(
+                          top: ScreenAdapter.height(5.0),
+                          left: ScreenAdapter.width(14.0),
+                          right: ScreenAdapter.width(14.0),
+                          bottom: ScreenAdapter.height(30)
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                            alignment: Alignment.center,
+                            child: Text(
+                              controller.reimburseText.value,
+                              style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(26),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor("#000000"),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            width: ScreenAdapter.width(500),
+                            padding: const EdgeInsets.all(20),
+                            child: SizedBox(
+                              height: 70,
+                              child: Center(
+                                  child: TextField(
+                                    controller: controller.orderIdController,
+                                    textAlign: TextAlign.center,
+                                    showCursor: false,
+                                    style: const TextStyle(fontSize: 40),
+                                    // Disable the default soft keybaord
+                                    keyboardType: TextInputType.none,
+                                    decoration: InputDecoration(
+                                      hintStyle: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(24)),
+                                      hintText: "注文番号の後ろ六桁を入力してください",
+                                      //border: InputBorder.none
+                                    ),
+                                  )),
+                            ),
+                          ),
+                          Container(
+                            width: ScreenAdapter.width(600),
+                            margin: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
+                            child: NumPad(
+                              buttonSize: 70,
+                              buttonColor: ColorsUtil.hexToColor("#f1f3f4"),
+                              iconColor: ColorsUtil.hexToColor("#9C9C9C"),
+                              controller: controller.orderIdController,
+                              textLength: 6,
+                              delete: () {
+                                if(controller.orderIdController.text.length >1){
+                                  controller.orderIdController.text = controller.orderIdController.text.substring(0, controller.orderIdController.text.length - 1);
+                                }else if(controller.orderIdController.text.length ==1){
+                                  controller.orderIdController.text = "";
+                                }
+                              },
+                              // do something with the input numbers
+                              onSubmit: () {
+                                if(controller.orderIdController.text.length <6){
+                                  showToast("注文番号の後ろ六桁を入力してください");
+                                  return;
+                                }
+                                if(controller.orderIdController.text.length >6){
+                                  showToast("最大6位");
+                                  controller.orderIdController.text = controller.orderIdController.text.substring(0, 5);
+                                  return;
+                                }
+
+                                controller.queryOrder();
+
+                              },
+                            ),
+                          ),
+
+                          Divider(
+                            thickness: 2.5,
+                            color: Colors.black12,
+                          ),
+                          Container(
+                            width: ScreenAdapter.width(710),
+                            child: showOrderInfo(),
+                          ),
+
+
+
+                        ],
                       ),
                     ),
-                  ),
-                  Container(
-                    width: ScreenAdapter.width(500),
-                    padding: const EdgeInsets.all(20),
-                    child: SizedBox(
-                      height: 70,
-                      child: Center(
-                          child: TextField(
-                            controller: controller.orderIdController,
-                            textAlign: TextAlign.center,
-                            showCursor: false,
-                            style: const TextStyle(fontSize: 40),
-                            // Disable the default soft keybaord
-                            keyboardType: TextInputType.none,
-                            decoration: InputDecoration(
-                              hintStyle: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(24)),
-                              hintText: "注文番号の後ろ六桁を入力してください",
-                              //border: InputBorder.none
-                            ),
-                          )),
-                    ),
-                  ),
-                  Container(
-                    width: ScreenAdapter.width(600),
-                    margin: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-                    child: NumPad(
-                      buttonSize: 70,
-                      buttonColor: ColorsUtil.hexToColor("#f1f3f4"),
-                      iconColor: ColorsUtil.hexToColor("#9C9C9C"),
-                      controller: controller.orderIdController,
-                      textLength: 6,
-                      delete: () {
-                        if(controller.orderIdController.text.length >1){
-                          controller.orderIdController.text = controller.orderIdController.text.substring(0, controller.orderIdController.text.length - 1);
-                        }else if(controller.orderIdController.text.length ==1){
-                          controller.orderIdController.text = "";
-                        }
-                      },
-                      // do something with the input numbers
-                      onSubmit: () {
-                        if(controller.orderIdController.text.length <6){
-                          showToast("注文番号の後ろ六桁を入力してください");
-                          return;
-                        }
-                        if(controller.orderIdController.text.length >6){
-                          showToast("最大6位");
-                          controller.orderIdController.text = controller.orderIdController.text.substring(0, 5);
-                          return;
-                        }
-
-                        controller.queryOrder();
-
-                      },
-                    ),
-                  ),
-
-                  Divider(
-                    thickness: 2.5,
-                    color: Colors.black12,
-                  ),
-                  Container(
-                    width: ScreenAdapter.width(710),
-                    child: showOrderInfo(),
-                  ),
-
-
-
                 ],
+            ),
+            onLoading: Center(
+              child: CircularProgressIndicator(
+                strokeWidth:6,
+                valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
               ),
             ),
-          ],
-        ),
-          onLoading: Center(
-            child: CircularProgressIndicator(
-              strokeWidth:6,
-              valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
-            ),
-          ),
         );
       }),
     );

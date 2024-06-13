@@ -1326,6 +1326,11 @@ class SettlementController extends GetxController with StateMixin {
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
         //print("_outStatus处理中:$_outStatus");
+      } else if (outStatus.value == "Error-A0--21" ||  outStatus.value == "Error-A0--22" || outStatus.value == "Error-A0--23" ) {
+        EasyLoading.dismiss();
+        //出金失败,弹出提示框
+
+
       } else {
         await Paycube.outPayCubeMoney(outStringMoney.value);
       }

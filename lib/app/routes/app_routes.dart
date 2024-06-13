@@ -20,6 +20,7 @@ abstract class Routes {
   static const SELF_CHECKOUTSCANNINGCODE = _Paths.SELF_CHECKOUTSCANNINGCODE;
   static const REIMBURSE_ORDER = _Paths.REIMBURSE_ORDER;
   static const ERROR_PAGE = _Paths.ERROR_PAGE;
+  static const RECEIPT_QUERY = _Paths.RECEIPT_QUERY;
 }
 
 abstract class _Paths {
@@ -41,4 +42,5 @@ abstract class _Paths {
   static const SELF_CHECKOUTSCANNINGCODE = '/self-checkoutscanningcode';
   static const REIMBURSE_ORDER = '/reimburse-order';
   static const ERROR_PAGE = '/error_page';
+  static const RECEIPT_QUERY = '/receipt_query';
 }

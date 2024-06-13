@@ -332,11 +332,11 @@ class SettingView extends GetView<SettingController> {
                 highlightColor: Colors.transparent, // 透明色
                 splashColor: Colors.transparent, // 透明色
                 onTap: (){
-                  controller.printPreviewReceipt();
-
+                  //controller.printPreviewReceipt();
+                  Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
                 },
                 child: Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.height(10), right: ScreenAdapter.height(10)),
+                  padding: EdgeInsets.only(left: ScreenAdapter.height(50), right: ScreenAdapter.height(50)),
                   margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                   //设置 child 居中
                   alignment: Alignment(0, 0),
@@ -352,7 +352,7 @@ class SettingView extends GetView<SettingController> {
                     //border: new Border.all(width: 1, color: Colors.red),
                   ),
                   child: Text(
-                      "領収書を再印刷する",
+                      "領収書",
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(24),

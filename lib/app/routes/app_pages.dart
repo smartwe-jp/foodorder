@@ -22,6 +22,8 @@ import '../modules/menuPage/views/menu_page_view.dart';
 import '../modules/menuPage/views/menuzong_page_view.dart';
 import '../modules/middlewareSettingPage/bindings/middleware_setting_page_binding.dart';
 import '../modules/middlewareSettingPage/views/middleware_setting_page_view.dart';
+import '../modules/receiptQueryPrint/bindings/receipt_query_binding.dart';
+import '../modules/receiptQueryPrint/views/receipt_query_view.dart';
 import '../modules/reimburseOrder/bindings/reimburse_order_binding.dart';
 import '../modules/reimburseOrder/views/reimburse_order_view.dart';
 import '../modules/setting/bindings/setting_binding.dart';
@@ -129,6 +131,11 @@ class AppPages {
       name: _Paths.ERROR_PAGE,
       page: () => ErrorPageView(),
       binding: ErrorBinding(),
+    ),
+    GetPage(
+      name: _Paths.RECEIPT_QUERY,
+      page: () => ReceiptQueryView(),
+      binding: ReceiptQueryBinding(),
     ),
   ];
 }

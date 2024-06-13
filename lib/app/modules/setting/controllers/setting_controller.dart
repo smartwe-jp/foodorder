@@ -157,6 +157,7 @@ class SettingController extends GetxController with StateMixin {
     request('webBootToRetryPrint', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
+      debugPrint("response:" + response.toString());
 
       EasyLoading.dismiss();
       if (response['code'] == 200 && null != response['data']) {
@@ -173,6 +174,7 @@ class SettingController extends GetxController with StateMixin {
             barrierDismissible: false);
       }
     });
+    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode.value});
   }
 
   //获取现金机列表
