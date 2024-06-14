@@ -51,6 +51,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxString is_allow_settlementhome = "0".obs;//0 不开启  1 开启
   RxString is_allow_oneyen = "0".obs;//0 禁用  1 允许
   RxString is_allow_backhome = "0".obs;//0 返回  1 返回菜单
+  RxString is_allow_rejishime = "0".obs;//0 不开启  1 开启
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   RxString is_allow_pos = "0".obs;//0 不开启  1 开启
   RxString pos_ip = "".obs;
@@ -100,6 +101,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _getSystemSettingInfo();
   }
 
+  //获取系统设置信息
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
@@ -130,6 +132,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       is_allow_attendance.value = systemSettingInfo['isAllowAttendance'];
       is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
       is_allow_backhome.value = systemSettingInfo['isAllowBackHome'];
+      is_allow_rejishime.value = systemSettingInfo['isAllowRejishime'] ?? "0";
       is_allow_pos.value = systemSettingInfo['isAllowPos'];
       is_allow_wlanPrint.value = systemSettingInfo['isAllowWlanPrint'];
       is_allow_wlanPrint_continuous.value = systemSettingInfo['isAllowWlanPrintContinuous'];
@@ -155,6 +158,27 @@ class SystemSettingPageController extends GetxController with StateMixin {
       }
     change(null, status: RxStatus.success());
   }
+
+  late Map<String, dynamic> systemSettingData = {
+    "diningType": dining_type.value, //1堂食 2外带
+    "menuDirection": menu_direction.value, //1顶部横向 2左侧竖
+    //"printPaperSize": _print_paper_size, //1 58mm 2 80mm
+    "printPaperTxtSize": print_paper_txt_size.value, //1 普通　2大　3特大
+    "isAllowReceipt": is_allow_receipt.value, //1必须打印小票 2不必须
+    "isAllowReceiptMenu": is_allow_receipt_menu.value, //1必须 2 不要
+    "machineMode": machine_mode.value, //1普通券卖机 2 精算机
+    "isReservation": isReservation.value, //是否开启预约服务
+    "isAllowAttendance": is_allow_attendance.value, //0不开启 1开启
+    "isAllowOneYen": is_allow_oneyen.value, //0禁用1元 1不禁用
+    "isAllowRejishime": is_allow_rejishime.value, //0不开启 1开启
+    "isAllowBackHome": is_allow_backhome.value, //0返回home 1返回到菜单
+    "isAllowPos": is_allow_pos.value, //0不开启 1开启
+    "isAllowWlanPrint": is_allow_wlanPrint.value, //0不开启 1开启
+    "isAllowWlanPrintContinuous": is_allow_wlanPrint_continuous.value,
+    "showPrintType": showPrintType.value.toString(), //0receipt 1label
+    "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
+    "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
+  };
 
   showDownloadingAlert() {
     //支付状态
@@ -252,6 +276,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
         )
     );
   }
+
+
 
   /// 下载安卓更新包
   Future<String?> downloadAndroid(String url) async {
@@ -361,32 +387,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
       dining_type_one.value = true;
       dining_type_tmp = "1";
     }
-    var systemSettingData = {
-      "diningType":dining_type_tmp, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
-
 
       dining_type.value = dining_type_tmp;
-    update();
+    _updateSystemSetting("diningType", dining_type_tmp);
     if(machine_mode == "1"){
       Get.find<OrderHomeController>().getSystemSettingInfo();
     }else if(machine_mode == "2"){
@@ -396,199 +399,43 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkMenuDirection(checkedType){
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":checkedType,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
 
     menu_direction.value = checkedType;
-    update();
+    _updateSystemSetting("menuDirection", checkedType);
     Get.find<OrderHomeController>().getSystemSettingInfo();
   }
 
   checkPrintPaperTxtSize(checkedType) async {
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":checkedType,//1 58mm 2 80mm
-      "printPaperTxtSize":checkedType,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     print_paper_txt_size.value = checkedType;
-    update();
+    _updateSystemSetting("printPaperTxtSize", checkedType);
   }
 
   checkIsAllowReceipt(checkedType) async {
 
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":checkedType,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     is_allow_receipt.value = checkedType;
-    update();
+    _updateSystemSetting("isAllowReceipt", checkedType);
 
   }
 
   checkIsAllowReceiptMenu(checkedType) async {
 
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":checkedType, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     is_allow_receipt_menu.value = checkedType;
-    update();
+    _updateSystemSetting("isAllowReceiptMenu", checkedType);
 
   }
 
   checkMachineMode(checkedType) async {
-
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":checkedType,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     machine_mode.value = checkedType;
-    update();
-
+    _updateSystemSetting("machineMode", checkedType);
   }
 
   checkIsReservation(checkedType) async {
-
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":checkedType, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     isReservation.value = checkedType;
-    update();
+    _updateSystemSetting("isReservation", checkedType);
 
   }
 
   checkIsAllowPos(checkedType) async {
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":checkedType,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     var posSettingData;
     if(checkedType == "1"){
       posSettingData = {
@@ -610,32 +457,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
     GetxStorage.setData('smartwe_posSetting', json.encode(posSettingData));
 
     is_allow_pos.value = checkedType;
-    update();
+    _updateSystemSetting("isAllowPos", checkedType);
 
   }
 
   checkIsAllowWlanPrint(checkedType) async {
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":checkedType,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
 
     var wlanPrintSettingData;
     if(checkedType == "1"){
@@ -657,36 +483,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Storage.setString('smartwe_wlanPrintSetting', json.encode(wlanPrintSettingData));
     GetxStorage.setData('smartwe_wlanPrintSetting', json.encode(wlanPrintSettingData));
 
+    is_allow_wlanPrint.value = checkedType;
 
-
-      is_allow_wlanPrint.value = checkedType;
-
-      update();
+    _updateSystemSetting("isAllowWlanPrint", checkedType);
   }
 
   checkIsAllowWlanPrintTwo(checkedType) async {
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":checkedType,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
 
     var wlanPrintSettingData;
     if(checkedType == "1"){
@@ -710,7 +512,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
 
       is_allow_wlanPrint_Two.value = checkedType;
-    update();
+    _updateSystemSetting("isAllowWlanPrintTwo", checkedType);
 
   }
 
@@ -894,68 +696,37 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllowOneYen(checkedType) async {
 
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":checkedType,//0禁用1元 1不禁用
-      "isAllowBackHome":is_allow_backhome.value,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
     if(checkedType == "0"){
       var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
     }else{
       var allowOneCashStatus =  await Paycube.allowOneCash;
     }
+    is_allow_oneyen.value = checkedType;
 
+    _updateSystemSetting("isAllowOneYen", checkedType);
 
-      is_allow_oneyen.value = checkedType;
-  update();
+  }
 
+  checkIsAllowRejishime(checkedType) async {
+    is_allow_rejishime.value = checkedType;
+    _updateSystemSetting("isAllowRejishime", checkedType);
+  }
+
+  void _updateSystemSetting(String key, dynamic value) {
+    if (systemSettingData.containsKey(key)) {
+      systemSettingData[key] = value;
+      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+      GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+    } else {
+      print('Key $key does not exist in systemSettingData.');
+    }
+    update();
   }
 
   checkIsAllowBackHome(checkedType) async {
 
-    var systemSettingData = {
-      "diningType":dining_type.value, //1堂食 2外带
-      "menuDirection":menu_direction.value,//1顶部横向 2左侧竖
-      //"printPaperSize":_print_paper_size,//1 58mm 2 80mm
-      "printPaperTxtSize":print_paper_txt_size.value,//1 普通　2大　3特大
-      "isAllowReceipt":is_allow_receipt.value,//1必须打印小票 2不必须
-      "isAllowReceiptMenu":is_allow_receipt_menu.value, //1必须 2 不要
-      "machineMode":machine_mode.value,//1普通券卖机 2 精算机
-      "isReservation":isReservation.value, //是否开启预约服务
-      "isAllowAttendance":is_allow_attendance.value,//0不开启 1开启
-      "isAllowOneYen":is_allow_oneyen.value,//0禁用1元 1不禁用
-      "isAllowBackHome":checkedType,//0返回home 1返回到菜单
-      "isAllowPos":is_allow_pos.value,//0不开启 1开启
-      "isAllowWlanPrint":is_allow_wlanPrint.value,//0不开启 1开启
-      "isAllowWlanPrintContinuous":is_allow_wlanPrint_continuous.value,
-      "showPrintType":showPrintType.value.toString(), //0receipt 1label
-      "isAllowWlanPrintTwo":is_allow_wlanPrint_Two.value,//0不开启 1开启
-      "isAllowWlanPrintTwoContinuous":is_allow_wlanPrint_Two_continuous.value,
-    };
-    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-    GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-
-
     is_allow_backhome.value = checkedType;
-
-    update();
+    _updateSystemSetting("isAllowBackHome", checkedType);
   }
 
   //上传现金机log
