@@ -1,11 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
@@ -20,6 +22,7 @@ import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../services/logUtil.dart';
+import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
@@ -970,13 +973,13 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //去打印小票
-  doPrintOrderMenu(printType,{isCash = false}) async {
+  doPrintOrderMenu(printType,{retry = true}) async {
     debugPrint("doPrintOrderMenu");
 
-    if (isCash) {
-      //现金支付 次のステップに進みます
-      printGoNext();
-    }
+    // if (isCash) {
+    //   //现金支付 次のステップに進みます
+    //   printGoNext();
+    // }
 
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
@@ -1030,19 +1033,31 @@ class SettlementController extends GetxController with StateMixin {
               createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
-          if (!isCash) {
-            printGoNext();
-          }
+          //if (!isCash) {
+          printGoNext();
+          //}
 
         } else {
           //错误后重新调用一次
-          doPrintOrderMenu(printType);
+          if (retry) {
+            doPrintOrderMenu(printType,retry: false);
+          }
           //EasyLoading.dismiss();
         }
+      })
+      .catchError((e) {
+        //错误后重新调用一次
+        if (retry) {
+          doPrintOrderMenu(printType,retry: false);
+        } else {
+          _checkOutErrorHandle(GString.getToString(
+              checkLanguage.value, "tag_print_content_paper_error"));
+        }
+        //EasyLoading.dismiss();
       });
     } else {
-      EasyLoading.dismiss();
 
+      EasyLoading.dismiss();
       var showDialogContent = "";
       if (printStatus == "7") {
         showDialogContent = GString.getToString(
@@ -1073,6 +1088,37 @@ class SettlementController extends GetxController with StateMixin {
       );
     }
   }
+
+  _checkOutErrorHandle(showDialogContent) async {
+    EasyLoading.dismiss();
+    Get.dialog(
+        DialogUtils.alert(showDialogContent,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            canceltitle: GString.getToString(checkLanguage.value,"cancel_order"),
+            confirmtitle: GString.getToString(checkLanguage.value,"show_del_cart_item_yes"),
+            confirm: () {
+              // Get.back();
+              // doPrintOrderMenu(printType);
+              //发邮件和播放感谢语
+              _sendEmailAndPlayVoice();
+            },
+            cancle: () {
+              Get.back();
+              showEasyLoading();
+              CancelOrder();
+            })
+    );
+  }
+
+  _sendEmailAndPlayVoice() async {
+    showToast(GString.getToString(checkLanguage.value,"error_tips_thanks"));
+    AssetsAudioPlayer.newPlayer().open(
+      Audio("assets/audios/12248.wav"),
+      autoStart: true,
+      volume: 0.5,
+    );
+  }
+
 
   //
   printGoNext() async {
@@ -1322,14 +1368,14 @@ class SettlementController extends GetxController with StateMixin {
 
         outmoneyt?.cancel();
       } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+        //该错误暂不处理，等待出金成功
         //await Paycube.setReceiveEvent;
         //sleep(Duration(milliseconds: 200));
         //await Paycube.getPayCubeOutMoneyStatus;
         //print("_outStatus处理中:$_outStatus");
       } else if (outStatus.value == "Error-A0--21" ||  outStatus.value == "Error-A0--22" || outStatus.value == "Error-A0--23" ) {
-        EasyLoading.dismiss();
         //出金失败,弹出提示框
-
+        _checkOutErrorHandle(GString.getToString(checkLanguage.value, "tag_out_money_error"));
 
       } else {
         await Paycube.outPayCubeMoney(outStringMoney.value);
@@ -1464,10 +1510,11 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //汇报入金币种,请求后台
-  reportPutMoneyCurrency() {
+  reportPutMoneyCurrency({retry = true}) {
 
-    if(isReportCash.value == true){print("已汇报过");
-    return;
+    if(isReportCash.value == true){
+      debugPrint("已汇报过");
+      return;
     }
 
     isReportCash.value = true;
@@ -1492,13 +1539,29 @@ class SettlementController extends GetxController with StateMixin {
     };//print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
-      var response = json.decode(value.toString());
+          debugPrint("----上报订单成功----");
+      //var response = json.decode(value.toString());
       // if (response['code'] == 200) {
       ///if (isReportOutMoney.value == true) {
       //已经结束入金，处理取引终了
       //reportOutMoneyCurrency();
       //}
       //}
+    }).catchError((e) {
+        //后期优化，上报失败存储本地，下次再上报。
+        debugPrint("----上报订单失败----");
+        if (!retry) {
+          FirebaseAnalytics.instance.logEvent(
+              name: "cash_report_error", parameters: {
+            "machineCode": machineCode.value,
+            "orderId": orderId.value,
+          });
+          //发送邮件计划
+        }
+        if (retry) {
+          isReportCash.value = false;
+          reportPutMoneyCurrency(retry: false);
+        }
     });
   }
 

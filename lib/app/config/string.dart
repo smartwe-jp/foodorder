@@ -120,6 +120,10 @@ class GString{
         "reboot_app":"再起動",
         "change_payment":"支払い方法を変更",
 
+        "cancel_order":"注文をキャンセル",
+        "tag_out_money_error":"お釣りが足りません,お近くのスタッフにお知らせください",
+        "error_tips_thanks":"操作ありがとうございます。処理のために店舗スタッフに連絡しました。しばらくお待ちください。",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -233,6 +237,10 @@ class GString{
         "cash_change_error_tips_down":"请切换到其他支付方式，或者重新启动应用。",
         "reboot_app":"重新启动",
         "change_payment":"更换支付方式",
+
+        "cancel_order":"取消订单",
+        "tag_out_money_error":"找零不足，请联系工作人员",
+        "error_tips_thanks":"感谢您的操作，已联系店员处理，请稍等待。",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -347,6 +355,10 @@ class GString{
         "cash_change_error_tips_down":"Please switch to other payment methods or restart the application.",
         "reboot_app":"Restart",
         "change_payment":"Change payment method",
+
+        "cancel_order":"Cancel order",
+        "tag_out_money_error":"Insufficient change, please contact the staff",
+        "error_tips_thanks":"Thank you for your operation. We have contacted the staff for processing. Please wait a moment.",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -461,6 +473,10 @@ class GString{
         "cash_change_error_tips_down":"다른 결제 방법으로 전환하거나 앱을 다시 시작하십시오.",
         "reboot_app":"재시작",
         "change_payment":"결제 방법 변경",
+
+        "cancel_order":"주문 취소",
+        "tag_out_money_error":"거스름돈이 부족합니다. 직원에게 문의하십시오.",
+        "error_tips_thanks":"작업 감사합니다. 처리를 위해 가게 직원에게 연락했습니다. 잠시만 기다려주세요.",
       };
     }
 
