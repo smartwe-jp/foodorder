@@ -78,6 +78,21 @@ class HomeServices{
     return isAllowReceiptInfo;
   }
 
+  static getPrintDirection() async{
+    String? printDirection;
+    try {
+      String? setting = await Storage.getString('printDirection');
+      printDirection = setting;
+    } catch (e) {
+      printDirection = "0";
+    }
+    return printDirection;
+  }
+
+  static setPrintDirection(String printDirectionData) async{
+    Storage.setString('printDirection', printDirectionData);
+  }
+
   //多参数设置
   static getSystemSettingInfo() async{
     Map? systemSettingInfo;

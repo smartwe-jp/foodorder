@@ -75,6 +75,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   RxDouble downloadProgress = 0.0.obs;
 
+  RxBool printDirection = false.obs;
+
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -107,6 +109,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
     Map wlanPrintSettingInfoTwo = await HomeServices.getWlanPrintSettingTwoInfo();
+    printDirection.value = await HomeServices.getPrintDirection() == "1" ? true : false;
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
 
@@ -710,6 +713,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllowRejishime(checkedType) async {
     is_allow_rejishime.value = checkedType;
     _updateSystemSetting("isAllowRejishime", checkedType);
+  }
+
+  setPrintDirection(direction) async {
+    await HomeServices.setPrintDirection(direction);
+    printDirection.value = direction == "1" ? true : false;
+    update();
   }
 
   void _updateSystemSetting(String key, dynamic value) {

@@ -1,9 +1,11 @@
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
@@ -34,7 +36,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
     }
   }
 
-  Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
+  Future<Widget> wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) async {
     var lineHight = 120;
     int menuNum = 0;
     var optionNum = 0;
@@ -271,29 +273,37 @@ extension SettlementControllerPrinterExtension on SettlementController {
       });
 
     }
-
+    final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
     // 生成打印图层任务，指定任务类型为标签
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: printMenus,
-    ));
+    return ReceiptConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: printMenus,
+          )
+        ),
+    );
 
 
 
   }
 
   //连票
-  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip){
+  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip) async {
+    final widget = await organizeData(serialNumber,printData,takeOut,orderTime,printer_ip);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
-        tempWidget: organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) as ATempWidget,
+        tempWidget: widget as ATempWidget,
         printTypeEnum: PrintTypeEnum.receipt,
         params: PrinterInfo(ip:printer_ip),
       ),
     );
   }
-  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) {
+  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) async {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 230;
@@ -588,12 +598,17 @@ extension SettlementControllerPrinterExtension on SettlementController {
         children: categoryMenus,
       ),
     );*/
-
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: categoryMenus,
-    ));
+    final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
+    return ReceiptConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: categoryMenus,
+        ))
+    );
 
 
 
