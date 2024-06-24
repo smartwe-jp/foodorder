@@ -1173,6 +1173,7 @@ class SettlementController extends GetxController with StateMixin {
           "machineCode":machineCode.value,
           "orderId":orderId.value,
         });
+        showCashTimer?.cancel();
         Get.toNamed(Routes.ERROR_PAGE);
         return;
       }
@@ -1191,6 +1192,7 @@ class SettlementController extends GetxController with StateMixin {
       debugPrint("打开次数$connectCount");
       if(connectCount > 50){
         allowt.cancel();
+        showCashTimer?.cancel();
         //上报错误。。。
         FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
           "machineCode":machineCode.value,
@@ -1211,13 +1213,13 @@ class SettlementController extends GetxController with StateMixin {
 
         allowt.cancel();
       } else if (allowStatus.value == "Error-F0--16") {
-        allowt.cancel();
+        //allowt.cancel();
         await Paycube.endTrade;
         //sleep(Duration(milliseconds: 200));
-        await Future.delayed(Duration(milliseconds: 200));
-        Starttoubi();
-        // String startPayCube = await Paycube.strartPayCube;
-        // debugPrint("startPayCube--==$startPayCube");
+        // await Future.delayed(Duration(milliseconds: 200));
+        // Starttoubi();
+       String startPayCube = await Paycube.strartPayCube;
+       debugPrint("startPayCube--==$startPayCube");
       } else if (allowStatus.value == "Error-A0--02" || "Error" == allowStatus.value) {
          if (allowStatus.value == "Error") {
            await Paycube.strartPayCube;
@@ -1228,6 +1230,7 @@ class SettlementController extends GetxController with StateMixin {
         _startCount++;
         if (_startCount == 10) {//10次打开失败 退出
           allowt.cancel();
+          showCashTimer?.cancel();
           //上报错误。。。
           FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
             "machineCode":machineCode.value,
