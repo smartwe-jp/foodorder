@@ -21,13 +21,13 @@ import '../views/receipt_constrained_box.dart';
 extension SettlementControllerPrinterExtension on SettlementController {
 
   //单票
-  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
+  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate){
     for(var i=0;i<printData.length;i++){
       // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
 
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip) as ATempWidget,
+          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip,rotate) as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
           params: PrinterInfo(ip:printer_ip),
         ),
@@ -36,7 +36,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
     }
   }
 
-  Future<Widget> wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) async {
+  Future<Widget> wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip,rotate) async {
     var lineHight = 120;
     int menuNum = 0;
     var optionNum = 0;
@@ -273,7 +273,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
       });
 
     }
-    final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
+
     // 生成打印图层任务，指定任务类型为标签
     return ReceiptConstrainedBox(
         Transform(
@@ -293,8 +293,8 @@ extension SettlementControllerPrinterExtension on SettlementController {
   }
 
   //连票
-  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip) async {
-    final widget = await organizeData(serialNumber,printData,takeOut,orderTime,printer_ip);
+  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
+    final widget = await organizeData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
         tempWidget: widget as ATempWidget,
@@ -303,7 +303,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
       ),
     );
   }
-  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) async {
+  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 230;

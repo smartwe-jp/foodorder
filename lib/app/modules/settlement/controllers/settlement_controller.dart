@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -1613,11 +1614,14 @@ class SettlementController extends GetxController with StateMixin {
     Map printerIpInfo = {"printer_ip":"","printer_port":"",};
     if(printType == "10"){
       if(wlan_print_ip.value != null && wlan_print_ip.value != ""){
+
+        final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
+
         printerIpInfo = {"printer_ip":wlan_print_ip.value,"printer_port":wlan_print_port.value,};
         if(is_allow_wlanPrint_continuous.value =="1"){
-          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value,rotate);
         }else{
-          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value);
+          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value,rotate);
         }
 
       }else{
@@ -1625,12 +1629,13 @@ class SettlementController extends GetxController with StateMixin {
       }
     }else if(printType == "12"){
       if(wlan_print_ip_two.value != null && wlan_print_ip_two.value != ""){
+        final rotate = await HomeServices.getPrintTwoDirection() == "1" ? pi : 0.0;
         printerIpInfo = {"printer_ip":wlan_print_ip_two.value,"printer_port":wlan_print_port_two.value,};
         if(is_allow_wlanPrint_Two_continuous.value =="1"){
-          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value,rotate);
 
         }else{
-          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value);
+          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value,rotate);
         }
       }else{
         return;

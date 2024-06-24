@@ -89,8 +89,23 @@ class HomeServices{
     return printDirection;
   }
 
+  static getPrintTwoDirection() async{
+    String? printDirection;
+    try {
+      String? setting = await Storage.getString('printTwoDirection');
+      printDirection = setting;
+    } catch (e) {
+      printDirection = "0";
+    }
+    return printDirection;
+  }
+
   static setPrintDirection(String printDirectionData) async{
     Storage.setString('printDirection', printDirectionData);
+  }
+
+  static setPrintTwoDirection(String printDirectionData) async{
+    Storage.setString('printTwoDirection', printDirectionData);
   }
 
   //多参数设置
