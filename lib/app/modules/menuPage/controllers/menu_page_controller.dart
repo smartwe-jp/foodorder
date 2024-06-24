@@ -383,7 +383,7 @@ class MenuPageController extends GetxController with StateMixin {
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
-            "showColor":MenuColor[menuIndex]
+            "showColor":categoryVoList['color'] ?? MenuColor[menuIndex]
           });
           menuIndex++;
           //配置顶部菜单默认项
