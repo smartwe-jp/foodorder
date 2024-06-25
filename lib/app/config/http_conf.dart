@@ -1,6 +1,6 @@
 //const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-const base_url = "https://api.smartwe.jp/";  //new生产环境地址
-//const base_url = "https://sit-reji.smartwe.jp/";  //测试环境地址
+//const base_url = "https://api.smartwe.jp/";  //new生产环境地址
+const base_url = "https://sit-api.smartwe.jp/";  //测试环境地址
 
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
