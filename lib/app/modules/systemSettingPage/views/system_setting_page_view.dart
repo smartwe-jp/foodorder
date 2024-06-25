@@ -2219,23 +2219,23 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
                                   ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "レジ締め",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setOpenRejishime(),//是否结算完后回到首页
-                                      ]
-                                  )
+                                  // TableRow(
+                                  //     children: <Widget>[
+                                  //       Container(
+                                  //         //height: ScreenAdapter.height(65),
+                                  //         alignment: Alignment.center,
+                                  //         child: Text(
+                                  //           "レジ締め",
+                                  //           style: TextStyle(
+                                  //               fontFamily: 'NotoSansJP',
+                                  //               fontSize: ScreenAdapter.fontSize(22),
+                                  //               fontWeight: FontWeight.w500
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       setOpenRejishime(),//是否结算完后回到首页
+                                  //     ]
+                                  // )
                                 ]
                             ),
                           ),

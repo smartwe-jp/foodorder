@@ -85,6 +85,14 @@ class publicShowMenuImage  extends StatelessWidget{
                   placeholder: kTransparentImage,
                   image: imgPath,
                   fit: BoxFit.cover,
+                  imageErrorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        "assets/images/public/food.png",
+                        fit: BoxFit.cover,
+                        width: ScreenAdapter.width(imgWidth),
+                        height: ScreenAdapter.height(imgHeight),
+                      );
+                    },
                   // loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
                   //   if (loadingProgress == null) return child;
                   //   return Center(

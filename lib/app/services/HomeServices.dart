@@ -82,7 +82,7 @@ class HomeServices{
     String? printDirection;
     try {
       String? setting = await Storage.getString('printDirection');
-      printDirection = setting;
+      printDirection = setting ?? "0";
     } catch (e) {
       printDirection = "0";
     }
@@ -93,7 +93,7 @@ class HomeServices{
     String? printDirection;
     try {
       String? setting = await Storage.getString('printTwoDirection');
-      printDirection = setting;
+      printDirection = setting ?? "0";
     } catch (e) {
       printDirection = "0";
     }
