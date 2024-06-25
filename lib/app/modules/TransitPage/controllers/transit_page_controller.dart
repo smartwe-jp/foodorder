@@ -279,16 +279,13 @@ class TransitPageController extends GetxController {
       try {
         var prohibitOneCashStatus = await Paycube.prohibitOneCash.timeout(
             Duration(seconds: 10));
-        _goNext(checkmachineMode);
       } on TimeoutException catch (e) {
         print('Timeout: $e');
-        _goNext(checkmachineMode);
       } catch (e) {
         print('error: $e');
-        _goNext(checkmachineMode);
       }
-
     }
+    _goNext(checkmachineMode);
 
   }
 
