@@ -354,7 +354,6 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewBack() {
     ordersqlcontroller.removeAllFromCart();
-    Get.find<MenuPageController>().getCartPriceTotal();
     EasyLoading.dismiss();
     Get.back();
     if (machineMode.value == "1") {
@@ -364,8 +363,8 @@ class SettlementController extends GetxController with StateMixin {
         //Navigator.pushNamed(context, '/home');
       }else{
         // eventBus.fire(new clearCartEvent('支付成功...'));
-
         //有弹窗选择支付才在关闭一个
+        Get.find<MenuPageController>().getCartPriceTotal();
         if(showOpenPayment.value == true){
           Get.back();
         }
@@ -373,23 +372,24 @@ class SettlementController extends GetxController with StateMixin {
       }
 
     }else if (machineMode.value == "3") {
-      if(is_back_home.value == "0"){
-        Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-        Get.toNamed("/selfservice-page");
-        //Navigator.pushNamed(context, '/selfServiceHomePage');
-      }else{
-        //eventBus.fire(new clearCartEvent('支付成功...'));
-
-        //有弹窗选择支付才在关闭一个
-        if(showOpenPayment.value == true){
-          Get.back();
-        }
-
-      }
+      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      Get.toNamed("/selfservice-page");
+      // if(is_back_home.value == "0"){
+      //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //   Get.toNamed("/selfservice-page");
+      //   //Navigator.pushNamed(context, '/selfServiceHomePage');
+      // }else{
+      //   //eventBus.fire(new clearCartEvent('支付成功...'));
+      //
+      //   //有弹窗选择支付才在关闭一个
+      //   if(showOpenPayment.value == true){
+      //     Get.back();
+      //   }
+      //
+      // }
 
     } else {
-      Get.delete<CheckoutPageController>();
-      Get.delete<MenuPageController>();// 手动删除控制器实例
+      Get.delete<CheckoutPageController>();// 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         Get.toNamed("/checkout-page");
@@ -696,7 +696,6 @@ class SettlementController extends GetxController with StateMixin {
         if (transactionType == "900") {
           if (FirstString == "3" && SecondString == "11" && resultString == "000" && eventReportString.value.length == 40) {print("进来取消了");
           CancelOrder();
-            //showEasyLoading();
           }else if(resultString.trim() != "000"){
 
             //T10 交通系等待时间超过30-40后自动返回
@@ -858,7 +857,6 @@ class SettlementController extends GetxController with StateMixin {
         var resultData = response['data'];
         if(resultData["requestInfo"] != null && resultData["requestInfo"] != "" ){
           if(resultData["exceptionMessage"] != null && resultData["exceptionMessage"] == ""){
-            //EasyLoading.dismiss();
             print("刷卡到这里了么？");
             //showPosEasyLoading();
 
@@ -914,7 +912,6 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) async {
       var response = json.decode(val.toString());//print("发送取消请求");
       LogUtil.d(response);
-      //EasyLoading.dismiss();
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         this._socket?.write(response['data']);
@@ -923,7 +920,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 //刷卡机nfc支付汇报
   CreditCardPayReport(eventString) {
-    //showEasyLoading();
+
     posResultReportData.value["result"] = true;
     posResultReportData.value["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport', method: 'POST', parameters: posResultReportData.value).then((val) {
@@ -976,7 +973,6 @@ class SettlementController extends GetxController with StateMixin {
   //去打印小票
   doPrintOrderMenu(printType,{retry = true}) async {
     debugPrint("doPrintOrderMenu");
-
     // if (isCash) {
     //   //现金支付 次のステップに進みます
     //   printGoNext();
@@ -1043,7 +1039,6 @@ class SettlementController extends GetxController with StateMixin {
           if (retry) {
             doPrintOrderMenu(printType,retry: false);
           }
-          //EasyLoading.dismiss();
         }
       })
       .catchError((e) {
@@ -1054,7 +1049,7 @@ class SettlementController extends GetxController with StateMixin {
           _checkOutErrorHandle(GString.getToString(
               checkLanguage.value, "tag_print_content_paper_error"));
         }
-        //EasyLoading.dismiss();
+
       });
     } else {
 
@@ -1131,9 +1126,14 @@ class SettlementController extends GetxController with StateMixin {
         //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
         //Get.find<MenuPageController>().getBookingBootMenu();
       } else if (machineMode.value == "3"){
+
         Get.find<SelfCheckoutscanningcodeController>().clearCartList();
-      }
-      else if (machineMode.value == "2") {
+        await Future.delayed(Duration(milliseconds: 300), () {
+          showEasyLoading();//clearCartList 会隐藏Loading 需要再次打开显示
+        });
+
+
+      } else if (machineMode.value == "2") {
         if (Get.isRegistered<MenuPageController>()) {
           MenuPageController controller = Get.find<MenuPageController>();
           if (controller.mealType.value) {
