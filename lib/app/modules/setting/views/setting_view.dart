@@ -336,7 +336,7 @@ class SettingView extends GetView<SettingController> {
                   Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
                 },
                 child: Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.height(50), right: ScreenAdapter.height(50)),
+                  padding: EdgeInsets.only(left: ScreenAdapter.height(15), right: ScreenAdapter.height(15)),
                   margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                   //设置 child 居中
                   alignment: Alignment(0, 0),
@@ -352,7 +352,7 @@ class SettingView extends GetView<SettingController> {
                     //border: new Border.all(width: 1, color: Colors.red),
                   ),
                   child: Text(
-                      "領収書",
+                      "領収書再印刷",
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(24),

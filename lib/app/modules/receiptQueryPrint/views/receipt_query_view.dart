@@ -434,7 +434,7 @@ class ReceiptQueryView extends GetView<ReceiptQueryController> {
                           borderRadius: new BorderRadius.circular((16.0)),
                         ),
                         child: Text(
-                            "プリント",
+                            "再印刷",
                             style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(28),
