@@ -22,6 +22,7 @@ import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
+import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 
@@ -368,12 +369,20 @@ class SettingController extends GetxController with StateMixin {
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if (machine_mode.value == "1") {
       menuPagecontroller.clearCartList();
+      if (Get.isRegistered<MenuPageController>())
       Get.delete<MenuPageController>(); // 手动删除控制器实例
     } else if (machine_mode.value == "2") {
-      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      if (Get.isRegistered<CheckoutPageController>()) {
+        Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      }
     } else if (machine_mode.value == "3") {
+      if (Get.isRegistered<SelfCheckoutscanningcodeController>())
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+
+      if (Get.isRegistered<SelfservicePageController>())
+      Get.delete<SelfservicePageController>();
     }
+    if (Get.isRegistered<SettingController>())
     Get.delete<SettingController>(); // 手动删除控制器实例
     FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
       "machineCode":machineCode.value,
