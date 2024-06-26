@@ -1444,7 +1444,7 @@ class SystemSettingPageView extends GetView {
                                     "${controller.wlan_print_ip_Two.value}:",
                                     style: TextStyle(
                                       fontFamily: 'NotoSansJP',
-                                      fontSize: ScreenAdapter.fontSize(22),
+                                      fontSize: ScreenAdapter.fontSize(20),
                                       color: ColorsUtil.hexToColor("#FFFFFF"),
                                     )
                                 ),
@@ -1452,7 +1452,7 @@ class SystemSettingPageView extends GetView {
                                     "${controller.wlan_print_port_Two.value}",
                                     style: TextStyle(
                                       fontFamily: 'NotoSansJP',
-                                      fontSize: ScreenAdapter.fontSize(22),
+                                      fontSize: ScreenAdapter.fontSize(20),
                                       color: ColorsUtil.hexToColor("#FFFFFF"),
                                     )
                                 )
