@@ -396,8 +396,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       dining_type.value = dining_type_tmp;
     _updateSystemSetting("diningType", dining_type_tmp);
     if(machine_mode == "1"){
+      if (Get.isRegistered<OrderHomeController>())
       Get.find<OrderHomeController>().getSystemSettingInfo();
     }else if(machine_mode == "2"){
+      if (Get.isRegistered<CheckoutPageController>())
       Get.find<CheckoutPageController>().getSystemSettingInfo();
     }
 
@@ -407,6 +409,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     menu_direction.value = checkedType;
     _updateSystemSetting("menuDirection", checkedType);
+    if(Get.isRegistered<OrderHomeController>())
     Get.find<OrderHomeController>().getSystemSettingInfo();
   }
 
