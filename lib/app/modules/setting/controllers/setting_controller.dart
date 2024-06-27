@@ -29,7 +29,7 @@ import '../../menuPage/controllers/menu_page_controller.dart';
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-  MenuPageController menuPagecontroller = Get.put(MenuPageController());
+  //MenuPageController menuPagecontroller = Get.put(MenuPageController());
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
   RxString machineCode = "".obs;
@@ -368,9 +368,10 @@ class SettingController extends GetxController with StateMixin {
   goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if (machine_mode.value == "1") {
-      menuPagecontroller.clearCartList();
-      if (Get.isRegistered<MenuPageController>())
-      Get.delete<MenuPageController>(); // 手动删除控制器实例
+      if (Get.isRegistered<MenuPageController>()) {
+        Get.find<MenuPageController>().clearCartList();
+        Get.delete<MenuPageController>();
+      }// 手动删除控制器实例
     } else if (machine_mode.value == "2") {
       if (Get.isRegistered<CheckoutPageController>()) {
         Get.delete<CheckoutPageController>(); // 手动删除控制器实例
