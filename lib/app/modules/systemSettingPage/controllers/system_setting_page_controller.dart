@@ -395,6 +395,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
       dining_type.value = dining_type_tmp;
     _updateSystemSetting("diningType", dining_type_tmp);
+    //该处逻辑需要修改，如果切换模式会有获取不到Controller的问题。
     if(machine_mode == "1"){
       if (Get.isRegistered<OrderHomeController>())
       Get.find<OrderHomeController>().getSystemSettingInfo();
