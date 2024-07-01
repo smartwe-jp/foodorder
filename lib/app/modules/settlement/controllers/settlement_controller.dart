@@ -973,10 +973,6 @@ class SettlementController extends GetxController with StateMixin {
   //去打印小票
   doPrintOrderMenu(printType,{retry = true}) async {
     debugPrint("doPrintOrderMenu");
-    // if (isCash) {
-    //   //现金支付 次のステップに進みます
-    //   printGoNext();
-    // }
 
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
@@ -1030,9 +1026,8 @@ class SettlementController extends GetxController with StateMixin {
               createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
-          //if (!isCash) {
+
           printGoNext();
-          //}
 
         } else {
           //错误后重新调用一次
@@ -1127,11 +1122,7 @@ class SettlementController extends GetxController with StateMixin {
         //Get.find<MenuPageController>().getBookingBootMenu();
       } else if (machineMode.value == "3"){
 
-        Get.find<SelfCheckoutscanningcodeController>().clearCartList();
-        await Future.delayed(Duration(milliseconds: 300), () {
-          showEasyLoading();//clearCartList 会隐藏Loading 需要再次打开显示
-        });
-
+        Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
 
       } else if (machineMode.value == "2") {
         if (Get.isRegistered<MenuPageController>()) {
