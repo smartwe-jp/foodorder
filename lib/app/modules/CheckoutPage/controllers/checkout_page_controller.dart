@@ -300,7 +300,9 @@ class CheckoutPageController extends GetxController with StateMixin {
     if(scanQrCodeController.text !=""){
       //_showOrderEasyLoading();
       if(scanQrCodeController.text.contains('?p=') == true){
-        _orderkey = scanQrCodeController.text.substring(scanQrCodeController.text.length-21);
+        //_orderkey = scanQrCodeController.text.substring(scanQrCodeController.text.length-21);
+        RegExp regExp = new RegExp(r"\?p=(.*)");
+        _orderkey = regExp.stringMatch(scanQrCodeHomeController.text).toString().substring(3);
       }
       //自定义声音
       //playQRScannerSound();
@@ -337,8 +339,10 @@ class CheckoutPageController extends GetxController with StateMixin {
     var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
     if(scanQrCodeHomeController.text !=""){
       //_showOrderEasyLoading();
-      if(scanQrCodeHomeController.text.contains('?p=') == true){
-        _orderkey = scanQrCodeHomeController.text.substring(scanQrCodeHomeController.text.length-21);
+      if(_orderkey.contains('?p=') == true){
+        //正则实现截取'?p='之后的字符串
+        RegExp regExp = new RegExp(r"\?p=(.*)");
+        _orderkey = regExp.stringMatch(scanQrCodeHomeController.text).toString().substring(3);
       }
       //自定义声音
       //playQRScannerSound();
