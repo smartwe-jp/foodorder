@@ -41,6 +41,7 @@ class SettingController extends GetxController with StateMixin {
   RxMap cashInfoList = {}.obs;
   RxList lastTotalList = [].obs;
   RxMap depositData = {}.obs;
+  RxList mailList = [].obs;
 
   RxBool switchValue = false.obs;
 

@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller.dar
 import 'package:foodorder/app/modules/setting/views/AdjustModalView.dart';
 import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
 import 'package:foodorder/app/modules/setting/views/NumberListView.dart';
+import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/modules/setting/views/SegmentControl.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -557,7 +558,40 @@ class CashSettingViewState extends State<CashSettingView> {
                         ),
                       ),
                       Container(
+                        alignment: Alignment.center,
                         height: 80,
+                        child: InkWell(
+                          highlightColor: Colors.transparent, // 透明色
+                          splashColor: Colors.transparent, // 透明色
+                          onTap: (){
+                            // controller.showCashDetail(_detail);
+                            log("レジ締め");
+                            showRejishimeView();
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: ScreenAdapter.width(180),
+                            height: ScreenAdapter.height(60),
+
+                            //边框设置
+                            decoration: new BoxDecoration(
+                              //背景
+                              color: ColorsUtil.hexToColor("#dca550"),
+                              //设置四周圆角 角度
+                              borderRadius: BorderRadius.all(Radius.circular(30)),
+                              //设置四周边框
+                              //border: new Border.all(width: 1, color: Colors.red),
+                            ),
+                            child: Text(
+                                "レジ締め",
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )
+                            ),
+                          ),
+                        ),
                       ),
 
                     ]
@@ -566,6 +600,12 @@ class CashSettingViewState extends State<CashSettingView> {
           ),
         ],
       ),
+    );
+  }
+
+  showRejishimeView() async {
+    Get.dialog(
+        RejishiMeRequestView()
     );
   }
 
