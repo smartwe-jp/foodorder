@@ -14,13 +14,13 @@ class ReceiptConstrainedBox extends StatelessWidget with ATempWidget {
   Widget build(BuildContext context) {
     return Container(
       color: Colors.white,
-      width: 550.w,
+      width: 385.w,
       child: child,
     );
   }
 
   @override
-  int get pixelPagerWidth => 550;
+  int get pixelPagerWidth => 385;
 
   @override
   double get pixelRatio => 1 / 1.w;
