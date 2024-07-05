@@ -979,7 +979,7 @@ class SettlementController extends GetxController with StateMixin {
         printType = "1";
     }
 
-    var printStatus = 0;//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为0
+    var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
         "orderId": orderId.value,
