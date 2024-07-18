@@ -77,6 +77,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   RxBool printDirection = false.obs;
   RxBool printTwoDirection = false.obs;
+  RxBool printThreeDirection = false.obs;
+  RxDouble printLabelWidth = 400.0.obs;
 
   @override
   void onInit() {
@@ -112,6 +114,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Map wlanPrintSettingInfoTwo = await HomeServices.getWlanPrintSettingTwoInfo();
     printDirection.value = await HomeServices.getPrintDirection() == "1" ? true : false;
     printTwoDirection.value = await HomeServices.getPrintTwoDirection() == "1" ? true : false;
+    printThreeDirection.value = await HomeServices.getPrintThreeDirection() == "1" ? true : false;
+    printLabelWidth.value = await HomeServices.getLabelPrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
 
@@ -729,7 +733,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
     } else if (index == 2) {
       await HomeServices.setPrintTwoDirection(direction);
       printTwoDirection.value = direction == "1" ? true : false;
+    } else if (index == 3) {
+      await HomeServices.setPrintThreeDirection(direction);
+      printThreeDirection.value = direction == "1" ? true : false;
     }
+    update();
+  }
+
+  setLabelPrintSize(width) async {
+    printLabelWidth.value = width;
+    await HomeServices.setLabelPrintWidth(width);
     update();
   }
 

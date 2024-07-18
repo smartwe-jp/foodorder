@@ -6,9 +6,17 @@ class Storage{
        SharedPreferences sp=await SharedPreferences.getInstance();
        sp.setString(key, value);
   }
+  static Future<void> setDouble(key,value) async{
+    SharedPreferences sp=await SharedPreferences.getInstance();
+    sp.setDouble(key, value);
+  }
   static Future<String?> getString(key) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
        return sp.getString(key);
+  }
+  static Future<double?> getDouble(key) async{
+    SharedPreferences sp=await SharedPreferences.getInstance();
+    return sp.getDouble(key);
   }
   static Future<void> setBool(key,value) async{
     SharedPreferences sp=await SharedPreferences.getInstance();
