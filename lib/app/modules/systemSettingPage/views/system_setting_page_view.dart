@@ -2011,8 +2011,8 @@ class SystemSettingPageView extends GetView {
                     border: TableBorder.all(),
                     columnWidths: const <int, TableColumnWidth>{
                       //0: IntrinsicColumnWidth(),
-                      0:FlexColumnWidth(30),
-                      1: FixedColumnWidth(970),
+                      0: FixedColumnWidth(40),
+                      1: FlexColumnWidth(970),
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: <TableRow>[
@@ -2046,8 +2046,8 @@ class SystemSettingPageView extends GetView {
                               border: TableBorder.all(),
                               columnWidths: const <int, TableColumnWidth>{
                                 //0: IntrinsicColumnWidth(),
-                                0:FlexColumnWidth(300),
-                                1: FixedColumnWidth(750),
+                                0:FlexColumnWidth(200),
+                                1: FlexColumnWidth(750),
                               },
                                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                 children: <TableRow>[
@@ -2274,8 +2274,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(300),
-                                      1: FixedColumnWidth(750),
+                                      0:FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2350,8 +2350,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(300),
-                                      1: FixedColumnWidth(750),
+                                      0: FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2388,8 +2388,8 @@ class SystemSettingPageView extends GetView {
                       border: TableBorder.all(),
                       columnWidths: const <int, TableColumnWidth>{
                         //0: IntrinsicColumnWidth(),
-                        0:FlexColumnWidth(300),
-                        1: FixedColumnWidth(750),
+                        0: FlexColumnWidth(258),
+                        1: FlexColumnWidth(750),
                       },
                       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                       children: <TableRow>[
