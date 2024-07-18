@@ -317,7 +317,7 @@ class SettlementController extends GetxController with StateMixin {
       if(payment_method_num.value == "0" || payment_method_num.value == "1"){
         if(machineMode.value == "2") {//精算时候请求
           //print("精算请求了new order id");
-          Get.find<CheckoutPageController>().postNewOrderId();
+          Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
         }else if(machineMode.value == "3"){
           //print("自助精算请求了new order id");
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
@@ -991,6 +991,11 @@ class SettlementController extends GetxController with StateMixin {
         printType = "1";
     }
 
+    if (retry && (payment_method_num.value == "0" || payment_method_num.value == "1")) {
+      printGoNext();
+      await Future.delayed(Duration(milliseconds: 2000));
+    }
+
     var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
@@ -1030,7 +1035,7 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            //createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
+            createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
@@ -1038,7 +1043,9 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
 
-          printGoNext();
+          if ((payment_method_num.value != "0" && payment_method_num.value != "1")) {
+            printGoNext();
+          }
 
         } else {
           //错误后重新调用一次
