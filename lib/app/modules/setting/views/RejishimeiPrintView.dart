@@ -141,25 +141,25 @@ class RejishimePrintView extends StatelessWidget {
                     ],
                   }
               ),
-              Container(
-                margin: EdgeInsets.only(top: 20, left: 40,right: 40),
-                height: 1,
-                color: ColorsUtil.hexToColor("#9C9C9C"),
-              ),
+              // Container(
+              //   margin: EdgeInsets.only(top: 20, left: 40,right: 40),
+              //   height: 1,
+              //   color: ColorsUtil.hexToColor("#9C9C9C"),
+              // ),
 
-              _normalTitle("メニュー別売上情報"),
-              _menuSaleInfoTable([
-                ["メニュー1", "10", "¥ 1000"],
-                ["メニュー2", "10", "¥ 1000"],
-                ["メニュー3", "10", "¥ 1000"],
-                ["メニュー4", "10", "¥ 1000"],
-                ["メニュー5", "10", "¥ 1000"],
-                ["メニュー6", "10", "¥ 1000"],
-                ["メニュー7", "10", "¥ 1000"],
-                ["メニュー8", "10", "¥ 1000"],
-                ["メニュー9", "10", "¥ 1000"],
-                ["メニュー10", "10", "¥ 1000"],
-              ]),
+              // _normalTitle("メニュー別売上情報"),
+              // _menuSaleInfoTable([
+              //   ["メニュー1", "10", "¥ 1000"],
+              //   ["メニュー2", "10", "¥ 1000"],
+              //   ["メニュー3", "10", "¥ 1000"],
+              //   ["メニュー4", "10", "¥ 1000"],
+              //   ["メニュー5", "10", "¥ 1000"],
+              //   ["メニュー6", "10", "¥ 1000"],
+              //   ["メニュー7", "10", "¥ 1000"],
+              //   ["メニュー8", "10", "¥ 1000"],
+              //   ["メニュー9", "10", "¥ 1000"],
+              //   ["メニュー10", "10", "¥ 1000"],
+              // ]),
 
 
             ],
@@ -253,47 +253,8 @@ class RejishimePrintView extends StatelessWidget {
         // 3: FlexColumnWidth(200.0),
       },
       children: <TableRow>[
-
         //使用 cashInfoList 初始化 _oneWithMultipleSubTableRows
         ...cashInfoList.entries.map((entry) => _oneWithMultipleSubTableRows(entry.key, entry.value)).toList(growable: false),
-
-
-        // _oneWithMultipleSubTableRows('万円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('五千円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('二千円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('千円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('百円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('五十円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('十円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('五円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
-        // _oneWithMultipleSubTableRows('一円', [
-        //   ['入金',  '1', '¥ 1000'],
-        //   ['出金', '1', '¥ 500'],
-        // ]),
       ],
     );
   }

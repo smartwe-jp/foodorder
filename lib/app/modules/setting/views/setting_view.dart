@@ -898,8 +898,13 @@ class SettingView extends GetView<SettingController> {
                         ),
 
                         InkWell(
-                          onTap: () {
-                            Get.toNamed('/system-setting-page', arguments: {"machineCode": controller.machineCode.value});
+                          onTap: () async {
+                           final result = await Get.toNamed('/system-setting-page',
+                                arguments: {"machineCode": controller.machineCode.value},
+                            );
+                           if (result != null) {
+                             controller.getSystemSettingInfo();
+                           }
 
                           },
                           child: Container(
@@ -970,6 +975,7 @@ class SettingView extends GetView<SettingController> {
                   ),
                   CashSettingView(cashInfoList:
                   controller.cashInfoList.value,
+                    isAllowRejishime: controller.isAllowRejishime.value,
                     machineCode: controller.machineCode.value,
                     recycleCash: () {
                       controller.recycleCash();

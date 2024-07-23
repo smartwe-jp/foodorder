@@ -262,7 +262,7 @@ class TransitPageController extends GetxController {
       "showPrintType":(SystemSettingInfo["showPrintType"] !="" && SystemSettingInfo["showPrintType"]!=null) ? SystemSettingInfo["showPrintType"] :"0",//0 receipt 1label
       "isAllowWlanPrintTwo":(SystemSettingInfo["isAllowWlanPrintTwo"] !="" && SystemSettingInfo["isAllowWlanPrintTwo"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwo"] :"0",//0 不开打印机 1开打印机
       "isAllowWlanPrintTwoContinuous":(SystemSettingInfo["isAllowWlanPrintTwoContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintTwoContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwoContinuous"] :"1",//0 单票 1连票
-
+      "isAllowRejishime":(SystemSettingInfo["isAllowRejishime"] !="" && SystemSettingInfo["isAllowRejishime"]!=null) ? SystemSettingInfo["isAllowRejishime"] :"0",
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));

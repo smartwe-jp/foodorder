@@ -1873,7 +1873,7 @@ class SystemSettingPageView extends GetView {
                         ),
                         (Route route) => false,
                       );*/
-                      Get.back();
+                      Get.back(result: "setting-back");
                       /*Future.delayed(Duration(milliseconds: 100), () {
                         Navigator.pushNamed(context, '/home');
                       });*/

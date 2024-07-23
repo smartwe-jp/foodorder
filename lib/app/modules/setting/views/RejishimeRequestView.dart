@@ -103,6 +103,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         child: SimpleDialog(
           children: <Widget>[
               Stack(
+                alignment: Alignment.topCenter,
                 children: <Widget>[
                   Container(
                     width: ScreenAdapter.width(680),
