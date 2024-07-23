@@ -1327,7 +1327,6 @@ class SettlementController extends GetxController with StateMixin {
 
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
-    timer?.cancel();
     //await Future.delayed(Duration(milliseconds: 300));
     var executeCount = 0;
     CashStep.value = 2;
@@ -1340,7 +1339,7 @@ class SettlementController extends GetxController with StateMixin {
     //开启倒计时
     _countDownTimer("3");
     stoptimer?.cancel();
-    stoptimer =Timer.periodic(Duration(milliseconds: 550), (Timer stopt) async {
+    stoptimer =Timer.periodic(Duration(milliseconds: 570), (Timer stopt) async {
       stopStatus.value = await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (stopStatus.value == "StopSuccess") {
@@ -1360,15 +1359,15 @@ class SettlementController extends GetxController with StateMixin {
           payCubeCloseTransaction();
         }
       } else if (stopStatus.value == "Error-A0--02") {
-        // debugPrint("get stopStatus==$stopStatus");
+        debugPrint("stopStatus Error-A0--02");
         if (executeCount == 1) {
           await Paycube.sendPutCashDetail;
-          //await Paycube.endPayCube;
         } else {
           await Paycube.endPayCube;
         }
         executeCount++;
-
+      } else if (stopStatus.value == "Sending") {
+        debugPrint("Sending just wait");
       } else {
         await Paycube.endPayCube;
       }

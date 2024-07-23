@@ -103,7 +103,7 @@ class Paycube {
 
   //入金结束
   static Future<String> get endPayCube async {
-
+    payCubeStopCashStatus = "Sending";
     Map<String, Object> map = {'operEvent': 'endPayCube'};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
     return inputAmount;
