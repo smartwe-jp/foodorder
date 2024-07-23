@@ -21,13 +21,15 @@ import '../views/receipt_constrained_box.dart';
 extension SettlementControllerPrinterExtension on SettlementController {
 
   //单票
-  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate){
+  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
     for(var i=0;i<printData.length;i++){
       // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
 
+      final printWidget = await wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip,rotate);
+
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip,rotate) as ATempWidget,
+          tempWidget: printWidget as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
           params: PrinterInfo(ip:printer_ip),
         ),
@@ -36,7 +38,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
     }
   }
 
-  Future<Widget> wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip,rotate) async {
+  wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip,rotate) async {
     var lineHight = 120;
     int menuNum = 0;
     var optionNum = 0;
