@@ -127,6 +127,7 @@ class Paycube {
 
   //交易结束
   static Future<String> get endTrade async {
+    payCubeEndTradeStatus = "Sending";
     Map<String, Object> map = {'operEvent': 'endTradePayCube'};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
     return inputAmount;

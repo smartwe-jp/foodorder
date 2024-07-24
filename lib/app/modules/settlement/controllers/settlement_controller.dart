@@ -1492,9 +1492,10 @@ class SettlementController extends GetxController with StateMixin {
         } else {
           gotonewMenuPage();
         }
-
         endtradet.cancel();
-      }else {
+      } else if (endStatus.value == "Sending") {
+        debugPrint("Sending just wait");
+      } else {
         //sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }
