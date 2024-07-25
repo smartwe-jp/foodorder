@@ -369,6 +369,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   printView(printData) {
 
     Get.dialog(
+        barrierDismissible: false,
        SimpleDialog(
           contentPadding: EdgeInsets.all(0),
         children:[
@@ -404,10 +405,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                       ),
                     ),
                   ]
-
                 )
-
-
               ),
 
               Container(
