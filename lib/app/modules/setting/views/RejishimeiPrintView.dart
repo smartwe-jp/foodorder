@@ -97,10 +97,9 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               _mainTitle( printInfo['shopName'] ?? "Unknown"),
               _normalTitle("レジ番号 : ${printInfo['machineCode'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("印字日時 : ", alignment: Alignment.centerLeft),
-              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("${printInfo['printTime'] ?? "Unknown"}", alignment: Alignment.centerRight),
+              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("${printInfo['startTime'] ?? "Unknown"}　から　\n ${printInfo['endTime'] ?? "Unknown"}　まで"),
-
               //分割线
               Container(
                 margin: EdgeInsets.only(top: 20, left: 40,right: 40),
