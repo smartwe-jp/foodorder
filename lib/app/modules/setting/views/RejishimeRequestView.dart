@@ -141,13 +141,18 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             //_showTag,
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "printticketloading"),
-                  fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
             ),
           ],
         ),
@@ -276,8 +281,15 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
             child: _mailList(),
           ),
           if (isRequesting)
-          Center(
-            child: CircularProgressIndicator(),
+          Expanded(
+            child:
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.white.withOpacity(0.5),
+                borderRadius: BorderRadius.circular(10),
+              ),
+              alignment: Alignment.center,
+            child: CircularProgressIndicator()),
           )
         ],
       ),
@@ -349,7 +361,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   _printRejishime(data, double length) async {
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: data),
-      size: Size(383, length + 200),
+      size: Size(383, length + 150),
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
