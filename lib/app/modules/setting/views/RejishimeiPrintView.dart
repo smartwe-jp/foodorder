@@ -151,8 +151,11 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                 color: ColorsUtil.hexToColor("#9C9C9C"),
               ),
 
-              _normalTitle("現金入出金情報"),
-              _cashInfoTable( printInfo['cashInfo'] ?? {}),
+              if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+                _normalTitle("現金入出金情報"),
+
+              if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+                _cashInfoTable(printInfo['cashInfo']),
             ],
 
     );
