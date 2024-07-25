@@ -311,10 +311,10 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
-        showToast('回收成功');
+        showToast('リサイクル成功');
         _getChangeState();
       } else {
-        showToast('回收失败');
+        showToast('リサイクルに失敗しました');
       }
     });
   }
