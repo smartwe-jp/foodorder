@@ -5,18 +5,48 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 
-class RejishimePrintView extends StatelessWidget {
+class RejishimePrintView extends StatefulWidget {
 
+  final Map printInfo;
   final bool isPrint;
+  final Function(double)? lengthUpdate;
+  RejishimePrintView({super.key, this.isPrint = false, required this.printInfo, this.lengthUpdate});
+  @override
+  RejishimePrintViewState createState() => RejishimePrintViewState();
+}
 
-  const RejishimePrintView({super.key, this.isPrint = false});
+class RejishimePrintViewState extends State<RejishimePrintView> {
 
 
+  ScrollController _scrollController = ScrollController();
+  double contentLength = 0.0;
+  Map printInfo = {};
+  bool isPrint = false;
 
   @override
   Widget build(BuildContext context) {
     // TODO: implement build
     return isPrint ? printView() : showView();
+  }
+
+
+  @override
+  void initState() {
+    printInfo = widget.printInfo;
+    isPrint = widget.isPrint;
+    super.initState();
+    // 在布局完成后获取内容长度
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_scrollController.hasClients) {
+        setState(() {
+          contentLength = _scrollController.position.maxScrollExtent +
+              _scrollController.position.viewportDimension;
+        });
+      }
+      if (widget.lengthUpdate != null) {
+        widget.lengthUpdate!(contentLength);
+      }
+    });
   }
 
   Widget _mainTitle(String title) {
@@ -39,24 +69,37 @@ class RejishimePrintView extends StatelessWidget {
 
   Widget printView() {
     return Container(
-        padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 80),
+        padding: EdgeInsets.only(left: 0, right: 0, top: 20, bottom: 80),
         child: _miroWidget()
     );
   }
 
   Widget showView() {
     return SingleChildScrollView(
+        controller: _scrollController,
         padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 80),
         child: _miroWidget()
     );
+  }
+
+  String formatSum(sum) {
+    if (sum == null) return "Unknown";
+    List<String> parts = sum.toString().split('.');
+    parts[0] = parts[0].replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+    return parts.join('.');
   }
 
   Widget _miroWidget() {
 
     return  Column(
             children: [
-              _mainTitle("甘蘭牛肉麺 大阪日本橋店"),
-              _normalTitle("精算期間：2024年7月1日10:00~2024年7月1日23:00"),
+              _mainTitle( printInfo['shopName'] ?? "Unknown"),
+              _normalTitle("号機 : ${printInfo['machineCode'] ?? "Unknown"}", alignment: Alignment.centerLeft),
+              _normalTitle("印字日時 : ", alignment: Alignment.centerLeft),
+              _normalTitle("${printInfo['printTime'] ?? "Unknown"}", alignment: Alignment.centerRight),
+              _normalTitle("${printInfo['startTime'] ?? "Unknown"}　から　\n ${printInfo['endTime'] ?? "Unknown"}　まで"),
+              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
 
               //分割线
               Container(
@@ -74,20 +117,29 @@ class RejishimePrintView extends StatelessWidget {
                         children: [
                           _normalTitle("販売実績"),
 
-                          _twoContentRow("総売上", "¥ 200,000"),
-                          _twoContentRow("税抜", "¥ 190,000"),
-                          _twoContentRow("消費税", "¥ 10,000"),
-                          _twoContentRow("8%对象", "¥ 1000",leading: 45.0),
-                          _twoContentRow("10%对象", "¥ 9000",leading: 45.0),
+                          _twoContentRow("総売上", "¥ ${formatSum(printInfo['total'])}"),
+                          _twoContentRow("税抜", "¥ ${formatSum(printInfo['noTaxTotal'])}"),
+                          _twoContentRow("消費税", "¥ ${formatSum(printInfo['taxTotal'])}"),
+                          _twoContentRow("8%对象", "¥ ${formatSum(printInfo['taxTotalA'])}",leading: 45.0),
+                          _twoContentRow("10%对象", "¥ ${formatSum(printInfo['taxTotalB'])}",leading: 45.0),
+                          _twoContentRow("販売数量", "${formatSum(printInfo['qty'])}"),
+                          _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",leading: 45.0),
+                          _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",leading: 45.0),
                           Container(
                             margin: EdgeInsets.only(top: 20),
                             height: 1,
                             color: ColorsUtil.hexToColor("#9C9C9C"),
                           ),
-                          _twoContentRow("現金", "¥ 10,000"),
-                          _twoContentRow("クレジットカード", "¥ 1000"),
-                          _twoContentRow("電子マネー", "¥ 100"),
-                          _twoContentRow("その他", "¥ 100,000"),
+                          _twoContentRow("現金", "¥ ${formatSum(printInfo['cashTotal'])}"),
+                          _twoContentRow("クレジットカード", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
+                          _twoContentRow("PayPay", "¥ ${formatSum(printInfo['payPayTotal'])}"),
+                          _twoContentRow("AliPay", "¥ ${formatSum(printInfo['aliPayTotal'])}"),
+                          _twoContentRow("WeChatPay", "¥ ${formatSum(printInfo['wechatTotal'])}"),
+                          _twoContentRow("r_Pay", "¥ ${formatSum(printInfo['r_PayTotal'])}"),
+                          _twoContentRow("au_Pay", "¥ ${formatSum(printInfo['au_PayTotal'])}"),
+                          _twoContentRow("d_Pay", "¥ ${formatSum(printInfo['d_PayTotal'])}"),
+                          _twoContentRow("m_Pay", "¥ ${formatSum(printInfo['m_PayTotal'])}"),
+                          _twoContentRow("交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
                         ],
                       )
                 ),
@@ -101,74 +153,15 @@ class RejishimePrintView extends StatelessWidget {
               ),
 
               _normalTitle("現金入出金情報"),
-              _cashInfoTable(
-                  {
-                    '万円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '五千円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '二千円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '千円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '百円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '五十円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '十円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '五円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                    '一円': [
-                      ['入金',  '1', '¥ 1000'],
-                      ['出金', '1', '¥ 500'],
-                    ],
-                  }
-              ),
-              // Container(
-              //   margin: EdgeInsets.only(top: 20, left: 40,right: 40),
-              //   height: 1,
-              //   color: ColorsUtil.hexToColor("#9C9C9C"),
-              // ),
-
-              // _normalTitle("メニュー別売上情報"),
-              // _menuSaleInfoTable([
-              //   ["メニュー1", "10", "¥ 1000"],
-              //   ["メニュー2", "10", "¥ 1000"],
-              //   ["メニュー3", "10", "¥ 1000"],
-              //   ["メニュー4", "10", "¥ 1000"],
-              //   ["メニュー5", "10", "¥ 1000"],
-              //   ["メニュー6", "10", "¥ 1000"],
-              //   ["メニュー7", "10", "¥ 1000"],
-              //   ["メニュー8", "10", "¥ 1000"],
-              //   ["メニュー9", "10", "¥ 1000"],
-              //   ["メニュー10", "10", "¥ 1000"],
-              // ]),
-
-
+              _cashInfoTable( printInfo['cashInfo'] ?? {}),
             ],
 
     );
   }
 
-  Widget _normalTitle(String title) {
+  Widget _normalTitle(String title, {alignment = Alignment.center}) {
     return Container(
+      alignment: alignment,
       margin: EdgeInsets.only(top: 20),
       child: Directionality(
       textDirection: TextDirection.ltr,
@@ -227,17 +220,31 @@ class RejishimePrintView extends StatelessWidget {
   }
 
 
-  _cashInfoTableHeader() {
+  _cashInfoTables(cashInfo) {
+
+    final displayInfo = cashInfo.entries.map((entry) {
+      String key = entry.key;
+      Map value = entry.value;
+      return [
+        key,
+        value['backup'] ?? '',
+        value['income'] ?? '',
+        value['remain'] ?? '',
+      ];
+    }).toList();
+
     return Table(
       border: TableBorder.all(width: 1.0, color: Colors.grey.shade400),
       columnWidths: const <int, TableColumnWidth>{
         0: FixedColumnWidth(100.0),
         1: FlexColumnWidth(150.0),
-        2: FixedColumnWidth(100.0),
-        3: FlexColumnWidth(200.0),
+        2: FlexColumnWidth(150.0),
+        3: FlexColumnWidth(150.0),
       },
       children: <TableRow>[
-        _tableRow(['金種', '科目', '枚数', '金額'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
+        _tableRow(['金種', '备份', '入金', '出金'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
+        ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
+
       ],
     );
   }
@@ -260,16 +267,12 @@ class RejishimePrintView extends StatelessWidget {
   }
 
   Widget _cashInfoTable(Map cashInfo) {
+
     return Container(
       padding: EdgeInsets.only(top: 20,),
       child: Directionality(
       textDirection: TextDirection.ltr,
-      child:Column(
-          children: [
-            _cashInfoTableHeader(),
-            _cashInfoTableBody(cashInfo),
-          ],
-        ),
+      child: _cashInfoTables(cashInfo),
       ));
   }
 
@@ -297,10 +300,10 @@ class RejishimePrintView extends StatelessWidget {
     ));
   }
 
-  TableRow _tableRow(List<String> contentList, {backgroundColor = Colors.white}) {
+  TableRow _tableRow(List<dynamic> contentList, {backgroundColor = Colors.white, alignment = Alignment.center}) {
     return TableRow(
       children: contentList
-          .map((content) => _tableItem(content, backgroundColor: backgroundColor ))
+          .map((content) => _tableItem(content, backgroundColor: backgroundColor, alignment: alignment))
           .toList(growable: false),
     );
   }
@@ -328,19 +331,19 @@ class RejishimePrintView extends StatelessWidget {
     );
   }
 
-  Widget _tableItem(String content, {backgroundColor = Colors.white}) {
+  Widget _tableItem(String content, {backgroundColor = Colors.white, alignment = Alignment.center}) {
     return Container(
       padding: EdgeInsets.all(8.0),
       height: 60,
-      alignment: Alignment.centerLeft,
+      alignment: alignment,
       color: backgroundColor,
       child: Directionality(
       textDirection: TextDirection.ltr,
       child:Text(content,
             style: TextStyle(
-              fontFamily: 'NotoSansJP',
+              fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(24),
-              fontWeight: FontWeight.w500,
+              fontWeight: FontWeight.w400,
               color: Colors.black,
             )),
     ));

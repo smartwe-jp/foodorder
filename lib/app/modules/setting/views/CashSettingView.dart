@@ -58,12 +58,14 @@ class CashSettingViewState extends State<CashSettingView> {
   String _allDepositSum = "";
   String _outSetSum = "";
   String _remainingSum = "";
+  String _machineCode = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _cashInfoList = widget.cashInfoList ?? {};
+    _machineCode = widget.machineCode;
     _getAllDepositSum();
     _getOusetSum();
     _getRemainingSum();
@@ -618,7 +620,9 @@ class CashSettingViewState extends State<CashSettingView> {
 
   showRejishimeView() async {
     Get.dialog(
-        RejishiMeRequestView()
+        RejishiMeRequestView(machineCode: _machineCode, resetCash: (){
+          widget.resetCash();
+        },)
     );
   }
 

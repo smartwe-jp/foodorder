@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
+import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -21,6 +22,11 @@ import '../../settlement/views/receipt_constrained_box.dart';
 
 class RejishiMeRequestView extends StatefulWidget {
 
+  final String machineCode;
+  final Function resetCash;
+
+  const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash});
+
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
 
@@ -28,11 +34,13 @@ class RejishiMeRequestView extends StatefulWidget {
 
 class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
-  List mailList = [];
+  List mailInfo = [];
   bool isRequesting = true;
   bool isSelected = false;
   String selectMail = "";
-  GlobalKey _containerKey = GlobalKey();
+  String selectUser = "";
+  double printLength = 2352;
+  Function _resetCash = () {};
 
 
 
@@ -40,7 +48,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
   @override
   void initState() {
-
+    _resetCash = widget.resetCash;
     super.initState();
     _loadMailAddress();
   }
@@ -48,22 +56,77 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
   _loadMailAddress() async {
 
-    await Future.delayed(Duration(seconds: 1));
-    mailList = ["mail1@gmail.com","mail2@gmail.com","mail3@gmail.com"];
+      final param = {
+        "machineCode": widget.machineCode,
+      };
+      request('webBootEmailList', method: 'POST', parameters: param)
+          .then((val) {
+        var response = json.decode(val.toString());
+
+        if (response != null &&
+            response['code'] == 200 &&
+            null != response['data']) {
+          mailInfo = response['data'];
+          setState(() {
+            isRequesting = false;
+          });
+        } else {
+          showToast('获取失败');
+        }
+      });
+
+  }
+
+  _sendVerifyCode() async {
     setState(() {
-      isRequesting = false;
+      isRequesting = true;
+    });
+    final param = {
+      "machineCode": widget.machineCode,
+      "verifyEmail": selectMail,
+      "verifyUserName": selectUser,
+    };
+    request('webBootAdminVerify', method: 'POST', parameters: param)
+        .then((val) {
+      var response = json.decode(val.toString());
+      setState(() {
+        isRequesting = false;
+      });
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+        setState(() {
+          isSelected = true;
+        });
+      } else {
+        showToast('確認コードの送信に失敗しました');
+      }
     });
   }
 
-  _requestShimeInfo() async {
+  _requestShimeInfo(code) async {
     _showEasyLoading();
-    await Future.delayed(Duration(seconds: 2));
-    EasyLoading.dismiss();
 
-    //Navigator.pop(context);
-    Get.back();
+    final param = {
+      "machineCode": widget.machineCode,
+      "verifyCode": code,
+      "verifyUserName": selectUser,
+    };
 
-    printView();
+    request('webBootRejishimeiPrintInfo', method: 'POST', parameters: param)
+        .then((val) {
+      EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+
+        Get.back();
+        printView(response['data']);
+      } else {
+        showToast('印刷情報の取得に失敗しました');
+      }
+    });
   }
 
   _showEasyLoading() {
@@ -116,7 +179,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                         Text("確認コードは電子メール アドレス $selectMail に送信されました。",
                             style:
                         TextStyle(fontSize:
-                            ScreenAdapter.fontSize(28),
+                            ScreenAdapter.fontSize(26),
                             fontFamily: GFont.getFontFamily(),
                             fontWeight: FontWeight.w600),
                             textAlign: TextAlign.center,
@@ -169,7 +232,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                               return;
                             }
 
-                            _requestShimeInfo();
+                            _requestShimeInfo(_verifyCodeController.text);
 
 
                           },
@@ -224,52 +287,69 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   Widget _mailList() {
     return Padding(
       padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.w),
-      child:
+      child: Column(
+        children: [
 
-      mailList.length == 0 && !isRequesting
-          ?  Center(
-              child: ElevatedButton(
-                onPressed: () {
-                  setState(() {
-                    isRequesting = true;
-                  });
-                  _loadMailAddress();
-                },
-                child: Text('Retry'),
-              ),)
-          :
-      ListView.separated(
-        shrinkWrap: true,
-        itemCount: mailList.length,
-        separatorBuilder: (BuildContext context, int index) {
-          return Divider();
-        },
-        itemBuilder: (BuildContext context, int index) {
-          return Row(
-            children: [
-              const SizedBox(width: 30),
-              Expanded(child: Text(mailList.elementAt(index),style: TextStyle(fontSize: 20))),
-              TextButton(
-                onPressed: () {
-                  setState(() {
-                    selectMail = mailList.elementAt(index);
-                    isSelected = true;
-                  });
-                },
-                child: Text('選択',style: TextStyle(fontSize: 20)),
+          Text(
+            'メールアドレスを選択してください',
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(26),
+                fontFamily: GFont.getFontFamily(),
+                color: ColorsUtil.hexToColor("#000000"),
               ),
-              const SizedBox(width: 30),
-            ],
-          );
-        },
+          ),
+
+           SizedBox(
+              height: 20.w,
+            ),
+          mailInfo.length == 0 && !isRequesting
+              ?  Center(
+            child: ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  isRequesting = true;
+                });
+                _loadMailAddress();
+              },
+              child: Text('Retry'),
+            ),)
+              :
+          ListView.separated(
+            shrinkWrap: true,
+            itemCount: mailInfo.length,
+            separatorBuilder: (BuildContext context, int index) {
+              return Divider();
+            },
+            itemBuilder: (BuildContext context, int index) {
+              return
+                TextButton(
+                  onPressed: () {
+                    setState(() {
+                      selectMail = mailInfo[index]['verifyEmail'] ?? "";
+                      selectUser = mailInfo[index]['verifyUserName'] ?? "";
+                    });
+                    _sendVerifyCode();
+                  },
+                  child: Row(
+                    children: [
+                      Expanded(child: Text(mailInfo[index]['verifyEmail'] ?? "",style: TextStyle(fontSize: 20))),
+                      Text('選択',style: TextStyle(fontSize: 20))
+                    ],
+                  ),
+                );
+            },
+          ),
+        ],
       ),
+
+
     );
   }
 
-  _printRejishime(Size size) async {
+  _printRejishime(data, double length) async {
     ByteData byteData = await WidgetToImage.widgetToImage(
-      RejishimePrintView(isPrint: true),
-      size: Size(383, 2880),
+      RejishimePrintView(isPrint: true, printInfo: data),
+      size: Size(383, length + 200),
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
@@ -279,10 +359,14 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     Future.delayed(Duration(milliseconds: 300), () async {
       await FlutterPluginMsprinter.sendPrintCut("0");
     });
+
+    _resetCash();
+    Get.back();
+
   }
 
 
-  printView() {
+  printView(printData) {
 
     Get.dialog(
        SimpleDialog(
@@ -291,13 +375,6 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
           Column(
 
             children: [
-              Container(//退款小票信息，计算大小用，不显示。
-                child: Offstage(
-                  offstage: true,//不显示
-                  key: _containerKey,
-                  child: RejishimePrintView(isPrint: true),
-                ),
-              ),
 
               Container(
                 padding:EdgeInsets.only(top: 20, left: 20, right: 20, bottom: 20),
@@ -343,7 +420,10 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   border: Border.all(color: ColorsUtil.hexToColor("#000000"), width: 1),
                 ),
 
-                child: RejishimePrintView(),
+                child: RejishimePrintView(printInfo: printData, lengthUpdate: (double length){
+                  print("printLength: $length");
+                  printLength = length;
+                },),
 
               ),
 
@@ -386,13 +466,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   Expanded(
                     child: InkWell(
                       onTap: (){
-                        final RenderBox box = _containerKey.currentContext?.findRenderObject() as RenderBox;
-                        final size = box.size;
-                        Widget? container = _containerKey.currentWidget;
-                        if (container == null) {
-                          return;
-                        }
-                        _printRejishime(size);
+                        _printRejishime(printData,printLength);
                         //Get.back();
                       },
                       child: Container(
