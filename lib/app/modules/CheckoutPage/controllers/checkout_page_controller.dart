@@ -444,7 +444,11 @@ class CheckoutPageController extends GetxController with StateMixin {
     );
   }
 
-  postNewOrderId() {
+  postNewOrderId({orderIdIfTakeOut = ""}) {
+
+    if (orderId.value == "") {
+      orderId.value = orderIdIfTakeOut;
+    }
 
     var formData = {
       "orderId": orderId.value,

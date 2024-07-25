@@ -7,15 +7,16 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 ///标签固定大小限制的容器 (生成尺寸 45 * 70 的标签)
 class LabelConstrainedBox extends StatelessWidget with ATempWidget {
   final Widget child;
+  final double pagerWidth;
 
-  const LabelConstrainedBox(this.child, {Key? key}) : super(key: key);
+  const LabelConstrainedBox(this.child, {Key? key, this.pagerWidth = 384}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     // 384/8纸宽度 232、8纸高度 mm
     return Container(
       color: Colors.white,
-      width: 384.w,
+      width: ScreenUtil().setWidth(pagerWidth),
       height: 232.w,
       child: ColorFiltered(
         colorFilter: const ColorFilter.mode(

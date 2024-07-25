@@ -13,6 +13,7 @@ import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
@@ -154,6 +155,7 @@ class SettlementController extends GetxController with StateMixin {
   RxInt socketNumberTimes = 0.obs;
   RxBool socketPosCancel = false.obs;
 
+  int timeOffset = 0;
   bool posTest = false;
 
   @override
@@ -315,7 +317,7 @@ class SettlementController extends GetxController with StateMixin {
       if(payment_method_num.value == "0" || payment_method_num.value == "1"){
         if(machineMode.value == "2") {//精算时候请求
           //print("精算请求了new order id");
-          Get.find<CheckoutPageController>().postNewOrderId();
+          Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
         }else if(machineMode.value == "3"){
           //print("自助精算请求了new order id");
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
@@ -970,16 +972,31 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
+  getCurrentTime() {
+    int milliseconds = DateTime.now().millisecondsSinceEpoch;
+
+    DateTime date = DateTime.fromMillisecondsSinceEpoch(milliseconds);
+    DateFormat formatter = DateFormat('yyyy-MM-dd HH:mm:ss.SSS');
+
+    String formatted = formatter.format(date);
+
+    return formatted;
+  }
+
   //去打印小票
   doPrintOrderMenu(printType,{retry = true}) async {
     debugPrint("doPrintOrderMenu");
-
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
         printType = "1";
     }
 
-    var printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    if (retry && (payment_method_num.value == "0" || payment_method_num.value == "1")) {
+      printGoNext();
+      await Future.delayed(Duration(milliseconds: 2000));
+    }
+
+    var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
         "orderId": orderId.value,
@@ -998,7 +1015,6 @@ class SettlementController extends GetxController with StateMixin {
       //queryUrl = "webBootToPrintV5";
       //queryUrl = "webBootToPrintV6"; //23新修改小票
       queryUrl = "webBootToPrintV7"; //230704新修改小票
-
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         debugPrint("doPrintOrderMenu==val");
@@ -1027,7 +1043,9 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
 
-          printGoNext();
+          if ((payment_method_num.value != "0" && payment_method_num.value != "1")) {
+            printGoNext();
+          }
 
         } else {
           //错误后重新调用一次
@@ -1179,8 +1197,8 @@ class SettlementController extends GetxController with StateMixin {
       allowStatus.value = await Paycube.getPayCubeAllowCashStatus;
       debugPrint("allowStatus==$allowStatus");
 
+      debugPrint("重试等待次数$connectCount");
       connectCount++;
-      debugPrint("打开次数$connectCount");
       if(connectCount > 50){
         allowt.cancel();
         showCashTimer?.cancel();
@@ -1196,13 +1214,14 @@ class SettlementController extends GetxController with StateMixin {
       // 循环一定要记得设置取消条件，手动取消
       if (allowStatus.value == "AllowSuccess") {
         //如果打开了现金机，则去掉倒计时监听
+        allowt.cancel();
         showCashTimer?.cancel();
         seconds.value = 120;
 
         getPutInMoney();
         //getPayCubeBackDataInfo();
 
-        allowt.cancel();
+        //allowt.cancel();
       } else if (allowStatus.value == "Error-F0--16") {
         //allowt.cancel();
         await Paycube.endTrade;
@@ -1308,35 +1327,48 @@ class SettlementController extends GetxController with StateMixin {
 
   //打印小票之后在关闭现金机，所以不考虑_isPrint
   nextOper() async {
+    //await Future.delayed(Duration(milliseconds: 300));
+    var executeCount = 0;
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
     await Paycube.setReceiveEvent;
-    var endStatus = await Paycube.endPayCube;
+    //await Future.delayed(Duration(milliseconds: 350));
+    timeOffset = DateTime.now().millisecondsSinceEpoch;
+    final endStatus = await Paycube.endPayCube;
+    debugPrint("endStatus==$endStatus");
     //开启倒计时
     _countDownTimer("3");
     stoptimer?.cancel();
-    stoptimer =Timer.periodic(Duration(milliseconds: 450), (Timer stopt) async {
+    stoptimer =Timer.periodic(Duration(milliseconds: 570), (Timer stopt) async {
       stopStatus.value = await Paycube.getPayCubeStopCashStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (stopStatus.value == "StopSuccess") {
+        debugPrint("现金机关闭耗时 ${DateTime.now().millisecondsSinceEpoch - timeOffset}毫秒");
         showCashTimer?.cancel();
         seconds.value = 180;
         timer?.cancel();
+        stopt.cancel();
         //如果投币金额大于待支付总金额
         if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
           giveChangeMoney.value = int.parse(getPutMoney.value) - int.parse(totalPrice.value);
-
+          //gotonewMenuPage();
           //找零
           startOutPutMoney(giveChangeMoney.value);
         } else {
           //已经结束入金，处理取引终了
           payCubeCloseTransaction();
         }
-
-        stopt.cancel();
-      }/* else if (stopStatus.value == "error-A0--02") {
-
-      }*/else {
+      } else if (stopStatus.value == "Error-A0--02") {
+        debugPrint("stopStatus Error-A0--02");
+        if (executeCount == 1) {
+          await Paycube.sendPutCashDetail;
+        } else {
+          await Paycube.endPayCube;
+        }
+        executeCount++;
+      } else if (stopStatus.value == "Sending") {
+        debugPrint("Sending just wait");
+      } else {
         await Paycube.endPayCube;
       }
     });
@@ -1355,6 +1387,7 @@ class SettlementController extends GetxController with StateMixin {
       outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
       if (outStatus.value == "OutSuccess") {
+        debugPrint("现金机出金耗时 ${DateTime.now().millisecondsSinceEpoch - timeOffset}毫秒");
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         seconds.value = 180;
@@ -1459,9 +1492,10 @@ class SettlementController extends GetxController with StateMixin {
         } else {
           gotonewMenuPage();
         }
-
         endtradet.cancel();
-      }else {
+      } else if (endStatus.value == "Sending") {
+        debugPrint("Sending just wait");
+      } else {
         //sleep(Duration(milliseconds: 200));
         await Paycube.endTrade;
       }

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
@@ -1067,8 +1069,8 @@ class SystemSettingPageView extends GetView {
               border: TableBorder.all(),
               columnWidths: const <int, TableColumnWidth>{
                 //0: IntrinsicColumnWidth(),
-                //0: FlexColumnWidth(100),
-                1: FixedColumnWidth(550),
+                0: FlexColumnWidth(200),
+                1: FlexColumnWidth(550),
               },
               defaultVerticalAlignment: TableCellVerticalAlignment.middle,
               children: <TableRow>[
@@ -1099,7 +1101,10 @@ class SystemSettingPageView extends GetView {
   }
 
   setIsAllowWlanLablePrint() {
-    return Container(
+    return
+      Column(
+          children: [
+            Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Row(
@@ -1251,7 +1256,71 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
-    );
+    ),
+            Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  //0: IntrinsicColumnWidth(),
+                  0: FlexColumnWidth(200),
+                  1: FlexColumnWidth(550),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+
+                  TableRow(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenAdapter.height(80),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "プリント方向",
+                            style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ),
+                        setPrintDirection(3,controller.printThreeDirection),//第二台打印机
+
+                      ]
+                  ),
+
+                ]
+            ),
+            Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  //0: IntrinsicColumnWidth(),
+                  0: FlexColumnWidth(200),
+                  1: FlexColumnWidth(550),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+
+                  TableRow(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenAdapter.height(80),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "プリントサイズ",
+                            style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ),
+                        setLabelPrintSize(),//第二台打印机
+
+                      ]
+                  ),
+
+                ]
+            ),
+          ]
+      );
   }
 
   //设置网络打印机ip
@@ -1477,8 +1546,8 @@ class SystemSettingPageView extends GetView {
                   border: TableBorder.all(),
                   columnWidths: const <int, TableColumnWidth>{
                     //0: IntrinsicColumnWidth(),
-                    //0: FlexColumnWidth(100),
-                    1: FixedColumnWidth(550),
+                    0: FlexColumnWidth(200),
+                    1: FlexColumnWidth(550),
                   },
                   defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                   children: <TableRow>[
@@ -1679,6 +1748,52 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
+    );
+  }
+
+  setLabelPrintSize() {
+
+    final _labelPrintSize = {"50x30":384,"40x30":284};
+
+    return Container(
+        margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+        child: Wrap(
+          spacing: ScreenAdapter.width(15), // 主轴(水平)方向间距
+          children: _labelPrintSize.keys.map((e) {
+            return InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.setLabelPrintSize(_labelPrintSize[e]?.toDouble());
+              },
+              child: Container(
+                //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(140),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: (controller.printLabelWidth.value == _labelPrintSize[e]) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],//
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Text("$e",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.printLabelWidth.value == _labelPrintSize[e]) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    )
+                ),
+              ),
+            );
+          }).toList(),
+        ),
     );
   }
 
@@ -2011,8 +2126,8 @@ class SystemSettingPageView extends GetView {
                     border: TableBorder.all(),
                     columnWidths: const <int, TableColumnWidth>{
                       //0: IntrinsicColumnWidth(),
-                      0:FlexColumnWidth(30),
-                      1: FixedColumnWidth(970),
+                      0: FixedColumnWidth(40),
+                      1: FlexColumnWidth(970),
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: <TableRow>[
@@ -2046,8 +2161,8 @@ class SystemSettingPageView extends GetView {
                               border: TableBorder.all(),
                               columnWidths: const <int, TableColumnWidth>{
                                 //0: IntrinsicColumnWidth(),
-                                0:FlexColumnWidth(300),
-                                1: FixedColumnWidth(750),
+                                0:FlexColumnWidth(200),
+                                1: FlexColumnWidth(750),
                               },
                                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                 children: <TableRow>[
@@ -2274,8 +2389,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(300),
-                                      1: FixedColumnWidth(750),
+                                      0:FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2350,8 +2465,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(300),
-                                      1: FixedColumnWidth(750),
+                                      0: FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2388,8 +2503,8 @@ class SystemSettingPageView extends GetView {
                       border: TableBorder.all(),
                       columnWidths: const <int, TableColumnWidth>{
                         //0: IntrinsicColumnWidth(),
-                        0:FlexColumnWidth(300),
-                        1: FixedColumnWidth(750),
+                        0: FlexColumnWidth(258),
+                        1: FlexColumnWidth(750),
                       },
                       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                       children: <TableRow>[

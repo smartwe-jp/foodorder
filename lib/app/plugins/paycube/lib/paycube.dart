@@ -16,6 +16,8 @@ class Paycube {
   static String payCubeOutMoneyStatus = "Error";
   static String payCubeEndTradeStatus = "Error";
 
+
+
   static void getPayCubeListener() {
     _channel.setMethodCallHandler((call) async {
       print(call.method+"======"+call.arguments);
@@ -101,8 +103,15 @@ class Paycube {
 
   //入金结束
   static Future<String> get endPayCube async {
-
+    payCubeStopCashStatus = "Sending";
     Map<String, Object> map = {'operEvent': 'endPayCube'};
+    final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
+    return inputAmount;
+  }
+
+  static Future<String> get sendPutCashDetail async {
+
+    Map<String, Object> map = {'operEvent': 'sendPutCashDetail'};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
     return inputAmount;
   }
@@ -118,6 +127,7 @@ class Paycube {
 
   //交易结束
   static Future<String> get endTrade async {
+    payCubeEndTradeStatus = "Sending";
     Map<String, Object> map = {'operEvent': 'endTradePayCube'};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
     return inputAmount;
