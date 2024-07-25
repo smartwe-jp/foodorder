@@ -95,11 +95,11 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
     return  Column(
             children: [
               _mainTitle( printInfo['shopName'] ?? "Unknown"),
-              _normalTitle("号機 : ${printInfo['machineCode'] ?? "Unknown"}", alignment: Alignment.centerLeft),
+              _normalTitle("レジ番号 : ${printInfo['machineCode'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("印字日時 : ", alignment: Alignment.centerLeft),
+              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("${printInfo['printTime'] ?? "Unknown"}", alignment: Alignment.centerRight),
               _normalTitle("${printInfo['startTime'] ?? "Unknown"}　から　\n ${printInfo['endTime'] ?? "Unknown"}　まで"),
-              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
 
               //分割线
               Container(
@@ -131,7 +131,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                             color: ColorsUtil.hexToColor("#9C9C9C"),
                           ),
                           _twoContentRow("現金", "¥ ${formatSum(printInfo['cashTotal'])}"),
-                          _twoContentRow("クレジットカード", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
+                          _twoContentRow("クレジット", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
                           _twoContentRow("PayPay", "¥ ${formatSum(printInfo['payPayTotal'])}"),
                           _twoContentRow("AliPay", "¥ ${formatSum(printInfo['aliPayTotal'])}"),
                           _twoContentRow("WeChatPay", "¥ ${formatSum(printInfo['wechatTotal'])}"),
