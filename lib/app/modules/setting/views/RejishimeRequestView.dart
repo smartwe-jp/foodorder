@@ -71,9 +71,16 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
             isRequesting = false;
           });
         } else {
-          showToast('获取失败');
+          showToast('取得に失敗しました');
         }
+      })
+      .catchError((e){
+        setState(() {
+          isRequesting = false;
+        });
+        showToast('取得に失敗しました');
       });
+
 
   }
 
@@ -101,6 +108,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       } else {
         showToast('確認コードの送信に失敗しました');
       }
+    }).catchError((e){
+      setState(() {
+        isRequesting = false;
+      });
+      showToast('確認コードの送信に失敗しました');
     });
   }
 
@@ -124,8 +136,12 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         Get.back();
         printView(response['data']);
       } else {
-        showToast('印刷情報の取得に失敗しました');
+        showToast('レジ情報の取得に失敗しました');
       }
+    })
+    .catchError((e){
+      EasyLoading.dismiss();
+      showToast('レジ情報の取得に失敗しました');
     });
   }
 
@@ -315,16 +331,17 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
               height: 20.w,
             ),
           mailInfo.length == 0 && !isRequesting
-              ?  Center(
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isRequesting = true;
-                });
-                _loadMailAddress();
-              },
-              child: Text('Retry'),
-            ),)
+              ? Expanded(
+                  child: Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isRequesting = true;
+                      });
+                      _loadMailAddress();
+                    },
+                    child: Text('再取得',style: TextStyle(fontSize: 20)),
+            ),))
               :
           ListView.separated(
             shrinkWrap: true,
