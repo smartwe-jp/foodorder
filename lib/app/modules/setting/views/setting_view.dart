@@ -18,6 +18,13 @@ class SettingView extends GetView<SettingController> {
 
   //支付金额展示
   getDepositListShow() {
+    final depositList = {
+      "預り金": controller.depositData.value['deposit_payment'],
+      "現金": controller.depositData.value['deposit_crash'],
+      "Alipay": controller.depositData.value['deposit_alipay'],
+      "PayPay": controller.depositData.value['deposit_paypay'],
+      "WechatPay": controller.depositData.value['deposit_wechat'],
+    };
     return Container(
       margin: EdgeInsets.only(
           top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
@@ -53,100 +60,27 @@ class SettingView extends GetView<SettingController> {
                         //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                       )),
                   child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      
-                      Expanded(
-                        child:
-                        Container(
-                          //width: ScreenAdapter.width(200),
-                          height: ScreenAdapter.height(45),
-                          margin: EdgeInsets.only(
-                              left: ScreenAdapter.width(5),
-                              right: ScreenAdapter.width(5)),
-                          alignment: Alignment.center,
-                          child: Text("預り金",
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(20),
-                                fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              )),
-                        ),
-                      ),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text("現金",
-                            style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                      ),
-                      ),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text("Alipay",
-                            style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                      ),
-                      ),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text("PayPay",
-                            style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                      ),
-                      ),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text("WechatPay",
-                            style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                      ),
-                      )
-                    ],
+                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    children:
+                    depositList.keys.map((key) {
+                      return Expanded(
+                          child: Container(
+                            //width: ScreenAdapter.width(200),
+                            height: ScreenAdapter.height(45),
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(5),
+                                right: ScreenAdapter.width(5)),
+                            alignment: Alignment.center,
+                            child: Text(key,
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(20),
+                                  fontWeight: FontWeight.w600,
+                                  color: ColorsUtil.hexToColor("#000000"),
+                                )),
+                          )
+                      );
+                    }).toList(),
                   ),
                 ),
                 Container(
@@ -160,175 +94,45 @@ class SettingView extends GetView<SettingController> {
                         //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                       )),
                   child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
                     crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                              text: controller.depositData.value['deposit_payment'].toString(),
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
+                    children:
+                    depositList.values.map((value) {
+                      return
+                        Expanded(
+                          child:Container(
+                            //width: ScreenAdapter.width(200),
+                            height: ScreenAdapter.height(45),
+                            margin: EdgeInsets.only(
+                                left: ScreenAdapter.width(5),
+                                right: ScreenAdapter.width(5)),
+                            alignment: Alignment.center,
+                            child: RichText(
+                              text: TextSpan(
+                                  text: value.toString(),
                                   style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
+                                    fontFamily: 'NotoSansJP',
+                                    fontSize: ScreenAdapter.fontSize(22),
                                     fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
+                                    color: ColorsUtil.hexToColor("#000000"),
                                   ),
-                                ),
-                              ]),
-                        ),
-                      )),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                              text: controller.depositData.value['deposit_crash'].toString(),
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
-                                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      )),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                              text: controller.depositData.value['deposit_alipay'].toString(),
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
-                                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      )),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                              text: controller.depositData.value['deposit_paypay'].toString(),
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
-                                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      )),
-                      Expanded(
-                        child:
-                      Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child:  RichText(
-                          text: TextSpan(
-                              text: controller.depositData.value['deposit_wechat'].toString(),
-                              style: TextStyle(
-                                fontFamily: GFont.getFontFamily(),
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
-                                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    fontSize:
-                                    ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor(
-                                        "#000000"),
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      )),
-                    ],
+                                  children: [
+                                    TextSpan(
+                                      text: "円",
+                                      style: TextStyle(
+                                        fontFamily: 'NotoSansJP',
+                                        fontSize:
+                                        ScreenAdapter.fontSize(18),
+                                        fontWeight: FontWeight.w500,
+                                        color: ColorsUtil.hexToColor(
+                                            "#000000"),
+                                      ),
+                                    ),
+                                  ]),
+                            ),
+                          )
+                        );
+                    }).toList(),
                   ),
                 ),
               ],
@@ -357,11 +161,11 @@ class SettingView extends GetView<SettingController> {
                 highlightColor: Colors.transparent, // 透明色
                 splashColor: Colors.transparent, // 透明色
                 onTap: (){
-                  controller.printPreviewReceipt();
-
+                  //controller.printPreviewReceipt();
+                  Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
                 },
                 child: Container(
-                  padding: EdgeInsets.only(left: ScreenAdapter.height(10), right: ScreenAdapter.height(10)),
+                  padding: EdgeInsets.only(left: ScreenAdapter.height(15), right: ScreenAdapter.height(15)),
                   margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                   //设置 child 居中
                   alignment: Alignment(0, 0),
@@ -377,7 +181,7 @@ class SettingView extends GetView<SettingController> {
                     //border: new Border.all(width: 1, color: Colors.red),
                   ),
                   child: Text(
-                      "領収書を再印刷する",
+                      "領収書再印刷",
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(24),
@@ -925,8 +729,13 @@ class SettingView extends GetView<SettingController> {
                         ),
 
                         InkWell(
-                          onTap: () {
-                            Get.toNamed('/system-setting-page', arguments: {"machineCode": controller.machineCode.value});
+                          onTap: () async {
+                           final result = await Get.toNamed('/system-setting-page',
+                                arguments: {"machineCode": controller.machineCode.value},
+                            );
+                           if (result != null) {
+                             controller.getSystemSettingInfo();
+                           }
 
                           },
                           child: Container(
@@ -997,6 +806,7 @@ class SettingView extends GetView<SettingController> {
                   ),
                   CashSettingView(cashInfoList:
                   controller.cashInfoList.value,
+                    isAllowRejishime: controller.isAllowRejishime.value,
                     machineCode: controller.machineCode.value,
                     recycleCash: () {
                       controller.recycleCash();

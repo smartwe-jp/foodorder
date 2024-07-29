@@ -1,9 +1,11 @@
 
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
@@ -19,13 +21,15 @@ import '../views/receipt_constrained_box.dart';
 extension SettlementControllerPrinterExtension on SettlementController {
 
   //单票
-  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip){
+  wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
     for(var i=0;i<printData.length;i++){
       // wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip);
 
+      final printWidget = await wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip,rotate);
+
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: wifiNetPrintReceiptnew(serialNumber,printData[i],takeOut,orderTime,printer_ip) as ATempWidget,
+          tempWidget: printWidget as ATempWidget,
           printTypeEnum: PrintTypeEnum.receipt,
           params: PrinterInfo(ip:printer_ip),
         ),
@@ -34,7 +38,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
     }
   }
 
-  Widget wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip) {
+  wifiNetPrintReceiptnew(serialNumber,orderprintData,takeOut,orderTime,printer_ip,rotate) async {
     var lineHight = 120;
     int menuNum = 0;
     var optionNum = 0;
@@ -273,27 +277,35 @@ extension SettlementControllerPrinterExtension on SettlementController {
     }
 
     // 生成打印图层任务，指定任务类型为标签
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: printMenus,
-    ));
+    return ReceiptConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:
+          Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: printMenus,
+          )
+        ),
+    );
 
 
 
   }
 
   //连票
-  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip){
+  wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
+    final widget = await organizeData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
-        tempWidget: organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) as ATempWidget,
+        tempWidget: widget as ATempWidget,
         printTypeEnum: PrintTypeEnum.receipt,
         params: PrinterInfo(ip:printer_ip),
       ),
     );
   }
-  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip) {
+  organizeData(serialNumber,printData,takeOut,orderTime,printer_ip,rotate) async {
     var categoryVos = printData;
     List<Widget> categoryMenus = [];
     var lineHight = 230;
@@ -588,25 +600,30 @@ extension SettlementControllerPrinterExtension on SettlementController {
         children: categoryMenus,
       ),
     );*/
-
-    return ReceiptConstrainedBox(Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: categoryMenus,
-    ));
+    final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
+    return ReceiptConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: categoryMenus,
+        ))
+    );
 
 
 
   }
 
   //打印label
-  wifiNetworkLabelPrintData(extendPrintVo){
+  wifiNetworkLabelPrintData(extendPrintVo) async {
     var printData = [];
     for(var i=0;i<extendPrintVo.length;i++){
       // 生成打印图层任务，指定任务类型为标签
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: menuData(extendPrintVo[i]) as ATempWidget,
+          tempWidget: await menuData(extendPrintVo[i]) as ATempWidget,
           printTypeEnum: PrintTypeEnum.label,
           params: PrinterInfo(ip:wlan_print_ip.value),
         ),
@@ -621,7 +638,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
 
     Future.delayed(Duration(milliseconds: 1200),() async {
       ByteData byteData = await WidgetToImage.widgetToImage(
-          menuData(orderprintData)
+          await menuData(orderprintData)
       );
 
       Uint8List imageBytes = byteData.buffer.asUint8List();
@@ -637,93 +654,103 @@ extension SettlementControllerPrinterExtension on SettlementController {
 
   }
 
-  Widget menuData(orderprintData) {
+  Future<Widget> menuData(orderprintData) async {
+
+    final printWidth = await HomeServices.getLabelPrintWidth() ?? 384.0;
+    final rotate = await HomeServices.getPrintThreeDirection() == "1" ? pi : 0.0;
+
     return LabelConstrainedBox(
-        Padding(
-          padding: const EdgeInsets.only(
-            //left: 5,
-            top: 2,
-            //right: 5,
-          ),
-          child: Container(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:
+            Padding(
+              padding: const EdgeInsets.only(
+                //left: 5,
+                top: 2,
+                //right: 5,
+              ),
+              child: Container(
 
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              textDirection: TextDirection.ltr,
-              children: [
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  textDirection: TextDirection.ltr,
+                  children: [
 
-                Container(
-                  decoration: BoxDecoration(
-                    //color: Colors.red,
-                    border: Border(
-                      bottom: BorderSide(
-                          color: ColorsUtil.hexToColor("#000000"), width: 2),
-                    ),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    textDirection: TextDirection.ltr,
-                    children: [
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Expanded(child: ConstrainedBox(
-                            constraints: BoxConstraints(
-                              minWidth: ScreenAdapter.width(20),
-                              maxWidth: ScreenAdapter.width(400),
-                              minHeight: ScreenAdapter.height(30),
-                              maxHeight: ScreenAdapter.height(75),
-                            ),
-                            child: AutoSizeText(
-                              "${orderprintData["printTitleText"]}",
-                              style: GoogleFonts.zenKakuGothicAntique(
-                                  fontSize: ScreenAdapter.fontSize(32),
-                                  fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              textAlign: TextAlign.left,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          )
-                          )
-                      ),
-                    ],
-                  ),
-                ),
-
-                Expanded(
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Expanded(child: Container(
-                              /*constraints: BoxConstraints(
-                            minWidth: ScreenAdapter.width(20),
-                            maxWidth: ScreenAdapter.width(400),
-                            minHeight: ScreenAdapter.height(30),
-                            maxHeight: ScreenAdapter.height(210),
-                          ),*/
-                              child: Text(
-                                orderprintData["printText"],
-                                style: GoogleFonts.zenKakuGothicAntique(
-                                    fontSize: ScreenAdapter.fontSize(26),
-                                    fontWeight: FontWeight.w500),
-                                maxLines: 4,
-                                textAlign: TextAlign.left,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            )
-                            )
+                    Container(
+                      decoration: BoxDecoration(
+                        //color: Colors.red,
+                        border: Border(
+                          bottom: BorderSide(
+                              color: ColorsUtil.hexToColor("#000000"), width: 2),
                         ),
-                      ],
-                    )
-                ),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        textDirection: TextDirection.ltr,
+                        children: [
+                          Directionality(
+                              textDirection: TextDirection.ltr,
+                              child: Expanded(child: ConstrainedBox(
+                                constraints: BoxConstraints(
+                                  minWidth: ScreenAdapter.width(20),
+                                  maxWidth: ScreenAdapter.width(400),
+                                  minHeight: ScreenAdapter.height(30),
+                                  maxHeight: ScreenAdapter.height(75),
+                                ),
+                                child: AutoSizeText(
+                                  "${orderprintData["printTitleText"]}",
+                                  style: GoogleFonts.zenKakuGothicAntique(
+                                      fontSize: ScreenAdapter.fontSize(32),
+                                      fontWeight: FontWeight.w500),
+                                  maxLines: 2,
+                                  textAlign: TextAlign.left,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              )
+                              )
+                          ),
+                        ],
+                      ),
+                    ),
 
-              ],
-            ),
-          ),
-        )
+                    Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          textDirection: TextDirection.ltr,
+                          children: [
+                            Directionality(
+                                textDirection: TextDirection.ltr,
+                                child: Expanded(child: Container(
+                                  /*constraints: BoxConstraints(
+                                minWidth: ScreenAdapter.width(20),
+                                maxWidth: ScreenAdapter.width(400),
+                                minHeight: ScreenAdapter.height(30),
+                                maxHeight: ScreenAdapter.height(210),
+                              ),*/
+                                  child: Text(
+                                    orderprintData["printText"],
+                                    style: GoogleFonts.zenKakuGothicAntique(
+                                        fontSize: ScreenAdapter.fontSize(26),
+                                        fontWeight: FontWeight.w500),
+                                    maxLines: 4,
+                                    textAlign: TextAlign.left,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                )
+                                )
+                            ),
+                          ],
+                        )
+                    ),
+
+                  ],
+                ),
+              ),
+            )
+        ),
+        pagerWidth: printWidth,
     );
   }
 

@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller.dar
 import 'package:foodorder/app/modules/setting/views/AdjustModalView.dart';
 import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
 import 'package:foodorder/app/modules/setting/views/NumberListView.dart';
+import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/modules/setting/views/SegmentControl.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
@@ -22,6 +23,7 @@ import '../../systemSettingPage/views/SetPassword.dart';
 class CashSettingView extends StatefulWidget {
 
   final Map? cashInfoList;
+  final bool isAllowRejishime;
   final Function() recycleCash;
   final Function(String, int) adjustCash;
   final Function(String, int) setOutset;
@@ -33,6 +35,7 @@ class CashSettingView extends StatefulWidget {
   final String  machineCode;
   CashSettingView({Key? key,
     required this.cashInfoList,
+    required this.isAllowRejishime,
     required this.recycleCash,
     required this.adjustCash,
     required this.setOutset,
@@ -55,12 +58,14 @@ class CashSettingViewState extends State<CashSettingView> {
   String _allDepositSum = "";
   String _outSetSum = "";
   String _remainingSum = "";
+  String _machineCode = "";
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _cashInfoList = widget.cashInfoList ?? {};
+    _machineCode = widget.machineCode;
     _getAllDepositSum();
     _getOusetSum();
     _getRemainingSum();
@@ -520,45 +525,8 @@ class CashSettingViewState extends State<CashSettingView> {
                         height: 80,
                         //color: Colors.green,
                       ),
-                      Container(
-                        alignment: Alignment.center,
-                        height: 80,
-                        child: InkWell(
-                          highlightColor: Colors.transparent, // 透明色
-                          splashColor: Colors.transparent, // 透明色
-                          onTap: (){
-                            // controller.showCashDetail(_detail);
-                            log("預り金回収");
-                            _recycleAlert();
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(60),
-
-                            //边框设置
-                            decoration: new BoxDecoration(
-                              //背景
-                              color: ColorsUtil.hexToColor("#dca550"),
-                              //设置四周圆角 角度
-                              borderRadius: BorderRadius.all(Radius.circular(30)),
-                              //设置四周边框
-                              //border: new Border.all(width: 1, color: Colors.red),
-                            ),
-                            child: Text(
-                                "預り金回収",
-                                style: TextStyle(
-                                  fontFamily: 'NotoSansJP',
-                                  fontSize: ScreenAdapter.fontSize(22),
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )
-                            ),
-                          ),
-                        ),
-                      ),
-                      Container(
-                        height: 80,
-                      ),
+                      widget.isAllowRejishime ? Container(height: 80,) : recycleButton(),
+                      widget.isAllowRejishime ? rejishimeButton() : Container(height: 80,),
 
                     ]
                 ),
@@ -566,6 +534,95 @@ class CashSettingViewState extends State<CashSettingView> {
           ),
         ],
       ),
+    );
+  }
+
+
+  recycleButton() {
+    return Container(
+      alignment: Alignment.center,
+      height: 80,
+      child: InkWell(
+        highlightColor: Colors.transparent, // 透明色
+        splashColor: Colors.transparent, // 透明色
+        onTap: (){
+          // controller.showCashDetail(_detail);
+          log("預り金回収");
+          _recycleAlert();
+        },
+        child: Container(
+          alignment: Alignment.center,
+          width: ScreenAdapter.width(180),
+          height: ScreenAdapter.height(60),
+
+          //边框设置
+          decoration: new BoxDecoration(
+            //背景
+            color: ColorsUtil.hexToColor("#dca550"),
+            //设置四周圆角 角度
+            borderRadius: BorderRadius.all(Radius.circular(30)),
+            //设置四周边框
+            //border: new Border.all(width: 1, color: Colors.red),
+          ),
+          child: Text(
+              "預り金回収",
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(22),
+                color: ColorsUtil.hexToColor("#FFFFFF"),
+              )
+          ),
+        ),
+      ),
+    );
+  }
+
+  rejishimeButton() {
+    return Container(
+      alignment: Alignment.center,
+      height: 80,
+      child: InkWell(
+        highlightColor: Colors.transparent, // 透明色
+        splashColor: Colors.transparent, // 透明色
+        onTap: (){
+          // controller.showCashDetail(_detail);
+          log("レジ締め");
+          showRejishimeView();
+        },
+        child: Container(
+          alignment: Alignment.center,
+          width: ScreenAdapter.width(180),
+          height: ScreenAdapter.height(60),
+
+          //边框设置
+          decoration: new BoxDecoration(
+            //背景
+            color: ColorsUtil.hexToColor("#dca550"),
+            //设置四周圆角 角度
+            borderRadius: BorderRadius.all(Radius.circular(30)),
+            //设置四周边框
+            //border: new Border.all(width: 1, color: Colors.red),
+          ),
+          child: Text(
+              "レジ締め",
+              style: TextStyle(
+                fontFamily: 'NotoSansJP',
+                fontSize: ScreenAdapter.fontSize(22),
+                color: ColorsUtil.hexToColor("#FFFFFF"),
+              )
+          ),
+        ),
+      ),
+    );
+  }
+
+
+
+  showRejishimeView() async {
+    Get.dialog(
+        RejishiMeRequestView(machineCode: _machineCode, resetCash: (){
+          widget.resetCash();
+        },)
     );
   }
 

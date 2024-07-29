@@ -5,6 +5,7 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
+import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 
@@ -101,11 +102,11 @@ class TransitPageController extends GetxController {
       "version": local_version.value
     };
     print(formData);
-    request('webBootActivatev3', method: 'POST', parameters: formData)
-        .then((val) async {
+    request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
-      LogUtil.d(response);
-      if (response['code'] == 200 && response['data'] != null) {
+
+      if (response != null && response['code'] == 200 && response['data'] != null) {
+        LogUtil.d(response);
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
@@ -236,31 +237,45 @@ class TransitPageController extends GetxController {
             'machineSettingData', json.encode(machineSettingBool));
 
         _actuarial.value = shopData["actuarial"];
+        if (Platform.isAndroid) {
+          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+        }
+        await _getSmartweSystemSettingInfo();
+      } else {
+        if (Platform.isAndroid) {
+          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
+        }
+        _showErrorDialog();
       }
-      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate', parameters: {'machine_activate': '${_machineCode.value}'});
-      await _getSmartweSystemSettingInfo();
+
     })
     .catchError((e) {
-      print(e);
+      if (Platform.isAndroid) {
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
+      }
+      //print("error: $e");
       _showErrorDialog(error: e);
-      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}' + e.toString()});
     })
     .timeout(Duration(seconds: 15), onTimeout: () {
-      print('timeout');
+      if (Platform.isAndroid) {
+        FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout',
+            parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+      }
       _showErrorDialog();
-      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
     });
   }
 
   _showErrorDialog({error}) =>
   Get.dialog(
-        DialogUtils.alertOneButton(error ?? ""  +  "インターネットの接続のご確認をお願いします,再度お試しください。",
+        DialogUtils.alertOneButton("異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
         title: "お知らせ",
-        confirmtitle: "はい",
+        confirmtitle: "再度お起動",
         confirm: () {
         Future.delayed(Duration(milliseconds: 200), () {
-        Get.back();
-          _getMachineActivate();
+          Get.back();
+          //_getMachineActivate();
+          Appset.restartApp;
+          //exit(0);
         });
 
         })
@@ -310,61 +325,22 @@ class TransitPageController extends GetxController {
           ? SystemSettingInfo["menuDirection"]
           : "1", //1顶部横向 2左侧竖
       //"printPaperSize":(SystemSettingInfo["printPaperSize"] !="" && SystemSettingInfo["printPaperSize"]!=null) ? SystemSettingInfo["printPaperSize"] :"1",//1 58mm 2 80mm
-      "printPaperTxtSize": (SystemSettingInfo["printPaperTxtSize"] != "" &&
-              SystemSettingInfo["printPaperTxtSize"] != null)
-          ? SystemSettingInfo["printPaperTxtSize"]
-          : "1", //1 普通　2大　3特大
-      "isAllowReceipt": (SystemSettingInfo["isAllowReceipt"] != "" &&
-              SystemSettingInfo["isAllowReceipt"] != null)
-          ? SystemSettingInfo["isAllowReceipt"]
-          : "1", //1必须打印小票 2不必须
-      "isAllowReceiptMenu": (SystemSettingInfo["isAllowReceiptMenu"] != "" &&
-              SystemSettingInfo["isAllowReceiptMenu"] != null)
-          ? SystemSettingInfo["isAllowReceiptMenu"]
-          : "1", //1必须打印小票顶部菜单 2不打印
-      "machineMode": checkmachineMode,
-      "isReservation": (SystemSettingInfo["isReservation"] != "" &&
-              SystemSettingInfo["isReservation"] != null)
-          ? SystemSettingInfo["isReservation"]
-          : "0", //是否开启预约 0不开启 1开启
-      "isAllowAttendance": (SystemSettingInfo["isAllowAttendance"] != "" &&
-              SystemSettingInfo["isAllowAttendance"] != null)
-          ? SystemSettingInfo["isAllowAttendance"]
-          : "0", //0 不开考勤 1开考勤
-      "isAllowOneYen": (SystemSettingInfo["isAllowOneYen"] != "" &&
-              SystemSettingInfo["isAllowOneYen"] != null)
-          ? SystemSettingInfo["isAllowOneYen"]
-          : "0", //0禁用1元 1不禁用
-      "isAllowBackHome": (SystemSettingInfo["isAllowBackHome"] != "" &&
-              SystemSettingInfo["isAllowBackHome"] != null)
-          ? SystemSettingInfo["isAllowBackHome"]
-          : "0", //0回到首页，1回到菜单页
-      "isAllowPos": (SystemSettingInfo["isAllowPos"] != "" &&
-              SystemSettingInfo["isAllowPos"] != null)
-          ? SystemSettingInfo["isAllowPos"]
-          : "0", //0 不开pos 1开pos
-      "isAllowWlanPrint": (SystemSettingInfo["isAllowWlanPrint"] != "" &&
-              SystemSettingInfo["isAllowWlanPrint"] != null)
-          ? SystemSettingInfo["isAllowWlanPrint"]
-          : "0", //0 不开打印机 1开打印机
-      "isAllowWlanPrintContinuous":
-          (SystemSettingInfo["isAllowWlanPrintContinuous"] != "" &&
-                  SystemSettingInfo["isAllowWlanPrintContinuous"] != null)
-              ? SystemSettingInfo["isAllowWlanPrintContinuous"]
-              : "1", //0 单票 1连票
-      "showPrintType": (SystemSettingInfo["showPrintType"] != "" &&
-              SystemSettingInfo["showPrintType"] != null)
-          ? SystemSettingInfo["showPrintType"]
-          : "0", //0 receipt 1label
-      "isAllowWlanPrintTwo": (SystemSettingInfo["isAllowWlanPrintTwo"] != "" &&
-              SystemSettingInfo["isAllowWlanPrintTwo"] != null)
-          ? SystemSettingInfo["isAllowWlanPrintTwo"]
-          : "0", //0 不开打印机 1开打印机
-      "isAllowWlanPrintTwoContinuous":
-          (SystemSettingInfo["isAllowWlanPrintTwoContinuous"] != "" &&
-                  SystemSettingInfo["isAllowWlanPrintTwoContinuous"] != null)
-              ? SystemSettingInfo["isAllowWlanPrintTwoContinuous"]
-              : "1", //0 单票 1连票
+      "printPaperTxtSize":(SystemSettingInfo["printPaperTxtSize"] !="" && SystemSettingInfo["printPaperTxtSize"]!=null) ? SystemSettingInfo["printPaperTxtSize"] :"1",//1 普通　2大　3特大
+      "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
+      "isAllowReceiptMenu":(SystemSettingInfo["isAllowReceiptMenu"] !="" && SystemSettingInfo["isAllowReceiptMenu"]!=null) ? SystemSettingInfo["isAllowReceiptMenu"] :"1",//1必须打印小票顶部菜单 2不打印
+      "machineMode":checkmachineMode,
+      "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
+      "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
+      "isAllowOneYen":(SystemSettingInfo["isAllowOneYen"] !="" && SystemSettingInfo["isAllowOneYen"]!=null) ? SystemSettingInfo["isAllowOneYen"] :"0",//0禁用1元 1不禁用
+      "isAllowBackHome":(SystemSettingInfo["isAllowBackHome"] !="" && SystemSettingInfo["isAllowBackHome"]!=null) ? SystemSettingInfo["isAllowBackHome"] :"0",//0回到首页，1回到菜单页
+      "isAllowPos":(SystemSettingInfo["isAllowPos"] !="" && SystemSettingInfo["isAllowPos"]!=null) ? SystemSettingInfo["isAllowPos"] :"0",//0 不开pos 1开pos
+      "isAllowWlanPrint":(SystemSettingInfo["isAllowWlanPrint"] !="" && SystemSettingInfo["isAllowWlanPrint"]!=null) ? SystemSettingInfo["isAllowWlanPrint"] :"0",//0 不开打印机 1开打印机
+      "isAllowWlanPrintContinuous":(SystemSettingInfo["isAllowWlanPrintContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintContinuous"] :"1",//0 单票 1连票
+      "showPrintType":(SystemSettingInfo["showPrintType"] !="" && SystemSettingInfo["showPrintType"]!=null) ? SystemSettingInfo["showPrintType"] :"0",//0 receipt 1label
+      "isAllowWlanPrintTwo":(SystemSettingInfo["isAllowWlanPrintTwo"] !="" && SystemSettingInfo["isAllowWlanPrintTwo"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwo"] :"0",//0 不开打印机 1开打印机
+      "isAllowWlanPrintTwoContinuous":(SystemSettingInfo["isAllowWlanPrintTwoContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintTwoContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwoContinuous"] :"1",//0 单票 1连票
+      "isAllowRejishime":(SystemSettingInfo["isAllowRejishime"] !="" && SystemSettingInfo["isAllowRejishime"]!=null) ? SystemSettingInfo["isAllowRejishime"] :"0",
+
     };
     Storage.setString('smartwe_systemSetting',
         json.encode(systemSettingData)); //1 默认58mm  2 宽纸80mm
@@ -390,16 +366,15 @@ class TransitPageController extends GetxController {
             var prohibitOneCashStatus =
             await Paycube.prohibitOneCash.timeout(Duration(seconds: 10));
         }
-        
-        _goNext(checkmachineMode);
       } on TimeoutException catch (e) {
         print('Timeout: $e');
-        _goNext(checkmachineMode);
       } catch (e) {
         print('error: $e');
-        _goNext(checkmachineMode);
       }
     }
+
+    _goNext(checkmachineMode);
+
   }
 
   void _goNext(checkmachineMode) async {

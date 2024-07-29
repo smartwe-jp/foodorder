@@ -1,6 +1,6 @@
 //const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-const base_url = "https://api.smartwe.jp/";  //new生产环境地址
-//const base_url = "https://sit-api.smartwe.co.jp/";  //测试环境地址
+//const base_url = "https://api.smartwe.jp/";  //new生产环境地址
+const base_url = "https://sit-api.smartwe.jp/";  //测试环境地址
 
 
 const oa_base_url = "https://oa.gutingjun.com/api/"; //刷脸正式环境地址
@@ -35,7 +35,7 @@ const servicePath = {
       base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
   'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
-  'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
   'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
@@ -79,10 +79,18 @@ const servicePath = {
       base_url + 'pad/web/boot/reimburse/execute', //扫码支付的退款开始执行
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
 
+  //领收书相关
+  'webBootReceiptQuery': base_url + 'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
+  //レジ締め
+  'webBootRejishimeiPrintInfo': base_url + 'pad/web/boot/query/printInfo', //レジ締め 获取打印信息
+  'webBootEmailList': base_url + 'pad/web/boot/emails', //レジ締め 获取邮件列表
+  'webBootAdminVerify': base_url + 'pad/web/boot/sendVerifyCode', //レジ締め 发送验证码
+  'webBootRejishimeiConfirm': base_url + 'pad/web/boot/confirm/close', //レジ締め 确认
 
   //Pos测试接口
   'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
 
   'webBootTroubleNotify': base_url + 'pad/web/boot/notice', //Pos测试接口
 };
+
 

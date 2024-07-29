@@ -295,12 +295,18 @@ class CheckoutPageController extends GetxController with StateMixin {
     );
   }
 
+  _getOrderKey(qrCodeString) {
+    RegExp regExp = new RegExp(r"\?p=(.*)");
+    return regExp.stringMatch(qrCodeString).toString().substring(3);
+  }
+
   doNextPay(){
     var _orderkey = scanQrCodeController.text;//print(_orderkey);
     if(scanQrCodeController.text !=""){
       //_showOrderEasyLoading();
       if(scanQrCodeController.text.contains('?p=') == true){
-        _orderkey = scanQrCodeController.text.substring(scanQrCodeController.text.length-21);
+        //正则实现截取'?p='之后的字符串
+        _orderkey = _getOrderKey(scanQrCodeController.text);
       }
       //自定义声音
       //playQRScannerSound();
@@ -337,8 +343,9 @@ class CheckoutPageController extends GetxController with StateMixin {
     var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
     if(scanQrCodeHomeController.text !=""){
       //_showOrderEasyLoading();
-      if(scanQrCodeHomeController.text.contains('?p=') == true){
-        _orderkey = scanQrCodeHomeController.text.substring(scanQrCodeHomeController.text.length-21);
+      if(_orderkey.contains('?p=') == true){
+        //正则实现截取'?p='之后的字符串
+        _orderkey = _getOrderKey(scanQrCodeHomeController.text);
       }
       //自定义声音
       //playQRScannerSound();
@@ -437,7 +444,11 @@ class CheckoutPageController extends GetxController with StateMixin {
     );
   }
 
-  postNewOrderId() {
+  postNewOrderId({orderIdIfTakeOut = ""}) {
+
+    if (orderId.value == "") {
+      orderId.value = orderIdIfTakeOut;
+    }
 
     var formData = {
       "orderId": orderId.value,

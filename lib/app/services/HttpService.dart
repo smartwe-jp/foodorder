@@ -72,6 +72,7 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     //}else{
       //showToast('異常が生じてます。お近くのスタッフにお声かけください。');
     //}
-    return print('error:::${e}');
+    //return print('error:::${e}');
+    throw e;
   }
 }

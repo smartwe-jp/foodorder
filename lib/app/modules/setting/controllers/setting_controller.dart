@@ -19,6 +19,7 @@ import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
+import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import 'package:yaml/yaml.dart';
@@ -26,18 +27,20 @@ import 'package:yaml/yaml.dart';
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-  MenuPageController menuPagecontroller = Get.put(MenuPageController());
+  //MenuPageController menuPagecontroller = Get.put(MenuPageController());
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
   RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
   RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
+  RxBool isAllowRejishime = false.obs;
 
   RxList cashList = [].obs;
   RxMap cashInfoList = {}.obs;
   RxList lastTotalList = [].obs;
   RxMap depositData = {}.obs;
+  RxList mailList = [].obs;
 
   RxBool switchValue = false.obs;
 
@@ -154,8 +157,9 @@ class SettingController extends GetxController with StateMixin {
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
-    debugPrint("SettingController machine_mode.value = ${machine_mode.value}");
-    var reimburse= await HomeServices.getSmartweReimburseData();
+
+    isAllowRejishime.value = (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1"  ? true : false;
+    var reimburse = await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
     shopCode.value = await HomeServices.getShopCode();
     //查看机器零钱状态
@@ -170,6 +174,7 @@ class SettingController extends GetxController with StateMixin {
     request('webBootToRetryPrint', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
+      debugPrint("response:" + response.toString());
 
       EasyLoading.dismiss();
       if (response['code'] == 200 && null != response['data']) {
@@ -186,6 +191,7 @@ class SettingController extends GetxController with StateMixin {
             barrierDismissible: false);
       }
     });
+    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode.value});
   }
 
   //获取现金机列表
@@ -319,10 +325,10 @@ class SettingController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
-        showToast('回收成功');
+        showToast('リサイクル成功');
         _getChangeState();
       } else {
-        showToast('回收失败');
+        showToast('リサイクルに失敗しました');
       }
     });
   }
@@ -378,13 +384,22 @@ class SettingController extends GetxController with StateMixin {
   goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if (machine_mode.value == "1") {
-      menuPagecontroller.clearCartList();
-      Get.delete<MenuPageController>(); // 手动删除控制器实例
+      if (Get.isRegistered<MenuPageController>()) {
+        Get.find<MenuPageController>().clearCartList();
+        Get.delete<MenuPageController>();
+      }// 手动删除控制器实例
     } else if (machine_mode.value == "2") {
-      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      if (Get.isRegistered<CheckoutPageController>()) {
+        Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      }
     } else if (machine_mode.value == "3") {
+      if (Get.isRegistered<SelfCheckoutscanningcodeController>())
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+
+      if (Get.isRegistered<SelfservicePageController>())
+      Get.delete<SelfservicePageController>();
     }
+    if (Get.isRegistered<SettingController>())
     Get.delete<SettingController>(); // 手动删除控制器实例
     // FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
     //   "machineCode":machineCode.value,

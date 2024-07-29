@@ -80,6 +80,66 @@ class HomeServices{
     return isAllowReceiptInfo;
   }
 
+  static getPrintDirection() async{
+    String? printDirection;
+    try {
+      String? setting = await Storage.getString('printDirection');
+      printDirection = setting ?? "0";
+    } catch (e) {
+      printDirection = "0";
+    }
+    return printDirection;
+  }
+
+  static getPrintTwoDirection() async{
+    String? printDirection;
+    try {
+      String? setting = await Storage.getString('printTwoDirection');
+      printDirection = setting ?? "0";
+    } catch (e) {
+      printDirection = "0";
+    }
+    return printDirection;
+  }
+
+  static getPrintThreeDirection() async{
+    String? printDirection;
+    try {
+      String? setting = await Storage.getString('printThreeDirection');
+      printDirection = setting ?? "0";
+    } catch (e) {
+      printDirection = "0";
+    }
+    return printDirection;
+  }
+
+  static getLabelPrintWidth() async{
+    double? labelPrintWidth;
+    try {
+      double? setting = await Storage.getDouble('labelPrintWidth');
+      labelPrintWidth = setting ?? 384.0;
+    } catch (e) {
+      labelPrintWidth = 384.0;
+    }
+    return labelPrintWidth;
+  }
+
+  static setLabelPrintWidth(double labelPrintWidthData) async{
+    Storage.setDouble('labelPrintWidth', labelPrintWidthData);
+  }
+
+  static setPrintDirection(String printDirectionData) async{
+    Storage.setString('printDirection', printDirectionData);
+  }
+
+  static setPrintTwoDirection(String printDirectionData) async{
+    Storage.setString('printTwoDirection', printDirectionData);
+  }
+
+  static setPrintThreeDirection(String printDirectionData) async{
+    Storage.setString('printThreeDirection', printDirectionData);
+  }
+
   //多参数设置
   static getSystemSettingInfo() async{
     Map? systemSettingInfo;

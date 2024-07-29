@@ -120,6 +120,7 @@ class GString{
         "reboot_app":"再起動",
         "change_payment":"支払い方法を変更",
 
+
         "select_option":"選択",
         "tag_checkout":"お会計",
         "show_empty_cart_item_title":"カートが空です",
@@ -163,6 +164,11 @@ class GString{
         "cash_error_no_ported": "ポートが見つかりません。設定を確認してください。",
         "cash_error_specific": "特定のエラーが発生しました。設定を確認してください。",
         "cash_error_unknown": "不明なエラーが発生しました。設定を確認してください。",
+
+        "cancel_order":"注文をキャンセル",
+        "tag_out_money_error":"お釣りが足りません,お近くのスタッフにお知らせください",
+        "error_tips_thanks":"操作ありがとうございます。処理のために店舗スタッフに連絡しました。しばらくお待ちください。",
+
 
       };
     }else if(languageCode == 'CH'){
@@ -324,6 +330,9 @@ class GString{
         "cash_error_unknown": "未知错误，请检查设备设置。",
 
 
+        "cancel_order":"取消订单",
+        "tag_out_money_error":"找零不足，请联系工作人员",
+        "error_tips_thanks":"感谢您的操作，已联系店员处理，请稍等待。",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -484,6 +493,9 @@ class GString{
         "cash_error_unknown": "Unknown error occurred. Please check the device settings.",
 
 
+        "cancel_order":"Cancel order",
+        "tag_out_money_error":"Insufficient change, please contact the staff",
+        "error_tips_thanks":"Thank you for your operation. We have contacted the staff for processing. Please wait a moment.",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -643,7 +655,10 @@ class GString{
         "cash_error_no_ported": "포트를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
         "cash_error_specific": "특정 오류가 발생했습니다. 장치 설정을 확인하십시오.",
         "cash_error_unknown": "알 수 없는 오류가 발생했습니다. 장치 설정을 확인하십시오.",
-        
+
+        "cancel_order":"주문 취소",
+        "tag_out_money_error":"거스름돈이 부족합니다. 직원에게 문의하십시오.",
+        "error_tips_thanks":"작업 감사합니다. 처리를 위해 가게 직원에게 연락했습니다. 잠시만 기다려주세요.",
       };
     }
 

@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 
@@ -980,201 +982,243 @@ class SystemSettingPageView extends GetView {
 
   //设置是否开启打印机
   setIsAllowWlanPrint() {
-    return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+    return Column(
         children: [
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllowWlanPrint("0");
-            },
-            child: Container(
-              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("オフ",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              //controller.is_allow_wlanPrint_continuous.value = "0";
-              _showWlanPrintSettingDialog("0",0);
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: RichText(
-                text: TextSpan(
-                    text: "オン",
-                    style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontWeight: FontWeight.w400,
-                      fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+          Container(
+            margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+            padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    controller.checkIsAllowWlanPrint("0");
+                  },
+                  child: Container(
+                    //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(140),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
                     ),
-                    children: [
-                      TextSpan(
-                        text: "（単票）",
+                    child: Text("オフ",
                         style: TextStyle(
                           fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(18),
                           fontWeight: FontWeight.w400,
-                          color: ColorsUtil.hexToColor("#d90000"),
-                        ),
-                      ),
-                    ]),
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
+                          fontSize: ScreenAdapter.fontSize(22.0),
+                          color: (controller.is_allow_wlanPrint.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                        )
+                    ),
+                  ),
+                ),
+                InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
+                    //controller.is_allow_wlanPrint_continuous.value = "0";
+                    _showWlanPrintSettingDialog("0",0);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(140),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: RichText(
+                      text: TextSpan(
+                          text: "オン",
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenAdapter.fontSize(22.0),
+                            color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "0" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "（単票）",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(18),
+                                fontWeight: FontWeight.w400,
+                                color: ColorsUtil.hexToColor("#d90000"),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+                InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent, // 透明色
+                  onTap: (){
 
-              _showWlanPrintSettingDialog("1",0);
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: RichText(
-                text: TextSpan(
-                    text: "オン",
-                    style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontWeight: FontWeight.w400,
-                      fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    _showWlanPrintSettingDialog("1",0);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(140),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
                     ),
-                    children: [
-                      TextSpan(
-                        text: "（連票）",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(18),
-                          fontWeight: FontWeight.w400,
-                          color: ColorsUtil.hexToColor("#d90000"),
-                        ),
+                    child: RichText(
+                      text: TextSpan(
+                          text: "オン",
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenAdapter.fontSize(22.0),
+                            color: (controller.is_allow_wlanPrint.value == "1" && controller.is_allow_wlanPrint_continuous.value == "1" && controller.showPrintType.value==0) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                          ),
+                          children: [
+                            TextSpan(
+                              text: "（連票）",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(18),
+                                fontWeight: FontWeight.w400,
+                                color: ColorsUtil.hexToColor("#d90000"),
+                              ),
+                            ),
+                          ]),
+                    ),
+                  ),
+                ),
+                if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "" && controller.showPrintType.value==0)
+                  InkWell(
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
+                      controller.printTest(SearchType.net,
+                          controller.wlan_print_ip.value,
+                          controller.wlan_print_port.value,
+                          printType:controller.showPrintType.value);
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(220),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: ColorsUtil.hexToColor("#409eff"),
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
                       ),
-                    ]),
-              ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                  "${controller.wlan_print_ip.value}:",
+                                  style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
+                                    fontSize: ScreenAdapter.fontSize(20),
+                                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  )
+                              ),
+                              Text(
+                                  "${controller.wlan_print_port.value}",
+                                  style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
+                                    fontSize: ScreenAdapter.fontSize(20),
+                                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  )
+                              )
+                            ],
+                          ),
+                          Text("テスト印刷",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontWeight: FontWeight.w400,
+                                fontSize: ScreenAdapter.fontSize(20.0),
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+
+              ],
             ),
           ),
-          if(controller.wlan_print_ip.value != "" && controller.wlan_print_port.value != "" && controller.showPrintType.value==0)
-            InkWell(
-              highlightColor: Colors.transparent, // 透明色
-              splashColor: Colors.transparent, // 透明色
-              onTap: (){
-                controller.printTest(SearchType.net ,controller.wlan_print_ip.value,controller.wlan_print_port.value,printType:controller.showPrintType.value);
+
+          Table(
+              border: TableBorder.all(),
+              columnWidths: const <int, TableColumnWidth>{
+                //0: IntrinsicColumnWidth(),
+                0: FlexColumnWidth(200),
+                1: FlexColumnWidth(550),
               },
-              child: Container(
-                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                //设置 child 居中
-                alignment: Alignment(0, 0),
-                height: ScreenAdapter.height(60),
-                width: ScreenAdapter.width(220),
-                //边框设置
-                decoration: new BoxDecoration(
-                  //背景
-                  color: ColorsUtil.hexToColor("#409eff"),
-                  //设置四周圆角 角度
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  //设置四周边框
-                  //border: new Border.all(width: 1, color: Colors.red),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            "${controller.wlan_print_ip.value}:",
-                            style: TextStyle(
-                              fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(20),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        ),
-                        Text(
-                            "${controller.wlan_print_port.value}",
-                            style: TextStyle(
-                              fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(20),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        )
-                      ],
-                    ),
-                    Text("テスト印刷",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontWeight: FontWeight.w400,
-                          fontSize: ScreenAdapter.fontSize(20.0),
-                          color: ColorsUtil.hexToColor("#FFFFFF"),
-                        )
-                    ),
-                  ],
-                ),
-              ),
-            ),
+              defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+              children: <TableRow>[
 
-        ],
-      ),
+                TableRow(
+                    children: <Widget>[
+                      Container(
+                        height: ScreenAdapter.height(80),
+                        alignment: Alignment.center,
+                        child: Text(
+                          "プリント方向",
+                          style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(22),
+                              fontWeight: FontWeight.w500
+                          ),
+                        ),
+                      ),
+                      setPrintDirection(1,controller.printDirection),//第二台打印机
+
+                    ]
+                ),
+
+              ]
+          ),
+        ]
     );
   }
 
   setIsAllowWlanLablePrint() {
-    return Container(
+    return
+      Column(
+          children: [
+            Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
       child: Row(
@@ -1326,7 +1370,71 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
-    );
+    ),
+            Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  //0: IntrinsicColumnWidth(),
+                  0: FlexColumnWidth(200),
+                  1: FlexColumnWidth(550),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+
+                  TableRow(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenAdapter.height(80),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "プリント方向",
+                            style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ),
+                        setPrintDirection(3,controller.printThreeDirection),//第二台打印机
+
+                      ]
+                  ),
+
+                ]
+            ),
+            Table(
+                border: TableBorder.all(),
+                columnWidths: const <int, TableColumnWidth>{
+                  //0: IntrinsicColumnWidth(),
+                  0: FlexColumnWidth(200),
+                  1: FlexColumnWidth(550),
+                },
+                defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                children: <TableRow>[
+
+                  TableRow(
+                      children: <Widget>[
+                        Container(
+                          height: ScreenAdapter.height(80),
+                          alignment: Alignment.center,
+                          child: Text(
+                            "プリントサイズ",
+                            style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                fontWeight: FontWeight.w500
+                            ),
+                          ),
+                        ),
+                        setLabelPrintSize(),//第二台打印机
+
+                      ]
+                  ),
+
+                ]
+            ),
+          ]
+      );
   }
 
   //设置网络打印机ip
@@ -1354,196 +1462,236 @@ class SystemSettingPageView extends GetView {
 
   //设置是否开启打印机
   setIsAllowWlanPrintTwo() {
-    return Container(
-      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.start,
+
+     return
+      Column(
         children: [
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.checkIsAllowWlanPrintTwo("0");
-            },
-            child: Container(
-              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("オフ",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
+          Container(
+          margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+          padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+          child:
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  InkWell(
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
+                      controller.checkIsAllowWlanPrintTwo("0");
+                    },
+                    child: Container(
+                      //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(140),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
+                      ),
+                      child: Text("オフ",
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontWeight: FontWeight.w400,
+                            fontSize: ScreenAdapter.fontSize(22.0),
+                            color: (controller.is_allow_wlanPrint_Two.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                          )
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
 
-              _showWlanPrintSettingDialogTwo("0");
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: RichText(
-                text: TextSpan(
-                    text: "オン",
-                    style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontWeight: FontWeight.w400,
-                      fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "（単票）",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(18),
-                          fontWeight: FontWeight.w400,
-                          color: ColorsUtil.hexToColor("#d90000"),
-                        ),
+                      _showWlanPrintSettingDialogTwo("0");
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(140),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
                       ),
-                    ]),
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              _showWlanPrintSettingDialogTwo("1");
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: RichText(
-                text: TextSpan(
-                    text: "オン",
-                    style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontWeight: FontWeight.w400,
-                      fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                    ),
-                    children: [
-                      TextSpan(
-                        text: "（連票）",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(18),
-                          fontWeight: FontWeight.w400,
-                          color: ColorsUtil.hexToColor("#d90000"),
-                        ),
-                      ),
-                    ]),
-              ),
-            ),
-          ),
-          if(controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
-            InkWell(
-              highlightColor: Colors.transparent, // 透明色
-              splashColor: Colors.transparent, // 透明色
-              onTap: (){
-                controller.printTest(SearchType.net, controller.wlan_print_ip_Two.value,controller.wlan_print_port_Two.value);
-              },
-              child: Container(
-                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                //设置 child 居中
-                alignment: Alignment(0, 0),
-                height: ScreenAdapter.height(60),
-                width: ScreenAdapter.width(220),
-                //边框设置
-                decoration: new BoxDecoration(
-                  //背景
-                  color: ColorsUtil.hexToColor("#409eff"),
-                  //设置四周圆角 角度
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  //设置四周边框
-                  //border: new Border.all(width: 1, color: Colors.red),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            "${controller.wlan_print_ip_Two.value}:",
+                      child: RichText(
+                        text: TextSpan(
+                            text: "オン",
                             style: TextStyle(
                               fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(22),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        ),
-                        Text(
-                            "${controller.wlan_print_port_Two.value}",
+                              fontWeight: FontWeight.w400,
+                              fontSize: ScreenAdapter.fontSize(22.0),
+                              color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "（単票）",
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(18),
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorsUtil.hexToColor("#d90000"),
+                                ),
+                              ),
+                            ]),
+                      ),
+                    ),
+                  ),
+                  InkWell(
+                    highlightColor: Colors.transparent, // 透明色
+                    splashColor: Colors.transparent, // 透明色
+                    onTap: (){
+                      _showWlanPrintSettingDialogTwo("1");
+                    },
+                    child: Container(
+                      margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                      //设置 child 居中
+                      alignment: Alignment(0, 0),
+                      height: ScreenAdapter.height(60),
+                      width: ScreenAdapter.width(140),
+                      //边框设置
+                      decoration: new BoxDecoration(
+                        //背景
+                        color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                        //设置四周圆角 角度
+                        borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                        //设置四周边框
+                        //border: new Border.all(width: 1, color: Colors.red),
+                      ),
+                      child: RichText(
+                        text: TextSpan(
+                            text: "オン",
                             style: TextStyle(
                               fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(22),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        )
-                      ],
+                              fontWeight: FontWeight.w400,
+                              fontSize: ScreenAdapter.fontSize(22.0),
+                              color: (controller.is_allow_wlanPrint_Two.value == "1" && controller.is_allow_wlanPrint_Two_continuous.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                            ),
+                            children: [
+                              TextSpan(
+                                text: "（連票）",
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(18),
+                                  fontWeight: FontWeight.w400,
+                                  color: ColorsUtil.hexToColor("#d90000"),
+                                ),
+                              ),
+                            ]),
+                      ),
                     ),
-                    Text("テスト印刷",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontWeight: FontWeight.w400,
-                          fontSize: ScreenAdapter.fontSize(20.0),
-                          color: ColorsUtil.hexToColor("#FFFFFF"),
-                        )
+                  ),
+                  if(controller.wlan_print_ip_Two.value != "" && controller.wlan_print_port_Two.value != "")
+                    InkWell(
+                      highlightColor: Colors.transparent, // 透明色
+                      splashColor: Colors.transparent, // 透明色
+                      onTap: (){
+                        controller.printTest(SearchType.net,
+                            controller.wlan_print_ip_Two.value,
+                            controller.wlan_print_port_Two.value);
+                      },
+                      child: Container(
+                        margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                        //设置 child 居中
+                        alignment: Alignment(0, 0),
+                        height: ScreenAdapter.height(60),
+                        width: ScreenAdapter.width(220),
+                        //边框设置
+                        decoration: new BoxDecoration(
+                          //背景
+                          color: ColorsUtil.hexToColor("#409eff"),
+                          //设置四周圆角 角度
+                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          //设置四周边框
+                          //border: new Border.all(width: 1, color: Colors.red),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Text(
+                                    "${controller.wlan_print_ip_Two.value}:",
+                                    style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      fontSize: ScreenAdapter.fontSize(20),
+                                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                                    )
+                                ),
+                                Text(
+                                    "${controller.wlan_print_port_Two.value}",
+                                    style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      fontSize: ScreenAdapter.fontSize(20),
+                                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                                    )
+                                )
+                              ],
+                            ),
+                            Text("テスト印刷",
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontWeight: FontWeight.w400,
+                                  fontSize: ScreenAdapter.fontSize(20.0),
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )
+                            ),
+                          ],
+                        ),
+                      ),
                     ),
-                  ],
-                ),
-              ),
-            ),
 
-        ],
-      ),
-    );
+                ],
+              )),
+              Table(
+                  border: TableBorder.all(),
+                  columnWidths: const <int, TableColumnWidth>{
+                    //0: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(200),
+                    1: FlexColumnWidth(550),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: <TableRow>[
+
+                    TableRow(
+                        children: <Widget>[
+                          Container(
+                            height: ScreenAdapter.height(80),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "プリント方向",
+                              style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          ),
+                          setPrintDirection(2,controller.printTwoDirection),//第二台打印机
+
+                        ]
+                    ),
+
+                  ]
+              ),
+
+            ]
+          );
   }
 
 
@@ -1634,6 +1782,202 @@ class SystemSettingPageView extends GetView {
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  setOpenRejishime() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowRejishime("1");
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オン",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowRejishime("0");
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_rejishime.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オフ",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_rejishime.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  setLabelPrintSize() {
+
+    final _labelPrintSize = {"50x30":384,"40x30":284};
+
+    return Container(
+        margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+        child: Wrap(
+          spacing: ScreenAdapter.width(15), // 主轴(水平)方向间距
+          children: _labelPrintSize.keys.map((e) {
+            return InkWell(
+              highlightColor: Colors.transparent, // 透明色
+              splashColor: Colors.transparent, // 透明色
+              onTap: (){
+                controller.setLabelPrintSize(_labelPrintSize[e]?.toDouble());
+              },
+              child: Container(
+                //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+                //设置 child 居中
+                alignment: Alignment(0, 0),
+                height: ScreenAdapter.height(60),
+                width: ScreenAdapter.width(140),
+                //边框设置
+                decoration: new BoxDecoration(
+                  //背景
+                  color: (controller.printLabelWidth.value == _labelPrintSize[e]) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],//
+                  //设置四周圆角 角度
+                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                  //设置四周边框
+                  //border: new Border.all(width: 1, color: Colors.red),
+                ),
+                child: Text("$e",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(22.0),
+                      color: (controller.printLabelWidth.value == _labelPrintSize[e]) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    )
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+    );
+  }
+
+  setPrintDirection(index,printDirection) {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.setPrintDirection("0",index);
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: !printDirection.value ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("デフォルト",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: !printDirection.value ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.setPrintDirection("1",index);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: printDirection.value ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("逆に",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: printDirection.value ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -1760,7 +2104,7 @@ class SystemSettingPageView extends GetView {
                         ),
                         (Route route) => false,
                       );*/
-                      Get.back();
+                      Get.back(result: "setting-back");
                       /*Future.delayed(Duration(milliseconds: 100), () {
                         Navigator.pushNamed(context, '/home');
                       });*/
@@ -1898,8 +2242,8 @@ class SystemSettingPageView extends GetView {
                     border: TableBorder.all(),
                     columnWidths: const <int, TableColumnWidth>{
                       //0: IntrinsicColumnWidth(),
-                      0: FixedColumnWidth(60),
-                      1: FlexColumnWidth(1),
+                      0: FixedColumnWidth(40),
+                      1: FlexColumnWidth(970),
                     },
                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                     children: <TableRow>[
@@ -1933,8 +2277,8 @@ class SystemSettingPageView extends GetView {
                               border: TableBorder.all(),
                               columnWidths: const <int, TableColumnWidth>{
                                 //0: IntrinsicColumnWidth(),
-                                0: FixedColumnWidth(160),
-                                1: FlexColumnWidth(1),
+                                0:FlexColumnWidth(200),
+                                1: FlexColumnWidth(750),
                               },
                                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                 children: <TableRow>[
@@ -2105,6 +2449,23 @@ class SystemSettingPageView extends GetView {
                                         ),
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "レジ締め",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setOpenRejishime(),//是否结算完后回到首页
+                                      ]
                                   )
                                 ]
                             ),
@@ -2144,8 +2505,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0: FixedColumnWidth(160),
-                                      1: FlexColumnWidth(1),
+                                      0:FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2238,8 +2599,8 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0: FixedColumnWidth(160),
-                                      1: FlexColumnWidth(1),
+                                      0: FlexColumnWidth(200),
+                                      1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
@@ -2262,6 +2623,7 @@ class SystemSettingPageView extends GetView {
 
                                           ]
                                       ),
+
                                     ]
                                 ),
                               ],
@@ -2275,8 +2637,8 @@ class SystemSettingPageView extends GetView {
                       border: TableBorder.all(),
                       columnWidths: const <int, TableColumnWidth>{
                         //0: IntrinsicColumnWidth(),
-                        0:FlexColumnWidth(300),
-                        1: FixedColumnWidth(750),
+                        0: FlexColumnWidth(258),
+                        1: FlexColumnWidth(750),
                       },
                       defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                       children: <TableRow>[

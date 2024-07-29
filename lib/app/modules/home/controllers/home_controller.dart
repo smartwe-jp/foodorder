@@ -276,7 +276,7 @@ class HomeController extends GetxController {
     var endStatus = await Paycube.endPayCube;
     debugPrint("endStatus:$endStatus");
     stopChecktimer?.cancel();
-    stopChecktimer = Timer.periodic(Duration(milliseconds: 500), (Timer stopcheck) async {
+    stopChecktimer = Timer.periodic(Duration(milliseconds: 550), (Timer stopcheck) async {
       _stopStatus =  await Paycube.getPayCubeStopCashStatus;
       debugPrint("_stopStatus:$_stopStatus");
       // 循环一定要记得设置取消条件，手动取消
@@ -304,7 +304,7 @@ class HomeController extends GetxController {
     debugPrint("endTrade:$endTrade");
     await Paycube.setReceiveEvent;
     closetimer?.cancel();
-    closetimer = Timer.periodic(Duration(milliseconds: 500), (Timer closecheck) async {
+    closetimer = Timer.periodic(Duration(milliseconds: 550), (Timer closecheck) async {
       _closeStatus =  await Paycube.getPayCubeEndTradeStatus;
       debugPrint("_closeStatus:$_closeStatus");
       // 循环一定要记得设置取消条件，手动取消

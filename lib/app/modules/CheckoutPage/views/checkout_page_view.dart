@@ -31,34 +31,43 @@ class CheckoutPageView extends GetView {
 
     List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
     for (var item in languagesButton) {
-      takeoutMenus.add(InkWell(
-        onTap: () {
-          var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-          Get.toNamed(jumpUrl,arguments: {"checkLanguage": "${item["value"]}","mealType":true});
-        },
-        child: Container(
-          width: ScreenAdapter.width(217),
-          height: ScreenAdapter.height(90),
-          margin: EdgeInsets.only(left:ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              //alignment: Alignment.topCenter,
-                image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                fit: BoxFit.fill),
-          ),
-          child: Center(
-            //加上Center让文字居中
-            child: Text(
-              '${item["name"]}',
-              style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
-                  fontSize: ScreenAdapter.fontSize(36.0),
-                  color: ColorsUtil.hexToColor("#F9F9F9"),
-                  fontWeight: FontWeight.w600),
+      if(controller.machineLanguagesList.value.contains(item["value"]) == true) {
+        takeoutMenus.add(InkWell(
+          onTap: () {
+            var jumpUrl = (controller.menu_direction.value == "1")
+                ? '/menu-page'
+                : '/menuzong-page';
+            Get.toNamed(jumpUrl, arguments: {
+              "checkLanguage": "${item["value"]}",
+              "mealType": true
+            });
+          },
+          child: Container(
+            width: ScreenAdapter.width(217),
+            height: ScreenAdapter.height(90),
+            margin: EdgeInsets.only(
+                left: ScreenAdapter.width(15), right: ScreenAdapter.width(15)),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                //alignment: Alignment.topCenter,
+                  image: AssetImage(
+                      GImage.getImageString("imgpublic", "home_button")),
+                  fit: BoxFit.fill),
+            ),
+            child: Center(
+              //加上Center让文字居中
+              child: Text(
+                '${item["name"]}',
+                style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: ScreenAdapter.fontSize(36.0),
+                    color: ColorsUtil.hexToColor("#F9F9F9"),
+                    fontWeight: FontWeight.w600),
+              ),
             ),
           ),
-        ),
-      ));
+        ));
+      }
 
     }
     return Container(

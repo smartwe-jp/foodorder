@@ -247,6 +247,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                 setState(() {
                   _receiptPrintType = "2";
                   _showReceiptPage = false;
+
                 });
               },
               child: Container(

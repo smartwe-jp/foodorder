@@ -63,6 +63,21 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     String _payCubeOutMoneyStatus = "Error";
     String _payCubeEndTradeStatus = "Error";
 
+    byte[][] putCash = new byte[10][3];
+
+    byte[][] putCashOriginInfo = {
+            {(byte) 0x61, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x62, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x63, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x64, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x65, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x66, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x87, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x88, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x89, (byte) 0x00, (byte) 0x00},
+            {(byte) 0x8A, (byte) 0x00, (byte) 0x00},
+    };
+
     ConcurrentLinkedQueue<ReceiveEvent> events = new ConcurrentLinkedQueue<>();
 
 
@@ -106,8 +121,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                 @Override
                                 public void run() {
                                     byte[] arraye = (byte[]) event.getReceiveData();
-                                    //System.out.println("---ReceiveData:");
-                                    //System.out.println(Arrays.toString(arraye));
+                                    System.out.println("---ReceiveData: " + Arrays.toString(arraye));
                                     events.add(event);
                                     /*获取机器通信*/
                                     StringBuffer stringBuffero = new StringBuffer();
@@ -130,6 +144,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             if(_payCubeAllowCashStatus != "AllowSuccess"){
                                                 if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
                                                     _payCubeAllowCashStatus = "AllowSuccess";
+                                                    System.out.println("入金许可监听状态");
                                                 }else{
                                                     String[] AllowArray = receiveStr.split(" ");
                                                     _payCubeAllowCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
@@ -148,6 +163,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                             // 当监听的服务发生变化时，调用_sendToFlutter向Flutter端发送通知
                                             Log.logger.info("入金禁止监听状态");
+                                            System.out.println("入金禁止监听状态 _payCubeStopCashStatus = " + _payCubeStopCashStatus);
                                             _sendToFlutter("onEndServiceChange",_payCubeStopCashStatus);
 
                                         }else if(event.getReceiveData()[3] == (byte) 0x03){
@@ -190,14 +206,28 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
                                             _sendToFlutter("onGetPutMoneyStringChange",putMoney);
                                             //入金金额大于0后，说明允许投币了
+                                            System.out.println("入金金额大于0后，说明允许投币了");
                                             _payCubeAllowCashStatus = "AllowSuccess";
                                         }
-                                        //入金币种
+                                        //入金币种[0, 7, 10, -126, 126, 122, 101, 3, 0]
                                         if(event.getReceiveData()[3] == (byte) 0x82){
                                             if (receiveStr.length() >26) {
                                                 //入金币种
                                                 //putCurrency = ("".equals(putCurrency)) ? receiveStr.substring(24) : putCurrency + " "+receiveStr.substring(24);
                                                 putCurrency = receiveStr.substring(26);
+
+                                                byte cashType = event.getReceiveData()[6];
+                                                byte cashValueLow = event.getReceiveData()[7];
+                                                byte cashTypeHigh = event.getReceiveData()[8];
+
+                                                //查找 putCash 中是否有相同的 cashType
+                                                for (int i = 0; i < putCash.length; i++) {
+                                                    if (putCash[i][0] == cashType) {
+                                                        putCash[i][1] = cashValueLow;
+                                                        putCash[i][2] = cashTypeHigh;
+                                                        break;
+                                                    }
+                                                }
 
                                                 _sendToFlutter("onGetPutMoneyCurrencyStringChange",putCurrency);
                                                 Log.logger.info("入金币种字符串=======start");
@@ -217,6 +247,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             buf.put(new byte[]{event.getReceiveData()[4], event.getReceiveData()[5]});
                                             // -- body --
                                             lib.write(buf.array());
+                                            System.out.println("----入金金額コマンド----： " + Arrays.toString(buf.array()));
                                             Log.logger.info("入金金額コマンド");
                                         } catch (Exception e) {
                                             Log.logger.error("入金金額コマンド受信Exception", e);
@@ -476,7 +507,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     buf.put(data);
                     Log.logger.info("-----------------现金机 取引终了开结束----------------- "+outMoney);
                     lib.write(buf.array());
-
+                    System.out.println("---outPayCubeMoney: " + Arrays.toString(buf.array()));
                     result.success("outMoneySuccess");
                 } catch (COMException e) {
                 }
@@ -495,7 +526,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     buf.put(new byte[]{(byte) 0x0A, (byte) 0x02});    // Header
                     buf.put(getSeqNo());
                     lib.write(buf.array());
-
+                    System.out.println("---endPayCube: " + Arrays.toString(buf.array()));
 
                     result.success("endsuccess");
                     //lib.setReceiveEventEnable(false);
@@ -517,7 +548,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     buf.put(getSeqNo());
                     lib.write(buf.array());
 
-
+                    resetPutCashToOrigin(); // 重置入金信息
                     //lib.setReceiveEventEnable(false);
 
                     putMoney = "0";
@@ -612,6 +643,34 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     e.printStackTrace();
                 }
 
+            } else if (operEvent.equals("sendPutCashDetail")) {
+                try {
+                    if (lib == null) {
+                        result.success("sendPutCashDetailFail");
+                        return;
+                    }
+
+                    ByteBuffer buf = ByteBuffer.allocate(39);
+                    buf.put(new byte[]{(byte) 0x00, (byte) 0x25});    // Len2
+                    buf.put(new byte[]{(byte) 0x0A, (byte) 0x82});    // Header
+                    buf.put(getSeqNo());
+                    buf.put(new byte[]{(byte) 0xFF, (byte) 0x00, (byte) 0x00});
+                    //入金
+
+                    for (int i = 0; i < putCash.length; i++) {
+                        buf.put(new byte[] {putCash[i][0], putCash[i][1], putCash[i][2]});
+                    }
+
+                    lib.write(buf.array());
+                    System.out.println("---sendPutCashDetail: " + Arrays.toString(buf.array()));
+
+                    //putMoney = "0";
+                    result.success("sendPutCashDetailSuccess");
+
+                    //lib.setReceiveEventEnable(false);
+                } catch (COMException e) {
+                    e.printStackTrace();
+                }
             }
         } else {
             result.notImplemented();
@@ -622,6 +681,16 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
         channel.setMethodCallHandler(null);
+    }
+
+    private void resetPutCashToOrigin(){
+        byte[][] newArray = new byte[10][3];
+        for (int i = 0; i < putCashOriginInfo.length; i++) {
+            for (int j = 0; j < putCashOriginInfo[i].length; j++) {
+                newArray[i][j] = putCashOriginInfo[i][j];
+            }
+        }
+        putCash = newArray;
     }
 
     private void _sendToFlutter(String channelMethod,String message) {
@@ -637,6 +706,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 Log.logger.info("doBeginDeposit lib is null");
                 return;
             }
+            resetPutCashToOrigin(); // 重置入金信息
             ByteBuffer buf = ByteBuffer.allocate(14);
             buf.put(new byte[]{(byte) 0x00, (byte) 0x0C});    // Len2
             buf.put(new byte[]{(byte) 0x0A, (byte) 0x01});    // Header
@@ -645,6 +715,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             buf.put(getCalendarHex());
             buf.put((byte) 0x01);
             lib.write(buf.array());
+            System.out.println("---startPayCube: " + Arrays.toString(buf.array()));
             Log.logger.info("入金開始設置完了");
             result.success("startSuccess");
         } catch (Exception e) {

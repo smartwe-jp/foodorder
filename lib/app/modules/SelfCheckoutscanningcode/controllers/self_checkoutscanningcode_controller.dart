@@ -148,7 +148,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     getCartPriceTotal(); //新版新获取分类
   }
 
-  getCartPriceTotal() async {
+  getCartPriceTotal({hideLoading = true}) async {
     await ordersqlcontroller.getCardList();
     var total = await ordersqlcontroller.getCartAllPrice();
     if(total != null){
@@ -163,15 +163,17 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     update();
     change(null, status: RxStatus.success());
-    _resetScanQrCode();
+    _resetScanQrCode(hideLoading);
     scrollToBottom();
   }
 
-  _resetScanQrCode(){
+  _resetScanQrCode(hideLoading){
     scanQrCodeController.text = "";
     //所有流程执行完成后才能获取焦点
     scanQrCodeFocusNode.requestFocus();
-    EasyLoading.dismiss();
+    if (hideLoading) {
+      EasyLoading.dismiss();
+    }
   }
 
   deleteItemSound() async {
@@ -233,7 +235,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
         }else{
           print("未查询出来");
-          _resetScanQrCode();
+          _resetScanQrCode(true);
         }
       });
     }
@@ -366,11 +368,11 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     update();
   }
 
-  clearCartList() {
+  clearCartList({hideLoading = true}) {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
     showScanCartItems.value = [];
-    getCartPriceTotal();
+    getCartPriceTotal(hideLoading: hideLoading);
   }
 
   gotoLanguageHome(){
