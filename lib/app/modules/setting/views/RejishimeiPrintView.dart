@@ -98,7 +98,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               _normalTitle("レジ番号 : ${printInfo['machineCode'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("印字日時 : ", alignment: Alignment.centerLeft),
               _normalTitle("${printInfo['printTime'] ?? "Unknown"}", alignment: Alignment.centerRight),
-              _normalTitle("スターフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
+              _normalTitle("スタッフ : ${printInfo['verifyUserName'] ?? "Unknown"}", alignment: Alignment.centerLeft),
               _normalTitle("${printInfo['startTime'] ?? "Unknown"}　から　\n ${printInfo['endTime'] ?? "Unknown"}　まで"),
               //分割线
               Container(
@@ -114,16 +114,19 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                     child:
                       Column(
                         children: [
-                          _normalTitle("販売実績"),
+                          _normalTitle("精算情報"),
 
-                          _twoContentRow("総売上", "¥ ${formatSum(printInfo['total'])}"),
+                          _twoContentRow("売上", "¥ ${formatSum(printInfo['total'])}"),
                           _twoContentRow("税抜", "¥ ${formatSum(printInfo['noTaxTotal'])}"),
                           _twoContentRow("消費税", "¥ ${formatSum(printInfo['taxTotal'])}"),
                           _twoContentRow("8%对象", "¥ ${formatSum(printInfo['taxTotalA'])}",leading: 45.0),
                           _twoContentRow("10%对象", "¥ ${formatSum(printInfo['taxTotalB'])}",leading: 45.0),
-                          _twoContentRow("販売数量", "${formatSum(printInfo['qty'])}"),
+                          _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
                           _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",leading: 45.0),
                           _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",leading: 45.0),
+                          _twoContentRow("返金額", "${formatSum(printInfo['repaymentQty'])}"),
+                          _twoContentRow("返金件数", "${formatSum(printInfo['repaymentTotal'])}"),
+
                           Container(
                             margin: EdgeInsets.only(top: 20),
                             height: 1,
@@ -152,7 +155,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               ),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-                _normalTitle("現金入出金情報"),
+                _normalTitle("現金入出金情報（枚数）"),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
                 _cashInfoTable(printInfo['cashInfo']),
@@ -244,7 +247,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
         3: FlexColumnWidth(150.0),
       },
       children: <TableRow>[
-        _tableRow(['金種', '备份', '入金', '出金'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
+        _tableRow(['金種', '予備', '入金', '出金'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
         ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
 
       ],

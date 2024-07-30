@@ -330,6 +330,12 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
+    })
+    .catchError((e){
+      change(null, status: RxStatus.error('Failed to load data'));
+    })
+    .timeout(Duration(seconds: 15), onTimeout: (){
+      change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
   }
 
@@ -423,6 +429,14 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
+    })
+    .catchError((e){
+      FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_failure', parameters: {'machineCode': machineCode.value});
+      change(null, status: RxStatus.error('Failed to load data'));
+    })
+    .timeout(Duration(seconds: 60), onTimeout: (){
+      FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineCode.value});
+      change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
   }
 
@@ -543,6 +557,14 @@ class MenuPageController extends GetxController with StateMixin {
         Get.back();
       }
 
+    })
+    .catchError((e){
+      FirebaseAnalytics.instance.logEvent(name: 'load_menu_failure', parameters: {'machineCode': machineCode.value});
+      change(null, status: RxStatus.error('Failed to load data'));
+    })
+    .timeout(Duration(seconds: 60), onTimeout: (){
+      FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineCode.value});
+      change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
   }
 
@@ -563,6 +585,11 @@ class MenuPageController extends GetxController with StateMixin {
     showCartItems.value = ordersqlcontroller.cartItems;
 
     update();
+  }
+
+  backToNewHome() async {
+    Get.delete<MenuPageController>(); // 手动删除控制器实例
+    Get.toNamed("/order-home");
   }
 
   //公共设置菜单Title

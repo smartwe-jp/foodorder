@@ -136,7 +136,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         Get.back();
         printView(response['data']);
       } else {
-        showToast('レジ情報の取得に失敗しました');
+        //当前没有レジ情報
+        showToast('レジ情報がありません');
       }
     })
     .catchError((e){
@@ -197,7 +198,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
-                        Text("確認コードは電子メール アドレス $selectMail に送信されました。",
+                        Text("確認コードはメール アドレス $selectMail に送信されました。",
                             style:
                         TextStyle(fontSize:
                             ScreenAdapter.fontSize(26),
@@ -297,8 +298,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
             child: _mailList(),
           ),
           if (isRequesting)
-          Expanded(
-            child:
+          // Expanded(
+          //   child:
             Container(
               decoration: BoxDecoration(
                 color: Colors.white.withOpacity(0.5),
@@ -306,7 +307,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
               ),
               alignment: Alignment.center,
             child: CircularProgressIndicator()),
-          )
+         // )
         ],
       ),
     );
@@ -331,17 +332,22 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
               height: 20.w,
             ),
           mailInfo.length == 0 && !isRequesting
-              ? Expanded(
-                  child: Center(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        isRequesting = true;
-                      });
-                      _loadMailAddress();
-                    },
-                    child: Text('再取得',style: TextStyle(fontSize: 20)),
-            ),))
+              ?
+          Expanded(
+                  child:
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        setState(() {
+                          isRequesting = true;
+                        });
+                        _loadMailAddress();
+                      },
+                      child: Text('再取得',style: TextStyle(fontSize: 20, fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w400)),
+                    ),
+                  )
+              )
               :
           ListView.separated(
             shrinkWrap: true,
@@ -361,8 +367,29 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   },
                   child: Row(
                     children: [
-                      Expanded(child: Text(mailInfo[index]['verifyEmail'] ?? "",style: TextStyle(fontSize: 20))),
-                      Text('選択',style: TextStyle(fontSize: 20))
+                      Expanded(child: Text(mailInfo[index]['verifyEmail'] ?? "",style: TextStyle(fontSize: 20,
+                                                                                                  fontFamily: GFont.getFontFamily(),
+                                                                                                  fontWeight: FontWeight.w400))),
+
+                      Container(
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(right: 10, left: 10, top: 5, bottom: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(5),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.grey.withOpacity(0.2),
+                              offset: Offset(4, 3),
+                              blurRadius: 3,
+                            ),
+                          ],
+                        ),
+                        child: Text('選択', style: TextStyle(fontSize: 20,
+                                                          fontFamily: GFont.getFontFamily(),
+                                                          fontWeight: FontWeight.w400)),
+                      ),
+
                     ],
                   ),
                 );

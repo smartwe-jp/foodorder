@@ -169,6 +169,9 @@ class GString{
         "tag_out_money_error":"お釣りが足りません,お近くのスタッフにお知らせください",
         "error_tips_thanks":"操作ありがとうございます。処理のために店舗スタッフに連絡しました。しばらくお待ちください。",
 
+        "load_menu_failure_title" : "メニューの読み込みに異常が発生しました。",
+        "load_menu_failure_content" : "@seconds秒後にホーム画面に戻りますので、\n再度お試しください。",
+        "load_menu_failure_back" : "ホームに戻る",
 
       };
     }else if(languageCode == 'CH'){
@@ -333,6 +336,10 @@ class GString{
         "cancel_order":"取消订单",
         "tag_out_money_error":"找零不足，请联系工作人员",
         "error_tips_thanks":"感谢您的操作，已联系店员处理，请稍等待。",
+
+        "load_menu_failure_title" : "菜单加载异常。",
+        "load_menu_failure_content" : "@seconds秒后将返回首页,请重试。",
+        "load_menu_failure_back" : "返回首页",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -496,6 +503,9 @@ class GString{
         "cancel_order":"Cancel order",
         "tag_out_money_error":"Insufficient change, please contact the staff",
         "error_tips_thanks":"Thank you for your operation. We have contacted the staff for processing. Please wait a moment.",
+        "load_menu_failure_title" : "Menu loading error.",
+        "load_menu_failure_content" : "Returning to the home screen in @seconds seconds, please try again.",
+        "load_menu_failure_back" : "Back to home",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -659,6 +669,10 @@ class GString{
         "cancel_order":"주문 취소",
         "tag_out_money_error":"거스름돈이 부족합니다. 직원에게 문의하십시오.",
         "error_tips_thanks":"작업 감사합니다. 처리를 위해 가게 직원에게 연락했습니다. 잠시만 기다려주세요.",
+
+        "load_menu_failure_title" : "메뉴 로딩 오류。",
+        "load_menu_failure_content" : "@seconds초 후 홈 화면으로 돌아갑니다,\n다시 시도하십시오。",
+        "load_menu_failure_back" : "홈으로",
       };
     }
 

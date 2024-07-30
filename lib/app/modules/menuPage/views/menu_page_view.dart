@@ -8,6 +8,7 @@ import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_checkout.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_shopingcar.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_sideBar.dart';
+import 'package:foodorder/app/modules/menuPage/views/LoadingFailPage.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
@@ -311,6 +312,9 @@ class MenuPageView extends GetView {
                   ColorsUtil.hexToColor("#80B646")),
             ),
           ),
+          onError: (error) => LoadingFailedWidget(onBack: (){
+            controller.backToNewHome();
+          },),
         );
       }),
     );
