@@ -95,4 +95,9 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('dispenseCash() has not been implemented.');
   }
 
+  //collectAll
+  Future<int?> collectAll({int bill = 1, int coin = 1}) {
+    throw UnimplementedError('collectAll() has not been implemented.');
+  }
+
 }

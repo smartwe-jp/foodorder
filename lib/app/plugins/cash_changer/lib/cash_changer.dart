@@ -98,6 +98,11 @@ class CashChanger {
     return CashChangerPlatform.instance.dispenseCash(cashCounts);
   }
 
+  //collectAll
+  static Future<int?> collectAll({int bill = 1, int coin = 1}) async {
+    return CashChangerPlatform.instance.collectAll(bill: bill, coin: coin);
+  }
+
   static getOposResult(int? result) {
     if (result == null) {
       return OposResult(

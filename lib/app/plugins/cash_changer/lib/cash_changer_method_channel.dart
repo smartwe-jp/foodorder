@@ -11,7 +11,8 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   final methodChannel = const MethodChannel('cash_changer');
 
   @override
-  Future<void> setEvenstListener(Future<void> Function(MethodCall) events) async {
+  Future<void> setEvenstListener(
+      Future<void> Function(MethodCall) events) async {
     methodChannel.setMethodCallHandler(events);
   }
 
@@ -63,16 +64,18 @@ class MethodChannelCashChanger extends CashChangerPlatform {
 
   @override
   Future<int?> endDeposit(int status) async {
-    final result = await methodChannel.invokeMethod<int>('endDeposit' , <String, dynamic>{
-        'end_deposit': status,
+    final result =
+        await methodChannel.invokeMethod<int>('endDeposit', <String, dynamic>{
+      'end_deposit': status,
     });
     return result;
   }
 
   @override
   Future<int?> dispenseChange(int change) async {
-    final result = await methodChannel.invokeMethod<int>('dispenseChange', <String, dynamic>{
-        'dispense': change,
+    final result = await methodChannel
+        .invokeMethod<int>('dispenseChange', <String, dynamic>{
+      'dispense': change,
     });
     return result;
   }
@@ -91,17 +94,26 @@ class MethodChannelCashChanger extends CashChangerPlatform {
 
   @override
   Future<String?> changerDIStatus(int pData) async {
-    final result = await methodChannel.invokeMethod<String>('changer_di_status', <String, dynamic>{
-        'pData': pData,
+    final result = await methodChannel
+        .invokeMethod<String>('changer_di_status', <String, dynamic>{
+      'pData': pData,
     });
     return result;
   }
 
   @override
   Future<int?> dispenseCash(String cashCounts) async {
-    final result = await methodChannel.invokeMethod<int>('dispenseCash', <String, dynamic>{
-        'cashCounts': cashCounts,
+    final result =
+        await methodChannel.invokeMethod<int>('dispenseCash', <String, dynamic>{
+      'cashCounts': cashCounts,
     });
+    return result;
+  }
+
+  @override
+  Future<int?> collectAll({int bill = 1, int coin = 1}) async {
+    final result = await methodChannel.invokeMethod<int>('collectAll',
+        <String, dynamic>{'Bill': bill, 'Coin': coin});
     return result;
   }
 }

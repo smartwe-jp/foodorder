@@ -1,7 +1,11 @@
 import 'dart:convert';
+import 'dart:io';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:package_info/package_info.dart';
@@ -138,7 +142,8 @@ class SettingController extends GetxController with StateMixin {
     // PackageInfo packageInfo = await PackageInfo.fromPlatform();
     // local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
     local_version.value = await _getWindowsAppVersion();
-    debugPrint("SettingController local_version.value = ${local_version.value}");
+    debugPrint(
+        "SettingController local_version.value = ${local_version.value}");
     getSystemSettingInfo();
   }
 
@@ -157,7 +162,6 @@ class SettingController extends GetxController with StateMixin {
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
-
     isAllowRejishime.value = (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1"  ? true : false;
     var reimburse = await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
@@ -202,7 +206,8 @@ class SettingController extends GetxController with StateMixin {
     request('webBootChangeState', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
-      debugPrint("SettingController _getPaycubeChangeState response = ${response}");
+      debugPrint(
+          "SettingController _getPaycubeChangeState response = ${response}");
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
@@ -219,7 +224,7 @@ class SettingController extends GetxController with StateMixin {
     //print(_menuOption);
   }
 
-  _getChangeState() {
+  _getChangeState() async {
     var formData = {
       "machineCode": machineCode.value,
     };
@@ -315,22 +320,51 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
-  recycleCash() {
+  recycleCash() async {
+    if (Platform.isWindows) {
+      final result = await CashChanger.collectAll();
+      await CashChanger.changerResultNext(
+          resultCode: result,
+          onSuccess: () async {
+            debugPrint("recycleCash onSuccess");
+            //showToast('回收成功');
+          },
+          onRetry: () {
+            recycleCash();
+          },
+          showError: (String error) {
+            debugPrint("recycleCash error: $error");
+            //showToast('回收失败');
+            commonHandleDialog("回收失败：$error");
+          });
+    }
+
     var formData = {
       "machineCode": machineCode.value,
       "shopCode": shopCode.value,
     };
     request('webBootChangeReset', method: 'POST', parameters: formData)
-        .then((val) {
+        .then((val) async {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200) {
-        showToast('リサイクル成功');
-        _getChangeState();
+        await _getChangeState();
+        commonHandleDialog('リサイクル成功');
       } else {
         showToast('リサイクルに失敗しました');
+        commonHandleDialog("リサイクルに失敗しました：${response['code']}");
       }
     });
+  }
+
+  commonHandleDialog(String error) {
+    EasyLoading.dismiss();
+    debugPrint("errorHandleDialog: $error");
+    Get.dialog(DialogUtils.alertOneButton(error,
+        title: GString.getToString("JP", "tag_title"),
+        confirmtitle: GString.getToString("JP", "tag_button_yes"), confirm: () {
+      Get.back();
+    }));
   }
 
   _getCatVal(type) {
@@ -401,11 +435,13 @@ class SettingController extends GetxController with StateMixin {
     }
     if (Get.isRegistered<SettingController>())
     Get.delete<SettingController>(); // 手动删除控制器实例
-    // FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
-    //   "machineCode":machineCode.value,
-    // });
+    if (Platform.isAndroid) {
+      FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
+        "machineCode":machineCode.value,
+      });
+    }
     //Future.delayed(Duration(milliseconds: 100), () {
-      Get.toNamed('/transit-page');
+    Get.toNamed('/transit-page');
     //});
   }
 }

@@ -1,9 +1,11 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
+import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
@@ -97,7 +99,7 @@ extension SettlementControllerExtension on SettlementController {
     };
   }
 
-  //入金开始-入金结束-交易结束-出金开始-交易结束  
+  //入金开始-入金结束-交易结束-出金开始-交易结束
   endDeposit() async {
     debugPrint("endDeposit");
     sleep(Duration(milliseconds: 300));
@@ -115,7 +117,7 @@ extension SettlementControllerExtension on SettlementController {
             giveChangeMoney.value =
                 int.parse(getPutMoney.value) - int.parse(totalPrice.value);
             if (isPrint.value == false) {
-              _startOutputMoney(giveChangeMoney.value);
+              _startOutputMoney(giveChangeMoney.value,"");
             }
           } else if (int.parse(getPutMoney.value) ==
               int.parse(totalPrice.value)) {
@@ -137,7 +139,7 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   //打印小票之后在关闭现金机
-  gloryNextOper() async {
+  gloryNextOper(orderId) async {
     debugPrint("nextOper");
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
@@ -148,14 +150,14 @@ extension SettlementControllerExtension on SettlementController {
           int.parse(getPutMoney.value) - int.parse(totalPrice.value);
 
       //找零
-      _startOutputMoney(giveChangeMoney.value);
+      _startOutputMoney(giveChangeMoney.value, orderId);
     } else {
       //已经结束入金，处理取引终了
       _payCubeCloseTransaction();
     }
   }
 
-  _startOutputMoney(outMoney) async {
+  _startOutputMoney(outMoney,orderId) async {
     debugPrint("startOutPutMoney");
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
@@ -169,13 +171,65 @@ extension SettlementControllerExtension on SettlementController {
         },
         onRetry: () {
           debugPrint("startOutPutMoney 2");
-          _startOutputMoney(outMoney);
+          _startOutputMoney(outMoney,orderId);
         },
         showError: (String error) {
           debugPrint("startOutPutMoney error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(GString.getToString(checkLanguage.value, error), 
+          confirm: () {
+            //找钱失败一律退单和退回入金
+            CashChanger.depositRepay;
+            Get.back();
+            Get.back();
+          });
         });
   }
+
+  reportChange(changeString) {
+    debugPrint("reportChange isReportCash = ${isReportCash.value}");
+    if(isReportCash.value == true){
+      return;
+    }
+
+    isReportCash.value = true;
+
+    var formData = {
+      "responseMessage": changeString,
+      "machineCode": machineCode.value,
+      "orderId": orderId,
+    };
+    request('webBootReimburseNotify', method: 'POST', parameters: formData)
+        .then((value) {
+      var response = json.decode(value.toString());
+
+      EasyLoading.dismiss();
+      if(response['code'] == 200 && response['data'] == true){
+        Get.dialog(
+            DialogUtils.alertOneButton("返金成功。",
+                title: "お知らせ",
+                confirmtitle: "はい",
+                confirm: () {
+                  Get.back();
+                }),
+            barrierDismissible: false
+        );
+
+      }else{
+        Get.dialog(
+            DialogUtils.alertOneButton("返金失敗です。",
+                title: "お知らせ",
+                confirmtitle: "はい",
+                confirm: () {
+                  Get.back();
+                }),
+            barrierDismissible: false
+        );
+      }
+    });
+
+  }
+
+
 
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
@@ -255,7 +309,7 @@ extension SettlementControllerExtension on SettlementController {
     }
   }
 
-  errorHandleDialog(String error) {
+  errorHandleDialog(String error, {Function? confirm}) {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
     Get.dialog(DialogUtils.alertOneButton(error,
@@ -263,8 +317,12 @@ extension SettlementControllerExtension on SettlementController {
         confirmtitle:
             GString.getToString(checkLanguage.value, "tag_button_yes"),
         confirm: () {
-        allowClick.value == true;
+      allowClick.value == true;
+      if (confirm != null) {
+        confirm();
+      } else {
         Get.back();
+      }
     }));
   }
 }
