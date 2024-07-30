@@ -2,6 +2,7 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/modules/menuPage/views/LoadingFailPage.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
 
 import 'package:get/get.dart';
@@ -3077,6 +3078,9 @@ class MenuPageView extends GetView {
               valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
             ),
           ),
+          onError: (error) => LoadingFailedWidget(onBack: (){
+            controller.backToNewHome();
+          },),
         );
       }),
     );
