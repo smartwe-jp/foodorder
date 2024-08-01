@@ -1830,6 +1830,8 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
+          
+          SizedBox(width: ScreenAdapter.width(20)),
           InkWell(
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
 
 import 'package:get/get.dart';
 
@@ -804,6 +805,8 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
+                  
+                  if (Platform.isAndroid)
                   CashSettingView(cashInfoList:
                   controller.cashInfoList.value,
                     isAllowRejishime: controller.isAllowRejishime.value,
@@ -822,6 +825,10 @@ class SettingView extends GetView<SettingController> {
                     resetCash: () {
                       controller.recycleCash();
                     },),
+
+                  if(Platform.isWindows)
+                  cycleCashSetting(),
+
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),

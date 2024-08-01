@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -13,7 +12,6 @@ import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
-
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
@@ -61,16 +59,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求wlan print的相关数据
   RxString is_allow_wlanPrint = "0".obs; //0 不开启  1 开启
-  RxString is_allow_wlanPrint_continuous =
-      "0".obs; //0 单票  1 连票  Print Continuous
+  RxString is_allow_wlanPrint_continuous = "0".obs; //0 单票  1 连票  Print Continuous
   RxString wlan_print_ip = "".obs;
   RxString wlan_print_port = "9100".obs;
 
   RxInt showPrintType = 0.obs; //0 receipt   1Lable
 
   RxString is_allow_wlanPrint_Two = "0".obs; //0 不开启  1 开启
-  RxString is_allow_wlanPrint_Two_continuous =
-      "0".obs; //0 单票  1 连票  Print Continuous
+  RxString is_allow_wlanPrint_Two_continuous = "0".obs; //0 单票  1 连票  Print Continuous
   RxString wlan_print_ip_Two = "".obs;
   RxString wlan_print_port_Two = "9100".obs;
 
@@ -78,7 +74,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool lineup = false.obs; //是否开启排队
 
   RxDouble downloadProgress = 0.0.obs;
-
 
   RxMap usbDevice = {}.obs;
 
@@ -517,7 +512,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     GetxStorage.setData('smartwe_posSetting', json.encode(posSettingData));
 
     is_allow_pos.value = checkedType;
-    update();
+    _updateSystemSetting("isAllowPos", checkedType);
   }
 
   UsbDeviceInfo? get curUsbPrinter {
@@ -575,7 +570,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     is_allow_wlanPrint.value = checkedType;
 
-    update();
+    _updateSystemSetting("isAllowWlanPrint", checkedType);
   }
 
   checkIsAllowWlanPrintTwo(checkedType) async {
@@ -603,7 +598,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     is_allow_wlanPrint_Two.value = checkedType;
 
-    update();
+    _updateSystemSetting("isAllowWlanPrintTwo", checkedType);
   }
 
   posTest(posIp, posPort) async {

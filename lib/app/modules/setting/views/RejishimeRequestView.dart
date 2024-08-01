@@ -1,10 +1,12 @@
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -18,14 +20,19 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
+import 'package:android_usb_printer/android_usb_printer.dart';
+import 'package:foodorder/app/config/printer_info.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 
 class RejishiMeRequestView extends StatefulWidget {
 
   final String machineCode;
   final Function resetCash;
+  final Map? usbDevice;
 
-  const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash});
+
+  const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash, this.usbDevice});
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -41,6 +48,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectUser = "";
   double printLength = 2352;
   Function _resetCash = () {};
+  Map _usbDevice = {}.obs;
 
 
 
@@ -49,10 +57,37 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   @override
   void initState() {
     _resetCash = widget.resetCash;
+    _usbDevice = widget.usbDevice ?? {};
+    debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
+    //usbDevice.value = HomeServices.getUsbPrintSettingInfo();  
     super.initState();
     _loadMailAddress();
   }
 
+  UsbDeviceInfo? get curUsbPrinter {
+    if (_usbDevice.isEmpty) {
+      print("usbDevice is empty");
+      //弹出提示框，打印机未设置，请设置打印机或者联系管理员
+      Get.dialog(
+        AlertDialog(
+          title: Text("プリンター未設定"),
+          content: Text("プリンターを設定してください。"),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text("OK"),
+            ),
+          ],
+        ),
+      );
+      
+      return null;
+    }
+    print("usbDevice.value:${_usbDevice}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(_usbDevice));
+  }
 
   _loadMailAddress() async {
 
@@ -403,22 +438,45 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _printRejishime(data, double length) async {
-    ByteData byteData = await WidgetToImage.widgetToImage(
-      RejishimePrintView(isPrint: true, printInfo: data),
-      size: Size(383, length + 150),
-    );
 
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+    if (Platform.isAndroid) {
+      ByteData byteData = await WidgetToImage.widgetToImage(
+        RejishimePrintView(isPrint: true, printInfo: data),
+        size: Size(383, length + 150),
+      );
 
-    String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
-    Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("0");
-    });
+      List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+      String base64Image = base64Encode(imageBytes);
 
-    _resetCash();
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
+      Future.delayed(Duration(milliseconds: 300), () async {
+        await FlutterPluginMsprinter.sendPrintCut("0");
+      });
+    } else {
+      final printWidget = Container(
+        width: 385,
+        height: length + 150,
+        child: RejishimePrintView(isPrint: true, printInfo: data),
+        
+      );
+      _sendToUsePrinter(printWidget);
+    }
+
+    //_resetCash();
     Get.back();
 
+  }
+
+  _sendToUsePrinter(widget) {
+
+    final printWidget = ReceiptConstrainedBox(widget);
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: printWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(usbDevice: curUsbPrinter),
+      ),
+    );
   }
 
 

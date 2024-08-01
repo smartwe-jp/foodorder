@@ -5,6 +5,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
+import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
@@ -49,6 +51,7 @@ class SettingController extends GetxController with StateMixin {
   RxBool switchValue = false.obs;
 
   RxString local_version = "".obs; //本appversion
+  RxMap usbPrinter = {}.obs;
   var progressValue = 0.0;
 
   @override
@@ -136,6 +139,25 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
+  showRejishimeiView() async {
+    Get.dialog(RejishiMeRequestView(
+      machineCode: machineCode.value,
+      resetCash: () {
+        recycleCash();
+      },
+      usbDevice: usbPrinter.value
+    ));
+  }
+
+  showRecycleAlert() {
+    Get.dialog(RecycleAlert(onConfirm: () {
+      recycleCash();
+      Get.back();
+    }, onCancel: () {
+      Get.back();
+    }));
+  }
+
   //获取版本号
   _getPackageInfo() async {
     debugPrint("SettingController _getPackageInfo");
@@ -162,10 +184,13 @@ class SettingController extends GetxController with StateMixin {
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
     machine_mode.value = SystemSettingInfo['machineMode'];
-    isAllowRejishime.value = (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1"  ? true : false;
+    isAllowRejishime.value =
+        (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1" ? true : false;
     var reimburse = await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
     shopCode.value = await HomeServices.getShopCode();
+    usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
+    debugPrint("usbPrinter = ${usbPrinter}");
     //查看机器零钱状态
     _getPaycubeChangeState();
   }
@@ -195,7 +220,8 @@ class SettingController extends GetxController with StateMixin {
             barrierDismissible: false);
       }
     });
-    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode.value});
+    Get.toNamed('/receipt-query',
+        arguments: {"machineCode": machineCode.value});
   }
 
   //获取现金机列表
@@ -421,23 +447,23 @@ class SettingController extends GetxController with StateMixin {
       if (Get.isRegistered<MenuPageController>()) {
         Get.find<MenuPageController>().clearCartList();
         Get.delete<MenuPageController>();
-      }// 手动删除控制器实例
+      } // 手动删除控制器实例
     } else if (machine_mode.value == "2") {
       if (Get.isRegistered<CheckoutPageController>()) {
         Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       }
     } else if (machine_mode.value == "3") {
       if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+        Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
 
       if (Get.isRegistered<SelfservicePageController>())
-      Get.delete<SelfservicePageController>();
+        Get.delete<SelfservicePageController>();
     }
     if (Get.isRegistered<SettingController>())
-    Get.delete<SettingController>(); // 手动删除控制器实例
+      Get.delete<SettingController>(); // 手动删除控制器实例
     if (Platform.isAndroid) {
-      FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
-        "machineCode":machineCode.value,
+      FirebaseAnalytics.instance.logEvent(name: "setting_back", parameters: {
+        "machineCode": machineCode.value,
       });
     }
     //Future.delayed(Duration(milliseconds: 100), () {
