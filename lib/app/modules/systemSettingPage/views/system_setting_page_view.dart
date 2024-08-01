@@ -1803,37 +1803,6 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkIsAllowRejishime("1");
-            },
-            child: Container(
-              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("オン",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
               controller.checkIsAllowRejishime("0");
             },
             child: Container(
@@ -1857,6 +1826,37 @@ class SystemSettingPageView extends GetView {
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.is_allow_rejishime.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowRejishime("1");
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オン",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_rejishime.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),

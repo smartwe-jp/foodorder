@@ -556,7 +556,7 @@ class CreatePrintImageController extends GetxController {
                         Directionality(
                             textDirection: TextDirection.ltr,
                             child: Container(
-                              width: ScreenAdapter.width(30),
+                              //width: ScreenAdapter.width(30),
                               alignment: Alignment.centerRight,
                               child: Text("${lineVosList["menuQty"]}",
                                 style: printMenuFont,
@@ -564,10 +564,11 @@ class CreatePrintImageController extends GetxController {
                               ),
                             )
                         ),
+                        SizedBox(width: 10,),
                         Directionality(
                             textDirection: TextDirection.ltr,
                             child: Container(
-                              width: ScreenAdapter.width(105),
+                              //width: ScreenAdapter.width(105),
                               alignment: Alignment.centerRight,
                               child: Text("￥${formatMoney(lineVosList["price"])}",
                                 style: printMenuFont,//GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
