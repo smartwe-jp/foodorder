@@ -250,8 +250,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
 
   @override
   Widget build(BuildContext context) {
-    var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']] ?? 0;
-    var optionPrice = controller.addselectedMenuOptionChangePrice.value[item['menuCode']] ?? 0;
+    var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']];
     return GetBuilder<MenuPageController>(
         builder: (controller) {
           return RepaintBoundary(
@@ -407,7 +406,10 @@ class showOneItemOptionWidgetVOneView extends GetView {
 
                                                 children: [
                                                   TextSpan(
-                                                    text: formatMoney((itemPrice+optionPrice).toString()),
+                                                    text: formatMoney((
+                                                        controller.selectedMenuOptionChangePrice.value[item['menuCode']] +
+                                                        controller.addselectedMenuOptionChangePrice.value[item['menuCode']]
+                                                        ).toString()),
                                                     style: TextStyle(
                                                       fontSize: ScreenAdapter.fontSize(70),
                                                       fontFamily: GFont.getFontFamily(),
