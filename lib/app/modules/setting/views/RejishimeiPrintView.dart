@@ -247,7 +247,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
         3: FlexColumnWidth(150.0),
       },
       children: <TableRow>[
-        _tableRow(['金種', '予備', '入金', '出金'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
+        _tableRow(['金種', '予備', '入金', '残り'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
         ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
 
       ],
