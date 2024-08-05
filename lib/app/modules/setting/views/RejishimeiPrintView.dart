@@ -124,7 +124,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                           _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
                           _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",leading: 45.0),
                           _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",leading: 45.0),
-                          _twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
+                          //_twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
                           _twoContentRow("返金件数", "${formatSum(printInfo['repaymentQty'])}"),
 
                           Container(
@@ -155,7 +155,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               ),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-                _normalTitle("現金入出金情報（枚数）"),
+                _normalTitle("釣銭機情報（枚数）"),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
                 _cashInfoTable(printInfo['cashInfo']),
