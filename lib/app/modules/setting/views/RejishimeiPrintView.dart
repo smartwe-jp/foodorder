@@ -124,8 +124,8 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                           _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
                           _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",leading: 45.0),
                           _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",leading: 45.0),
-                          _twoContentRow("返金額", "${formatSum(printInfo['repaymentQty'])}"),
-                          _twoContentRow("返金件数", "${formatSum(printInfo['repaymentTotal'])}"),
+                          _twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
+                          _twoContentRow("返金件数", "${formatSum(printInfo['repaymentQty'])}"),
 
                           Container(
                             margin: EdgeInsets.only(top: 20),
