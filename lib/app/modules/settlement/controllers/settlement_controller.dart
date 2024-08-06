@@ -1296,7 +1296,7 @@ class SettlementController extends GetxController with StateMixin {
 
     stoptimer?.cancel();
     stoptimer =
-        Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
+        Timer.periodic(Duration(milliseconds: 570), (Timer stopt) async {
           stopStatus.value = await Paycube.getPayCubeStopCashStatus;
           // 循环一定要记得设置取消条件，手动取消
           if (stopStatus.value == "StopSuccess") {
