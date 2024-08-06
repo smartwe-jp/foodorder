@@ -1690,7 +1690,7 @@ class SystemSettingPageView extends GetView {
               controller.checkIsAllowRejishime("0");
             },
             child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
@@ -1721,7 +1721,7 @@ class SystemSettingPageView extends GetView {
               controller.checkIsAllowRejishime("1");
             },
             child: Container(
-              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
