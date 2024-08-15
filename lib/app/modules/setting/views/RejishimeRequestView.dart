@@ -6,7 +6,6 @@ import 'dart:typed_data';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
-import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';

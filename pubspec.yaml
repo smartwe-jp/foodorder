@@ -5,6 +5,10 @@ description: A new Fanxing Food Order Flutter project.
 environment: 
   sdk: '>=2.18.6 <3.0.0'
 
+dependency_overrides:
+  win32: 5.5.4
+
+
 dependencies: 
   yaml: any
   sqflite_common_ffi: any
@@ -38,6 +42,8 @@ dependencies:
   badges: ^3.1.1
   connectivity_plus: ^4.0.2
   audioplayers: ^5.2.1
+  #win_toast: ^0.3.0
+  adaptive_dialog: ^2.1.0
   get: 4.6.5
   intl: 0.18.1
   transparent_image: ^2.0.1

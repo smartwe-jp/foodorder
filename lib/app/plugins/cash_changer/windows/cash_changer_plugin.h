@@ -49,6 +49,7 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
     IConnectionPoint* pCP = nullptr;
     IConnectionPointContainer* pEvents = nullptr;
     CashChangerEvents* pHandler = NULL;
+    bool isDepositAmount = false;
     
     // 存储入金金额
     //long amount;

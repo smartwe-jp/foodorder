@@ -79,6 +79,7 @@ extension SettlementControllerExtension on SettlementController {
       if (result > 0) {
         timer?.cancel();
         getPutMoney.value = result.toString();
+        debugPrint("getPutMoney.value==${getPutMoney.value}");
         scanQrCodeFocusNode.unfocus();
         int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
         //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
@@ -145,6 +146,7 @@ extension SettlementControllerExtension on SettlementController {
     //sleep(Duration(milliseconds: 50));
     var depositAmount = await CashChanger.depositAmount;
     getPutMoney.value = depositAmount.toString();
+    debugPrint("depositAmount==${depositAmount}");
     if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
       giveChangeMoney.value =
           int.parse(getPutMoney.value) - int.parse(totalPrice.value);
@@ -153,7 +155,7 @@ extension SettlementControllerExtension on SettlementController {
       _startOutputMoney(giveChangeMoney.value, orderId);
     } else {
       //已经结束入金，处理取引终了
-      _payCubeCloseTransaction();
+      _getInputMoneyInfo();
     }
   }
 
@@ -231,6 +233,33 @@ extension SettlementControllerExtension on SettlementController {
 
 
 
+  //获取入金币种
+
+  _getInputMoneyInfo() async {
+    debugPrint("_getInputMoneyInfo");
+    String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
+    debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
+
+    String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);
+    debugPrint("currencyCashStringresult==${currencyCashStringresult}");
+
+    var putMoneyCurrency = "";
+
+    if (currencyCoinStringresult != null &&
+        currencyCoinStringresult.length > 36) {
+      putMoneyCurrency = currencyCoinStringresult.substring(0, 18); //入金
+    }
+
+    if (currencyCashStringresult != null &&
+        currencyCashStringresult.length > 24) {
+      putMoneyCurrency += currencyCashStringresult.substring(0, 12);
+    }
+    getPutMoneyCurrency.value =
+        MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+    _payCubeCloseTransaction();
+  }
+
+
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
     OutMoneytimer?.cancel();
@@ -289,11 +318,12 @@ extension SettlementControllerExtension on SettlementController {
 
   _getPayCubePutMoneyCurrency() async {
     //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
-
+    debugPrint("_getPayCubePutMoneyCurrency"); 
     if (getputMoneyString.value == true) {
       // 循环一定要记得设置取消条件，手动取消
       String putcurrencyString =
           getPutMoneyCurrency.value; //await Paycube.getPayCubePutMoneyCurrency;
+      debugPrint("putcurrencyString==${putcurrencyString}");
       if (putcurrencyString.trim().length > 60) {
         var totalAmount =
             MoneyParser.calculateTotalAmount(putcurrencyString.trim());
@@ -303,6 +333,7 @@ extension SettlementControllerExtension on SettlementController {
           getPutMoneyCurrency.value = putcurrencyString;
           getputMoneyString.value = false;
           //汇报入金币种
+          debugPrint("--reportPutMoneyCurrency");
           reportPutMoneyCurrency();
         }
       }

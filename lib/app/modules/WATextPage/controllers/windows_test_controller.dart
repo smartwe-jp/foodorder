@@ -8,6 +8,7 @@ class WindowsTestController extends GetxController with StateMixin {
   RxString depositAmount = "".obs;
   RxString changeAmount = "0".obs;
   RxBool openSuccess = false.obs;
+  RxInt getPutMoney = 0.obs;
 
   @override
   void onInit() {
@@ -86,6 +87,9 @@ class WindowsTestController extends GetxController with StateMixin {
     debugPrint("  StartDeposit  ");
     int? resultCode = await CashChanger.startDeposit;
     debugPrint("StartDeposit result:  " + resultCode.toString());
+    if (resultCode == 0) {
+      _getInputMoney();
+    }
     Get.dialog(
         DialogUtils.alert("StartDeposit result:  " + resultCode.toString(),
             title: "CashChanger", confirm: () {
@@ -94,6 +98,21 @@ class WindowsTestController extends GetxController with StateMixin {
           Get.back();
         }),
         barrierDismissible: false);
+  }
+
+  _getInputMoney() async {
+    //await Paycube.setReceiveEvent;
+    debugPrint("getPutInMoney");
+    CashChanger.onGetPutMoneyStringChange = (int result) {
+      debugPrint("onGetPutMoneyStringChange");
+      if (result > 0) {
+        debugPrint("getPutMoney.value==${result.toString()}");
+        getPutMoney.value = result;
+        changeAmount.value = result.toString();
+        update();
+        //_getInputMoneyInfo();
+      }
+    };
   }
 
   void stopDeposit() async {

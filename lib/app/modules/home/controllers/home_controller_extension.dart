@@ -73,7 +73,7 @@ extension HomeControllerExtension on HomeController {
         },
         showError: (String error) {
           debugPrint("OpenPayCube error: $error");
-          if (retCode==225) {//已打开 
+          if (retCode==225) {//已打开 // clearinput?
             _calculateAmount();
           }
         });
@@ -114,7 +114,7 @@ extension HomeControllerExtension on HomeController {
     debugPrint("CalculateAmount 1");
     //int connectCount = 0;
     //计算投币金额
-    final result = await CashChanger.depositAmount;
+    final result = await CashChanger.depositAmount; //这一步有问题，如果获取金额不为0，需要退金。
     await CashChanger.changerResultNext(
         resultCode: result,
         onSuccess: () async {
@@ -128,6 +128,7 @@ extension HomeControllerExtension on HomeController {
           _calculateAmount();
         },
         showError: (String error) {
+          stopCashChanger(DepositAction.repay.index, true);
           debugPrint("CalculateAmount error: $error");
         });
   }

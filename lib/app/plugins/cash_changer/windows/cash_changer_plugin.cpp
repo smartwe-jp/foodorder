@@ -118,6 +118,10 @@ CashChangerPlugin::~CashChangerPlugin() {
 
 // Implements ICashChangerEventsDelegate
 void CashChangerPlugin::DataEvent(long Status) {
+    // if (isDepositAmount) {
+    //     isDepositAmount = false;
+    //     return;
+    // }
     cerr << "------ CashChangerPlugin::DataEvent ------" << endl;
     cerr << "------ Status: " << Status << endl;
     long depositAmount = pCashChanger->DepositAmount;
@@ -341,7 +345,7 @@ void CashChangerPlugin::HandleMethodCall(
  
   // 获取入金金额
   if(method_call.method_name().compare("depositAmount") == 0) {
-
+    isDepositAmount = true;
     cerr << "DepositAmount called 。。" << endl;
 
     if (pCashChanger == nullptr) {
@@ -360,9 +364,29 @@ void CashChangerPlugin::HandleMethodCall(
         logAmount = pCashChanger->DepositAmount;
         result->Success(flutter::EncodableValue(logAmount));
     } else {
-        //result->Success(flutter::EncodableValue(lngRet));
-        result->Error("Cash Changer ResultCode = " + to_string(lngRet));
+        result->Success(flutter::EncodableValue(-1));
+        //result->Error(flutter::EncodableValue("Cash Changer FixDeposit Error"));
         //result->Success(flutter::EncodableValue("Error in ending deposit counting: " + to_string(lngRet)));
+    }
+
+    return;
+  }
+
+  if(method_call.method_name().compare("fixDeposit") == 0) {
+    isDepositAmount = true;
+    cerr << "fixDeposit called 。。" << endl;
+
+    if (pCashChanger == nullptr) {
+        result->Error("Cash Changer not initialized");
+    }
+
+    long lngRet = pCashChanger->FixDeposit();
+    cout << "fixDeposit result: " << lngRet << endl;
+    if (lngRet == OposSuccess) {           
+        // 获取入金金额
+        result->Success(flutter::EncodableValue(lngRet));
+    } else {
+        result->Success(flutter::EncodableValue(lngRet));
     }
 
     return;
@@ -646,6 +670,7 @@ void CashChangerPlugin::HandleMethodCall(
 
     if (pCashChanger == nullptr) {
         result->Error("Cash Changer not initialized");
+        return;
     }
 
     long lngData;
@@ -659,6 +684,10 @@ void CashChangerPlugin::HandleMethodCall(
         return;
     }
     const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+    if (!mapValue) {
+        cerr << "changer_di_status param error 。。2" << endl;
+        return;
+    }
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("pData"));
     if (it != mapValue->end()) {
@@ -679,12 +708,17 @@ void CashChangerPlugin::HandleMethodCall(
 
     //strTemp = "";
     BSTR strTemp = SysAllocString(L"");
+    if (!strTemp) {
+        cerr << "Failed to allocate BSTR" << endl;
+        result->Error("Memory allocation failed");
+        return;
+    }
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
     lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
     //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
     cerr << "-- DirectIO CHAN_DI_STATUSREAD end --" << lngRet << endl;
     cerr << "strTemp " << lngData << " : " << strTemp << endl;
-    SysFreeString(strTemp);
+    
     //000001F3AA222A18
     if (lngRet == OposSuccess) {
         // if (mode == 1) {
@@ -705,9 +739,10 @@ void CashChangerPlugin::HandleMethodCall(
         result->Success(flutter::EncodableValue(str));
     } else {
         //result->Success(flutter::EncodableValue(lngRet));
+        cerr << "DirectIO CHAN_DI_STATUSREAD error .." << lngRet << endl;
         result->Error("Cash Changer Status no response");
     }
-
+    SysFreeString(strTemp);
     
     return;
   }

@@ -258,7 +258,7 @@ class WindewsTestView extends GetView<WindowsTestController> {
                               onPressed: () {
                                 //to home page
                                 Future.delayed(Duration(milliseconds: 200), () {
-                                  Get.toNamed("/home");
+                                  Get.back();
                                 });
                               },
                               child: const Text('終了'),

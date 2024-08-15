@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/modules/reimburseOrder/controllers/reimburse_order_controller_extension.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -55,14 +55,17 @@ class ReimburseOrderController extends GetxController with StateMixin {
   Socket? _socket; //socket对象
   RxBool socketState = false.obs; //连接状态
   RxString eventReportString = "".obs;
+  RxString checkLanguage = "JA".obs;
 
   RxInt socketNumberTimes = 0.obs;
+  RxMap usbDevice = {}.obs;
 
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
+    checkLanguage.value = Get.locale?.languageCode.toUpperCase() ?? "JA";
     _getSystemSettingInfo();
     super.onInit();
   }
@@ -80,6 +83,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     isAllowPos.value = systemSettingInfo['isAllowPos'];
+    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
     _getPosSettingInfo();
     _getPrintLogoImageData();
   }
@@ -98,6 +102,10 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
 
   queryOrder(){
+
+    print("---------queryOrder---------");
+    gloryOutputMoney(10);
+    return;
     if(orderIdController.text == ""){
       update();
       return;
@@ -208,7 +216,7 @@ LogUtil.d(response);
       var response = json.decode(value.toString());
       if(response['code'] == 200 &&  response['data']["executeMark"] == true && response['data']["requestMessage"] ==""){
         EasyLoading.dismiss();
-        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
+        printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功",
                 title: "お知らせ",
@@ -539,7 +547,7 @@ LogUtil.d(response);
 
       EasyLoading.dismiss();
       if(response['code'] == 200 && response['data'] == true){
-        _printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
+        printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
                 title: "お知らせ",
@@ -597,24 +605,34 @@ LogUtil.d(response);
     });
   }
 
-  _printReimburseReceipt(Size size, Widget widget) async {
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
-      width: size.width.toDouble(),
-      padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
-      height: size.height.toDouble(),
-      color: Colors.white,
-      child: widget,
-      ),
-      size: size,
-    );
+  printReimburseReceipt(Size size, Widget widget) async {
+    if (Platform.isAndroid) {
+      ByteData byteData = await WidgetToImage.widgetToImage(Container(
+        width: size.width.toDouble(),
+        padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
+        height: size.height.toDouble(),
+        color: Colors.white,
+        child: widget,
+        ),
+        size: size,
+      );
 
-    List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+      List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
-    Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("0");
-    });
+      String base64Image = base64Encode(imageBytes);
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
+      Future.delayed(Duration(milliseconds: 300), () async {
+        await FlutterPluginMsprinter.sendPrintCut("0");
+      });
+    } else {
+
+      final printWidget = Container(
+        width: size.width.toDouble(),
+        height: size.height.toDouble() + 150,
+        child: widget,
+      );
+      sendToUsePrinter(printWidget);
+    }
   }
 
   _getPrintLogoImageData() async {

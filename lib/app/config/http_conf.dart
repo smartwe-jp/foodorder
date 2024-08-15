@@ -91,6 +91,16 @@ const servicePath = {
   'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
 
   'webBootTroubleNotify': base_url + 'pad/web/boot/notice', //Pos测试接口
+
+
+  //Glory supplement
+  'webBootGlorySupplement': base_url + 'web/glory/supplement', //Glory补充
+
+  //Glory exchange
+  'webBootGloryExchange': base_url + 'web/glory/exchange', //Glory兑换
+
+  //Glory confirm close
+  'webBootGloryConfirmClose': base_url + 'web/glory/confirm/close', //Glory确认关闭
 };
 
 

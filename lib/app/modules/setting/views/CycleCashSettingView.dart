@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleButton.dart';
 import 'package:foodorder/app/modules/setting/views/setting_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
@@ -116,6 +117,10 @@ extension CycleCashSettingView on SettingView {
                   },) : 
                   RecycleButton(title: "預り金回収", onPressed: (){
                     controller.showRecycleAlert();
+                  },),
+
+                  RecycleButton(title: "補充", onPressed: (){
+                    controller.showReplenishAlert();
                   },),
                   
                   RecycleButton(title: "両替", onPressed: (){

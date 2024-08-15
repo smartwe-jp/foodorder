@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
 
 import 'package:get/get.dart';
@@ -163,7 +164,8 @@ class SettingView extends GetView<SettingController> {
                 splashColor: Colors.transparent, // 透明色
                 onTap: (){
                   //controller.printPreviewReceipt();
-                  Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
+                  //Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
+                  controller.cancelReplanish();
                 },
                 child: Container(
                   padding: EdgeInsets.only(left: ScreenAdapter.height(15), right: ScreenAdapter.height(15)),
@@ -199,8 +201,8 @@ class SettingView extends GetView<SettingController> {
           if(controller.is_reimburse.value == "1")
             InkWell(
               onTap: () {
-                Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
-
+                //Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
+                controller.startDeposit();
               },
               child: Container(
                 margin: EdgeInsets.only(
@@ -635,216 +637,223 @@ class SettingView extends GetView<SettingController> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: GetBuilder<SettingController>(builder: (controller){
-        return controller.obx((state) => ListView(
-          children: <Widget>[
-
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(30.0),
-              ),
-              alignment: Alignment.center,
-              padding: EdgeInsets.only(
-                top: ScreenAdapter.height(5.0),
-                left: ScreenAdapter.width(20.0),
-                right: ScreenAdapter.width(20.0),
-              ),
-              child: Row(
-                children: [
-                  Container(
-                    width: ScreenAdapter.width(820.0),
-                    child: Row(
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            //controller.menuPagecontroller.clearCartList();
-                            //sleep(Duration(milliseconds: 100));
-                            //Get.back();
-                            controller.goToBack();
-                            Future.delayed(Duration(milliseconds: 100), () {
-                              //Get.back();
-                              //Get.off(() => TransitPageView());
-                              //Get.toNamed('/transit-page');
-                              //Get.toNamed('/settingback-transit');
-                              //Get.to(() => TransitPageView());
-                              //Get.offAllNamed('/transit-page');
-                              //Get.offNamedUntil('/transit-page', (route) => route.settings.name == '/home');
-                              //Navigator.of(context, rootNavigator: true).pushReplacementNamed('/transit-page');
-                              //Get.until((route) => Get.currentRoute == '/transit-page');
-                              //Navigator.pushReplacementNamed(context, '/transit-page');
-                            });
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(120),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#67c23a"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            child: Text("戻る",
-                                style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
+        return controller.obx((state) => 
+        
+          Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child: 
+                  ListView(
+                    children: <Widget>[
+                      Container(
+                        decoration: new BoxDecoration(color: Colors.white),
+                        margin: EdgeInsets.only(
+                          top: ScreenAdapter.height(30.0),
                         ),
-
-                        InkWell(
-                          onTap: () {
-                            controller.ordersqlcontroller.removeAllFromCart();
-                            if (Platform.isAndroid) {
-                              controller.showBullyScreen();
-                            }
-                            sleep(Duration(milliseconds: 1500));
-                            Get.back();
-                            //退出关闭
-                            exit(0);
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#e6a23c"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            child: Text("ログアウト",
-                                style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.only(
+                          top: ScreenAdapter.height(5.0),
+                          left: ScreenAdapter.width(20.0),
+                          right: ScreenAdapter.width(20.0),
                         ),
+                        child: Row(
+                          children: [
+                            Container(
+                              width: ScreenAdapter.width(820.0),
+                              child: Row(
+                                children: [
+                                  InkWell(
+                                    onTap: () {
+                                      //controller.menuPagecontroller.clearCartList();
+                                      //sleep(Duration(milliseconds: 100));
+                                      //Get.back();
+                                      controller.goToBack();
+                                      Future.delayed(Duration(milliseconds: 100), () {
+                                        //Get.back();
+                                        //Get.off(() => TransitPageView());
+                                        //Get.toNamed('/transit-page');
+                                        //Get.toNamed('/settingback-transit');
+                                        //Get.to(() => TransitPageView());
+                                        //Get.offAllNamed('/transit-page');
+                                        //Get.offNamedUntil('/transit-page', (route) => route.settings.name == '/home');
+                                        //Navigator.of(context, rootNavigator: true).pushReplacementNamed('/transit-page');
+                                        //Get.until((route) => Get.currentRoute == '/transit-page');
+                                        //Navigator.pushReplacementNamed(context, '/transit-page');
+                                      });
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: ScreenAdapter.width(10),
+                                          right: ScreenAdapter.width(10)),
+                                      width: ScreenAdapter.width(120),
+                                      height: ScreenAdapter.height(65),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: ColorsUtil.hexToColor("#67c23a"),
+                                        //设置圆角
+                                        borderRadius: new BorderRadius.circular((16.0)),
+                                      ),
+                                      child: Text("戻る",
+                                          style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontSize: ScreenAdapter.fontSize(24),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor("#FFFFFF"),
+                                          )),
+                                    ),
+                                  ),
 
-                        InkWell(
-                          onTap: () async {
-                           final result = await Get.toNamed('/system-setting-page',
-                                arguments: {"machineCode": controller.machineCode.value},
-                            );
-                           if (result != null) {
-                             controller.getSystemSettingInfo();
-                           }
+                                  InkWell(
+                                    onTap: () {
+                                      controller.ordersqlcontroller.removeAllFromCart();
+                                      if (Platform.isAndroid) {
+                                        controller.showBullyScreen();
+                                      }
+                                      sleep(Duration(milliseconds: 1500));
+                                      Get.back();
+                                      //退出关闭
+                                      exit(0);
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: ScreenAdapter.width(10),
+                                          right: ScreenAdapter.width(10)),
+                                      width: ScreenAdapter.width(180),
+                                      height: ScreenAdapter.height(65),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: ColorsUtil.hexToColor("#e6a23c"),
+                                        //设置圆角
+                                        borderRadius: new BorderRadius.circular((16.0)),
+                                      ),
+                                      child: Text("ログアウト",
+                                          style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontSize: ScreenAdapter.fontSize(24),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor("#FFFFFF"),
+                                          )),
+                                    ),
+                                  ),
 
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#409eff"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
+                                  InkWell(
+                                    onTap: () async {
+                                    final result = await Get.toNamed('/system-setting-page',
+                                          arguments: {"machineCode": controller.machineCode.value},
+                                      );
+                                    if (result != null) {
+                                      controller.getSystemSettingInfo();
+                                    }
+
+                                    },
+                                    child: Container(
+                                      margin: EdgeInsets.only(
+                                          left: ScreenAdapter.width(10),
+                                          right: ScreenAdapter.width(10)),
+                                      width: ScreenAdapter.width(180),
+                                      height: ScreenAdapter.height(65),
+                                      alignment: Alignment.center,
+                                      decoration: BoxDecoration(
+                                        color: ColorsUtil.hexToColor("#409eff"),
+                                        //设置圆角
+                                        borderRadius: new BorderRadius.circular((16.0)),
+                                      ),
+                                      child: Text("システム設定",
+                                          style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontSize: ScreenAdapter.fontSize(24),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor("#FFFFFF"),
+                                          )),
+                                    ),
+                                  ),
+
+
+                                ],
+                              ),
                             ),
-                            child: Text("システム設定",
-                                style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
+                            GestureDetector(
+                              onTap: (){
+                                controller.uploadErrorLog();
+                              },
+                              child: Container(
+                                padding:
+                                EdgeInsets.only(right: ScreenAdapter.width(18)),
+                                child: Text(
+                                  "Version：${controller.local_version.value}",
+                                  style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
+                                      color: Colors.grey[500],
+                                      fontSize: ScreenAdapter.fontSize(20.0)),
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-
-
-                      ],
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: (){
-                      controller.uploadErrorLog();
-                    },
-                    child: Container(
-                      padding:
-                      EdgeInsets.only(right: ScreenAdapter.width(18)),
-                      child: Text(
-                        "Version：${controller.local_version.value}",
-                        style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            color: Colors.grey[500],
-                            fontSize: ScreenAdapter.fontSize(20.0)),
                       ),
-                    ),
+                      Container(
+                        decoration: new BoxDecoration(color: Colors.white),
+                        margin: EdgeInsets.only(
+                          top: ScreenAdapter.height(15.0),
+                        ),
+                        padding: EdgeInsets.only(
+                          top: ScreenAdapter.height(10.0),
+                          left: ScreenAdapter.width(14.0),
+                          right: ScreenAdapter.width(14.0),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            getDepositListShow(),
+                            SizedBox(
+                              height: ScreenAdapter.height(20),
+                            ),
+                            getLastOrderTotalShow(),
+                            SizedBox(
+                              height: ScreenAdapter.height(20),
+                            ),
+                            
+                            if (Platform.isAndroid)
+                            CashSettingView(cashInfoList:
+                            controller.cashInfoList.value,
+                              isAllowRejishime: controller.isAllowRejishime.value,
+                              machineCode: controller.machineCode.value,
+                              recycleCash: () {
+                                controller.recycleCash();
+                              }, adjustCash: (type , number ) {
+                                controller.adjustCash(type, number);
+                              },
+                              setOutset: (type, number) {
+                                controller.setCashSenOutset(type, number);
+                              },
+                              adjustCashFromDeposit: (catVal , number , deposit , qty ) {
+                                controller.adjustCashFromDeposit(catVal , number , deposit , qty);
+                              },
+                              resetCash: () {
+                                controller.recycleCash();
+                              },),
+
+                            if(Platform.isWindows)
+                            cycleCashSetting(),
+
+                            SizedBox(
+                              height: ScreenAdapter.height(20),
+                            ),
+
+                            rePrintArea(),
+                            // SizedBox(
+                            //   height: ScreenAdapter.height(20),
+                            // ),
+                            // CashSettingView(),
+
+
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            ),
-            Container(
-              decoration: new BoxDecoration(color: Colors.white),
-              margin: EdgeInsets.only(
-                top: ScreenAdapter.height(15.0),
-              ),
-              padding: EdgeInsets.only(
-                top: ScreenAdapter.height(10.0),
-                left: ScreenAdapter.width(14.0),
-                right: ScreenAdapter.width(14.0),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  getDepositListShow(),
-                  SizedBox(
-                    height: ScreenAdapter.height(20),
-                  ),
-                  getLastOrderTotalShow(),
-                  SizedBox(
-                    height: ScreenAdapter.height(20),
-                  ),
-                  
-                  if (Platform.isAndroid)
-                  CashSettingView(cashInfoList:
-                  controller.cashInfoList.value,
-                    isAllowRejishime: controller.isAllowRejishime.value,
-                    machineCode: controller.machineCode.value,
-                    recycleCash: () {
-                      controller.recycleCash();
-                    }, adjustCash: (type , number ) {
-                      controller.adjustCash(type, number);
-                    },
-                    setOutset: (type, number) {
-                      controller.setCashSenOutset(type, number);
-                    },
-                    adjustCashFromDeposit: (catVal , number , deposit , qty ) {
-                      controller.adjustCashFromDeposit(catVal , number , deposit , qty);
-                    },
-                    resetCash: () {
-                      controller.recycleCash();
-                    },),
-
-                  if(Platform.isWindows)
-                  cycleCashSetting(),
-
-                  SizedBox(
-                    height: ScreenAdapter.height(20),
-                  ),
-
-                  rePrintArea(),
-                  // SizedBox(
-                  //   height: ScreenAdapter.height(20),
-                  // ),
-                  // CashSettingView(),
-
-
-                ],
-              ),
-            ),
-          ],
-        ),
+          ),
           onLoading: Center(
             child: CircularProgressIndicator(
               strokeWidth:6,

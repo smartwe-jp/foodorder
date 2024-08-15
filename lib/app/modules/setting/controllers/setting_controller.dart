@@ -10,11 +10,6 @@ import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
-import 'package:package_info/package_info.dart';
-
-import '../../../config/color.dart';
-import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -26,9 +21,9 @@ import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
 import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
-import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
-import 'package:yaml/yaml.dart';
+import '../views/ReplanishView.dart';
+
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -52,6 +47,12 @@ class SettingController extends GetxController with StateMixin {
 
   RxString local_version = "".obs; //本appversion
   RxMap usbPrinter = {}.obs;
+  RxString getPutMoneyCurrency = "".obs;
+  RxInt getPutMoney = 0.obs;
+  RxBool isStartPutMoney = false.obs;
+  RxList moneyList = [].obs;
+  RxMap moneyMap = {}.obs;
+
   var progressValue = 0.0;
 
   @override
@@ -83,7 +84,7 @@ class SettingController extends GetxController with StateMixin {
     switchValue.value = value; // 更新值
   }
 
-  _showEasyLoading() {
+  showEasyLoading() {
     //var _showTag;
     // _showTag = Text("Uploading……",
     //     style: TextStyle(
@@ -119,7 +120,7 @@ class SettingController extends GetxController with StateMixin {
 
   //上传现金机log
   uploadErrorLog() async {
-    _showEasyLoading();
+    showEasyLoading();
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
@@ -156,6 +157,13 @@ class SettingController extends GetxController with StateMixin {
     }, onCancel: () {
       Get.back();
     }));
+  }
+
+  showReplenishAlert() {
+    Get.dialog(
+      barrierDismissible: false,
+      ReplanishView()
+    );
   }
 
   //获取版本号
@@ -196,7 +204,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   printPreviewReceipt() async {
-    _showEasyLoading();
+    showEasyLoading();
     var formData = {
       "machineCode": machineCode.value,
     };

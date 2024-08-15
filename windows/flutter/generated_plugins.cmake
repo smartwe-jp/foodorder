@@ -8,6 +8,7 @@ list(APPEND FLUTTER_PLUGIN_LIST
   cash_changer
   charset_converter
   connectivity_plus
+  dynamic_color
   firebase_core
   flutter_plugin_msprinter
   permission_handler_windows
