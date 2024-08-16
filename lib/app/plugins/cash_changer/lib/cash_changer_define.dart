@@ -34,9 +34,11 @@ enum HealthResultCode {
 enum ResultCodeExtended {
   OPOS_ECHAN_OVERDISPENSE, //超出最大找零金额 取消订单 提醒商家补钱
   OPOS_ECHAN_TOTALOVER, //none
+  OPOS_ECHAN_CHANGEERROR,
   OPOS_ECHAN_OVER, //超过指定面值的最大找零数量 取消订单 提醒商家补钱
   OPOS_ECHAN_IFERROR, //通信异常 重试
   OPOS_ECHAN_SETERROR, //脱机状态 提醒商家外部处理
+  OPOS_ECHAN_ERROR,
   OPOS_ECHAN_CHARGING, //正在找零中 等待
   OPOS_ECHAN_NEAREMPTY,//none
   OPOS_ECHAN_EMPTY,//none

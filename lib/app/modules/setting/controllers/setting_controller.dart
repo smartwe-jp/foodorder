@@ -5,11 +5,14 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
+import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -36,6 +39,7 @@ class SettingController extends GetxController with StateMixin {
   RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
   RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
   RxBool isAllowRejishime = false.obs;
+  RxString checkLanguage = "JP".obs;
 
   RxList cashList = [].obs;
   RxMap cashInfoList = {}.obs;
@@ -52,6 +56,7 @@ class SettingController extends GetxController with StateMixin {
   RxBool isStartPutMoney = false.obs;
   RxList moneyList = [].obs;
   RxMap moneyMap = {}.obs;
+  RxMap cashInfo = {}.obs;
 
   var progressValue = 0.0;
 
@@ -59,6 +64,7 @@ class SettingController extends GetxController with StateMixin {
   void onInit() {
     debugPrint("SettingController onInit");
     machineCode.value = Get.arguments['machineCode'];
+    checkLanguage.value = Get.locale?.languageCode.toUpperCase() ?? "JP";
     debugPrint("SettingController machineCode.value = ${machineCode.value}");
     _getPackageInfo();
 
@@ -166,6 +172,16 @@ class SettingController extends GetxController with StateMixin {
     );
   }
 
+  showExchangeAlert() async {
+    Get.dialog(
+      barrierDismissible: false,
+      Exchangeview()
+    );
+    //await Future.delayed(Duration(milliseconds: 800), () {
+       
+    //});
+  }
+
   //获取版本号
   _getPackageInfo() async {
     debugPrint("SettingController _getPackageInfo");
@@ -175,6 +191,7 @@ class SettingController extends GetxController with StateMixin {
     debugPrint(
         "SettingController local_version.value = ${local_version.value}");
     getSystemSettingInfo();
+    getCashInfo();
   }
 
   //获取系统版本信息

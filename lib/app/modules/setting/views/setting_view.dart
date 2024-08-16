@@ -164,8 +164,7 @@ class SettingView extends GetView<SettingController> {
                 splashColor: Colors.transparent, // 透明色
                 onTap: (){
                   //controller.printPreviewReceipt();
-                  //Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
-                  controller.cancelReplanish();
+                  Get.toNamed('/receipt_query', arguments: {"machineCode": controller.machineCode.value});
                 },
                 child: Container(
                   padding: EdgeInsets.only(left: ScreenAdapter.height(15), right: ScreenAdapter.height(15)),
@@ -201,8 +200,7 @@ class SettingView extends GetView<SettingController> {
           if(controller.is_reimburse.value == "1")
             InkWell(
               onTap: () {
-                //Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
-                controller.startDeposit();
+                Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode.value});
               },
               child: Container(
                 margin: EdgeInsets.only(

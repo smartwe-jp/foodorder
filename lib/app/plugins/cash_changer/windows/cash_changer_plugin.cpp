@@ -148,6 +148,8 @@ void CashChangerPlugin::StatusUpdateEvent(long Data) {
 void CashChangerPlugin::HandleMethodCall(
     const flutter::MethodCall<flutter::EncodableValue> &method_call,
     unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result) {
+    cerr << "CashChangerPlugin::HandleMethodCall" << endl;
+    cerr << "method_call.method_name() = " << method_call.method_name() << endl;
  // 打开设备
  if (method_call.method_name().compare("openCashChanger") == 0) {
     cerr << "openCashChange called 。。" << endl;
@@ -297,7 +299,7 @@ void CashChangerPlugin::HandleMethodCall(
     // ...
 
     // 返回处理后的信息
-    result->Success(flutter::EncodableValue("Coins: " + st_CoinCashList + "\nBills: " + st_BillCashList));
+    result->Success(flutter::EncodableValue(st_CoinCashList +','+ st_BillCashList));
     return;
   }
 
@@ -482,11 +484,11 @@ void CashChangerPlugin::HandleMethodCall(
                 case OPOS_ECHAN_SETERROR:
                 case OPOS_ECHAN_ERROR:
                 case OPOS_ECHAN_BUSY:
-                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
-
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+                    cerr << "OPOS_ECHAN_SETERROR" << endl;
                     break;
                 default:
-                    result->Success(flutter::EncodableValue(pCashChanger->ResultCode));
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
 
             }
         } else {
@@ -747,7 +749,7 @@ void CashChangerPlugin::HandleMethodCall(
     return;
   }
   
-  if (method_call.method_name().compare("dispenseCash")) {
+  if (method_call.method_name().compare("dispenseCash") == 0) {
     cerr << "dispenseCash called 。。" << endl;
 
     if (pCashChanger == nullptr) {
@@ -778,7 +780,31 @@ void CashChangerPlugin::HandleMethodCall(
     if (lngRet == OposSuccess) {
         result->Success(flutter::EncodableValue(OposSuccess));
     } else {
-        result->Success(flutter::EncodableValue(lngRet));
+        if (lngRet == OposEExtended) {
+            switch (pCashChanger->ResultCodeExtended) {
+                case OPOS_ECHAN_OVERDISPENSE:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
+                    cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
+                    //pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_OVER:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
+                    cerr << "OPOS_ECHAN_OVER" << endl;
+                    //pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_SETERROR:
+                case OPOS_ECHAN_ERROR:
+                case OPOS_ECHAN_BUSY:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+                    cerr << "OPOS_ECHAN_SETERROR" << endl;
+                    break;
+                default:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+
+            }
+        } else {
+            result->Success(flutter::EncodableValue(lngRet));
+        }
     }
 
     return;

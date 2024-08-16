@@ -123,8 +123,8 @@ extension CycleCashSettingView on SettingView {
                     controller.showReplenishAlert();
                   },),
                   
-                  RecycleButton(title: "両替", onPressed: (){
-                    
+                  RecycleButton(title: "両替", onPressed: () async {
+                    await controller.showExchangeAlert();
                   },) 
 
                 ]

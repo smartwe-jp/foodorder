@@ -4,6 +4,8 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
@@ -18,10 +20,10 @@ extension SettingControllerExtension on SettingController {
   startPutMoney() async {
     isStartPutMoney.value = true;
     update();
-    await startDeposit();
+    await _startDeposit();
   }
 
-  startDeposit() async {
+  _startDeposit() async {
     debugPrint("startDeposit");
     await CashChanger.setEventsListener();
     final resultCode = await CashChanger.startDeposit;
@@ -33,7 +35,7 @@ extension SettingControllerExtension on SettingController {
         },
         onRetry: () {
           debugPrint("startDeposit 2");
-          startDeposit();
+          _startDeposit();
         },
         showError: (String error) {
           debugPrint("startDeposit error: $error");
@@ -86,19 +88,21 @@ extension SettingControllerExtension on SettingController {
       if (result > 0) {
         debugPrint("getPutMoney.value==${result.toString()}");
         getPutMoney.value = result;
-        //update();
-        _getInputMoneyInfo();
+        update();
+        //_getInputMoneyInfo();
       }
     };
   }
 
   _getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
-    String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);//'0000010000000000000000000000000010000000000000000000000000000000';
+    String? currencyCoinStringresult = await CashChanger.changerDIStatus(
+        0x04); //'0000010000000000000000000000000010000000000000000000000000000000';
     //await CashChanger.changerDIStatus(0x04);
     debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
 
-    String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);//'0000000000000000000000000000000000000000000000000000000000000000';
+    String? currencyCashStringresult = await CashChanger.changerDIStatus(
+        0x82); //'0000000000000000000000000000000000000000000000000000000000000000';
     //await CashChanger.changerDIStatus(0x82);
     debugPrint("currencyCashStringresult==${currencyCashStringresult}");
 
@@ -122,10 +126,11 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
-  closeDeposit() async {
+  Future<bool> closeDeposit() async {
     debugPrint("closeDeposit");
     //await CashChanger.removeEventsListener();
     //await Future.delayed(Duration(seconds: 1));
+    bool success = false;
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
     final resultCode =
@@ -134,6 +139,7 @@ extension SettingControllerExtension on SettingController {
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("closeDeposit 1");
+          success = true;
         },
         onRetry: () {
           debugPrint("closeDeposit 2");
@@ -141,8 +147,10 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("closeDeposit error: $error");
+          success = false;
           //errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
+    return success;
   }
 
   cancelReplanish() async {
@@ -174,15 +182,13 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("cancelReplanish error: $error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
   //上报
   reportReplanishInfo(changeInfoMap, context) async {
     debugPrint("reportReplanishInfo changeInfoMap: $changeInfoMap");
-    _getInputMoneyInfo();
-    return;
 
     showEasyLoading();
     await closeDeposit();
@@ -220,6 +226,24 @@ extension SettingControllerExtension on SettingController {
     moneyList.value = [];
     moneyMap.value = {};
     getPutMoney.value = 0;
-    update();
+    getCashInfo();
+  }
+
+  errorHandleDialog(String error, {Function? confirm}) {
+    EasyLoading.dismiss();
+    debugPrint("errorHandleDialog: $error");
+    Get.dialog(
+      barrierDismissible: false,
+      DialogUtils.alertOneButton(error,
+        title: GString.getToString(checkLanguage.value, "tag_title"),
+        confirmtitle:
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        confirm: () {
+      if (confirm != null) {
+        confirm();
+      } else {
+        Get.back();
+      }
+    }));
   }
 }
