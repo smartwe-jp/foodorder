@@ -92,6 +92,37 @@ class CashChanger {
     return CashChangerPlatform.instance.checkChangerStatus();
   }
 
+  //supply cash
+  static Future<int?> get startSupply async {
+    return CashChangerPlatform.instance.startSupply();
+  }
+
+  //SUPPLYCOUNTS
+  static Future<String?> supplyCounts(int mode) async {
+    return CashChangerPlatform.instance.supplyCounts(mode);
+  }
+
+  //COUNTCLR
+  static Future<int?> countClear() async {
+    return CashChangerPlatform.instance.countClear();
+  }
+
+  //dispenseCashOutside
+  static Future<int?> dispenseCashOutside(String cashInfo) async {
+    return CashChangerPlatform.instance.dispenseCashOutside(cashInfo);
+  }
+  
+  //beginCashReturn
+  static Future<int?> get beginCashReturn async {
+    return CashChangerPlatform.instance.beginCashReturn();
+  }
+
+  //BEGINDEPOSITOUTSIDE
+  static Future<int?> get beginDepositOutside async {
+    return CashChangerPlatform.instance.beginDepositOutside();
+  }
+
+
   //changer di status
   static Future<String?> changerDIStatus(int pData) async {
     return CashChangerPlatform.instance.changerDIStatus(pData);

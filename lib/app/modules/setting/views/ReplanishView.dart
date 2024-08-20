@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
@@ -308,7 +309,7 @@ class ReplanishView extends GetView<SettingController> {
                         child: ElevatedButton(
                           onPressed: () {
                             if (controller.getPutMoney.value > 0) {
-                              controller.reportReplanishInfo(controller.moneyMap.value, context);
+                              controller.reportReplanishInfo(controller.uploadMoneyInfo, context);
                             }
                           },
                           child: Text("確認",
@@ -339,14 +340,28 @@ class ReplanishView extends GetView<SettingController> {
 
 
   titleValues() {
-    return ['万円', '５千円', '２千円', '千円', '５百円', '百円', '50円', '10円', '５円', '１円'];
+    return ['万円', '５千円', '２千円', '千円', '５百円', '百円', '50円', '10円', '５円', '１円'].reversed.toList();
   }
 
   titleAndValueMap() {
-    final values = controller.moneyList.value.isEmpty ? [0,0,0,0,0,0,0,0,0,0] : controller.moneyList.value;
-    return titleValues().asMap().map((index, value) {
-      return MapEntry(value, values[index] ?? 0);
+
+    if (controller.getPutMoneyCurrency.value.isEmpty) {
+      return titleValues().asMap().map((key, value) {
+        return MapEntry(value, 0);
+      });
+    }
+
+    debugPrint('getPutMoneyCurrency: ${controller.getPutMoneyCurrency.value}');
+
+
+    final typeAndValueMap = controller.getPutMoneyCurrency.value.split(',').asMap().map((key, value) {
+      final cash = value.split(':');
+      return MapEntry(controller.getCashName(cash[0]), cash[1]);
     });
+
+    debugPrint('typeAndValueMap: $typeAndValueMap');
+
+    return typeAndValueMap;
   }
 
   @override

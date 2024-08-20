@@ -11,6 +11,13 @@ import 'package:get/get.dart';
 extension ExchangeControllerExtension on SettingController {
   //get cashinfo
 
+  startPutExchangeMoney() async {
+    ignoreNotify.value = false;
+    isStartPutMoney.value = true;
+    update();
+    await beginDepositOutside();
+  }
+
   getCashInfo() async {
     final result = await CashChanger.getCashBalance;
     print('result: $result');
@@ -26,6 +33,44 @@ extension ExchangeControllerExtension on SettingController {
     update();
   }
 
+  //投币BEGINDEPOSITOUTSIDE
+  beginDepositOutside() async {
+    final result = await CashChanger.beginDepositOutside;
+    debugPrint('beginDepositOutside: $result');
+    await CashChanger.changerResultNext(
+        resultCode: result,
+        onSuccess: () {
+          debugPrint("beginDepositOutside 1");
+          _getOutsideInputMoney();
+        },
+        onRetry: () {
+          debugPrint("beginDepositOutside 2");
+          beginDepositOutside();
+        },
+        showError: (String error) {
+          debugPrint("beginDepositOutside error: $error");
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        });
+  }
+
+  _getOutsideInputMoney() async {
+    debugPrint("_getOutsideInputMoney");
+    await CashChanger.setEventsListener();
+    CashChanger.onGetPutMoneyStringChange = (int result) {
+      debugPrint("onGetPutMoneyStringChange _getOutsideInputMoney");
+      if (ignoreNotify.value) {
+        return;
+      }
+      if (result > 0) {
+        debugPrint("_getOutsideInputMoney getPutMoney.value==${result.toString()}");
+        getPutMoney.value = result;
+        //update();
+        getInputMoneyInfo();
+        //
+      }
+    };
+  }
+
   exChangeFlow(type, count, change) async {
     debugPrint('exChangeFlow: $type, $count');
     final outBillInfo = ";$type:$count";
@@ -36,18 +81,18 @@ extension ExchangeControllerExtension on SettingController {
 
     Function endFunction = (result) async {
       debugPrint('endFunction: $result');
-        if (result) {
-          clearTask();
-          Get.back();
-        }
-      };
+      if (result) {
+        clearTask();
+        Get.back();
+      }
+    };
 
     Function pecifyMoney = (result) async {
       debugPrint('pecifyMoney: $result');
       if (result) {
         final result =
-          await outSpecifyMoney(outBillInfo, successTask: endFunction);
-      endFunction(result);
+            await outSpecifyMoney(outBillInfo, successTask: endFunction);
+        endFunction(result);
       }
     };
 
@@ -66,8 +111,7 @@ extension ExchangeControllerExtension on SettingController {
   tipsTitle() {
     if (getPutMoney.value == 0) {
       return 'お金を入れてください';
-    } else if (getPutMoney.value > 0 &&
-        (getExchangeList().isEmpty)) {
+    } else if (getPutMoney.value > 0 && (getExchangeList().isEmpty)) {
       //请继续投钱
       return 'お金を入れ続けてください';
     } else {
@@ -76,7 +120,8 @@ extension ExchangeControllerExtension on SettingController {
     }
   }
 
-  Future<bool> outSpecifyMoney(money, {Function? successTask, bool? fromeError}) async {
+  Future<bool> outSpecifyMoney(money,
+      {Function? successTask, bool? fromeError}) async {
     bool success = false;
     final result = await CashChanger.dispenseCash(money);
     await CashChanger.changerResultNext(
@@ -86,7 +131,7 @@ extension ExchangeControllerExtension on SettingController {
           success = true;
           if (fromeError != null && fromeError) {
             successTask?.call(true);
-          } 
+          }
         },
         onRetry: () {
           debugPrint("exchangeMoney 2");
@@ -128,7 +173,8 @@ extension ExchangeControllerExtension on SettingController {
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             Get.back();
-            gloryOutputMoney(outMoney, successTask: successTask, fromeError: true);
+            gloryOutputMoney(outMoney,
+                successTask: successTask, fromeError: true);
           });
         });
     return success;
@@ -136,8 +182,8 @@ extension ExchangeControllerExtension on SettingController {
 
   bool canExchange() {
     var canExchange = false;
-    debugPrint('cashInfo: ${cashInfo.value}');
-    cashInfo.value.forEach((key, value) {
+    //debugPrint('cashInfo: ${cashInfo.value}');
+    cashInfo.forEach((key, value) {
       if (value != '0' && (key == '1000' || key == '5000' || key == '10000')) {
         canExchange = true;
       }
@@ -184,7 +230,6 @@ extension ExchangeControllerExtension on SettingController {
       }
 
       exchangeList.add([5000, exchange5000, remainMoney]);
-      
     }
 
     if (cash10000 > 0 && getPutMoney.value >= 10000) {
@@ -227,5 +272,9 @@ extension ExchangeControllerExtension on SettingController {
       default:
         return '';
     }
+  }
+
+  exchangeMoney() async {
+    debugPrint('exchangeMoney');
   }
 }

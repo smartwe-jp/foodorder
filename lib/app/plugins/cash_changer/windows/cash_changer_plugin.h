@@ -39,6 +39,9 @@ class CashChangerPlugin : public flutter::Plugin, public ICashChangerEventsDeleg
     void DirectIOEvent(long EventNumber, long *pData, BSTR *pString) override;
     void StatusUpdateEvent(long Data) override;
 
+    void ReturnMapValue(unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result, long *status, flutter::EncodableValue *value);
+    void DirectIOMethod(unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result, long Command, long pData, BSTR pString);
+
     
       
   private:

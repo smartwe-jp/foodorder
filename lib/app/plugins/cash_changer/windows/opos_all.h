@@ -185,6 +185,10 @@ const int CHAN_DI_COUNTCLR = 19;
 const int CHAN_DI_GETLOG = 20;
 const int CHAN_DI_OPENDRAWER = 21;
 const int CHAN_DI_CHILDLOCK = 22;
+const int CHAN_DI_SUPPLY = 26;
+const int CHAN_DI_BEGINDEPOSITOUTSIDE = 27;
+const int CHAN_DI_DISPENSECASHOUTSIDE = 29;
+const int CHAN_DI_BEGINCASHRETURN = 30;
 const int CHAN_DI_ERRGUIDANCE = 101;
 
 // DirectIO Event Constants

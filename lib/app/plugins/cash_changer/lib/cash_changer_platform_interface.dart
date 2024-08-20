@@ -80,6 +80,36 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('checkChangerStatus() has not been implemented.');
   }
 
+  //startSupply
+  Future<int?> startSupply() {
+    throw UnimplementedError('startSupply() has not been implemented.');
+  }
+
+  //supplyCounts
+  Future<String?> supplyCounts(int mode) {
+    throw UnimplementedError('supplyCounts() has not been implemented.');
+  }
+
+  //COUNTCLR
+  Future<int?> countClear() {
+    throw UnimplementedError('countClear() has not been implemented.');
+  }
+
+  //dispenseCashOutside
+  Future<int?> dispenseCashOutside(String cashInfo) {
+    throw UnimplementedError('dispenseCashOutside() has not been implemented.');
+  }
+
+  //beginCashReturn
+  Future<int?> beginCashReturn() {
+    throw UnimplementedError('beginCashReturn() has not been implemented.');
+  }
+
+  //BEGINDEPOSITOUTSIDE
+  Future<int?> beginDepositOutside() {
+    throw UnimplementedError('beginDepositOutside() has not been implemented.');
+  }
+  
   //Set Event Listener
   Future<void> setEvenstListener(Future<void> Function(MethodCall) events) {
     throw UnimplementedError('setEvenstListener() has not been implemented.');

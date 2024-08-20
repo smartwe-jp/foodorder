@@ -18,20 +18,20 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 
 extension SettingControllerExtension on SettingController {
   startPutMoney() async {
+    ignoreNotify.value = false;
     isStartPutMoney.value = true;
     update();
-    await _startDeposit();
+    await _startSupply();
   }
 
   _startDeposit() async {
     debugPrint("startDeposit");
-    await CashChanger.setEventsListener();
     final resultCode = await CashChanger.startDeposit;
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("startDeposit 1");
-          _checkChangerStatus();
+          checkChangerStatus();
         },
         onRetry: () {
           debugPrint("startDeposit 2");
@@ -43,12 +43,104 @@ extension SettingControllerExtension on SettingController {
         });
   }
 
-  _checkChangerStatus() async {
+  _startSupply() async {
+    debugPrint("startSupply");
+    final resultCode = await CashChanger.startSupply;
+    await CashChanger.changerResultNext(
+        resultCode: resultCode,
+        onSuccess: () {
+          debugPrint("startSupply 1");
+          checkChangerStatus();
+          //_getInputMoney();
+        },
+        onRetry: () {
+          debugPrint("startSupply 2");
+          _startSupply();
+        },
+        showError: (String error) {
+          debugPrint("startSupply error: $error");
+          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        });
+  }
+
+  _supplyCounts() async {
+    debugPrint("supplyCounts");
+    String? supplyCounts = await CashChanger.supplyCounts(0x00);
+    if (supplyCounts == null) {
+      debugPrint("supplyCounts==null 无法启动");
+      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
+      return;
+    }
+    //获取=号与;号之间的数据
+    final supplyString = supplyCounts.split('=')[1];
+    //再截取;号与;号之间的数据
+    final supplyStringList = supplyString.split(';');
+
+    List<String> allPairs = [];
+    for (var part in supplyStringList) {
+      allPairs.addAll(part.split(','));
+    }
+
+    getPutMoneyCurrency.value = allPairs.join(',');
+    debugPrint("getPutMoneyCurrency==${getPutMoneyCurrency.value}");
+    update();
+  }
+
+  supplyCountsClear() async {
+    debugPrint("_supplyCountsClear");
+
+    String? supplyCounts = await CashChanger.supplyCounts(0x01);
+    if (supplyCounts == null) {
+      debugPrint("supplyCounts==null 无法启动");
+      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
+      return;
+    }
+    debugPrint("_supplyCountsClear==${supplyCounts}");
+
+    if (supplyCounts.contains('=') && supplyCounts.contains(';')) {
+        //获取=号与;号之间的数据
+        final supplyString = supplyCounts.split('=')[1];
+        //再截取;号与;号之间的数据
+        final supplyStringList = supplyString.split(';');
+
+        List<String> allPairs = [];
+        for (var part in supplyStringList) {
+          allPairs.addAll(part.split(','));
+        }
+
+        final resultString = allPairs.join(',');
+        debugPrint("getPutMoneyCurrency==${resultString}");
+
+        final resultMap = resultString.split(',').asMap().map((key, value) {
+          final cash = value.split(':');
+          return MapEntry(cash[0], cash[1]);
+        });
+
+        if (getPutMoneyMap.isEmpty) {
+          getPutMoneyMap.value = resultMap;
+        } else {
+          resultMap.forEach((key, value) {
+            if (getPutMoneyMap.containsKey(key)) {
+              getPutMoneyMap[key] = (int.parse(getPutMoneyMap[key]) + int.parse(value)).toString();
+            } else {
+              getPutMoneyMap[key] = value;
+            }
+          });
+        }
+
+
+        debugPrint("getPutMoneyMap==${getPutMoneyMap.value}");
+
+       update();
+    }
+  }
+
+  checkChangerStatus() async {
     debugPrint("checkChangerStatus 1");
     var resultCode = await CashChanger.checkChangerStatus;
     if (resultCode == null) {
       debugPrint("Unknown error");
-      _checkChangerStatus();
+      checkChangerStatus();
       return;
     }
     debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
@@ -68,7 +160,7 @@ extension SettingControllerExtension on SettingController {
         break;
       case HealthResultCode.OPOS_E_BUSY:
         sleep(Duration(seconds: 5));
-        _checkChangerStatus();
+        checkChangerStatus();
         break;
       case HealthResultCode.OPOS_E_NOHARDWARE:
         debugPrint("checkChangerStatus error: $resultCode");
@@ -81,20 +173,24 @@ extension SettingControllerExtension on SettingController {
 
   //获取投入金额
   _getInputMoney() async {
-    //await Paycube.setReceiveEvent;
+    await CashChanger.setEventsListener();
     debugPrint("getPutInMoney");
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");
+      if (ignoreNotify.value) {
+        return;
+      }
       if (result > 0) {
         debugPrint("getPutMoney.value==${result.toString()}");
         getPutMoney.value = result;
-        update();
+        //update();
         //_getInputMoneyInfo();
+        supplyCountsClear();
       }
     };
   }
 
-  _getInputMoneyInfo() async {
+  getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(
         0x04); //'0000010000000000000000000000000010000000000000000000000000000000';
@@ -121,14 +217,12 @@ extension SettingControllerExtension on SettingController {
         putMoneyCurrency, onResult: (List<int> result, Map details) {
       debugPrint("result==${result}");
       moneyList.value = result;
-      moneyMap.value = details;
       update();
     });
   }
 
   Future<bool> closeDeposit() async {
     debugPrint("closeDeposit");
-    //await CashChanger.removeEventsListener();
     //await Future.delayed(Duration(seconds: 1));
     bool success = false;
     final depositAmount = await CashChanger.fixDeposit;
@@ -148,42 +242,60 @@ extension SettingControllerExtension on SettingController {
         showError: (String error) {
           debugPrint("closeDeposit error: $error");
           success = false;
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
     return success;
   }
 
   cancelReplanish() async {
     debugPrint("cancelReplanish");
+    //await CashChanger.removeEventsListener();
+    ignoreNotify.value = true;
 
     if (getPutMoney.value == 0) {
       await closeDeposit();
+      clearTask();
+      Get.back();
     } else {
-      //showEasyLoading();
-      await depositRepay();
-      //EasyLoading.dismiss();
+      final result = await dispenseCashOutside();
+      if (result) {
+        final result = await supplyCountsClear();
+        if (result) {
+          clearTask();
+          Get.back();
+        } else {
+          debugPrint("supplyCountsClear error");
+          //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
+        }
+      } else {
+        debugPrint("cancelReplanish error");
+        //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
+      }
     }
-    clearTask();
-    Get.back();
   }
 
-  depositRepay() async {
-    final depositAmount = await CashChanger.depositAmount;
-    debugPrint("depositAmount: $depositAmount");
-    final resultCode = await CashChanger.depositRepay;
+  dispenseCashOutside() async {
+    var success = false;
+    final depositAmount = await CashChanger.fixDeposit;
+    debugPrint("fixDeposit: $depositAmount");
+    final resultCode = await CashChanger.dispenseCashOutside(
+        getNoneZeroInfo(getPutMoneyCurrency.value));
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("cancelReplanish 1");
+          success = true;
         },
         onRetry: () {
           debugPrint("cancelReplanish 2");
-          depositRepay();
+          dispenseCashOutside();
         },
         showError: (String error) {
           debugPrint("cancelReplanish error: $error");
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          success = false;
         });
+    return success;
   }
 
   //上报
@@ -191,12 +303,12 @@ extension SettingControllerExtension on SettingController {
     debugPrint("reportReplanishInfo changeInfoMap: $changeInfoMap");
 
     showEasyLoading();
-    await closeDeposit();
-
-    isStartPutMoney.value = false;
+    ignoreNotify.value = true;
+    if (!await closeDeposit())
+    return;
 
     var formData = {
-      'changeInfoMap': {'87': 1},
+      'changeInfoMap': changeInfoMap,
       'machineCode': 'PAZK8N7KKE8evkXks4',
       'shopCode': shopCode.value,
     };
@@ -218,13 +330,49 @@ extension SettingControllerExtension on SettingController {
       }
     }).catchError((error) {
       EasyLoading.dismiss();
+      showToast('補充失败!', context: context);
     });
+  }
+
+  Map get uploadMoneyInfo {
+    if (getPutMoneyCurrency.value.isEmpty) {
+      return {};
+    }
+    final currencyPairs = getNoneZeroInfo(getPutMoneyCurrency.value);
+    return currencyPairs.split(',').asMap().map((key, value) {
+      final cash = value.split(':');
+      return MapEntry(cash[0], cash[1]);
+    });
+  }
+
+  String getNoneZeroInfo(String input) {
+    List<String> currencyPairs = input.split(',');
+
+    List<String> nonZeroPairs = currencyPairs.where((pair) {
+      List<String> parts = pair.split(':');
+      return parts.length == 2 && parts[1] != '0' && int.parse(parts[0]) <= 500;
+    }).toList();
+    debugPrint("nonZeroPairs: $nonZeroPairs");
+
+    List<String> nonZeroPairsOver500 = currencyPairs.where((pair) {
+      List<String> parts = pair.split(':');
+      return parts.length == 2 && parts[1] != '0' && int.parse(parts[0]) > 500;
+    }).toList();
+    debugPrint("nonZeroPairsOver500: $nonZeroPairsOver500");
+
+    var result = nonZeroPairs.join(',');
+
+    if (nonZeroPairsOver500.isNotEmpty) {
+      result += ';' + nonZeroPairsOver500.join(',');
+    }
+
+    return result;
   }
 
   clearTask() {
     isStartPutMoney.value = false;
     moneyList.value = [];
-    moneyMap.value = {};
+    getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
     getCashInfo();
   }
@@ -233,17 +381,17 @@ extension SettingControllerExtension on SettingController {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
     Get.dialog(
-      barrierDismissible: false,
-      DialogUtils.alertOneButton(error,
-        title: GString.getToString(checkLanguage.value, "tag_title"),
-        confirmtitle:
-            GString.getToString(checkLanguage.value, "tag_button_yes"),
-        confirm: () {
-      if (confirm != null) {
-        confirm();
-      } else {
-        Get.back();
-      }
-    }));
+        barrierDismissible: false,
+        DialogUtils.alertOneButton(error,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            confirm: () {
+          if (confirm != null) {
+            confirm();
+          } else {
+            Get.back();
+          }
+        }));
   }
 }

@@ -48,14 +48,15 @@ class SettingController extends GetxController with StateMixin {
   RxList mailList = [].obs;
 
   RxBool switchValue = false.obs;
+  RxBool ignoreNotify = false.obs;
 
   RxString local_version = "".obs; //本appversion
   RxMap usbPrinter = {}.obs;
   RxString getPutMoneyCurrency = "".obs;
+  RxMap getPutMoneyMap = {}.obs;
   RxInt getPutMoney = 0.obs;
   RxBool isStartPutMoney = false.obs;
   RxList moneyList = [].obs;
-  RxMap moneyMap = {}.obs;
   RxMap cashInfo = {}.obs;
 
   var progressValue = 0.0;

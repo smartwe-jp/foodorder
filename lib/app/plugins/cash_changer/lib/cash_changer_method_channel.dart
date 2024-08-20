@@ -110,6 +110,48 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
+  Future<int?> startSupply() async {
+    final result = await methodChannel.invokeMethod<int>('startSupply');
+    return result;
+  }
+
+  @override
+  Future<String?> supplyCounts(int mode) async {
+    final result = await methodChannel
+        .invokeMethod<String>('supplyCounts', <String, dynamic>{
+      'pData': mode,
+    });
+    return result;
+  }
+
+  @override
+  Future<int?> countClear() async {
+    final result = await methodChannel.invokeMethod<int>('countClear');
+    return result;
+  }
+
+  //dispenseCashOutside
+  Future<int?> dispenseCashOutside(String cashInfo) async {
+    final result = await methodChannel.invokeMethod<int>('dispenseCashOutside',
+        <String, dynamic>{'cashInfo': cashInfo});
+    return result;
+  }
+
+
+  //beginCashReturn
+  Future<int?> beginCashReturn() async {
+    final result = await methodChannel.invokeMethod<int>('beginCashReturn');
+    return result;
+  }
+
+  //BEGINDEPOSITOUTSIDE
+  Future<int?> beginDepositOutside() async {
+    final result = await methodChannel.invokeMethod<int>('beginDepositOutside');
+    return result;
+  }
+
+
+  @override
   Future<int?> dispenseCash(String cashCounts) async {
     debugPrint('---dispenseCash--- $cashCounts');
     final result =

@@ -9,6 +9,8 @@
 #include <flutter/method_channel.h>
 #include <flutter/plugin_registrar_windows.h>
 #include <flutter/standard_method_codec.h>
+#include <flutter/standard_message_codec.h>
+#include <flutter/encodable_value.h>
 
 #include <memory>
 #include <sstream>
@@ -143,6 +145,51 @@ void CashChangerPlugin::StatusUpdateEvent(long Data) {
     cerr << "------ CashChangerPlugin::StatusUpdateEvent ------" << endl;
     cerr << "------ Data: " << Data << endl;
     channel->InvokeMethod("StatusUpdateEvent", std::make_unique<flutter::EncodableValue>(Data));
+}
+
+void CashChangerPlugin::ReturnMapValue(unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result, long *status, flutter::EncodableValue *value) {
+    flutter::EncodableMap map;
+    map[flutter::EncodableValue("status")] = flutter::EncodableValue(*status);
+    map[flutter::EncodableValue("value")] = *value;
+    result->Success(flutter::EncodableValue(map));
+}
+
+void CashChangerPlugin::DirectIOMethod(unique_ptr<flutter::MethodResult<flutter::EncodableValue>> result, long Command, long pData, BSTR pString) {
+
+    cerr << "DirectIOMethod" << Command << "start 。。" << endl;
+    long lngRet = pCashChanger->DirectIO(Command, &pData, &pString);
+    cerr << "DirectIOMethod" << Command << " end 。。 " << lngRet << endl;
+    if (lngRet == OposSuccess) {
+        result->Success(flutter::EncodableValue(OposSuccess));
+    } else {
+
+        if (lngRet == OposEExtended) {
+            switch (pCashChanger->ResultCodeExtended) {
+                case OPOS_ECHAN_OVERDISPENSE:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
+                    cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
+                    //pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_OVER:
+                    result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
+                    cerr << "OPOS_ECHAN_OVER" << endl;
+                    //pCashChanger->EndDeposit(ChanDepositrepay);
+                    break;
+                case OPOS_ECHAN_SETERROR:
+                case OPOS_ECHAN_ERROR:
+                case OPOS_ECHAN_BUSY:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+                    cerr << "OPOS_ECHAN_SETERROR" << endl;
+                    break;
+                default:
+                    result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
+
+            }
+        } else {
+            result->Success(flutter::EncodableValue(lngRet));
+        }
+    }
+    SysFreeString(pString);
 }
 
 void CashChangerPlugin::HandleMethodCall(
@@ -675,11 +722,8 @@ void CashChangerPlugin::HandleMethodCall(
         return;
     }
 
-    long lngData;
-    int lngRet;
-    // string strTemp;
+    long lngData = 1;
 
-    int mode = 1;
     auto arguments = method_call.arguments();
     if (!arguments) {
         cerr << "changer_di_status param error 。。1" << endl;
@@ -693,47 +737,24 @@ void CashChangerPlugin::HandleMethodCall(
     // Accessing a value in the map
     auto it = mapValue->find(flutter::EncodableValue("pData"));
     if (it != mapValue->end()) {
-        mode = get<int>(it->second);
+        lngData = get<int>(it->second);
     } else {
         cerr << "changer_di_status param error 。。2" << endl;
         return;
     }
 
-    //short checkErrorCode = 0;
-    lngData = mode;
-
-    // if (mode == 1) {
-    //     lngData = 0x80; // 紙幣・硬貨両接続
-    // } else {
-    //     lngData = 0x1; // 硬貨単体接続
-    // }
-
-    //strTemp = "";
     BSTR strTemp = SysAllocString(L"");
     if (!strTemp) {
         cerr << "Failed to allocate BSTR" << endl;
         result->Error("Memory allocation failed");
         return;
     }
-    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", true, "", "ClassName", "", "");
-    lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
-    //gfncOposLog("DirectIO CHAN_DI_STATUSREAD", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
+    long lngRet = pCashChanger->DirectIO(CHAN_DI_STATUSREAD, &lngData, &strTemp);
     cerr << "-- DirectIO CHAN_DI_STATUSREAD end --" << lngRet << endl;
     cerr << "strTemp " << lngData << " : " << strTemp << endl;
     
     //000001F3AA222A18
     if (lngRet == OposSuccess) {
-        // if (mode == 1) {
-        //     checkErrorCode = stoi(strTemp.substr(39, 4));
-        //     if (checkErrorCode < 1) {
-        //         checkErrorCode = stoi(strTemp.substr(0, 4));
-        //     }
-        // } else {
-        //     checkErrorCode = stoi(strTemp.substr(0, 4));
-        // }
-        // Convert BSTR to std::wstring
-        // std::wstring wstr(strTemp, SysStringLen(strTemp));
-        // 将 BSTR 转换为 string
         _bstr_t bstrCashCounts(strTemp, false);
         string str = (const char*)bstrCashCounts;
         cerr << "str : " << str << endl;
@@ -748,6 +769,205 @@ void CashChangerPlugin::HandleMethodCall(
     
     return;
   }
+
+  //補充開始 CHAN_DI_SUPPLY
+    if (method_call.method_name().compare("startSupply") == 0) {
+        cerr << "startSupply called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        cerr << "DirectIO CHAN_DI_SUPPLY start 。。 " << endl;
+        long dummyData = 0;
+        BSTR dummyString = SysAllocString(L"");
+
+        long lngRet = pCashChanger->DirectIO(CHAN_DI_SUPPLY, &dummyData, &dummyString);
+        
+        cerr << "DirectIO CHAN_DI_SUPPLY end 。。 " << lngRet << endl;
+        if (lngRet == OposSuccess) {
+            result->Success(flutter::EncodableValue(OposSuccess));
+        } else {
+            result->Success(flutter::EncodableValue(lngRet));
+        }
+        SysFreeString(dummyString);
+        return;
+    }
+    
+    //補充枚数取得 CHAN_DI_SUPPLYCOUNTS
+    if (method_call.method_name().compare("supplyCounts") == 0) {
+        cerr << "getSupplyCounts called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        long lngData;
+
+        lngData = 1;
+        auto arguments = method_call.arguments();
+        if (!arguments) {
+            cerr << "getSupplyCounts param error 。。1" << endl;
+            return;
+        }
+        const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+        if (!mapValue) {
+            cerr << "getSupplyCounts param error 。。2" << endl;
+            return;
+        }
+        // Accessing a value in the map
+        auto it = mapValue->find(flutter::EncodableValue("pData"));
+        if (it != mapValue->end()) {
+            lngData = get<int>(it->second);
+        } else {
+            cerr << "getSupplyCounts param error 。。2" << endl;
+            return;
+        }
+
+        long lngRet;
+        BSTR strTemp = SysAllocString(L"");
+        if (!strTemp) {
+            cerr << "Failed to allocate BSTR" << endl;
+            result->Error("Memory allocation failed");
+            return;
+        }
+        lngRet = pCashChanger->DirectIO(CHAN_DI_SUPPLYCOUNTS, &lngData, &strTemp);
+        cerr << "DirectIO CHAN_DI_SUPPLYCOUNTS end 。。 " << lngRet << endl;
+        if (lngRet == OposSuccess) {
+            _bstr_t bstrCashCounts(strTemp, false);
+            string str = (const char*)bstrCashCounts;
+            cerr << "CHAN_DI_SUPPLYCOUNTS str : " << str << endl;
+    
+            result->Success(flutter::EncodableValue(str));
+        } else {
+            cerr << "DirectIO CHAN_DI_SUPPLYCOUNTS error .." << lngRet << endl;
+            result->Error("Cash Changer SupplyCounts no response");
+        }
+        SysFreeString(strTemp);
+        
+        return;
+    }
+
+    //累計カウンタクリア
+    if (method_call.method_name().compare("countClear") == 0) {
+        cerr << "countClear called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        long lngData = 0;
+        BSTR strTemp = SysAllocString(L"");
+        if (!strTemp) {
+            cerr << "Failed to allocate BSTR" << endl;
+            result->Error("Memory allocation failed");
+            return;
+        }
+        long lngRet = pCashChanger->DirectIO(CHAN_DI_COUNTCLR, &lngData, &strTemp);
+        cerr << "DirectIO CHAN_DI_COUNTCLEAR end 。。 " << lngRet << endl;
+        if (lngRet == OposSuccess) {
+            result->Success(flutter::EncodableValue(OposSuccess));
+        } else {
+            cerr << "DirectIO CHAN_DI_COUNTCLEAR error .." << lngRet << endl;
+            result->Error("Cash Changer CountClear no response");
+        }
+        SysFreeString(strTemp);
+        
+        return;
+    }
+
+    //リセット CHAN_DI_RESET
+    if (method_call.method_name().compare("reset") == 0) {
+        cerr << "reset called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        long lngData = 0;
+        BSTR strTemp = SysAllocString(L"");
+        if (!strTemp) {
+            cerr << "Failed to allocate BSTR" << endl;
+            result->Error("Memory allocation failed");
+            return;
+        }
+        long lngRet = pCashChanger->DirectIO(CHAN_DI_RESET, &lngData, &strTemp);
+        cerr << "DirectIO CHAN_DI_RESET end 。。 " << lngRet << endl;
+        if (lngRet == OposSuccess) {
+            result->Success(flutter::EncodableValue(OposSuccess));
+        } else {
+            cerr << "DirectIO CHAN_DI_RESET error .." << lngRet << endl;
+            result->Error("Cash Changer Reset no response");
+        }
+        SysFreeString(strTemp);
+        
+        return;
+    }
+
+    //取引外入金開始 CHAN_DI_BEGINDEPOSITOUTSIDE
+    if (method_call.method_name().compare("beginDepositOutside") == 0) {
+        cerr << "beginDepositOutside called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        long lngData = 0;
+        BSTR strTemp = SysAllocString(L"");
+        DirectIOMethod(move(result), CHAN_DI_BEGINDEPOSITOUTSIDE, lngData, strTemp);
+        
+        return;
+    }
+
+
+  
+    //枚数指定出金 CHAN_DI_DISPENSECASHOUTSIDE
+    if (method_call.method_name().compare("dispenseCashOutside") == 0) {
+        cerr << "dispenseCashOutside called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+        }
+        BSTR cashInfo = SysAllocString(L"");
+        long lngData = 0;
+        auto arguments = method_call.arguments();
+        if (!arguments) {
+            cerr << "dispenseCashOutside param error 。。1" << endl;
+            return;
+        }
+        const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+        auto it = mapValue->find(flutter::EncodableValue("cashInfo"));
+        if (it != mapValue->end()) {
+            string str = get<string>(it->second);
+            cerr << "cashInfo : " << str << endl;
+            _bstr_t bstr(str.c_str());
+            cashInfo = bstr;
+        } else {
+            cerr << "dispenseCashOutside param error 。。2" << endl;
+            return;
+        }
+        DirectIOMethod(move(result), CHAN_DI_DISPENSECASHOUTSIDE, lngData, cashInfo);
+        
+        return;
+    }
+
+    //CHAN_DI_BEGINCASHRETURN
+    if (method_call.method_name().compare("beginCashReturn") == 0) {
+        cerr << "beginCashReturn called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            result->Error("Cash Changer not initialized");
+            return;
+        }
+        BSTR strTemp = SysAllocString(L"");
+        long lngData = 0;
+
+        DirectIOMethod(move(result), CHAN_DI_BEGINCASHRETURN, lngData, strTemp);
+        
+        return;
+    }
+
+
   
   if (method_call.method_name().compare("dispenseCash") == 0) {
     cerr << "dispenseCash called 。。" << endl;
@@ -806,6 +1026,7 @@ void CashChangerPlugin::HandleMethodCall(
             result->Success(flutter::EncodableValue(lngRet));
         }
     }
+    SysFreeString(cashCounts);
 
     return;
   }

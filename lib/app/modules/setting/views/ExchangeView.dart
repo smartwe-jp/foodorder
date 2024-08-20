@@ -154,7 +154,7 @@ class Exchangeview extends GetView<SettingController> {
                     height: ScreenAdapter.height(80),
                     child: ElevatedButton(
                       onPressed: () async {
-                        await controller.startPutMoney();
+                        await controller.startPutExchangeMoney();
                       },
                       child: Text("開始投币",
                           style: TextStyle(
@@ -181,6 +181,10 @@ class Exchangeview extends GetView<SettingController> {
                           child: ElevatedButton(
                             onPressed: () async {
                               await controller.cancelReplanish();
+                            },
+                            onLongPress: () async {
+                              controller.clearTask();
+                              Get.back();
                             },
                             child: Text("キャンセル",
                                 style: TextStyle(
