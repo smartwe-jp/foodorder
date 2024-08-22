@@ -92,47 +92,50 @@ extension SettingControllerExtension on SettingController {
     String? supplyCounts = await CashChanger.supplyCounts(0x01);
     if (supplyCounts == null) {
       debugPrint("supplyCounts==null 无法启动");
-      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
-      return;
+      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error")); //弹窗提示 再点击重试
+      return false;
     }
-    debugPrint("_supplyCountsClear==${supplyCounts}");
-
     if (supplyCounts.contains('=') && supplyCounts.contains(';')) {
-        //获取=号与;号之间的数据
-        final supplyString = supplyCounts.split('=')[1];
-        //再截取;号与;号之间的数据
-        final supplyStringList = supplyString.split(';');
-
-        List<String> allPairs = [];
-        for (var part in supplyStringList) {
-          allPairs.addAll(part.split(','));
-        }
-
-        final resultString = allPairs.join(',');
-        debugPrint("getPutMoneyCurrency==${resultString}");
-
-        final resultMap = resultString.split(',').asMap().map((key, value) {
-          final cash = value.split(':');
-          return MapEntry(cash[0], cash[1]);
-        });
-
-        if (getPutMoneyMap.isEmpty) {
-          getPutMoneyMap.value = resultMap;
-        } else {
-          resultMap.forEach((key, value) {
-            if (getPutMoneyMap.containsKey(key)) {
-              getPutMoneyMap[key] = (int.parse(getPutMoneyMap[key]) + int.parse(value)).toString();
-            } else {
-              getPutMoneyMap[key] = value;
-            }
-          });
-        }
-
-
-        debugPrint("getPutMoneyMap==${getPutMoneyMap.value}");
-
-       update();
+      debugPrint("_supplyCountsClear==${supplyCounts}");
+      return true;
     }
+    return false;
+
+    // if (supplyCounts.contains('=') && supplyCounts.contains(';')) {
+    //     //获取=号与;号之间的数据
+    //     final supplyString = supplyCounts.split('=')[1];
+    //     //再截取;号与;号之间的数据
+    //     final supplyStringList = supplyString.split(';');
+
+    //     List<String> allPairs = [];
+    //     for (var part in supplyStringList) {
+    //       allPairs.addAll(part.split(','));
+    //     }
+
+    //     final resultString = allPairs.join(',');
+    //     debugPrint("getPutMoneyCurrency==${resultString}");
+
+    //     final resultMap = resultString.split(',').asMap().map((key, value) {
+    //       final cash = value.split(':');
+    //       return MapEntry(cash[0], cash[1]);
+    //     });
+
+    //     if (getPutMoneyMap.isEmpty) {
+    //       getPutMoneyMap.value = resultMap;
+    //     } else {
+    //       resultMap.forEach((key, value) {
+    //         if (getPutMoneyMap.containsKey(key)) {
+    //           getPutMoneyMap[key] = (int.parse(getPutMoneyMap[key]) + int.parse(value)).toString();
+    //         } else {
+    //           getPutMoneyMap[key] = value;
+    //         }
+    //       });
+    //     }
+
+    //     debugPrint("getPutMoneyMap==${getPutMoneyMap.value}");
+
+    //   update();
+    //}
   }
 
   checkChangerStatus() async {
@@ -173,6 +176,9 @@ extension SettingControllerExtension on SettingController {
 
   //获取投入金额
   _getInputMoney() async {
+    final result = await supplyCountsClear();
+    if (!result) return;
+
     await CashChanger.setEventsListener();
     debugPrint("getPutInMoney");
     CashChanger.onGetPutMoneyStringChange = (int result) {
@@ -185,7 +191,7 @@ extension SettingControllerExtension on SettingController {
         getPutMoney.value = result;
         //update();
         //_getInputMoneyInfo();
-        supplyCountsClear();
+        _supplyCounts();
       }
     };
   }
@@ -213,12 +219,10 @@ extension SettingControllerExtension on SettingController {
         currencyCashStringresult.length > 24) {
       putMoneyCurrency += currencyCashStringresult.substring(0, 12);
     }
-    getPutMoneyCurrency.value = MoneyParser.migrationGloryToHexString(
-        putMoneyCurrency, onResult: (List<int> result, Map details) {
-      debugPrint("result==${result}");
-      moneyList.value = result;
-      update();
-    });
+
+    getPutMoneyCurrency.value = MoneyParser.migrationGloryToIntString(putMoneyCurrency);
+
+    update();
   }
 
   Future<bool> closeDeposit() async {
@@ -304,8 +308,7 @@ extension SettingControllerExtension on SettingController {
 
     showEasyLoading();
     ignoreNotify.value = true;
-    if (!await closeDeposit())
-    return;
+    if (!await closeDeposit()) return;
 
     var formData = {
       'changeInfoMap': changeInfoMap,
@@ -338,11 +341,20 @@ extension SettingControllerExtension on SettingController {
     if (getPutMoneyCurrency.value.isEmpty) {
       return {};
     }
-    final currencyPairs = getNoneZeroInfo(getPutMoneyCurrency.value);
-    return currencyPairs.split(',').asMap().map((key, value) {
-      final cash = value.split(':');
-      return MapEntry(cash[0], cash[1]);
-    });
+    final currencyPairs = getPutMoneyCurrency
+        .value; //getNoneZeroInfo(getPutMoneyCurrency.value, isReport: true);
+    debugPrint("currencyPairs: $currencyPairs");
+
+    //获取不为0的数据返回Map
+    List<String> currencyPairsList = currencyPairs.split(',');
+    Map<String, String> currencyPairsMap = {};
+    for (var pair in currencyPairsList) {
+      List<String> parts = pair.split(':');
+      if (parts.length == 2 && parts[1] != '0') {
+        currencyPairsMap[catValFromInt(parts[0])] = parts[1];
+      }
+    }
+    return currencyPairsMap;
   }
 
   String getNoneZeroInfo(String input) {

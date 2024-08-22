@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
@@ -109,15 +110,20 @@ class SettingController extends GetxController with StateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            //_showTag,
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "printticketloading"),
-                  fit: BoxFit.fitHeight),
+            InkWell(
+              onLongPress: () {
+                EasyLoading.dismiss();
+              },
+              child: Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
             ),
+
           ],
         ),
       ),
@@ -435,6 +441,33 @@ class SettingController extends GetxController with StateMixin {
         return "A2";
       case "一円":
         return "A1";
+      default:
+        return "";
+    }
+  }
+
+  catValFromInt(type) {
+    switch (type) {
+      case "10000":
+        return "8A";
+      case "5000":
+        return "89";
+      case "2000":
+        return "88";
+      case "1000":
+        return "87";
+      case "500":
+        return "66";
+      case "100":
+        return "65";
+      case "50":
+        return "64";
+      case "10":
+        return "63";
+      case "5":
+        return "62";
+      case "1":
+        return "61";
       default:
         return "";
     }

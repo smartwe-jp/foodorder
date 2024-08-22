@@ -189,7 +189,7 @@ void CashChangerPlugin::DirectIOMethod(unique_ptr<flutter::MethodResult<flutter:
             result->Success(flutter::EncodableValue(lngRet));
         }
     }
-    SysFreeString(pString);
+    //SysFreeString(pString);
 }
 
 void CashChangerPlugin::HandleMethodCall(
@@ -657,7 +657,7 @@ void CashChangerPlugin::HandleMethodCall(
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", true, "", "ClassName", "", "");
     lngRet = pCashChanger->DirectIO(CHAN_DI_COLLECT, &lngData, &bstr);
     //gfncOposLog("DirectIO CHAN_DI_COLLECT", false, "結果コード：" + to_string(lngRet), "ClassName", "", "");
-    SysFreeString(bstr);
+    //SysFreeString(bstr);
     switch (pCashChanger->ResultCode) {
         case OposSuccess:
   
@@ -760,12 +760,14 @@ void CashChangerPlugin::HandleMethodCall(
         cerr << "str : " << str << endl;
 
         result->Success(flutter::EncodableValue(str));
+        //打印result 是否有值
+        cerr << "result : " << result << endl;
     } else {
         //result->Success(flutter::EncodableValue(lngRet));
         cerr << "DirectIO CHAN_DI_STATUSREAD error .." << lngRet << endl;
         result->Error("Cash Changer Status no response");
     }
-    SysFreeString(strTemp);
+    //SysFreeString(strTemp);
     
     return;
   }
@@ -782,15 +784,8 @@ void CashChangerPlugin::HandleMethodCall(
         long dummyData = 0;
         BSTR dummyString = SysAllocString(L"");
 
-        long lngRet = pCashChanger->DirectIO(CHAN_DI_SUPPLY, &dummyData, &dummyString);
-        
-        cerr << "DirectIO CHAN_DI_SUPPLY end 。。 " << lngRet << endl;
-        if (lngRet == OposSuccess) {
-            result->Success(flutter::EncodableValue(OposSuccess));
-        } else {
-            result->Success(flutter::EncodableValue(lngRet));
-        }
-        SysFreeString(dummyString);
+        DirectIOMethod(move(result), CHAN_DI_SUPPLY, dummyData, dummyString);
+        //SysFreeString(dummyString);
         return;
     }
     
@@ -843,7 +838,7 @@ void CashChangerPlugin::HandleMethodCall(
             cerr << "DirectIO CHAN_DI_SUPPLYCOUNTS error .." << lngRet << endl;
             result->Error("Cash Changer SupplyCounts no response");
         }
-        SysFreeString(strTemp);
+        //SysFreeString(strTemp);
         
         return;
     }
@@ -863,15 +858,8 @@ void CashChangerPlugin::HandleMethodCall(
             result->Error("Memory allocation failed");
             return;
         }
-        long lngRet = pCashChanger->DirectIO(CHAN_DI_COUNTCLR, &lngData, &strTemp);
-        cerr << "DirectIO CHAN_DI_COUNTCLEAR end 。。 " << lngRet << endl;
-        if (lngRet == OposSuccess) {
-            result->Success(flutter::EncodableValue(OposSuccess));
-        } else {
-            cerr << "DirectIO CHAN_DI_COUNTCLEAR error .." << lngRet << endl;
-            result->Error("Cash Changer CountClear no response");
-        }
-        SysFreeString(strTemp);
+        DirectIOMethod(move(result), CHAN_DI_COUNTCLR, lngData, strTemp);
+        //SysFreeString(strTemp);
         
         return;
     }
@@ -891,15 +879,8 @@ void CashChangerPlugin::HandleMethodCall(
             result->Error("Memory allocation failed");
             return;
         }
-        long lngRet = pCashChanger->DirectIO(CHAN_DI_RESET, &lngData, &strTemp);
-        cerr << "DirectIO CHAN_DI_RESET end 。。 " << lngRet << endl;
-        if (lngRet == OposSuccess) {
-            result->Success(flutter::EncodableValue(OposSuccess));
-        } else {
-            cerr << "DirectIO CHAN_DI_RESET error .." << lngRet << endl;
-            result->Error("Cash Changer Reset no response");
-        }
-        SysFreeString(strTemp);
+        DirectIOMethod(move(result), CHAN_DI_RESET, lngData, strTemp);
+        //SysFreeString(strTemp);
         
         return;
     }

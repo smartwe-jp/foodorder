@@ -58,16 +58,14 @@ class MoneyParser {
     return totalAmount;
   }
 
-  static String migrationGloryToHexString(String input,
+  static String migrationGloryToIntString(String input,
       {Function(List<int>, Map)? onResult}) {
-    debugPrint("glory = ${input}");
+            debugPrint("glory = ${input}");
     if (input.length % 3 != 0 || input.length < 30) {
       throw Exception('Invalid input');
     }
 
-    String hexString = '';
-    List<int> result = [];
-    Map details = {};
+    String intString = '';
 
     final int en500Amout = int.parse(input.substring(0, 3));
     final int en100Amout = int.parse(input.substring(3, 6));
@@ -79,52 +77,60 @@ class MoneyParser {
     final int en5000Amout = int.parse(input.substring(21, 24));
     final int en2000Amout = int.parse(input.substring(24, 27));
     final int en1000Amout = int.parse(input.substring(27, 30));
-    
-    result.add(en10000Amout);
-    result.add(en5000Amout);
-    result.add(en2000Amout);
-    result.add(en1000Amout);
-    result.add(en500Amout);
-    result.add(en100Amout);
-    result.add(en50Amout);
-    result.add(en10Amout);
-    result.add(en5Amout);
-    result.add(en1Amout);
 
-    if (en10000Amout > 0) 
-      details['8A'] = en10000Amout;
-    
-    if (en5000Amout > 0) 
-      details['89'] = en5000Amout;
-    
-    if (en2000Amout > 0) 
-      details['88'] = en2000Amout;
-    
-    if (en1000Amout > 0) 
-      details['87'] = en1000Amout;
+    intString = "1:" +
+        "$en1Amout" +
+        "," +
+        "5:" +
+        "$en5Amout" +
+        "," +
+        "10:" +
+        "$en10Amout" +
+        "," +
+        "50:" +
+        "$en50Amout" +
+        "," +
+        "100:" +
+        "$en100Amout" +
+        "," +
+        "500:" +
+        "$en500Amout" +
+        "," +
+        "1000:" +
+        "$en1000Amout" +
+        "," +
+        "2000:" +
+        "$en2000Amout" +
+        "," +
+        "5000:" +
+        "$en5000Amout" +
+        "," +
+        "10000:" +
+        "$en10000Amout";
+    debugPrint("intString = ${intString}");
+    return intString;
+        
+  }
 
-    if (en500Amout > 0)
-      details['66'] = en500Amout;
-
-    if (en100Amout > 0)
-      details['65'] = en100Amout;
-
-    if (en50Amout > 0)
-      details['64'] = en50Amout;
-    
-    if (en10Amout > 0)
-      details['63'] = en10Amout;
-
-    if (en5Amout > 0)
-      details['62'] = en5Amout;
-
-    if (en1Amout > 0)
-      details['61'] = en1Amout;
-    
-
-    if (onResult != null) {
-      onResult(result, details);
+  static String migrationGloryToHexString(String input,
+      {Function(List<int>, Map)? onResult}) {
+    debugPrint("glory = ${input}");
+    if (input.length % 3 != 0 || input.length < 30) {
+      throw Exception('Invalid input');
     }
+
+    String hexString = '';
+
+    final int en500Amout = int.parse(input.substring(0, 3));
+    final int en100Amout = int.parse(input.substring(3, 6));
+    final int en50Amout = int.parse(input.substring(6, 9));
+    final int en10Amout = int.parse(input.substring(9, 12));
+    final int en5Amout = int.parse(input.substring(12, 15));
+    final int en1Amout = int.parse(input.substring(15, 18));
+    final int en10000Amout = int.parse(input.substring(18, 21));
+    final int en5000Amout = int.parse(input.substring(21, 24));
+    final int en2000Amout = int.parse(input.substring(24, 27));
+    final int en1000Amout = int.parse(input.substring(27, 30));
 
     hexString = "61 " +
         bigEndToLittleDnd(en1Amout) +

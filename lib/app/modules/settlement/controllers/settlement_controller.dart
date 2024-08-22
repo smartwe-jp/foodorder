@@ -1653,7 +1653,8 @@ class SettlementController extends GetxController with StateMixin {
       "price": int.parse(getPutMoney.value),
       "operation": operation,
       "coinForbidden": int.parse(is_allow_oneyen.value)
-    }; //print("webBootToReportV1==${formData}");
+    }; 
+    print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
       debugPrint("----上报订单成功----");

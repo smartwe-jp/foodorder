@@ -1,11 +1,12 @@
-import 'dart:ffi';
-
-import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/showToast.dart';
 import 'package:get/get.dart';
 
 extension ExchangeControllerExtension on SettingController {
@@ -62,49 +63,188 @@ extension ExchangeControllerExtension on SettingController {
         return;
       }
       if (result > 0) {
-        debugPrint("_getOutsideInputMoney getPutMoney.value==${result.toString()}");
+        debugPrint(
+            "_getOutsideInputMoney getPutMoney.value==${result.toString()}");
         getPutMoney.value = result;
-        //update();
         getInputMoneyInfo();
-        //
       }
     };
   }
 
+  //如果第一次兑换失败，重新投币开始，这部分数据有误，需要考虑这个问题。
   exChangeFlow(type, count, change) async {
-    debugPrint('exChangeFlow: $type, $count');
-    final outBillInfo = ";$type:$count";
+    debugPrint('exChangeFlow: $type, $count, $change');
+
+    showEasyLoading();
+
+    final outBillInfo = "$type:$count";
+
+    debugPrint(
+        'exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
+
+    final changeString =
+        findClosestCombination(getPutMoneyCurrency.value, change);
+    debugPrint('changeString: $changeString');
+
+    final outStringTemp = changeString[1] + ',' + outBillInfo;
+    debugPrint('outStringTemp: $outStringTemp');
+
+    final outInfo = getNoneZeroInfo(outStringTemp);
+    debugPrint('outInfo: $outInfo');
+
+    debugPrint('putsString: ${changeString[0]}');
+
+    var puts = [{}];
+
+    if (changeString[0].contains(',')) {
+      debugPrint('contains ,');
+      puts = changeString[0].split(',').map((e) {
+        final cat = e.split(':');
+        return {
+          'catVal': catValFromInt(int.parse(cat[0])),
+          'val': int.parse(cat[1]) * int.parse(cat[0]),
+        };
+      }).toList();
+    } else {
+      debugPrint('not contains ,');
+      final cat = changeString[0].split(':');
+      debugPrint('cat: $cat');
+      puts = [
+        {
+          'catVal': catValFromInt(cat[0]),
+          'val': int.parse(cat[1]) * int.parse(cat[0]),
+        }
+      ];
+    }
+    debugPrint('puts: $puts');
+
+    final pops = [
+      {
+        'catVal': catValFromInt(type),
+        'val': count * int.parse(type),
+      }
+    ];
+
+    debugPrint('pops: $pops');
+
     final depositAmount = await CashChanger.fixDeposit;
-    if (depositAmount != 0) {
+    // if (depositAmount != 0) {
+    //   return;
+    // }
+
+    final result = await gloryOutputMoney(outInfo);
+    if (result) {
+      clearTask();
+      //Get.back();
+    } else {
       return;
     }
 
-    Function endFunction = (result) async {
-      debugPrint('endFunction: $result');
-      if (result) {
-        clearTask();
-        Get.back();
-      }
-    };
+    await reportExchange(puts, pops);
 
-    Function pecifyMoney = (result) async {
-      debugPrint('pecifyMoney: $result');
-      if (result) {
-        final result =
-            await outSpecifyMoney(outBillInfo, successTask: endFunction);
-        endFunction(result);
-      }
-    };
+    // Function endFunction = (result) async {
+    //   debugPrint('endFunction: $result');
+    //   if (result) {
+    //     clearTask();
+    //     Get.back();
+    //   }
+    // };
 
-    if (change > 0) {
-      final result = await gloryOutputMoney(change, successTask: pecifyMoney);
-      debugPrint('gloryOutputMoney result: $result');
-      pecifyMoney(result);
-    } else {
-      final result =
-          await outSpecifyMoney(outBillInfo, successTask: endFunction);
-      endFunction(result);
+    // Function pecifyMoney = (result) async {
+    //   debugPrint('pecifyMoney: $result');
+    //   if (result) {
+    //     final result =
+    //         await outSpecifyMoney(outBillInfo, successTask: endFunction);
+    //     endFunction(result);
+    //   }
+    // };
+
+    // if (change > 0) {
+    //   final result = await gloryOutputMoney(change, successTask: pecifyMoney);
+    //   debugPrint('gloryOutputMoney result: $result');
+    //   pecifyMoney(result);
+    // } else {
+    //   final result =
+    //       await outSpecifyMoney(outBillInfo, successTask: endFunction);
+    //   endFunction(result);
+    // }
+  }
+
+  List<String> findClosestCombination(String depositDetails, int target) {
+    debugPrint('findClosestCombination: $depositDetails, $target');
+
+    //去除depositDetails 中为0的数据
+
+    List<String> detailList = depositDetails.split(',');
+    String noZeroString = '';
+    for (String detail in detailList) {
+      if (detail.split(':')[1] != '0') {
+        if (noZeroString != '') {
+          noZeroString += ',';
+        }
+        noZeroString += detail;
+      }
     }
+    debugPrint('noZeroString: $noZeroString');
+
+    Map<String, int> depositMap = {};
+    List<String> details = noZeroString.split(',');
+    debugPrint('details: $details');
+
+    // 解析每对值，构建 Map
+    for (String detail in details) {
+      List<String> parts = detail.split(':');
+
+      String denomination = '${parts[0]}:${parts[1]}';
+      int count = int.parse(parts[1]) * int.parse(parts[0]);
+      depositMap[denomination] = count;
+    }
+
+    debugPrint('cashMap: $depositMap');
+
+    var sum = 0;
+    String outMoney = '';
+    String putMoney = '';
+    for (var entry in depositMap.entries) {
+      sum += entry.value;
+      if (sum < target) {
+        if (outMoney != '') {
+          outMoney += ',';
+        }
+        outMoney += entry.key;
+      } else if (sum == target) {
+        if (outMoney != '') {
+          outMoney += ',';
+        }
+        outMoney += entry.key;
+        debugPrint('outMoney: $outMoney');
+        //putMoney 字符串 等于 depositDetails字符串除去outMoney
+        putMoney = noZeroString.replaceAll(outMoney + ',', '');
+        debugPrint('putMoney: $putMoney');
+        break;
+      } else {
+        int diffValue = sum - target;
+        String currentKeyValue = entry.key.split(':')[0];
+        int valueCount = int.parse(entry.key.split(':')[1]);
+
+        int offset = diffValue ~/ int.parse(currentKeyValue);
+        int diffKey = valueCount - offset;
+
+        putMoney =
+            noZeroString.replaceAll(outMoney + ',' + entry.key + ',', '');
+        int putMonyValue =
+            (entry.value - diffValue) ~/ int.parse(currentKeyValue);
+
+        putMoney = '${entry.key.split(':')[0]}:$putMonyValue' + ',' + putMoney;
+        debugPrint('putMoney: $putMoney');
+
+        outMoney += '${entry.key.split(':')[0]}:$diffKey';
+        debugPrint('outMoney: $outMoney');
+
+        break;
+      }
+    }
+    return [putMoney, outMoney];
   }
 
   //日文提示
@@ -152,8 +292,9 @@ extension ExchangeControllerExtension on SettingController {
   gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
     //debugPrint("startOutPutMoney");
     print("outMoney: $outMoney");
+    await CashChanger.removeEventsListener();
     bool success = false;
-    final resultCode = await CashChanger.dispenseChange(outMoney);
+    final resultCode = await CashChanger.dispenseCashOutside(outMoney);
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
@@ -178,6 +319,38 @@ extension ExchangeControllerExtension on SettingController {
           });
         });
     return success;
+  }
+
+  reportExchange(puts, pops) async {
+    debugPrint('reportExchange');
+    var formData = {
+      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'puts': puts,
+      'pops': pops,
+      'shopCode': shopCode.value,
+    };
+
+    debugPrint('formData: $formData');
+
+    request(
+      'webBootGloryExchange',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      final response = json.decode(value.toString());
+      debugPrint("response: $response");
+      EasyLoading.dismiss();
+      if (response["code"] == 200) {
+        clearTask();
+        Get.back();
+        showToast('完了しました', context: Get.context);
+      } else {
+        showToast('補充失败!', context: Get.context);
+      }
+    }).catchError((error) {
+      EasyLoading.dismiss();
+      showToast('補充失败!', context: Get.context);
+    });
   }
 
   bool canExchange() {
