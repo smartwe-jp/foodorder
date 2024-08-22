@@ -60,7 +60,7 @@ class MoneyParser {
 
   static String migrationGloryToIntString(String input,
       {Function(List<int>, Map)? onResult}) {
-            debugPrint("glory = ${input}");
+    debugPrint("glory = ${input}");
     if (input.length % 3 != 0 || input.length < 30) {
       throw Exception('Invalid input');
     }
@@ -109,11 +109,10 @@ class MoneyParser {
         "$en10000Amout";
     debugPrint("intString = ${intString}");
     return intString;
-        
   }
 
   static String migrationGloryToHexString(String input,
-      {Function(List<int>, Map)? onResult}) {
+      {bool isOutMoney = false}) {
     debugPrint("glory = ${input}");
     if (input.length % 3 != 0 || input.length < 30) {
       throw Exception('Invalid input');
@@ -132,35 +131,68 @@ class MoneyParser {
     final int en2000Amout = int.parse(input.substring(24, 27));
     final int en1000Amout = int.parse(input.substring(27, 30));
 
-    hexString = "61 " +
-        bigEndToLittleDnd(en1Amout) +
-        " " +
-        "62 " +
-        bigEndToLittleDnd(en5Amout) +
-        " " +
-        "63 " +
-        bigEndToLittleDnd(en10Amout) +
-        " " +
-        "64 " +
-        bigEndToLittleDnd(en50Amout) +
-        " " +
-        "65 " +
-        bigEndToLittleDnd(en100Amout) +
-        " " +
-        "66 " +
-        bigEndToLittleDnd(en500Amout) +
-        " " +
-        "87 " +
-        bigEndToLittleDnd(en1000Amout) +
-        " " +
-        "88 " +
-        bigEndToLittleDnd(en2000Amout) +
-        " " +
-        "89 " +
-        bigEndToLittleDnd(en5000Amout) +
-        " " +
-        "8A " +
-        bigEndToLittleDnd(en10000Amout);
+    if (isOutMoney) {
+      hexString = "A1 " +
+          bigEndToLittleDnd(en1Amout) +
+          " " +
+          "A2 " +
+          bigEndToLittleDnd(en5Amout) +
+          " " +
+          "A3 " +
+          bigEndToLittleDnd(en10Amout) +
+          " " +
+          "A4 " +
+          bigEndToLittleDnd(en50Amout) +
+          " " +
+          "A5 " +
+          bigEndToLittleDnd(en100Amout) +
+          " " +
+          "A6 " +
+          bigEndToLittleDnd(en500Amout) +
+          " " +
+          "97 " +
+          bigEndToLittleDnd(en1000Amout) +
+          " " +
+          "98 " +
+          bigEndToLittleDnd(en2000Amout) +
+          " " +
+          "99 " +
+          bigEndToLittleDnd(en5000Amout) +
+          " " +
+          "9A " +
+          bigEndToLittleDnd(en10000Amout);
+    } else {
+      hexString = "61 " +
+          bigEndToLittleDnd(en1Amout) +
+          " " +
+          "62 " +
+          bigEndToLittleDnd(en5Amout) +
+          " " +
+          "63 " +
+          bigEndToLittleDnd(en10Amout) +
+          " " +
+          "64 " +
+          bigEndToLittleDnd(en50Amout) +
+          " " +
+          "65 " +
+          bigEndToLittleDnd(en100Amout) +
+          " " +
+          "66 " +
+          bigEndToLittleDnd(en500Amout) +
+          " " +
+          "87 " +
+          bigEndToLittleDnd(en1000Amout) +
+          " " +
+          "88 " +
+          bigEndToLittleDnd(en2000Amout) +
+          " " +
+          "89 " +
+          bigEndToLittleDnd(en5000Amout) +
+          " " +
+          "8A " +
+          bigEndToLittleDnd(en10000Amout);
+    }
+
     debugPrint("hexString = ${hexString}");
     return hexString;
   }

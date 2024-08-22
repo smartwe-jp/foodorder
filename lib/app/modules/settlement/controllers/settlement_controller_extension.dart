@@ -289,7 +289,7 @@ extension SettlementControllerExtension on SettlementController {
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
-    currencyString.value = MoneyParser.migrationGloryToHexString(currency);
+    currencyString.value = MoneyParser.migrationGloryToHexString(currency,isOutMoney: true);
 
     getOutMoneyString.value == false;
 
