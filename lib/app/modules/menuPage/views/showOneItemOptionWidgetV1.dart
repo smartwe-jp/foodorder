@@ -406,7 +406,10 @@ class showOneItemOptionWidgetVOneView extends GetView {
 
                                                 children: [
                                                   TextSpan(
-                                                    text: formatMoney((controller.selectedMenuOptionChangePrice.value[item['menuCode']]+controller.addselectedMenuOptionChangePrice.value[item['menuCode']]).toString()),
+                                                    text: formatMoney((
+                                                        controller.selectedMenuOptionChangePrice.value[item['menuCode']] +
+                                                        controller.addselectedMenuOptionChangePrice.value[item['menuCode']]
+                                                        ).toString()),
                                                     style: TextStyle(
                                                       fontSize: ScreenAdapter.fontSize(70),
                                                       fontFamily: GFont.getFontFamily(),

@@ -26,7 +26,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
           dining_type: controller.dining_type.value,
           menu_direction:controller.menu_direction.value,
           onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
-
+            var locale = Locale('$checkedLanguage', '$checkedLanguage');
+            Get.updateLocale(locale);
             var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
 
             Get.toNamed(jumpUrl,arguments: {
@@ -109,11 +110,11 @@ class OrderHomeView extends GetView<OrderHomeController> {
                         InkWell(
                           onTap: () {
                             //_clearCartList();
-                            var locale = Locale('jp', 'JP');
-                            Get.updateLocale(locale);
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+                              var locale = Locale('jp', 'JP');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "JP",
                                 "mealType":mealType
@@ -153,11 +154,11 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_CH.value == true)
                         InkWell(
                           onTap: () {
-                            var locale = Locale('ch', 'CH');
-                            Get.updateLocale(locale);
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+                              var locale = Locale('ch', 'CH');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "CH",
                                 "mealType":mealType
@@ -194,11 +195,11 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_EN.value == true)
                         InkWell(
                           onTap: () {
-                            var locale = Locale('en', 'US');
-                            Get.updateLocale(locale);
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+                              var locale = Locale('en', 'US');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "EN",
                                 "mealType":mealType
@@ -235,11 +236,11 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_KO.value == true)
                         InkWell(
                           onTap: () {
-                            var locale = Locale('ko', 'KR');
-                            Get.updateLocale(locale);
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+                              var locale = Locale('ko', 'KR');
+                              Get.updateLocale(locale);
                               Get.toNamed(jumpUrl,arguments: {
                                 "checkLanguage": "KO",
                                 "mealType":mealType

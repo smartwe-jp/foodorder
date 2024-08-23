@@ -124,8 +124,8 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                           _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
                           _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",leading: 45.0),
                           _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",leading: 45.0),
-                          _twoContentRow("返金額", "${formatSum(printInfo['repaymentQty'])}"),
-                          _twoContentRow("返金件数", "${formatSum(printInfo['repaymentTotal'])}"),
+                          //_twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
+                          _twoContentRow("返金件数", "${formatSum(printInfo['repaymentQty'])}"),
 
                           Container(
                             margin: EdgeInsets.only(top: 20),
@@ -155,7 +155,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               ),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-                _normalTitle("現金入出金情報（枚数）"),
+                _normalTitle("釣銭機情報（枚数）"),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
                 _cashInfoTable(printInfo['cashInfo']),
@@ -247,7 +247,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
         3: FlexColumnWidth(150.0),
       },
       children: <TableRow>[
-        _tableRow(['金種', '予備', '入金', '出金'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
+        _tableRow(['金種', '予備', '入金', '残り'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
         ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
 
       ],

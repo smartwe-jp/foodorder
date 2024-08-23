@@ -27,11 +27,13 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 class RejishiMeRequestView extends StatefulWidget {
 
   final String machineCode;
+
   final Function resetCash;
   final Map? usbDevice;
 
 
   const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash, this.usbDevice});
+
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -51,6 +53,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
 
 
+
   final TextEditingController _verifyCodeController = TextEditingController();
 
   @override
@@ -58,7 +61,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     _resetCash = widget.resetCash;
     _usbDevice = widget.usbDevice ?? {};
     debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
-    //usbDevice.value = HomeServices.getUsbPrintSettingInfo();  
+    //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
     super.initState();
     _loadMailAddress();
   }
@@ -156,6 +159,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     final param = {
       "machineCode": widget.machineCode,
       "verifyCode": code,
+      "verifyEmail": selectMail,
       "verifyUserName": selectUser,
     };
 
@@ -179,6 +183,37 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       showToast('レジ情報の取得に失敗しました');
     });
   }
+
+  _comfirmShimeInfo(code, printData) async {
+    _showEasyLoading();
+
+    final param = {
+      "machineCode": widget.machineCode,
+      "verifyCode": code,
+      "verifyEmail": selectMail,
+      "verifyUserName": selectUser,
+    };
+
+    request('webBootRejishimeiConfirm', method: 'POST', parameters: param)
+        .then((val) {
+      EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+        //printView(response['data']);
+        _printRejishime(printData,printLength);
+      } else {
+        //当前没有レジ情報
+        showToast('印刷に失敗しました');
+      }
+    }).catchError((e){
+      EasyLoading.dismiss();
+      showToast('印刷に失敗しました');
+    });
+  }
+
+
 
   _showEasyLoading() {
 
@@ -446,7 +481,6 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
       List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
       String base64Image = base64Encode(imageBytes);
-
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");//printLogoImage.value
       Future.delayed(Duration(milliseconds: 300), () async {
         await FlutterPluginMsprinter.sendPrintCut("0");
@@ -577,7 +611,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   Expanded(
                     child: InkWell(
                       onTap: (){
-                        _printRejishime(printData,printLength);
+                        _comfirmShimeInfo(_verifyCodeController.text, printData);
+                        //_printRejishime(printData,printLength);
                         //Get.back();
                       },
                       child: Container(

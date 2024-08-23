@@ -1368,26 +1368,24 @@ class SettlementController extends GetxController with StateMixin {
 
     stoptimer?.cancel();
     stoptimer =
-        Timer.periodic(Duration(milliseconds: 950), (Timer stopt) async {
-      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (stopStatus.value == "StopSuccess") {
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        timer?.cancel();
-        if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
-          giveChangeMoney.value =
-              int.parse(getPutMoney.value) - int.parse(totalPrice.value);
-          if (isPrint.value == false) {
-            startOutPutMoney(giveChangeMoney.value);
-          }
-        } else if (int.parse(getPutMoney.value) ==
-            int.parse(totalPrice.value)) {
-          if (isPrint.value == false) {
-            //已经结束入金，处理取引终了
-            payCubeCloseTransaction();
-          }
-        } /* else {
+        Timer.periodic(Duration(milliseconds: 570), (Timer stopt) async {
+          stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+          // 循环一定要记得设置取消条件，手动取消
+          if (stopStatus.value == "StopSuccess") {
+            showCashTimer?.cancel();
+            seconds.value = 180;
+            timer?.cancel();
+            if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
+              giveChangeMoney.value = int.parse(getPutMoney.value) - int.parse(totalPrice.value);
+              if (isPrint.value == false) {
+                startOutPutMoney(giveChangeMoney.value);
+              }
+            } else if (int.parse(getPutMoney.value) == int.parse(totalPrice.value)) {
+              if (isPrint.value == false) {
+                //已经结束入金，处理取引终了
+                payCubeCloseTransaction();
+              }
+            }/* else {
           showToast(
               GString.getToString(this._checkLanguage, "show_put_money_error"));
         }*/
