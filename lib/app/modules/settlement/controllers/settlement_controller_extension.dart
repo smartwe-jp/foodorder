@@ -118,7 +118,7 @@ extension SettlementControllerExtension on SettlementController {
             giveChangeMoney.value =
                 int.parse(getPutMoney.value) - int.parse(totalPrice.value);
             if (isPrint.value == false) {
-              _startOutputMoney(giveChangeMoney.value,"");
+              _startOutputMoney(giveChangeMoney.value);
             }
           } else if (int.parse(getPutMoney.value) ==
               int.parse(totalPrice.value)) {
@@ -140,9 +140,9 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   //打印小票之后在关闭现金机
-  gloryNextOper(orderId) async {
-    debugPrint("nextOper");
-    CashStep.value = 2;
+  gloryPayFlow(printType) async {
+    // debugPrint("nextOper");
+    // CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
     var depositAmount = await CashChanger.depositAmount;
     getPutMoney.value = depositAmount.toString();
@@ -152,14 +152,35 @@ extension SettlementControllerExtension on SettlementController {
           int.parse(getPutMoney.value) - int.parse(totalPrice.value);
 
       //找零
-      _startOutputMoney(giveChangeMoney.value, orderId);
+      if (await _startOutputMoney(giveChangeMoney.value)) {
+        doPrintOrderMenu(printType);
+      }
+    } else {
+      //已经结束入金，处理取引终了
+      doPrintOrderMenu(printType);
+    }
+  }
+
+  //gloryNextOper 打印小票之后在关闭现金机
+
+  gloryNextOper() async {
+    debugPrint("nextOper");
+    CashStep.value = 2;
+    //sleep(Duration(milliseconds: 50));
+    // var depositAmount = await CashChanger.depositAmount;
+    // getPutMoney.value = depositAmount.toString();
+    // debugPrint("depositAmount==${depositAmount}");
+    if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
+      _getPayCubeOutMoney();
     } else {
       //已经结束入金，处理取引终了
       _getInputMoneyInfo();
     }
   }
 
-  _startOutputMoney(outMoney,orderId) async {
+
+  _startOutputMoney(outMoney) async {
+    var success = false;
     debugPrint("startOutPutMoney");
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
@@ -169,27 +190,30 @@ extension SettlementControllerExtension on SettlementController {
         resultCode: resultCode,
         onSuccess: () {
           //已经结束入金，处理取引终了
-          _getPayCubeOutMoney();
+          //_getPayCubeOutMoney();
+          success = true;
         },
         onRetry: () {
           debugPrint("startOutPutMoney 2");
-          _startOutputMoney(outMoney,orderId);
+          _startOutputMoney(outMoney);
         },
         showError: (String error) {
+          success = false;
           debugPrint("startOutPutMoney error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error), 
-          confirm: () {
+          errorHandleDialog(GString.getToString(checkLanguage.value, error),
+              confirm: () {
             //找钱失败一律退单和退回入金
             CashChanger.depositRepay;
             Get.back();
             Get.back();
           });
         });
+    return success;
   }
 
   reportChange(changeString) {
     debugPrint("reportChange isReportCash = ${isReportCash.value}");
-    if(isReportCash.value == true){
+    if (isReportCash.value == true) {
       return;
     }
 
@@ -205,33 +229,23 @@ extension SettlementControllerExtension on SettlementController {
       var response = json.decode(value.toString());
 
       EasyLoading.dismiss();
-      if(response['code'] == 200 && response['data'] == true){
+      if (response['code'] == 200 && response['data'] == true) {
         Get.dialog(
             DialogUtils.alertOneButton("返金成功。",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
-
-      }else{
+                title: "お知らせ", confirmtitle: "はい", confirm: () {
+              Get.back();
+            }),
+            barrierDismissible: false);
+      } else {
         Get.dialog(
             DialogUtils.alertOneButton("返金失敗です。",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
+                title: "お知らせ", confirmtitle: "はい", confirm: () {
+              Get.back();
+            }),
+            barrierDismissible: false);
       }
     });
-
   }
-
-
 
   //获取入金币种
 
@@ -258,7 +272,6 @@ extension SettlementControllerExtension on SettlementController {
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
     _payCubeCloseTransaction();
   }
-
 
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
@@ -289,7 +302,8 @@ extension SettlementControllerExtension on SettlementController {
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
-    currencyString.value = MoneyParser.migrationGloryToHexString(currency,isOutMoney: true);
+    currencyString.value =
+        MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
 
     getOutMoneyString.value == false;
 
@@ -318,7 +332,7 @@ extension SettlementControllerExtension on SettlementController {
 
   _getPayCubePutMoneyCurrency() async {
     //_putcurrencyString现金机出款币种:61 00 00 62 00 00 63 00 00
-    debugPrint("_getPayCubePutMoneyCurrency"); 
+    debugPrint("_getPayCubePutMoneyCurrency");
     if (getputMoneyString.value == true) {
       // 循环一定要记得设置取消条件，手动取消
       String putcurrencyString =

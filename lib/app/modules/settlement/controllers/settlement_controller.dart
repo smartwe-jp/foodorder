@@ -1406,7 +1406,7 @@ class SettlementController extends GetxController with StateMixin {
     var executeCount = 0;
     CashStep.value = 2;
     if (Platform.isWindows) {
-      await gloryNextOper(orderId);
+      await gloryNextOper();
       return;
     }
     //sleep(Duration(milliseconds: 50));
