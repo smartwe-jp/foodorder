@@ -989,6 +989,7 @@ class MenuPageController extends GetxController with StateMixin {
     if (canAddCart.value == false) {
       return;
     }
+    canAddCart.value = false;
 
     fToast = FToast();
     await fToast?.init(context);
@@ -1140,7 +1141,6 @@ print("加1了");
     if (canAddCart.value == false) {
       return;
     }
-    canAddCart.value = false;
 
     var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
 
