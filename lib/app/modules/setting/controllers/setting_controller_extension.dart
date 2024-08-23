@@ -18,9 +18,10 @@ import 'package:get/get_connect/http/src/utils/utils.dart';
 
 extension SettingControllerExtension on SettingController {
   startPutMoney() async {
+    debugPrint("startPutMoney");
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
-    update();
+    
     await _startSupply();
   }
 
@@ -100,42 +101,6 @@ extension SettingControllerExtension on SettingController {
       return true;
     }
     return false;
-
-    // if (supplyCounts.contains('=') && supplyCounts.contains(';')) {
-    //     //获取=号与;号之间的数据
-    //     final supplyString = supplyCounts.split('=')[1];
-    //     //再截取;号与;号之间的数据
-    //     final supplyStringList = supplyString.split(';');
-
-    //     List<String> allPairs = [];
-    //     for (var part in supplyStringList) {
-    //       allPairs.addAll(part.split(','));
-    //     }
-
-    //     final resultString = allPairs.join(',');
-    //     debugPrint("getPutMoneyCurrency==${resultString}");
-
-    //     final resultMap = resultString.split(',').asMap().map((key, value) {
-    //       final cash = value.split(':');
-    //       return MapEntry(cash[0], cash[1]);
-    //     });
-
-    //     if (getPutMoneyMap.isEmpty) {
-    //       getPutMoneyMap.value = resultMap;
-    //     } else {
-    //       resultMap.forEach((key, value) {
-    //         if (getPutMoneyMap.containsKey(key)) {
-    //           getPutMoneyMap[key] = (int.parse(getPutMoneyMap[key]) + int.parse(value)).toString();
-    //         } else {
-    //           getPutMoneyMap[key] = value;
-    //         }
-    //       });
-    //     }
-
-    //     debugPrint("getPutMoneyMap==${getPutMoneyMap.value}");
-
-    //   update();
-    //}
   }
 
   checkChangerStatus() async {
@@ -302,38 +267,77 @@ extension SettingControllerExtension on SettingController {
     return success;
   }
 
+  //清空上报
+
+  gloryEmptyReport() async{
+    debugPrint("gloryEmptyReposrt");
+
+    var success = false;
+
+    final machineChangeInfo = await getMachineCashInfo();
+
+    var formData = {
+      'changeInfoMap': machineChangeInfo,
+      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'shopCode': shopCode.value,
+    };
+
+    debugPrint("formData: $formData");
+
+    await request(
+      'webBootGloryEmpty',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      final response = json.decode(value.toString());
+      debugPrint("response: $response");
+      if (response["code"] == 200) {
+        success = true;
+      } else {
+        success = false;
+      }
+    }).catchError((error) {
+      //showToast('回收失败!');
+      success = false;
+    });
+
+    return success;
+
+  }
+
   //上报
-  reportReplanishInfo(changeInfoMap, context) async {
-    debugPrint("reportReplanishInfo changeInfoMap: $changeInfoMap");
+  reportReplanishInfo() async {
+    debugPrint("reportReplanishInfo changeInfoMap: $uploadMoneyInfo");
 
     showEasyLoading();
     ignoreNotify.value = true;
     if (!await closeDeposit()) return;
 
     var formData = {
-      'changeInfoMap': changeInfoMap,
+      'changeInfoMap': uploadMoneyInfo,
       'machineCode': 'PAZK8N7KKE8evkXks4',
       'shopCode': shopCode.value,
     };
+    debugPrint("formData: $formData");
 
     request(
       'webBootGlorySupplement',
       method: 'POST',
       parameters: formData,
-    ).then((value) {
+    ).then((value) async {
       final response = json.decode(value.toString());
       debugPrint("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        clearTask();
         Get.back();
-        showToast('完了しました', context: context);
+        clearTask();
+        showToast('完了しました', context: Get.context);
       } else {
-        showToast('補充失败!', context: context);
+        showToast('補充失败!', context: Get.context);
       }
     }).catchError((error) {
       EasyLoading.dismiss();
-      showToast('補充失败!', context: context);
+      showToast('補充失败!', context: Get.context);
     });
   }
 
@@ -381,12 +385,13 @@ extension SettingControllerExtension on SettingController {
     return result;
   }
 
-  clearTask() {
+  clearTask() async {
     isStartPutMoney.value = false;
-    moneyList.value = [];
+    //moneyList.value = [];
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
-    getCashInfo();
+    getServerCashInfo();
+    //update();
   }
 
   errorHandleDialog(String error, {Function? confirm}) {

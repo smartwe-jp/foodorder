@@ -834,7 +834,7 @@ class SettingView extends GetView<SettingController> {
 
                             if(Platform.isWindows)
                             cycleCashSetting(),
-
+                            
                             SizedBox(
                               height: ScreenAdapter.height(20),
                             ),

@@ -7,9 +7,9 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller_ext
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
-class Exchangeview extends GetView<SettingController> {
-  final SettingController controller = Get.put(SettingController());
-  Exchangeview({Key? key}) : super(key: key);
+class Exchangeview extends StatelessWidget {
+  final SettingController controller;
+  Exchangeview({Key? key, required this.controller}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

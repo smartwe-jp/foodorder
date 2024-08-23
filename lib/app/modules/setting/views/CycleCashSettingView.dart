@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
-import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleButton.dart';
 import 'package:foodorder/app/modules/setting/views/setting_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:get/get.dart';
 
 extension CycleCashSettingView on SettingView {
   cycleCashSetting() {
-    final cashListInfo = controller.cashInfoList.value;
+    //final cashListInfo = controller.cashInfoList.value;
 
-    return Container(
+    return Obx(()=> Container(
         child: Column(children: [
       Container(
         alignment: Alignment.center,
@@ -44,7 +44,7 @@ extension CycleCashSettingView on SettingView {
                       color: ColorsUtil.hexToColor("#000000"),
                     )),
               ),
-              ...cashListInfo.entries.map((element) {
+              ...controller.cashInfoList.entries.map((element) {
                 return Container(
                   height: 80,
                   alignment: Alignment.center,
@@ -70,11 +70,11 @@ extension CycleCashSettingView on SettingView {
                       color: ColorsUtil.hexToColor("#000000"),
                     )),
               ),
-              ...cashListInfo.entries.map((element) {
+              ...controller.cashInfoList.entries.map((element) {
                 return Container(
                   height: 80,
                   alignment: Alignment.center,
-                  child: Text("${element.value['remaining']}",
+                  child: Text("${element.value}",
                       style: TextStyle(
                         fontFamily: 'NotoSansJP',
                         fontSize: ScreenAdapter.fontSize(20),
@@ -135,6 +135,6 @@ extension CycleCashSettingView on SettingView {
     
        ]
       )
-    );
+    ));
   }
 }

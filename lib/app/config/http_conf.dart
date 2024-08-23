@@ -101,6 +101,12 @@ const servicePath = {
 
   //Glory confirm close
   'webBootGloryConfirmClose': base_url + 'web/glory/confirm/close', //Glory确认关闭
+
+  //Glory empty
+  'webBootGloryEmpty': base_url + 'web/glory/empty', //Glory清空
+
+  //Glory information
+  'webBootGloryInformation': base_url + 'web/glory/information', //Glory信息
 };
 
 

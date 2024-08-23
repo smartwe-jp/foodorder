@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
@@ -27,7 +28,6 @@ import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_con
 import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/ReplanishView.dart';
-
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -54,10 +54,8 @@ class SettingController extends GetxController with StateMixin {
   RxString local_version = "".obs; //本appversion
   RxMap usbPrinter = {}.obs;
   RxString getPutMoneyCurrency = "".obs;
-  RxMap getPutMoneyMap = {}.obs;
   RxInt getPutMoney = 0.obs;
   RxBool isStartPutMoney = false.obs;
-  RxList moneyList = [].obs;
   RxMap cashInfo = {}.obs;
 
   var progressValue = 0.0;
@@ -123,7 +121,6 @@ class SettingController extends GetxController with StateMixin {
                     fit: BoxFit.fitHeight),
               ),
             ),
-
           ],
         ),
       ),
@@ -155,12 +152,11 @@ class SettingController extends GetxController with StateMixin {
 
   showRejishimeiView() async {
     Get.dialog(RejishiMeRequestView(
-      machineCode: machineCode.value,
-      resetCash: () {
-        recycleCash();
-      },
-      usbDevice: usbPrinter.value
-    ));
+        machineCode: machineCode.value,
+        resetCash: () {
+          recycleCash();
+        },
+        usbDevice: usbPrinter.value));
   }
 
   showRecycleAlert() {
@@ -175,18 +171,12 @@ class SettingController extends GetxController with StateMixin {
   showReplenishAlert() {
     Get.dialog(
       barrierDismissible: false,
-      ReplanishView()
+      ReplanishView(controller: this)
     );
   }
 
   showExchangeAlert() async {
-    Get.dialog(
-      barrierDismissible: false,
-      Exchangeview()
-    );
-    //await Future.delayed(Duration(milliseconds: 800), () {
-       
-    //});
+    Get.dialog(barrierDismissible: false, Exchangeview(controller:this));
   }
 
   //获取版本号
@@ -198,7 +188,6 @@ class SettingController extends GetxController with StateMixin {
     debugPrint(
         "SettingController local_version.value = ${local_version.value}");
     getSystemSettingInfo();
-    getCashInfo();
   }
 
   //获取系统版本信息
@@ -224,7 +213,7 @@ class SettingController extends GetxController with StateMixin {
     usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
     debugPrint("usbPrinter = ${usbPrinter}");
     //查看机器零钱状态
-    _getPaycubeChangeState();
+    await getPaycubeChangeState();
   }
 
   printPreviewReceipt() async {
@@ -257,7 +246,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   //获取现金机列表
-  _getPaycubeChangeState() {
+  getPaycubeChangeState() async {
     var formData = {
       "machineCode": machineCode.value,
     };
@@ -272,13 +261,18 @@ class SettingController extends GetxController with StateMixin {
         depositData.value = response['data'];
         cashList.value = response['data']['changeStates'];
         lastTotalList.value = response['data']['last7daysTotal'];
-
         update();
-      } else {}
+      } else {
+        debugPrint("SettingController _getPaycubeChangeState 获取失败");
+      }
     });
 
-    _getChangeState();
-
+    if (Platform.isAndroid) {
+      await _getChangeState();
+    } else {
+      await getServerCashInfo();
+    }
+    change(null, status: RxStatus.success());
     //print(_menuOption);
   }
 
@@ -286,7 +280,7 @@ class SettingController extends GetxController with StateMixin {
     var formData = {
       "machineCode": machineCode.value,
     };
-    request('webBootChangeInfo', method: 'POST', parameters: formData)
+    await request('webBootChangeInfo', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
 
@@ -299,7 +293,6 @@ class SettingController extends GetxController with StateMixin {
       } else {
         showToast('获取失败');
       }
-      change(null, status: RxStatus.success());
     });
   }
 
@@ -380,11 +373,18 @@ class SettingController extends GetxController with StateMixin {
 
   recycleCash() async {
     if (Platform.isWindows) {
+      if (!await gloryEmptyReport()) {
+        commonHandleDialog("回收失败：Glory机器未清空");
+        return;
+      }
+
       final result = await CashChanger.collectAll();
       await CashChanger.changerResultNext(
           resultCode: result,
           onSuccess: () async {
             debugPrint("recycleCash onSuccess");
+            await getPaycubeChangeState();
+            commonHandleDialog('リサイクル成功');
             //showToast('回收成功');
           },
           onRetry: () {
@@ -395,34 +395,41 @@ class SettingController extends GetxController with StateMixin {
             //showToast('回收失败');
             commonHandleDialog("回收失败：$error");
           });
+    } else {
+      var formData = {
+        "machineCode": machineCode.value,
+        "shopCode": shopCode.value,
+      };
+      request('webBootChangeReset', method: 'POST', parameters: formData)
+          .then((val) async {
+        var response = json.decode(val.toString());
+
+        if (response != null && response['code'] == 200) {
+          await getPaycubeChangeState();
+          commonHandleDialog('リサイクル成功');
+        } else {
+          showToast('リサイクルに失敗しました');
+          commonHandleDialog("リサイクルに失敗しました：${response['code']}");
+        }
+      });
     }
-
-    var formData = {
-      "machineCode": machineCode.value,
-      "shopCode": shopCode.value,
-    };
-    request('webBootChangeReset', method: 'POST', parameters: formData)
-        .then((val) async {
-      var response = json.decode(val.toString());
-
-      if (response != null && response['code'] == 200) {
-        await _getChangeState();
-        commonHandleDialog('リサイクル成功');
-      } else {
-        showToast('リサイクルに失敗しました');
-        commonHandleDialog("リサイクルに失敗しました：${response['code']}");
-      }
-    });
   }
 
-  commonHandleDialog(String error) {
+  commonHandleDialog(String error, {Function? confirm}) {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
-    Get.dialog(DialogUtils.alertOneButton(error,
-        title: GString.getToString("JP", "tag_title"),
-        confirmtitle: GString.getToString("JP", "tag_button_yes"), confirm: () {
-      Get.back();
-    }));
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alertOneButton(error,
+            title: GString.getToString("JP", "tag_title"),
+            confirmtitle: GString.getToString("JP", "tag_button_yes"),
+            confirm: () {
+          if (confirm != null) {
+            confirm();
+          } else {
+            Get.back();
+          }
+        }));
   }
 
   _getCatVal(type) {
@@ -497,6 +504,62 @@ class SettingController extends GetxController with StateMixin {
         return "61";
       default:
         return "";
+    }
+  }
+
+  //根据数值获取钱币显示名称
+  String getCashName(String value) {
+    switch (value) {
+      case '1':
+        return '一円';
+      case '5':
+        return '五円';
+      case '10':
+        return '十円';
+      case '50':
+        return '五十円';
+      case '100':
+        return '百円';
+      case '500':
+        return '五百円';
+      case '1000':
+        return '千円';
+      case '2000':
+        return '二千円';
+      case '5000':
+        return '五千円';
+      case '10000':
+        return '一万円';
+      default:
+        return '';
+    }
+  }
+
+  //根据显示名称获取数值
+  String getCatVal(String value) {
+    switch (value) {
+      case '一円':
+        return '1';
+      case '五円':
+        return '5';
+      case '十円':
+        return '10';
+      case '五十円':
+        return '50';
+      case '百円':
+        return '100';
+      case '五百円':
+        return '500';
+      case '千円':
+        return '1000';
+      case '二千円':
+        return '2000';
+      case '五千円':
+        return '5000';
+      case '一万円':
+        return '10000';
+      default:
+        return '';
     }
   }
 

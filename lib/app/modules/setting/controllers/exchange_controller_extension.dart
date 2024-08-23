@@ -19,19 +19,58 @@ extension ExchangeControllerExtension on SettingController {
     await beginDepositOutside();
   }
 
-  getCashInfo() async {
+  getServerCashInfo() async {
+    debugPrint('getServerCashInfo');
+    var formData = {
+      'machineCode': 'PAZK8N7KKE8evkXks4',
+    };
+    debugPrint('formData: $formData');
+    await request(
+      'webBootGloryInformation',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      debugPrint('value: $value');
+      final response = json.decode(value.toString());
+      debugPrint("response: $response");
+      // ignore: invalid_use_of_protected_member
+      if (response["code"] == 200 && response['data'] != null) {
+        cashInfoList.value = response['data'];
+        debugPrint('cashInfoList: ${cashInfoList.value}');
+        cashInfo.value = _changeMapKey(response['data'], getCatVal);
+        debugPrint('cashInfo: $cashInfo');
+        update();
+      }
+    }).catchError((error) {
+      debugPrint('error: $error');
+    });
+  }
+
+  _changeMapKey(Map<String, dynamic> map, Function(String) keyFunc) {
+    Map<String, int> newCashInfoList = {};
+
+    map.forEach((key, value) {
+      String newKey = keyFunc(key);
+      newCashInfoList[newKey] = value;
+    });
+
+    return newCashInfoList;
+  }
+
+  Future<Map> getMachineCashInfo() async {
     final result = await CashChanger.getCashBalance;
     print('result: $result');
     if (result == null) {
-      return;
+      return {};
     }
+
     //以逗号为分割获取每个数据，再以冒号分割获取key和value, 再赋值给一个Map
-    cashInfo.value = result.split(',').asMap().map((key, value) {
+    final resultMap = result.split(',').asMap().map((key, value) {
       final cash = value.split(':');
-      return MapEntry(cash[0], cash[1]);
+      return MapEntry(catValFromInt(cash[0]), cash[1]);
     });
-    debugPrint('getCashInfo: ${cashInfo.value}');
-    update();
+    debugPrint('resultMap: ${resultMap}');
+    return resultMap;
   }
 
   //投币BEGINDEPOSITOUTSIDE
@@ -102,7 +141,7 @@ extension ExchangeControllerExtension on SettingController {
         final cat = e.split(':');
         return {
           'catVal': catValFromInt(int.parse(cat[0])),
-          'val': int.parse(cat[1]) * int.parse(cat[0]),
+          'val': int.parse(cat[1]),
         };
       }).toList();
     } else {
@@ -112,7 +151,7 @@ extension ExchangeControllerExtension on SettingController {
       puts = [
         {
           'catVal': catValFromInt(cat[0]),
-          'val': int.parse(cat[1]) * int.parse(cat[0]),
+          'val': int.parse(cat[1]),
         }
       ];
     }
@@ -121,7 +160,7 @@ extension ExchangeControllerExtension on SettingController {
     final pops = [
       {
         'catVal': catValFromInt(type),
-        'val': count * int.parse(type),
+        'val': count,
       }
     ];
 
@@ -207,6 +246,13 @@ extension ExchangeControllerExtension on SettingController {
     String putMoney = '';
     for (var entry in depositMap.entries) {
       sum += entry.value;
+
+      if (target == 0) {
+        outMoney = '';
+        putMoney = noZeroString;
+        break;
+      }
+
       if (sum < target) {
         if (outMoney != '') {
           outMoney += ',';
@@ -242,7 +288,7 @@ extension ExchangeControllerExtension on SettingController {
         debugPrint('outMoney: $outMoney');
 
         break;
-      }
+      } 
     }
     return [putMoney, outMoney];
   }
@@ -377,9 +423,9 @@ extension ExchangeControllerExtension on SettingController {
 
   List<List<int>> getExchangeList() {
     final exchangeList = <List<int>>[];
-    final cash1000 = int.parse(cashInfo.value['1000']);
-    final cash5000 = int.parse(cashInfo.value['5000']);
-    final cash10000 = int.parse(cashInfo.value['10000']);
+    int cash1000 = cashInfo.value['1000'];
+    int cash5000 = cashInfo.value['5000'];
+    int cash10000 = cashInfo.value['10000'];
 
     if (cash1000 > 0 && getPutMoney.value >= 1000) {
       //获取能换多少个1000
@@ -417,34 +463,6 @@ extension ExchangeControllerExtension on SettingController {
       exchangeList.add([10000, exchange10000, remainMoney]);
     }
     return exchangeList;
-  }
-
-  //根据数值获取钱币显示名称
-  String getCashName(String value) {
-    switch (value) {
-      case '1':
-        return '一円';
-      case '5':
-        return '五円';
-      case '10':
-        return '十円';
-      case '50':
-        return '五十円';
-      case '100':
-        return '百円';
-      case '500':
-        return '五百円';
-      case '1000':
-        return '千円';
-      case '2000':
-        return '二千円';
-      case '5000':
-        return '五千円';
-      case '10000':
-        return '一万円';
-      default:
-        return '';
-    }
   }
 
   exchangeMoney() async {
