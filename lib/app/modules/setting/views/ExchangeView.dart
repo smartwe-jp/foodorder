@@ -239,6 +239,22 @@ class Exchangeview extends StatelessWidget {
                   ),
               ],
             )),
+            if (!controller.isStartPutMoney.value)
+                Positioned(
+                    right: ScreenAdapter.width(5),
+                    child: InkWell(
+                      highlightColor: Colors.transparent, // 透明色
+                      splashColor: Colors.transparent, // 透明色
+                      onTap: (){
+                        Get.back();
+                      },
+                      child: Icon(
+                        Icons.close_outlined,
+                        color: ColorsUtil.hexToColor("#000000"),
+                        size: 40.0,
+                      ),
+                    ),
+                  )
       ])
     ]);
   }

@@ -12,40 +12,6 @@ class ReplanishView extends StatelessWidget {
 
   final SettingController controller;
   ReplanishView({Key? key, required this.controller}) : super(key: key);
-  // final bool isStartPutMoney;
-  // final String getPutMoneyCurrency;
-  // final int getPutMoney;
-  // final Function startPutMoney;
-  // final Function cancelReplanish;
-  // final Function reportReplanishInfo;
-
-  // ReplanishView({
-  //   Key? key,
-  //   required this.getPutMoney,
-  //   required this.isStartPutMoney,
-  //   required this.getPutMoneyCurrency,
-  //   required this.startPutMoney,
-  //   required this.cancelReplanish,
-  //   required this.reportReplanishInfo,
-  // }) : super(key: key);
-
-//   @override
-//   ReplanishViewState createState() => ReplanishViewState();
-// }
-
-// //final SettingController controller = Get.put(SettingController());
-// class ReplanishViewState extends State<ReplanishView> {
-
-  // bool _isStartPutMoney = false;
-  // int _getPutMoney = 0;
-
-  // @override
-  // void initState() {
-  //   _getPutMoney = widget.getPutMoney;
-  //   super.initState();
-
-  //   //controller.getCashInfo();
-  // }
 
   showRelanishAlert() {
     return Obx(() => SimpleDialog(children: <Widget>[
@@ -359,6 +325,22 @@ class ReplanishView extends StatelessWidget {
                       ),
                   ],
                 )),
+            if (!controller.isStartPutMoney.value)
+                Positioned(
+                    right: ScreenAdapter.width(5),
+                    child: InkWell(
+                      highlightColor: Colors.transparent, // 透明色
+                      splashColor: Colors.transparent, // 透明色
+                      onTap: (){
+                        Get.back();
+                      },
+                      child: Icon(
+                        Icons.close_outlined,
+                        color: ColorsUtil.hexToColor("#000000"),
+                        size: 40.0,
+                      ),
+                    ),
+                  )
           ])
         ]));
   }
