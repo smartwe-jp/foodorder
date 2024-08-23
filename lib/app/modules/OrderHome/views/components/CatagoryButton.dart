@@ -46,7 +46,7 @@ class CatagoryButton extends StatelessWidget {
                                   style: TextStyle(
                                     color: const Color.fromARGB(255, 53,59,80),
                                     fontSize: 34,
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w400,
                                   ),
                                 ),
                               ],

@@ -18,79 +18,6 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 
 extension ReimburseOrderControllerExtension on ReimburseOrderController {
-  void onInit() {
-    print('ReimburseOrderController onInit');
-  }
-
-    startDeposit() async {
-    debugPrint("startDeposit");
-
-    final resultCode = await CashChanger.startDeposit;
-    await CashChanger.changerResultNext(
-        resultCode: resultCode,
-        onSuccess: () {
-          debugPrint("startDeposit 1");
-          _checkChangerStatus();
-        },
-        onRetry: () {
-          debugPrint("startDeposit 2");
-          startDeposit();
-        },
-        showError: (String error) {
-          debugPrint("startDeposit error: $error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
-        });
-  }
-
-  _checkChangerStatus() async {
-    debugPrint("checkChangerStatus 1");
-    var resultCode = await CashChanger.checkChangerStatus;
-    if (resultCode == null) {
-      debugPrint("Unknown error");
-      _checkChangerStatus();
-      return;
-    }
-    debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
-    if (resultCode == 0) {
-      resultCode = 100;
-    }
-    HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode - 100];
-    switch (resultCodeEnum) {
-      case HealthResultCode.OPOS_SUCCESS:
-      case HealthResultCode.OPOS_E_ILLEGAL:
-        _getInputMoney();
-        break;
-      case HealthResultCode.OPOS_E_CLOSED:
-      case HealthResultCode.OPOS_E_NOTCLAIMED:
-      case HealthResultCode.OPOS_E_DISABLED:
-        debugPrint("checkChangerStatus error: $resultCode");
-        break;
-      case HealthResultCode.OPOS_E_BUSY:
-        _checkChangerStatus();
-        break;
-      case HealthResultCode.OPOS_E_NOHARDWARE:
-        debugPrint("checkChangerStatus error: $resultCode");
-        break;
-      default:
-        debugPrint("checkChangerStatus error: $resultCode");
-        break;
-    }
-  }
-
-  //获取投入金额
-  _getInputMoney() async {
-    //await Paycube.setReceiveEvent;
-    debugPrint("getPutInMoney");
-    CashChanger.onGetPutMoneyStringChange = (int result) {
-      debugPrint("onGetPutMoneyStringChange");
-      if (result > 0) {
-        debugPrint("getPutMoney.value==${result.toString()}");
-        //getPutMoney.value = result;
-        //update();
-        //_getInputMoneyInfo();
-      }
-    };
-  }
 
   gloryOutputMoney(outMoney) async {
     //debugPrint("startOutPutMoney");
@@ -117,61 +44,6 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
         });
   }
 
-_reportChange(changeString) {
-    debugPrint("reportChange isReportCash = ${isReportCash.value}");
-    if(isReportCash.value == true){
-      return;
-    }
-
-    isReportCash.value = true;
-
-    var formData = {
-      "responseMessage": changeString,
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
-    };
-    request('webBootReimburseNotify', method: 'POST', parameters: formData)
-        .then((value) {
-      var response = json.decode(value.toString());
-
-      EasyLoading.dismiss();
-      if(response['code'] == 200 && response['data'] == true){
-        printReimburseReceipt(reimbursePrintViewSize, reimbursePrintView);//打印
-        Get.dialog(
-            DialogUtils.alertOneButton("返金成功。",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  isReportCash.value = false;
-                  orderIdController.text = "";
-                  orderList.value = [];
-                  refundInfo.value = {};
-                  queryOrder();
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
-
-      }else{
-        Get.dialog(
-            DialogUtils.alertOneButton("返金失敗です。",
-                title: "お知らせ",
-                confirmtitle: "はい",
-                confirm: () {
-                  orderIdController.text = "";
-                  orderList.value = [];
-                  refundInfo.value = {};
-                  queryOrder();
-                  Get.back();
-                }),
-            barrierDismissible: false
-        );
-      }
-    });
-
-  }
-
-
 
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
@@ -197,7 +69,7 @@ _reportChange(changeString) {
       currency += currencyCashStringresult.substring(12, 24);
     }
 
-    currencyString.value = MoneyParser.migrationGloryToHexString(currency);
+    currencyString.value = MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
 
     getOutMoneyString.value == false;
 

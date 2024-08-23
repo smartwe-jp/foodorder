@@ -46,7 +46,7 @@ class BookingTypeButton extends StatelessWidget {
                   title,
                   style: TextStyle(
                     color: selected ? Colors.white : const Color.fromARGB(255, 53,59,80),
-                    fontSize: 64,
+                    fontSize: 50,
                     fontWeight: FontWeight.w600,
                   ),
                 ),

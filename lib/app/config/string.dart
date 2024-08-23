@@ -173,6 +173,10 @@ class GString{
         "load_menu_failure_content" : "@seconds秒後にホーム画面に戻りますので、\n再度お試しください。",
         "load_menu_failure_back" : "ホームに戻る",
 
+        "in_shop":"店内",
+        "take_out":"持ち帰り",
+        "more_title":"もっと見る",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -340,6 +344,14 @@ class GString{
         "load_menu_failure_title" : "菜单加载异常。",
         "load_menu_failure_content" : "@seconds秒后将返回首页,请重试。",
         "load_menu_failure_back" : "返回首页",
+
+        "in_shop":"堂食",
+        "take_out":"外带",
+        "more_title":"更多",
+
+
+
+
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -506,6 +518,10 @@ class GString{
         "load_menu_failure_title" : "Menu loading error.",
         "load_menu_failure_content" : "Returning to the home screen in @seconds seconds, please try again.",
         "load_menu_failure_back" : "Back to home",
+
+        "in_shop":"Eat in",
+        "take_out":"Take out",
+        "more_title":"More",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -673,6 +689,10 @@ class GString{
         "load_menu_failure_title" : "메뉴 로딩 오류。",
         "load_menu_failure_content" : "@seconds초 후 홈 화면으로 돌아갑니다,\n다시 시도하십시오。",
         "load_menu_failure_back" : "홈으로",
+
+        "in_shop":"식사",
+        "take_out":"테이크아웃",
+        "more_title":"더보기",
       };
     }
 

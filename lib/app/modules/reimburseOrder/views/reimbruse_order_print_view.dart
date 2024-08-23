@@ -14,8 +14,13 @@ class ReimbursePrintView extends StatelessWidget {
   final GlobalKey containerKey = GlobalKey();
   ReimbursePrintView({Key? key, required this.reimburseInfo})
       : super(key: key);
-  final contentStyle = GoogleFonts.zenKakuGothicAntique(
-      fontSize: 26, fontWeight: FontWeight.w300, color: Colors.black87);
+
+  final contentStyle = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black,
+    fontSize: 30,
+    fontWeight: FontWeight.w400,
+  );
 
 
   @override
@@ -57,20 +62,21 @@ class ReimbursePrintView extends StatelessWidget {
     categoryMenus.add(amountInfoArea());
 
     return
-      Directionality(
-        textDirection: TextDirection.ltr,
-        child:Wrap(
-          children: [
+      // Directionality(
+      //   textDirection: TextDirection.ltr,
+      //   child:Wrap(
+      //     children: [
             Container(
+              alignment: Alignment.center,
               margin: EdgeInsets.only(top: 10, bottom: 40),
               width: 385,
               color: Colors.white,
               child: Column(
                 children: categoryMenus,
               ),
-            ),
-          ],
-        ),
+        //     ),
+        //   ],
+        // ),
       );
 
   }
@@ -102,10 +108,12 @@ class ReimbursePrintView extends StatelessWidget {
               margin: EdgeInsets.only(bottom: 10),
               child: Text(
                 "${reimburseInfo["shopName"]}",
-                style: GoogleFonts.zenKakuGothicAntique(
-                    fontSize: 30,
-                    fontWeight: FontWeight.w600,
-                    color: Colors.black87),
+                style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        color: Colors.black,
+                        fontSize: 40,
+                        fontWeight: FontWeight.w500,
+                      ),
               ),
             ) : Container(),
 

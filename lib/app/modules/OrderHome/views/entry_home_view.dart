@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/OrderHome/controllers/order_home_controller.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/CatagoryButton.dart';
@@ -277,7 +278,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             Expanded(
                               child: BookingTypeButton(
                                 icon: eatInShopImage,
-                                title: "堂食",
+                                title: GString.getToString(controller.settingLanguage.value, "in_shop"),
                                 selected: controller.dining_type.value == "1",
                                 onTap: () {
                                   controller.updateDingType("1");
@@ -290,7 +291,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             Expanded(
                               child: BookingTypeButton(
                                 icon: eatOutImage,
-                                title: "外带",
+                                title: GString.getToString(controller.settingLanguage.value, "take_out"),
                                 selected: controller.dining_type.value == "2",
                                 onTap: () {
                                   controller.updateDingType("2");

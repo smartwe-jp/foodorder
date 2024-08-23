@@ -91,10 +91,13 @@ class OrderHomeController extends GetxController with StateMixin {
   }
 
   updateDingType(String type) async {
+    debugPrint("updateDingType $type");
     dining_type.value = type;
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-    SystemSettingInfo["diningType"] = type;
-    await HomeServices.updateSystemSettingInfo(SystemSettingInfo);
+    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    debugPrint("SystemSettingInfo $systemSettingInfo");
+    systemSettingInfo["diningType"] = type;
+    debugPrint("SystemSettingInfo new $systemSettingInfo");
+    await HomeServices.updateSystemSettingInfo(systemSettingInfo);
     await getBookingBootIndexCagegory();
   }
 
@@ -154,7 +157,7 @@ class OrderHomeController extends GetxController with StateMixin {
     var newList = List.from(homeList.sublist(0, 5));
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
-      "categoryName": "更多",
+      "categoryName": GString.getToString(settingLanguage.value, "more_title"),
       "showType": "1"
     });
     return newList;
@@ -162,7 +165,7 @@ class OrderHomeController extends GetxController with StateMixin {
     var newList = List.from(homeList);
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
-      "categoryName": "更多",
+      "categoryName": GString.getToString(settingLanguage.value, "more_title"),
       "showType": "1"
     });
     return newList;
