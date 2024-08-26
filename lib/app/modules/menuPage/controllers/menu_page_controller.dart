@@ -1325,8 +1325,10 @@ print("加1了");
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": mealType.value,
       };
+      debugPrint("doSubmitOrde formData: $formData");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
+        debugPrint("doSubmitOrde response: $response");
         EasyLoading.dismiss();
 
         if (response['code'] == 200 && response != null) {

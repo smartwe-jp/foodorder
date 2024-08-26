@@ -27,12 +27,12 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 class RejishiMeRequestView extends StatefulWidget {
 
   final String machineCode;
-
+  final Map? cashInfo;
   final Function resetCash;
   final Map? usbDevice;
 
 
-  const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash, this.usbDevice});
+  const RejishiMeRequestView({super.key, required this.machineCode, required this.resetCash, this.usbDevice, this.cashInfo});
 
 
   @override
@@ -50,7 +50,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   double printLength = 2352;
   Function _resetCash = () {};
   Map _usbDevice = {}.obs;
-
+  Map _cashinfo = {};
 
 
 
@@ -60,6 +60,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   void initState() {
     _resetCash = widget.resetCash;
     _usbDevice = widget.usbDevice ?? {};
+    _cashinfo = widget.cashInfo ?? {};
     debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
     //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
     super.initState();
@@ -162,19 +163,22 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       "verifyEmail": selectMail,
       "verifyUserName": selectUser,
     };
+    debugPrint("Rejishimei request: $param");
 
     request('webBootRejishimeiPrintInfo', method: 'POST', parameters: param)
         .then((val) {
       EasyLoading.dismiss();
+      debugPrint("Rejishimei response0: $val");
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
-
+        debugPrint("Rejishimei response: $response");
         Get.back();
         printView(response['data']);
       } else {
         //当前没有レジ情報
+        debugPrint("レジ情報がありません");
         showToast('レジ情報がありません');
       }
     })
@@ -195,6 +199,36 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     };
 
     request('webBootRejishimeiConfirm', method: 'POST', parameters: param)
+        .then((val) {
+      EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+        //printView(response['data']);
+        _printRejishime(printData,printLength);
+      } else {
+        //当前没有レジ情報
+        showToast('印刷に失敗しました');
+      }
+    }).catchError((e){
+      EasyLoading.dismiss();
+      showToast('印刷に失敗しました');
+    });
+  }
+
+  _comfirmGloryShimeInfo(code, changeInfoMap ,printData) async {
+    _showEasyLoading();
+
+    final param = {
+      "changeInfoMap": changeInfoMap,
+      "machineCode": widget.machineCode,
+      "verifyCode": code,
+      "verifyEmail": selectMail,
+      "verifyUserName": selectUser,
+    };
+
+    request('webBootGloryConfirmClose', method: 'POST', parameters: param)
         .then((val) {
       EasyLoading.dismiss();
       var response = json.decode(val.toString());
@@ -495,7 +529,9 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       _sendToUsePrinter(printWidget);
     }
 
-    //_resetCash();
+    if (Platform.isWindows) {
+      _resetCash();
+    }
     Get.back();
 
   }
@@ -611,7 +647,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   Expanded(
                     child: InkWell(
                       onTap: (){
-                        _comfirmShimeInfo(_verifyCodeController.text, printData);
+                        if (Platform.isWindows) {
+                          _comfirmGloryShimeInfo(_verifyCodeController.text, _cashinfo, printData);
+                        } else {
+                          _comfirmShimeInfo(_verifyCodeController.text, printData);
+                        }
                         //_printRejishime(printData,printLength);
                         //Get.back();
                       },

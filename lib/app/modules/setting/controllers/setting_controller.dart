@@ -151,8 +151,15 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showRejishimeiView() async {
+
+    final catValMap = cashInfoList.map((key, value) {
+      return MapEntry(getCatVal(key), value);
+    });
+
+
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
+        cashInfo: catValMap,
         resetCash: () {
           recycleCash();
         },
@@ -199,7 +206,7 @@ class SettingController extends GetxController with StateMixin {
     // var version = yaml['version'];
     // print('Version: $version');
     // return version;
-    return "2.4.0";
+    return "2.6.0";
   }
 
   getSystemSettingInfo() async {
