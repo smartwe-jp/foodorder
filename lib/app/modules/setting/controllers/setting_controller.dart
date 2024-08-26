@@ -15,6 +15,8 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
+import 'package:package_info/package_info.dart';
+import 'package:yaml/yaml.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -189,24 +191,26 @@ class SettingController extends GetxController with StateMixin {
   //获取版本号
   _getPackageInfo() async {
     debugPrint("SettingController _getPackageInfo");
-    // PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    // local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
-    local_version.value = await _getWindowsAppVersion();
-    debugPrint(
-        "SettingController local_version.value = ${local_version.value}");
+
+    if (Platform.isWindows) {
+      //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
+      local_version.value = "2.6.0"; //当前每次打包需要手动修改版本号
+    } else {
+      PackageInfo packageInfo = await PackageInfo.fromPlatform();
+      local_version.value = packageInfo.version;
+    }
+    //+"+"+packageInfo.buildNumber
+    
     getSystemSettingInfo();
   }
 
   //获取系统版本信息
   Future<String> _getWindowsAppVersion() async {
-    // debugPrint("SettingController _getWindowsAppVersion");
-    // var file = File('../../../../../pubspec.yaml');
-    // var contents = await file.readAsString();
-    // var yaml = loadYaml(contents);
-    // var version = yaml['version'];
-    // print('Version: $version');
-    // return version;
-    return "2.6.0";
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    String version = packageInfo.version;
+    String buildNumber = packageInfo.buildNumber;
+    local_version.value = packageInfo.version + " ${buildNumber}";
+    return version;
   }
 
   getSystemSettingInfo() async {
