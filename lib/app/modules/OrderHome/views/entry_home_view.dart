@@ -188,11 +188,19 @@ class EntryHomeView extends GetView<OrderHomeController> {
       ? AssetImage("assets/images/public/eat_out_on.png")
       : AssetImage("assets/images/public/eat_out_off.png");
 
+  ImageProvider _catagroyImage(url) {
+    if (url == null) {
+      return AssetImage("assets/images/public/food-catagory.png");
+    } else {
+      return CachedNetworkImageProvider(url);
+    }
+  }
+
   catagoryGridView() {
     List<Widget> buttonList = controller.showCatagory
         .map<Widget>(
           (e) => CatagoryButton(
-            icon: AssetImage("assets/images/public/food-catagory.png"),
+            icon: _catagroyImage(e['showImage']),
             title: e["categoryName"] as String,
             onTap: () {
               var mealType =
@@ -234,38 +242,42 @@ class EntryHomeView extends GetView<OrderHomeController> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     Container(
-                        height: ScreenAdapter.height(400),
-                        alignment: Alignment.center,
-                        child: Swiper(
-                            //itemHeight: 200,
-                            itemBuilder: (BuildContext context,int index){
-                              // 配置图片地址
-                              return Container(
-                                        decoration: BoxDecoration(
-                                          //color: Colors.green,
-                                          image: DecorationImage(
-                                            image: CachedNetworkImageProvider(
-                                                controller.homeImages.value[index]),
-                                            fit: BoxFit.cover,
-                                          ),
-                                        ),
-                                        //child: publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
-                                      );
-                            },
-                            // 配置图片数量
-                            itemCount: controller.homeImages.value.length,
-                            // 底部分页器
-                            //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                            // 左右箭头
-                            //control: new SwiperControl(),
-                            // 无限循环
-                            loop: (controller.homeImages.value.length >1) ?true :false,
-                            duration: 1000,
-                            autoplayDelay:12000,
-                            // 自动轮播
-                            autoplay: (controller.homeImages.value.length >1) ?true :false,
-                          ),
+                      height: ScreenAdapter.height(400),
+                      alignment: Alignment.center,
+                      child: Swiper(
+                        //itemHeight: 200,
+                        itemBuilder: (BuildContext context, int index) {
+                          // 配置图片地址
+                          return Container(
+                            decoration: BoxDecoration(
+                              //color: Colors.green,
+                              image: DecorationImage(
+                                image: CachedNetworkImageProvider(
+                                    controller.homeImages.value[index]),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            //child: publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
+                          );
+                        },
+                        // 配置图片数量
+                        itemCount: controller.homeImages.value.length,
+                        // 底部分页器
+                        //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                        // 左右箭头
+                        //control: new SwiperControl(),
+                        // 无限循环
+                        loop: (controller.homeImages.value.length > 1)
+                            ? true
+                            : false,
+                        duration: 1000,
+                        autoplayDelay: 12000,
+                        // 自动轮播
+                        autoplay: (controller.homeImages.value.length > 1)
+                            ? true
+                            : false,
                       ),
+                    ),
                     Expanded(
                       flex: 3,
                       child: Container(
@@ -278,7 +290,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             Expanded(
                               child: BookingTypeButton(
                                 icon: eatInShopImage,
-                                title: GString.getToString(controller.settingLanguage.value, "in_shop"),
+                                title: GString.getToString(
+                                    controller.settingLanguage.value,
+                                    "in_shop"),
                                 selected: controller.dining_type.value == "1",
                                 onTap: () {
                                   controller.updateDingType("1");
@@ -291,7 +305,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             Expanded(
                               child: BookingTypeButton(
                                 icon: eatOutImage,
-                                title: GString.getToString(controller.settingLanguage.value, "take_out"),
+                                title: GString.getToString(
+                                    controller.settingLanguage.value,
+                                    "take_out"),
                                 selected: controller.dining_type.value == "2",
                                 onTap: () {
                                   controller.updateDingType("2");
