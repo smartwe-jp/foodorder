@@ -278,17 +278,18 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': machineChangeInfo,
-      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode.value,
       'shopCode': shopCode.value,
     };
 
-    debugPrint("formData: $formData");
+    debugPrint("gloryEmptyReposrt formData: $formData");
 
     await request(
       'webBootGloryEmpty',
       method: 'POST',
       parameters: formData,
     ).then((value) {
+      debugPrint("gloryEmptyReport value: $value");
       final response = json.decode(value.toString());
       debugPrint("response: $response");
       if (response["code"] == 200) {
@@ -297,6 +298,7 @@ extension SettingControllerExtension on SettingController {
         success = false;
       }
     }).catchError((error) {
+      debugPrint("gloryEmptyReport error: $error");
       //showToast('回收失败!');
       success = false;
     });
@@ -315,7 +317,7 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': uploadMoneyInfo,
-      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode,//'PAZK8N7KKE8evkXks4'
       'shopCode': shopCode.value,
     };
     debugPrint("formData: $formData");

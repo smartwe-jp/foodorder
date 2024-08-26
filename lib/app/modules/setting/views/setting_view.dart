@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
+import 'package:foodorder/app/services/Storage.dart';
 
 import 'package:get/get.dart';
 
@@ -703,10 +704,11 @@ class SettingView extends GetView<SettingController> {
                                   ),
 
                                   InkWell(
-                                    onTap: () {
-                                      controller.ordersqlcontroller.removeAllFromCart();
+                                    onTap: () async {
+                                      await controller.ordersqlcontroller.removeAllFromCart();
+                                      await Storage.clearAll();
                                       if (Platform.isAndroid) {
-                                        controller.showBullyScreen();
+                                        await controller.showBullyScreen();
                                       }
                                       sleep(Duration(milliseconds: 1500));
                                       Get.back();

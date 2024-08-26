@@ -22,7 +22,7 @@ extension ExchangeControllerExtension on SettingController {
   getServerCashInfo() async {
     debugPrint('getServerCashInfo');
     var formData = {
-      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode.value,//'PAZK8N7KKE8evkXks4',
     };
     debugPrint('formData: $formData');
     await request(
@@ -370,7 +370,7 @@ extension ExchangeControllerExtension on SettingController {
   reportExchange(puts, pops) async {
     debugPrint('reportExchange');
     var formData = {
-      'machineCode': 'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode,//'PAZK8N7KKE8evkXks4',
       'puts': puts,
       'pops': pops,
       'shopCode': shopCode.value,
