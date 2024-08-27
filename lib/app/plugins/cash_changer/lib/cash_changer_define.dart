@@ -12,6 +12,15 @@ enum DepositAction {
   repay,
 }
 
+
+
+class ChangerResult {
+  final int code;
+  final dynamic value;
+  final String message;
+  ChangerResult({required this.code, required this.value, required this.message});
+}
+
 //定义一组错误码enum
 enum HealthResultCode {
   OPOS_SUCCESS,
@@ -32,6 +41,7 @@ enum HealthResultCode {
   NONE,
 }
 enum ResultCodeExtended {
+  OPOS_SUCCESS,
   OPOS_ECHAN_OVERDISPENSE, //超出最大找零金额 取消订单 提醒商家补钱
   OPOS_ECHAN_TOTALOVER, //none
   OPOS_ECHAN_CHANGEERROR,

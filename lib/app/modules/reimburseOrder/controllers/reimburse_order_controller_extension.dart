@@ -23,10 +23,14 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
     //debugPrint("startOutPutMoney");
     print("outMoney: $outMoney");
     var outStringMoney = outMoney.toString();
-    final resultCode =
+    final result =
         await CashChanger.dispenseChange(int.parse(outStringMoney));
+    
+    if (result == null) return;
+    debugPrint("resultCode: $result");
+
     await CashChanger.changerResultNext(
-        resultCode: resultCode,
+        resultCode: result['code'] ?? 0,
         onSuccess: () {
           //已经结束入金，处理取引终了
           _getPayCubeOutMoney();

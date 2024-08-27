@@ -56,27 +56,20 @@ extension HomeControllerExtension on HomeController {
     debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
     //如果检测现金机打开错误，则重新打开一下
-    int? retCode = await CashChanger.openCashChanger;
-    debugPrint("OpenPayCube retCode: $retCode");
-    //debugPrint("OpenPayCube 3");
-    await CashChanger.openChangerNext(
-        openResult: retCode,
-        onSuccess: () async {
-          debugPrint("OpenPayCube 6");
-          await Future.delayed(Duration(milliseconds: 200));
-          startDeposit();
-        },
-        onRetry: () {
-          debugPrint("OpenPayCube 7");
-          sleep(Duration(milliseconds: 200));
-          openCashChanger();
-        },
-        showError: (String error) {
-          debugPrint("OpenPayCube error: $error");
-          if (retCode==225) {//已打开 // clearinput?
+    bool retCode = await CashChanger.openCashChanger(
+      onSuccess: () async {
+        debugPrint("OpenPayCube 6");
+        await Future.delayed(Duration(milliseconds: 200));
+        startDeposit();
+      }, 
+      catchError: (retCode, error) async {
+        debugPrint("OpenPayCube error: $error");
+          if (retCode == 225) {
+            //已打开 // clearinput?
             _calculateAmount();
           }
-        });
+      },
+    );
   }
 
   //现金机开始 打开现金机，准备开始投币
@@ -91,22 +84,14 @@ extension HomeControllerExtension on HomeController {
       debugPrint("Starttoubi getIsFirstOpen");
       getIsFirstOpen();
     }
-    int? result = await CashChanger.startDeposit;
-    await CashChanger.changerResultNext(
-        resultCode: result,
-        onSuccess: () async {
-          debugPrint("Starttoubi success");
-          await Future.delayed(Duration(milliseconds: 200));
-          _calculateAmount();
-        },
-        onRetry: () async {
-          debugPrint("Starttoubi retry");
-          await Future.delayed(Duration(milliseconds: 200));
-          startDeposit();
-        },
-        showError: (String error) {
-          debugPrint("Starttoubi error: $error");
-        });
+
+    await CashChanger.startDeposit(onSuccess: () async {
+      debugPrint("Starttoubi success");
+      await Future.delayed(Duration(milliseconds: 200));
+      _calculateAmount();
+    }, catchError: (error) {
+      debugPrint("Starttoubi error: $error");
+    });
   }
 
   //计算投币金额

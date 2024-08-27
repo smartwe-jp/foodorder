@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
@@ -14,34 +13,14 @@ import 'package:foodorder/app/services/cashMoneyParser.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 
 extension SettingControllerExtension on SettingController {
   startPutMoney() async {
     debugPrint("startPutMoney");
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
-    
-    await _startSupply();
-  }
 
-  _startDeposit() async {
-    debugPrint("startDeposit");
-    final resultCode = await CashChanger.startDeposit;
-    await CashChanger.changerResultNext(
-        resultCode: resultCode,
-        onSuccess: () {
-          debugPrint("startDeposit 1");
-          checkChangerStatus();
-        },
-        onRetry: () {
-          debugPrint("startDeposit 2");
-          _startDeposit();
-        },
-        showError: (String error) {
-          debugPrint("startDeposit error: $error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
-        });
+    await _startSupply();
   }
 
   _startSupply() async {
@@ -60,47 +39,50 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("startSupply error: $error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
   _supplyCounts() async {
     debugPrint("supplyCounts");
-    String? supplyCounts = await CashChanger.supplyCounts(0x00);
-    if (supplyCounts == null) {
-      debugPrint("supplyCounts==null 无法启动");
-      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
-      return;
-    }
-    //获取=号与;号之间的数据
-    final supplyString = supplyCounts.split('=')[1];
-    //再截取;号与;号之间的数据
-    final supplyStringList = supplyString.split(';');
+    await CashChanger.supplyCounts(
+      0x00,
+      onSuccess: (value) {
+        //获取=号与;号之间的数据
+        final supplyString = value.split('=')[1];
+        //再截取;号与;号之间的数据
+        final supplyStringList = supplyString.split(';');
 
-    List<String> allPairs = [];
-    for (var part in supplyStringList) {
-      allPairs.addAll(part.split(','));
-    }
+        List<String> allPairs = [];
+        for (var part in supplyStringList) {
+          allPairs.addAll(part.split(','));
+        }
 
-    getPutMoneyCurrency.value = allPairs.join(',');
-    debugPrint("getPutMoneyCurrency==${getPutMoneyCurrency.value}");
-    update();
+        getPutMoneyCurrency.value = allPairs.join(',');
+        debugPrint("getPutMoneyCurrency==${getPutMoneyCurrency.value}");
+        update();
+      },
+      catchError: (error) {
+        errorHandleDialog(
+            GString.getToString(checkLanguage.value, error));
+      },
+    );
+
+    
   }
 
   supplyCountsClear() async {
     debugPrint("_supplyCountsClear");
 
-    String? supplyCounts = await CashChanger.supplyCounts(0x01);
-    if (supplyCounts == null) {
-      debugPrint("supplyCounts==null 无法启动");
-      //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error")); //弹窗提示 再点击重试
-      return false;
-    }
-    if (supplyCounts.contains('=') && supplyCounts.contains(';')) {
-      debugPrint("_supplyCountsClear==${supplyCounts}");
-      return true;
-    }
-    return false;
+    return await CashChanger.supplyCounts(
+      0x01,
+      onSuccess: (value) {
+      },
+      catchError: (error) {
+        errorHandleDialog(
+            GString.getToString(checkLanguage.value, error));
+      },
+    );
   }
 
   checkChangerStatus() async {
@@ -185,7 +167,8 @@ extension SettingControllerExtension on SettingController {
       putMoneyCurrency += currencyCashStringresult.substring(0, 12);
     }
 
-    getPutMoneyCurrency.value = MoneyParser.migrationGloryToIntString(putMoneyCurrency);
+    getPutMoneyCurrency.value =
+        MoneyParser.migrationGloryToIntString(putMoneyCurrency);
 
     update();
   }
@@ -269,7 +252,7 @@ extension SettingControllerExtension on SettingController {
 
   //清空上报
 
-  gloryEmptyReport() async{
+  gloryEmptyReport() async {
     debugPrint("gloryEmptyReposrt");
 
     var success = false;
@@ -304,7 +287,6 @@ extension SettingControllerExtension on SettingController {
     });
 
     return success;
-
   }
 
   //上报
@@ -317,7 +299,7 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': uploadMoneyInfo,
-      'machineCode': machineCode,//'PAZK8N7KKE8evkXks4'
+      'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4'
       'shopCode': shopCode.value,
     };
     debugPrint("formData: $formData");
@@ -327,6 +309,7 @@ extension SettingControllerExtension on SettingController {
       method: 'POST',
       parameters: formData,
     ).then((value) async {
+      debugPrint("reportReplanishInfo value: $value");
       final response = json.decode(value.toString());
       debugPrint("response: $response");
       EasyLoading.dismiss();
@@ -338,6 +321,7 @@ extension SettingControllerExtension on SettingController {
         showToast('補充失败!', context: Get.context);
       }
     }).catchError((error) {
+      debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
       showToast('補充失败!', context: Get.context);
     });

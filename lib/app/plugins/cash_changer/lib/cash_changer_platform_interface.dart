@@ -31,7 +31,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
   }
 
   //Open cash change
-  Future<int?> openCashChanger() {
+  Future<Map?> openCashChanger() {
     throw UnimplementedError('openCashChanger() has not been implemented.');
   }
 
@@ -45,8 +45,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('getCashBalance() has not been implemented.');
   }
 
-  //Start Deposit
-  Future<int?> startDeposit() {
+  Future<Map?> startDeposit() {
     throw UnimplementedError('startDeposit() has not been implemented.');
   }
 
@@ -66,7 +65,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
   }
 
   //Dispense Change
-  Future<int?> dispenseChange(int change) {
+  Future<Map?> dispenseChange(int change) {
     throw UnimplementedError('dispenseChange() has not been implemented.');
   }
   
@@ -86,7 +85,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
   }
 
   //supplyCounts
-  Future<String?> supplyCounts(int mode) {
+  Future<Map?> supplyCounts(int mode) {
     throw UnimplementedError('supplyCounts() has not been implemented.');
   }
 
@@ -126,7 +125,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
   }
 
   //Dispense Cash
-  Future<int?> dispenseCash(String cashCounts) {
+  Future<Map?> dispenseCash(String cashCounts) {
     throw UnimplementedError('dispenseCash() has not been implemented.');
   }
 

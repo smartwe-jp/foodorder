@@ -78,8 +78,8 @@ class TransitPageController extends GetxController {
   //获取版本号
   _getPackageInfo() async {
     debugPrint("transit  getPackageInfo");
-    PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
+    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = "2.6.0";//packageInfo.version; //+"+"+packageInfo.buildNumber
 
     await _getMachineActivate();
   }
@@ -115,6 +115,7 @@ class TransitPageController extends GetxController {
         var _showCash = shopData["linePayChannelMap"]["Cash"] != null
             ? shopData["linePayChannelMap"]["Cash"]
             : false;
+        debugPrint("showCash: $_showCash");
         var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
             ? shopData["linePayChannelMap"]["Wechat"]
             : false;

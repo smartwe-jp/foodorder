@@ -44,8 +44,24 @@ class CashChanger {
   }
 
   //Open cash changer
-  static Future<int?> get openCashChanger async {
-    return CashChangerPlatform.instance.openCashChanger();
+  static Future<bool> openCashChanger({required Function onSuccess, required Function(int,String) catchError}) async {
+    Map? result = await CashChangerPlatform.instance.openCashChanger();
+    var ret = false;
+    await openChangerNext(
+        openResult: result?['code'],
+        onSuccess: () async {
+          ret = true;
+          onSuccess();
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          openCashChanger;
+        },
+        showError: (error) async {
+          ret = false;
+          catchError(result?['code'],error);
+        });
+    return ret;
   }
 
   //Close cash changer
@@ -58,9 +74,25 @@ class CashChanger {
     return CashChangerPlatform.instance.getCashBalance();
   }
 
-  //Start Deposit
-  static Future<int?> get startDeposit async {
-    return CashChangerPlatform.instance.startDeposit();
+  static Future<bool> startDeposit(
+      {required Function onSuccess, required Function(String) catchError}) async {
+    var ret = false;
+    final resultMap = await CashChangerPlatform.instance.startDeposit();
+    await changerResultNext(
+        resultCode: resultMap?['code'],
+        onSuccess: () {
+          onSuccess();
+          ret = true;
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          startDeposit(onSuccess: onSuccess, catchError: catchError);
+        },
+        showError: (error) async {
+          catchError(error);
+          ret = false;
+        });
+    return ret;
   }
 
   //Deposit Amount
@@ -78,7 +110,7 @@ class CashChanger {
   }
 
   //Dispense Change
-  static Future<int?> dispenseChange(int change) async {
+  static Future<Map?> dispenseChange(int change) async {
     return CashChangerPlatform.instance.dispenseChange(change);
   }
 
@@ -98,8 +130,25 @@ class CashChanger {
   }
 
   //SUPPLYCOUNTS
-  static Future<String?> supplyCounts(int mode) async {
-    return CashChangerPlatform.instance.supplyCounts(mode);
+  static Future<bool> supplyCounts(int mode, {required Function(String) onSuccess, required Function(String) catchError}) async {
+    Map? result = await CashChangerPlatform.instance.supplyCounts(mode);
+    var ret = false;
+    await changerResultNext(
+        resultCode: result?['code'],
+        onSuccess: () {
+          ret = true;
+          onSuccess(result?['value'] ?? "");
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          supplyCounts(mode, onSuccess: onSuccess, catchError: catchError);
+        },
+        showError: (error) async {
+          ret = false;
+          catchError(error);
+        });
+    return ret;
+
   }
 
   //COUNTCLR
@@ -111,7 +160,7 @@ class CashChanger {
   static Future<int?> dispenseCashOutside(String cashInfo) async {
     return CashChangerPlatform.instance.dispenseCashOutside(cashInfo);
   }
-  
+
   //beginCashReturn
   static Future<int?> get beginCashReturn async {
     return CashChangerPlatform.instance.beginCashReturn();
@@ -122,15 +171,30 @@ class CashChanger {
     return CashChangerPlatform.instance.beginDepositOutside();
   }
 
-
   //changer di status
   static Future<String?> changerDIStatus(int pData) async {
     return CashChangerPlatform.instance.changerDIStatus(pData);
   }
 
   //dispense cash
-  static Future<int?> dispenseCash(String cashCounts) async {
-    return CashChangerPlatform.instance.dispenseCash(cashCounts);
+  static Future<bool> dispenseCash(String cashCounts,{required Function onSuccess, required Function(String) catchError}) async {
+    Map? result = await CashChangerPlatform.instance.dispenseCash(cashCounts);
+    var ret = false;
+    await changerResultNext(
+        resultCode: result?['code'],
+        onSuccess: () {
+          ret = true;
+          onSuccess();
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          dispenseCash(cashCounts, onSuccess: onSuccess, catchError: catchError);
+        },
+        showError: (error) async {
+          ret = false;
+          catchError(error);
+        });
+    return ret;
   }
 
   //collectAll
@@ -153,13 +217,13 @@ class CashChanger {
           resultCode: resultCode,
           resultCodeExtended: resultExtended ?? ResultCodeExtended.NONE);
     } else {
-      HealthResultCode? resultCode = HealthResultCode.values.fromIndex(result>100 ? result - 100 : result);
+      HealthResultCode? resultCode = HealthResultCode.values
+          .fromIndex(result > 100 ? result - 100 : result);
       return OposResult(
           resultCode: resultCode ?? HealthResultCode.NONE,
           resultCodeExtended: ResultCodeExtended.NONE);
     }
   }
-
 
   static Future changerResultNext(
       {required int? resultCode,
@@ -258,20 +322,20 @@ class CashChanger {
 
   static Map<int, OpenChangerResult> openChangerResultValues = {
     0: OpenChangerResult.OPEN_SUCCESS,
-  300: OpenChangerResult.OPOS_OPEN_ERR,
-  301: OpenChangerResult.OPOS_OR_ALREADYOPEN,
-  302: OpenChangerResult.OPOS_OR_REGBADNAME,
-  303: OpenChangerResult.OPOS_OR_REGPROGID,
-  304: OpenChangerResult.OPOS_OR_CREATE,
-  305: OpenChangerResult.OPOS_OR_BADIF,
-  306: OpenChangerResult.OPOS_ORS_FAILEDOPEN,
-  307: OpenChangerResult.OPOS_ORS_BADVERSION,
-  400: OpenChangerResult.OPOS_OPEN_ERR_SO,
-  401: OpenChangerResult.OPOS_ORS_NOPORT,
-  402: OpenChangerResult.OPOS_ORS_NOPORTED,
-  403: OpenChangerResult.OPOS_ORS_CONFIG,
-  450: OpenChangerResult.OPOS_SPECIFIC,
-};
+    300: OpenChangerResult.OPOS_OPEN_ERR,
+    301: OpenChangerResult.OPOS_OR_ALREADYOPEN,
+    302: OpenChangerResult.OPOS_OR_REGBADNAME,
+    303: OpenChangerResult.OPOS_OR_REGPROGID,
+    304: OpenChangerResult.OPOS_OR_CREATE,
+    305: OpenChangerResult.OPOS_OR_BADIF,
+    306: OpenChangerResult.OPOS_ORS_FAILEDOPEN,
+    307: OpenChangerResult.OPOS_ORS_BADVERSION,
+    400: OpenChangerResult.OPOS_OPEN_ERR_SO,
+    401: OpenChangerResult.OPOS_ORS_NOPORT,
+    402: OpenChangerResult.OPOS_ORS_NOPORTED,
+    403: OpenChangerResult.OPOS_ORS_CONFIG,
+    450: OpenChangerResult.OPOS_SPECIFIC,
+  };
 
   static Future openChangerNext(
       {required int? openResult,
@@ -283,17 +347,18 @@ class CashChanger {
       return;
     }
 
-    if (openChangerResultValues[openResult] == null) {
+    if (openChangerResultValues[openResult] == null && openResult > 200) {
       changerResultExtendedNext(
-          resultCodeExtended: ResultCodeExtended.values.fromIndex(openResult) ??
+          resultCodeExtended: ResultCodeExtended.values.fromIndex(openResult - 200) ??
               ResultCodeExtended.NONE,
           onSuccess: onSuccess,
           onRetry: onRetry ?? () {},
           showError: showError);
+          return;
     }
 
-    OpenChangerResult result = openChangerResultValues[openResult] ??
-        OpenChangerResult.NONE;
+    OpenChangerResult result =
+        openChangerResultValues[openResult] ?? OpenChangerResult.NONE;
     switch (result) {
       case OpenChangerResult.OPEN_SUCCESS:
       case OpenChangerResult.OPOS_OR_ALREADYOPEN:
@@ -301,63 +366,63 @@ class CashChanger {
         break;
       case OpenChangerResult.OPOS_OPEN_ERR:
         showError("cash_error_open");
-        showError("打开失败 请重试");
+        //showError("打开失败 请重试");
         break;
       case OpenChangerResult.OPOS_OR_REGBADNAME:
         showError("cash_error_reg_bad_name");
-        showError("打开名称不正确 提醒处理 打开设置工具");
+        //showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OR_REGPROGID:
         showError("cash_error_reg_prog_id");
-        showError("打开名称不正确 提醒处理 打开设置工具");
+        //showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OR_CREATE:
         showError("cash_error_create");
-        showError("初始化SO有问题 提醒处理 重新初始化");
+        //showError("初始化SO有问题 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_OR_BADIF:
         showError("cash_error_bad_if");
-        showError("SO库无法使用 提醒处理 重新初始化");
+        //showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_NOPORT:
         showError("cash_error_no_port");
-        showError("端口设置有问题 提醒处理 打开设置工具");
+        //showError("端口设置有问题 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_ORS_SENSETHREAD:
         showError("cash_error_sense_thread");
-        showError("线程有问题 暂无法处理 上报记录");
+        //showError("线程有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_CONFIG:
         showError("cash_error_config");
-        showError("配置文件有问题 提醒处理 重新初始化");
+        //showError("配置文件有问题 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_EVENTTHRREAD:
         showError("cash_error_event_thread");
-        showError("事件处理有问题 暂无法处理 上报记录");
+        //showError("事件处理有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_FAILEDOPEN:
         showError("cash_error_failed_open");
-        showError("SO库无法使用 提醒处理 重新初始化");
+        //showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_EVENTCLASS:
         showError("cash_error_event_class");
-        showError("事件处理程序有问题 暂无法处理 上报记录");
+        //showError("事件处理程序有问题 暂无法处理 上报记录");
         break;
       case OpenChangerResult.OPOS_ORS_BADVERSION:
         showError("cash_error_bad_version");
-        showError("打开名称不正确 提醒处理 打开设置工具");
+        //showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_OPEN_ERR_SO:
         showError("cash_error_open_so");
-        showError("SO库无法使用 提醒处理 重新初始化");
+        //showError("SO库无法使用 提醒处理 重新初始化");
         break;
       case OpenChangerResult.OPOS_ORS_NOPORTED:
         showError("cash_error_no_ported");
-        showError("端口设置有问题 提醒处理 打开设置工具");
+        //showError("端口设置有问题 提醒处理 打开设置工具");
         break;
       case OpenChangerResult.OPOS_SPECIFIC:
         showError("cash_error_specific");
-        showError("打开名称不正确 提醒处理 打开设置工具");
+        //showError("打开名称不正确 提醒处理 打开设置工具");
         break;
       default:
         showError("cash_error_unknown");

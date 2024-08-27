@@ -22,7 +22,7 @@ extension ExchangeControllerExtension on SettingController {
   getServerCashInfo() async {
     debugPrint('getServerCashInfo');
     var formData = {
-      'machineCode': machineCode.value,//'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4',
     };
     debugPrint('formData: $formData');
     await request(
@@ -288,7 +288,7 @@ extension ExchangeControllerExtension on SettingController {
         debugPrint('outMoney: $outMoney');
 
         break;
-      } 
+      }
     }
     return [putMoney, outMoney];
   }
@@ -308,31 +308,22 @@ extension ExchangeControllerExtension on SettingController {
 
   Future<bool> outSpecifyMoney(money,
       {Function? successTask, bool? fromeError}) async {
-    bool success = false;
-    final result = await CashChanger.dispenseCash(money);
-    await CashChanger.changerResultNext(
-        resultCode: result,
+    bool result = await CashChanger.dispenseCash(
+        money,
         onSuccess: () {
           debugPrint("exchangeMoney 1");
-          success = true;
           if (fromeError != null && fromeError) {
             successTask?.call(true);
           }
-        },
-        onRetry: () {
-          debugPrint("exchangeMoney 2");
-          outSpecifyMoney(money);
-        },
-        showError: (String error) {
+        }, catchError: (error) {
           debugPrint("exchangeMoney error: $error");
-          success = false;
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             Get.back();
             outSpecifyMoney(money, successTask: successTask, fromeError: true);
           });
         });
-    return success;
+    return result;
   }
 
   gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
@@ -370,7 +361,7 @@ extension ExchangeControllerExtension on SettingController {
   reportExchange(puts, pops) async {
     debugPrint('reportExchange');
     var formData = {
-      'machineCode': machineCode,//'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode, //'PAZK8N7KKE8evkXks4',
       'puts': puts,
       'pops': pops,
       'shopCode': shopCode.value,

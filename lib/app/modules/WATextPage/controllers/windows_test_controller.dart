@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 
@@ -30,9 +31,18 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void openCashChange() async {
     debugPrint("  openCashChange  ");
-    int? resultCode = await CashChanger.openCashChanger;
-    debugPrint("open CashChanger resultCode:  " + resultCode.toString());
-    if (resultCode == 0) {
+    bool result = await CashChanger.openCashChanger(
+      onSuccess: () async {
+        debugPrint("OpenPayCube 6");
+      }, 
+      catchError: (retCode, error) async {
+        debugPrint("OpenPayCube error: $error");
+      },
+    );
+    
+
+    debugPrint("open CashChanger resultCode:  $result");
+    if (result) {
       openSuccess.value = true;
     } else {
       openSuccess.value = false;
@@ -40,7 +50,7 @@ class WindowsTestController extends GetxController with StateMixin {
 
     Get.dialog(
         DialogUtils.alert(
-            "open CashChanger resultCode:  " + resultCode.toString(),
+            "open CashChanger resultCode: $result",
             title: "CashChanger", confirm: () {
           Get.back();
         }, cancle: () {
@@ -85,13 +95,18 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void startDeposit() async {
     debugPrint("  StartDeposit  ");
-    int? resultCode = await CashChanger.startDeposit;
-    debugPrint("StartDeposit result:  " + resultCode.toString());
-    if (resultCode == 0) {
-      _getInputMoney();
-    }
+    bool result = await CashChanger.startDeposit(
+      onSuccess: () {
+        _getInputMoney();
+
+      },
+      catchError: (error) => {
+
+      },
+    );
+
     Get.dialog(
-        DialogUtils.alert("StartDeposit result:  " + resultCode.toString(),
+        DialogUtils.alert("StartDeposit result:  ${result}",
             title: "CashChanger", confirm: () {
           Get.back();
         }, cancle: () {
@@ -133,7 +148,7 @@ class WindowsTestController extends GetxController with StateMixin {
     debugPrint("  DepositAmount  ");
     int? resultCode = await CashChanger.depositAmount;
     debugPrint("DepositAmount result:  " + resultCode.toString());
-    
+
     depositAmount.value = resultCode.toString();
   }
 

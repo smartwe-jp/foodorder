@@ -17,21 +17,16 @@ extension SettlementControllerExtension on SettlementController {
   startDeposit() async {
     debugPrint("startDeposit");
 
-    final resultCode = await CashChanger.startDeposit;
-    await CashChanger.changerResultNext(
-        resultCode: resultCode,
-        onSuccess: () {
-          debugPrint("startDeposit 1");
-          _checkChangerStatus();
-        },
-        onRetry: () {
-          debugPrint("startDeposit 2");
-          startDeposit();
-        },
-        showError: (String error) {
-          debugPrint("startDeposit error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
-        });
+    await CashChanger.startDeposit(
+      onSuccess: () {
+        debugPrint("startDeposit 1");
+        _checkChangerStatus();
+      },
+      catchError: (error) => {
+        debugPrint("startDeposit error: $error"),
+        errorHandleDialog(GString.getToString(checkLanguage.value, error))
+      },
+    );
   }
 
   _checkChangerStatus() async {
@@ -184,10 +179,13 @@ extension SettlementControllerExtension on SettlementController {
     debugPrint("startOutPutMoney");
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
-    final resultCode =
+    final result =
         await CashChanger.dispenseChange(int.parse(outStringMoney.value));
+    if (result == null) return;
+    debugPrint("resultCode: $result");
+
     await CashChanger.changerResultNext(
-        resultCode: resultCode,
+        resultCode: result['code'] ?? 0,
         onSuccess: () {
           //已经结束入金，处理取引终了
           //_getPayCubeOutMoney();
@@ -357,7 +355,9 @@ extension SettlementControllerExtension on SettlementController {
   errorHandleDialog(String error, {Function? confirm}) {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
-    Get.dialog(DialogUtils.alertOneButton(error,
+    Get.dialog(
+      barrierDismissible: false,
+      DialogUtils.alertOneButton(error,
         title: GString.getToString(checkLanguage.value, "tag_title"),
         confirmtitle:
             GString.getToString(checkLanguage.value, "tag_button_yes"),

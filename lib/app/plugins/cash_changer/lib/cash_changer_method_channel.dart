@@ -35,8 +35,8 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
-  Future<int?> openCashChanger() async {
-    final result = await methodChannel.invokeMethod<int>('openCashChanger');
+  Future<Map?> openCashChanger() async {
+    final result = await methodChannel.invokeMethod<Map>('openCashChanger');
     return result;
   }
 
@@ -53,8 +53,8 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
-  Future<int?> startDeposit() async {
-    final result = await methodChannel.invokeMethod<int>('startDeposit');
+  Future<Map?> startDeposit() async {
+    final result = await methodChannel.invokeMethod<Map>('startDeposit');
     return result;
   }
 
@@ -80,11 +80,15 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
-  Future<int?> dispenseChange(int change) async {
+  Future<Map?> dispenseChange(int change) async {
     final result = await methodChannel
-        .invokeMethod<int>('dispenseChange', <String, dynamic>{
+        .invokeMethod<Map>('dispenseChange', <String, dynamic>{
       'dispense': change,
     });
+
+
+
+
     return result;
   }
 
@@ -116,9 +120,9 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
-  Future<String?> supplyCounts(int mode) async {
+  Future<Map?> supplyCounts(int mode) async {
     final result = await methodChannel
-        .invokeMethod<String>('supplyCounts', <String, dynamic>{
+        .invokeMethod<Map>('supplyCounts', <String, dynamic>{
       'pData': mode,
     });
     return result;
@@ -152,10 +156,10 @@ class MethodChannelCashChanger extends CashChangerPlatform {
 
 
   @override
-  Future<int?> dispenseCash(String cashCounts) async {
+  Future<Map?> dispenseCash(String cashCounts) async {
     debugPrint('---dispenseCash--- $cashCounts');
     final result =
-        await methodChannel.invokeMethod<int>('dispenseCash', <String, dynamic>{
+        await methodChannel.invokeMethod<Map>('dispenseCash', <String, dynamic>{
       'cashCounts': cashCounts,
     });
     return result;
