@@ -176,6 +176,8 @@ class GString{
         "in_shop":"店内",
         "take_out":"持ち帰り",
         "more_title":"もっと見る",
+        "main_page":"ホーム",
+
 
       };
     }else if(languageCode == 'CH'){
@@ -348,7 +350,7 @@ class GString{
         "in_shop":"堂食",
         "take_out":"外带",
         "more_title":"更多",
-
+        "main_page":"首页",
 
 
 
@@ -522,6 +524,7 @@ class GString{
         "in_shop":"Eat in",
         "take_out":"Take out",
         "more_title":"More",
+        "main_page":"Home",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -693,9 +696,10 @@ class GString{
         "in_shop":"식사",
         "take_out":"테이크아웃",
         "more_title":"더보기",
+        "main_page":"첫장",
       };
     }
 
-    return languagePack[stringTag];
+    return languagePack[stringTag] ?? stringTag;
   }
 }

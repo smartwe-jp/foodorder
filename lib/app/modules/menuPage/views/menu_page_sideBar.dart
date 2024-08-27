@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
@@ -108,7 +109,9 @@ extension MenuPageSideBar on MenuPageView {
                     ),
                     SizedBox(width: ScreenAdapter.width(10),),
                     Text(
-                      "首页",
+                      GString.getToString(
+                                    controller.checkLanguage.value,
+                                    "main_page"),
                       style: TextStyle(
                           fontSize: 30,
                           fontWeight: FontWeight.w600,
