@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleButton.dart';
@@ -111,7 +113,7 @@ extension CycleCashSettingView on SettingView {
                         )),
                   ),
 
-                  controller.isAllowRejishime.value ? 
+                  (controller.isAllowRejishime.value || Platform.isWindows) ? 
                   RecycleButton(title: "レジ締め", onPressed: (){
                     controller.showRejishimeiView();
                   },) : 

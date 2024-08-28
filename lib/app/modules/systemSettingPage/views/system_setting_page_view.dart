@@ -1,4 +1,5 @@
 import 'dart:ffi';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
@@ -2292,7 +2293,7 @@ class SystemSettingPageView extends GetView {
                               },
                                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                 children: <TableRow>[
-                                  if(controller.actuarial.value == true)
+                                  if(controller.actuarial.value == true && Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2426,6 +2427,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
                                       ]
                                   ),
+                                  if (Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2460,6 +2462,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
                                   ),
+                                  if (Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
