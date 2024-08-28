@@ -215,14 +215,8 @@ extension SettingControllerExtension on SettingController {
         if (result) {
           clearTask();
           Get.back();
-        } else {
-          debugPrint("supplyCountsClear error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
-        }
-      } else {
-        debugPrint("cancelReplanish error");
-        //errorHandleDialog(GString.getToString(checkLanguage.value, "tag_error"));
-      }
+        } 
+      } 
     }
   }
 
@@ -282,7 +276,9 @@ extension SettingControllerExtension on SettingController {
       }
     }).catchError((error) {
       debugPrint("gloryEmptyReport error: $error");
+      commonHandleDialog("gloryEmptyReport error");
       //showToast('回收失败!');
+      
       success = false;
     });
 

@@ -2077,7 +2077,15 @@ class SystemSettingPageView extends GetView {
     return Scaffold(
       //appBar: AppBar(title: Text("システム設定")),
       body: GetBuilder<SystemSettingPageController>(builder: (controller){
-        return controller.obx((state) => ListView(
+        return controller.obx((state) => 
+
+        Container(
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                ),
+                child:
+        
+        ListView(
           children: <Widget>[
 
             Container(
@@ -2685,7 +2693,7 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ],
-        ),
+        )),
           onLoading: Center(
             child: CircularProgressIndicator(
               strokeWidth:6,

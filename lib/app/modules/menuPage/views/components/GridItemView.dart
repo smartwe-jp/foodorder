@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
 class GridItemView extends StatelessWidget {
@@ -251,3 +252,113 @@ class GridMenuView extends StatelessWidget {
     );
   }
 }
+
+
+class GridMenuViews extends StatefulWidget {
+  final MenuPageController controller;
+  final List<String> categories; // 每个页面的类别
+  final double? mainAxisSpacing;
+  final double? crossAxisSpacing;
+  final int? crossAxisCount;
+  final double? childAspectRatio;
+  final bool canScroll;
+
+  GridMenuViews({
+    Key? key,
+    required this.categories,
+    this.mainAxisSpacing,
+    this.crossAxisSpacing,
+    this.crossAxisCount, 
+    this.childAspectRatio,
+    this.canScroll = true, 
+    required this.controller,
+  });
+
+  @override
+  _GridMenuViewState createState() => _GridMenuViewState();
+}
+
+class _GridMenuViewState extends State<GridMenuViews> {
+  late PageController _pageController;
+  int _currentPage = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  Future<List<Widget>> _fetchData(String category) async {
+    // 模拟网络请求，根据类别获取数据
+    await Future.delayed(Duration(seconds: 2));
+    // 返回模拟数据
+    return List.generate(10, (index) => Card(child: Center(child: Text('$category Item $index'))));
+  }
+
+
+
+  
+
+  @override
+  Widget build(BuildContext context) {
+    return PageView.builder(
+      controller: _pageController,
+      itemCount: widget.categories.length,
+      scrollDirection: Axis.vertical,
+      onPageChanged: (int page) {
+        setState(() {
+          _currentPage = page;
+        });
+      },
+      itemBuilder: (context, pageIndex) {
+        String category = widget.categories[pageIndex];
+
+        return Padding(
+          padding: EdgeInsets.only(
+              top: ScreenAdapter.height(0), bottom: ScreenAdapter.height(0)),
+          child: FutureBuilder<List<Widget>>(
+            future: _fetchData(category),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return Center(child: CircularProgressIndicator());
+              } else if (snapshot.hasError) {
+                return Center(child: Text('Error: ${snapshot.error}'));
+              } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                return Center(child: Text('No data available'));
+              } else {
+
+
+                return GridView.builder(
+                  padding: EdgeInsets.zero,
+                  physics: widget.canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                  addAutomaticKeepAlives: true,
+                  gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                      mainAxisSpacing: widget.mainAxisSpacing ?? ScreenAdapter.height(40),
+                      crossAxisSpacing: widget.crossAxisSpacing ?? ScreenAdapter.width(20),
+                      crossAxisCount: widget.crossAxisCount ?? 3,
+                      childAspectRatio: widget.childAspectRatio ?? 0.76),
+                  itemBuilder: (BuildContext context, int index) {
+                    return snapshot.data![index];
+                  },
+                  itemCount: snapshot.data!.length,
+                );
+
+
+
+
+              }
+            },
+          ),
+        );
+      },
+    );
+  }
+}
+

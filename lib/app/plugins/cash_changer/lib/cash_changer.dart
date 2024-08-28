@@ -212,7 +212,7 @@ class CashChanger {
     if (result > 200) {
       HealthResultCode resultCode = HealthResultCode.OPOS_E_EXTENDED;
       ResultCodeExtended? resultExtended =
-          ResultCodeExtended.values.fromIndex(result - 201);
+          ResultCodeExtended.values.fromIndex(result - 200);
       return OposResult(
           resultCode: resultCode,
           resultCodeExtended: resultExtended ?? ResultCodeExtended.NONE);

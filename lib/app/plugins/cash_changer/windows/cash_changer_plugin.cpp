@@ -697,7 +697,10 @@ void CashChangerPlugin::HandleMethodCall(
     cerr << "checkChangerStatus called 。。" << endl;
 
     if (pCashChanger == nullptr) {
-        result->Error("Cash Changer not initialized");
+        cerr << "Cash Changer not initialized" << endl;
+        result->Success(flutter::EncodableValue(-1));
+        return;
+        //result->Error("Cash Changer not initialized");
     }
 
     long lngRet = pCashChanger->CheckHealth(OposChInternal);
