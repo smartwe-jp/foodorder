@@ -121,6 +121,10 @@ extension CycleCashSettingView on SettingView {
                     controller.showRecycleAlert();
                   },),
 
+                  RecycleButton(title: "全回収", onPressed: (){
+                    controller.showRecycleAlert();
+                  },),
+
                   RecycleButton(title: "補充", onPressed: (){
                     controller.showReplenishAlert();
                   },),

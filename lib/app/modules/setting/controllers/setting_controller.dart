@@ -12,6 +12,7 @@ import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -153,11 +154,9 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showRejishimeiView() async {
-
     final catValMap = cashInfoList.map((key, value) {
       return MapEntry(getCatVal(key), value);
     });
-
 
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
@@ -178,14 +177,31 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showReplenishAlert() {
+    Get.dialog(barrierDismissible: false, ReplanishView(controller: this));
+  }
+
+  signoutAlert() async {
+    debugPrint("SettingController signoutAlert");
+    //确定要退出吗？
     Get.dialog(
-      barrierDismissible: false,
-      ReplanishView(controller: this)
+      DialogUtils.alert("サインアウトしてもよろしいですか?", confirm: () async {
+        await ordersqlcontroller.removeAllFromCart();
+        await Storage.clearAll();
+        if (Platform.isAndroid) {
+          await showBullyScreen();
+        }
+        sleep(Duration(milliseconds: 1500));
+        Get.back();
+        //退出关闭
+        exit(0);
+      }, cancle: () {
+        Get.back();
+      })
     );
   }
 
   showExchangeAlert() async {
-    Get.dialog(barrierDismissible: false, Exchangeview(controller:this));
+    Get.dialog(barrierDismissible: false, Exchangeview(controller: this));
   }
 
   //获取版本号
@@ -200,7 +216,7 @@ class SettingController extends GetxController with StateMixin {
       local_version.value = packageInfo.version;
     }
     //+"+"+packageInfo.buildNumber
-    
+
     getSystemSettingInfo();
   }
 
