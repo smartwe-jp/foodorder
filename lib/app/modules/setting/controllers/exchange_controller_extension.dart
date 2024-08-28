@@ -140,7 +140,7 @@ extension ExchangeControllerExtension on SettingController {
       puts = changeString[0].split(',').map((e) {
         final cat = e.split(':');
         return {
-          'catVal': catValFromInt(int.parse(cat[0])),
+          'catVal': catValFromInt(cat[0]),
           'val': int.parse(cat[1]),
         };
       }).toList();
@@ -171,15 +171,14 @@ extension ExchangeControllerExtension on SettingController {
     //   return;
     // }
 
-    final result = await gloryOutputMoney(outInfo);
+    final result = await reportExchange(puts, pops);
     if (result) {
-      clearTask();
-      //Get.back();
-    } else {
-      return;
+      final result = await gloryOutputMoney(outInfo);
+      if (result) {
+        clearTask();
+        Get.back();
+      }
     }
-
-    await reportExchange(puts, pops);
 
     // Function endFunction = (result) async {
     //   debugPrint('endFunction: $result');
@@ -269,22 +268,23 @@ extension ExchangeControllerExtension on SettingController {
         debugPrint('putMoney: $putMoney');
         break;
       } else {
-        int diffValue = sum - target;
-        String currentKeyValue = entry.key.split(':')[0];
-        int valueCount = int.parse(entry.key.split(':')[1]);
+        int diffValue = sum - target; //815 - 315 = 500
+        String currentKeyValue = entry.key.split(':')[0]; //100
+        int valueCount = int.parse(entry.key.split(':')[1]); //8
 
-        int offset = diffValue ~/ int.parse(currentKeyValue);
-        int diffKey = valueCount - offset;
+        int offset = diffValue ~/ int.parse(currentKeyValue); //500 / 100 = 5
+        int diffKey = valueCount - offset; //8 - 5 = 3
 
-        putMoney =
-            noZeroString.replaceAll(outMoney + ',' + entry.key + ',', '');
-        int putMonyValue =
-            (entry.value - diffValue) ~/ int.parse(currentKeyValue);
+        putMoney = noZeroString.replaceAll(
+            outMoney + ',' + entry.key + ',', ''); //500:1
+        debugPrint('putMoney0: $putMoney');
+        // int putMonyValue =
+        //     (entry.value - diffValue) ~/ int.parse(currentKeyValue); // (800 - 500) / 100 = 3
 
-        putMoney = '${entry.key.split(':')[0]}:$putMonyValue' + ',' + putMoney;
+        putMoney = '${entry.key.split(':')[0]}:$offset' + ',' + putMoney;
         debugPrint('putMoney: $putMoney');
 
-        outMoney += '${entry.key.split(':')[0]}:$diffKey';
+        outMoney += ',' + '${entry.key.split(':')[0]}:$diffKey'; //100:3
         debugPrint('outMoney: $outMoney');
 
         break;
@@ -308,21 +308,19 @@ extension ExchangeControllerExtension on SettingController {
 
   Future<bool> outSpecifyMoney(money,
       {Function? successTask, bool? fromeError}) async {
-    bool result = await CashChanger.dispenseCash(
-        money,
-        onSuccess: () {
-          debugPrint("exchangeMoney 1");
-          if (fromeError != null && fromeError) {
-            successTask?.call(true);
-          }
-        }, catchError: (error) {
-          debugPrint("exchangeMoney error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error),
-              confirm: () {
-            Get.back();
-            outSpecifyMoney(money, successTask: successTask, fromeError: true);
-          });
-        });
+    bool result = await CashChanger.dispenseCash(money, onSuccess: () {
+      debugPrint("exchangeMoney 1");
+      if (fromeError != null && fromeError) {
+        successTask?.call(true);
+      }
+    }, catchError: (error) {
+      debugPrint("exchangeMoney error: $error");
+      errorHandleDialog(GString.getToString(checkLanguage.value, error),
+          confirm: () {
+        Get.back();
+        outSpecifyMoney(money, successTask: successTask, fromeError: true);
+      });
+    });
     return result;
   }
 
@@ -359,9 +357,10 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   reportExchange(puts, pops) async {
+    var success = false;
     debugPrint('reportExchange');
     var formData = {
-      'machineCode': machineCode, //'PAZK8N7KKE8evkXks4',
+      'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4',
       'puts': puts,
       'pops': pops,
       'shopCode': shopCode.value,
@@ -369,7 +368,7 @@ extension ExchangeControllerExtension on SettingController {
 
     debugPrint('formData: $formData');
 
-    request(
+    await request(
       'webBootGloryExchange',
       method: 'POST',
       parameters: formData,
@@ -378,16 +377,18 @@ extension ExchangeControllerExtension on SettingController {
       debugPrint("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        clearTask();
-        Get.back();
-        showToast('完了しました', context: Get.context);
+        success = true;
+        //showToast('完了しました', context: Get.context);
       } else {
+        success = false;
         showToast('補充失败!', context: Get.context);
       }
     }).catchError((error) {
+      success = false;
       EasyLoading.dismiss();
       showToast('補充失败!', context: Get.context);
     });
+    return success;
   }
 
   bool canExchange() {
