@@ -26,6 +26,7 @@ class PrinterListPage extends StatefulWidget {
 class _PrinterListPageState extends State<PrinterListPage> {
   //查询本地USB打印机列表
   Future<List<PrinterInfo>> queryLocalUSBPrinter() {
+    debugPrint('queryLocalUSBPrinter');
     return FlutterPrinterFinder.queryUsbPrinter().then(
       (value) => value.map((e) => PrinterInfo.fromUsbDevice(e)).toList(),
     );

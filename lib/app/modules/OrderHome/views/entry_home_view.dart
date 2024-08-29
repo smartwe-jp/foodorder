@@ -12,8 +12,6 @@ import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:get/get.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
-
-import '../../../services/showImage.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -180,11 +178,11 @@ class EntryHomeView extends GetView<OrderHomeController> {
     );
   }
 
-  get eatInShopImage => controller.dining_type.value == "1"
+  get eatInShopImage => !controller.mealType.value
       ? AssetImage("assets/images/public/eat_in_on.png")
       : AssetImage("assets/images/public/eat_in_off.png");
 
-  get eatOutImage => controller.dining_type.value == "2"
+  get eatOutImage => controller.mealType.value
       ? AssetImage("assets/images/public/eat_out_on.png")
       : AssetImage("assets/images/public/eat_out_off.png");
 
@@ -215,6 +213,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                 "checkLanguage": controller.settingLanguage.value,
                 "mealType": mealType
               });
+                         
             },
           ),
         )
@@ -278,11 +277,18 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             : false,
                       ),
                     ),
+
+                    // if (controller.dining_type.value == "3" && !controller.isSelect.value)
+                    // SizedBox(
+                    //   height: ScreenAdapter.height(70),
+                    // ),
+
+                    ///if (controller.dining_type.value == "3" && !controller.isSelect.value)
                     Expanded(
                       flex: 3,
                       child: Container(
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(
                               width: ScreenAdapter.width(70),
@@ -293,14 +299,14 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                 title: GString.getToString(
                                     controller.settingLanguage.value,
                                     "in_shop"),
-                                selected: controller.dining_type.value == "1",
+                                selected: !controller.mealType.value,
                                 onTap: () {
                                   controller.updateDingType("1");
                                 },
                               ),
                             ),
                             SizedBox(
-                              width: ScreenAdapter.width(70),
+                              width: ScreenAdapter.height(70),
                             ),
                             Expanded(
                               child: BookingTypeButton(
@@ -308,7 +314,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                 title: GString.getToString(
                                     controller.settingLanguage.value,
                                     "take_out"),
-                                selected: controller.dining_type.value == "2",
+                                selected: controller.mealType.value,
                                 onTap: () {
                                   controller.updateDingType("2");
                                 },
@@ -321,6 +327,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                         ),
                       ),
                     ),
+                    //if (controller.dining_type.value != "3" || controller.isSelect.value)
                     Expanded(
                         flex: 7,
                         child: Container(

@@ -1138,9 +1138,9 @@ print("加1了");
 
 //限量商品请求接口
   checkQtyBoundsCount(item, optionCode, popupType, context) async {
-    if (canAddCart.value == false) {
-      return;
-    }
+    // if (canAddCart.value == false) {
+    //   return;
+    // }
 
     var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
 

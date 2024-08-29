@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 // import 'package:foodorder/app/config/string.dart';
@@ -15,7 +14,6 @@ import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/order_sql_controller.dart';
-import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
 
 class OrderHomeController extends GetxController with StateMixin {
@@ -38,6 +36,7 @@ class OrderHomeController extends GetxController with StateMixin {
 
   RxList homeList = [].obs;
   RxList homeImages = [].obs;
+  RxBool mealType = false.obs;
 
   @override
   Future<void> onInit() async {
@@ -92,12 +91,17 @@ class OrderHomeController extends GetxController with StateMixin {
 
   updateDingType(String type) async {
     debugPrint("updateDingType $type");
-    dining_type.value = type;
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    debugPrint("SystemSettingInfo $systemSettingInfo");
-    systemSettingInfo["diningType"] = type;
-    debugPrint("SystemSettingInfo new $systemSettingInfo");
-    await HomeServices.updateSystemSettingInfo(systemSettingInfo);
+    //dining_type.value = type;
+    if (type == "2") {
+      mealType.value = true;
+    } else {
+      mealType.value = false;
+    }
+    // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    // debugPrint("SystemSettingInfo $systemSettingInfo");
+    // systemSettingInfo["diningType"] = type;
+    // debugPrint("SystemSettingInfo new $systemSettingInfo");
+    // await HomeServices.updateSystemSettingInfo(systemSettingInfo);
     await getBookingBootIndexCagegory();
   }
 
@@ -153,7 +157,7 @@ class OrderHomeController extends GetxController with StateMixin {
   }
   debugPrint("homeList.length > 4");
   if (homeList.length > 4) {
-    // 获取前5个
+    // 获取前8个
     var newList = List.from(homeList.sublist(0, 5));
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
@@ -187,11 +191,11 @@ class OrderHomeController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-//        if(mealType.value == true){
-        queryTakeout = "0";
-        // }else{
-        //   queryTakeout = "2";
-        // }
+        if(mealType.value == true){
+          queryTakeout = "0";
+        }else{
+          queryTakeout = "2";
+        }
         break;
       default:
         queryTakeout = "2";
