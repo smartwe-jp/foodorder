@@ -57,6 +57,7 @@ class SettingController extends GetxController with StateMixin {
   RxString local_version = "".obs; //本appversion
   RxMap usbPrinter = {}.obs;
   RxString getPutMoneyCurrency = "".obs;
+  RxString getOutMoneyCurrency = "".obs;
   RxInt getPutMoney = 0.obs;
   RxBool isStartPutMoney = false.obs;
   RxMap cashInfo = {}.obs;
@@ -154,15 +155,22 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showRejishimeiView() async {
-    final catValMap = cashInfoList.map((key, value) {
-      return MapEntry(getCatVal(key), value);
-    });
+    // final catValMap = cashInfoList.map((key, value) {
+    //   return MapEntry(getCatVal(key), value);
+    // });
 
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
-        cashInfo: catValMap,
         resetCash: () {
           recycleCash();
+        },
+        recycleCash: (p0) async {
+          debugPrint("recycleCashOut p0 = ${p0}");
+          Map result = await recycleCashOut(p0);
+          debugPrint("recycleCashOut result = ${result}");
+          
+          return result;
+          
         },
         usbDevice: usbPrinter.value));
   }
@@ -183,21 +191,19 @@ class SettingController extends GetxController with StateMixin {
   signoutAlert() async {
     debugPrint("SettingController signoutAlert");
     //确定要退出吗？
-    Get.dialog(
-      DialogUtils.alert("サインアウトしてもよろしいですか?", confirm: () async {
-        await ordersqlcontroller.removeAllFromCart();
-        await Storage.clearAll();
-        if (Platform.isAndroid) {
-          await showBullyScreen();
-        }
-        sleep(Duration(milliseconds: 1500));
-        Get.back();
-        //退出关闭
-        exit(0);
-      }, cancle: () {
-        Get.back();
-      })
-    );
+    Get.dialog(DialogUtils.alert("サインアウトしてもよろしいですか?", confirm: () async {
+      await ordersqlcontroller.removeAllFromCart();
+      await Storage.clearAll();
+      if (Platform.isAndroid) {
+        await showBullyScreen();
+      }
+      sleep(Duration(milliseconds: 1500));
+      Get.back();
+      //退出关闭
+      exit(0);
+    }, cancle: () {
+      Get.back();
+    }));
   }
 
   showExchangeAlert() async {
@@ -398,30 +404,47 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
+  recycleCashOut(count) async {
+    debugPrint("recycleCashOut count = ${count}");
+    bool result = await dispenseCashCount(count);
+    debugPrint("recycleCashOut result = ${result}");
+    if (!result) {
+      return null;
+    }
+    bool result2 = await getInAndOutMoney();
+    debugPrint("recycleCashOut result2 = ${result2}");
+    if (result2) {
+      return uploadOutMoneyInfo;
+    }
+    return null;
+  }
+
   recycleCash() async {
     if (Platform.isWindows) {
-      if (!await gloryEmptyReport()) {
-        commonHandleDialog("回收失败：Glory机器未清空");
-        return;
-      }
+      await getPaycubeChangeState();
+      commonHandleDialog('リサイクル成功');
+      // if (!await gloryEmptyReport()) {
+      //   commonHandleDialog("回收失败：Glory机器未清空");
+      //   return;
+      // }
 
-      final result = await CashChanger.collectAll();
-      await CashChanger.changerResultNext(
-          resultCode: result,
-          onSuccess: () async {
-            debugPrint("recycleCash onSuccess");
-            await getPaycubeChangeState();
-            commonHandleDialog('リサイクル成功');
-            //showToast('回收成功');
-          },
-          onRetry: () {
-            recycleCash();
-          },
-          showError: (String error) {
-            debugPrint("recycleCash error: $error");
-            //showToast('回收失败');
-            commonHandleDialog("回收失败：$error");
-          });
+      // final result = await CashChanger.collectAll();
+      // await CashChanger.changerResultNext(
+      //     resultCode: result,
+      //     onSuccess: () async {
+      //       debugPrint("recycleCash onSuccess");
+      //       await getPaycubeChangeState();
+      //       commonHandleDialog('リサイクル成功');
+      //       //showToast('回收成功');
+      //     },
+      //     onRetry: () {
+      //       recycleCash();
+      //     },
+      //     showError: (String error) {
+      //       debugPrint("recycleCash error: $error");
+      //       //showToast('回收失败');
+      //       commonHandleDialog("回收失败：$error");
+      //     });
     } else {
       var formData = {
         "machineCode": machineCode.value,

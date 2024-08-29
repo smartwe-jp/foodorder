@@ -63,12 +63,9 @@ extension SettingControllerExtension on SettingController {
         update();
       },
       catchError: (error) {
-        errorHandleDialog(
-            GString.getToString(checkLanguage.value, error));
+        errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
-
-    
   }
 
   supplyCountsClear() async {
@@ -76,11 +73,9 @@ extension SettingControllerExtension on SettingController {
 
     return await CashChanger.supplyCounts(
       0x01,
-      onSuccess: (value) {
-      },
+      onSuccess: (value) {},
       catchError: (error) {
-        errorHandleDialog(
-            GString.getToString(checkLanguage.value, error));
+        errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
   }
@@ -173,6 +168,40 @@ extension SettingControllerExtension on SettingController {
     update();
   }
 
+   getInAndOutMoney() async {
+    //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
+
+    debugPrint("_getPayCubeOutMoney");
+    //获取硬币入金出金币种
+    String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
+    debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
+
+    String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);
+    debugPrint("currencyCashStringresult==${currencyCashStringresult}");
+
+    var putMoneyCurrency = "";
+    var currency = "";
+
+    if (currencyCoinStringresult != null &&
+        currencyCoinStringresult.length > 36) {
+      putMoneyCurrency = currencyCoinStringresult.substring(0, 18); //入金
+      currency = currencyCoinStringresult.substring(18, 36); //出金
+    }
+
+    if (currencyCashStringresult != null &&
+        currencyCashStringresult.length > 24) {
+      putMoneyCurrency += currencyCashStringresult.substring(0, 12);
+      currency += currencyCashStringresult.substring(12, 24);
+    }
+
+    getPutMoneyCurrency.value =
+        MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+    getOutMoneyCurrency.value =
+         MoneyParser.migrationGloryToIntString(currency);
+    
+    return true;
+  }
+
   Future<bool> closeDeposit() async {
     debugPrint("closeDeposit");
     //await Future.delayed(Duration(seconds: 1));
@@ -215,9 +244,31 @@ extension SettingControllerExtension on SettingController {
         if (result) {
           clearTask();
           Get.back();
-        } 
-      } 
+        }
+      }
     }
+  }
+
+  dispenseCashCount(count) async {
+    debugPrint("dispenseCashCount");
+    var success = false;
+    Map? result = await CashChanger.dispenseChange(count);
+    await CashChanger.changerResultNext(
+        resultCode: result?['code'] ?? -1,
+        onSuccess: () {
+          debugPrint("cancelReplanish 1");
+          success = true;
+        },
+        onRetry: () {
+          debugPrint("cancelReplanish 2");
+          dispenseCashCount(count);
+        },
+        showError: (String error) {
+          debugPrint("cancelReplanish error: $error");
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          success = false;
+        });
+    return success;
   }
 
   dispenseCashOutside() async {
@@ -278,7 +329,7 @@ extension SettingControllerExtension on SettingController {
       debugPrint("gloryEmptyReport error: $error");
       commonHandleDialog("gloryEmptyReport error");
       //showToast('回收失败!');
-      
+
       success = false;
     });
 
@@ -328,6 +379,26 @@ extension SettingControllerExtension on SettingController {
       return {};
     }
     final currencyPairs = getPutMoneyCurrency
+        .value; //getNoneZeroInfo(getPutMoneyCurrency.value, isReport: true);
+    debugPrint("currencyPairs: $currencyPairs");
+
+    //获取不为0的数据返回Map
+    List<String> currencyPairsList = currencyPairs.split(',');
+    Map<String, String> currencyPairsMap = {};
+    for (var pair in currencyPairsList) {
+      List<String> parts = pair.split(':');
+      if (parts.length == 2 && parts[1] != '0') {
+        currencyPairsMap[catValFromInt(parts[0])] = parts[1];
+      }
+    }
+    return currencyPairsMap;
+  }
+
+  Map get uploadOutMoneyInfo {
+    if (getOutMoneyCurrency.value.isEmpty) {
+      return {};
+    }
+    final currencyPairs = getOutMoneyCurrency
         .value; //getNoneZeroInfo(getPutMoneyCurrency.value, isReport: true);
     debugPrint("currencyPairs: $currencyPairs");
 

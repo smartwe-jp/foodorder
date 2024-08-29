@@ -25,16 +25,16 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 class RejishiMeRequestView extends StatefulWidget {
   final String machineCode;
-  final Map? cashInfo;
   final Function resetCash;
+  final Future<Map?> Function(int)? recycleCash;
   final Map? usbDevice;
 
   const RejishiMeRequestView(
       {super.key,
       required this.machineCode,
       required this.resetCash,
-      this.usbDevice,
-      this.cashInfo});
+      this.recycleCash,
+      this.usbDevice});
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -49,7 +49,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   double printLength = 2352;
   Function _resetCash = () {};
   Map _usbDevice = {}.obs;
-  Map _cashinfo = {};
+  int _recycleCash = 0;
 
   final TextEditingController _verifyCodeController = TextEditingController();
 
@@ -57,7 +57,6 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   void initState() {
     _resetCash = widget.resetCash;
     _usbDevice = widget.usbDevice ?? {};
-    _cashinfo = widget.cashInfo ?? {};
     debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
     //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
     super.initState();
@@ -166,6 +165,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
           response['code'] == 200 &&
           null != response['data']) {
         debugPrint("Rejishimei response: $response");
+        int total = response['data']['total'] ?? 0;
+        debugPrint("Rejishimei total: $total");
+        setState(() {
+          _recycleCash = total;
+        });
         Get.back();
         printView(response['data']);
       } else {
@@ -209,11 +213,24 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     });
   }
 
-  _comfirmGloryShimeInfo(code, changeInfoMap, printData) async {
+  _comfirmGloryShimeInfo(code, printData) async {
+    debugPrint("_comfirmGloryShimeInfo");
     _showEasyLoading();
 
+    if(widget.recycleCash == null) {
+      EasyLoading.dismiss();
+      showToast('印刷に失敗しました');
+      return;
+    }
+
+    Map? result = await widget.recycleCash!(_recycleCash);
+    if (result == null) {
+      EasyLoading.dismiss();
+      return;
+    }
+
     final param = {
-      "changeInfoMap": changeInfoMap,
+      "changeInfoMap": result,
       "machineCode": widget.machineCode,
       "verifyCode": code,
       "verifyEmail": selectMail,
@@ -509,17 +526,17 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         await FlutterPluginMsprinter.sendPrintCut("0");
       });
     } else {
-      final printWidget = Container(
+        final printWidget = Container(
         width: 385,
         height: length + 150,
         child: RejishimePrintView(isPrint: true, printInfo: data),
-      );
-      _sendToUsePrinter(printWidget);
+        );
+        _sendToUsePrinter(printWidget);
     }
 
-    if (Platform.isWindows) {
+    //if (Platform.isAndroid) {
       _resetCash();
-    }
+    //}
     Get.back();
   }
 
@@ -624,10 +641,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   ),
                   Expanded(
                     child: InkWell(
-                      onTap: () {
+                      onTap: () async {
                         if (Platform.isWindows) {
-                          _comfirmGloryShimeInfo(
-                              _verifyCodeController.text, _cashinfo, printData);
+                          debugPrint("comfirmGloryShimeInfo");
+                          await _comfirmGloryShimeInfo(
+                              _verifyCodeController.text, printData);
                         } else {
                           _comfirmShimeInfo(
                               _verifyCodeController.text, printData);
