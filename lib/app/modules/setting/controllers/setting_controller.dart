@@ -177,7 +177,7 @@ class SettingController extends GetxController with StateMixin {
 
   showRecycleAlert() {
     Get.dialog(RecycleAlert(onConfirm: () {
-      recycleCash();
+      recycleCash(isRejishimei: false);
       Get.back();
     }, onCancel: () {
       Get.back();
@@ -419,32 +419,34 @@ class SettingController extends GetxController with StateMixin {
     return null;
   }
 
-  recycleCash() async {
+  recycleCash({isRejishimei = true}) async {
     if (Platform.isWindows) {
+      if (isRejishimei) {
       await getPaycubeChangeState();
       commonHandleDialog('リサイクル成功');
-      // if (!await gloryEmptyReport()) {
-      //   commonHandleDialog("回收失败：Glory机器未清空");
-      //   return;
-      // }
-
-      // final result = await CashChanger.collectAll();
-      // await CashChanger.changerResultNext(
-      //     resultCode: result,
-      //     onSuccess: () async {
-      //       debugPrint("recycleCash onSuccess");
-      //       await getPaycubeChangeState();
-      //       commonHandleDialog('リサイクル成功');
-      //       //showToast('回收成功');
-      //     },
-      //     onRetry: () {
-      //       recycleCash();
-      //     },
-      //     showError: (String error) {
-      //       debugPrint("recycleCash error: $error");
-      //       //showToast('回收失败');
-      //       commonHandleDialog("回收失败：$error");
-      //     });
+      if (!await gloryEmptyReport()) {
+        commonHandleDialog("回收失败：Glory机器未清空");
+        return;
+      }
+    } else {
+      final result = await CashChanger.collectAll();
+      await CashChanger.changerResultNext(
+          resultCode: result,
+          onSuccess: () async {
+            debugPrint("recycleCash onSuccess");
+            await getPaycubeChangeState();
+            commonHandleDialog('リサイクル成功');
+            //showToast('回收成功');
+          },
+          onRetry: () {
+            recycleCash();
+          },
+          showError: (String error) {
+            debugPrint("recycleCash error: $error");
+            //showToast('回收失败');
+            commonHandleDialog("回收失败：$error");
+          });
+      }
     } else {
       var formData = {
         "machineCode": machineCode.value,
