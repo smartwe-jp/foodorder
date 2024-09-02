@@ -424,11 +424,12 @@ class SettingController extends GetxController with StateMixin {
       if (isRejishimei) {
       await getPaycubeChangeState();
       commonHandleDialog('リサイクル成功');
+      
+    } else {
       if (!await gloryEmptyReport()) {
         commonHandleDialog("回收失败：Glory机器未清空");
         return;
       }
-    } else {
       final result = await CashChanger.collectAll();
       await CashChanger.changerResultNext(
           resultCode: result,
