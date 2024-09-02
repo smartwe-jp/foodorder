@@ -283,7 +283,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                     //   height: ScreenAdapter.height(70),
                     // ),
 
-                    ///if (controller.dining_type.value == "3" && !controller.isSelect.value)
+                    if (controller.dining_type.value == "3")
                     Expanded(
                       flex: 3,
                       child: Container(
