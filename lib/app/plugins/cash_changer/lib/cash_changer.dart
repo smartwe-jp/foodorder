@@ -72,7 +72,8 @@ class CashChanger {
   }
 
   //Get Cash Balance Info
-  static Future<bool> getCashBalance({required Function(String) onSuccess,
+  static Future<bool> getCashBalance(
+      {required Function(String) onSuccess,
       required Function(String) catchError}) async {
     Map? result = await CashChangerPlatform.instance.getCashBalance();
     var ret = false;
@@ -314,8 +315,16 @@ class CashChanger {
       case ResultCodeExtended.OPOS_ECHAN_OVER:
         showError("cash_error_over");
         break;
-      case ResultCodeExtended.OPOS_ECHAN_IFERROR:
-        showError("cash_error_if_error");
+      case ResultCodeExtended.OPOS_ECHAN_IFERROR: //通信异常 重试
+
+        final result = await endDeposit(DepositAction.repay.index);
+        if (result == 0) {
+          onRetry();
+        } else {
+          showError("cash_error_if_error");
+        }
+        //onRetry();
+        //showError("cash_error_if_error");
         break;
       case ResultCodeExtended.OPOS_ECHAN_SETERROR:
         showError("cash_error_set_error");
