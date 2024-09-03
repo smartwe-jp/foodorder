@@ -168,7 +168,7 @@ extension SettingControllerExtension on SettingController {
     update();
   }
 
-   getInAndOutMoney() async {
+  getInAndOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
 
     debugPrint("_getPayCubeOutMoney");
@@ -196,9 +196,8 @@ extension SettingControllerExtension on SettingController {
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
-    getOutMoneyCurrency.value =
-         MoneyParser.migrationGloryToIntString(currency);
-    
+    getOutMoneyCurrency.value = MoneyParser.migrationGloryToIntString(currency);
+
     return true;
   }
 
@@ -302,7 +301,10 @@ extension SettingControllerExtension on SettingController {
 
     var success = false;
 
-    final machineChangeInfo = await getMachineCashInfo();
+    Map? machineChangeInfo = await getMachineCashInfo(); //这里会获取失败，应该是上次操作未正常结束。
+    if (machineChangeInfo == null) {
+      return;
+    }
 
     var formData = {
       'changeInfoMap': machineChangeInfo,
@@ -327,7 +329,13 @@ extension SettingControllerExtension on SettingController {
       }
     }).catchError((error) {
       debugPrint("gloryEmptyReport error: $error");
-      commonHandleDialog("gloryEmptyReport error");
+
+      if (error.toString().contains("Http status error")) {
+        //全回收功能需要在执行レジ締め后才可以执行。
+        errorHandleDialog("この機能はレジ締め後に実行する必要があります。");
+      } else {
+        errorHandleDialog("gloryEmptyReport error: ${error}");
+      }
       //showToast('回收失败!');
 
       success = false;

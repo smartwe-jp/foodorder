@@ -34,12 +34,11 @@ class WindowsTestController extends GetxController with StateMixin {
     bool result = await CashChanger.openCashChanger(
       onSuccess: () async {
         debugPrint("OpenPayCube 6");
-      }, 
+      },
       catchError: (retCode, error) async {
         debugPrint("OpenPayCube error: $error");
       },
     );
-    
 
     debugPrint("open CashChanger resultCode:  $result");
     if (result) {
@@ -49,8 +48,7 @@ class WindowsTestController extends GetxController with StateMixin {
     }
 
     Get.dialog(
-        DialogUtils.alert(
-            "open CashChanger resultCode: $result",
+        DialogUtils.alert("open CashChanger resultCode: $result",
             title: "CashChanger", confirm: () {
           Get.back();
         }, cancle: () {
@@ -81,7 +79,7 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void GetCashBalanceInfo() async {
     debugPrint("  GetCashBalanceInfo  ");
-    String? resultCode = await CashChanger.getCashBalance;
+    String? resultCode = ""; //await CashChanger.getCashBalance;
     debugPrint("GetCashBalanceInfo result:  " + resultCode!);
     Get.dialog(
         DialogUtils.alert("GetCashBalanceInfo result:  " + resultCode,
@@ -98,11 +96,8 @@ class WindowsTestController extends GetxController with StateMixin {
     bool result = await CashChanger.startDeposit(
       onSuccess: () {
         _getInputMoney();
-
       },
-      catchError: (error) => {
-
-      },
+      catchError: (error) => {},
     );
 
     Get.dialog(
@@ -154,7 +149,8 @@ class WindowsTestController extends GetxController with StateMixin {
 
   void getChangeAmount() async {
     debugPrint("  getChangeAmount  ");
-    String? resultCode = await CashChanger.getCashBalance;
+    String? resultCode = "";
+    //await CashChanger.getCashBalance;
     debugPrint("getChangeAmount result:  " + resultCode!);
 
     changeAmount.value = resultCode.toString();

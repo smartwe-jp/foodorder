@@ -44,7 +44,9 @@ class CashChanger {
   }
 
   //Open cash changer
-  static Future<bool> openCashChanger({required Function onSuccess, required Function(int,String) catchError}) async {
+  static Future<bool> openCashChanger(
+      {required Function onSuccess,
+      required Function(int, String) catchError}) async {
     Map? result = await CashChangerPlatform.instance.openCashChanger();
     var ret = false;
     await openChangerNext(
@@ -59,7 +61,7 @@ class CashChanger {
         },
         showError: (error) async {
           ret = false;
-          catchError(result?['code'],error);
+          catchError(result?['code'], error);
         });
     return ret;
   }
@@ -70,12 +72,33 @@ class CashChanger {
   }
 
   //Get Cash Balance Info
-  static Future<String?> get getCashBalance async {
-    return CashChangerPlatform.instance.getCashBalance();
+  static Future<bool> getCashBalance({required Function(String) onSuccess,
+      required Function(String) catchError}) async {
+    Map? result = await CashChangerPlatform.instance.getCashBalance();
+    var ret = false;
+    if (result == null) {
+      return ret;
+    }
+    await changerResultNext(
+        resultCode: result['code'],
+        onSuccess: () {
+          ret = true;
+          onSuccess(result['value'] ?? "");
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          getCashBalance;
+        },
+        showError: (error) async {
+          ret = false;
+          catchError(error);
+        });
+    return ret;
   }
 
   static Future<bool> startDeposit(
-      {required Function onSuccess, required Function(String) catchError}) async {
+      {required Function onSuccess,
+      required Function(String) catchError}) async {
     var ret = false;
     final resultMap = await CashChangerPlatform.instance.startDeposit();
     await changerResultNext(
@@ -130,7 +153,9 @@ class CashChanger {
   }
 
   //SUPPLYCOUNTS
-  static Future<bool> supplyCounts(int mode, {required Function(String) onSuccess, required Function(String) catchError}) async {
+  static Future<bool> supplyCounts(int mode,
+      {required Function(String) onSuccess,
+      required Function(String) catchError}) async {
     Map? result = await CashChangerPlatform.instance.supplyCounts(mode);
     var ret = false;
     await changerResultNext(
@@ -148,7 +173,6 @@ class CashChanger {
           catchError(error);
         });
     return ret;
-
   }
 
   //COUNTCLR
@@ -177,7 +201,9 @@ class CashChanger {
   }
 
   //dispense cash
-  static Future<bool> dispenseCash(String cashCounts,{required Function onSuccess, required Function(String) catchError}) async {
+  static Future<bool> dispenseCash(String cashCounts,
+      {required Function onSuccess,
+      required Function(String) catchError}) async {
     Map? result = await CashChangerPlatform.instance.dispenseCash(cashCounts);
     var ret = false;
     await changerResultNext(
@@ -188,7 +214,8 @@ class CashChanger {
         },
         onRetry: () async {
           await Future.delayed(Duration(milliseconds: 200));
-          dispenseCash(cashCounts, onSuccess: onSuccess, catchError: catchError);
+          dispenseCash(cashCounts,
+              onSuccess: onSuccess, catchError: catchError);
         },
         showError: (error) async {
           ret = false;
@@ -349,12 +376,13 @@ class CashChanger {
 
     if (openChangerResultValues[openResult] == null && openResult > 200) {
       changerResultExtendedNext(
-          resultCodeExtended: ResultCodeExtended.values.fromIndex(openResult - 200) ??
-              ResultCodeExtended.NONE,
+          resultCodeExtended:
+              ResultCodeExtended.values.fromIndex(openResult - 200) ??
+                  ResultCodeExtended.NONE,
           onSuccess: onSuccess,
           onRetry: onRetry ?? () {},
           showError: showError);
-          return;
+      return;
     }
 
     OpenChangerResult result =

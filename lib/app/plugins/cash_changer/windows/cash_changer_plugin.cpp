@@ -317,8 +317,9 @@ void CashChangerPlugin::HandleMethodCall(
   if (method_call.method_name().compare("getCashBalance") == 0) {
     cerr << "getCashBalance called 。。" << endl;
     if (pCashChanger == nullptr) {
-      result->Error("Cash Changer not initialized");
-      result->Success(flutter::EncodableValue("Cash Changer not initialized"));
+      //result->Error("Cash Changer not initialized");
+      //result->Success(flutter::EncodableValue("Cash Changer not initialized"));
+      ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("Cash Changer not initialized"));
       return;
     }
 
@@ -334,7 +335,16 @@ void CashChangerPlugin::HandleMethodCall(
     cerr << "ReadCashCounts end 。。 " << lngRet << endl;
     // 检查是否成功
     if (lngRet != OposSuccess) {
-       result->Success(flutter::EncodableValue("ReadCashCounts failed with code: " + to_string(lngRet)));
+        
+        if (lngRet == OposEExtended) {
+            //result->Success(flutter::EncodableValue(0));
+            cerr << "ReadCashCounts failed with code: " << pCashChanger->ResultCodeExtended << endl;
+            ReturnMapValue(move(result), flutter::EncodableValue(pCashChanger->ResultCodeExtended), flutter::EncodableValue(0), flutter::EncodableValue("failured"));
+            return;
+        }
+
+        ReturnMapValue(move(result), flutter::EncodableValue(lngRet), flutter::EncodableValue(0), flutter::EncodableValue("ReadCashCounts failed with code: " + to_string(lngRet)));
+        //result->Success(flutter::EncodableValue("ReadCashCounts failed with code: " + to_string(lngRet)));
         return;
     }
 
@@ -357,7 +367,9 @@ void CashChangerPlugin::HandleMethodCall(
     // ...
 
     // 返回处理后的信息
-    result->Success(flutter::EncodableValue(st_CoinCashList +','+ st_BillCashList));
+    //result->Success(flutter::EncodableValue(st_CoinCashList +','+ st_BillCashList));
+    ReturnMapValue(move(result), flutter::EncodableValue(0), flutter::EncodableValue(st_CoinCashList +','+ st_BillCashList), flutter::EncodableValue("success"));
+
     return;
   }
 

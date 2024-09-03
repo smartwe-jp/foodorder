@@ -427,7 +427,7 @@ class SettingController extends GetxController with StateMixin {
       
     } else {
       if (!await gloryEmptyReport()) {
-        commonHandleDialog("回收失败：Glory机器未清空");
+        //commonHandleDialog("回收失败：Glory机器未清空");
         return;
       }
       final result = await CashChanger.collectAll();

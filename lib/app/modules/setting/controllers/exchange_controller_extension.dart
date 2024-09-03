@@ -57,18 +57,35 @@ extension ExchangeControllerExtension on SettingController {
     return newCashInfoList;
   }
 
-  Future<Map> getMachineCashInfo() async {
-    final result = await CashChanger.getCashBalance;
-    print('result: $result');
-    if (result == null) {
-      return {};
-    }
+  Future<Map?> getMachineCashInfo() async {
+    var resultMap = null;
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        debugPrint("getMachineCashInfo 1");
 
-    //以逗号为分割获取每个数据，再以冒号分割获取key和value, 再赋值给一个Map
-    final resultMap = result.split(',').asMap().map((key, value) {
-      final cash = value.split(':');
-      return MapEntry(catValFromInt(cash[0]), cash[1]);
-    });
+        resultMap = value.split(',').asMap().map((key, value) {
+          final cash = value.split(':');
+          return MapEntry(catValFromInt(cash[0]), cash[1]);
+        });
+        
+      },
+      catchError: (error) {
+        debugPrint("getMachineCashInfo error: $error");
+        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+      },
+    );
+    
+    // print('result: $result');
+    // if (result == null) {
+    //   return {};
+    // }
+
+    // //以逗号为分割获取每个数据，再以冒号分割获取key和value, 再赋值给一个Map
+    // final resultMap = result.split(',').asMap().map((key, value) {
+    //   final cash = value.split(':');
+    //   return MapEntry(catValFromInt(cash[0]), cash[1]);
+    // });
+    // debugPrint('resultMap: ${resultMap}');
     debugPrint('resultMap: ${resultMap}');
     return resultMap;
   }

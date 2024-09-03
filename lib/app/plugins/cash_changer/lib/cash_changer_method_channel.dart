@@ -47,8 +47,8 @@ class MethodChannelCashChanger extends CashChangerPlatform {
   }
 
   @override
-  Future<String?> getCashBalance() async {
-    final result = await methodChannel.invokeMethod<String>('getCashBalance');
+  Future<Map?> getCashBalance() async {
+    final result = await methodChannel.invokeMethod<Map>('getCashBalance');
     return result;
   }
 

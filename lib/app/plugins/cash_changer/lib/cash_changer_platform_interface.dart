@@ -41,7 +41,7 @@ abstract class CashChangerPlatform extends PlatformInterface {
   }
 
   //Get Cash Balance Info
-  Future<String?> getCashBalance() {
+  Future<Map?> getCashBalance() {
     throw UnimplementedError('getCashBalance() has not been implemented.');
   }
 

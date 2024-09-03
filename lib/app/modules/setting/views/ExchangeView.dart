@@ -182,10 +182,10 @@ class Exchangeview extends StatelessWidget {
                             onPressed: () async {
                               await controller.cancelReplanish();
                             },
-                            onLongPress: () async {
-                              controller.clearTask();
-                              Get.back();
-                            },
+                            // onLongPress: () async {
+                            //   controller.clearTask();
+                            //   Get.back();
+                            // },
                             child: Text("キャンセル",
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
