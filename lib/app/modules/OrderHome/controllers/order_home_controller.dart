@@ -156,9 +156,15 @@ class OrderHomeController extends GetxController with StateMixin {
     return [];
   }
   debugPrint("homeList.length > 4");
-  if (homeList.length > 4) {
+
+  var showItemCount = 9;
+  if (dining_type.value == "3") {
+    showItemCount = 6;
+  }
+
+  if (homeList.length >= showItemCount - 1) {
     // 获取前8个
-    var newList = List.from(homeList.sublist(0, 5));
+    var newList = List.from(homeList.sublist(0, showItemCount - 1));
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
       "categoryName": GString.getToString(settingLanguage.value, "more_title"),
