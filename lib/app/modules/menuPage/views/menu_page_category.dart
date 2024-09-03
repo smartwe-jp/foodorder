@@ -1063,7 +1063,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第二个分类 小菜
   showCategoryTwo(showItemList, context, {popupType: "old"}) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
         child: showCategoryTwoItemList(showItemList, context,
@@ -1662,7 +1662,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第四个酒水分类
   showCategoryFour(showItemList, context, {popupType: "old"}) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
         child: showCategoryFourItemList(showItemList, context,
@@ -1764,7 +1764,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第三个分类 定食
   showCategoryThree(showItemList) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
             top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(15)),
@@ -1885,7 +1885,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第五个分类 期间限定
   showCategoryFive(showItemList) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         padding: EdgeInsets.only(
             top: ScreenAdapter.height(8),
@@ -2483,7 +2483,8 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第六个分类 每页两列一行
   showCategorySix(showItemList, context, {popupType: "old"}) {
-    if (showItemList.length > 0) {
+    //debugPrint("showItemList:${showItemList}");
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
         child: showCategorySixItemList(showItemList, context,
@@ -2590,7 +2591,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第七个分类 每页三列一行  饮品
   showCategorySeven(showItemList, context, {popupType: "old"}) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       return Container(
         //height: 450,
         child: showCategorySevenItemList(showItemList, context, popupType: popupType),
@@ -2716,7 +2717,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
   //第八个分类 混合排列，第一行一大两小，其余三个一行每页三列一行
   showCategoryEight(showItemList, context, {popupType: "old"}) {
-    if (showItemList.length > 0) {
+    if (showItemList != null && showItemList.length > 0) {
       if (showItemList.length >= 3) {
         var _leftItem = showItemList[0];
         var _rightTop = showItemList[1];
