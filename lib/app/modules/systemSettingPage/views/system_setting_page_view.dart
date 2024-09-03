@@ -2200,7 +2200,7 @@ class SystemSettingPageView extends GetView {
                           ),
                           GestureDetector(
                             onTap: (){
-                              controller.uploadErrorLog();
+                              //controller.uploadErrorLog();//windows 暂时不支持
                             },
                             child: Container(
                               padding:

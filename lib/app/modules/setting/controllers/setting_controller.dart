@@ -53,6 +53,7 @@ class SettingController extends GetxController with StateMixin {
 
   RxBool switchValue = false.obs;
   RxBool ignoreNotify = false.obs;
+  RxBool showSignOut = false.obs;
 
   RxString local_version = "".obs; //本appversion
   RxMap usbPrinter = {}.obs;

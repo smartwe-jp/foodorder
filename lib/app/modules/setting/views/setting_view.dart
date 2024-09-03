@@ -736,7 +736,7 @@ class SettingView extends GetView<SettingController> {
                                           )),
                                     ),
                                   ),
-
+                                  if (controller.showSignOut.value)
                                   InkWell(
                                     onTap: () async {
                                      controller.signoutAlert();
@@ -803,9 +803,15 @@ class SettingView extends GetView<SettingController> {
                                 ],
                               ),
                             ),
-                            GestureDetector(
+
+                            InkWell(
                               onTap: (){
-                                controller.uploadErrorLog();
+                                //controller.uploadErrorLog();//windows not support
+                                //controller.showSignOut.value = !controller.showSignOut.value;
+                              },
+                              onLongPress: () {
+                                controller.showSignOut.value = !controller.showSignOut.value;
+                                controller.update();
                               },
                               child: Container(
                                 padding:
