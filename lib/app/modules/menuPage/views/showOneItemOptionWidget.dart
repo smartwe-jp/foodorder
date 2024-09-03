@@ -131,8 +131,8 @@ class showOneItemOptionWidgetView extends GetView {
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
-                          ColorsUtil.hexToColor("#C47829"),
-                          ColorsUtil.hexToColor("#854610"),
+                          ColorsUtil.hexToColor(Gcolor.greenThemeColorLight),
+                          ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                         ],
                       ),
 
@@ -170,7 +170,7 @@ class showOneItemOptionWidgetView extends GetView {
                             ? CachedNetworkImage(imageUrl:optionVolistSon['homeImage'],
                             width: ScreenAdapter.width(18),
                             height: ScreenAdapter.height(30),
-                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                             fit: BoxFit.fitHeight)
                             : Container(
                           width: 0,
@@ -191,7 +191,7 @@ class showOneItemOptionWidgetView extends GetView {
                                 fontWeight: FontWeight.w500,
                                 fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(24.0),
-                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                                color: (optionVolistSon['checked'] == true) ?ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                               ),
                               softWrap: true,
                               //minFontSize: 10,
