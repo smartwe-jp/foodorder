@@ -63,12 +63,12 @@ extension MenuPageSideBar on MenuPageView {
                               child: AutoSizeText(
                                 "${item['categoryName']}",
                                 style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(30),
+                                    fontSize: ScreenAdapter.fontSize(32),
                                     color: item['categoryCode'] ==
                                             controller.classTag.value
                                         ? Colors.white
                                         : Color.fromARGB(255, 144,147,153), //ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                    fontWeight: FontWeight.w500),
+                                    fontWeight: FontWeight.w400),
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 textAlign: TextAlign.center,
