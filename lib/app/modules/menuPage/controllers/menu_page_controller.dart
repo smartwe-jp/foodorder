@@ -1006,12 +1006,11 @@ class MenuPageController extends GetxController with StateMixin {
       toastDuration: Duration(milliseconds: 300),
     );
 
-    await playQRScannerSound();
-
-    await Future.delayed(Duration(milliseconds: 500), () {
+    Future.delayed(Duration(milliseconds: 500), () {
       canAddCart.value = true;
     });
 
+    playQRScannerSound();
     //EasyLoading.dismiss();
   }
 
