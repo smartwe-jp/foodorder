@@ -437,7 +437,7 @@ class SettingController extends GetxController with StateMixin {
           onSuccess: () async {
             debugPrint("recycleCash onSuccess");
             await getPaycubeChangeState();
-            commonHandleDialog('リサイクル成功');
+            commonHandleDialog('完了しました');
             //showToast('回收成功');
           },
           onRetry: () {

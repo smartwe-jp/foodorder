@@ -371,14 +371,17 @@ extension SettingControllerExtension on SettingController {
       if (response["code"] == 200) {
         Get.back();
         clearTask();
-        showToast('完了しました', context: Get.context);
+        commonHandleDialog('完了しました');
+        //showToast('完了しました', context: Get.context);
       } else {
-        showToast('補充失败!', context: Get.context);
+        commonHandleDialog('補充失败!');
+        //showToast('補充失败!', context: Get.context);
       }
     }).catchError((error) {
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
-      showToast('補充失败!', context: Get.context);
+      commonHandleDialog('補充失败!');
+      //showToast('補充失败!', context: Get.context);
     });
   }
 
