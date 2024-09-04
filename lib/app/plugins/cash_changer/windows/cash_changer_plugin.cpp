@@ -388,7 +388,7 @@ void CashChangerPlugin::HandleMethodCall(
         // 成功开始存款计数
         //result->Success(flutter::EncodableValue(OposSuccess));
         ReturnMapValue(move(result), flutter::EncodableValue(OposSuccess), flutter::EncodableValue(0), flutter::EncodableValue("success"));
-    } else if (lngRet == OposEIllegal) {
+    } else if (lngRet == OposEExtended) {
         // 特定错误处理
         // switch (pCashChanger->ResultCodeExtended) {
         //     case OPOS_ECHAN_DEPOSIT:

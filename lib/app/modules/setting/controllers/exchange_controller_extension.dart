@@ -366,8 +366,8 @@ extension ExchangeControllerExtension on SettingController {
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             Get.back();
-            gloryOutputMoney(outMoney,
-                successTask: successTask, fromeError: true);
+            // gloryOutputMoney(outMoney,
+            //     successTask: successTask, fromeError: true);
           });
         });
     return success;
