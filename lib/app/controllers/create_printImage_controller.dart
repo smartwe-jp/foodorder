@@ -1,5 +1,6 @@
 
 import 'dart:convert';
+import 'dart:io';
 import 'dart:typed_data';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:get/get.dart';
@@ -125,15 +126,15 @@ class CreatePrintImageController extends GetxController {
     if(print_paper_txt_size.value == "1"){
       print_menu_txt_size = 34.0;
       wrapNum = 12;
-      oneRowHeight = 40;
+      oneRowHeight = Platform.isAndroid ? 40 : 48;
     }else if(print_paper_txt_size.value == "2"){
       print_menu_txt_size = 37.0;
       wrapNum = 10;
-      oneRowHeight = 46;
+      oneRowHeight = Platform.isAndroid ? 46 : 52;
     }else if(print_paper_txt_size.value == "3"){
       print_menu_txt_size = 44.0;
       wrapNum = 8;
-      oneRowHeight = 57;
+      oneRowHeight = Platform.isAndroid ? 57 : 66;
     }
 
     List<Widget> categoryMenus = [];
@@ -511,7 +512,7 @@ class CreatePrintImageController extends GetxController {
       var takeoutTag = (printData["takeOut"] == true) ? "*":"";
       if(groupNameLength>10){
         linNum+=2;
-        addRowHight += 76;
+        addRowHight += 86;
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
@@ -583,13 +584,13 @@ class CreatePrintImageController extends GetxController {
               )),
         );
       }else{
-        addRowHight += 33;
+        addRowHight += 38;
         linNum+=1;
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                height: 33,
+                height: 38,
                 //margin: EdgeInsets.only(bottom: 3),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
