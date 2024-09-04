@@ -2346,6 +2346,7 @@ class SystemSettingPageView extends GetView {
                                         setDiningtype(),//食事のタイプ
                                       ]
                                   ),
+                                  if(Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
