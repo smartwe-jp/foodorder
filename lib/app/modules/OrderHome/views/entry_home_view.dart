@@ -201,8 +201,8 @@ class EntryHomeView extends GetView<OrderHomeController> {
             icon: _catagroyImage(e['showImage']),
             title: e["categoryName"] as String,
             onTap: () {
-              var mealType =
-                  (controller.dining_type.value == "2") ? true : false;
+              var mealType = controller.mealType.value;
+                
               var jumpUrl = (controller.menu_direction.value == "1")
                   ? '/menu-page'
                   : '/menuzong-page';
