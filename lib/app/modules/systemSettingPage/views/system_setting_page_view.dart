@@ -2170,6 +2170,8 @@ class SystemSettingPageView extends GetView {
                         ),
                       ),
                       SizedBox(width: 30,),
+
+                      if(Platform.isAndroid)
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
