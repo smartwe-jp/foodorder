@@ -155,7 +155,7 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("homeList.length == 0");
     return [];
   }
-  debugPrint("homeList.length > 4");
+  debugPrint("homeList.length > 0");
 
   var showItemCount = 9;
   if (dining_type.value == "3") {
@@ -214,14 +214,14 @@ class OrderHomeController extends GetxController with StateMixin {
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
-      isLoading.value = false;
+      //isLoading.value = false;
       if (response['code'] == 200) {
         List myList = response['data']['categoryVoList'];
         for (var i = 0; i < myList.length; i++) {
           //if(menuIndex >=5) menuIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
-          homeList.value.add({
+          homeList.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
@@ -229,6 +229,7 @@ class OrderHomeController extends GetxController with StateMixin {
           });
         }
         update();
+        isLoading.value = false;
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
