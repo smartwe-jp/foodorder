@@ -199,7 +199,7 @@ class SettingController extends GetxController with StateMixin {
         await showBullyScreen();
       }
       sleep(Duration(milliseconds: 1500));
-      Get.back();
+      //Get.back();
       //退出关闭
       exit(0);
     }, cancle: () {
