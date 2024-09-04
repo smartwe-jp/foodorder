@@ -198,10 +198,10 @@ class EntryHomeView extends GetView<OrderHomeController> {
     List<Widget> buttonList = controller.showCatagory
         .map<Widget>(
           (e) => CatagoryButton(
-            icon: _catagroyImage(e['showImage']),
+            icon: _catagroyImage(e['image']),
             title: e["categoryName"] as String,
             onTap: () {
-              var mealType = controller.mealType.value;
+              var mealType = controller.mealType.value || controller.dining_type.value == "2";
                 
               var jumpUrl = (controller.menu_direction.value == "1")
                   ? '/menu-page'

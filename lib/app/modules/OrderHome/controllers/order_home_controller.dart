@@ -161,12 +161,12 @@ class OrderHomeController extends GetxController with StateMixin {
   if (dining_type.value == "3") {
     showItemCount = 6;
   }
-
   if (homeList.length >= showItemCount - 1) {
     // 获取前8个
     var newList = List.from(homeList.sublist(0, showItemCount - 1));
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
+      "image": homeList.first["showImage"],
       "categoryName": GString.getToString(settingLanguage.value, "more_title"),
       "showType": "1"
     });
@@ -175,6 +175,7 @@ class OrderHomeController extends GetxController with StateMixin {
     var newList = List.from(homeList);
     newList.add({
       "categoryCode": homeList.first["categoryCode"],
+      "image": homeList.first["image"],
       "categoryName": GString.getToString(settingLanguage.value, "more_title"),
       "showType": "1"
     });
@@ -225,7 +226,8 @@ class OrderHomeController extends GetxController with StateMixin {
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
-            //"showColor":MenuColor[menuIndex]
+            "image": categoryVoList['image'],
+            "color":categoryVoList['color'],
           });
         }
         update();
