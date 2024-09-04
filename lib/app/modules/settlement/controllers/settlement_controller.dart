@@ -372,18 +372,21 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       print("过来删除menu了");
       Get.delete<MenuPageController>(); // 手动删除控制器实例
+      Get.delete<OrderHomeController>();
       Get.toNamed("/entry-home");
       //Navigator.pushNamed(context, '/home');
     }
   }
 
-  gotonewBack() {
+  gotonewBack() async {
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
     if (machineMode.value == "1") {
       if (is_back_home.value == "0") {
+        debugPrint("普通支付返回首页");
         Get.delete<MenuPageController>(); // 手动删除控制器实例
+        Get.delete<OrderHomeController>();
         Get.toNamed("/entry-home");
         //Navigator.pushNamed(context, '/home');
       } else {
@@ -1082,6 +1085,7 @@ class SettlementController extends GetxController with StateMixin {
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         debugPrint("doPrintOrderMenu==val");
         var response = json.decode(val.toString());
+        debugPrint("doPrintOrderMenu==$response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
@@ -1368,23 +1372,25 @@ class SettlementController extends GetxController with StateMixin {
     stoptimer?.cancel();
     stoptimer =
         Timer.periodic(Duration(milliseconds: 570), (Timer stopt) async {
-          stopStatus.value = await Paycube.getPayCubeStopCashStatus;
-          // 循环一定要记得设置取消条件，手动取消
-          if (stopStatus.value == "StopSuccess") {
-            showCashTimer?.cancel();
-            seconds.value = 180;
-            timer?.cancel();
-            if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
-              giveChangeMoney.value = int.parse(getPutMoney.value) - int.parse(totalPrice.value);
-              if (isPrint.value == false) {
-                startOutPutMoney(giveChangeMoney.value);
-              }
-            } else if (int.parse(getPutMoney.value) == int.parse(totalPrice.value)) {
-              if (isPrint.value == false) {
-                //已经结束入金，处理取引终了
-                payCubeCloseTransaction();
-              }
-            }/* else {
+      stopStatus.value = await Paycube.getPayCubeStopCashStatus;
+      // 循环一定要记得设置取消条件，手动取消
+      if (stopStatus.value == "StopSuccess") {
+        showCashTimer?.cancel();
+        seconds.value = 180;
+        timer?.cancel();
+        if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
+          giveChangeMoney.value =
+              int.parse(getPutMoney.value) - int.parse(totalPrice.value);
+          if (isPrint.value == false) {
+            startOutPutMoney(giveChangeMoney.value);
+          }
+        } else if (int.parse(getPutMoney.value) ==
+            int.parse(totalPrice.value)) {
+          if (isPrint.value == false) {
+            //已经结束入金，处理取引终了
+            payCubeCloseTransaction();
+          }
+        } /* else {
           showToast(
               GString.getToString(this._checkLanguage, "show_put_money_error"));
         }*/
@@ -1650,7 +1656,7 @@ class SettlementController extends GetxController with StateMixin {
       "price": int.parse(getPutMoney.value),
       "operation": operation,
       "coinForbidden": int.parse(is_allow_oneyen.value)
-    }; 
+    };
     print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
