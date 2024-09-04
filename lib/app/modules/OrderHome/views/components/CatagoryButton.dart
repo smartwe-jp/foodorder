@@ -16,49 +16,38 @@ class CatagoryButton extends StatelessWidget {
           onTap: () => onTap?.call(),
           child:  Container(
                   padding: EdgeInsets.only(
-                    // top: ScreenAdapter.height(20),
+                    top: ScreenAdapter.height(20),
                     bottom: ScreenAdapter.height(20),
-                    // left: ScreenAdapter.width(20),
-                    // right: ScreenAdapter.width(20),
+                    left: ScreenAdapter.width(20),
+                    right: ScreenAdapter.width(20),
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: const Color.fromARGB(255, 255, 255, 255),
                     borderRadius: BorderRadius.circular(20),
                   ),
-                  child: Column(
-                    children: [
-                      Expanded(
-                        flex: 1,
-                        child: Container(),
-                      ),
-                      Expanded(
-                        flex: 3,
-                        child: 
+                  child: 
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+
                         Row(
                           children: [
-                            Expanded(child: Container(),flex: 2,),
-                            Expanded(child: Column(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                RectangleImageView(image: icon, radius: 0),
-                                Text(
-                                  title,
-                                  style: TextStyle(
-                                    color: const Color.fromARGB(255, 53,59,80),
-                                    fontSize: 34,
-                                    fontWeight: FontWeight.w400,
-                                  ),
-                                ),
-                              ],
-                            ),flex: 3,),
-                            
-                            Expanded(child: Container(),flex: 2,),
+                            Expanded(child: Container(),flex: 1,),
+                            Expanded(child: RectangleImageView(image: icon, radius: 0),flex: 3,),
+                            Expanded(child: Container(),flex: 1,),
                           ],
                         ),
-                        
-                      )
-                    ],
-                  )
+
+                        Text(
+                          title,
+                          style: TextStyle(
+                            color: const Color.fromARGB(255, 53,59,80),
+                            fontSize: 34,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    )
                 )
     );
   }
