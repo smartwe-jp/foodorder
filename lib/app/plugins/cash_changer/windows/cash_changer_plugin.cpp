@@ -490,6 +490,7 @@ void CashChangerPlugin::HandleMethodCall(
     }
 
     intSuc = get<int>(it->second);
+    cerr << "endDeposit param 。。" << intSuc << endl;
     long lngRet = pCashChanger->EndDeposit(intSuc);
     cerr << "EndDeposit result 。。 " << lngRet << endl;
     if (lngRet == OposSuccess) {

@@ -96,32 +96,40 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束
-  endDeposit() async {
-    debugPrint("endDeposit");
-    sleep(Duration(milliseconds: 300));
-    var depositAmount = await CashChanger.depositAmount;
-    getPutMoney.value = depositAmount.toString();
-    sleep(Duration(milliseconds: 300));
+  endDeposit({repay = false}) async {
+    debugPrint("endDeposit repay: $repay");
+    //sleep(Duration(milliseconds: 300));
+    final result = await CashChanger.fixDeposit;
+    if (result != 0) {
+      debugPrint("endDeposit error: $result");
+      // errorHandleDialog('OPOS_fixDeposit_FAILURE');
+      // return;
+    }
+    //getPutMoney.value = depositAmount.toString();
+    //sleep(Duration(milliseconds: 300));
+
+
 
     final resultCode =
-        await CashChanger.endDeposit(DepositAction.noChange.index);
+        await CashChanger.endDeposit(repay ? DepositAction.repay.index : DepositAction.noChange.index);
 
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
-          if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
-            giveChangeMoney.value =
-                int.parse(getPutMoney.value) - int.parse(totalPrice.value);
-            if (isPrint.value == false) {
-              _startOutputMoney(giveChangeMoney.value);
-            }
-          } else if (int.parse(getPutMoney.value) ==
-              int.parse(totalPrice.value)) {
-            if (isPrint.value == false) {
-              //已经结束入金，处理取引终了
-              _payCubeCloseTransaction();
-            }
-          }
+          // if (int.parse(getPutMoney.value) > int.parse(totalPrice.value)) {
+          //   giveChangeMoney.value =
+          //       int.parse(getPutMoney.value) - int.parse(totalPrice.value);
+          //   if (isPrint.value == false) {
+          //     _startOutputMoney(giveChangeMoney.value);
+          //   }
+          // } else if (int.parse(getPutMoney.value) ==
+          //     int.parse(totalPrice.value)) {
+          //   if (isPrint.value == false) {
+          //     //已经结束入金，处理取引终了
+          //     _payCubeCloseTransaction();
+          //   }
+          // }
+          _payCubeCloseTransaction();
         },
         onRetry: () {
           debugPrint("endDeposit 2");

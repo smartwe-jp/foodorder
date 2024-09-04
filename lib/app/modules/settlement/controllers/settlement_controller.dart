@@ -1004,7 +1004,7 @@ class SettlementController extends GetxController with StateMixin {
 
         //如果现金机投币大于0后取消，则直接关机出金
         if (Platform.isWindows) {
-          await endDeposit();
+          await endDeposit(repay: true);
         } else {
           Endtoubi();
         }
@@ -1013,7 +1013,6 @@ class SettlementController extends GetxController with StateMixin {
         totalPrice.value = "0";
         getPutMoney.value = "0";
         showPrintButton.value = false;
-        //如果现金机投币大于0后取消，则直接关机出金
         if (Platform.isWindows) {
           await endDeposit();
         } else {
