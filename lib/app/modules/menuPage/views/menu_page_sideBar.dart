@@ -102,7 +102,7 @@ extension MenuPageSideBar on MenuPageView {
               ),
               decoration: BoxDecoration(
                 color: Colors.white,
-                borderRadius: BorderRadius.all(Radius.circular(30)),
+                borderRadius: BorderRadius.all(Radius.circular(20)),
                 //阴影
                 boxShadow: [
                   BoxShadow(
