@@ -897,7 +897,7 @@ class CreatePrintImageController extends GetxController {
                 //color: Colors.green,
                   image: DecorationImage(
                     image: CachedNetworkImageProvider(printLogoImage.value),
-                    fit: BoxFit.fitHeight,
+                    fit: BoxFit.fill,
                   ),
                 )
               ),
