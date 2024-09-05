@@ -195,7 +195,7 @@ extension SettingControllerExtension on SettingController {
     }
 
     getPutMoneyCurrency.value =
-        MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+        MoneyParser.migrationGloryToIntString(putMoneyCurrency);
     getOutMoneyCurrency.value = MoneyParser.migrationGloryToIntString(currency);
 
     return true;

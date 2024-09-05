@@ -352,13 +352,13 @@ class ReplanishView extends StatelessWidget {
   }
 
   titleAndValueMap() {
-    if (controller.getPutMoneyCurrency.isEmpty) {
+    if (controller.getPutMoneyCurrency.isEmpty || !controller.getPutMoneyCurrency.contains(',')) {
       return titleValues().asMap().map((key, value) {
         return MapEntry(value, 0);
       });
     }
 
-    //debugPrint('getPutMoneyCurrency: ${controller.getPutMoneyCurrency.value}');
+    debugPrint('getPutMoneyCurrency: ${controller.getPutMoneyCurrency.value}');
 
     final typeAndValueMap =
         controller.getPutMoneyCurrency.split(',').asMap().map((key, value) {

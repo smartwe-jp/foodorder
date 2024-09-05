@@ -423,8 +423,8 @@ class SettingController extends GetxController with StateMixin {
   recycleCash({isRejishimei = true}) async {
     if (Platform.isWindows) {
       if (isRejishimei) {
-      await getPaycubeChangeState();
-      commonHandleDialog('リサイクル成功');
+      await clearTask();
+      commonHandleDialog('完了しました');
       
     } else {
       if (!await gloryEmptyReport()) {
@@ -436,8 +436,8 @@ class SettingController extends GetxController with StateMixin {
           resultCode: result,
           onSuccess: () async {
             debugPrint("recycleCash onSuccess");
-            await getPaycubeChangeState();
-            commonHandleDialog('完了しました');
+            await clearTask();
+            commonHandleDialog('リサイクルしました');
             //showToast('回收成功');
           },
           onRetry: () {
