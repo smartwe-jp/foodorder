@@ -488,13 +488,13 @@ class CreatePrintImageController extends GetxController {
               decoration: BoxDecoration(
                 border: Border(
                   top: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 1),
+                      color: ColorsUtil.hexToColor("#000000"), width: 2),
                   left: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 1),
+                      color: ColorsUtil.hexToColor("#000000"), width: 2),
                   bottom: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 1),
+                      color: ColorsUtil.hexToColor("#000000"), width: 2),
                   right: BorderSide(
-                      color: ColorsUtil.hexToColor("#000000"), width: 1),
+                      color: ColorsUtil.hexToColor("#000000"), width: 2),
                 ),
               ),
               child: Text(
@@ -1079,7 +1079,7 @@ class CreatePrintImageController extends GetxController {
         textDirection: TextDirection.ltr,
         child: Container(
           margin: EdgeInsets.only(top: 5, bottom: 5),
-          height: 0.5,
+          height: 2,
           color: ColorsUtil.hexToColor("#000000"),
           width: 375,
         ));

@@ -103,8 +103,8 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
               //分割线
               Container(
                 margin: EdgeInsets.only(top: 20, left: 40,right: 40),
-                height: 1,
-                color: ColorsUtil.hexToColor("#9C9C9C"),
+                height: 2,
+                color: Colors.black,
               ),
 
               Container(
@@ -129,8 +129,8 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
 
                           Container(
                             margin: EdgeInsets.only(top: 20),
-                            height: 1,
-                            color: ColorsUtil.hexToColor("#9C9C9C"),
+                            height: 2,
+                            color: Colors.black,
                           ),
                           _twoContentRow("現金", "¥ ${formatSum(printInfo['cashTotal'])}"),
                           _twoContentRow("クレジット", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
@@ -150,15 +150,18 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
 
               Container(
                 margin: EdgeInsets.only(top: 20, left: 40,right: 40),
-                height: 1,
-                color: ColorsUtil.hexToColor("#9C9C9C"),
+                height: 2,
+                color: Colors.black,
               ),
-
+              
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
                 _normalTitle("釣銭機情報（枚数）"),
 
               if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
                 _cashInfoTable(printInfo['cashInfo']),
+
+              
+
             ],
 
     );
@@ -239,7 +242,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
     }).toList();
 
     return Table(
-      border: TableBorder.all(width: 1.0, color: Colors.grey.shade400),
+      border: TableBorder.all(width: 2.0, color: const Color.fromARGB(255, 43, 42, 42)),
       columnWidths: const <int, TableColumnWidth>{
         0: FixedColumnWidth(100.0),
         1: FlexColumnWidth(150.0),
@@ -248,7 +251,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
       },
       children: <TableRow>[
         _tableRow(['金種', '予備', '入金', '残り'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
-        ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
+        ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.center)).toList(growable: false),
 
       ],
     );
