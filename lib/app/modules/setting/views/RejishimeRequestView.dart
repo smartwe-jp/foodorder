@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
@@ -162,14 +163,15 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         printView(response['data']);
       } else {
         //当前没有レジ情報
-        debugPrint("レジ情報がありません");
         showToast('レジ情報がありません');
       }
-    }).catchError((e) {
+    }).catchError((e) { 
       EasyLoading.dismiss();
       showToast('レジ情報の取得に失敗しました');
     });
   }
+
+  
 
   _comfirmShimeInfo(code, printData) async {
     _showEasyLoading();
