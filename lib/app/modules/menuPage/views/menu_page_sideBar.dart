@@ -90,6 +90,29 @@ extension MenuPageSideBar on MenuPageView {
             },
             child: Container(
               alignment: Alignment.center,
+              margin: EdgeInsets.only(
+                left: ScreenAdapter.width(10),
+                right: ScreenAdapter.width(10),
+              ),
+              padding: EdgeInsets.only(
+                left: ScreenAdapter.width(10),
+                right: ScreenAdapter.width(10),
+                top: ScreenAdapter.height(10),
+                bottom: ScreenAdapter.height(10)
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(30)),
+                //阴影
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(0, 2), // changes position of shadow
+                  ),
+                ],
+              ),
               child: 
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -113,7 +136,7 @@ extension MenuPageSideBar on MenuPageView {
                                     controller.checkLanguage.value,
                                     "main_page"),
                       style: TextStyle(
-                          fontSize: 32,
+                          fontSize: 26,
                           fontWeight: FontWeight.w600,
                           fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
