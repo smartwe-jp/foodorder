@@ -171,7 +171,7 @@ class CreatePrintImageController extends GetxController {
             FontWeight.w400,
             "${lineItem["qty"]}",
             print_menu_txt_size,
-            FontWeight.w100),
+            FontWeight.w400),
       );
       if (optionVoList != null && optionVoList.isNotEmpty) {
         optionVoList.forEach((key, value) {
