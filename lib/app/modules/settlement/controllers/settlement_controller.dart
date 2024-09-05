@@ -1058,6 +1058,7 @@ class SettlementController extends GetxController with StateMixin {
     if (retry &&
         (payment_method_num.value == "0" || payment_method_num.value == "1")) {
       printGoNext(orderId.value);
+      if (Platform.isAndroid) 
       await Future.delayed(Duration(milliseconds: 2000));
     }
 
