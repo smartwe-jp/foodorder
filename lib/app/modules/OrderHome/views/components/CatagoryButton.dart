@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
@@ -38,8 +39,9 @@ class CatagoryButton extends StatelessWidget {
                           ],
                         ),
 
-                        Text(
+                        AutoSizeText(
                           title,
+                          maxLines: 2,
                           style: TextStyle(
                             color: const Color.fromARGB(255, 53,59,80),
                             fontSize: 34,
