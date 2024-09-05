@@ -131,7 +131,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
     return Container(
         alignment: Alignment.center,
         padding: EdgeInsets.only(
-          top: ScreenAdapter.height(20),
+          //top: ScreenAdapter.height(20),
           left: ScreenAdapter.width(70),
           right: ScreenAdapter.width(70),
           bottom: ScreenAdapter.height(20),
