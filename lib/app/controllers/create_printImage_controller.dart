@@ -1,20 +1,14 @@
-import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
-import 'package:widget_to_image/widget_to_image.dart';
 
 import '../config/colorsUtil.dart';
-//import '../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
-import '../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../services/HomeServices.dart';
 import '../services/ScreenAdapter.dart';
 import '../services/formatMoney.dart';
@@ -883,17 +877,37 @@ class CreatePrintImageController extends GetxController {
       width: 385,
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
-      height: totalHight.toDouble() + 100,
+      height: totalHight.toDouble() + 100 + 240,
       color: Colors.white,
       //alignment: Alignment.topCenter,
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         //crossAxisAlignment: CrossAxisAlignment.start,
         textDirection: TextDirection.rtl,
-        children: categoryMenus,
+        children: [
+            //base64Image to Image
+            Container(
+              padding: EdgeInsets.only(
+                top: ScreenAdapter.height(10), 
+                bottom: ScreenAdapter.height(30), 
+                left: ScreenAdapter.width(10), 
+                right: ScreenAdapter.width(10)),
+                height: ScreenAdapter.height(240),
+                decoration:BoxDecoration(
+                //color: Colors.green,
+                  image: DecorationImage(
+                    image: CachedNetworkImageProvider(printLogoImage.value),
+                    fit: BoxFit.fitHeight,
+                  ),
+                )
+              ),
+          ...categoryMenus,
+          
+          ],
       ),
     );
-    Future.delayed(Duration(milliseconds: 300), () async {
+    //categoryMenus
+    Future.delayed(Duration(milliseconds: 500), () async {
       //await FlutterPluginMsprinter.sendPrintCut("1");
       _sendToUsePrinter(printWidget);
     });
