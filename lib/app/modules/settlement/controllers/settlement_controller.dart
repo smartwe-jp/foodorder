@@ -200,7 +200,8 @@ class SettlementController extends GetxController with StateMixin {
     super.onClose();
   }
 
-  readyQueryData() {
+  readyQueryData() async {
+    debugPrint("readyQueryData");
     checkLanguage.value = Get.arguments['checkLanguage'];
     machineCode.value = Get.arguments['machineCode'];
     orderId.value = Get.arguments['orderId'];
@@ -245,7 +246,15 @@ class SettlementController extends GetxController with StateMixin {
         Starttoubi();
       } else {
         CashChanger.setEventsListener();
-        startDeposit();
+        String result = await startDeposit();
+        if (result != 'success') {
+          debugPrint("startDeposit error $result");
+          errorHandleDialog(result, confirm: () {
+            Get.back();
+            Get.back();
+          });
+        }
+        
       }
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
@@ -1058,8 +1067,8 @@ class SettlementController extends GetxController with StateMixin {
     if (retry &&
         (payment_method_num.value == "0" || payment_method_num.value == "1")) {
       printGoNext(orderId.value);
-      if (Platform.isAndroid) 
-      await Future.delayed(Duration(milliseconds: 2000));
+      if (Platform.isAndroid)
+        await Future.delayed(Duration(milliseconds: 2000));
     }
 
     if (printStatus == "0" || printStatus == "8") {

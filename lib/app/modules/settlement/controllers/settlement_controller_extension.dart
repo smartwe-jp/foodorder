@@ -16,17 +16,20 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 extension SettlementControllerExtension on SettlementController {
   startDeposit() async {
     debugPrint("startDeposit");
-
+    var ret = 'failure';
     await CashChanger.startDeposit(
       onSuccess: () {
         debugPrint("startDeposit 1");
+        ret = 'success';
         _checkChangerStatus();
       },
       catchError: (error) => {
-        debugPrint("startDeposit error: $error"),
-        errorHandleDialog(GString.getToString(checkLanguage.value, error))
+        //debugPrint("startDeposit error: $error"),
+        ret = GString.getToString(checkLanguage.value, error),
+        //errorHandleDialog(GString.getToString(checkLanguage.value, error))
       },
     );
+    return ret;
   }
 
   _checkChangerStatus() async {
