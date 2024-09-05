@@ -1025,7 +1025,7 @@ class MenuPageController extends GetxController with StateMixin {
       );
     } else {
       //try {
-        await player.setVolume(0.3);
+        await player.setVolume(1.2);
         //await player.play(DeviceFileSource("assets/audios/14428.wav"));
         await player.setSource(AssetSource('audios/14428.wav'));
         await player.resume();
