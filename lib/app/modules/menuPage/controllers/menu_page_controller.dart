@@ -342,11 +342,9 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
-    })
-    .catchError((e){
+    }).catchError((e) {
       change(null, status: RxStatus.error('Failed to load data'));
-    })
-    .timeout(Duration(seconds: 15), onTimeout: (){
+    }).timeout(Duration(seconds: 15), onTimeout: () {
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
   }
@@ -446,22 +444,24 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
-    })
-    .catchError((e){
+    }).catchError((e) {
       if (Platform.isAndroid) {
-        FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_failure', parameters: {'machineCode': machineCode.value});
+        FirebaseAnalytics.instance.logEvent(
+            name: 'load_menu_category_failure',
+            parameters: {'machineCode': machineCode.value});
       }
       change(null, status: RxStatus.error('Failed to load data'));
-    })
-    .timeout(Duration(seconds: 60), onTimeout: (){
+    }).timeout(Duration(seconds: 60), onTimeout: () {
       if (Platform.isAndroid) {
-        FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineCode.value});
+        FirebaseAnalytics.instance.logEvent(
+            name: 'load_menu_category_timeout',
+            parameters: {'machineCode': machineCode.value});
       }
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
   }
 
-  getBookingBootIndexMenu(queryCategoryCode){
+  getBookingBootIndexMenu(queryCategoryCode) {
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch (dining_type.value) {
@@ -582,17 +582,18 @@ class MenuPageController extends GetxController with StateMixin {
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
-
-    })
-    .catchError((e){
+    }).catchError((e) {
       if (Platform.isAndroid) {
-        FirebaseAnalytics.instance.logEvent(name: 'load_menu_failure', parameters: {'machineCode': machineCode.value});
+        FirebaseAnalytics.instance.logEvent(
+            name: 'load_menu_failure',
+            parameters: {'machineCode': machineCode.value});
       }
       change(null, status: RxStatus.error('Failed to load data'));
-    })
-    .timeout(Duration(seconds: 60), onTimeout: (){
+    }).timeout(Duration(seconds: 60), onTimeout: () {
       if (Platform.isAndroid) {
-        FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineCode.value});
+        FirebaseAnalytics.instance.logEvent(
+            name: 'load_menu_timeout',
+            parameters: {'machineCode': machineCode.value});
       }
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
@@ -619,6 +620,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   backToNewHome() async {
     Get.delete<MenuPageController>(); // 手动删除控制器实例
+    Get.delete<OrderSqlController>(); // 手动删除控制器实例
     Get.toNamed("/order-home");
   }
 
@@ -1022,8 +1024,23 @@ class MenuPageController extends GetxController with StateMixin {
         volume: 0.3,
       );
     } else {
-      await player.setVolume(0.3);
-      await player.play(DeviceFileSource("assets/audios/14428.wav"));
+      //try {
+        await player.setVolume(0.3);
+        //await player.play(DeviceFileSource("assets/audios/14428.wav"));
+        await player.setSource(AssetSource('audios/14428.wav'));
+        await player.resume();
+        
+      // } catch (e) {
+      //   debugPrint("playQRScannerSound error: $e");
+      //   FToast fToast = FToast();
+      //   if (Get.context != null) {
+      //     fToast.init(Get.context!);
+      //     fToast.showToast(
+      //       child: Text("playQRScannerSound error: $e"),
+      //       gravity: ToastGravity.CENTER,
+      //     );
+      //   }
+      // }
     }
   }
 
