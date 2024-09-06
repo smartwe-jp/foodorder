@@ -523,10 +523,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         );
         _sendToUsePrinter(printWidget);
     }
-
-    //if (Platform.isAndroid) {
-      _resetCash();
-    //}
+    
+    _resetCash();
     Get.back();
   }
 

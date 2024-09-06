@@ -373,7 +373,7 @@ extension SettingControllerExtension on SettingController {
   }
 
   //上报
-  reportReplanishInfo(printView) async {
+  reportReplanishInfo(printView) async {//该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
     showEasyLoading();
     ignoreNotify.value = true;
     if (!await closeDeposit()) return;
@@ -479,6 +479,7 @@ extension SettingControllerExtension on SettingController {
 
   clearTask() async {
     isStartPutMoney.value = false;
+    hasOutMoney = false;
     //moneyList.value = [];
     hasExchangeCash = false;
     getPutMoneyCurrency.value = "";

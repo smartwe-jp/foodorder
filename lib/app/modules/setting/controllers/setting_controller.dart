@@ -66,6 +66,7 @@ class SettingController extends GetxController with StateMixin {
 
   var progressValue = 0.0;
   var hasExchangeCash = false;
+  var hasOutMoney = false;
 
   @override
   void onInit() {
@@ -139,10 +140,10 @@ class SettingController extends GetxController with StateMixin {
     newValues.forEach((key, value) {
       if (supplyInfo.containsKey(key)) {
         supplyInfo[key][field] = value;
-        supplyInfo[key]['remain'] = supplyInfo[key]['origin']  +  supplyInfo[key]['supply'];
+        supplyInfo[key]['remain'] =
+            supplyInfo[key]['origin'] + supplyInfo[key]['supply'];
       }
     });
-
   }
 
   //上传现金机log
@@ -171,7 +172,7 @@ class SettingController extends GetxController with StateMixin {
     // final catValMap = cashInfoList.map((key, value) {
     //   return MapEntry(getCatVal(key), value);
     // });
-
+    hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
         resetCash: () {
@@ -188,6 +189,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showRecycleAlert() {
+    hasOutMoney = false;
     Get.dialog(RecycleAlert(onConfirm: () {
       recycleCash(isRejishimei: false);
       Get.back();
@@ -197,6 +199,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showReplenishAlert() {
+    hasOutMoney = false;
     supplyInfo.value = cashInfoList.map((key, value) {
       return MapEntry(key, {
         "origin": value,
@@ -206,7 +209,7 @@ class SettingController extends GetxController with StateMixin {
     });
     Get.dialog(barrierDismissible: false, ReplanishView(controller: this));
   }
-  
+
   signoutAlert() async {
     debugPrint("SettingController signoutAlert");
     //确定要退出吗？
@@ -425,11 +428,13 @@ class SettingController extends GetxController with StateMixin {
 
   recycleCashOut(count) async {
     debugPrint("recycleCashOut count = ${count}");
-    bool result = await dispenseCashCount(count);
-    debugPrint("recycleCashOut result = ${result}");
-    if (!result) {
+    var outResult = false;
+    if (!hasOutMoney) outResult = await dispenseCashCount(count);
+    debugPrint("recycleCashOut result = ${outResult}");
+    if (!outResult && !hasOutMoney) {
       return null;
     }
+    hasOutMoney = true;
     bool result2 = await getInAndOutMoney();
     debugPrint("recycleCashOut result2 = ${result2}");
     if (result2) {
@@ -444,27 +449,29 @@ class SettingController extends GetxController with StateMixin {
         await clearTask();
         commonHandleDialog('完了しました');
       } else {
-        if (!await gloryEmptyReport()) {
-          //commonHandleDialog("回收失败：Glory机器未清空");
-          return;
+        if (!hasOutMoney) {
+          final result = await CashChanger.collectAll();
+          await CashChanger.changerResultNext(
+              resultCode: result,
+              onSuccess: () async {
+                debugPrint("collectAll onSuccess");
+                hasOutMoney = true;
+                //showToast('回收成功');
+              },
+              onRetry: () {
+                recycleCash();
+              },
+              showError: (String error) {
+                debugPrint("collectAll error: $error");
+                //showToast('回收失败');
+                commonHandleDialog("出钱 collectAll：$error");
+              });
         }
-        final result = await CashChanger.collectAll();
-        await CashChanger.changerResultNext(
-            resultCode: result,
-            onSuccess: () async {
-              debugPrint("recycleCash onSuccess");
-              await clearTask();
-              commonHandleDialog('リサイクルしました');
-              //showToast('回收成功');
-            },
-            onRetry: () {
-              recycleCash();
-            },
-            showError: (String error) {
-              debugPrint("recycleCash error: $error");
-              //showToast('回收失败');
-              commonHandleDialog("回收失败：$error");
-            });
+        if (await gloryEmptyReport()) { //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+          //commonHandleDialog("回收失败：Glory机器未清空");
+          await clearTask();
+          commonHandleDialog('リサイクルしました');
+        }
       }
     } else {
       var formData = {
