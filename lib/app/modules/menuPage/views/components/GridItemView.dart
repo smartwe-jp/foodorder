@@ -60,7 +60,7 @@ class GridItemView extends StatelessWidget {
                               borderRadius: BorderRadius.all(Radius.circular(5.0)),
                             ),
                             child: Text(
-                              subtitle!,
+                              subtitle,
                               maxLines: 2,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
@@ -143,12 +143,13 @@ class ItemInfoArea extends StatelessWidget {
         //标题
         MainTitle(title: title),
         //价格
-        Row(mainAxisAlignment: MainAxisAlignment.spaceBetween, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           SubTitle(title: subtitle),
+          //SizedBox(width: ScreenAdapter.width(20)),
           //option button
-          (option != "")
-              ? OptionButton(title: option, onTap: onTap)
-              : Container(),
+          // (option != "")
+          //     ? OptionButton(title: option, onTap: onTap)
+          //     : Container(),
         ])
       ],
     );
