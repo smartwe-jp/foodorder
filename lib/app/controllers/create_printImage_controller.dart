@@ -1081,7 +1081,7 @@ class CreatePrintImageController extends GetxController {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 2,
           color: ColorsUtil.hexToColor("#000000"),
-          width: 375,
+          //width: 375,
         ));
   }
 }
