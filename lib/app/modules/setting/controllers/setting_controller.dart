@@ -62,6 +62,7 @@ class SettingController extends GetxController with StateMixin {
   RxInt getPutMoney = 0.obs;
   RxBool isStartPutMoney = false.obs;
   RxMap cashInfo = {}.obs;
+  RxMap supplyInfo = {}.obs;
 
   var progressValue = 0.0;
 
@@ -133,6 +134,16 @@ class SettingController extends GetxController with StateMixin {
     );
   }
 
+  void updateSupplyInfo(Map<String, int> newValues, String field) {
+    newValues.forEach((key, value) {
+      if (supplyInfo.containsKey(key)) {
+        supplyInfo[key][field] = value;
+        supplyInfo[key]['remain'] = supplyInfo[key]['origin']  +  supplyInfo[key]['supply'];
+      }
+    });
+
+  }
+
   //上传现金机log
   uploadErrorLog() async {
     showEasyLoading();
@@ -169,9 +180,8 @@ class SettingController extends GetxController with StateMixin {
           debugPrint("recycleCashOut p0 = ${p0}");
           Map result = await recycleCashOut(p0);
           debugPrint("recycleCashOut result = ${result}");
-          
+
           return result;
-          
         },
         usbDevice: usbPrinter.value));
   }
@@ -186,9 +196,16 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showReplenishAlert() {
+    supplyInfo.value = cashInfoList.map((key, value) {
+      return MapEntry(key, {
+        "origin": value,
+        "supply": 0,
+        "remain": 0,
+      });
+    });
     Get.dialog(barrierDismissible: false, ReplanishView(controller: this));
   }
-
+  
   signoutAlert() async {
     debugPrint("SettingController signoutAlert");
     //确定要退出吗？
@@ -423,31 +440,30 @@ class SettingController extends GetxController with StateMixin {
   recycleCash({isRejishimei = true}) async {
     if (Platform.isWindows) {
       if (isRejishimei) {
-      await clearTask();
-      commonHandleDialog('完了しました');
-      
-    } else {
-      if (!await gloryEmptyReport()) {
-        //commonHandleDialog("回收失败：Glory机器未清空");
-        return;
-      }
-      final result = await CashChanger.collectAll();
-      await CashChanger.changerResultNext(
-          resultCode: result,
-          onSuccess: () async {
-            debugPrint("recycleCash onSuccess");
-            await clearTask();
-            commonHandleDialog('リサイクルしました');
-            //showToast('回收成功');
-          },
-          onRetry: () {
-            recycleCash();
-          },
-          showError: (String error) {
-            debugPrint("recycleCash error: $error");
-            //showToast('回收失败');
-            commonHandleDialog("回收失败：$error");
-          });
+        await clearTask();
+        commonHandleDialog('完了しました');
+      } else {
+        if (!await gloryEmptyReport()) {
+          //commonHandleDialog("回收失败：Glory机器未清空");
+          return;
+        }
+        final result = await CashChanger.collectAll();
+        await CashChanger.changerResultNext(
+            resultCode: result,
+            onSuccess: () async {
+              debugPrint("recycleCash onSuccess");
+              await clearTask();
+              commonHandleDialog('リサイクルしました');
+              //showToast('回收成功');
+            },
+            onRetry: () {
+              recycleCash();
+            },
+            showError: (String error) {
+              debugPrint("recycleCash error: $error");
+              //showToast('回收失败');
+              commonHandleDialog("回收失败：$error");
+            });
       }
     } else {
       var formData = {

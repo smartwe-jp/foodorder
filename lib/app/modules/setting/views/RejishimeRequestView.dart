@@ -503,7 +503,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   _printRejishime(data, double length) async {
     if (Platform.isAndroid) {
       ByteData byteData = await WidgetToImage.widgetToImage(
-        RejishimePrintView(isPrint: true, printInfo: data),
+        PrintView(isPrint: true, printInfo: data),
         size: Size(383, length + 150),
       );
 
@@ -519,7 +519,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         final printWidget = Container(
         width: 385,
         height: length + 150,
-        child: RejishimePrintView(isPrint: true, printInfo: data),
+        child: PrintView(isPrint: true, printInfo: data),
         );
         _sendToUsePrinter(printWidget);
     }
@@ -587,7 +587,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   border: Border.all(
                       color: ColorsUtil.hexToColor("#000000"), width: 1),
                 ),
-                child: RejishimePrintView(
+                child: PrintView(
                   printInfo: printData,
                   lengthUpdate: (double length) {
                     print("printLength: $length");

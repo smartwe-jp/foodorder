@@ -4,6 +4,7 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
+import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
@@ -13,9 +14,25 @@ class ReplanishView extends StatelessWidget {
   final SettingController controller;
   ReplanishView({Key? key, required this.controller}) : super(key: key);
 
+  var printLength = 0.0;
+
   showRelanishAlert() {
+    GlobalKey containerKey = GlobalKey();
     return Obx(() => SimpleDialog(children: <Widget>[
           Stack(alignment: Alignment.topCenter, children: <Widget>[
+            Container(//退款小票信息，计算大小用，不显示。
+                  child: Offstage(
+                    offstage: true,//不显示
+                    child: Container(
+                      key: containerKey,
+                      alignment: Alignment.centerRight,
+                      child: PrintView(printInfo: controller.supplyInfo, printType: PrintType.SUPPLY,lengthUpdate: (double length) {
+                        print("printLength: $length");
+                        printLength = length;
+                  },),
+                    ),
+                  ),
+                ),
             Container(
                 width: ScreenAdapter.width(680),
                 padding: EdgeInsets.only(
@@ -299,7 +316,12 @@ class ReplanishView extends StatelessWidget {
                             child: ElevatedButton(
                               onPressed: () {
                                 if (controller.getPutMoney.value > 0) {
-                                  controller.reportReplanishInfo();
+                                  final printWidget = Container(
+                                    width: 385,
+                                    height: printLength,
+                                    child: PrintView(isPrint: true, printInfo: controller.supplyInfo, printType: PrintType.SUPPLY),
+                                  );
+                                  controller.reportReplanishInfo(printWidget);
                                 }
                               },
                               child: Text("確認",
@@ -363,13 +385,16 @@ class ReplanishView extends StatelessWidget {
     final typeAndValueMap =
         controller.getPutMoneyCurrency.split(',').asMap().map((key, value) {
       final cash = value.split(':');
-      return MapEntry(controller.getCashName(cash[0]), cash[1]);
+      return MapEntry(controller.getCashName(cash[0]), int.parse(cash[1]));
     });
 
     debugPrint('typeAndValueMap: $typeAndValueMap');
 
+    controller.updateSupplyInfo(typeAndValueMap, 'supply');
+
     return typeAndValueMap;
   }
+  
   @override
   Widget build(BuildContext context) {
     return Container(

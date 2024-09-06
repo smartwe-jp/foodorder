@@ -6,6 +6,10 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
+import 'package:android_usb_printer/android_usb_printer.dart';
+import 'package:foodorder/app/config/printer_info.dart';
+import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
@@ -344,10 +348,32 @@ extension SettingControllerExtension on SettingController {
     return success;
   }
 
-  //上报
-  reportReplanishInfo() async {
-    debugPrint("reportReplanishInfo changeInfoMap: $uploadMoneyInfo");
+  UsbDeviceInfo? get curUsbPrinter {
+    if (usbPrinter.isEmpty) {
+      print("usbDevice is empty");
+      //弹出提示框，打印机未设置，请设置打印机或者联系管理员
+      DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
+        Get.back();
+      });
+      return null;
+    }
+    print("usbDevice.value:${usbPrinter.value}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbPrinter.value));
+  }
 
+  _sendToUsePrinter(widget) {
+    final printWidget = ReceiptConstrainedBox(widget);
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: printWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(usbDevice: curUsbPrinter),
+      ),
+    );
+  }
+
+  //上报
+  reportReplanishInfo(printView) async {
     showEasyLoading();
     ignoreNotify.value = true;
     if (!await closeDeposit()) return;
@@ -358,7 +384,6 @@ extension SettingControllerExtension on SettingController {
       'shopCode': shopCode.value,
     };
     debugPrint("formData: $formData");
-
     request(
       'webBootGlorySupplement',
       method: 'POST',
@@ -369,6 +394,9 @@ extension SettingControllerExtension on SettingController {
       debugPrint("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
+        if (printView != null) {
+          _sendToUsePrinter(printView);
+        }
         Get.back();
         clearTask();
         commonHandleDialog('完了しました');
