@@ -10,6 +10,7 @@ import 'package:foodorder/app/services/ScreenAdapter.dart';
 class GridItemView extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String price;
   final ImageProvider image;
   final double imageRadius;
   final String option;
@@ -21,6 +22,7 @@ class GridItemView extends StatelessWidget {
       {Key? key,
       required this.title,
       required this.subtitle,
+      required this.price,
       required this.image,
       required this.onTap,
       this.option = "",
@@ -38,11 +40,46 @@ class GridItemView extends StatelessWidget {
               Container(
                 child: Column(
                   children: [
-                    RectangleImageView(
+
+                    Container(
+                      child: Stack(
+                        alignment: Alignment.bottomLeft,
+                        children: [
+                          RectangleImageView(
                         image: image, radius: imageRadius, onTap: onTap, aspectRatio: aspectRatio),
+                          //subtitle 底部叠在图片上，限制两行
+                          if (subtitle.isNotEmpty)
+                          Container(
+                            padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10),
+                                top: ScreenAdapter.width(5),
+                                bottom: ScreenAdapter.width(5)),
+                            decoration: BoxDecoration(
+                              color: const Color.fromARGB(169, 255, 255, 255),
+                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                            ),
+                            child: Text(
+                              subtitle!,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(20),
+                                fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
+                                color: ColorsUtil.hexToColor(Gcolor.itemSubTitleColor),
+                              ),
+                            ),
+                          ),
+
+
+                        ],
+                      ),
+                    ),
+                    
                     ItemInfoArea(
                         title: title,
-                        subtitle: subtitle,
+                        subtitle: price,
                         option: option,
                         onTap: onTap),
                   ],

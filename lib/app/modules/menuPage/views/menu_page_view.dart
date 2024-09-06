@@ -111,9 +111,11 @@ class MenuPageView extends GetView {
   }
 
   menuItemView(item, context, {popupType: "old", aspectRatio:1.0}) {
+    //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
-      subtitle: "${item['currentPrice']}",
+      subtitle: "${item['subtitle'] ?? ""}",
+      price: "${item['currentPrice']}",
       image: CachedNetworkImageProvider(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0 ? GString.getToString(
                           controller.checkLanguage.value,"select_option") : "",

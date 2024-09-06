@@ -17,6 +17,7 @@ class Gcolor {
   static const String categoryTitle = "#CEA062";
   static const String mainTitleColor = "#000000";
   static const String itemTitleColor = "#121212";
+  static const String itemSubTitleColor = "#222222";
   static const String optionBtnColor = "#FFFFFF";
   static const String optionBtnColorBlack = "#FFFFFF";
   static const String priceColor = "#A61C1C";
