@@ -15,6 +15,7 @@ extension ExchangeControllerExtension on SettingController {
   startPutExchangeMoney() async {
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
+    hasExchangeCash = false;
     update();
     await beginDepositOutside();
   }
@@ -187,10 +188,14 @@ extension ExchangeControllerExtension on SettingController {
     // if (depositAmount != 0) {
     //   return;
     // }
-
-    final result = await reportExchange(puts, pops);
-    if (result) {
-      final result = await gloryOutputMoney(outInfo);
+    
+    var outMoneySuccess = false;
+    if(hasExchangeCash) 
+    outMoneySuccess = await gloryOutputMoney(outInfo); 
+    
+    if (outMoneySuccess || hasExchangeCash) {
+      hasExchangeCash = true;
+      final result = await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
       if (result) {
         clearTask();
         Get.back();

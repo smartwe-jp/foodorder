@@ -65,6 +65,7 @@ class SettingController extends GetxController with StateMixin {
   RxMap supplyInfo = {}.obs;
 
   var progressValue = 0.0;
+  var hasExchangeCash = false;
 
   @override
   void onInit() {

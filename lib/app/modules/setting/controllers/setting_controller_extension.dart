@@ -480,6 +480,7 @@ extension SettingControllerExtension on SettingController {
   clearTask() async {
     isStartPutMoney.value = false;
     //moneyList.value = [];
+    hasExchangeCash = false;
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
     getServerCashInfo();
