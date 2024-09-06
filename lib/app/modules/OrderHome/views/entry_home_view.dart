@@ -188,7 +188,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
   ImageProvider _catagroyImage(url) {
     if (url == null) {
-      return AssetImage("assets/images/public/food-catagory.png");
+      return AssetImage("assets/images/public/app_viewmore_icon.png");
     } else {
       return CachedNetworkImageProvider(url);
     }
