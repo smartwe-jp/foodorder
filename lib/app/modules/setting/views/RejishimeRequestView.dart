@@ -154,7 +154,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
           response['code'] == 200 &&
           null != response['data']) {
         debugPrint("Rejishimei response: $response");
-        int total = response['data']['total'] ?? 0;
+        int total = response['data']['cashTotal'] ?? 0;
         debugPrint("Rejishimei total: $total");
         setState(() {
           _recycleCash = total;
@@ -214,6 +214,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     }
 
     Map? result = await widget.recycleCash!(_recycleCash);
+    debugPrint("recycleCash result: $result");
     if (result == null) {
       EasyLoading.dismiss();
       return;
@@ -226,6 +227,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       "verifyEmail": selectMail,
       "verifyUserName": selectUser,
     };
+    debugPrint("webBootGloryConfirmClose param: $param");
 
     request('webBootGloryConfirmClose', method: 'POST', parameters: param)
         .then((val) {
@@ -501,6 +503,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _printRejishime(data, double length) async {
+    _showEasyLoading();
     if (Platform.isAndroid) {
       ByteData byteData = await WidgetToImage.widgetToImage(
         PrintView(isPrint: true, printInfo: data),
@@ -523,9 +526,15 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         );
         _sendToUsePrinter(printWidget);
     }
+
+    Future.delayed(Duration(milliseconds: 500), () {//不延迟会出现打印信息被销毁的情况，后续优化。
+      EasyLoading.dismiss();
+      _resetCash();
+      Get.back();
+    });
     
-    _resetCash();
-    Get.back();
+    // _resetCash();
+    // Get.back();
   }
 
   _sendToUsePrinter(widget) {
