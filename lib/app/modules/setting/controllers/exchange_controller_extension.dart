@@ -190,8 +190,11 @@ extension ExchangeControllerExtension on SettingController {
     // }
     
     var outMoneySuccess = false;
-    if(hasExchangeCash) 
+    if(!hasExchangeCash) 
     outMoneySuccess = await gloryOutputMoney(outInfo); 
+
+    if (!outMoneySuccess)
+    EasyLoading.dismiss();
     
     if (outMoneySuccess || hasExchangeCash) {
       hasExchangeCash = true;
