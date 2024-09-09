@@ -329,6 +329,7 @@ extension SettingControllerExtension on SettingController {
       if (response["code"] == 200) {
         success = true;
       } else {
+        errorHandleDialog("${response["msg"] ?? 'この機能はレジ締め後に実行する必要があります。'}");
         success = false;
       }
     }).catchError((error) {
