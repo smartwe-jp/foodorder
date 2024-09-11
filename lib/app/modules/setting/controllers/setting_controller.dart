@@ -15,9 +15,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
-import 'package:get/get_connect/http/src/utils/utils.dart';
 import 'package:package_info/package_info.dart';
-import 'package:yaml/yaml.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -140,10 +138,10 @@ class SettingController extends GetxController with StateMixin {
     newValues.forEach((key, value) {
       if (supplyInfo.containsKey(key)) {
         supplyInfo[key][field] = value;
-        supplyInfo[key]['remain'] = supplyInfo[key]['origin']  +  supplyInfo[key]['supply'];
+        supplyInfo[key]['remain'] =
+            supplyInfo[key]['origin'] + supplyInfo[key]['supply'];
       }
     });
-
   }
 
   //上传现金机log
@@ -172,6 +170,8 @@ class SettingController extends GetxController with StateMixin {
     // final catValMap = cashInfoList.map((key, value) {
     //   return MapEntry(getCatVal(key), value);
     // });
+    String cashInfo = await getMachineCashInfo();
+
     hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
@@ -200,6 +200,7 @@ class SettingController extends GetxController with StateMixin {
 
   showReplenishAlert() {
     hasOutMoney = false;
+    isStartPutMoney.value = false;
     supplyInfo.value = cashInfoList.map((key, value) {
       return MapEntry(key, {
         "origin": value,
@@ -209,7 +210,7 @@ class SettingController extends GetxController with StateMixin {
     });
     Get.dialog(barrierDismissible: false, ReplanishView(controller: this));
   }
-  
+
   signoutAlert() async {
     debugPrint("SettingController signoutAlert");
     //确定要退出吗？
@@ -229,6 +230,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showExchangeAlert() async {
+    isStartPutMoney.value = false;
     Get.dialog(barrierDismissible: false, Exchangeview(controller: this));
   }
 
@@ -298,6 +300,50 @@ class SettingController extends GetxController with StateMixin {
     });
     Get.toNamed('/receipt-query',
         arguments: {"machineCode": machineCode.value});
+  }
+
+  getMachineCashInfo() async {
+    var cashInfo = "";
+    await CashChanger.getCashBalance(onSuccess: (value) {
+      cashInfo = value;
+    }, catchError: (error) {
+      errorHandleDialog(GString.getToString(checkLanguage.value, error));
+    });
+    debugPrint('machine cashInfo: $cashInfo');
+    return cashInfo;
+  }
+
+  String findChange(String cashStatus, int changeCount) {
+    // 将字符串转换为Map
+    Map<int, int> coins = Map.fromEntries(
+      cashStatus.split(',').map((item) {
+        List<String> parts = item.split(':');
+        return MapEntry(int.parse(parts[0]), int.parse(parts[1]));
+      }),
+    );
+
+    // 按面额从大到小排序
+    List<int> denominations = coins.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    Map<int, int> change = {};
+
+    for (int denomination in denominations) {
+      int count = coins[denomination]!;
+      while (count > 0 && changeCount >= denomination) {
+        change[denomination] = (change[denomination] ?? 0) + 1;
+        changeCount -= denomination;
+        count--;
+      }
+      if (changeCount == 0) break;
+    }
+
+    if (changeCount > 0) {
+      return "";
+    }
+
+    // 将结果转换为字符串
+    return change.entries.map((e) => "${e.key}:${e.value}").join(',');
   }
 
   //获取现金机列表
@@ -429,8 +475,7 @@ class SettingController extends GetxController with StateMixin {
   recycleCashOut(count) async {
     debugPrint("recycleCashOut count = ${count}");
     var outResult = false;
-    if (!hasOutMoney)
-    outResult = await dispenseCashCount(count);
+    if (!hasOutMoney) outResult = await dispenseCashCount(count);
     debugPrint("recycleCashOut result = ${outResult}");
     if (!outResult && !hasOutMoney) {
       return null;
@@ -450,8 +495,10 @@ class SettingController extends GetxController with StateMixin {
         await clearTask();
         commonHandleDialog('完了しました');
       } else {
+        showEasyLoading();
         if (!await gloryEmptyReport()) {
           //commonHandleDialog("回收失败：Glory机器未清空");
+          EasyLoading.dismiss();
           return;
         }
         final result = await CashChanger.collectAll(); //该步骤失败如何处理
@@ -459,6 +506,7 @@ class SettingController extends GetxController with StateMixin {
             resultCode: result,
             onSuccess: () async {
               debugPrint("recycleCash onSuccess");
+              EasyLoading.dismiss();
               await clearTask();
               commonHandleDialog('リサイクルしました');
               //showToast('回收成功');
@@ -467,6 +515,7 @@ class SettingController extends GetxController with StateMixin {
               recycleCash();
             },
             showError: (String error) {
+              EasyLoading.dismiss();
               debugPrint("recycleCash error: $error");
               //showToast('回收失败');
               commonHandleDialog("回收失败：$error");

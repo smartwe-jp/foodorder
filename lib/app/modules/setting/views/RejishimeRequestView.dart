@@ -145,10 +145,12 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     };
     debugPrint("Rejishimei request: $param");
 
-    request('webBootRejishimeiPrintInfo', method: 'POST', parameters: param)
-        .then((val) {
+    final domain = Platform.isAndroid
+        ? 'webBootRejishimeiPrintInfo'
+        : 'webGloryRejishimeiPrintInfo';
+
+    request(domain, method: 'POST', parameters: param).then((val) {
       EasyLoading.dismiss();
-      debugPrint("Rejishimei response0: $val");
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
@@ -165,13 +167,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         //当前没有レジ情報
         showToast('レジ情報がありません');
       }
-    }).catchError((e) { 
+    }).catchError((e) {
       EasyLoading.dismiss();
       showToast('レジ情報の取得に失敗しました');
     });
   }
-
-  
 
   _comfirmShimeInfo(code, printData) async {
     _showEasyLoading();
@@ -204,20 +204,28 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _comfirmGloryShimeInfo(code, printData) async {
+    final result = await _comfirmGloryShimeInfos(code, printData);
+    if (!result) return;
+    await _printRejishime(printData, printLength);
+  }
+
+  _comfirmGloryShimeInfos(code, printData) async {
     debugPrint("_comfirmGloryShimeInfo");
+    var success = false;
+
     _showEasyLoading();
 
-    if(widget.recycleCash == null) {
+    if (widget.recycleCash == null) {
       EasyLoading.dismiss();
       showToast('印刷に失敗しました');
-      return;
+      return success;
     }
 
     Map? result = await widget.recycleCash!(_recycleCash);
     debugPrint("recycleCash result: $result");
     if (result == null) {
       EasyLoading.dismiss();
-      return;
+      return success;
     }
 
     final param = {
@@ -229,7 +237,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     };
     debugPrint("webBootGloryConfirmClose param: $param");
 
-    request('webBootGloryConfirmClose', method: 'POST', parameters: param)
+    await request('webBootGloryConfirmClose', method: 'POST', parameters: param)
         .then((val) {
       EasyLoading.dismiss();
       var response = json.decode(val.toString());
@@ -237,15 +245,19 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
           response['code'] == 200 &&
           null != response['data']) {
         //printView(response['data']);
-        _printRejishime(printData, printLength);
+        success = true;
+        
       } else {
         //当前没有レジ情報
+        success = false;
         showToast('印刷に失敗しました');
       }
     }).catchError((e) {
       EasyLoading.dismiss();
+      success = false;
       showToast('印刷に失敗しました');
     });
+    return success;
   }
 
   _showEasyLoading() {
@@ -519,25 +531,26 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
         await FlutterPluginMsprinter.sendPrintCut("0");
       });
     } else {
-        final printWidget = Container(
+      final printWidget = Container(
         width: 385,
         height: length + 150,
         child: PrintView(isPrint: true, printInfo: data),
-        );
-        _sendToUsePrinter(printWidget);
+      );
+      await _sendToUsePrinter(printWidget);
     }
 
-    Future.delayed(Duration(milliseconds: 500), () {//不延迟会出现打印信息被销毁的情况，后续优化。
-      EasyLoading.dismiss();
-      _resetCash();
-      Get.back();
-    });
-    
+    //await Future.delayed(Duration(milliseconds: 1000), () {
+    //不延迟会出现打印信息被销毁的情况，后续优化。
+    EasyLoading.dismiss();
+    _resetCash();
+    Get.back();
+    //});
+
     // _resetCash();
     // Get.back();
   }
 
-  _sendToUsePrinter(widget) {
+  _sendToUsePrinter(widget) async {
     final printWidget = ReceiptConstrainedBox(widget);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(

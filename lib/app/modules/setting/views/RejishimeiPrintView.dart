@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 
 import '../../../config/colorsUtil.dart';
@@ -171,7 +173,12 @@ class RejishimePrintViewState extends State<PrintView> {
         ...displayInfo
             .map((content) => _tableRow(content, alignment: Alignment.center))
             .toList(growable: false),
-        _tableRow(['総額', '$orginCount', '$supplyCount', '$remainCount'])
+        _tableRow([
+          '総額',
+          '¥ ${formatSum(orginCount)}',
+          '¥ ${formatSum(supplyCount)}',
+          '¥ ${formatSum(remainCount)}'
+        ])
       ],
     );
   }
@@ -262,8 +269,8 @@ class RejishimePrintViewState extends State<PrintView> {
                       "d_Pay", "¥ ${formatSum(printInfo['d_PayTotal'])}"),
                   _twoContentRow(
                       "m_Pay", "¥ ${formatSum(printInfo['m_PayTotal'])}"),
-                  _twoContentRow(
-                      "交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
+                  // _twoContentRow(
+                  //     "交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
                 ],
               )),
         ),
@@ -281,6 +288,16 @@ class RejishimePrintViewState extends State<PrintView> {
         if (printInfo['cashInfo'] != null &&
             (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
           _cashInfoTable(printInfo['cashInfo']),
+
+        if (printInfo['cashInfoGlory'] != null &&
+            (printInfo['cashInfoGlory'] is Map &&
+                !printInfo['cashInfoGlory'].isEmpty))
+          _normalTitle("釣銭機情報（枚数）"),
+
+        if (printInfo['cashInfoGlory'] != null &&
+            (printInfo['cashInfoGlory'] is Map &&
+                !printInfo['cashInfoGlory'].isEmpty))
+          _cashInfoTable(printInfo['cashInfoGlory']),
       ],
     );
   }
@@ -342,6 +359,40 @@ class RejishimePrintViewState extends State<PrintView> {
     );
   }
 
+  _cashInfoGloryTables(cashInfo) {
+    var displayInfo = [];
+    num totalCount = 0;
+    num totalAmount = 0;
+
+    cashInfo.forEach((key, value) {
+      // String key = entry.key;
+      // Map value = entry.value;
+      totalCount += value;
+      totalAmount += value * getCatVal(key);
+      displayInfo.add([key, value, formatSum(value * getCatVal(key))]);
+    });
+
+    debugPrint('displayInfo: $displayInfo');
+
+    return Table(
+      border: TableBorder.all(
+          width: 2.0, color: const Color.fromARGB(255, 43, 42, 42)),
+      columnWidths: const <int, TableColumnWidth>{
+        0: FixedColumnWidth(100.0),
+        1: FlexColumnWidth(150.0),
+        2: FlexColumnWidth(150.0),
+      },
+      children: <TableRow>[
+        _tableRow(['金種', '残り', '総額'],
+            backgroundColor: isPrint ? Colors.white : Colors.grey[200]),
+        ...displayInfo
+            .map((content) => _tableRow(content, alignment: Alignment.center))
+            .toList(growable: false),
+        _tableRow(['合計', '$totalCount', '¥ ${formatSum(totalAmount)}'])
+      ],
+    );
+  }
+
   _cashInfoTables(cashInfo) {
     final displayInfo = cashInfo.entries.map((entry) {
       String key = entry.key;
@@ -399,7 +450,9 @@ class RejishimePrintViewState extends State<PrintView> {
         ),
         child: Directionality(
           textDirection: TextDirection.ltr,
-          child: _cashInfoTables(cashInfo),
+          child: Platform.isAndroid
+              ? _cashInfoTables(cashInfo)
+              : _cashInfoGloryTables(cashInfo),
         ));
   }
 

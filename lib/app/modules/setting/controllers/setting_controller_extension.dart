@@ -238,15 +238,16 @@ extension SettingControllerExtension on SettingController {
 
     if (getPutMoney.value == 0) {
       await closeDeposit();
-      clearTask();
       Get.back();
+      clearTask();
     } else {
-      final result = await dispenseCashOutside();
+      final result =
+          await dispenseCashOutside(getNoneZeroInfo(getPutMoneyCurrency.value));
       if (result) {
         final result = await supplyCountsClear();
         if (result) {
-          clearTask();
           Get.back();
+          clearTask();
         }
       }
     }
@@ -254,32 +255,55 @@ extension SettingControllerExtension on SettingController {
 
   dispenseCashCount(count) async {
     debugPrint("dispenseCashCount");
-    var success = false;
-    Map? result = await CashChanger.dispenseChange(count);
-    await CashChanger.changerResultNext(
-        resultCode: result?['code'] ?? -1,
-        onSuccess: () {
-          debugPrint("cancelReplanish 1");
-          success = true;
-        },
-        onRetry: () {
-          debugPrint("cancelReplanish 2");
-          dispenseCashCount(count);
-        },
-        showError: (String error) {
-          debugPrint("cancelReplanish error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          success = false;
-        });
-    return success;
+
+    bool? result =
+        await CashChanger.dispenseChangeOutside(count, onSuccess: () {
+      debugPrint("cancelReplanish 1");
+    }, catchError: (error) {
+      debugPrint("cancelReplanish error: $error");
+      //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+    });
+    debugPrint("dispenseCashCount result: $result");
+    if (result) {
+      return result;
+    } else {
+      String machineCash = await getMachineCashInfo();
+      if (machineCash.isEmpty) return false;
+      String outMoneyString = await findChange(machineCash, count);
+      if (outMoneyString.isEmpty) {
+        errorHandleDialog(GString.getToString(checkLanguage.value, 'cash_error_over_dispense'));
+        return false;
+      }
+      final result =
+          await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
+      return result;
+    }
+
+    // var success = false;
+    // Map? result = await CashChanger.dispenseChange(count);
+    // await CashChanger.changerResultNext(
+    //     resultCode: result?['code'] ?? -1,
+    //     onSuccess: () {
+    //       debugPrint("cancelReplanish 1");
+    //       success = true;
+    //     },
+    //     onRetry: () {
+    //       debugPrint("cancelReplanish 2");
+    //       dispenseCashCount(count);
+    //     },
+    //     showError: (String error) {
+    //       debugPrint("cancelReplanish error: $error");
+    //       errorHandleDialog(GString.getToString(checkLanguage.value, error));
+    //       success = false;
+    //     });
+    // return success;
   }
 
-  dispenseCashOutside() async {
+  dispenseCashOutside(outInfo) async {
     var success = false;
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
-    final resultCode = await CashChanger.dispenseCashOutside(
-        getNoneZeroInfo(getPutMoneyCurrency.value));
+    final resultCode = await CashChanger.dispenseCashOutside(outInfo);
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
@@ -288,7 +312,7 @@ extension SettingControllerExtension on SettingController {
         },
         onRetry: () {
           debugPrint("cancelReplanish 2");
-          dispenseCashOutside();
+          dispenseCashOutside(outInfo);
         },
         showError: (String error) {
           debugPrint("cancelReplanish error: $error");
@@ -305,7 +329,7 @@ extension SettingControllerExtension on SettingController {
 
     var success = false;
 
-    Map? machineChangeInfo = await getMachineCashInfo(); //这里会获取失败，应该是上次操作未正常结束。
+    Map? machineChangeInfo = await getMachineCashInfos(); //这里会获取失败，应该是上次操作未正常结束。
     if (machineChangeInfo == null) {
       return;
     }
@@ -374,7 +398,8 @@ extension SettingControllerExtension on SettingController {
   }
 
   //上报
-  reportReplanishInfo(printView) async {//该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
+  reportReplanishInfo(printView) async {
+    //该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
     showEasyLoading();
     ignoreNotify.value = true;
     if (!await closeDeposit()) return;
@@ -479,7 +504,8 @@ extension SettingControllerExtension on SettingController {
   }
 
   clearTask() async {
-    isStartPutMoney.value = false;
+    //
+    //isStartPutMoney.value = false;
     hasOutMoney = false;
     //moneyList.value = [];
     hasExchangeCash = false;
