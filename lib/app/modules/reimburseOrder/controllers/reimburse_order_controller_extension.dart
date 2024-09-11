@@ -30,10 +30,10 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
           },
           catchError: (error) {
             debugPrint("startOutPutMoney error: $error");
-            _errorHandleDialog(GString.getToString(checkLanguage.value, error),
-            confirm: () {
-              Get.back();
-            });
+            // _errorHandleDialog(GString.getToString(checkLanguage.value, error),
+            // confirm: () {
+            //   Get.back();
+            // });
           }
         );
 
