@@ -58,7 +58,7 @@ extension ExchangeControllerExtension on SettingController {
     return newCashInfoList;
   }
 
-  Future<Map?> getMachineCashInfo() async {
+  Future<Map?> getMachineCashInfos() async {
     var resultMap = null;
     await CashChanger.getCashBalance(
       onSuccess: (value) {
@@ -68,14 +68,13 @@ extension ExchangeControllerExtension on SettingController {
           final cash = value.split(':');
           return MapEntry(catValFromInt(cash[0]), cash[1]);
         });
-        
       },
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
         errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
-    
+
     // print('result: $result');
     // if (result == null) {
     //   return {};
@@ -188,17 +187,16 @@ extension ExchangeControllerExtension on SettingController {
     // if (depositAmount != 0) {
     //   return;
     // }
-    
-    var outMoneySuccess = false;
-    if(!hasExchangeCash) 
-    outMoneySuccess = await gloryOutputMoney(outInfo); 
 
-    if (!outMoneySuccess)
-    EasyLoading.dismiss();
-    
+    var outMoneySuccess = false;
+    if (!hasExchangeCash) outMoneySuccess = await gloryOutputMoney(outInfo);
+
+    if (!outMoneySuccess) EasyLoading.dismiss();
+
     if (outMoneySuccess || hasExchangeCash) {
       hasExchangeCash = true;
-      final result = await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
+      final result =
+          await reportExchange(puts, pops); //该步骤失败，后续被取消，数据与后台不一致，如何记录。
       if (result) {
         clearTask();
         Get.back();
@@ -293,23 +291,30 @@ extension ExchangeControllerExtension on SettingController {
         debugPrint('putMoney: $putMoney');
         break;
       } else {
-        int diffValue = sum - target; //815 - 315 = 500
-        String currentKeyValue = entry.key.split(':')[0]; //100
-        int valueCount = int.parse(entry.key.split(':')[1]); //8
+        //{100:6: 600, 500:1: 500}
+        int diffValue = sum - target; //815 - 315 = 500   600 - 100 = 500
+        String currentKeyValue = entry.key.split(':')[0]; //100   100
+        int valueCount = int.parse(entry.key.split(':')[1]); //8   6
 
-        int offset = diffValue ~/ int.parse(currentKeyValue); //500 / 100 = 5
-        int diffKey = valueCount - offset; //8 - 5 = 3
+        int offset = diffValue ~/
+            int.parse(currentKeyValue); //500 / 100 = 5   500/100 = 5
+        int diffKey = valueCount - offset; //8 - 5 = 3    6 - 5 = 1
+        //100:6，500:1
+
+        outMoney = outMoney + (outMoney !="" ? "," : "");//如果outMoney 为空 则不加",""
 
         putMoney = noZeroString.replaceAll(
-            outMoney + ',' + entry.key + ',', ''); //500:1
+            outMoney + entry.key + ',', ''); //500:1   500:1
         debugPrint('putMoney0: $putMoney');
         // int putMonyValue =
         //     (entry.value - diffValue) ~/ int.parse(currentKeyValue); // (800 - 500) / 100 = 3
 
-        putMoney = '${entry.key.split(':')[0]}:$offset' + ',' + putMoney;
+        putMoney = '${entry.key.split(':')[0]}:$offset' + ',' + putMoney;  //100:5,500:1
         debugPrint('putMoney: $putMoney');
 
-        outMoney += ',' + '${entry.key.split(':')[0]}:$diffKey'; //100:3
+        outMoney = outMoney + (outMoney !="" ? "," : "");//如果outMoney 为空 则不加",""
+
+        outMoney += '${entry.key.split(':')[0]}:$diffKey'; //100:3    100:1
         debugPrint('outMoney: $outMoney');
 
         break;
@@ -331,23 +336,23 @@ extension ExchangeControllerExtension on SettingController {
     }
   }
 
-  Future<bool> outSpecifyMoney(money,
-      {Function? successTask, bool? fromeError}) async {
-    bool result = await CashChanger.dispenseCash(money, onSuccess: () {
-      debugPrint("exchangeMoney 1");
-      if (fromeError != null && fromeError) {
-        successTask?.call(true);
-      }
-    }, catchError: (error) {
-      debugPrint("exchangeMoney error: $error");
-      errorHandleDialog(GString.getToString(checkLanguage.value, error),
-          confirm: () {
-        Get.back();
-        outSpecifyMoney(money, successTask: successTask, fromeError: true);
-      });
-    });
-    return result;
-  }
+  // Future<bool> outSpecifyMoney(money,
+  //     {Function? successTask, bool? fromeError}) async {
+  //   bool result = await CashChanger.dispenseCash(money, onSuccess: () {
+  //     debugPrint("exchangeMoney 1");
+  //     if (fromeError != null && fromeError) {
+  //       successTask?.call(true);
+  //     }
+  //   }, catchError: (error) {
+  //     debugPrint("exchangeMoney error: $error");
+  //     errorHandleDialog(GString.getToString(checkLanguage.value, error),
+  //         confirm: () {
+  //       Get.back();
+  //       outSpecifyMoney(money, successTask: successTask, fromeError: true);
+  //     });
+  //   });
+  //   return result;
+  // }
 
   gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
     //debugPrint("startOutPutMoney");
@@ -445,13 +450,18 @@ extension ExchangeControllerExtension on SettingController {
     int cash10000 = cashInfo.value['10000'];
 
     if (cash1000 > 0 && getPutMoney.value >= 1000) {
-      //获取能换多少个1000
+      //预计要换多少个1000
       var exchange1000 = getPutMoney.value ~/ 1000;
+      debugPrint('exchange1000: $exchange1000');
       //获取剩余的钱
       var remainMoney = getPutMoney.value % 1000;
-      if (cash1000 * 1000 < getPutMoney.value) {
-        exchange1000 = (getPutMoney.value - cash10000 * 1000) ~/ 1000;
-        remainMoney = getPutMoney.value - cash10000 * 1000;
+      debugPrint('remainMoney: $remainMoney');
+      if (cash1000 < exchange1000) {
+        //不够换
+        exchange1000 = cash1000;
+        debugPrint('exchange1000 e: $exchange1000');
+        remainMoney = getPutMoney.value - cash1000 * 1000;
+        debugPrint('remainMoney e: $remainMoney');
       }
 
       exchangeList.add([1000, exchange1000, remainMoney]);
@@ -460,9 +470,9 @@ extension ExchangeControllerExtension on SettingController {
     if (cash5000 > 0 && getPutMoney.value >= 5000) {
       var exchange5000 = getPutMoney.value ~/ 5000;
       var remainMoney = getPutMoney.value % 5000;
-      if (cash5000 * 5000 < getPutMoney.value) {
-        exchange5000 = (getPutMoney.value - cash10000 * 5000) ~/ 5000;
-        remainMoney = getPutMoney.value - cash10000 * 5000;
+      if (cash5000 < exchange5000) {
+        exchange5000 = cash5000;
+        remainMoney = getPutMoney.value - cash5000 * 5000;
       }
 
       exchangeList.add([5000, exchange5000, remainMoney]);
@@ -472,8 +482,8 @@ extension ExchangeControllerExtension on SettingController {
       var exchange10000 = getPutMoney.value ~/ 10000;
       var remainMoney = getPutMoney.value % 10000;
 
-      if (cash10000 * 10000 < getPutMoney.value) {
-        exchange10000 = (getPutMoney.value - cash10000 * 10000) ~/ 10000;
+      if (cash10000 < exchange10000) {
+        exchange10000 = cash10000;
         remainMoney = getPutMoney.value - cash10000 * 10000;
       }
 
