@@ -523,7 +523,7 @@ class CreatePrintImageController extends GetxController {
           Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                height: 76,
+                height: 86,
                 //margin: EdgeInsets.only(bottom: 3),
                 child: Column(
                   textDirection: TextDirection.rtl,
@@ -573,7 +573,7 @@ class CreatePrintImageController extends GetxController {
                               ),
                             )),
                         SizedBox(
-                          width: 10,
+                          width: 30,
                         ),
                         Directionality(
                             textDirection: TextDirection.ltr,
@@ -624,10 +624,11 @@ class CreatePrintImageController extends GetxController {
                             style: printMenuFont,
                           ),
                         )),
+                    SizedBox(width: ScreenAdapter.width(30),),
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
-                          width: ScreenAdapter.width(105),
+                          //width: ScreenAdapter.width(105),
                           alignment: Alignment.centerRight,
                           child: Text(
                             "￥${formatMoney(lineVosList["price"])}",
@@ -701,12 +702,12 @@ class CreatePrintImageController extends GetxController {
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
-            "　  (内    消費税",
+            "　  内    消費税",
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == true)
                 ? "${formatMoney(printData["tax"])})"
-                : "0)",
+                : "0",
             24.0,
             FontWeight.w100,
             true),
@@ -728,12 +729,12 @@ class CreatePrintImageController extends GetxController {
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
-            "　  (内    消費税",
+            "　  内    消費税",
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == false)
-                ? "${formatMoney(printData["tax"])})"
-                : "0)",
+                ? "${formatMoney(printData["tax"])}"
+                : "0",
             24.0,
             FontWeight.w100,
             true),
