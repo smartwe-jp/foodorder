@@ -73,7 +73,7 @@ class GImage{
         "settlement_top_qr":"assets/images/public/settlement_top_qr.png",
         "settlement_top_card":"assets/images/public/settlement_top_card.png",
         "settlement_top_nfc":"assets/images/public/settlement_top_nfc.png",
-        "settlement_top_lead_qr":"assets/images/public/settlement_top_lead_qr.jpg",
+        "settlement_top_lead_qr":Platform.isAndroid ? "assets/images/public/settlement_top_lead_qr.jpg" : "assets/images/glory/qrcode.charge.png",
         "settlement_top_lead_cash_JP": Platform.isAndroid ? "assets/images/public/settlement_top_lead_cash_JP.png" : "assets/images/glory/settlement_top_lead_cash_JP.png" ,
         "settlement_bottom_lead_cash_JP":"assets/images/public/settlement_bottom_lead_cash_JP.png",
         "settlement_top_lead_card_JP":"assets/images/public/settlement_top_lead_card_JP.png",
