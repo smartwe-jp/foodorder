@@ -436,7 +436,7 @@ class SettlementView extends GetView {
                     child: FadeInImage(
                       placeholder: AssetImage('assets/images/public/placeholder.png'), // 本地assets中的占位符图像
                       image: AssetImage(GImage.getImageString("imgpublic", "settlement_top_lead_cash_${controller.checkLanguage.value}")),
-                      width: ScreenAdapter.width(780),
+                      width: Platform.isAndroid ? ScreenAdapter.width(780) : ScreenAdapter.width(1080),
                       height: ScreenAdapter.width(870),
                       fit: BoxFit.fitHeight,
                       // [占位符] 的淡出动画时间
@@ -465,7 +465,7 @@ class SettlementView extends GetView {
                           fadeInDuration: Duration(milliseconds: 100),
                         ),
                         Positioned(
-                            right: ScreenAdapter.width(120),
+                            right: ScreenAdapter.width(100),
                             top: ScreenAdapter.height(250),
                             child: Container(
                               width: ScreenAdapter.width(250),
