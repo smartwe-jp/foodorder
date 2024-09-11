@@ -70,8 +70,22 @@ extension SettlementControllerExtension on SettlementController {
 
   //获取投入金额
   _getInputMoney() async {
+    debugPrint("_getInputMoney");
     //await Paycube.setReceiveEvent;
-    debugPrint("getPutInMoney");
+    int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+    if (totalPriceResult == 0) {
+      debugPrint('totalPriceResult == 0');
+      scanQrCodeFocusNode.unfocus();
+      getPutMoney.value = "0";
+      if (isCancel.value == false) {
+        showPrintButton.value = true;
+      } else {
+        showPrintButton.value = false;
+      }
+      showOutMoney.value = "0";
+      update();
+    }
+
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");
       if (result > 0) {
@@ -79,7 +93,7 @@ extension SettlementControllerExtension on SettlementController {
         getPutMoney.value = result.toString();
         debugPrint("getPutMoney.value==${getPutMoney.value}");
         scanQrCodeFocusNode.unfocus();
-        int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+        totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
         //if (int.parse(result) >=int.parse(totalPrice.value, onError: (source) => -1)) {
         if (result >= totalPriceResult) {
           if (isCancel.value == false) {
@@ -111,10 +125,8 @@ extension SettlementControllerExtension on SettlementController {
     //getPutMoney.value = depositAmount.toString();
     //sleep(Duration(milliseconds: 300));
 
-
-
-    final resultCode =
-        await CashChanger.endDeposit(repay ? DepositAction.repay.index : DepositAction.noChange.index);
+    final resultCode = await CashChanger.endDeposit(
+        repay ? DepositAction.repay.index : DepositAction.noChange.index);
 
     await CashChanger.changerResultNext(
         resultCode: resultCode,
@@ -183,7 +195,6 @@ extension SettlementControllerExtension on SettlementController {
       _getInputMoneyInfo();
     }
   }
-
 
   _startOutputMoney(outMoney) async {
     var success = false;
@@ -367,18 +378,18 @@ extension SettlementControllerExtension on SettlementController {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
     Get.dialog(
-      barrierDismissible: false,
-      DialogUtils.alertOneButton(error,
-        title: GString.getToString(checkLanguage.value, "tag_title"),
-        confirmtitle:
-            GString.getToString(checkLanguage.value, "tag_button_yes"),
-        confirm: () {
-      allowClick.value == true;
-      if (confirm != null) {
-        confirm();
-      } else {
-        Get.back();
-      }
-    }));
+        barrierDismissible: false,
+        DialogUtils.alertOneButton(error,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            confirm: () {
+          allowClick.value == true;
+          if (confirm != null) {
+            confirm();
+          } else {
+            Get.back();
+          }
+        }));
   }
 }
