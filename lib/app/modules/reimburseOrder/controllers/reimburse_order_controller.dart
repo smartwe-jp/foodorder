@@ -146,10 +146,10 @@ class ReimburseOrderController extends GetxController with StateMixin {
     reimbursePrintViewSize = viewSize;
     Get.dialog(
         DialogUtils.alert("この注文をキャンセルして返金しますか？",
-            title: "お知らせ", canceltitle: "いいえ", confirmtitle: "はい", confirm: () {
+            title: "お知らせ", canceltitle: "いいえ", confirmtitle: "はい", confirm: () async {
           Get.back();
           refundInfo.value = orderinfo;
-          refoundOrder();
+          await refoundOrder();
         }, cancle: () {
           Get.back();
         }),
@@ -165,7 +165,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
       Paycube.getPayCubeListener();
-      startOutPutMoney(refundInfo.value["amount"]);
+      await startOutPutMoney(refundInfo.value["amount"]);
     } else if (refundInfo.value["payChannel"] == "CreditCard") {
       showPosEasyLoading();
       refundCreditCard();
@@ -533,6 +533,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
       "orderId": refundInfo.value["orderId"],
     };
+    debugPrint('formData:  $formData');
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
       var response = json.decode(value.toString());

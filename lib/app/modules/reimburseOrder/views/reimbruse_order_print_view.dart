@@ -9,11 +9,9 @@ import '../../../config/colorsUtil.dart';
 import '../controllers/reimburse_order_controller.dart';
 
 class ReimbursePrintView extends StatelessWidget {
-
   final Map<String, dynamic> reimburseInfo;
   final GlobalKey containerKey = GlobalKey();
-  ReimbursePrintView({Key? key, required this.reimburseInfo})
-      : super(key: key);
+  ReimbursePrintView({Key? key, required this.reimburseInfo}) : super(key: key);
 
   final contentStyle = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -21,7 +19,6 @@ class ReimbursePrintView extends StatelessWidget {
     fontSize: 30,
     fontWeight: FontWeight.w400,
   );
-
 
   @override
   Widget build(BuildContext context) {
@@ -37,48 +34,45 @@ class ReimbursePrintView extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.only(bottom: 20),
-              child:
-              Directionality(
+              child: Directionality(
                 textDirection: TextDirection.ltr,
-                child: Text("[売上取消票]",
-                    style: contentStyle),
+                child: Text("[売上取消票]", style: contentStyle),
               ),
             ),
           ],
         ),
       ),
     );
-    categoryMenus.add(_publicSplitLine());//
+    categoryMenus.add(_publicSplitLine()); //
 
     //branch info
     categoryMenus.add(shitenInfoArea());
-    categoryMenus.add(_publicSplitLine());//分割线
+    categoryMenus.add(_publicSplitLine()); //分割线
 
     //order info
     categoryMenus.add(reimburseInfoArea());
-    categoryMenus.add(_publicSplitLine());//分割线
+    categoryMenus.add(_publicSplitLine()); //分割线
 
     //reimburse info
     categoryMenus.add(amountInfoArea());
 
     return
-      // Directionality(
-      //   textDirection: TextDirection.ltr,
-      //   child:Wrap(
-      //     children: [
-            Container(
-              alignment: Alignment.center,
-              margin: EdgeInsets.only(top: 10, bottom: 40),
-              width: 385,
-              color: Colors.white,
-              child: Column(
-                children: categoryMenus,
-              ),
-        //     ),
-        //   ],
-        // ),
-      );
-
+        // Directionality(
+        //   textDirection: TextDirection.ltr,
+        //   child:Wrap(
+        //     children: [
+        Container(
+      alignment: Alignment.center,
+      margin: EdgeInsets.only(top: 10, bottom: 40),
+      width: 385,
+      color: Colors.white,
+      child: Column(
+        children: categoryMenus,
+      ),
+      //     ),
+      //   ],
+      // ),
+    );
   }
 
   //分割线
@@ -87,7 +81,7 @@ class ReimbursePrintView extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Container(
           margin: EdgeInsets.only(top: 5, bottom: 5),
-          height: 0.5,
+          height: 2,
           color: ColorsUtil.hexToColor("#000000"),
           width: 385,
         ));
@@ -96,241 +90,271 @@ class ReimbursePrintView extends StatelessWidget {
   Widget shitenInfoArea() {
     return Container(
         margin: EdgeInsets.only(top: 10, bottom: 10),
-        child:
-        Directionality(
-        textDirection: TextDirection.ltr,
-        child:
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            //店舗名
-            hasShopName() ? Container(
-              margin: EdgeInsets.only(bottom: 10),
-              child: Text(
-                "${reimburseInfo["shopName"]}",
-                style: TextStyle(
-                        fontFamily: 'NotoSansJP',
-                        color: Colors.black,
-                        fontSize: 40,
-                        fontWeight: FontWeight.w500,
-                      ),
-              ),
-            ) : Container(),
-
-            hasAddress() ? Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
-                  "住所",
-                  style: contentStyle,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Expanded(
-                  child: Text(
-                    "${reimburseInfo["address"]}",
-                    style: contentStyle,
-                  ),
-                ),
-              ],
-            ) : Container(),
+                //店舗名
+                hasShopName()
+                    ? Container(
+                        margin: EdgeInsets.only(bottom: 10),
+                        child: Text(
+                          "${reimburseInfo["shopName"]}",
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            color: Colors.black,
+                            fontSize: 40,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      )
+                    : Container(),
 
-            hasPhone() ? Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  "電話",
-                  style: contentStyle,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "${reimburseInfo["telNo"]}",
-                  style: contentStyle,
-                ),
+                hasAddress()
+                    ? Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "住所",
+                            style: contentStyle,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${reimburseInfo["address"]}",
+                              style: contentStyle,
+                            ),
+                          ),
+                        ],
+                      )
+                    : Container(),
+
+                hasPhone()
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Text(
+                            "電話",
+                            style: contentStyle,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "${reimburseInfo["telNo"]}",
+                            style: contentStyle,
+                          ),
+                        ],
+                      )
+                    : Container(),
               ],
-            ) : Container(),
-          ],
-        )));
+            )));
   }
 
   Widget reimburseInfoArea() {
     return Container(
       margin: EdgeInsets.only(top: 10, bottom: 10),
-      child:
-      Directionality(
-      textDirection: TextDirection.ltr,
-      child:
-      Column(
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            crossAxisAlignment: CrossAxisAlignment.start,
+      child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Column(
             children: [
-              Text(
-                "取引時間",
-                style: contentStyle,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    "取引時間",
+                    style: contentStyle,
+                  ),
+                  SizedBox(
+                    width: 10,
+                  ),
+                  Text(
+                    _getCurrentTime(),
+                    style: contentStyle,
+                  ),
+                ],
               ),
-              SizedBox(
-                width: 10,
-              ),
-              Text(
-                _getCurrentTime()
-                ,
-                style: contentStyle,
-              ),
+              _hasOrderId()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "注文番号",
+                          style: contentStyle,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${reimburseInfo["orderIdStr"]}",
+                          style: contentStyle,
+                        ),
+                      ],
+                    )
+                  : Container(),
+              _hasSerialNumber()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "お客様番号",
+                          style: contentStyle,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${reimburseInfo["serialNumber"]}",
+                          style: contentStyle,
+                        ),
+                      ],
+                    )
+                  : Container(),
+              hasPayTime()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "決済時間",
+                          style: contentStyle,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${reimburseInfo["payTime"]}",
+                          style: contentStyle,
+                        ),
+                      ],
+                    )
+                  : Container(),
+              hasPayChannel()
+                  ? Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "決済方法",
+                          style: contentStyle,
+                        ),
+                        SizedBox(
+                          width: 10,
+                        ),
+                        Text(
+                          "${reimburseInfo["payChannel"]}",
+                          style: contentStyle,
+                        ),
+                      ],
+                    )
+                  : Container(),
             ],
-          ),
-          _hasOrderId() ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "注文番号",
-                      style: contentStyle,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "${reimburseInfo["orderIdStr"]}",
-                      style: contentStyle,
-                    ),
-                  ],
-                )
-              : Container(),
-          _hasSerialNumber() ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "お客様番号",
-                      style: contentStyle,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "${reimburseInfo["serialNumber"]}",
-                      style: contentStyle,
-                    ),
-                  ],
-                )
-              : Container(),
-          hasPayTime() ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "決済時間",
-                      style: contentStyle,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "${reimburseInfo["payTime"]}",
-                      style: contentStyle,
-                    ),
-                  ],
-                ) : Container(),
-
-          hasPayChannel() ? Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      "決済方法",
-                      style: contentStyle,
-                    ),
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Text(
-                      "${reimburseInfo["payChannel"]}",
-                      style: contentStyle,
-                    ),
-                  ],
-                ) : Container(),
-        ],
-      )),
+          )),
     );
   }
   //
 
   String _getCurrentTime() {
-    DateTime now = DateTime.now();
-    DateTime tokyoTime = now.add(Duration(hours: 9 - now.timeZoneOffset.inHours));
-    String formattedDate = "${tokyoTime.year}/${tokyoTime.month}/${tokyoTime.day} ${tokyoTime.hour}:${tokyoTime.minute}";
-    return formattedDate;
+    return getFormattedTokyoTime();
+    // DateTime now = DateTime.now();
+    // DateTime tokyoTime =
+    //     now.add(Duration(hours: 9 - now.timeZoneOffset.inHours));
+    // String formattedDate =
+    //     "${tokyoTime.year}/${tokyoTime.month}/${tokyoTime.day} ${tokyoTime.hour}:${tokyoTime.minute}";
+    // return formattedDate;
+  }
+
+  String getFormattedTokyoTime() {
+    DateTime now = DateTime.now().toUtc();
+    DateTime tokyoTime = now.add(Duration(hours: 9));
+    return "${tokyoTime.year.toString().padLeft(4, '0')}/"
+        "${tokyoTime.month.toString().padLeft(2, '0')}/"
+        "${tokyoTime.day.toString().padLeft(2, '0')} "
+        "${tokyoTime.hour.toString().padLeft(2, '0')}:"
+        "${tokyoTime.minute.toString().padLeft(2, '0')}";
+  }
+
+  String formatSum(sum) {
+    if (sum == null) return "Unknown";
+    List<String> parts = sum.toString().split('.');
+    parts[0] = parts[0].replaceAllMapped(
+        RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
+    return parts.join('.');
   }
 
   Widget amountInfoArea() {
     return Container(
         margin: EdgeInsets.only(top: 10, bottom: 10),
         child: Directionality(
-        textDirection: TextDirection.ltr,
-        child:
-        Column(
-          children: [
-            hasPayAmount() ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            child: Column(
               children: [
-                Text(
-                  "決済金額",
-                  style: contentStyle,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "¥ ${reimburseInfo["amount"]}",
-                  style: contentStyle,
-                ),
-              ],
-            ) : Container(),
+                hasPayAmount()
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "決済金額",
+                            style: contentStyle,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "¥ ${formatSum(reimburseInfo["amount"])}",
+                            style: contentStyle,
+                          ),
+                        ],
+                      )
+                    : Container(),
 
-            // hasChange() ? Row(
-            //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            //   crossAxisAlignment: CrossAxisAlignment.start,
-            //   children: [
-            //     Text(
-            //       "お釣り金額",
-            //       style: contentStyle,
-            //     ),
-            //     SizedBox(
-            //       width: 10,
-            //     ),
-            //     Text(
-            //       "¥ -${reimburseInfo["change"]}",
-            //       style: contentStyle,
-            //     ),
-            //   ],
-            // ) : Container(),
+                // hasChange() ? Row(
+                //   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                //   crossAxisAlignment: CrossAxisAlignment.start,
+                //   children: [
+                //     Text(
+                //       "お釣り金額",
+                //       style: contentStyle,
+                //     ),
+                //     SizedBox(
+                //       width: 10,
+                //     ),
+                //     Text(
+                //       "¥ -${reimburseInfo["change"]}",
+                //       style: contentStyle,
+                //     ),
+                //   ],
+                // ) : Container(),
 
-            hasAmount() ? Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "返金金額",
-                  style: contentStyle,
-                ),
-                SizedBox(
-                  width: 10,
-                ),
-                Text(
-                  "¥ ${reimburseInfo["amount"]}",
-                  style: contentStyle,
-                ),
+                hasAmount()
+                    ? Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            "返金金額",
+                            style: contentStyle,
+                          ),
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            "¥ ${reimburseInfo["amount"]}",
+                            style: contentStyle,
+                          ),
+                        ],
+                      )
+                    : Container(),
               ],
-            ) : Container(),
-          ],
-        )));
+            )));
   }
 
   bool _hasOrderId() {
@@ -382,7 +406,6 @@ class ReimbursePrintView extends StatelessWidget {
     return reimburseInfo["shopName"] != null &&
         reimburseInfo["shopName"].toString().length > 0;
   }
-
 }
 
 

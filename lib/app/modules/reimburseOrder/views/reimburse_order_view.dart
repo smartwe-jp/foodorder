@@ -336,7 +336,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                               ),
                               (Route route) => false,
                             );*/
-                            Get.back();
+                            Get.back(result: true);
                             /*Future.delayed(Duration(milliseconds: 100), () {
                               Navigator.pushNamed(context, '/home');
                             });*/

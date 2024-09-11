@@ -1,5 +1,3 @@
-
-
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -14,40 +12,142 @@ import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 
 extension ReimburseOrderControllerExtension on ReimburseOrderController {
-
   gloryOutputMoney(outMoney) async {
     //debugPrint("startOutPutMoney");
     print("outMoney: $outMoney");
-    var outStringMoney = outMoney.toString();
-    final result =
-        await CashChanger.dispenseChange(int.parse(outStringMoney));
-    
-    if (result == null) return;
-    debugPrint("resultCode: $result");
+    //var outStringMoney = outMoney.toString();
+    bool? result =
+        await CashChanger.dispenseChangeOutside(
+          outMoney,
+          onSuccess: () {
+            //已经结束入金，处理取引终了
+            _getPayCubeOutMoney();
+          },
+          catchError: (error) {
+            debugPrint("startOutPutMoney error: $error");
+            _errorHandleDialog(GString.getToString(checkLanguage.value, error),
+            confirm: () {
+              Get.back();
+            });
+          }
+        );
 
-    await CashChanger.changerResultNext(
-        resultCode: result['code'] ?? 0,
-        onSuccess: () {
-          //已经结束入金，处理取引终了
+    debugPrint("resultCode: $result");
+      if (!result) {
+        String machineCash = await getMachineCashInfo();
+        debugPrint('machineCash: $machineCash');
+        if (machineCash.isEmpty) return false;
+        String outMoneyString = await findChange(machineCash, outMoney);
+        debugPrint('outMoneyString: $outMoneyString');
+        if (outMoneyString.isEmpty) {
+          _errorHandleDialog(GString.getToString(checkLanguage.value, 'cash_error_over'));
+          return false;
+        }
+        final result = await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
+        if (result) {
           _getPayCubeOutMoney();
-        },
-        onRetry: () {
-          debugPrint("startOutPutMoney 2");
-          gloryOutputMoney(outMoney);
-        },
-        showError: (String error) {
-          debugPrint("startOutPutMoney error: $error");
-          _errorHandleDialog(GString.getToString(checkLanguage.value, error), 
-          confirm: () {
-            Get.back();
-          });
-        });
+        }
+    }
   }
 
+  getMachineCashInfo() async {
+    var cashInfo = "";
+    await CashChanger.getCashBalance(onSuccess: (value) {
+      cashInfo = value;
+    }, catchError: (error) {
+      _errorHandleDialog(GString.getToString(checkLanguage.value, error));
+    });
+    debugPrint('machine cashInfo: $cashInfo');
+    return cashInfo;
+  }
+
+  String findChange(String cashStatus, int changeCount) {
+    // 将字符串转换为Map
+    Map<int, int> coins = Map.fromEntries(
+      cashStatus.split(',').map((item) {
+        List<String> parts = item.split(':');
+        return MapEntry(int.parse(parts[0]), int.parse(parts[1]));
+      }),
+    );
+    debugPrint('coins: $coins');
+
+    // 按面额从大到小排序
+    List<int> denominations = coins.keys.toList()
+      ..sort((a, b) => b.compareTo(a));
+
+    debugPrint('denominations: $denominations');
+
+    Map<int, int> change = {};
+
+    for (int denomination in denominations) {
+      int count = coins[denomination]!;
+      while (count > 0 && changeCount >= denomination) {
+        change[denomination] = (change[denomination] ?? 0) + 1;
+        changeCount -= denomination;
+        count--;
+      }
+      if (changeCount == 0) break;
+    }
+
+    if (changeCount > 0) {
+      return "";
+    }
+
+    // 将结果转换为字符串
+    return change.entries.map((e) => "${e.key}:${e.value}").join(',');
+  }
+
+  dispenseCashOutside(outInfo) async {
+    var success = false;
+    final depositAmount = await CashChanger.fixDeposit;
+    debugPrint("fixDeposit: $depositAmount");
+    final resultCode = await CashChanger.dispenseCashOutside(outInfo);
+    await CashChanger.changerResultNext(
+        resultCode: resultCode,
+        onSuccess: () {
+          debugPrint("cancelReplanish 1");
+          success = true;
+        },
+        onRetry: () {
+          debugPrint("cancelReplanish 2");
+          dispenseCashOutside(outInfo);
+        },
+        showError: (String error) {
+          debugPrint("cancelReplanish error: $error");
+          _errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          success = false;
+        });
+    return success;
+  }
+
+  String getNoneZeroInfo(String input) {
+    List<String> currencyPairs = input.split(',');
+
+    List<String> nonZeroPairs = currencyPairs.where((pair) {
+      List<String> parts = pair.split(':');
+      return parts.length == 2 && parts[1] != '0' && int.parse(parts[0]) <= 500;
+    }).toList();
+    debugPrint("nonZeroPairs: $nonZeroPairs");
+
+    List<String> nonZeroPairsOver500 = currencyPairs.where((pair) {
+      List<String> parts = pair.split(':');
+      return parts.length == 2 && parts[1] != '0' && int.parse(parts[0]) > 500;
+    }).toList();
+    debugPrint("nonZeroPairsOver500: $nonZeroPairsOver500");
+
+    var result = nonZeroPairs.join(',');
+
+    if (nonZeroPairsOver500.isNotEmpty) {
+      result += ';' + nonZeroPairsOver500.join(',');
+    }
+
+    return result;
+  }
 
   _getPayCubeOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
@@ -73,7 +173,8 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
       currency += currencyCashStringresult.substring(12, 24);
     }
 
-    currencyString.value = MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
+    currencyString.value =
+        MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
 
     getOutMoneyString.value == false;
 
@@ -81,13 +182,14 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
   }
 
   sendToUsePrinter(widget) {
-
     final printWidget = ReceiptConstrainedBox(widget);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
-        tempWidget: printWidget as ATempWidget,
-        printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(usbDevice: curUsbPrinter,)),
+          tempWidget: printWidget as ATempWidget,
+          printTypeEnum: PrintTypeEnum.receipt,
+          params: PrinterInfo(
+            usbDevice: curUsbPrinter,
+          )),
     );
   }
 
@@ -109,13 +211,12 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
           ],
         ),
       );
-      
+
       return null;
     }
     print("usbDevice.value:${usbDevice}");
     return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
   }
-
 
   _errorHandleDialog(String error, {Function? confirm}) {
     EasyLoading.dismiss();
@@ -133,6 +234,4 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
       }
     }));
   }
-
-
 }
