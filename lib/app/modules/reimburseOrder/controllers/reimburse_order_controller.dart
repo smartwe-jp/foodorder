@@ -129,7 +129,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   noOrderAlsert() {
     Get.dialog(
-        DialogUtils.alertOneButton("指定した取引は存在しません。",
+        DialogUtils.alertOneButton("返金に異常が発生しました，店舗にお問い合わせください。",
             title: "お知らせ", confirmtitle: "はい", confirm: () {
           orderIdController.text = "";
           orderList.value = [];
