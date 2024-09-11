@@ -186,6 +186,31 @@ class CashChanger {
     return CashChangerPlatform.instance.dispenseCashOutside(cashInfo);
   }
 
+  //dispenseChangeOutside
+  static Future<bool> dispenseChangeOutside(int count,
+      {required Function() onSuccess,
+      required Function(String) catchError}) async {
+    int? result =
+        await CashChangerPlatform.instance.dispenseChangeOutside(count);
+    var ret = false;
+    await changerResultNext(
+        resultCode: result ?? -1,
+        onSuccess: () {
+          ret = true;
+          onSuccess();
+        },
+        onRetry: () async {
+          await Future.delayed(Duration(milliseconds: 200));
+          dispenseChangeOutside(count,
+              onSuccess: onSuccess, catchError: catchError);
+        },
+        showError: (error) async {
+          ret = false;
+          catchError(error);
+        });
+    return ret;
+  }
+
   //beginCashReturn
   static Future<int?> get beginCashReturn async {
     return CashChangerPlatform.instance.beginCashReturn();

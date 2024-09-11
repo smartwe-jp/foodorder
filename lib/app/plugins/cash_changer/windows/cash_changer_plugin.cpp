@@ -931,13 +931,17 @@ void CashChangerPlugin::HandleMethodCall(
         cerr << "dispenseCashOutside called 。。" << endl;
     
         if (pCashChanger == nullptr) {
-            result->Error("Cash Changer not initialized");
+            //result->Error("Cash Changer not initialized");
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("Cash Changer not initialized"));
+            result->Success(flutter::EncodableValue(-1));
         }
         BSTR cashInfo = SysAllocString(L"");
         long lngData = 0;
         auto arguments = method_call.arguments();
         if (!arguments) {
-            cerr << "dispenseCashOutside param error 。。1" << endl;
+            //cerr << "dispenseCashOutside param error 。。1" << endl;
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
+            result->Success(flutter::EncodableValue(-1));
             return;
         }
         const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
@@ -949,9 +953,50 @@ void CashChangerPlugin::HandleMethodCall(
             cashInfo = bstr;
         } else {
             cerr << "dispenseCashOutside param error 。。2" << endl;
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
+            result->Success(flutter::EncodableValue(-1));
             return;
         }
+        
+
+
         DirectIOMethod(move(result), CHAN_DI_DISPENSECASHOUTSIDE, lngData, cashInfo);
+        
+        return;
+    }
+
+    if (method_call.method_name().compare("dispenseChangeOutside") == 0) {
+        cerr << "dispenseChangeOutside called 。。" << endl;
+    
+        if (pCashChanger == nullptr) {
+            //result->Error("Cash Changer not initialized");
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("Cash Changer not initialized"));
+            result->Success(flutter::EncodableValue(-1));
+        }
+        BSTR cashInfo = SysAllocString(L"");
+        long lngData = 0;
+        auto arguments = method_call.arguments();
+        if (!arguments) {
+            //cerr << "dispenseChangeOutside param error 。。1" << endl;
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
+            result->Success(flutter::EncodableValue(-1));
+            return;
+        }
+        const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+        auto it = mapValue->find(flutter::EncodableValue("count"));
+        if (it != mapValue->end()) {
+            lngData = get<int>(it->second);
+            cerr << "count : " << lngData << endl;
+        } else {
+            cerr << "dispenseChangeOutside param error 。。2" << endl;
+            //ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
+            result->Success(flutter::EncodableValue(-1));
+            return;
+        }
+        
+
+
+        DirectIOMethod(move(result), CHAN_DI_DISPENSECHANGEOUTSIDE, lngData, cashInfo);
         
         return;
     }

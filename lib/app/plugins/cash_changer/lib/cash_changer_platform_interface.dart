@@ -99,6 +99,11 @@ abstract class CashChangerPlatform extends PlatformInterface {
     throw UnimplementedError('dispenseCashOutside() has not been implemented.');
   }
 
+  //dispenseChangeOutside
+  Future<int?> dispenseChangeOutside(int count) {
+    throw UnimplementedError('dispenseCashOutside() has not been implemented.');
+  }
+
   //beginCashReturn
   Future<int?> beginCashReturn() {
     throw UnimplementedError('beginCashReturn() has not been implemented.');

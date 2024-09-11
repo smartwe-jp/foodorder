@@ -141,6 +141,13 @@ class MethodChannelCashChanger extends CashChangerPlatform {
     return result;
   }
 
+  //dispenseChangeOutside
+  Future<int?> dispenseChangeOutside(int count) async {
+    final result = await methodChannel.invokeMethod<int>('dispenseChangeOutside',
+        <String, dynamic>{'count': count});
+    return result;
+  }
+
 
   //beginCashReturn
   Future<int?> beginCashReturn() async {
