@@ -57,7 +57,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                   //itemHeight: 200,
                   itemBuilder: (BuildContext context,int index){
                     // 配置图片地址
-                    return publicShowMenuImage(imgPath:controller.homeList.value[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                    return publicShowMenuImage(imgPath:controller.homeList.value[index],imgWidth: 1080.0,imgHeight: 1920.0);//图片显示报错
                   },
                   // 配置图片数量
                   itemCount: controller.homeList.value.length,

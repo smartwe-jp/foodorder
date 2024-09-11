@@ -37,8 +37,8 @@ extension CheckoutButton on MenuPageView {
                   flex: 9,
                   child:                 InkWell(
                     onTap: () {
-                      print("controller.shopCartTotalPrice.value");
-                      if (int.parse(controller.shopCartTotalPrice.value) <= 0) {
+                      print("controller.showCartTotalGoodsNum.value = ${controller.showCartTotalGoodsNum.value}");
+                      if (controller.showCartTotalGoodsNum.value <= 0) {
                         _showEmptyTips();
                         return;
                       }
@@ -152,7 +152,7 @@ extension CheckoutButton on MenuPageView {
                   child: 
                     InkWell(
                       onTap: () {
-                        if (int.parse(controller.shopCartTotalPrice.value) <= 0) {
+                        if (controller.showCartTotalGoodsNum.value <= 0) {
                           _showEmptyTips();
                           return;
                         }

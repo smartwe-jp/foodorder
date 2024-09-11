@@ -605,16 +605,15 @@ class MenuPageController extends GetxController with StateMixin {
     if (total != null) {
       shopCartTotalPrice.value =
           total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
-      if (shopCartTotalPrice.value == "0") {
-        showShopCart.value = false;
-      }
     }
 
     var totalNum = await ordersqlcontroller.getCartTotalNum();
     showCartTotalGoodsNum.value = totalNum;
 
     showCartItems.value = ordersqlcontroller.cartItems;
-
+    if (showCartTotalGoodsNum.value == 0) {
+        showShopCart.value = false;
+      }
     update();
   }
 
@@ -1554,7 +1553,7 @@ print("加1了");
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
-    debugPrint("topMenu.value: ${topMenu.value}");
+    //debugPrint("topMenu.value: ${topMenu.value}");
     if (topMenu.value.length > 0) {
       classTag.value = topMenu.value.first["categoryCode"];
     }
