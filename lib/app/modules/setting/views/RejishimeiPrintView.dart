@@ -283,7 +283,7 @@ class RejishimePrintViewState extends State<PrintView> {
 
         if (printInfo['cashInfo'] != null &&
             (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-          _normalTitle("釣銭機情報（枚数）"),
+          _normalTitle("釣銭機情報"),
 
         if (printInfo['cashInfo'] != null &&
             (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
