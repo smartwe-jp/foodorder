@@ -145,43 +145,46 @@ class OrderHomeController extends GetxController with StateMixin {
   updateSettingLanguage(String language) async {
     await HomeServices.updateSettingLanguage(language);
     settingLanguage.value = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
     //reload catagory...
     await getBookingBootIndexCagegory();
-    
   }
 
   get showCatagory {
-  if (homeList.length == 0) {
-    debugPrint("homeList.length == 0");
-    return [];
-  }
-  debugPrint("homeList.length > 0");
+    if (homeList.length == 0) {
+      debugPrint("homeList.length == 0");
+      return [];
+    }
+    debugPrint("homeList.length > 0");
 
-  var showItemCount = 9;
-  if (dining_type.value == "3") {
-    showItemCount = 6;
+    var showItemCount = 9;
+    if (dining_type.value == "3") {
+      showItemCount = 6;
+    }
+    if (homeList.length >= showItemCount - 1) {
+      // 获取前8个
+      var newList = List.from(homeList.sublist(0, showItemCount - 1));
+      newList.add({
+        "categoryCode": homeList.first["categoryCode"],
+        "image": homeList.first["showImage"],
+        "categoryName":
+            GString.getToString(settingLanguage.value, "more_title"),
+        "showType": "1"
+      });
+      return newList;
+    } else {
+      var newList = List.from(homeList);
+      newList.add({
+        "categoryCode": homeList.first["categoryCode"],
+        "image": homeList.first["image"],
+        "categoryName":
+            GString.getToString(settingLanguage.value, "more_title"),
+        "showType": "1"
+      });
+      return newList;
+    }
   }
-  if (homeList.length >= showItemCount - 1) {
-    // 获取前8个
-    var newList = List.from(homeList.sublist(0, showItemCount - 1));
-    newList.add({
-      "categoryCode": homeList.first["categoryCode"],
-      "image": homeList.first["showImage"],
-      "categoryName": GString.getToString(settingLanguage.value, "more_title"),
-      "showType": "1"
-    });
-    return newList;
-  } else {
-    var newList = List.from(homeList);
-    newList.add({
-      "categoryCode": homeList.first["categoryCode"],
-      "image": homeList.first["image"],
-      "categoryName": GString.getToString(settingLanguage.value, "more_title"),
-      "showType": "1"
-    });
-    return newList;
-  }
-}
 
   //获取页面分类
   getBookingBootIndexCagegory() async {
@@ -198,9 +201,9 @@ class OrderHomeController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-        if(mealType.value == true){
+        if (mealType.value == true) {
           queryTakeout = "0";
-        }else{
+        } else {
           queryTakeout = "2";
         }
         break;
@@ -227,7 +230,7 @@ class OrderHomeController extends GetxController with StateMixin {
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
             "image": categoryVoList['image'],
-            "color":categoryVoList['color'],
+            "color": categoryVoList['color'],
           });
         }
         update();
