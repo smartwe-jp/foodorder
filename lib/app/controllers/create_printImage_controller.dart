@@ -523,7 +523,7 @@ class CreatePrintImageController extends GetxController {
           Directionality(
               textDirection: TextDirection.ltr,
               child: Container(
-                height: 86,
+                height: 86 + 48,
                 //margin: EdgeInsets.only(bottom: 3),
                 child: Column(
                   textDirection: TextDirection.rtl,
@@ -557,7 +557,7 @@ class CreatePrintImageController extends GetxController {
                               ),
                       ],
                     ),
-
+                    
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
