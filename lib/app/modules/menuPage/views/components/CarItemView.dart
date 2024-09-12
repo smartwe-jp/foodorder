@@ -39,10 +39,15 @@ class CarItemView extends StatelessWidget {
                     top: ScreenAdapter.width(14), 
                     bottom: ScreenAdapter.width(14)),
       child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
         children: [
           RectangleImageView(image: image, radius: imageRadius),
+
           SizedBox(width: ScreenAdapter.width(20)),
-          Column(
+          Container(
+            width: ScreenAdapter.width(500),
+            child: 
+            Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -52,8 +57,8 @@ class CarItemView extends StatelessWidget {
                 maxLines: 2,
                 style: TextStyle(
                   fontFamily: GFont.getFontFamily(),
-                  fontSize: 38,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 30,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               //subtitle
@@ -91,11 +96,13 @@ class CarItemView extends StatelessWidget {
               
             ],
           ),
+          ),
           Spacer(),
+
           SizedBox(width: ScreenAdapter.width(20)),
+
           Container(
               alignment: Alignment.bottomCenter,
-              //margin: EdgeInsets.only(right: 50),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
@@ -144,7 +151,8 @@ class CarItemView extends StatelessWidget {
                 )
                   
               ],
-            )),
+            )
+          ),
         ],
       ),
     );

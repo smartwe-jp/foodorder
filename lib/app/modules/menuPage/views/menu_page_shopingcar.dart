@@ -36,10 +36,11 @@ extension Shoppingcar on MenuPageView {
                             Container(
                               constraints: BoxConstraints(
                                 maxHeight: ScreenAdapter.height(1000),
-                                maxWidth: ScreenAdapter.width(800),
+                                maxWidth: ScreenAdapter.width(900),
                                 minWidth: ScreenAdapter.width(500),
                                 //minHeight: ScreenAdapter.height(500),
                               ),
+                              //margin: EdgeInsets.only(left: ScreenAdapter.width(100),right: ScreenAdapter.width(100)),
                               padding: EdgeInsets.only(
                                         left: ScreenAdapter.width(10), 
                                         right: ScreenAdapter.width(10), 
