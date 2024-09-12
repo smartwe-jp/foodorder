@@ -83,7 +83,7 @@ class ReimbursePrintView extends StatelessWidget {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 2,
           color: ColorsUtil.hexToColor("#000000"),
-          width: 385,
+          //width: 385,
         ));
   }
 
