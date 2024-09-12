@@ -539,7 +539,7 @@ class CreatePrintImageController extends GetxController {
                               child: Text(
                                 "${lineVosList["menuName"] + ' x' + lineVosList["menuQty"]}",
                                 overflow: TextOverflow.ellipsis,
-                                maxLines: 1,
+                                maxLines: 2,
                                 style: printMenuFont,
                               ),
                             )),
