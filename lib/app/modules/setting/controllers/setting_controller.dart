@@ -65,6 +65,7 @@ class SettingController extends GetxController with StateMixin {
   var progressValue = 0.0;
   var hasExchangeCash = false;
   var hasOutMoney = false;
+  var taskTouch = false;
 
   @override
   void onInit() {

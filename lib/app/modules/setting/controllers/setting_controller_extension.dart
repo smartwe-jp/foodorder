@@ -21,8 +21,10 @@ import 'package:get/get.dart';
 extension SettingControllerExtension on SettingController {
   startPutMoney() async {
     debugPrint("startPutMoney");
+    taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
+    
 
     await _startSupply();
   }
@@ -234,13 +236,18 @@ extension SettingControllerExtension on SettingController {
   cancelReplanish() async {
     debugPrint("cancelReplanish");
     //await CashChanger.removeEventsListener();
+    if (taskTouch) return;
+    taskTouch = true;
+
     ignoreNotify.value = true;
 
     if (getPutMoney.value == 0) {
       await closeDeposit();
       Get.back();
       clearTask();
+      taskTouch = false;
     } else {
+      showEasyLoading();
       final result =
           await dispenseCashOutside(getNoneZeroInfo(getPutMoneyCurrency.value));
       if (result) {
@@ -250,6 +257,8 @@ extension SettingControllerExtension on SettingController {
           clearTask();
         }
       }
+      taskTouch = false;
+      EasyLoading.dismiss();
     }
   }
 
@@ -258,9 +267,9 @@ extension SettingControllerExtension on SettingController {
 
     bool? result =
         await CashChanger.dispenseChangeOutside(count, onSuccess: () {
-      debugPrint("cancelReplanish 1");
+      debugPrint("dispenseCashCount 1");
     }, catchError: (error) {
-      debugPrint("cancelReplanish error: $error");
+      debugPrint("dispenseCashCount error: $error");
       //errorHandleDialog(GString.getToString(checkLanguage.value, error));
     });
     debugPrint("dispenseCashCount result: $result");
@@ -271,32 +280,13 @@ extension SettingControllerExtension on SettingController {
       if (machineCash.isEmpty) return false;
       String outMoneyString = await findChange(machineCash, count);
       if (outMoneyString.isEmpty) {
-        errorHandleDialog(GString.getToString(checkLanguage.value, 'cash_error_over_dispense'));
+        errorHandleDialog(GString.getToString(
+            checkLanguage.value, 'cash_error_over_dispense'));
         return false;
       }
-      final result =
-          await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
+      final result = await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
       return result;
     }
-
-    // var success = false;
-    // Map? result = await CashChanger.dispenseChange(count);
-    // await CashChanger.changerResultNext(
-    //     resultCode: result?['code'] ?? -1,
-    //     onSuccess: () {
-    //       debugPrint("cancelReplanish 1");
-    //       success = true;
-    //     },
-    //     onRetry: () {
-    //       debugPrint("cancelReplanish 2");
-    //       dispenseCashCount(count);
-    //     },
-    //     showError: (String error) {
-    //       debugPrint("cancelReplanish error: $error");
-    //       errorHandleDialog(GString.getToString(checkLanguage.value, error));
-    //       success = false;
-    //     });
-    // return success;
   }
 
   dispenseCashOutside(outInfo) async {
@@ -307,15 +297,15 @@ extension SettingControllerExtension on SettingController {
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
-          debugPrint("cancelReplanish 1");
+          debugPrint("dispenseCashOutside 1");
           success = true;
         },
         onRetry: () {
-          debugPrint("cancelReplanish 2");
+          debugPrint("dispenseCashOutside 2");
           dispenseCashOutside(outInfo);
         },
         showError: (String error) {
-          debugPrint("cancelReplanish error: $error");
+          debugPrint("dispenseCashOutside error: $error");
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
           success = false;
         });
@@ -329,7 +319,8 @@ extension SettingControllerExtension on SettingController {
 
     var success = false;
 
-    Map? machineChangeInfo = await getMachineCashInfos(); //这里会获取失败，应该是上次操作未正常结束。
+    Map? machineChangeInfo =
+        await getMachineCashInfos(); //这里会获取失败，应该是上次操作未正常结束。
     if (machineChangeInfo == null) {
       return;
     }
