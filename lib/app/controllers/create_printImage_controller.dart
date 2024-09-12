@@ -537,24 +537,24 @@ class CreatePrintImageController extends GetxController {
                             textDirection: TextDirection.ltr,
                             child: Expanded(
                               child: Text(
-                                "${lineVosList["menuName"] + ' x' + lineVosList["menuQty"]}",
+                                "${lineVosList["menuName"]+ takeoutTag + ' x' + lineVosList["menuQty"]}",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: printMenuFont,
                               ),
                             )),
-                        (printData["takeOut"] == true)
-                            ? Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: Text(
-                                  "${takeoutTag}",
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: printMenuFont,
-                                ))
-                            : Container(
-                                width: 0,
-                              ),
+                        // (printData["takeOut"] == true)
+                        //     ? Directionality(
+                        //         textDirection: TextDirection.ltr,
+                        //         child: Text(
+                        //           "${takeoutTag}",
+                        //           overflow: TextOverflow.ellipsis,
+                        //           maxLines: 1,
+                        //           style: printMenuFont,
+                        //         ))
+                        //     : Container(
+                        //         width: 0,
+                        //       ),
                       ],
                     ),
                     
