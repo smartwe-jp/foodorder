@@ -537,7 +537,7 @@ class CreatePrintImageController extends GetxController {
                             textDirection: TextDirection.ltr,
                             child: Expanded(
                               child: Text(
-                                "${lineVosList["menuName"]}",
+                                "${lineVosList["menuName"] + ' x' + lineVosList["menuQty"]}",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 1,
                                 style: printMenuFont,
@@ -557,37 +557,50 @@ class CreatePrintImageController extends GetxController {
                               ),
                       ],
                     ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      textDirection: TextDirection.ltr,
-                      children: [
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Container(
-                              //width: ScreenAdapter.width(30),
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "${lineVosList["menuQty"]}",
-                                style: printMenuFont,
-                              ),
-                            )),
-                        SizedBox(
-                          width: 30,
-                        ),
-                        Directionality(
-                            textDirection: TextDirection.ltr,
-                            child: Container(
-                              //width: ScreenAdapter.width(105),
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                "￥${formatMoney(lineVosList["price"])}",
-                                style:
-                                    printMenuFont, //GoogleFonts.zenKakuGothicAntique(fontSize: 26,fontWeight: FontWeight.w300,color: Colors.black87),
-                              ),
-                            )),
-                      ],
+
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Container(
+                          //width: ScreenAdapter.width(105),
+                          alignment: Alignment.centerRight,
+                          child: Text(
+                            "￥${formatMoney(lineVosList["price"])}",
+                            style:
+                                printMenuFont, 
+                          ),
+                        )
                     ),
+                    // Row(
+                    //   mainAxisAlignment: MainAxisAlignment.end,
+                    //   crossAxisAlignment: CrossAxisAlignment.end,
+                    //   textDirection: TextDirection.ltr,
+                    //   children: [
+                    //     Directionality(
+                    //         textDirection: TextDirection.ltr,
+                    //         child: Container(
+                    //           //width: ScreenAdapter.width(30),
+                    //           alignment: Alignment.centerRight,
+                    //           child: Text(
+                    //             "${lineVosList["menuQty"]}",
+                    //             style: printMenuFont,
+                    //           ),
+                    //         )),
+                    //     SizedBox(
+                    //       width: 30,
+                    //     ),
+                    //     Directionality(
+                    //         textDirection: TextDirection.ltr,
+                    //         child: Container(
+                    //           //width: ScreenAdapter.width(105),
+                    //           alignment: Alignment.centerRight,
+                    //           child: Text(
+                    //             "￥${formatMoney(lineVosList["price"])}",
+                    //             style:
+                    //                 printMenuFont, 
+                    //           ),
+                    //         )),
+                    //   ],
+                    // ),
                   ],
                 ),
               )),
@@ -610,20 +623,20 @@ class CreatePrintImageController extends GetxController {
                         textDirection: TextDirection.ltr,
                         child: Expanded(
                           child: Text(
-                            "${lineVosList["menuName"]}${takeoutTag}",
+                            "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
                             style: printMenuFont,
                           ),
                         )),
-                    Directionality(
-                        textDirection: TextDirection.ltr,
-                        child: Container(
-                          width: ScreenAdapter.width(30),
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            "${lineVosList["menuQty"]}",
-                            style: printMenuFont,
-                          ),
-                        )),
+                    // Directionality(
+                    //     textDirection: TextDirection.ltr,
+                    //     child: Container(
+                    //       width: ScreenAdapter.width(30),
+                    //       alignment: Alignment.centerRight,
+                    //       child: Text(
+                    //         "${lineVosList["menuQty"]}",
+                    //         style: printMenuFont,
+                    //       ),
+                    //     )),
                     SizedBox(width: ScreenAdapter.width(30),),
                     Directionality(
                         textDirection: TextDirection.ltr,
