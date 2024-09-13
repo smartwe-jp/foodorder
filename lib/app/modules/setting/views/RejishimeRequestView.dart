@@ -26,7 +26,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 class RejishiMeRequestView extends StatefulWidget {
   final String machineCode;
-  final Function resetCash;
+  final Function(double, Map) resetCash;
   final Future<Map?> Function(int)? recycleCash;
   final Map? usbDevice;
 
@@ -48,7 +48,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectMail = "";
   String selectUser = "";
   double printLength = 2352;
-  Function _resetCash = () {};
+  //Function _resetCash = () {};
   Map _usbDevice = {}.obs;
   int _recycleCash = 0;
 
@@ -56,7 +56,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
   @override
   void initState() {
-    _resetCash = widget.resetCash;
+    //_resetCash = widget.resetCash;
     _usbDevice = widget.usbDevice ?? {};
     debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
     //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
@@ -239,16 +239,16 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
     await request('webBootGloryConfirmClose', method: 'POST', parameters: param)
         .then((val) {
-      EasyLoading.dismiss();
+      //EasyLoading.dismiss();
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
         //printView(response['data']);
         success = true;
-        
       } else {
         //当前没有レジ情報
+        EasyLoading.dismiss();
         success = false;
         showToast('印刷に失敗しました');
       }
@@ -515,7 +515,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _printRejishime(data, double length) async {
-    _showEasyLoading();
+    //_showEasyLoading();
     if (Platform.isAndroid) {
       ByteData byteData = await WidgetToImage.widgetToImage(
         PrintView(isPrint: true, printInfo: data),
@@ -530,24 +530,13 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       Future.delayed(Duration(milliseconds: 300), () async {
         await FlutterPluginMsprinter.sendPrintCut("0");
       });
+      EasyLoading.dismiss();
+      Get.back();
     } else {
-      final printWidget = Container(
-        width: 385,
-        height: length + 150,
-        child: PrintView(isPrint: true, printInfo: data),
-      );
-      await _sendToUsePrinter(printWidget);
+      await widget.resetCash(length, data);
     }
 
-    //await Future.delayed(Duration(milliseconds: 1000), () {
-    //不延迟会出现打印信息被销毁的情况，后续优化。
-    EasyLoading.dismiss();
-    _resetCash();
-    Get.back();
-    //});
-
-    // _resetCash();
-    // Get.back();
+    
   }
 
   _sendToUsePrinter(widget) async {

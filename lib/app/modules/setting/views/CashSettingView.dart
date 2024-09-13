@@ -588,7 +588,7 @@ class CashSettingViewState extends State<CashSettingView> {
 
   showRejishimeView() async {
     Get.dialog(
-        RejishiMeRequestView(machineCode: _machineCode, resetCash: () => {
+        RejishiMeRequestView(machineCode: _machineCode, resetCash: (lenght, data) => {
           widget.resetCash()
         }));
   }

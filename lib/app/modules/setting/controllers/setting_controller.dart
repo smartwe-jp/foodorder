@@ -11,6 +11,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller_ext
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
+import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
@@ -167,6 +168,20 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
+  printRejishimei(length, data) async {
+    final printWidget = Container(
+      width: 385,
+      height: length + 150,
+      child: PrintView(isPrint: true, printInfo: data),
+    );
+    await sendToUsePrinter(printWidget);
+    await Future.delayed(Duration(seconds: 3));
+    EasyLoading.dismiss();
+    Get.back();
+    clearTask();
+    showToast('完了しました');
+  }
+
   showRejishimeiView() async {
     // final catValMap = cashInfoList.map((key, value) {
     //   return MapEntry(getCatVal(key), value);
@@ -176,8 +191,8 @@ class SettingController extends GetxController with StateMixin {
     hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
-        resetCash: () {
-          recycleCash();
+        resetCash: (length, data) async {
+          await printRejishimei(length, data);
         },
         recycleCash: (p0) async {
           debugPrint("recycleCashOut p0 = ${p0}");
@@ -493,8 +508,8 @@ class SettingController extends GetxController with StateMixin {
   recycleCash({isRejishimei = true}) async {
     if (Platform.isWindows) {
       if (isRejishimei) {
-        await clearTask();
-        commonHandleDialog('完了しました');
+        //clearTask();
+        //commonHandleDialog('完了しました');
       } else {
         showEasyLoading();
         if (!await gloryEmptyReport()) {

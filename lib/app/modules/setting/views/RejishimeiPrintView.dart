@@ -232,15 +232,15 @@ class RejishimePrintViewState extends State<PrintView> {
                   _twoContentRow(
                       "消費税", "¥ ${formatSum(printInfo['taxTotal'])}"),
                   _twoContentRow(
-                      "8%对象", "¥ ${formatSum(printInfo['taxTotalA'])}",
+                      "8%対象", "¥ ${formatSum(printInfo['taxTotalA'])}",
                       leading: 45.0),
                   _twoContentRow(
-                      "10%对象", "¥ ${formatSum(printInfo['taxTotalB'])}",
+                      "10%対象", "¥ ${formatSum(printInfo['taxTotalB'])}",
                       leading: 45.0),
                   _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
-                  _twoContentRow("8%对象", "${formatSum(printInfo['qtyA'])}",
+                  _twoContentRow("8%対象", "${formatSum(printInfo['qtyA'])}",
                       leading: 45.0),
-                  _twoContentRow("10%对象", "${formatSum(printInfo['qtyB'])}",
+                  _twoContentRow("10%対象", "${formatSum(printInfo['qtyB'])}",
                       leading: 45.0),
                   //_twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
                   _twoContentRow(
@@ -292,7 +292,7 @@ class RejishimePrintViewState extends State<PrintView> {
         if (printInfo['cashInfoGlory'] != null &&
             (printInfo['cashInfoGlory'] is Map &&
                 !printInfo['cashInfoGlory'].isEmpty))
-          _normalTitle("釣銭機情報（枚数）"),
+          _normalTitle("釣銭機情報"),
 
         if (printInfo['cashInfoGlory'] != null &&
             (printInfo['cashInfoGlory'] is Map &&
@@ -333,7 +333,7 @@ class RejishimePrintViewState extends State<PrintView> {
                 child: Text(
                   title,
                   style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(24),
+                      fontSize: ScreenAdapter.fontSize(26),
                       fontFamily: GFont.getFontFamily(),
                       color: Colors.black,
                       fontWeight: FontWeight.w500),
@@ -347,7 +347,7 @@ class RejishimePrintViewState extends State<PrintView> {
                 child: Text(
                   content,
                   style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(24),
+                      fontSize: ScreenAdapter.fontSize(26),
                       fontFamily: GFont.getFontFamily(),
                       color: Colors.black,
                       fontWeight: FontWeight.w500),
@@ -383,7 +383,7 @@ class RejishimePrintViewState extends State<PrintView> {
         2: FlexColumnWidth(150.0),
       },
       children: <TableRow>[
-        _tableRow(['金種', '残り', '総額'],
+        _tableRow(['金種', '残り', '金額'],
             backgroundColor: isPrint ? Colors.white : Colors.grey[200]),
         ...displayInfo
             .map((content) => _tableRow(content, alignment: Alignment.center))

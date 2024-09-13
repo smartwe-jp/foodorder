@@ -377,7 +377,7 @@ extension SettingControllerExtension on SettingController {
     return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbPrinter.value));
   }
 
-  _sendToUsePrinter(widget) {
+  sendToUsePrinter(widget) async {
     final printWidget = ReceiptConstrainedBox(widget);
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
@@ -412,11 +412,12 @@ extension SettingControllerExtension on SettingController {
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         if (printView != null) {
-          _sendToUsePrinter(printView);
+          sendToUsePrinter(printView);
         }
         Get.back();
         clearTask();
-        commonHandleDialog('完了しました');
+        showToast('完了しました');
+        //commonHandleDialog('完了しました');
         //showToast('完了しました', context: Get.context);
       } else {
         commonHandleDialog('補充失败!');

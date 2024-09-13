@@ -31,15 +31,15 @@ extension ExchangeControllerExtension on SettingController {
       method: 'POST',
       parameters: formData,
     ).then((value) {
-      debugPrint('value: $value');
+      //debugPrint('value: $value');
       final response = json.decode(value.toString());
-      debugPrint("response: $response");
+      debugPrint("getServerCashInfo response: $response");
       // ignore: invalid_use_of_protected_member
       if (response["code"] == 200 && response['data'] != null) {
         cashInfoList.value = response['data'];
-        debugPrint('cashInfoList: ${cashInfoList.value}');
+        //debugPrint('cashInfoList: ${cashInfoList.value}');
         cashInfo.value = _changeMapKey(response['data'], getCatVal);
-        debugPrint('cashInfo: $cashInfo');
+        //debugPrint('cashInfo: $cashInfo');
         update();
       }
     }).catchError((error) {
