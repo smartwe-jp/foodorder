@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -24,7 +25,6 @@ extension SettingControllerExtension on SettingController {
     taskTouch = false;
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
-    
 
     await _startSupply();
   }
@@ -137,6 +137,11 @@ extension SettingControllerExtension on SettingController {
       if (result > 0) {
         debugPrint("getPutMoney.value==${result.toString()}");
         getPutMoney.value = result;
+        showCashTimer?.cancel();
+        if (taskTouch) {
+          taskTouch = false;
+          EasyLoading.dismiss();
+        }
         //update();
         //_getInputMoneyInfo();
         _supplyCounts();
@@ -233,21 +238,32 @@ extension SettingControllerExtension on SettingController {
     return success;
   }
 
-  cancelReplanish() async {
-    debugPrint("cancelReplanish");
-    //await CashChanger.removeEventsListener();
+  cancelTimer() async {
     if (taskTouch) return;
     taskTouch = true;
+    showEasyLoading(content: 'お待ち下さい');
+
+    var seconds = 5;
+    showCashTimer?.cancel();
+    showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      seconds--;
+      if (seconds == 0) {
+        showCashTimer?.cancel();
+        cancelReplanish();
+      }
+    });
+  }
+
+  cancelReplanish() async {
+    debugPrint("cancelReplanish");
 
     ignoreNotify.value = true;
-
     if (getPutMoney.value == 0) {
       await closeDeposit();
       Get.back();
       clearTask();
       taskTouch = false;
     } else {
-      showEasyLoading();
       final result =
           await dispenseCashOutside(getNoneZeroInfo(getPutMoneyCurrency.value));
       if (result) {
@@ -258,8 +274,8 @@ extension SettingControllerExtension on SettingController {
         }
       }
       taskTouch = false;
-      EasyLoading.dismiss();
     }
+    EasyLoading.dismiss();
   }
 
   dispenseCashCount(count) async {

@@ -287,7 +287,7 @@ class ReplanishView extends StatelessWidget {
                               child: ElevatedButton(
                                 onPressed: () async {
                                   //cancelReplanish();
-                                  controller.cancelReplanish();
+                                  controller.cancelTimer();
                                 },
                                 child: Text("キャンセル",
                                     style: TextStyle(
