@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/color.dart';
+import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
@@ -67,6 +71,7 @@ class SettingController extends GetxController with StateMixin {
   var hasExchangeCash = false;
   var hasOutMoney = false;
   var taskTouch = false;
+  Timer? showCashTimer;
 
   @override
   void onInit() {
@@ -98,17 +103,16 @@ class SettingController extends GetxController with StateMixin {
     switchValue.value = value; // 更新值
   }
 
-  showEasyLoading() {
-    //var _showTag;
-    // _showTag = Text("Uploading……",
-    //     style: TextStyle(
-    //       fontSize: ScreenAdapter.fontSize(25),
-    //       fontFamily: GFont.getFontFamily(),
-    //       fontWeight: FontWeight.w600,
-    //       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-    //     ));
+  showEasyLoading({content}) {
+    var _showTag;
+    _showTag = Text("$content",
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(25),
+          fontFamily: GFont.getFontFamily(),
+          fontWeight: FontWeight.w600,
+          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+        ));
     EasyLoading.show(
-      //status: 'loading...',
       indicator: Container(
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
@@ -116,6 +120,7 @@ class SettingController extends GetxController with StateMixin {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
+            if (content != null) _showTag,
             InkWell(
               onLongPress: () {
                 EasyLoading.dismiss();
