@@ -2,8 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/fontSize.dart';
 import 'package:foodorder/app/config/imageData.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
@@ -63,7 +65,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text("桌号：",
+        Text(GString.getToString(controller.checkLanguage.value, "show_check_tableno"),
             style: TextStyle(
                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                 fontWeight: FontWeight.w600,
@@ -86,7 +88,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Text("总额：",
+            Text(GString.getToString(controller.checkLanguage.value, "settlement_total_price") + ' :',
                 style: TextStyle(
                     //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
@@ -95,12 +97,39 @@ class ScanDetailView extends GetView<CheckoutPageController> {
             SizedBox(
               width: ScreenAdapter.width(20),
             ),
-            Text('¥ ${controller.formatSum(count)}',
-                style: TextStyle(
-                    color: const Color.fromARGB(255, 161, 17, 6),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(50.0)))
+
+            RichText(
+                text: TextSpan(
+                    text: "¥",
+                    //GString.getToString(this._checkLanguage, "show_price_front"),
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceLeft),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    ),
+                    children: [
+                      TextSpan(
+                        text: controller.formatSum(int.parse(controller.totlaPrice.value)),
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPrice),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                        ),
+                      ),
+                      TextSpan(
+                        text:
+                        "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceRight),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                        ),
+                      ),
+                    ]),
+              ),
           ],
         ));
   }
