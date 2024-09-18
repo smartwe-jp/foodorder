@@ -15,6 +15,7 @@ import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -254,7 +255,6 @@ class SettlementController extends GetxController with StateMixin {
             Get.back();
           });
         }
-        
       }
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
@@ -329,6 +329,7 @@ class SettlementController extends GetxController with StateMixin {
       seconds.value--;
 
       if (this.seconds == 0) {
+        debugPrint("---- Time out quit -----");
         //如果60秒未接收返回正确通知，则进行下一步操作
         //eventBus.fire(new setShowCashEvent('支付成功...'));
         showCashTimer?.cancel(); //清除定时器
@@ -360,6 +361,18 @@ class SettlementController extends GetxController with StateMixin {
     }
     EasyLoading.dismiss();
     Get.back();
+  }
+
+  showSuccessAlert(Function task) async {
+    debugPrint("showSuccessAlert");
+    EasyLoading.dismiss();
+
+    Get.dialog(PayResultView(
+      dismiss: () {
+        Get.back();
+        task();
+      },
+    ));
   }
 
   goToNewMyHome() {
@@ -1234,7 +1247,9 @@ class SettlementController extends GetxController with StateMixin {
       if (payment_method_num.value == "1") {
         nextOper(orderId);
       } else {
-        goToNewMyHome();
+        showSuccessAlert(() {
+          goToNewMyHome();
+        });
       }
     });
   }
@@ -1588,11 +1603,6 @@ class SettlementController extends GetxController with StateMixin {
         showCashTimer?.cancel();
         seconds.value = 180;
         //关闭机器后的跳转
-        if (isPrint.value == true) {
-          gotonewBack();
-        } else {
-          gotonewMenuPage();
-        }
         endtradet.cancel();
       } else if (endStatus.value == "Sending") {
         debugPrint("Sending just wait");
@@ -1665,7 +1675,7 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "price": int.parse(getPutMoney.value),
       "operation": operation,
-      "coinForbidden": Platform.isAndroid ? int.parse(is_allow_oneyen.value):1
+      "coinForbidden": Platform.isAndroid ? int.parse(is_allow_oneyen.value) : 1
     };
     print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)

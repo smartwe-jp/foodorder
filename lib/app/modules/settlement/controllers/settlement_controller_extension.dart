@@ -144,7 +144,7 @@ extension SettlementControllerExtension on SettlementController {
           //     _payCubeCloseTransaction();
           //   }
           // }
-          _payCubeCloseTransaction();
+          _payCubeCloseTransaction(true);
         },
         onRetry: () {
           debugPrint("endDeposit 2");
@@ -290,7 +290,7 @@ extension SettlementControllerExtension on SettlementController {
     }
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
-    _payCubeCloseTransaction();
+    _payCubeCloseTransaction(false);
   }
 
   _getPayCubeOutMoney() async {
@@ -333,21 +333,42 @@ extension SettlementControllerExtension on SettlementController {
   //汇报出金币种,请求后台
   _reportOutMoney() {
     isReportOutMoney.value = true;
-    _payCubeCloseTransaction();
+    _payCubeCloseTransaction(false);
   }
 
-  _payCubeCloseTransaction() async {
+  _payCubeCloseTransaction(bool cancel) async {
     debugPrint("payCubeCloseTransaction");
     if (int.parse(getPutMoney.value) > 0) {
       //汇报入金币种
       _getPayCubePutMoneyCurrency();
     }
     CashStep.value = 4;
-    if (isPrint.value == true) {
-      gotonewBack();
+
+    debugPrint('cash showSuccessAlert');
+
+
+    if (cancel) {
+      if (isPrint.value == true) {
+        gotonewBack();
+      } else {
+        gotonewMenuPage();
+      }
     } else {
-      gotonewMenuPage();
+      showSuccessAlert(() {
+        if (isPrint.value == true) {
+          gotonewBack();
+        } else {
+          gotonewMenuPage();
+        }
+      });
     }
+    
+
+    // if (isPrint.value == true) {
+    //   gotonewBack();
+    // } else {
+    //   gotonewMenuPage();
+    // }
   }
 
   _getPayCubePutMoneyCurrency() async {
