@@ -1,5 +1,6 @@
 import 'dart:ffi';
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
@@ -76,12 +77,12 @@ class GridItemView extends StatelessWidget {
                         ],
                       ),
                     ),
-                    
-                    ItemInfoArea(
+                    Expanded(child: ItemInfoArea(
                         title: title,
                         subtitle: price,
                         option: option,
-                        onTap: onTap),
+                        onTap: onTap),)
+                    
                   ],
                 ),
               ),
@@ -138,12 +139,13 @@ class ItemInfoArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         //标题
         MainTitle(title: title),
         //价格
-        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+        Row(mainAxisAlignment: MainAxisAlignment.start,
+        children: [
           SubTitle(title: subtitle),
           //SizedBox(width: ScreenAdapter.width(20)),
           //option button
@@ -163,15 +165,21 @@ class MainTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-        alignment: Alignment.centerLeft,
-        child: Text(
-          title,
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(25),
-            fontWeight: FontWeight.w500,
-            fontFamily: GFont.getFontFamily(),
-            color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+    return Expanded(
+        child: 
+        Container(
+          alignment: Alignment.centerLeft,
+          child: AutoSizeText(
+            title,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(22),
+              fontWeight: FontWeight.w500,
+              fontFamily: GFont.getFontFamily(),
+              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+            ),
           ),
         ));
   }
@@ -387,10 +395,6 @@ class _GridMenuViewState extends State<GridMenuViews> {
                   },
                   itemCount: snapshot.data!.length,
                 );
-
-
-
-
               }
             },
           ),
