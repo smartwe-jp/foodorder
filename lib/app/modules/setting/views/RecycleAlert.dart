@@ -41,7 +41,7 @@ class RecycleAlert extends StatelessWidget {
                   Container(
                     padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
                     alignment: Alignment.centerLeft,
-                    child: Text("預り金回収してもよろしいですか？",
+                    child: Text("預り金を全回収してもよろしいですか？",
                         style: TextStyle(
                           fontFamily: 'NotoSansJP',
                           fontSize: ScreenAdapter.fontSize(22),

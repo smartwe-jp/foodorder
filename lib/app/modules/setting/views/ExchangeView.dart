@@ -6,6 +6,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller.dar
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 
 class Exchangeview extends StatelessWidget {
   final SettingController controller;
@@ -107,7 +108,7 @@ class Exchangeview extends StatelessWidget {
                         textAlign: TextAlign.center,
                       ),
                       Text(
-                        "${controller.getPutMoney.value.toString()} 円",
+                        "${formatSum(controller.getPutMoney.value)} 円",
                         style: TextStyle(
                             fontSize: ScreenAdapter.fontSize(26),
                             fontFamily: GFont.getFontFamily(),
@@ -156,7 +157,7 @@ class Exchangeview extends StatelessWidget {
                       onPressed: () async {
                         await controller.startPutExchangeMoney();
                       },
-                      child: Text("開始投币",
+                      child: Text("投入開始",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(26),
@@ -180,7 +181,8 @@ class Exchangeview extends StatelessWidget {
                           height: ScreenAdapter.height(80),
                           child: ElevatedButton(
                             onPressed: () async {
-                              await controller.cancelReplanish();
+                              //await controller.cancelReplanish();
+                              controller.cancelTimer();
                             },
                             // onLongPress: () async {
                             //   controller.clearTask();
@@ -302,11 +304,11 @@ class Exchangeview extends StatelessWidget {
             child: ElevatedButton(
               onPressed: () async {
                 //if (changeCount == 0) {
-                  await controller.exChangeFlow(moneyType, moneyCount, changeCount);
+                  await controller.exchangeFlow(moneyType, moneyCount, changeCount);
                 //}
               },
               child: Text(
-                "兑换",
+                "両替",
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(26),
                     fontFamily: GFont.getFontFamily(),
@@ -325,6 +327,11 @@ class Exchangeview extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String formatSum(int sum) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(sum);
   }
 
   //钱币信息显示Item 显示币种和数量 币种使用圆弧按钮显示 数量使用文本显示

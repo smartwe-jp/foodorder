@@ -347,7 +347,7 @@ class ReimbursePrintView extends StatelessWidget {
                             width: 10,
                           ),
                           Text(
-                            "¥ ${reimburseInfo["amount"]}",
+                            "¥ ${formatSum(reimburseInfo["amount"])}",
                             style: contentStyle,
                           ),
                         ],

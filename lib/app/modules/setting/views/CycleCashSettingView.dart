@@ -38,7 +38,7 @@ extension CycleCashSettingView on SettingView {
               Container(
                 height: 80,
                 alignment: Alignment.center,
-                child: Text("金种",
+                child: Text("金種",
                     style: TextStyle(
                       fontFamily: 'NotoSansJP',
                       fontSize: ScreenAdapter.fontSize(20),

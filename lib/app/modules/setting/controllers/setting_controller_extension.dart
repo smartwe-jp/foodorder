@@ -254,6 +254,22 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
+  confirmTimer(printView) async {
+    if (taskTouch) return;
+    taskTouch = true;
+    showEasyLoading(content: 'お待ち下さい');
+
+    var seconds = 5;
+    showCashTimer?.cancel();
+    showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      seconds--;
+      if (seconds == 0) {
+        showCashTimer?.cancel();
+        reportReplanishInfo(printView);
+      }
+    });
+  }
+
   cancelReplanish() async {
     debugPrint("cancelReplanish");
 
@@ -407,9 +423,12 @@ extension SettingControllerExtension on SettingController {
   //上报
   reportReplanishInfo(printView) async {
     //该步骤失败，后续程序非正常退出，数据与后台不一致，如何记录。
-    showEasyLoading();
+    //showEasyLoading();
     ignoreNotify.value = true;
-    if (!await closeDeposit()) return;
+    if (!await closeDeposit()) {
+      taskTouch = false;
+      return;
+    }
 
     var formData = {
       'changeInfoMap': uploadMoneyInfo,
@@ -422,6 +441,7 @@ extension SettingControllerExtension on SettingController {
       method: 'POST',
       parameters: formData,
     ).then((value) async {
+      taskTouch = false;
       debugPrint("reportReplanishInfo value: $value");
       final response = json.decode(value.toString());
       debugPrint("response: $response");
@@ -440,6 +460,7 @@ extension SettingControllerExtension on SettingController {
         //showToast('補充失败!', context: Get.context);
       }
     }).catchError((error) {
+      taskTouch = false;
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
       commonHandleDialog('補充失败!');

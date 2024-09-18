@@ -105,7 +105,7 @@ class RejishimePrintViewState extends State<PrintView> {
         padding: EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 80),
         child: Column(
           children: [
-            _normalTitle("お釣り金補充情報"),
+            _normalTitle("お預かり金補充情報"),
             SizedBox(height: 30),
             _supplyTable(cashInfo)
           ],

@@ -64,6 +64,7 @@ const servicePath = {
   //精算机使用接口
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
   'webBootCalculate': base_url + 'pad/web/boot/calculate', //扫桌号二维码下单
+  'webBootCalculateV2': base_url + 'web/boot/calculate/v2', //扫桌号二维码下单
   'checkOutOrderDetails':
       base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
 
