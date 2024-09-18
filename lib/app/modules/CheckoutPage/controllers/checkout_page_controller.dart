@@ -4,8 +4,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:intl/intl.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
@@ -19,8 +22,8 @@ import '../../menuPage/views/SelectPayment.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
   //TODO: Implement CheckoutPageController
-  TextEditingController scanQrCodeHomeController = new TextEditingController();
-  FocusNode scanQrCodeHomeFocusNode = FocusNode();
+  // TextEditingController scanQrCodeHomeController = new TextEditingController();
+  // FocusNode scanQrCodeHomeFocusNode = FocusNode();
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
@@ -31,7 +34,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxBool actuarial = false.obs;
   RxBool lineup = false.obs;
   RxBool takeOut = false.obs; //是否允许外带
-  RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
+  RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
   RxString isReservation = "0".obs;
 
   RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
@@ -73,13 +76,15 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString orderId = "".obs;
   RxString totlaPrice = "0".obs;
   RxString tableNum = "0".obs;
+  RxMap orderInfoMap = {}.obs;
 
   RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
 
   @override
   void onInit() {
-    Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+    Future.delayed(const Duration(),
+        () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
     //Get.focusScope.requestFocus(scanQrCodeFocusNode);
     getMachineInfo();
@@ -96,13 +101,11 @@ class CheckoutPageController extends GetxController with StateMixin {
     super.onClose();
   }
 
-
 //获取机器信息
   getMachineInfo() async {
     var machineCodestr = await HomeServices.getMachineInfo();
     if (machineCodestr != "") {
-        machineCode.value = machineCodestr;
-
+      machineCode.value = machineCodestr;
     }
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
 
@@ -118,7 +121,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   getSmartweMachineSettingData() async {
-    var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
+    var smartweMachineSetting =
+        await HomeServices.getSmartweMachineSettingData();
     actuarial.value = smartweMachineSetting["machineActuarial"];
     lineup.value = smartweMachineSetting["machineLineup"];
 
@@ -128,20 +132,25 @@ class CheckoutPageController extends GetxController with StateMixin {
   getSystemSettingInfo() async {
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-      menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
-      isReservation.value = SystemSettingInfo["isReservation"];
-      isAllowPos.value = SystemSettingInfo['isAllowPos'];
-      isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
-      takeOut.value = (SystemSettingInfo['diningType'] == "2" || SystemSettingInfo['diningType'] == "3") ? true : false;
+    menu_direction.value = (SystemSettingInfo["menuDirection"] != "" &&
+            SystemSettingInfo["menuDirection"] != null)
+        ? SystemSettingInfo["menuDirection"]
+        : "1";
+    isReservation.value = SystemSettingInfo["isReservation"];
+    isAllowPos.value = SystemSettingInfo['isAllowPos'];
+    isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
+    takeOut.value = (SystemSettingInfo['diningType'] == "2" ||
+            SystemSettingInfo['diningType'] == "3")
+        ? true
+        : false;
 
     getmenchineLanguages();
-
   }
 
   getmenchineLanguages() async {
     var menchineLanguagesData = await HomeServices.getMachineLanguages();
 
-      machineLanguagesList.value = menchineLanguagesData;
+    machineLanguagesList.value = menchineLanguagesData;
 
     getMachineActivateInfo();
   }
@@ -179,8 +188,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     change(null, status: RxStatus.success());
   }
 
-
-  showOrderEasyLoading(){
+  showOrderEasyLoading() {
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
@@ -191,14 +199,16 @@ class CheckoutPageController extends GetxController with StateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             InkWell(
-              onLongPress: (){
+              onLongPress: () {
                 EasyLoading.dismiss();
               },
               child: Container(
                 //width: ScreenAdapter.width(400),
                 margin: EdgeInsets.only(top: 60),
                 height: ScreenAdapter.height(200),
-                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
               ),
             ),
           ],
@@ -206,10 +216,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       ),
       maskType: EasyLoadingMaskType.black,
     );
-
   }
 
-  _showDialogError(msg){
+  _showDialogError(msg) {
     //查询订单弹出提示
     /*Get.dialog(
         Container(
@@ -284,15 +293,13 @@ class CheckoutPageController extends GetxController with StateMixin {
         )
     );*/
 
-    Get.dialog(
-        DialogUtils.alertOneButton(msg,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-            contentTagImg:"error_public",
-            confirm: () {
-              Get.back();
-            })
-    );
+    Get.dialog(DialogUtils.alertOneButton(msg,
+        title: GString.getToString(checkLanguage.value, "tag_title"),
+        confirmtitle:
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        contentTagImg: "error_public", confirm: () {
+      Get.back();
+    }));
   }
 
   _getOrderKey(qrCodeString) {
@@ -300,152 +307,208 @@ class CheckoutPageController extends GetxController with StateMixin {
     return regExp.stringMatch(qrCodeString).toString().substring(3);
   }
 
-  doNextPay(){
-    var _orderkey = scanQrCodeController.text;//print(_orderkey);
-    if(scanQrCodeController.text !=""){
+  String formatSum(int sum) {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(sum);
+  }
+
+  requestOrderList(TextEditingController textController, FocusNode focus) {
+    debugPrint('qrCodeString: ${textController.text}');
+
+    String orderKey = textController.text;
+    if (orderKey.isEmpty) return;
+
+    if (orderKey.contains('?p=') == true) {
+      //正则实现截取'?p='之后的字符串
+      orderKey = _getOrderKey(textController.text);
+    }
+
+    debugPrint('orderKey : $orderKey');
+
+    var formData = {
+      "orderKey": orderKey,
+      "language": checkLanguage.value,
+      "machineCode": machineCode.value
+    };
+
+    debugPrint('formData: $formData');
+
+    request('webBootCalculateV2', method: 'POST', parameters: formData)
+        .then((val) {
+      print('webBootCalculateV2:$val');
+
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200 &&
+          response["data"] != null &&
+          response["data"].isNotEmpty) {
+        if (response["data"]["totalPrice"] > 0) {
+          // scanQrCodeController.text = "";
+          // scanQrCodeFocusNode.requestFocus();
+          orderId.value = response["data"]["orderId"].toString();
+          totlaPrice.value = response["data"]["totalPrice"].toString();
+          tableNum.value = response["data"]["tableNum"].toString();
+          orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
+          debugPrint('/scan-detail');
+          Get.toNamed('/scan-detail');
+        } else {
+          textController.text = "";
+          focus.requestFocus();
+        }
+      } else {
+        textController.text = "";
+
+        _showDialogError(response['msg']);
+        focus.requestFocus(); // 获取焦点
+      }
+    }).catchError((error) {
+      print('webBootCalculateV2 error:${error.toString()}');
+    });
+  }
+
+  doNextPay() {
+    var _orderkey = scanQrCodeController.text; //print(_orderkey);
+    if (scanQrCodeController.text != "") {
       //_showOrderEasyLoading();
-      if(scanQrCodeController.text.contains('?p=') == true){
+      if (scanQrCodeController.text.contains('?p=') == true) {
         //正则实现截取'?p='之后的字符串
         _orderkey = _getOrderKey(scanQrCodeController.text);
       }
       //自定义声音
       //playQRScannerSound();
 
-      var formData = {
-        "orderKey": _orderkey
-      };
-      request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
+      var formData = {"orderKey": _orderkey};
+      request('webBootCalculate', method: 'POST', parameters: formData)
+          .then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
         //print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          if(response["data"]["totalPrice"] >0){
-              orderId.value = response["data"]["orderId"].toString();
-              totlaPrice.value = response["data"]["totalPrice"].toString();
-              tableNum.value = response["data"]["tableNum"].toString();
-            _showSelectMealTypeAndPaymentMethodDialog();
-          }else{
+        if (response['code'] == 200 &&
+            response["data"] != null &&
+            response["data"].isNotEmpty) {
+          if (response["data"]["totalPrice"] > 0) {
+            orderId.value = response["data"]["orderId"].toString();
+            totlaPrice.value = response["data"]["totalPrice"].toString();
+            tableNum.value = response["data"]["tableNum"].toString();
+            showSelectMealTypeAndPaymentMethodDialog();
+          } else {
             scanQrCodeController.text = "";
             scanQrCodeFocusNode.requestFocus();
           }
-
-        }else{
+        } else {
           scanQrCodeController.text = "";
 
           _showDialogError(response['msg']);
-          scanQrCodeFocusNode.requestFocus();// 获取焦点
+          scanQrCodeFocusNode.requestFocus(); // 获取焦点
         }
       });
     }
   }
 
-  doNextHomePay(){
-    var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
-    if(scanQrCodeHomeController.text !=""){
+  doNextHomePay() {
+    var _orderkey = scanQrCodeController.text; //print(_orderkey);
+    if (scanQrCodeController.text != "") {
       //_showOrderEasyLoading();
-      if(_orderkey.contains('?p=') == true){
+      if (_orderkey.contains('?p=') == true) {
         //正则实现截取'?p='之后的字符串
-        _orderkey = _getOrderKey(scanQrCodeHomeController.text);
+        _orderkey = _getOrderKey(scanQrCodeController.text);
       }
       //自定义声音
       //playQRScannerSound();
 
-      var formData = {
-        "orderKey": _orderkey
-      };
-      request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
+      var formData = {"orderKey": _orderkey};
+      request('webBootCalculate', method: 'POST', parameters: formData)
+          .then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
         //print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          if(response["data"]["totalPrice"] >0){
+        if (response['code'] == 200 &&
+            response["data"] != null &&
+            response["data"].isNotEmpty) {
+          if (response["data"]["totalPrice"] > 0) {
             orderId.value = response["data"]["orderId"].toString();
             totlaPrice.value = response["data"]["totalPrice"].toString();
             tableNum.value = response["data"]["tableNum"].toString();
-            _showSelectMealTypeAndPaymentMethodDialog();
-          }else{
-            scanQrCodeHomeController.text = "";
-            scanQrCodeHomeFocusNode.requestFocus();
+            showSelectMealTypeAndPaymentMethodDialog();
+          } else {
+            scanQrCodeController.text = "";
+            scanQrCodeFocusNode.requestFocus();
           }
-
-        }else{
-          scanQrCodeHomeController.text = "";
+        } else {
+          scanQrCodeController.text = "";
 
           _showDialogError(response['msg']);
-          scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+          scanQrCodeFocusNode.requestFocus(); // 获取焦点
         }
       });
     }
   }
 
   //选择食用方式和支付方式
-  _showSelectMealTypeAndPaymentMethodDialog() async {
+  showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
-    scanQrCodeHomeFocusNode.requestFocus();
-    Get.dialog(
-        SelectPaymentPage(
-            checkLanguage: checkLanguage.value,
-            menuCount: 0,
-            //mealType:_mealType,
-            isAllowPos: isAllowPos.value,
-            isAllowReceipt: isAllowReceipt.value,
-            payment_method_num: payment_method_num.value,
-            showCash: showCash.value,
-            showWechat: showWechat.value,
-            showAlipay: showAlipay.value,
-            showPayPay: showPayPay.value,
-            showauPay: showauPay.value,
-            showdPay: showdPay.value,
-            showrPay: showrPay.value,
-            showmPay: showmPay.value,
-            showCreditCard: showCreditCard.value,
-            showPosEdy: showPosEdy.value,
-            showPosiD: showPosiD.value,
-            showPosIC: showPosIC.value,
-            showPosQUICPay: showPosQUICPay.value,
-            showPosWAON: showPosWAON.value,
-            showPosnanaco: showPosnanaco.value,
-            showVisa: showVisa.value,
-            showMaster: showMaster.value,
-            showJcb: showJcb.value,
-            showUnionPay: showUnionPay.value,
-            showAmericanExpress: showAmericanExpress.value,
-            showDinersClub:showDinersClub.value,
-            showDiscover: showDiscover.value,
-            shopCartTotalPrice:totlaPrice.value,
-            tableNum: tableNum.value,
-            onConfrimClick: (String isAllowPosstr, String payment_method_numcheck, String receiptPrintTypeString) {
-                isAllowPos.value = isAllowPosstr;
-                payment_method_num.value = payment_method_numcheck;
-                receiptPrintType.value = receiptPrintTypeString;
-                //checkLanguage.value = "JP";
-                scanQrCodeController.text = "";
-                scanQrCodeHomeController.text = "";
-                showOpenPayment.value = true;
+    //scanQrCodeHomeFocusNode.requestFocus();
+    Get.dialog(SelectPaymentPage(
+        checkLanguage: checkLanguage.value,
+        menuCount: 0,
+        //mealType:_mealType,
+        isAllowPos: isAllowPos.value,
+        isAllowReceipt: isAllowReceipt.value,
+        payment_method_num: payment_method_num.value,
+        showCash: showCash.value,
+        showWechat: showWechat.value,
+        showAlipay: showAlipay.value,
+        showPayPay: showPayPay.value,
+        showauPay: showauPay.value,
+        showdPay: showdPay.value,
+        showrPay: showrPay.value,
+        showmPay: showmPay.value,
+        showCreditCard: showCreditCard.value,
+        showPosEdy: showPosEdy.value,
+        showPosiD: showPosiD.value,
+        showPosIC: showPosIC.value,
+        showPosQUICPay: showPosQUICPay.value,
+        showPosWAON: showPosWAON.value,
+        showPosnanaco: showPosnanaco.value,
+        showVisa: showVisa.value,
+        showMaster: showMaster.value,
+        showJcb: showJcb.value,
+        showUnionPay: showUnionPay.value,
+        showAmericanExpress: showAmericanExpress.value,
+        showDinersClub: showDinersClub.value,
+        showDiscover: showDiscover.value,
+        shopCartTotalPrice: totlaPrice.value,
+        tableNum: tableNum.value,
+        onConfrimClick: (String isAllowPosstr, String payment_method_numcheck,
+            String receiptPrintTypeString) {
+          isAllowPos.value = isAllowPosstr;
+          payment_method_num.value = payment_method_numcheck;
+          receiptPrintType.value = receiptPrintTypeString;
+          //checkLanguage.value = "JP";
+          scanQrCodeController.text = "";
+          //scanQrCodeHomeController.text = "";
+          showOpenPayment.value = true;
 
-              var paymentMethod = ["3","4","5","6","7","8","9","10"];
-              if (paymentMethod.contains(payment_method_num.value) == true) {
-                getPosSettingInfo();
-              }else{
-                //postNewOrderId();
-                goToSettlement();
-              }
-
-            },
-            onCancelClick: (String isBack){
-              if(isBack == "back"){
-                scanQrCodeController.text = "";
-                scanQrCodeHomeController.text = "";
-              }
-              scanQrCodeFocusNode.requestFocus();// 获取焦点
-              scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
-            }
-        )
-    );
+          var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
+          if (paymentMethod.contains(payment_method_num.value) == true) {
+            getPosSettingInfo();
+          } else {
+            //postNewOrderId();
+            goToSettlement();
+          }
+        },
+        onCancelClick: (String isBack) {
+          if (isBack == "back") {
+            scanQrCodeController.text = "";
+            //scanQrCodeHomeController.text = "";
+          }
+          scanQrCodeFocusNode.requestFocus(); // 获取焦点
+          //scanQrCodeHomeFocusNode.requestFocus(); // 获取焦点
+        }));
   }
 
   postNewOrderId({orderIdIfTakeOut = ""}) {
-
     if (orderId.value == "") {
       orderId.value = orderIdIfTakeOut;
     }
@@ -454,30 +517,28 @@ class CheckoutPageController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "machineCode": machineCode.value,
     };
-    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+    request('webBootToPayConfirm', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 
-      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
-
-          orderId.value = response['data']["orderId"];
-          print(orderId.value);
-          //goToSettlement();
-      }else{
-
+      if (response['code'] == 200 &&
+          response['data'] != null &&
+          response['data']['orderId'] != null) {
+        orderId.value = response['data']["orderId"];
+        print(orderId.value);
+        //goToSettlement();
+      } else {
         //showToast(response['data']["message"]);
-        Get.dialog(
-            DialogUtils.alertOneButton("${response['data']["message"]}",
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton("${response['data']["message"]}",
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            confirm: () {
+          Get.back();
+        }));
       }
     });
-
-
   }
 
   getPosSettingInfo() async {
@@ -487,51 +548,49 @@ class CheckoutPageController extends GetxController with StateMixin {
     //postNewOrderId();
     goToSettlement();
   }
-  goToSettlement(){
+
+  goToSettlement() {
     scanQrCodeController.text = "";
-    scanQrCodeHomeController.text = "";
-    Get.toNamed('/settlement',preventDuplicates: false,
-        arguments: {
-          "checkLanguage": checkLanguage.value,
-          "machineCode": machineCode.value,
-          "orderId" : orderId.value,
-          "totalPrice" : totlaPrice.value,
-          "machineMode":"2",
-          "isAllowPos": isAllowPos.value,
-          "receiptPrintType": receiptPrintType.value,
-          "posIp": pos_ip.value,
-          "posPort": pos_port.value,
-          "paymentMethod":payment_method_num.value,
-          "showWechat": showWechat.value,
-          "showAlipay": showAlipay.value,
-          "showPayPay": showPayPay.value,
-          "showCreditCard": showCreditCard.value,
-          "showauPay": showauPay.value,
-          "showdPay": showdPay.value,
-          "showrPay": showrPay.value,
-          "showmPay": showmPay.value,
-          "showPosEdy": showPosEdy.value,
-          "showPosiD": showPosiD.value,
-          "showPosIC": showPosIC.value,
-          "showPosQUICPay": showPosQUICPay.value,
-          "showPosWAON": showPosWAON.value,
-          "showPosnanaco": showPosnanaco.value,
-          "showVisa": showVisa.value,
-          "showMaster": showMaster.value,
-          "showJcb": showJcb.value,
-          "showUnionPay": showUnionPay.value,
-          "showAmericanExpress": showAmericanExpress.value,
-          "showDinersClub": showDinersClub.value,
-          "showDiscover": showDiscover.value,
-          "showOpenPayment":showOpenPayment.value
-        });
+    //scanQrCodeHomeController.text = "";
+    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+      "checkLanguage": checkLanguage.value,
+      "machineCode": machineCode.value,
+      "orderId": orderId.value,
+      "totalPrice": totlaPrice.value,
+      "machineMode": "2",
+      "isAllowPos": isAllowPos.value,
+      "receiptPrintType": receiptPrintType.value,
+      "posIp": pos_ip.value,
+      "posPort": pos_port.value,
+      "paymentMethod": payment_method_num.value,
+      "showWechat": showWechat.value,
+      "showAlipay": showAlipay.value,
+      "showPayPay": showPayPay.value,
+      "showCreditCard": showCreditCard.value,
+      "showauPay": showauPay.value,
+      "showdPay": showdPay.value,
+      "showrPay": showrPay.value,
+      "showmPay": showmPay.value,
+      "showPosEdy": showPosEdy.value,
+      "showPosiD": showPosiD.value,
+      "showPosIC": showPosIC.value,
+      "showPosQUICPay": showPosQUICPay.value,
+      "showPosWAON": showPosWAON.value,
+      "showPosnanaco": showPosnanaco.value,
+      "showVisa": showVisa.value,
+      "showMaster": showMaster.value,
+      "showJcb": showJcb.value,
+      "showUnionPay": showUnionPay.value,
+      "showAmericanExpress": showAmericanExpress.value,
+      "showDinersClub": showDinersClub.value,
+      "showDiscover": showDiscover.value,
+      "showOpenPayment": showOpenPayment.value
+    });
   }
 
-  backCheckHome(){
+  backCheckHome() {
+    scanQrCodeController.text = "";
+    scanQrCodeFocusNode.requestFocus(); 
     Get.back();
-    scanQrCodeFocusNode.requestFocus();// 获取焦点
-
   }
-
-
 }

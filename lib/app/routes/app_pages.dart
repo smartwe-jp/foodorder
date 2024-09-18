@@ -1,3 +1,4 @@
+import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
 import 'package:get/get.dart';
 
@@ -71,6 +72,11 @@ class AppPages {
       name: _Paths.ENTRY_HOME,
       page: () => EntryHomeView(),
       binding: OrderHomeBinding(),
+    ),
+    GetPage(
+      name: _Paths.SCAN_DETAIL,
+      page: () => ScanDetailView(),
+      binding: CheckoutPageBinding(),
     ),
     GetPage(
       name: _Paths.OPOS_APG,

@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
@@ -99,8 +101,8 @@ class CheckoutPageView extends GetView {
           billMenus.add(InkWell(
             onTap: () {
               controller.checkLanguage.value = item["value"]!;
-              controller.scanQrCodeHomeController.text = "";
-              controller.scanQrCodeHomeFocusNode.requestFocus();
+              controller.scanQrCodeController.text = "";
+              controller.scanQrCodeFocusNode.requestFocus();
 
 
               Get.toNamed("/scancode-page",arguments: {"checkLanguage": controller.checkLanguage.value});
@@ -220,8 +222,8 @@ class CheckoutPageView extends GetView {
                                 autofocus: true,
                                 showCursor: true, // 显示光标
                                 //readOnly: true,
-                                controller: controller.scanQrCodeHomeController,
-                                focusNode: controller.scanQrCodeHomeFocusNode,
+                                controller: controller.scanQrCodeController,
+                                focusNode: controller.scanQrCodeFocusNode,
                                 decoration: InputDecoration(
                                   hintText: "请扫码",
                                   border: InputBorder.none,
@@ -237,7 +239,12 @@ class CheckoutPageView extends GetView {
                                 },
                                 onSubmitted: (value){
                                   Future.delayed(Duration(milliseconds: 150), () {
-                                  controller.doNextHomePay();
+                                  
+                                    if (Platform.isAndroid) {
+                                      controller.doNextHomePay();
+                                    } else {
+                                      controller.requestOrderList(controller.scanQrCodeController, controller.scanQrCodeFocusNode);
+                                    }
                                   });
 
 
