@@ -28,6 +28,7 @@ class RejishiMeRequestView extends StatefulWidget {
   final String machineCode;
   final Function(double, Map) resetCash;
   final Future<Map?> Function(int)? recycleCash;
+  final Function(double, Map)? updatePrintInfo;
   final Map? usbDevice;
 
   const RejishiMeRequestView(
@@ -35,7 +36,8 @@ class RejishiMeRequestView extends StatefulWidget {
       required this.machineCode,
       required this.resetCash,
       this.recycleCash,
-      this.usbDevice});
+      this.usbDevice,
+      this.updatePrintInfo});
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -51,12 +53,14 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   //Function _resetCash = () {};
   Map _usbDevice = {}.obs;
   int _recycleCash = 0;
+  Function _updatePrintInfo = () {};
 
   final TextEditingController _verifyCodeController = TextEditingController();
 
   @override
   void initState() {
     //_resetCash = widget.resetCash;
+    _updatePrintInfo = widget.updatePrintInfo ?? () {};
     _usbDevice = widget.usbDevice ?? {};
     debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
     //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
@@ -535,8 +539,6 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     } else {
       await widget.resetCash(length, data);
     }
-
-    
   }
 
   _sendToUsePrinter(widget) async {
@@ -601,6 +603,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   lengthUpdate: (double length) {
                     print("printLength: $length");
                     printLength = length;
+                    _updatePrintInfo(length,printData);
                   },
                 ),
               ),

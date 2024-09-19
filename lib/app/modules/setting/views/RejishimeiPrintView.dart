@@ -281,23 +281,23 @@ class RejishimePrintViewState extends State<PrintView> {
           color: Colors.black,
         ),
 
-        if (printInfo['cashInfo'] != null &&
-            (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-          _normalTitle("釣銭機情報"),
+        // if (printInfo['cashInfo'] != null &&
+        //     (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+        //   _normalTitle("釣銭機情報"),
 
-        if (printInfo['cashInfo'] != null &&
-            (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
-          _cashInfoTable(printInfo['cashInfo']),
+        // if (printInfo['cashInfo'] != null &&
+        //     (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+        //   _cashInfoTable(printInfo['cashInfo']),
 
-        if (printInfo['cashInfoGlory'] != null &&
-            (printInfo['cashInfoGlory'] is Map &&
-                !printInfo['cashInfoGlory'].isEmpty))
-          _normalTitle("釣銭機情報"),
+        // if (printInfo['cashInfoGlory'] != null &&
+        //     (printInfo['cashInfoGlory'] is Map &&
+        //         !printInfo['cashInfoGlory'].isEmpty))
+        //   _normalTitle("釣銭機情報"),
 
-        if (printInfo['cashInfoGlory'] != null &&
-            (printInfo['cashInfoGlory'] is Map &&
-                !printInfo['cashInfoGlory'].isEmpty))
-          _cashInfoTable(printInfo['cashInfoGlory']),
+        // if (printInfo['cashInfoGlory'] != null &&
+        //     (printInfo['cashInfoGlory'] is Map &&
+        //         !printInfo['cashInfoGlory'].isEmpty))
+        //   _cashInfoTable(printInfo['cashInfoGlory']),
       ],
     );
   }
