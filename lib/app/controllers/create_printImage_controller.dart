@@ -890,8 +890,8 @@ class CreatePrintImageController extends GetxController {
     final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
-      height: totalHight.toDouble() + 100 + 240,
+          left: ScreenAdapter.width(15), right: ScreenAdapter.width(15)),
+      height: totalHight.toDouble() + 100 + 200,
       color: Colors.white,
       //alignment: Alignment.topCenter,
       child: Column(
@@ -904,14 +904,14 @@ class CreatePrintImageController extends GetxController {
               padding: EdgeInsets.only(
                 top: ScreenAdapter.height(10), 
                 bottom: ScreenAdapter.height(30), 
-                left: ScreenAdapter.width(10), 
-                right: ScreenAdapter.width(10)),
-                height: ScreenAdapter.height(240),
+                left: ScreenAdapter.width(30), 
+                right: ScreenAdapter.width(30)),
+                height: ScreenAdapter.height(200),
                 decoration:BoxDecoration(
                 //color: Colors.green,
                   image: DecorationImage(
                     image: CachedNetworkImageProvider(printLogoImage.value),
-                    fit: BoxFit.fill,
+                    fit: BoxFit.fitHeight,
                   ),
                 )
               ),
