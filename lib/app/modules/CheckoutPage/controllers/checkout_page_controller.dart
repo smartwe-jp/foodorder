@@ -589,8 +589,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   backCheckHome() {
+    Get.back();
     scanQrCodeController.text = "";
     scanQrCodeFocusNode.requestFocus(); 
-    Get.back();
   }
 }

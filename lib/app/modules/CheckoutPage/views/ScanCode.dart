@@ -146,12 +146,12 @@ class ScanCodeView extends GetView {
                       children: [
                         InkWell(
                           onTap: () {
-                            try {
+                            //try {
                               //showCancelConfirm();
                               //Navigator.pop(context);
-                              Get.back();
-                              //controller.backCheckHome();
-                            } catch (_) {}
+                              //Get.back();
+                              controller.backCheckHome();
+                            //} catch (_) {}
                           },
                           child: Container(
                             alignment: Alignment.center,
