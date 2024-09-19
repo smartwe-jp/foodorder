@@ -890,7 +890,7 @@ class CreatePrintImageController extends GetxController {
     final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(
-          left: ScreenAdapter.width(2), right: ScreenAdapter.width(15)),
+          left: ScreenAdapter.width(20), right: ScreenAdapter.width(15)),
       height: totalHight.toDouble() + 100 + 240,
       color: Colors.white,
       //alignment: Alignment.topCenter,

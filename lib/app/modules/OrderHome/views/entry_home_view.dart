@@ -200,8 +200,8 @@ class EntryHomeView extends GetView<OrderHomeController> {
       ? AssetImage("assets/images/public/eat_out_on.png")
       : AssetImage("assets/images/public/eat_out_off.png");
 
-  ImageProvider _catagroyImage(url) {
-    if (url == null) {
+  ImageProvider _catagroyImage(String url) {
+    if (url.isEmpty) {
       return AssetImage("assets/images/public/app_viewmore_icon.png");
     } else {
       return CachedNetworkImageProvider(url);
