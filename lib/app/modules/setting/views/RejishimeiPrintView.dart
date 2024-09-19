@@ -83,7 +83,7 @@ class RejishimePrintViewState extends State<PrintView> {
   Widget printView() {
     //debugPrint("printView　printInfo: $printInfo");
     return Container(
-        padding: EdgeInsets.only(left: 0, right: 0, top: 20, bottom: 80),
+        padding: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
         child: _miroWidget());
   }
 
@@ -275,11 +275,11 @@ class RejishimePrintViewState extends State<PrintView> {
               )),
         ),
 
-        Container(
-          margin: EdgeInsets.only(top: 20, left: 40, right: 40),
-          height: 2,
-          color: Colors.black,
-        ),
+        // Container(
+        //   margin: EdgeInsets.only(top: 20, left: 40, right: 40),
+        //   height: 2,
+        //   color: Colors.black,
+        // ),
 
         // if (printInfo['cashInfo'] != null &&
         //     (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
