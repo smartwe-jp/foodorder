@@ -71,6 +71,8 @@ class SettingController extends GetxController with StateMixin {
   var hasExchangeCash = false;
   var hasOutMoney = false;
   var taskTouch = false;
+  Map printInfo = {};
+  double printLength = 2048;
   Timer? showCashTimer;
 
   @override
@@ -173,11 +175,11 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
-  printRejishimei(length, data) async {
+  printRejishimei() async {
     final printWidget = Container(
       width: 385,
-      height: length + 150,
-      child: PrintView(isPrint: true, printInfo: data),
+      height: printLength + 150,
+      child: PrintView(isPrint: true, printInfo: printInfo),
     );
     await sendToUsePrinter(printWidget);
     await Future.delayed(Duration(seconds: 3));
@@ -191,13 +193,17 @@ class SettingController extends GetxController with StateMixin {
     // final catValMap = cashInfoList.map((key, value) {
     //   return MapEntry(getCatVal(key), value);
     // });
-    String cashInfo = await getMachineCashInfo();
+    //String cashInfo = await getMachineCashInfo();
 
     hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
         resetCash: (length, data) async {
-          await printRejishimei(length, data);
+          await printRejishimei();
+        },
+        updatePrintInfo: (length, data) {
+          printLength = length;
+          printInfo = data;
         },
         recycleCash: (p0) async {
           debugPrint("recycleCashOut p0 = ${p0}");
