@@ -343,6 +343,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   gotonewMenuPage() {
+    debugPrint("----gotonewMenuPage----");
     if (isPayConfirmOrderId.value == true) {
       if (payment_method_num.value == "0" || payment_method_num.value == "1") {
         if (machineMode.value == "2") {
@@ -376,6 +377,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   goToNewMyHome() {
+    debugPrint("----goToNewMyHome----");
     ordersqlcontroller.removeAllFromCart();
 
     EasyLoading.dismiss();
@@ -384,23 +386,25 @@ class SettlementController extends GetxController with StateMixin {
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
-        Get.toNamed("/checkout-page");
+        Get.offAllNamed("/checkout-page");
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     } else if (machineMode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      Get.toNamed("/selfservice-page");
+      Get.offAllNamed("/selfservice-page");
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {
       print("过来删除menu了");
       Get.delete<MenuPageController>(); // 手动删除控制器实例
       Get.delete<OrderHomeController>();
-      Get.toNamed("/entry-home");
+      //Get.offAllNamed("/entry-home");
+      Get.offNamedUntil('/entry-home', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/home');
     }
   }
 
   gotonewBack() async {
+    debugPrint("----gotonewBack----");
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -409,7 +413,9 @@ class SettlementController extends GetxController with StateMixin {
         debugPrint("普通支付返回首页");
         Get.delete<MenuPageController>(); // 手动删除控制器实例
         Get.delete<OrderHomeController>();
-        Get.toNamed("/entry-home");
+        //Get.offAllNamed("/entry-home");
+        //Get.offNamedUntil('/entry-home', ModalRoute.withName('/home'));
+        Get.offNamedUntil('/entry-home', (route) => route.isFirst);
         //Navigator.pushNamed(context, '/home');
       } else {
         // eventBus.fire(new clearCartEvent('支付成功...'));
@@ -421,7 +427,7 @@ class SettlementController extends GetxController with StateMixin {
       }
     } else if (machineMode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      Get.toNamed("/selfservice-page");
+      Get.offAllNamed("/selfservice-page");
       // if(is_back_home.value == "0"){
       //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //   Get.toNamed("/selfservice-page");
@@ -439,7 +445,7 @@ class SettlementController extends GetxController with StateMixin {
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
-        Get.toNamed("/checkout-page");
+        Get.offAllNamed("/checkout-page");
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }
@@ -1133,11 +1139,15 @@ class SettlementController extends GetxController with StateMixin {
               is_allow_receipt_menu.value == "1") {
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
+            debugPrint(
+                "createPrintImageController : $createPrintImageController");
             createPrintImageController.tpPrintnew(
                 print_paper_txt_size, response['data'], printType);
           } else {
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
+              debugPrint(
+                  "createPrintImageController : $createPrintImageController");
               createPrintImageController.tpPrintReceipt(
                   print_paper_txt_size, response['data']);
             }
@@ -1226,15 +1236,18 @@ class SettlementController extends GetxController with StateMixin {
   printGoNext(orderId) async {
     debugPrint("printGoNext");
     Future.delayed(Duration(milliseconds: 300), () async {
+      debugPrint("machineMode.value = ${machineMode.value}");
       if (machineMode.value == "1") {
         //eventBus.fire(new clearCartEvent('支付成功...'));
-        Get.find<OrderHomeController>().clearCartList();
+        if (Get.isRegistered<OrderHomeController>())
+          Get.find<OrderHomeController>().clearCartList();
         //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
         //Get.find<MenuPageController>().getBookingBootMenu();
       } else if (machineMode.value == "3") {
         Get.find<SelfCheckoutscanningcodeController>()
             .clearCartList(hideLoading: false);
       } else if (machineMode.value == "2") {
+        
         if (Get.isRegistered<MenuPageController>()) {
           MenuPageController controller = Get.find<MenuPageController>();
           if (controller.mealType.value) {

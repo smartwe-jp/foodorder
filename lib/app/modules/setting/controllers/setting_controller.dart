@@ -783,7 +783,11 @@ class SettingController extends GetxController with StateMixin {
       });
     }
     //Future.delayed(Duration(milliseconds: 100), () {
-    Get.toNamed('/transit-page');
+    //Get.offAllNamed('/transit-page');
+    //Get.toNamed('/transit-page');
+    //Get.offNamedUntil('/transit-page', ModalRoute.withName('/home'));
+    Get.offNamedUntil('/transit-page', (route) => route.isFirst); //, arguments: {'toView2': true}
+
     //});
   }
 }
