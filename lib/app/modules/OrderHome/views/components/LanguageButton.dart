@@ -18,9 +18,17 @@ class LanguageButton extends StatelessWidget {
   Widget build(BuildContext context) {
       return GestureDetector(
           onTap: () => onTap?.call(),
-          child: AspectRatio(
-            aspectRatio: 3,
-            child:Container(
+          child: 
+          // AspectRatio(
+          //   aspectRatio: 3,
+          //   child:
+            Container(
+            margin: EdgeInsets.only(
+              left: ScreenAdapter.width(8),
+              right: ScreenAdapter.width(8),
+            ),
+            height: ScreenAdapter.height(100),
+            width: ScreenAdapter.width(260),
             padding: EdgeInsets.only(
               left: ScreenAdapter.width(30),
               right: ScreenAdapter.width(30),
@@ -47,14 +55,15 @@ class LanguageButton extends StatelessWidget {
                     style: TextStyle(
                       color: selected ? Colors.white : Colors.black,
                       fontSize: 24,
-                      fontWeight: FontWeight.w400,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 )
                 
               ],
             ),
-          )),
+          //)
+          ),
           
     );
   }

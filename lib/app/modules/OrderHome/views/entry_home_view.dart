@@ -144,19 +144,33 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
     return Container(
         alignment: Alignment.center,
+        height: ScreenAdapter.height(100),
         padding: EdgeInsets.only(
           top: ScreenAdapter.height(20),
           left: ScreenAdapter.width(30),
           right: ScreenAdapter.width(30),
           bottom: ScreenAdapter.height(20),
         ),
-        child: GridMenuView(
-          children: buttonList,
-          crossAxisCount: 4,
-          mainAxisSpacing: ScreenAdapter.width(20),
-          crossAxisSpacing: ScreenAdapter.height(20),
-          childAspectRatio: 3,
-        ));
+        child:
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ...buttonList
+            ],
+          )
+
+         
+        //  Container(
+        //     height: ScreenAdapter.height(100),
+        //    child: GridMenuView(
+        //     children: buttonList,
+        //     crossAxisCount: buttonList.length,
+        //     mainAxisSpacing: ScreenAdapter.width(20),
+        //     crossAxisSpacing: ScreenAdapter.height(20),
+        //     childAspectRatio: 3,
+        //            ),
+        //  )
+        );
   }
 
   settingButton() {
