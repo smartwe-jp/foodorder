@@ -852,10 +852,10 @@ class SettingView extends GetView<SettingController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      getDepositListShow(),
-                      SizedBox(
-                        height: ScreenAdapter.height(20),
-                      ),
+                      // getDepositListShow(),
+                      // SizedBox(
+                      //   height: ScreenAdapter.height(20),
+                      // ),
                       getLastOrderTotalShow(),
                       SizedBox(
                         height: ScreenAdapter.height(20),

@@ -10,6 +10,7 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/modules/TransitPage/views/transit_page_view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
@@ -176,6 +177,23 @@ class SettingController extends GetxController with StateMixin {
   }
 
   printRejishimei() async {
+    if (printInfo.isEmpty) {
+      EasyLoading.dismiss();
+      Get.back();
+      clearTask();
+      commonHandleDialogs("レジ締め印刷失敗しました、再度印刷しましょうか？", confirm: () {
+        printRejishimei();
+      }, cancel: () {
+        Get.back();
+        clearTask();
+        //showToast('完了しました');
+      });
+    } else {
+      directPrintRejishimei();
+    }
+  }
+
+  directPrintRejishimei() async {
     final printWidget = Container(
       width: 385,
       height: printLength + 150,
@@ -583,6 +601,29 @@ class SettingController extends GetxController with StateMixin {
             Get.back();
           }
         }));
+  }
+
+  commonHandleDialogs(String messgae,
+      {required Function confirm, required Function cancel}) async {
+    EasyLoading.dismiss();
+    debugPrint("HandleDialog: $messgae");
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alert(
+          messgae,
+          title: GString.getToString("JP", "tag_title"),
+          confirmtitle: GString.getToString("JP", "tag_button_yes"),
+          confirm: () async {
+            //Get.back();
+            showEasyLoading();
+            Future.delayed(Duration(seconds: 2), () {
+              confirm();
+            });
+          },
+          cancle: () {
+            cancel();
+          },
+        ));
   }
 
   _getCatVal(type) {
