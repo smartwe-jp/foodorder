@@ -170,7 +170,8 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                           width: ScreenAdapter.width(20),
                         ),
                         Text(
-                          '注文について',
+                          GString.getToString(
+                                  controller.checkLanguage.value,"scan_order_detail_title"),
                           style: TextStyle(
                               //color: ColorsUtil.hexToColor("#FFFFFF"),
                               fontWeight: FontWeight.w600,

@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
@@ -20,8 +21,11 @@ class PayResultView extends StatefulWidget {
 class PayResultViewState extends State<PayResultView> {
   Timer? hideTimer;
 
+  String _localKey = "JP"; 
+
   @override
   void initState() {
+    _localKey = Get.locale?.languageCode.toUpperCase() ?? "JP";
     super.initState();
     _delayHide();
   }
@@ -38,13 +42,13 @@ class PayResultViewState extends State<PayResultView> {
         padding: EdgeInsets.only(
           top: ScreenAdapter.height(100),
         ),
-        width: ScreenAdapter.width(1000),
         child: SimpleDialog(
           insetPadding: EdgeInsets.all(0),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Align(
+          title: Container(
+              width: ScreenAdapter.width(600),
               alignment: Alignment.center,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -72,7 +76,7 @@ class PayResultViewState extends State<PayResultView> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'お支払いが成功しました\nご利用いただきありがとうございます',
+                      GString.getToString(_localKey, "pay_success_title"),
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(28),
@@ -99,7 +103,7 @@ class PayResultViewState extends State<PayResultView> {
                     InkWell(
                       onTap: () {
                         hideTimer?.cancel();
-                        
+
                         widget.dismiss();
                       },
                       child: Container(
@@ -119,7 +123,7 @@ class PayResultViewState extends State<PayResultView> {
                           // ),
                         ),
                         child: Text(
-                          "戻る",
+                          GString.getToString(_localKey, "settlement_back"),
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: GFont.getFontFamily(),

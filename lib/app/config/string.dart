@@ -176,6 +176,8 @@ class GString{
         "more_title":"もっと見る",
         "main_page":"ホーム",
 
+        "pay_success_title":"お支払いが成功しました\nご利用いただきありがとうございます",
+        "scan_order_detail_title":"ご注文",
 
       };
     }else if(languageCode == 'CH'){
@@ -350,6 +352,8 @@ class GString{
         "more_title":"更多",
         "main_page":"首页",
 
+        "pay_success_title":"支付成功\n感谢您的使用",
+        "scan_order_detail_title":"订单",
 
 
       };
@@ -523,6 +527,10 @@ class GString{
         "take_out":"Take out",
         "more_title":"More",
         "main_page":"Home",
+
+        "pay_success_title":"Payment Successful\nThank you for your use",
+        "scan_order_detail_title":"Order",
+        
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -695,6 +703,9 @@ class GString{
         "take_out":"테이크아웃",
         "more_title":"더보기",
         "main_page":"첫장",
+
+        "pay_success_title":"결제가 성공했습니다\n이용해 주셔서 감사합니다",
+        "scan_order_detail_title":"주문",
       };
     }
 
