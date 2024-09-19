@@ -90,32 +90,46 @@ class EntryHomeView extends GetView<OrderHomeController> {
   }
 
   languageSelectView() {
-    final languages = [
-      {
+    List languages = [];
+    if(controller.machineLanguages_JP.value == true)
+      languages.add({
         "language": "JP",
         "text": "日本語",
         "selected": controller.machineLanguages_JP.value,
         "icon": AssetImage("assets/images/public/language_Japanese.png"),
-      },
-      {
+      });
+
+      if(controller.machineLanguages_CH.value == true)
+      languages.add(
+        {
         "language": "CH",
         "text": "中文",
         "selected": controller.machineLanguages_CH.value,
         "icon": AssetImage("assets/images/public/language_Chinese.png"),
-      },
-      {
+        }
+      );
+
+      if(controller.machineLanguages_EN.value == true)
+      languages.add(
+        {
         "language": "EN",
         "text": "English",
         "selected": controller.machineLanguages_EN.value,
         "icon": AssetImage("assets/images/public/language_English.png"),
-      },
-      {
+        }
+      );
+
+      if(controller.machineLanguages_KO.value == true)
+      languages.add(
+        {
         "language": "KO",
         "text": "한국어",
         "selected": controller.machineLanguages_KO.value,
         "icon": AssetImage("assets/images/public/language_Korean.png"),
-      }
-    ];
+        }
+      );
+
+
 
     final buttonList = languages.map((e) {
       return LanguageButton(
