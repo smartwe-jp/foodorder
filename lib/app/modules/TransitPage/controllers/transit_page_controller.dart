@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
@@ -29,8 +30,11 @@ class TransitPageController extends GetxController {
   RxString local_version = "".obs; //本appversion
   RxBool _loadActiveInfo = false.obs;
 
+  String languageCode = "JP";
+
   @override
   Future<void> onInit() async {
+    languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
     await getIsShowCashInfo();
     super.onInit();
   }
@@ -268,9 +272,12 @@ class TransitPageController extends GetxController {
 
   _showErrorDialog({error}) =>
   Get.dialog(
-        DialogUtils.alertOneButton("異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
-        title: "お知らせ",
-        confirmtitle: "再度お起動",
+        DialogUtils.alertOneButton(GString.getToString(
+                      languageCode, "launch_error_tips"),//launch_error_tips
+        title: GString.getToString(
+                      languageCode, "tag_title"),//tag_title
+        confirmtitle: GString.getToString(
+                      languageCode, "reboot_app"),//reboot_app
         confirm: () {
         Future.delayed(Duration(milliseconds: 200), () {
           Get.back();

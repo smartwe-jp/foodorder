@@ -119,6 +119,7 @@ class GString{
         "cash_change_error_tips_down":"キャッシュレスの支払い方法に変更するか、アプリを再起動してみてください。",
         "reboot_app":"再起動",
         "change_payment":"支払い方法を変更",
+        "launch_error_tips":"異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
 
 
         "select_option":"選択",
@@ -290,6 +291,7 @@ class GString{
         "cash_change_error_title":"现金支付",
         "cash_change_error_tips_up":"现金支付机故障，暂不支持现金支付，请选择其他支付方式。",
         "cash_change_error_tips_down":"请切换到其他支付方式，或者重新启动应用。",
+        "launch_error_tips":"出现异常。请先检查网络连接，再试一次。",
         "reboot_app":"重新启动",
         "change_payment":"更换支付方式",
 
@@ -468,6 +470,7 @@ class GString{
         "cash_change_error_title":"Cash Payment",
         "cash_change_error_tips_up":"Cash payment machine failure, cash payment is not available.",
         "cash_change_error_tips_down":"Please switch to other payment methods or restart the application.",
+        "launch_error_tips":"An error has occurred. Please check your internet connection and try again.",
         "reboot_app":"Restart",
         "change_payment":"Change payment method",
 
@@ -643,6 +646,7 @@ class GString{
         "cash_change_error_title":"현금 결제",
         "cash_change_error_tips_up":"현재 현금 결제기에 장애가 발생하여 현금 결제를 사용할 수 없습니다.",
         "cash_change_error_tips_down":"다른 결제 방법으로 전환하거나 앱을 다시 시작하십시오.",
+        "launch_error_tips":"오류가 발생했습니다. 먼저 인터넷 연결을 확인한 후 다시 시도해 주세요.",
         "reboot_app":"재시작",
         "change_payment":"결제 방법 변경",
 

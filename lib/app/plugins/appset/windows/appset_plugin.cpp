@@ -109,6 +109,21 @@ void AppsetPlugin::HandleMethodCall(
     return;
   }
 
+  if (method_call.method_name().compare("restartApp") == 0) {
+    TCHAR szPath[MAX_PATH];
+    GetModuleFileName(NULL, szPath, MAX_PATH);
+
+    STARTUPINFO si = {0};
+    PROCESS_INFORMATION pi = {0};
+    si.cb = sizeof(si);
+
+    CreateProcess(szPath, NULL, NULL, NULL, FALSE, 0, NULL, NULL, &si, &pi);
+
+    // 退出当前进程
+    ExitProcess(0);
+
+  }
+
   if (method_call.method_name().compare("getPlatformVersion") == 0) {
     std::ostringstream version_stream;
     version_stream << "Windows ";
