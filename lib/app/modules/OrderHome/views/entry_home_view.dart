@@ -91,7 +91,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
   languageSelectView() {
     List languages = [];
-    if(controller.machineLanguages_JP.value == true)
+    if (controller.machineLanguages_JP.value == true)
       languages.add({
         "language": "JP",
         "text": "日本語",
@@ -99,37 +99,29 @@ class EntryHomeView extends GetView<OrderHomeController> {
         "icon": AssetImage("assets/images/public/language_Japanese.png"),
       });
 
-      if(controller.machineLanguages_CH.value == true)
-      languages.add(
-        {
+    if (controller.machineLanguages_CH.value == true)
+      languages.add({
         "language": "CH",
         "text": "中文",
         "selected": controller.machineLanguages_CH.value,
         "icon": AssetImage("assets/images/public/language_Chinese.png"),
-        }
-      );
+      });
 
-      if(controller.machineLanguages_EN.value == true)
-      languages.add(
-        {
+    if (controller.machineLanguages_EN.value == true)
+      languages.add({
         "language": "EN",
         "text": "English",
         "selected": controller.machineLanguages_EN.value,
         "icon": AssetImage("assets/images/public/language_English.png"),
-        }
-      );
+      });
 
-      if(controller.machineLanguages_KO.value == true)
-      languages.add(
-        {
+    if (controller.machineLanguages_KO.value == true)
+      languages.add({
         "language": "KO",
         "text": "한국어",
         "selected": controller.machineLanguages_KO.value,
         "icon": AssetImage("assets/images/public/language_Korean.png"),
-        }
-      );
-
-
+      });
 
     final buttonList = languages.map((e) {
       return LanguageButton(
@@ -151,15 +143,11 @@ class EntryHomeView extends GetView<OrderHomeController> {
           right: ScreenAdapter.width(30),
           bottom: ScreenAdapter.height(20),
         ),
-        child:
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              ...buttonList
-            ],
-          )
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [...buttonList],
+        )
 
-         
         //  Container(
         //     height: ScreenAdapter.height(100),
         //    child: GridMenuView(
@@ -226,22 +214,22 @@ class EntryHomeView extends GetView<OrderHomeController> {
     List<Widget> buttonList = controller.showCatagory
         .map<Widget>(
           (e) => CatagoryButton(
-            icon: _catagroyImage(e['image']),
-            title: e["categoryName"] as String,
+            icon: _catagroyImage(e['image'] ?? ""),
+            title: e["categoryName"] ?? "",
             onTap: () {
-              var mealType = controller.mealType.value || controller.dining_type.value == "2";
-                
+              var mealType = controller.mealType.value ||
+                  controller.dining_type.value == "2";
+
               var jumpUrl = (controller.menu_direction.value == "1")
                   ? '/menu-page'
                   : '/menuzong-page';
 
               Get.toNamed(jumpUrl, arguments: {
-                "classTag": e["categoryCode"] as String,
+                "classTag": e["categoryCode"] ?? "",
                 "menuList": controller.homeList.value,
                 "checkLanguage": controller.settingLanguage.value,
                 "mealType": mealType
               });
-                         
             },
           ),
         )
@@ -280,7 +268,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                               //color: Colors.green,
                               image: DecorationImage(
                                 image: CachedNetworkImageProvider(
-                                    controller.homeImages.value[index]),
+                                    controller.homeImages.value[index] ?? ""),
                                 fit: BoxFit.cover,
                               ),
                             ),
@@ -312,49 +300,49 @@ class EntryHomeView extends GetView<OrderHomeController> {
                     // ),
 
                     if (controller.dining_type.value == "3")
-                    Expanded(
-                      flex: 3,
-                      child: Container(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            SizedBox(
-                              width: ScreenAdapter.width(70),
-                            ),
-                            Expanded(
-                              child: BookingTypeButton(
-                                icon: eatInShopImage,
-                                title: GString.getToString(
-                                    controller.settingLanguage.value,
-                                    "in_shop"),
-                                selected: !controller.mealType.value,
-                                onTap: () {
-                                  controller.updateDingType("1");
-                                },
+                      Expanded(
+                        flex: 3,
+                        child: Container(
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                width: ScreenAdapter.width(70),
                               ),
-                            ),
-                            SizedBox(
-                              width: ScreenAdapter.height(70),
-                            ),
-                            Expanded(
-                              child: BookingTypeButton(
-                                icon: eatOutImage,
-                                title: GString.getToString(
-                                    controller.settingLanguage.value,
-                                    "take_out"),
-                                selected: controller.mealType.value,
-                                onTap: () {
-                                  controller.updateDingType("2");
-                                },
+                              Expanded(
+                                child: BookingTypeButton(
+                                  icon: eatInShopImage,
+                                  title: GString.getToString(
+                                      controller.settingLanguage.value,
+                                      "in_shop"),
+                                  selected: !controller.mealType.value,
+                                  onTap: () {
+                                    controller.updateDingType("1");
+                                  },
+                                ),
                               ),
-                            ),
-                            SizedBox(
-                              width: ScreenAdapter.width(70),
-                            ),
-                          ],
+                              SizedBox(
+                                width: ScreenAdapter.height(70),
+                              ),
+                              Expanded(
+                                child: BookingTypeButton(
+                                  icon: eatOutImage,
+                                  title: GString.getToString(
+                                      controller.settingLanguage.value,
+                                      "take_out"),
+                                  selected: controller.mealType.value,
+                                  onTap: () {
+                                    controller.updateDingType("2");
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                width: ScreenAdapter.width(70),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                     //if (controller.dining_type.value != "3" || controller.isSelect.value)
                     Expanded(
                         flex: 7,

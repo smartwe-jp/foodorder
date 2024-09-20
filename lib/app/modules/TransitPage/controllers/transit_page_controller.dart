@@ -399,15 +399,15 @@ class TransitPageController extends GetxController {
 
   void _goCheckOut() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => CheckoutPageView());
-      //Get.toNamed("/checkout-page");
+      //Get.off(() => CheckoutPageView());
+      Get.toNamed("/checkout-page");
     });
   }
 
   void _goSelfService() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => SelfservicePageView());
-      //Get.toNamed("/selfservice-page");
+      //Get.off(() => SelfservicePageView());
+      Get.toNamed("/selfservice-page");
     });
   }
 }

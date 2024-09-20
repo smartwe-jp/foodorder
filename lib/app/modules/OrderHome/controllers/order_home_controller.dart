@@ -167,7 +167,7 @@ class OrderHomeController extends GetxController with StateMixin {
       var newList = List.from(homeList.sublist(0, showItemCount - 1));
       newList.add({
         "categoryCode": homeList.first["categoryCode"],
-        "image": homeList.first["showImage"],
+        "image": null,
         "categoryName":
             GString.getToString(settingLanguage.value, "more_title"),
         "showType": "1"
@@ -177,7 +177,7 @@ class OrderHomeController extends GetxController with StateMixin {
       var newList = List.from(homeList);
       newList.add({
         "categoryCode": homeList.first["categoryCode"],
-        "image": homeList.first["image"],
+        "image": null,
         "categoryName":
             GString.getToString(settingLanguage.value, "more_title"),
         "showType": "1"

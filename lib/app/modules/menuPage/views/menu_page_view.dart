@@ -116,7 +116,7 @@ class MenuPageView extends GetView {
       title: item['mainTitle'],
       subtitle: "${item['subtitle'] ?? ""}",
       price: "${item['currentPrice']}",
-      image: CachedNetworkImageProvider(item['homeImage']),
+      image: CachedNetworkImageProvider(item['homeImage'] ?? ""),
       option: item['optionGroupVoList']?.length > 0 ? GString.getToString(
                           controller.checkLanguage.value,"select_option") : "",
       aspectRatio: aspectRatio,
@@ -216,7 +216,7 @@ class MenuPageView extends GetView {
                                           //color: Colors.green,
                                           image: DecorationImage(
                                             image: CachedNetworkImageProvider(
-                                                controller.homeImages.value[index]),
+                                                controller.homeImages.value[index] ?? ""),
                                             fit: BoxFit.cover,
                                           ),
                                         ),
