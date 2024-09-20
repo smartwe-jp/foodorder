@@ -28,7 +28,7 @@ class LanguageButton extends StatelessWidget {
               right: ScreenAdapter.width(8),
             ),
             height: ScreenAdapter.height(100),
-            width: ScreenAdapter.width(260),
+            width: ScreenAdapter.width(236),
             padding: EdgeInsets.only(
               left: ScreenAdapter.width(30),
               right: ScreenAdapter.width(30),
@@ -54,8 +54,8 @@ class LanguageButton extends StatelessWidget {
                     title,
                     style: TextStyle(
                       color: selected ? Colors.white : Colors.black,
-                      fontSize: 24,
-                      fontWeight: FontWeight.w600,
+                      fontSize: 22,
+                      fontWeight: FontWeight.w500,
                     ),
                   ),
                 )
