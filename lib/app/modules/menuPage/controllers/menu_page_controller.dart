@@ -785,8 +785,8 @@ class MenuPageController extends GetxController with StateMixin {
               fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(GFontSize.menuTwoTitleTag),
               color: ColorsUtil.hexToColor("#000000")),
-          maxLines: 1,
-          overflow: TextOverflow.ellipsis,
+          //maxLines: 2,
+          //overflow: TextOverflow.ellipsis,
         ),
       );
     } else {
