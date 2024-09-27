@@ -23,10 +23,11 @@ extension SettlementControllerExtension on SettlementController {
         ret = 'success';
         _checkChangerStatus();
       },
-      catchError: (error) => {
-        //debugPrint("startDeposit error: $error"),
-        ret = GString.getToString(checkLanguage.value, error),
-        //errorHandleDialog(GString.getToString(checkLanguage.value, error))
+      catchError: (error) {
+        debugPrint("startDeposit error: $error");
+        ret = GString.getToString(checkLanguage.value, error);
+        //"サービスは利用できません。スタッフに連絡してください。";
+        //errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
     return ret;
@@ -346,7 +347,6 @@ extension SettlementControllerExtension on SettlementController {
 
     debugPrint('cash showSuccessAlert');
 
-
     if (cancel) {
       if (isPrint.value == true) {
         gotonewBack();
@@ -362,7 +362,6 @@ extension SettlementControllerExtension on SettlementController {
         }
       });
     }
-    
 
     // if (isPrint.value == true) {
     //   gotonewBack();

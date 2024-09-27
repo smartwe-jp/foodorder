@@ -249,7 +249,6 @@ class SettlementController extends GetxController with StateMixin {
         CashChanger.setEventsListener();
         String result = await startDeposit();
         if (result != 'success') {
-          debugPrint("startDeposit error $result");
           errorHandleDialog(result, confirm: () {
             Get.back();
             //Get.back();

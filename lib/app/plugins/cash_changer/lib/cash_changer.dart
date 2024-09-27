@@ -296,7 +296,7 @@ class CashChanger {
         showError("cash_error_claimed");
         break;
       case HealthResultCode.OPOS_E_NOTCLAIMED:
-        showError("cash_error_not_claimed");
+        showError("cash_error_no_claimed");
         break;
       case HealthResultCode.OPOS_E_DISABLED:
         showError("cash_error_disabled");
