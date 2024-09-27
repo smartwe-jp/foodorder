@@ -252,7 +252,8 @@ class SettlementController extends GetxController with StateMixin {
           debugPrint("startDeposit error $result");
           errorHandleDialog(result, confirm: () {
             Get.back();
-            Get.back();
+            //Get.back();
+            Get.toNamed(Routes.ERROR_PAGE);
           });
         }
       }
