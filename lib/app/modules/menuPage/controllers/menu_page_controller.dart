@@ -190,11 +190,11 @@ class MenuPageController extends GetxController with StateMixin {
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
-    if (classTag.value == "") {
-      getBookingBootIndexCagegory(); //新版新获取分类
-    } else {
-      getBookingBootIndexMenu(classTag.value);
-    }
+    //if (classTag.value == "") {
+      getBookingBootIndexCagegory(classTag.value); //新版新获取分类
+    //  } else {
+    //    getBookingBootIndexMenu(classTag.value);
+    //  }
     _getHomeImageList();
   }
 
@@ -356,7 +356,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取页面分类
-  getBookingBootIndexCagegory() {
+  getBookingBootIndexCagegory(classTag) {
     topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -418,7 +418,7 @@ class MenuPageController extends GetxController with StateMixin {
           if (menuIndex >= 5) menuIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
-          topMenu.value.add({
+          topMenu.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
@@ -426,9 +426,9 @@ class MenuPageController extends GetxController with StateMixin {
           });
           menuIndex++;
           //配置顶部菜单默认项
-          if (i == 0) classTag.value = categoryVoList['categoryCode'];
+          //if (i == 0) classTag.value = categoryVoList['categoryCode'];
         }
-        getBookingBootIndexMenu(classTag.value);
+        getBookingBootIndexMenu(classTag);
 
         //update();
         //change(null, status: RxStatus.success());
@@ -509,7 +509,7 @@ class MenuPageController extends GetxController with StateMixin {
           Get.back();
         }
 
-        showItem.value[queryCategoryCode] = myList;
+        showItem[queryCategoryCode] = myList;
 
         //该分类下有option，先初始化页面数据
         if (myList.length > 0) {
@@ -1566,7 +1566,7 @@ print("加1了");
     clearCartList();
     //getBookingBootMenu();
     //Future.delayed(Duration(milliseconds: 100),() async {
-    Get.back();
+    Get.back(result: true);
     //});
   }
 }

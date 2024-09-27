@@ -224,12 +224,15 @@ class EntryHomeView extends GetView<OrderHomeController> {
                   ? '/menu-page'
                   : '/menuzong-page';
 
-              Get.toNamed(jumpUrl, arguments: {
+              final result = Get.toNamed(jumpUrl, arguments: {
                 "classTag": e["categoryCode"] ?? "",
                 "menuList": controller.homeList.value,
                 "checkLanguage": controller.settingLanguage.value,
                 "mealType": mealType
               });
+              if (result == true) {
+                controller.getBookingBootIndexCagegory();
+              }
             },
           ),
         )

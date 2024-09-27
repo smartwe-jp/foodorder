@@ -24,9 +24,9 @@ extension MenuPageSideBar on MenuPageView {
         children: [
           Expanded(
             child: ListView.builder(
-                itemCount: controller.topMenu.value.length,
+                itemCount: controller.topMenu.length,
                 itemBuilder: (context, index) {
-                  var item = controller.topMenu.value[index];
+                  var item = controller.topMenu[index];
 
                   return Column(
                     children: [
