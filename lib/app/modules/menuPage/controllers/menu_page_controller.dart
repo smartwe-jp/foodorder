@@ -191,7 +191,7 @@ class MenuPageController extends GetxController with StateMixin {
     showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
     //if (classTag.value == "") {
-      getBookingBootIndexCagegory(classTag.value); //新版新获取分类
+    getBookingBootIndexCagegory(classTag.value); //新版新获取分类
     //  } else {
     //    getBookingBootIndexMenu(classTag.value);
     //  }
@@ -356,7 +356,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取页面分类
-  getBookingBootIndexCagegory(classTag) {
+  getBookingBootIndexCagegory(String category) {
     topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -426,9 +426,12 @@ class MenuPageController extends GetxController with StateMixin {
           });
           menuIndex++;
           //配置顶部菜单默认项
-          //if (i == 0) classTag.value = categoryVoList['categoryCode'];
+          if (i == 0 && category.isEmpty) {
+            category = categoryVoList['categoryCode'];
+            classTag.value = categoryVoList['categoryCode'];
+          }
         }
-        getBookingBootIndexMenu(classTag);
+        getBookingBootIndexMenu(category);
 
         //update();
         //change(null, status: RxStatus.success());
@@ -612,15 +615,16 @@ class MenuPageController extends GetxController with StateMixin {
 
     showCartItems.value = ordersqlcontroller.cartItems;
     if (showCartTotalGoodsNum.value == 0) {
-        showShopCart.value = false;
-      }
+      showShopCart.value = false;
+    }
     update();
   }
 
   backToNewHome() async {
     Get.delete<MenuPageController>(); // 手动删除控制器实例
     Get.delete<OrderSqlController>(); // 手动删除控制器实例
-    Get.toNamed("/order-home");
+    //Get.toNamed("/order-home");
+    Get.offNamedUntil('/transit-page', (route) => route.isFirst);
   }
 
   //公共设置菜单Title
@@ -1024,11 +1028,11 @@ class MenuPageController extends GetxController with StateMixin {
       );
     } else {
       //try {
-        await player.setVolume(1.2);
-        //await player.play(DeviceFileSource("assets/audios/14428.wav"));
-        await player.setSource(AssetSource('audios/14428.wav'));
-        await player.resume();
-        
+      await player.setVolume(1.2);
+      //await player.play(DeviceFileSource("assets/audios/14428.wav"));
+      await player.setSource(AssetSource('audios/14428.wav'));
+      await player.resume();
+
       // } catch (e) {
       //   debugPrint("playQRScannerSound error: $e");
       //   FToast fToast = FToast();
