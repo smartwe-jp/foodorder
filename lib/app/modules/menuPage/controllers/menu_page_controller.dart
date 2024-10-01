@@ -388,7 +388,7 @@ class MenuPageController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
-        debugPrint("getBookingBootIndexCagegory response: $response");
+        //debugPrint("getBookingBootIndexCagegory response: $response");
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
         //如果菜单为空则返回言语选择页面并给出提示

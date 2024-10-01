@@ -72,8 +72,6 @@ void main() {
   runZonedGuarded(() async {
     WidgetsFlutterBinding.ensureInitialized();
 
-    
-
     await GetStorage.init();
 
     if (Platform.isAndroid) {
@@ -82,7 +80,6 @@ void main() {
         options: DefaultFirebaseOptions.currentPlatform,
       );
       FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-      
     }
 
     SystemUiOverlayStyle systemUiOverlayStyle =
@@ -97,32 +94,37 @@ void main() {
         minTextAdapt: true,
         splitScreenMode: true,
         builder: (context, child) {
-          return GetMaterialApp(
-            debugShowCheckedModeBanner: false,
-            title: "券売君",
-            //配置主题
-            /*theme: ThemeData(
-                  primarySwatch: Colors.white,
-                  //fontFamily: "IBMPlexSansJP",
-                ),*/
-                theme: ThemeData(
-                  primaryColor: Gcolor.primaryColor,  // 设置主体颜色
-                ),
-                home: child,
-                //initialRoute: AppPages.INITIAL,
-                //配置ios动画
-                locale: Locale('jp', 'JP'), // 默认语言
-                fallbackLocale: Locale('jp', 'JP'), // 备用语言
-                defaultTransition:Transition.fadeIn,
-                getPages: AppPages.routes,
-                builder: (context, widget) {
-                  return MediaQuery(
-                    ///设置文字大小不随系统设置改变
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                    child: FlutterEasyLoading(child:widget),
-                  );
-                },
-          );
+          return GlobalEventListener(
+              appBuilder: (context, resetTimer) => GetMaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: "券売君",
+                    theme: ThemeData(
+                      primaryColor: Gcolor.primaryColor, // 设置主体颜色
+                    ),
+                    home: child,
+                    //initialRoute: AppPages.INITIAL,
+                    //配置ios动画
+                    locale: Locale('jp', 'JP'), // 默认语言
+                    fallbackLocale: Locale('jp', 'JP'), // 备用语言
+                    defaultTransition: Transition.fadeIn,
+                    getPages: AppPages.routes,
+                    routingCallback: (value) {
+                      debugPrint("routingCallback : ${value?.current}");
+                      if (value?.current == Routes.MENU_PAGE) {
+                        resetTimer.startTimer();
+                      } else if (value?.current == Routes.ENTRY_HOME) {
+                        resetTimer.cancelTimer();
+                      }
+                    },
+                    builder: (context, widget) {
+                      return MediaQuery(
+                        ///设置文字大小不随系统设置改变
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaleFactor: 1.0),
+                        child: FlutterEasyLoading(child: widget),
+                      );
+                    },
+                  ));
         },
         child: Scaffold(
           body: PrintImageGenerateWidget(
@@ -153,5 +155,81 @@ class MyHttpOverrides extends HttpOverrides {
     return super.createHttpClient(context)
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
+  }
+}
+
+class ResetToHomeTimer {
+  Timer? _timer;
+  int _timeoutSeconds = 300; // 3分钟
+
+  void startTimer() {
+    cancelTimer();
+    debugPrint("startTimer");
+    _timeoutSeconds = 10;
+    _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      _timeoutSeconds--;
+      if (_timeoutSeconds == 0) {
+        if (Get.routing.current == Routes.ENTRY_HOME) {
+          cancelTimer();
+          return;
+        }
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      }
+    });
+  }
+
+  void resetTimer() {
+    // if (_timer != null) {
+    //   _timer!.cancel();
+    //   startTimer();
+    // }
+    debugPrint("resetTimer");
+    _timeoutSeconds = 300;
+  }
+
+  void cancelTimer() {
+    debugPrint("cancelTimer");
+    _timer?.cancel();
+    _timer = null;
+  }
+}
+
+typedef AppBuilder = Widget Function(
+    BuildContext context, ResetToHomeTimer resetTimer);
+
+class GlobalEventListener extends StatefulWidget {
+  final AppBuilder appBuilder;
+
+  const GlobalEventListener({Key? key, required this.appBuilder})
+      : super(key: key);
+
+  @override
+  _GlobalEventListenerState createState() => _GlobalEventListenerState();
+}
+
+class _GlobalEventListenerState extends State<GlobalEventListener> {
+  final ResetToHomeTimer _resetTimer = ResetToHomeTimer();
+
+  @override
+  void initState() {
+    super.initState();
+    //_resetTimer.startTimer();
+  }
+
+  @override
+  void dispose() {
+    _resetTimer.cancelTimer();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Listener(
+      behavior: HitTestBehavior.translucent,
+      onPointerDown: (_) => _resetTimer.resetTimer(),
+      onPointerMove: (_) => _resetTimer.resetTimer(),
+      onPointerUp: (_) => _resetTimer.resetTimer(),
+      child: widget.appBuilder(context, _resetTimer),
+    );
   }
 }

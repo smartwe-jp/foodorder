@@ -1,4 +1,5 @@
 // import 'dart:io';
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -37,6 +38,9 @@ class OrderHomeController extends GetxController with StateMixin {
   RxList homeList = [].obs;
   RxList homeImages = [].obs;
   RxBool mealType = false.obs;
+  int mealTypeStatus = 0;
+  int resetTime = 30;
+  Timer? resetTimer;
 
   @override
   Future<void> onInit() async {
@@ -53,6 +57,21 @@ class OrderHomeController extends GetxController with StateMixin {
   @override
   void onClose() {
     super.onClose();
+  }
+
+  startResetTimer() async {
+    debugPrint("startResetTimer");
+    resetTimer?.cancel();
+    resetTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      resetTime--;
+      if (resetTime == 0) {
+        resetTimer?.cancel();
+        resetTime = 30;
+        mealTypeStatus = 0;
+        debugPrint("startResetTimer end");
+        update();
+      }
+    });
   }
 
   //获取机器信息
@@ -89,10 +108,12 @@ class OrderHomeController extends GetxController with StateMixin {
     await getmenchineLanguages();
   }
 
-  updateDingType(String type) async {
+  updateDingType(int type) async {
     debugPrint("updateDingType $type");
+    startResetTimer();
+    mealTypeStatus = type;
     //dining_type.value = type;
-    if (type == "2") {
+    if (type == 2) {
       mealType.value = true;
     } else {
       mealType.value = false;

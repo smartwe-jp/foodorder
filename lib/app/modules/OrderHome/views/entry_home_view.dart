@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -194,11 +196,11 @@ class EntryHomeView extends GetView<OrderHomeController> {
     );
   }
 
-  get eatInShopImage => !controller.mealType.value
+  get eatInShopImage => controller.mealTypeStatus == 1
       ? AssetImage("assets/images/public/eat_in_on.png")
       : AssetImage("assets/images/public/eat_in_off.png");
 
-  get eatOutImage => controller.mealType.value
+  get eatOutImage => controller.mealTypeStatus == 2
       ? AssetImage("assets/images/public/eat_out_on.png")
       : AssetImage("assets/images/public/eat_out_off.png");
 
@@ -216,7 +218,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
           (e) => CatagoryButton(
             icon: _catagroyImage(e['image'] ?? ""),
             title: e["categoryName"] ?? "",
-            onTap: () {
+            onTap: () async {
+              controller.resetTimer?.cancel();
+              controller.mealTypeStatus = 0;
               var mealType = controller.mealType.value ||
                   controller.dining_type.value == "2";
 
@@ -224,13 +228,14 @@ class EntryHomeView extends GetView<OrderHomeController> {
                   ? '/menu-page'
                   : '/menuzong-page';
 
-              final result = Get.toNamed(jumpUrl, arguments: {
+              final result = await Get.toNamed(jumpUrl, arguments: {
                 "classTag": e["categoryCode"] ?? "",
                 "menuList": controller.homeList.value,
                 "checkLanguage": controller.settingLanguage.value,
                 "mealType": mealType
               });
               if (result == true) {
+                controller.mealTypeStatus = 0;
                 controller.getBookingBootIndexCagegory();
               }
             },
@@ -238,12 +243,49 @@ class EntryHomeView extends GetView<OrderHomeController> {
         )
         .toList();
 
-    return GridMenuView(
-      children: buttonList,
-      mainAxisSpacing: ScreenAdapter.width(50),
-      crossAxisSpacing: ScreenAdapter.height(50),
-      childAspectRatio: 0.9,
-    );
+    return Stack(children: [
+      Container(
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(70),
+          left: ScreenAdapter.width(70),
+          right: ScreenAdapter.width(70),
+          bottom: ScreenAdapter.height(70),
+        ),
+        child: GridMenuView(
+          children: buttonList,
+          mainAxisSpacing: ScreenAdapter.width(50),
+          crossAxisSpacing: ScreenAdapter.height(50),
+          childAspectRatio: 0.9,
+        ),
+      ),
+      if (controller.dining_type.value == "3" && controller.mealTypeStatus == 0)
+        ClipRect(
+            child: Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(0, 255, 255, 255),
+                ),
+              ),
+            ),
+            Positioned(
+                left: ScreenAdapter.width(200),
+                bottom: ScreenAdapter.width(400),
+                child: Container(
+                  alignment: Alignment.center,
+                  child: Text("お食事種類を選択してください",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(52),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                      )),
+                ))
+          ],
+        )),
+    ]);
   }
 
   @override
@@ -318,9 +360,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                   title: GString.getToString(
                                       controller.settingLanguage.value,
                                       "in_shop"),
-                                  selected: !controller.mealType.value,
+                                  selected: controller.mealTypeStatus == 1,
                                   onTap: () {
-                                    controller.updateDingType("1");
+                                    controller.updateDingType(1);
                                   },
                                 ),
                               ),
@@ -333,9 +375,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                   title: GString.getToString(
                                       controller.settingLanguage.value,
                                       "take_out"),
-                                  selected: controller.mealType.value,
+                                  selected: controller.mealTypeStatus == 2,
                                   onTap: () {
-                                    controller.updateDingType("2");
+                                    controller.updateDingType(2);
                                   },
                                 ),
                               ),
@@ -351,12 +393,6 @@ class EntryHomeView extends GetView<OrderHomeController> {
                         flex: 7,
                         child: Container(
                           alignment: Alignment.center,
-                          padding: EdgeInsets.only(
-                            top: ScreenAdapter.height(70),
-                            left: ScreenAdapter.width(70),
-                            right: ScreenAdapter.width(70),
-                            bottom: ScreenAdapter.height(70),
-                          ),
                           decoration: BoxDecoration(
                             color: Color.fromARGB(255, 243, 243, 243),
                           ),
