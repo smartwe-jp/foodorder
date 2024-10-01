@@ -160,13 +160,13 @@ class MyHttpOverrides extends HttpOverrides {
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 300;
-  int _timeoutSeconds = 300; // 3分钟
+  final int timeSeconds = 180;
+  int _timeoutSeconds = 180; // 3分钟
 
   void startTimer() {
     cancelTimer();
     debugPrint("startTimer");
-    _timeoutSeconds = _timeoutSeconds;
+    _timeoutSeconds = timeSeconds;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
@@ -185,7 +185,7 @@ class ResetToHomeTimer {
     //   startTimer();
     // }
     debugPrint("resetTimer");
-    _timeoutSeconds = _timeoutSeconds;
+    _timeoutSeconds = timeSeconds;
   }
 
   void cancelTimer() {
