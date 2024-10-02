@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
@@ -26,18 +27,20 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 class RejishiMeRequestView extends StatefulWidget {
   final String machineCode;
-  final Function(double, Map) resetCash;
+  final Function(double, Map)? resetCash;
   final Future<Map?> Function(int)? recycleCash;
   final Function(double, Map)? updatePrintInfo;
   final Map? usbDevice;
+  final SettingController? settingController;
 
   const RejishiMeRequestView(
       {super.key,
       required this.machineCode,
-      required this.resetCash,
+      this.resetCash,
       this.recycleCash,
       this.usbDevice,
-      this.updatePrintInfo});
+      this.updatePrintInfo,
+      this.settingController});
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -51,7 +54,6 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectUser = "";
   double printLength = 2352;
   //Function _resetCash = () {};
-  Map _usbDevice = {}.obs;
   int _recycleCash = 0;
   Function _updatePrintInfo = () {};
 
@@ -61,24 +63,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   void initState() {
     //_resetCash = widget.resetCash;
     _updatePrintInfo = widget.updatePrintInfo ?? () {};
-    _usbDevice = widget.usbDevice ?? {};
-    debugPrint("RejishiMeRequestState usbDevice: $_usbDevice");
-    //usbDevice.value = HomeServices.getUsbPrintSettingInfo();
     super.initState();
     _loadMailAddress();
-  }
-
-  UsbDeviceInfo? get curUsbPrinter {
-    if (_usbDevice.isEmpty) {
-      print("usbDevice is empty");
-      //弹出提示框，打印机未设置，请设置打印机或者联系管理员
-      DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
-        Get.back();
-      });
-      return null;
-    }
-    print("usbDevice.value:${_usbDevice}");
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(_usbDevice));
   }
 
   _loadMailAddress() async {
@@ -219,13 +205,13 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
     _showEasyLoading();
 
-    if (widget.recycleCash == null) {
-      EasyLoading.dismiss();
-      showToast('印刷に失敗しました');
-      return success;
-    }
+    // if (widget.recycleCash == null) {
+    //   EasyLoading.dismiss();
+    //   showToast('印刷に失敗しました');
+    //   return success;
+    // }
 
-    Map? result = await widget.recycleCash!(_recycleCash);
+    Map? result = await widget.settingController?.recycleCashOut(_recycleCash);
     debugPrint("recycleCash result: $result");
     if (result == null) {
       EasyLoading.dismiss();
@@ -537,19 +523,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
       EasyLoading.dismiss();
       Get.back();
     } else {
-      await widget.resetCash(length, data);
+      await widget.settingController?.printRejishimei(printLength, data);
     }
-  }
-
-  _sendToUsePrinter(widget) async {
-    final printWidget = ReceiptConstrainedBox(widget);
-    PictureGeneratorProvider.instance.addPicGeneratorTask(
-      PicGenerateTask<PrinterInfo>(
-        tempWidget: printWidget as ATempWidget,
-        printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(usbDevice: curUsbPrinter),
-      ),
-    );
   }
 
   printView(printData) {
@@ -603,7 +578,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   lengthUpdate: (double length) {
                     print("printLength: $length");
                     printLength = length;
-                    _updatePrintInfo(length,printData);
+                    //_updatePrintInfo(length, printData);
                   },
                 ),
               ),

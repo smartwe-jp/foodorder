@@ -73,8 +73,8 @@ class SettingController extends GetxController with StateMixin {
   var hasOutMoney = false;
   var taskTouch = false;
   var exchangeFromInfo = {};
-  Map printInfo = {};
-  double printLength = 2048;
+  // Map printInfo = {};
+  // double printLength = 2048;
   Timer? showCashTimer;
 
   @override
@@ -177,28 +177,28 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
-  printRejishimei() async {
-    if (printInfo.isEmpty) {
+  printRejishimei(printLength, data) async {
+    if (data.isEmpty) {
       EasyLoading.dismiss();
       Get.back();
       clearTask();
       commonHandleDialogs("レジ締め印刷失敗しました、再度印刷しましょうか？", confirm: () {
-        printRejishimei();
+        printRejishimei(printLength, data);
       }, cancel: () {
         Get.back();
         clearTask();
         //showToast('完了しました');
       });
     } else {
-      directPrintRejishimei();
+      directPrintRejishimei(printLength, data);
     }
   }
 
-  directPrintRejishimei() async {
+  directPrintRejishimei(printLength, data) async {
     final printWidget = Container(
       width: 385,
       height: printLength + 150,
-      child: PrintView(isPrint: true, printInfo: printInfo),
+      child: PrintView(isPrint: true, printInfo: data),
     );
     await sendToUsePrinter(printWidget);
     await Future.delayed(Duration(seconds: 3));
@@ -209,29 +209,24 @@ class SettingController extends GetxController with StateMixin {
   }
 
   showRejishimeiView() async {
-    // final catValMap = cashInfoList.map((key, value) {
-    //   return MapEntry(getCatVal(key), value);
-    // });
-    //String cashInfo = await getMachineCashInfo();
-
     hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
         machineCode: machineCode.value,
-        resetCash: (length, data) async {
-          await printRejishimei();
-        },
-        updatePrintInfo: (length, data) {
-          printLength = length;
-          printInfo = data;
-        },
-        recycleCash: (p0) async {
-          debugPrint("recycleCashOut p0 = ${p0}");
-          Map result = await recycleCashOut(p0);
-          //debugPrint("recycleCashOut result = ${result}");
+        // resetCash: (length, data) async {
+        //   await printRejishimei();
+        // },
+        // updatePrintInfo: (length, data) {
+        //   printLength = length;
+        //   printInfo = data;
+        // },
+        // recycleCash: (p0) async {
+        //   debugPrint("recycleCashOut p0 = ${p0}");
+        //   Map result = await recycleCashOut(p0);
+        //   //debugPrint("recycleCashOut result = ${result}");
 
-          return result;
-        },
-        usbDevice: usbPrinter.value));
+        //   return result;
+        // },
+        settingController: this,));
   }
 
   showRecycleAlert() {
