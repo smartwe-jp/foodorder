@@ -275,7 +275,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                 bottom: ScreenAdapter.width(400),
                 child: Container(
                   alignment: Alignment.center,
-                  child: Text("お食事種類を選択してください",
+                  child: Text("お食事種類を選んでください",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(52),
                         fontFamily: GFont.getFontFamily(),

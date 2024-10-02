@@ -184,12 +184,12 @@ class ResetToHomeTimer {
     //   _timer!.cancel();
     //   startTimer();
     // }
-    debugPrint("resetTimer");
+    //debugPrint("resetTimer");
     _timeoutSeconds = timeSeconds;
   }
 
   void cancelTimer() {
-    debugPrint("cancelTimer");
+    //debugPrint("cancelTimer");
     _timer?.cancel();
     _timer = null;
   }
