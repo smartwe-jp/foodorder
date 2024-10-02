@@ -238,7 +238,7 @@ extension SettingControllerExtension on SettingController {
     return success;
   }
 
-  cancelTimer() async {
+  cancelTimer({shouldBack = true}) async {
     if (taskTouch) return;
     taskTouch = true;
     showEasyLoading(content: 'お待ち下さい');
@@ -249,7 +249,7 @@ extension SettingControllerExtension on SettingController {
       seconds--;
       if (seconds == 0) {
         showCashTimer?.cancel();
-        cancelReplanish();
+        cancelReplanish(shouldBack: shouldBack);
       }
     });
   }
@@ -270,13 +270,13 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
-  cancelReplanish() async {
+  cancelReplanish({shouldBack = true}) async {
     debugPrint("cancelReplanish");
 
     ignoreNotify.value = true;
     if (getPutMoney.value == 0) {
       await closeDeposit();
-      Get.back();
+      if (shouldBack) Get.back();
       clearTask();
       taskTouch = false;
     } else {
@@ -285,7 +285,8 @@ extension SettingControllerExtension on SettingController {
       if (result) {
         final result = await supplyCountsClear();
         if (result) {
-          Get.back();
+          if (shouldBack) Get.back();
+
           clearTask();
         }
       }
@@ -540,6 +541,7 @@ extension SettingControllerExtension on SettingController {
     hasExchangeCash = false;
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
+    isStartPutMoney.value = false;
     getServerCashInfo();
     //update();
   }

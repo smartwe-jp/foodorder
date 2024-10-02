@@ -17,7 +17,7 @@ extension ExchangeControllerExtension on SettingController {
     ignoreNotify.value = false;
     isStartPutMoney.value = true;
     hasExchangeCash = false;
-    
+
     update();
     await beginDepositOutside();
   }
@@ -58,6 +58,22 @@ extension ExchangeControllerExtension on SettingController {
     });
 
     return newCashInfoList;
+  }
+
+  Future<String?> getMachineCashInfo() async {
+    var result = null;
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        debugPrint("getMachineCashInfo 1");
+
+        result = value;
+      },
+      catchError: (error) {
+        debugPrint("getMachineCashInfo error: $error");
+        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+      },
+    );
+    return result;
   }
 
   Future<Map?> getMachineCashInfos() async {
@@ -129,11 +145,42 @@ extension ExchangeControllerExtension on SettingController {
     };
   }
 
-  Map<String, int> parseCoinCounts(String input) {
+  Map<String, int> parseCoinCount(String input) {
     return Map.fromEntries(input.split(',').map((item) {
       List<String> parts = item.split(':');
       return MapEntry(parts[0], int.parse(parts[1]));
     }).where((entry) => entry.value > 0));
+  }
+
+  Map<String, int> parseCoinCounts(String input, String local, String out) {
+    Map<String, int> result = {};
+
+    void processInput(String str) {
+      str.split(',').forEach((item) {
+        List<String> parts = item.split(':');
+        String key = parts[0];
+        int value = int.parse(parts[1]);
+        result[key] = (result[key] ?? 0) + value;
+      });
+    }
+
+    void processOutput(String str) {
+      str.split(',').forEach((item) {
+        List<String> parts = item.split(':');
+        String key = parts[0];
+        int value = int.parse(parts[1]);
+        int count = (result[key] ?? 0);
+        if (count >= value) {
+          result[key] = count - value;
+        }
+      });
+    }
+
+    processInput(input);
+    processInput(local);
+    processOutput(out);
+
+    return Map.fromEntries(result.entries.where((entry) => entry.value > 0));
   }
 
   List<MapEntry<String, int>>? findChange(
@@ -157,15 +204,45 @@ extension ExchangeControllerExtension on SettingController {
     return null;
   }
 
+  List<MapEntry<String, int>>? findOptimalChange(
+      List<String> coins, Map<String, int> coinCounts, int target) {
+    if (target == 0) return [];
+    if (target < 0 || coins.isEmpty) return null;
+    debugPrint("findOptimalChange");
+    List<MapEntry<String, int>>? bestResult;
+    int minCoins = 9223372036854775807;
+    debugPrint("minCoins:$minCoins");
+    String coin = coins.first;
+    int coinValue = int.parse(coin);
+    int count = coinCounts[coin] ?? 0;
+    debugPrint("coin:$coin, coinValue:$coinValue, count:$count");
+
+    for (int i = 0; i <= count; i++) {
+      var result = findOptimalChange(
+          coins.sublist(1), coinCounts, target - coinValue * i);
+      if (result != null) {
+        final currentResult = i > 0 ? [MapEntry(coin, i), ...result] : result;
+        int totalCoins =
+            currentResult.fold(0, (sum, entry) => sum + entry.value);
+        if (totalCoins < minCoins) {
+          minCoins = totalCoins;
+          bestResult = currentResult;
+        }
+      }
+    }
+
+    return bestResult;
+  }
+
   String formatChange(List<MapEntry<String, int>> change, type, int count) {
     Map<String, int> changeMap = Map.fromEntries(change);
-    
+
     changeMap.update(type, (existingCount) => existingCount + count,
         ifAbsent: () => count);
 
     return changeMap.entries
-      .map((entry) => '${entry.key}:${entry.value}')
-      .join(',');
+        .map((entry) => '${entry.key}:${entry.value}')
+        .join(',');
   }
 
   Map<String, int> formatRemainingCoins(
@@ -176,8 +253,11 @@ extension ExchangeControllerExtension on SettingController {
           (remainingCoins[entry.key] ?? 0) - entry.value;
     }
     return Map.fromEntries(
-    remainingCoins.entries.where((entry) => entry.value > 0)
-    );
+        remainingCoins.entries.where((entry) => entry.value > 0));
+  }
+
+  String mapToString(Map<String, String> map) {
+    return map.entries.map((entry) => '${entry.key}:${entry.value}').join(',');
   }
 
   //exchangeFlow
@@ -189,7 +269,11 @@ extension ExchangeControllerExtension on SettingController {
     debugPrint(
         'exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
 
-    Map<String, int> coinCounts = parseCoinCounts(getPutMoneyCurrency.value);
+    String? localCashInfo = await getMachineCashInfo();
+    if (localCashInfo == null) return;
+    Map<String, int> coinCounts = parseCoinCounts(
+        getPutMoneyCurrency.value, localCashInfo, '$type:$count');
+
     debugPrint('coinCounts : $coinCounts');
     List<String> availableCoins = coinCounts.keys.toList(); //..sort();
     debugPrint('availableCoins : $availableCoins');
@@ -200,7 +284,7 @@ extension ExchangeControllerExtension on SettingController {
 
     if (change == null) {
       EasyLoading.dismiss();
-      errorHandleDialog("exchange fail");
+      errorHandleDialog("現在の組み合わせは両替できません、キャンセルしてやり直してください。"); //localized needed
       return;
     }
 
@@ -210,13 +294,14 @@ extension ExchangeControllerExtension on SettingController {
     String outInfo = getNoneZeroInfo(changeString);
     debugPrint('outInfo: $outInfo');
 
-    Map remainingCoins = formatRemainingCoins(coinCounts, change);
+    Map<String, int> putCoinCounts = parseCoinCount(getPutMoneyCurrency.value);
+    //Map remainingCoins = formatRemainingCoins(putCoinCounts, change);
 
-    final puts = remainingCoins.entries.map((e){
+    final puts = putCoinCounts.entries.map((e) {
       return {
-          'catVal': catValFromInt(e.key),
-          'val': e.value,
-        };
+        'catVal': catValFromInt(e.key),
+        'val': e.value,
+      };
     }).toList();
 
     debugPrint('puts: $puts');
@@ -225,11 +310,16 @@ extension ExchangeControllerExtension on SettingController {
       {
         'catVal': catValFromInt(type),
         'val': count,
-      }
+      },
+      ...change.map((item) => {
+        'catVal': catValFromInt(item.key),
+        'val': item.value,
+      })
     ];
+
     debugPrint('pops: $pops');
 
-    //final depositAmount = 
+    //final depositAmount =
     await CashChanger.fixDeposit;
     // if (depositAmount != 0) {
     //   return;
@@ -249,101 +339,6 @@ extension ExchangeControllerExtension on SettingController {
         Get.back();
       }
     }
-  }
-
-  List<String> findClosestCombination(String depositDetails, int target) {
-    debugPrint('findClosestCombination: $depositDetails, $target');
-
-    //去除depositDetails 中为0的数据
-
-    List<String> detailList = depositDetails.split(',');
-    String noZeroString = '';
-    for (String detail in detailList) {
-      if (detail.split(':')[1] != '0') {
-        if (noZeroString != '') {
-          noZeroString += ',';
-        }
-        noZeroString += detail;
-      }
-    }
-    debugPrint('noZeroString: $noZeroString');
-
-    Map<String, int> depositMap = {};
-    List<String> details = noZeroString.split(',');
-    debugPrint('details: $details');
-
-    // 解析每对值，构建 Map
-    for (String detail in details) {
-      List<String> parts = detail.split(':');
-
-      String denomination = '${parts[0]}:${parts[1]}';
-      int count = int.parse(parts[1]) * int.parse(parts[0]);
-      depositMap[denomination] = count;
-    }
-
-    debugPrint('cashMap: $depositMap');
-
-    var sum = 0;
-    String outMoney = '';
-    String putMoney = '';
-    for (var entry in depositMap.entries) {
-      sum += entry.value;
-
-      if (target == 0) {
-        outMoney = '';
-        putMoney = noZeroString;
-        break;
-      }
-
-      if (sum < target) {
-        if (outMoney != '') {
-          outMoney += ',';
-        }
-        outMoney += entry.key;
-      } else if (sum == target) {
-        if (outMoney != '') {
-          outMoney += ',';
-        }
-        outMoney += entry.key;
-        debugPrint('outMoney: $outMoney');
-        //putMoney 字符串 等于 depositDetails字符串除去outMoney
-        putMoney = noZeroString.replaceAll(outMoney + ',', '');
-        debugPrint('putMoney: $putMoney');
-        break;
-      } else {
-        //{100:6: 600, 500:1: 500}
-        int diffValue = sum - target; //815 - 315 = 500   600 - 100 = 500
-        String currentKeyValue = entry.key.split(':')[0]; //100   100
-        int valueCount = int.parse(entry.key.split(':')[1]); //8   6
-
-        int offset = diffValue ~/
-            int.parse(currentKeyValue); //500 / 100 = 5   500/100 = 5
-        int diffKey = valueCount - offset; //8 - 5 = 3    6 - 5 = 1
-        //100:6，500:1
-
-        outMoney =
-            outMoney + (outMoney != "" ? "," : ""); //如果outMoney 为空 则不加",""
-
-        putMoney = noZeroString.replaceAll(
-            outMoney + entry.key + ',', ''); //500:1   500:1
-        debugPrint('putMoney0: $putMoney');
-        // int putMonyValue =
-        //     (entry.value - diffValue) ~/ int.parse(currentKeyValue); // (800 - 500) / 100 = 3
-
-        putMoney =
-            '${entry.key.split(':')[0]}:$offset' + ',' + putMoney; //100:5,500:1
-        debugPrint('putMoney: $putMoney');
-
-        outMoney =
-            outMoney + (outMoney != "" ? "," : ""); //如果outMoney 为空 则不加",""
-
-        outMoney += '${entry.key.split(':')[0]}:$diffKey'; //100:3    100:1
-        debugPrint('outMoney: $outMoney');
-
-        break;
-      }
-    }
-    return [putMoney, outMoney];
   }
 
   //日文提示
@@ -446,6 +441,31 @@ extension ExchangeControllerExtension on SettingController {
       }
     });
     return canExchange;
+  }
+
+  List<int> getExchange() {
+    int exChangeType = int.parse(getCatVal(exchangeFromInfo.keys.first));
+    int count = exchangeFromInfo.values.first;
+
+    if (count > 0 && getPutMoney.value >= exChangeType && exChangeType > 0) {
+      //预计要换多少个
+      var exchange = getPutMoney.value ~/ exChangeType;
+      //debugPrint('exchange1000: $exchange');
+      //获取剩余的钱
+      var remainMoney = getPutMoney.value % exChangeType;
+      //debugPrint('remainMoney: $remainMoney');
+      if (count < exchange) {
+        //不够换
+        exchange = count;
+        //debugPrint('exchange1000 e: $exchange');
+        remainMoney = getPutMoney.value - count * exChangeType;
+        //debugPrint('remainMoney e: $remainMoney');
+      }
+
+      return [exChangeType, exchange, remainMoney];
+    }
+
+    return [];
   }
 
   List<List<int>> getExchangeList() {

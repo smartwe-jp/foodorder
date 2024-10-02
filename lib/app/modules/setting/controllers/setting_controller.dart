@@ -72,6 +72,7 @@ class SettingController extends GetxController with StateMixin {
   var hasExchangeCash = false;
   var hasOutMoney = false;
   var taskTouch = false;
+  var exchangeFromInfo = {};
   Map printInfo = {};
   double printLength = 2048;
   Timer? showCashTimer;
@@ -786,7 +787,8 @@ class SettingController extends GetxController with StateMixin {
     //Get.offAllNamed('/transit-page');
     //Get.toNamed('/transit-page');
     //Get.offNamedUntil('/transit-page', ModalRoute.withName('/home'));
-    Get.offNamedUntil('/transit-page', (route) => route.isFirst); //, arguments: {'toView2': true}
+    Get.offNamedUntil('/transit-page',
+        (route) => route.isFirst); //, arguments: {'toView2': true}
 
     //});
   }
