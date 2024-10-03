@@ -83,7 +83,7 @@ class TransitPageController extends GetxController {
     //   await _getSmartweSystemSettingInfo();
     //   return;
     // }
-    if(_loadActiveInfo.value == false){
+    if(_loadActiveInfo.value == false && !_checkShouldActive()){
       _actuarial.value = true;
       await _getSmartweSystemSettingInfo();
       return;
@@ -302,22 +302,22 @@ class TransitPageController extends GetxController {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => OrderHomeView());
-      //Get.toNamed("/order-home");
+      //Get.off(() => OrderHomeView());
+      Get.toNamed("/order-home");
     });
   }
 
   void _goCheckOut() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => CheckoutPageView());
-      //Get.toNamed("/checkout-page");
+      //Get.off(() => CheckoutPageView());
+      Get.toNamed("/checkout-page");
     });
   }
 
   void _goSelfService() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      Get.off(() => SelfservicePageView());
-      //Get.toNamed("/selfservice-page");
+      //Get.off(() => SelfservicePageView());
+      Get.toNamed("/selfservice-page");
     });
   }
 

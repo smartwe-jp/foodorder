@@ -340,16 +340,19 @@ class SettlementController extends GetxController with StateMixin {
       Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
-        Get.toNamed("/checkout-page");
+        //Get.toNamed("/checkout-page");
+        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }else if(machineMode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      Get.toNamed("/selfservice-page");
+      //Get.toNamed("/selfservice-page");
+      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {print("过来删除menu了");
     Get.delete<MenuPageController>(); // 手动删除控制器实例
-    Get.toNamed("/order-home");
+    //Get.toNamed("/order-home");
+    Get.offNamedUntil('/order-home', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/home');
     }
   }
@@ -361,7 +364,8 @@ class SettlementController extends GetxController with StateMixin {
     if (machineMode.value == "1") {
       if(is_back_home.value == "0"){
         Get.delete<MenuPageController>(); // 手动删除控制器实例
-        Get.toNamed("/order-home");
+        //Get.toNamed("/order-home");
+        Get.offNamedUntil('/order-home', (route) => route.isFirst);
         //Navigator.pushNamed(context, '/home');
       }else{
         // eventBus.fire(new clearCartEvent('支付成功...'));
@@ -375,7 +379,8 @@ class SettlementController extends GetxController with StateMixin {
 
     }else if (machineMode.value == "3") {
       Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      Get.toNamed("/selfservice-page");
+      //Get.toNamed("/selfservice-page");
+      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       // if(is_back_home.value == "0"){
       //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //   Get.toNamed("/selfservice-page");
@@ -394,7 +399,8 @@ class SettlementController extends GetxController with StateMixin {
       Get.delete<CheckoutPageController>();// 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
-        Get.toNamed("/checkout-page");
+        //Get.toNamed("/checkout-page");
+        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }

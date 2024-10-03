@@ -391,7 +391,8 @@ class SettingController extends GetxController with StateMixin {
       "machineCode":machineCode.value,
     });
     //Future.delayed(Duration(milliseconds: 100), () {
-      Get.toNamed('/transit-page');
+      //Get.toNamed('/transit-page');
+      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
     //});
   }
 }
