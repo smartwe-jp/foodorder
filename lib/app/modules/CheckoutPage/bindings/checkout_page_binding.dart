@@ -6,8 +6,8 @@ class CheckoutPageBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(CheckoutPageController());
-    /*Get.lazyPut<CheckoutPageController>(
-      () => CheckoutPageController(),
-    );*/
+    // Get.lazyPut<CheckoutPageController>(
+    //   () => CheckoutPageController(),
+    // );
   }
 }

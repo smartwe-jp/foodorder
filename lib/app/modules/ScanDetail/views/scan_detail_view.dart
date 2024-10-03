@@ -1,21 +1,20 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/common/NumberFormat.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/fontSize.dart';
 import 'package:foodorder/app/config/imageData.dart';
 import 'package:foodorder/app/config/string.dart';
-import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
+import 'package:foodorder/app/modules/ScanDetail/controllers/scan_detail_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
 // GString.getToString(
 //                                   controller.checkLanguage.value,
 //                                   "checkoutScanTitle"
-class ScanDetailView extends GetView<CheckoutPageController> {
+class ScanDetailView extends GetView<ScanDetailController> {
   _orderItem(title, qty) {
     return Container(
       padding: EdgeInsets.only(
@@ -65,7 +64,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(GString.getToString(controller.checkLanguage.value, "show_check_tableno"),
+        Text(GString.getToString(controller.languageKey, "show_check_tableno"),
             style: TextStyle(
                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                 fontWeight: FontWeight.w600,
@@ -88,7 +87,10 @@ class ScanDetailView extends GetView<CheckoutPageController> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
-            Text(GString.getToString(controller.checkLanguage.value, "settlement_total_price") + ' :',
+            Text(
+                GString.getToString(
+                        controller.languageKey, "settlement_total_price") +
+                    ' :',
                 style: TextStyle(
                     //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
@@ -97,39 +99,41 @@ class ScanDetailView extends GetView<CheckoutPageController> {
             SizedBox(
               width: ScreenAdapter.width(20),
             ),
-
             RichText(
-                text: TextSpan(
-                    text: "¥",
-                    //GString.getToString(this._checkLanguage, "show_price_front"),
-                    style: TextStyle(
-                      fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceLeft),
-                      fontFamily: GFont.getFontFamily(),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+              text: TextSpan(
+                  text: "¥",
+                  //GString.getToString(this._checkLanguage, "show_price_front"),
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(
+                        GFontSize.menusettlementBottomPriceLeft),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                  ),
+                  children: [
+                    TextSpan(
+                      text: int.parse(controller.totlaPrice).formatSum(),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(
+                            GFontSize.menusettlementBottomPrice),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                      ),
                     ),
-                    children: [
-                      TextSpan(
-                        text: controller.formatSum(int.parse(controller.totlaPrice.value)),
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPrice),
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                        ),
+                    TextSpan(
+                      text:
+                          "（${GString.getToString(controller.languageKey, "show_price_front")}）", //" 円",
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(
+                            GFontSize.menusettlementBottomPriceRight),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                       ),
-                      TextSpan(
-                        text:
-                        "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
-                        style: TextStyle(
-                          fontSize: ScreenAdapter.fontSize(GFontSize.menusettlementBottomPriceRight),
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                        ),
-                      ),
-                    ]),
-              ),
+                    ),
+                  ]),
+            ),
           ],
         ));
   }
@@ -137,7 +141,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<CheckoutPageController>(builder: (controller) {
+      body: GetBuilder<ScanDetailController>(builder: (controller) {
         return controller.obx(
           (state) => AnnotatedRegion(
             value: SystemUiOverlayStyle.light,
@@ -170,8 +174,8 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                           width: ScreenAdapter.width(20),
                         ),
                         Text(
-                          GString.getToString(
-                                  controller.checkLanguage.value,"scan_order_detail_title"),
+                          GString.getToString(controller.languageKey,
+                              "scan_order_detail_title"),
                           style: TextStyle(
                               //color: ColorsUtil.hexToColor("#FFFFFF"),
                               fontWeight: FontWeight.w600,
@@ -184,7 +188,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
-                  _tableNumber(controller.tableNum.value),
+                  _tableNumber(controller.tableNum),
                   _publicSplitLine(),
                   SizedBox(
                     height: ScreenAdapter.height(30),
@@ -208,7 +212,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
-                  _payCountTitle(int.parse(controller.totlaPrice.value)),
+                  _payCountTitle(int.parse(controller.totlaPrice)),
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
@@ -224,13 +228,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                       children: [
                         InkWell(
                           onTap: () {
-                            try {
-                              //showCancelConfirm();
-                              //Navigator.pop(context);
-                              controller.backCheckHome();
-                              //Get.back();
-                              //controller.backCheckHome();
-                            } catch (_) {}
+                            controller.returnBack();
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -244,8 +242,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.checkLanguage.value,
-                                  "settlement_back"),
+                                  controller.languageKey, "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#000000"),
                                   fontWeight: FontWeight.w500,
@@ -257,7 +254,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                         InkWell(
                           onTap: () {
                             //try {
-                              controller.showSelectMealTypeAndPaymentMethodDialog();
+                            controller.checkOut();
                             //} catch (_) {}
                           },
                           child: Container(
@@ -272,8 +269,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.checkLanguage.value,
-                                  "settlement_button"),
+                                  controller.languageKey, "settlement_button"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w500,

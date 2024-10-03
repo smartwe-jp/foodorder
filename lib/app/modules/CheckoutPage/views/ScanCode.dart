@@ -17,9 +17,9 @@ import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
 
-class ScanCodeView extends GetView {
-  final CheckoutPageController controller = Get.put(CheckoutPageController());
-  ScanCodeView({Key? key}) : super(key: key);
+class ScanCodeView extends GetView<CheckoutPageController> {
+  // final CheckoutPageController controller = Get.put(CheckoutPageController());
+  // ScanCodeView({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -43,8 +43,8 @@ class ScanCodeView extends GetView {
                           autofocus: true,
                           showCursor: true, // 显示光标
                           //readOnly: true,
-                          controller: controller.scanQrCodeController,
-                          focusNode: controller.scanQrCodeFocusNode,
+                          controller: controller.scanQrCode2Controller,
+                          focusNode: controller.scanQrCode2FocusNode,
                           decoration: InputDecoration(
                             hintText: "请扫码",
                             border: InputBorder.none,
@@ -64,7 +64,7 @@ class ScanCodeView extends GetView {
                               if (Platform.isAndroid) {
                                 controller.doNextPay();
                               } else {
-                                controller.requestOrderList(controller.scanQrCodeController, controller.scanQrCodeFocusNode);
+                                controller.requestOrderList(controller.scanQrCode2Controller, controller.scanQrCode2FocusNode);
                               }
                             });
                           },

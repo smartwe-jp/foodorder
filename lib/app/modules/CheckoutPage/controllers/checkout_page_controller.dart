@@ -28,6 +28,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
 
+  TextEditingController scanQrCode2Controller = new TextEditingController();
+  FocusNode scanQrCode2FocusNode = FocusNode();
+
   RxString machineCode = "".obs;
   RxList homeList = [].obs;
 
@@ -312,7 +315,8 @@ class CheckoutPageController extends GetxController with StateMixin {
     return formatter.format(sum);
   }
 
-  requestOrderList(TextEditingController textController, FocusNode focus) {
+  requestOrderList(
+      TextEditingController textController, FocusNode focus) async {
     debugPrint('qrCodeString: ${textController.text}');
 
     String orderKey = textController.text;
@@ -324,7 +328,14 @@ class CheckoutPageController extends GetxController with StateMixin {
     }
 
     debugPrint('orderKey : $orderKey');
+    textController.text = "";
+    focus.requestFocus();
 
+    debugPrint('/scan-detail');
+    Get.toNamed('/scan-detail',
+        arguments: {'machineCode': machineCode.value, 'orderKey': orderKey});
+
+    return;
     var formData = {
       "orderKey": orderKey,
       "language": checkLanguage.value,
@@ -352,6 +363,8 @@ class CheckoutPageController extends GetxController with StateMixin {
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
           debugPrint('/scan-detail');
           Get.toNamed('/scan-detail');
+          textController.text = "";
+          focus.requestFocus();
         } else {
           textController.text = "";
           focus.requestFocus();
@@ -443,6 +456,13 @@ class CheckoutPageController extends GetxController with StateMixin {
         }
       });
     }
+  }
+
+  detaiCheckPayment(iOrderId, iTotlaPrice, iTableNum) {
+    orderId.value = iOrderId;
+    totlaPrice.value = iTotlaPrice;
+    tableNum.value = iTableNum;
+    showSelectMealTypeAndPaymentMethodDialog();
   }
 
   //选择食用方式和支付方式
@@ -589,8 +609,11 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   backCheckHome() {
+    debugPrint("---backCheckHome---");
     Get.back();
     scanQrCodeController.text = "";
-    scanQrCodeFocusNode.requestFocus(); 
+    scanQrCodeFocusNode.requestFocus();
+    scanQrCode2Controller.text = "";
+    scanQrCode2FocusNode.requestFocus();
   }
 }
