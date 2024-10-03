@@ -309,7 +309,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                     children: [
                       SizedBox(width: ScreenAdapter.width(150),),
                       Transform.rotate(
-                      angle: pi / 6, // 45度等于π/4弧度
+                      angle: pi / 6,
                       child: 
                       Container(
                         width: ScreenAdapter.height(150),
@@ -325,7 +325,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                     ],
                   ),
                   
-                  Text("いらっしゃいませ。\n店内かお持ち帰りかを選択してください",
+                  Text(GString.getToString(controller.localKey, "dining_type_tips"),
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(56),
                           fontFamily: GFont.getFontFamily(),
@@ -335,7 +335,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                 ],
               )
               
-                        ),
+              ),
             )
           ],
         )),

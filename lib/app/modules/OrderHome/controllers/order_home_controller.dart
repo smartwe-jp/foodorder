@@ -74,6 +74,10 @@ class OrderHomeController extends GetxController with StateMixin {
     });
   }
 
+  get localKey {
+    Get.locale?.languageCode.toUpperCase() ?? "JP";
+  }
+
   //获取机器信息
   _getMachineInfo() async {
     debugPrint("获取机器信息");

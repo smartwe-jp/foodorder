@@ -179,6 +179,7 @@ class GString{
 
         "pay_success_title":"お支払いが成功しました\nご利用いただきありがとうございます",
         "scan_order_detail_title":"ご注文",
+        "dining_type_tips":"いらっしゃいませ。\n店内かお持ち帰りかを選択してください",
 
       };
     }else if(languageCode == 'CH'){
@@ -356,6 +357,7 @@ class GString{
 
         "pay_success_title":"支付成功\n感谢您的使用",
         "scan_order_detail_title":"订单",
+        "dining_type_tips":"欢迎光临。\n请选择堂食还是外带"
 
 
       };
@@ -533,6 +535,7 @@ class GString{
 
         "pay_success_title":"Payment Successful\nThank you for your use",
         "scan_order_detail_title":"Order",
+        "dining_type_tips":"Welcome.\nPlease choose dine-in or takeout"
         
       };
     }else if(languageCode == 'KO'){
@@ -710,6 +713,7 @@ class GString{
 
         "pay_success_title":"결제가 성공했습니다\n이용해 주셔서 감사합니다",
         "scan_order_detail_title":"주문",
+        "dining_type_tips":"어서 오세요.\n매장 식사 또는 포장 중 선택해 주세요"
       };
     }
 
