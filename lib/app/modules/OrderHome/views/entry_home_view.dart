@@ -324,8 +324,18 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
                     ],
                   ),
+
+                  Text(GString.getToString(Get.locale?.languageCode.toUpperCase() ?? "JP", "dining_welcome"),
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(80),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          color: const Color.fromARGB(255, 23, 106, 67),
+                        )),
+
+                  SizedBox(height: 20,),
                   
-                  Text(GString.getToString(controller.localKey, "dining_type_tips"),
+                  Text(GString.getToString(Get.locale?.languageCode.toUpperCase() ?? "JP", "dining_type_tips"),
                         style: TextStyle(
                           fontSize: ScreenAdapter.fontSize(56),
                           fontFamily: GFont.getFontFamily(),

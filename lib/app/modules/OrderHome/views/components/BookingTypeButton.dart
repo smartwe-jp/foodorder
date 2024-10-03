@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 
 class BookingTypeButton extends StatelessWidget {
@@ -47,6 +48,7 @@ class BookingTypeButton extends StatelessWidget {
                   style: TextStyle(
                     color: selected ? Colors.white : const Color.fromARGB(255, 53,59,80),
                     fontSize: 50,
+                    fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w600,
                   ),
                 ),
