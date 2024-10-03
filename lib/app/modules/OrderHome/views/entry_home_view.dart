@@ -259,6 +259,28 @@ class EntryHomeView extends GetView<OrderHomeController> {
         ),
       ),
       if (controller.dining_type.value == "3" && controller.mealTypeStatus == 0)
+        // Container(
+        //   decoration: BoxDecoration(
+        //     color: Color.fromARGB(50, 0, 0, 0),
+        //   ),
+        //   child: Center(
+        //     child: 
+        //     Column(
+        //       mainAxisAlignment: MainAxisAlignment.start,
+        //       children: [
+        //         Icon(Icons.pan_tool_alt, color: Color.fromARGB(255, 23, 106, 67),size: 100,),
+        //         Text("お食事種類を選んでください",
+        //               style: TextStyle(
+        //                 fontSize: ScreenAdapter.fontSize(52),
+        //                 fontFamily: GFont.getFontFamily(),
+        //                 fontWeight: FontWeight.w600,
+        //                 color: const Color.fromARGB(255, 23, 106, 67),
+        //               )),
+        //       ],
+        //     )
+            
+        //   )
+        // ),
         ClipRect(
             child: Stack(
           children: [
@@ -266,23 +288,51 @@ class EntryHomeView extends GetView<OrderHomeController> {
               filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
               child: Container(
                 decoration: BoxDecoration(
-                  color: Color.fromARGB(0, 255, 255, 255),
+                  color: Color.fromARGB(50, 0, 0, 0),
                 ),
               ),
             ),
-            Positioned(
-                left: ScreenAdapter.width(200),
-                bottom: ScreenAdapter.width(400),
-                child: Container(
-                  alignment: Alignment.center,
-                  child: Text("お食事種類を選んでください",
-                      style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(52),
-                        fontFamily: GFont.getFontFamily(),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-                      )),
-                ))
+            
+            Container(
+              padding: EdgeInsets.only(
+                left: ScreenAdapter.width(30),
+                right: ScreenAdapter.width(30)
+              ),
+              child: Center(
+              child: 
+              Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(width: ScreenAdapter.width(150),),
+                      Container(
+                        width: ScreenAdapter.height(150),
+                        height: ScreenAdapter.height(150),
+                        decoration: BoxDecoration(
+                          image: DecorationImage(
+                            image: AssetImage("assets/images/public/finger_touch.png"),
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      )
+
+                    ],
+                  ),
+                  
+                  Text("いらっしゃいませ。\n店内かお持ち帰りかを選択してください",
+                        style: TextStyle(
+                          fontSize: ScreenAdapter.fontSize(56),
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          color: const Color.fromARGB(255, 23, 106, 67),
+                        )),
+                ],
+              )
+              
+                        ),
+            )
           ],
         )),
     ]);
@@ -348,6 +398,10 @@ class EntryHomeView extends GetView<OrderHomeController> {
                       Expanded(
                         flex: 3,
                         child: Container(
+                          decoration: 
+                          BoxDecoration(
+                            color: controller.mealTypeStatus == 0 ? Color.fromARGB(50, 0, 0, 0) : Color.fromARGB(0, 0, 0, 0),
+                          ),
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
