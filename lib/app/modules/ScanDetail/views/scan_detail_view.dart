@@ -16,36 +16,46 @@ import 'package:get/get.dart';
 //                                   "checkoutScanTitle"
 class ScanDetailView extends GetView<ScanDetailController> {
   _orderItem(title, qty) {
-    return Container(
-      padding: EdgeInsets.only(
-        top: ScreenAdapter.height(10),
-        bottom: ScreenAdapter.height(10),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          Container(
-            width: ScreenAdapter.width(500),
-            child: Text('$title',
-                maxLines: 2,
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: ScreenAdapter.fontSize(40),
-                  fontWeight: FontWeight.w500,
-                  color: Colors.black,
-                )),
+    return 
+
+    Column(
+      children: [
+        Container(
+          padding: EdgeInsets.only(
+            top: ScreenAdapter.height(10),
+            bottom: ScreenAdapter.height(10),
           ),
-          SizedBox(width: ScreenAdapter.width(30)),
-          Text('x $qty',
-              style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(30),
-                fontWeight: FontWeight.w500,
-                color: Colors.black,
-              )),
-        ],
-      ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              Container(
+                width: ScreenAdapter.width(500),
+                child: Text('$title',
+                    maxLines: 2,
+                    style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(40),
+                      fontWeight: FontWeight.w500,
+                      color: Colors.black,
+                    )),
+              ),
+              SizedBox(width: ScreenAdapter.width(30)),
+              Text('x $qty',
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: ScreenAdapter.fontSize(30),
+                    fontWeight: FontWeight.w500,
+                    color: Colors.black,
+                  )),
+            ],
+          ),
+        ),
+        Divider(
+          thickness: 1,
+          color: const Color.fromARGB(255, 181, 171, 171),
+        )
+      ],
     );
   }
 
@@ -53,7 +63,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
     return Container(
       width: ScreenAdapter.width(500),
       //margin: EdgeInsets.only(top: 5, bottom: 5),
-      height: 1,
+      height: 2,
       color: ColorsUtil.hexToColor("#000000"),
       //width: 375,
     );
@@ -158,7 +168,8 @@ class ScanDetailView extends GetView<ScanDetailController> {
                           bottom: BorderSide(
                               color: ColorsUtil.hexToColor("#e5e5e5"),
                               width: 5.0),
-                        )),
+                        )
+                    ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -217,11 +228,16 @@ class ScanDetailView extends GetView<ScanDetailController> {
                     height: ScreenAdapter.height(30),
                   ),
                   Container(
+                    height: 5.0,
+                    decoration: BoxDecoration(
+                        color: ColorsUtil.hexToColor("#e5e5e5"),
+                    )),
+                  Container(
                     padding: EdgeInsets.only(
                         right: ScreenAdapter.width(50),
                         left: ScreenAdapter.width(50)),
                     height: ScreenAdapter.height(200),
-                    color: ColorsUtil.hexToColor("#DCDCDC"),
+                    color: ColorsUtil.hexToColor("#FFFFFF"),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -236,7 +252,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                             height: ScreenAdapter.height(100),
                             //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
                             decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
+                              color: ColorsUtil.hexToColor("#DCDCDC"),
                               //设置圆角
                               borderRadius: new BorderRadius.circular((5.0)),
                             ),

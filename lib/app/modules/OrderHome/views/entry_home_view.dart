@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:cached_network_image/cached_network_image.dart';
@@ -307,6 +308,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
                   Row(
                     children: [
                       SizedBox(width: ScreenAdapter.width(150),),
+                      Transform.rotate(
+                      angle: pi / 6, // 45度等于π/4弧度
+                      child: 
                       Container(
                         width: ScreenAdapter.height(150),
                         height: ScreenAdapter.height(150),
@@ -316,7 +320,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                             fit: BoxFit.cover,
                           ),
                         ),
-                      )
+                      ))
 
                     ],
                   ),
