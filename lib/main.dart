@@ -9,7 +9,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/controllers/order_sql_controller.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/modules/WATextPage/views/windows_test_view.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -112,7 +115,7 @@ void main() {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE) {
                         resetTimer.startTimer();
-                      } else if (value?.current == Routes.ENTRY_HOME) {
+                      } else if (value?.current == Routes.ENTRY_HOME || value?.current == Routes.SETTLEMENT) {
                         resetTimer.cancelTimer();
                       }
                     },
@@ -160,12 +163,12 @@ class MyHttpOverrides extends HttpOverrides {
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 180;
+  final int timeSeconds = 10;
   int _timeoutSeconds = 180; // 3分钟
 
   void startTimer() {
     cancelTimer();
-    debugPrint("startTimer");
+    debugPrint("--startTimer--");
     _timeoutSeconds = timeSeconds;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
@@ -174,7 +177,23 @@ class ResetToHomeTimer {
           cancelTimer();
           return;
         }
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+        //清空购物车
+        if (Get.isRegistered<OrderSqlController>()) {
+          final ordersqlcontroller = Get.find<OrderSqlController>();
+          ordersqlcontroller.removeAllFromCart();
+          ordersqlcontroller.getCardList();
+        }
+
+        if (Get.currentRoute == Routes.SETTLEMENT) {
+          if (Get.isRegistered<SettlementController>()) {
+            Get.find<SettlementController>().commonCancel();
+            Get.back();
+          } else {
+            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+          }
+        } else {
+          Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+        }
       }
     });
   }

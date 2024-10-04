@@ -1,9 +1,16 @@
 import 'dart:io';
+import 'dart:math';
+import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
+import 'package:foodorder/app/modules/OrderHome/views/components/CatagoryButton.dart';
+import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.dart';
+import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -21,6 +28,66 @@ import 'ScanCode.dart';
 class CheckoutPageView extends GetView {
   final CheckoutPageController controller = Get.put(CheckoutPageController());
   CheckoutPageView({Key? key}) : super(key: key);
+
+  languageSelectView() {
+    List languages = [];
+    if (controller.machineLanguages_JP.value == true)
+      languages.add({
+        "language": "JP",
+        "text": "日本語",
+        "selected": controller.machineLanguages_JP.value,
+        "icon": AssetImage("assets/images/public/language_Japanese.png"),
+      });
+
+    if (controller.machineLanguages_CH.value == true)
+      languages.add({
+        "language": "CH",
+        "text": "中文",
+        "selected": controller.machineLanguages_CH.value,
+        "icon": AssetImage("assets/images/public/language_Chinese.png"),
+      });
+
+    if (controller.machineLanguages_EN.value == true)
+      languages.add({
+        "language": "EN",
+        "text": "English",
+        "selected": controller.machineLanguages_EN.value,
+        "icon": AssetImage("assets/images/public/language_English.png"),
+      });
+
+    if (controller.machineLanguages_KO.value == true)
+      languages.add({
+        "language": "KO",
+        "text": "한국어",
+        "selected": controller.machineLanguages_KO.value,
+        "icon": AssetImage("assets/images/public/language_Korean.png"),
+      });
+
+    final buttonList = languages.map((e) {
+      return LanguageButton(
+        icon: e["icon"] as ImageProvider,
+        title: e["text"] as String,
+        selected: e["language"] == controller.settingLanguage.value,
+        onTap: () {
+          controller.updateSettingLanguage(e["language"] as String);
+        },
+      );
+    }).toList();
+
+    return Container(
+        alignment: Alignment.center,
+        height: ScreenAdapter.height(100),
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(20),
+          left: ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
+          bottom: ScreenAdapter.height(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [...buttonList],
+        ));
+  }
 
   //展示外带按钮
   _showTakeoutButton() {
@@ -40,7 +107,8 @@ class CheckoutPageView extends GetView {
             var jumpUrl = (controller.menu_direction.value == "1")
                 ? '/menu-page'
                 : '/menuzong-page';
-            final locale = Locale('${item["value"]}'.toLowerCase(), '${item["value"]}'.toUpperCase());
+            final locale = Locale('${item["value"]}'.toLowerCase(),
+                '${item["value"]}'.toUpperCase());
             Get.updateLocale(locale);
             Get.toNamed(jumpUrl, arguments: {
               "checkLanguage": "${item["value"]}",
@@ -103,7 +171,8 @@ class CheckoutPageView extends GetView {
               controller.checkLanguage.value = item["value"]!;
               controller.scanQrCodeController.text = "";
               controller.scanQrCodeFocusNode.requestFocus();
-              final locale = Locale('${item["value"]}'.toLowerCase(), '${item["value"]}');
+              final locale =
+                  Locale('${item["value"]}'.toLowerCase(), '${item["value"]}');
               Get.updateLocale(locale);
               Get.toNamed("/scancode-page",
                   arguments: {"checkLanguage": controller.checkLanguage.value});
@@ -190,6 +259,191 @@ class CheckoutPageView extends GetView {
     );
   }
 
+  ImageProvider _catagroyImage(String url) {
+    if (url.isEmpty) {
+      return AssetImage("assets/images/public/app_viewmore_icon.png");
+    } else {
+      return CachedNetworkImageProvider(url);
+    }
+  }
+
+  catagoryGridView() {
+    List<Widget> buttonList = controller.showCatagory
+        .map<Widget>(
+          (e) => CatagoryButton(
+            icon: _catagroyImage(e['image'] ?? ""),
+            title: e["categoryName"] ?? "",
+            onTap: () async {
+              controller.resetTimer?.cancel();
+              controller.mealTypeStatus = 0;
+              var mealType = true;
+
+              var jumpUrl = (controller.menu_direction.value == "1")
+                  ? '/menu-page'
+                  : '/menuzong-page';
+
+              final result = await Get.toNamed(jumpUrl, arguments: {
+                "classTag": e["categoryCode"] ?? "",
+                "menuList": controller.categoryList,
+                "checkLanguage": controller.settingLanguage.value,
+                "mealType": mealType
+              });
+              if (result == true) {
+                controller.mealTypeStatus = 0;
+                controller.getBookingBootIndexCagegory();
+              }
+            },
+          ),
+        )
+        .toList();
+
+    return Stack(children: [
+      Container(
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(70),
+          left: ScreenAdapter.width(70),
+          right: ScreenAdapter.width(70),
+          bottom: ScreenAdapter.height(70),
+        ),
+        child: GridMenuView(
+          children: buttonList,
+          mainAxisSpacing: ScreenAdapter.width(50),
+          crossAxisSpacing: ScreenAdapter.height(50),
+          childAspectRatio: 0.9,
+        ),
+      ),
+      if (controller.mealTypeStatus == 0)
+        ClipRect(
+            child: Stack(
+          children: [
+            BackdropFilter(
+              filter: ImageFilter.blur(sigmaX: 5, sigmaY: 5),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: Color.fromARGB(50, 0, 0, 0),
+                ),
+              ),
+            ),
+            Container(
+              padding: EdgeInsets.only(
+                  left: ScreenAdapter.width(30),
+                  right: ScreenAdapter.width(30)),
+              child: Center(
+                  child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    children: [
+                      SizedBox(
+                        width: ScreenAdapter.width(150),
+                      ),
+                      Transform.rotate(
+                          angle: pi / 6,
+                          child: Container(
+                            width: ScreenAdapter.height(150),
+                            height: ScreenAdapter.height(150),
+                            decoration: BoxDecoration(
+                              image: DecorationImage(
+                                image: AssetImage(
+                                    "assets/images/public/finger_touch.png"),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ))
+                    ],
+                  ),
+                  Text(
+                      GString.getToString(
+                          Get.locale?.languageCode.toUpperCase() ?? "JP",
+                          "dining_welcome"),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(80),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w600,
+                        color: const Color.fromARGB(255, 23, 106, 67),
+                      )),
+                  SizedBox(
+                    height: 20,
+                  ),
+                  Text(
+                      GString.getToString(
+                          Get.locale?.languageCode.toUpperCase() ?? "JP",
+                          "checkout_type_tips"),
+                      style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(56),
+                        fontFamily: GFont.getFontFamily(),
+                        fontWeight: FontWeight.w600,
+                        color: const Color.fromARGB(255, 23, 106, 67),
+                      )),
+                ],
+              )),
+            )
+          ],
+        )),
+    ]);
+  }
+
+  get eatInShopImage => controller.mealTypeStatus == 1
+      ? AssetImage("assets/images/public/settlement_top_qr.png")
+      : AssetImage("assets/images/public/settlement_top_qr_code_dark.png");
+
+  get eatOutImage => controller.mealTypeStatus == 2
+      ? AssetImage("assets/images/public/eat_out_on.png")
+      : AssetImage("assets/images/public/eat_out_off.png");
+
+  _mealTyleView() {
+    return Expanded(
+      flex: 3,
+      child: Container(
+        decoration: BoxDecoration(
+          color: controller.mealTypeStatus == 0
+              ? Color.fromARGB(50, 0, 0, 0)
+              : Color.fromARGB(0, 0, 0, 0),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(
+              width: ScreenAdapter.width(70),
+            ),
+            Expanded(
+              child: BookingTypeButton(
+                icon: eatInShopImage,
+                title: GString.getToString(
+                    controller.settingLanguage.value, "settlement_button"),
+                selected: controller.mealTypeStatus == 1,
+                onTap: () {
+                  //controller.updateDingType(1);
+                  Get.toNamed("/scancode-page", arguments: {
+                    "checkLanguage": controller.checkLanguage.value
+                  });
+                },
+              ),
+            ),
+            SizedBox(
+              width: ScreenAdapter.height(70),
+            ),
+            Expanded(
+              child: BookingTypeButton(
+                icon: eatOutImage,
+                title: GString.getToString(
+                    controller.settingLanguage.value, "take_out"),
+                selected: controller.mealTypeStatus == 2,
+                onTap: () {
+                  controller.updateDingType(2);
+                },
+              ),
+            ),
+            SizedBox(
+              width: ScreenAdapter.width(70),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   //预约弹出框
   _showMakeAnAppointmentDialog() async {
     Get.dialog(AppointmentPage());
@@ -205,8 +459,8 @@ class CheckoutPageView extends GetView {
             child: Stack(
               children: [
                 Container(
-                  padding: EdgeInsets.zero,
-                  height: ScreenAdapter.height(1920),
+                  //padding: EdgeInsets.zero,
+                  //height: ScreenAdapter.height(1920),
                   child: Column(
                     children: [
                       Container(
@@ -254,9 +508,7 @@ class CheckoutPageView extends GetView {
                         ),
                       ),
                       Container(
-                        width: MediaQuery.of(context).size.width,
-                        height: MediaQuery.of(context).size.height,
-                        padding: EdgeInsets.zero,
+                        height: ScreenAdapter.height(400),
                         child: Swiper(
                           //itemHeight: 200,
                           itemBuilder: (BuildContext context, int index) {
@@ -283,6 +535,20 @@ class CheckoutPageView extends GetView {
                               ? true
                               : false,
                         ),
+                      ),
+                      _mealTyleView(),
+                      Expanded(
+                          flex: 7,
+                          child: Container(
+                            alignment: Alignment.center,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 243, 243, 243),
+                            ),
+                            child: catagoryGridView(),
+                          )),
+                      Expanded(
+                        flex: 2,
+                        child: languageSelectView(),
                       ),
                     ],
                   ),
@@ -318,30 +584,30 @@ class CheckoutPageView extends GetView {
                     ),
                   ),
                 ),
-                Positioned(
-                  top: ScreenAdapter.height(1370),
-                  child: Container(
-                    width: ScreenAdapter.width(1080),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        if (controller.takeOut.value == true)
-                          _showTakeoutButton(),
+                // Positioned(
+                //   top: ScreenAdapter.height(1370),
+                //   child: Container(
+                //     width: ScreenAdapter.width(1080),
+                //     child: Column(
+                //       mainAxisAlignment: MainAxisAlignment.center,
+                //       crossAxisAlignment: CrossAxisAlignment.center,
+                //       mainAxisSize: MainAxisSize.min,
+                //       children: <Widget>[
+                //         if (controller.takeOut.value == true)
+                //           _showTakeoutButton(),
 
-                        _showLanguagesButton(),
-                        SizedBox(
-                          height: ScreenAdapter.height(40),
-                        ),
-                        //是否展示预定排号
-                        if (controller.lineup.value == true &&
-                            controller.isReservation.value == "1")
-                          _showLineUpButton(),
-                      ],
-                    ),
-                  ),
-                )
+                //         _showLanguagesButton(),
+                //         SizedBox(
+                //           height: ScreenAdapter.height(40),
+                //         ),
+                //         //是否展示预定排号
+                //         if (controller.lineup.value == true &&
+                //             controller.isReservation.value == "1")
+                //           _showLineUpButton(),
+                //       ],
+                //     ),
+                //   ),
+                // )
               ],
             ),
           ),

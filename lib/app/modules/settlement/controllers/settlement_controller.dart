@@ -161,6 +161,9 @@ class SettlementController extends GetxController with StateMixin {
   int timeOffset = 0;
   bool posTest = false;
 
+  Timer? paymentTimer;
+  bool hasStartPayflow = false;
+
   @override
   void onInit() {
     readyQueryData();
@@ -174,6 +177,7 @@ class SettlementController extends GetxController with StateMixin {
   @override
   void onReady() {
     super.onReady();
+    _startPaymentTimer();
   }
 
   @override
@@ -186,7 +190,7 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       CashChanger.removeEventsListener();
     }
-
+    paymentTimer?.cancel();
     allowtimer?.cancel();
     timer?.cancel();
     stoptimer?.cancel();
@@ -487,6 +491,7 @@ class SettlementController extends GetxController with StateMixin {
     if (machineCode.value != "" &&
         scanQrCodeController.text != "" &&
         orderId.value != null) {
+      hasStartPayflow = true;
       //_showEasyLoading();
       showEasyLoadingScan();
       var formData = {
@@ -648,6 +653,7 @@ class SettlementController extends GetxController with StateMixin {
   //pos机相关
   payconnectSocker({questData = ""}) async {
     //判断socket请求次数
+    hasStartPayflow = true;
     socketNumberTimes.value++;
     if (socketNumberTimes.value > 20) {
       _showScanCodeNoOpenDialog(
@@ -1020,6 +1026,32 @@ class SettlementController extends GetxController with StateMixin {
     });
   }
 
+  _startPaymentTimer() async {
+    debugPrint("startResetTimer");
+    paymentTimer?.cancel();
+    paymentTimer = Timer(Duration(seconds: 10), () async {
+      paymentTimer?.cancel();
+      if (hasStartPayflow) return;
+      commonCancel();
+    });
+  }
+
+  commonCancel() async {
+    if (payment_method_num.value == "0" || payment_method_num.value == "1") {
+      showBackEasyLoading();
+      CancelOrder();
+    } else {
+      var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
+      if (paymentMethod.contains(payment_method_num.value) == true) {
+        socketPosCancel.value = true;
+        getPaymentCancelPosData();
+      } else {
+        Get.back();
+      }
+    }
+    Get.back();
+  }
+
   CancelOrder() async {
     /*var formData = {
       "machineCode": _machineCode,
@@ -1251,7 +1283,6 @@ class SettlementController extends GetxController with StateMixin {
         Get.find<SelfCheckoutscanningcodeController>()
             .clearCartList(hideLoading: false);
       } else if (machineMode.value == "2") {
-        
         if (Get.isRegistered<MenuPageController>()) {
           MenuPageController controller = Get.find<MenuPageController>();
           if (controller.mealType.value) {
@@ -1382,6 +1413,7 @@ class SettlementController extends GetxController with StateMixin {
     timer = Timer.periodic(Duration(milliseconds: 200), (Timer t) async {
       var result = await Paycube.getPayCubeMoney;
       if (int.parse(result) > 0) {
+        hasStartPayflow = true;
         getPutMoney.value = result;
         scanQrCodeFocusNode.unfocus();
         int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;

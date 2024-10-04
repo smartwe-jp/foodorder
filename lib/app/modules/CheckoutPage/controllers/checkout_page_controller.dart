@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -31,8 +32,15 @@ class CheckoutPageController extends GetxController with StateMixin {
   TextEditingController scanQrCode2Controller = new TextEditingController();
   FocusNode scanQrCode2FocusNode = FocusNode();
 
+  RxBool machineLanguages_JP = false.obs;
+  RxBool machineLanguages_CH = false.obs;
+  RxBool machineLanguages_EN = false.obs;
+  RxBool machineLanguages_KO = false.obs;
+  RxString settingLanguage = "JP".obs;
+
   RxString machineCode = "".obs;
   RxList homeList = [].obs;
+  RxList categoryList = [].obs;
 
   RxBool actuarial = false.obs;
   RxBool lineup = false.obs;
@@ -83,6 +91,9 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
+  int mealTypeStatus = 0;
+  int resetTime = 3;
+  Timer? resetTimer;
 
   @override
   void onInit() {
@@ -152,6 +163,28 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   getmenchineLanguages() async {
     var menchineLanguagesData = await HomeServices.getMachineLanguages();
+    debugPrint("获取机器语言");
+    var languageJP = false;
+    var languageCH = false;
+    var languageEN = false;
+    var languageKO = false;
+
+    for (var item in menchineLanguagesData) {
+      if (item == "JP") {
+        languageJP = true;
+      } else if (item == "CH") {
+        languageCH = true;
+      } else if (item == "EN") {
+        languageEN = true;
+      } else if (item == "KO") {
+        languageKO = true;
+      }
+    }
+
+    machineLanguages_JP.value = languageJP;
+    machineLanguages_CH.value = languageCH;
+    machineLanguages_EN.value = languageEN;
+    machineLanguages_KO.value = languageKO;
 
     machineLanguagesList.value = menchineLanguagesData;
 
@@ -187,8 +220,74 @@ class CheckoutPageController extends GetxController with StateMixin {
     showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     showDiscover.value = systemSettingInfo['show_discover'];
+
+    await getBookingBootIndexCagegory();
+  }
+
+  updateSettingLanguage(String language) async {
+    await HomeServices.updateSettingLanguage(language);
+    settingLanguage.value = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
+    //reload catagory...
+    await getBookingBootIndexCagegory();
+  }
+
+  updateDingType(int type) async {
+    debugPrint("updateDingType $type");
+    startResetTimer();
+    mealTypeStatus = type;
     update();
-    change(null, status: RxStatus.success());
+
+    //await getBookingBootIndexCagegory();
+  }
+
+  startResetTimer() async {
+    debugPrint("startResetTimer");
+    resetTimer?.cancel();
+    resetTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+      resetTime--;
+      if (resetTime == 0) {
+        resetTimer?.cancel();
+        resetTime = 3;
+        mealTypeStatus = 0;
+        debugPrint("startResetTimer end");
+        update();
+      }
+    });
+  }
+
+  get showCatagory {
+    if (categoryList.length == 0) {
+      debugPrint("homeList.length == 0");
+      return [];
+    }
+    debugPrint("homeList.length > 0");
+
+    int showItemCount = 6;
+
+    if (categoryList.length >= showItemCount - 1) {
+      // 获取前8个
+      var newList = List.from(categoryList.sublist(0, showItemCount - 1));
+      newList.add({
+        "categoryCode": categoryList.first["categoryCode"],
+        "image": null,
+        "categoryName":
+            GString.getToString(settingLanguage.value, "more_title"),
+        "showType": "1"
+      });
+      return newList;
+    } else {
+      var newList = List.from(categoryList);
+      newList.add({
+        "categoryCode": categoryList.first["categoryCode"],
+        "image": null,
+        "categoryName":
+            GString.getToString(settingLanguage.value, "more_title"),
+        "showType": "1"
+      });
+      return newList;
+    }
   }
 
   showOrderEasyLoading() {
@@ -377,6 +476,53 @@ class CheckoutPageController extends GetxController with StateMixin {
       }
     }).catchError((error) {
       print('webBootCalculateV2 error:${error.toString()}');
+    });
+  }
+
+  getBookingBootIndexCagegory() async {
+    debugPrint("获取页面分类");
+
+    var formData = {
+      "machineCode": machineCode.value,
+      "language": settingLanguage.value,
+      "takeout": "0",
+    };
+    request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+      //isLoading.value = false;
+      if (response['code'] == 200) {
+        List myList = response['data']['categoryVoList'];
+        categoryList.clear();
+        for (var i = 0; i < myList.length; i++) {
+          //if(menuIndex >=5) menuIndex = 0;
+          var categoryVoList = myList[i];
+          //配置顶部菜单
+          categoryList.add({
+            "categoryCode": categoryVoList['categoryCode'],
+            "categoryName": categoryVoList['categoryName'],
+            "showType": categoryVoList['showType'],
+            "image": categoryVoList['image'],
+            "color": categoryVoList['color'],
+          });
+        }
+        update();
+        change(null, status: RxStatus.success());
+      } else {
+        //showToast(response['msg']);
+        Get.dialog(DialogUtils.alertOneButton(response['msg'],
+            title: GString.getToString(settingLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(settingLanguage.value, "tag_button_yes"),
+            confirm: () {
+          getBookingBootIndexCagegory();
+        }));
+        Future.delayed(Duration(milliseconds: 2000), () {
+          getBookingBootIndexCagegory();
+        });
+
+        //Get.back();
+      }
     });
   }
 

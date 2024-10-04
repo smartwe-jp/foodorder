@@ -150,17 +150,6 @@ class EntryHomeView extends GetView<OrderHomeController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         )
-
-        //  Container(
-        //     height: ScreenAdapter.height(100),
-        //    child: GridMenuView(
-        //     children: buttonList,
-        //     crossAxisCount: buttonList.length,
-        //     mainAxisSpacing: ScreenAdapter.width(20),
-        //     crossAxisSpacing: ScreenAdapter.height(20),
-        //     childAspectRatio: 3,
-        //            ),
-        //  )
         );
   }
 
@@ -260,28 +249,6 @@ class EntryHomeView extends GetView<OrderHomeController> {
         ),
       ),
       if (controller.dining_type.value == "3" && controller.mealTypeStatus == 0)
-        // Container(
-        //   decoration: BoxDecoration(
-        //     color: Color.fromARGB(50, 0, 0, 0),
-        //   ),
-        //   child: Center(
-        //     child: 
-        //     Column(
-        //       mainAxisAlignment: MainAxisAlignment.start,
-        //       children: [
-        //         Icon(Icons.pan_tool_alt, color: Color.fromARGB(255, 23, 106, 67),size: 100,),
-        //         Text("お食事種類を選んでください",
-        //               style: TextStyle(
-        //                 fontSize: ScreenAdapter.fontSize(52),
-        //                 fontFamily: GFont.getFontFamily(),
-        //                 fontWeight: FontWeight.w600,
-        //                 color: const Color.fromARGB(255, 23, 106, 67),
-        //               )),
-        //       ],
-        //     )
-            
-        //   )
-        // ),
         ClipRect(
             child: Stack(
           children: [

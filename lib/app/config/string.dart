@@ -181,6 +181,7 @@ class GString{
         "scan_order_detail_title":"ご注文",
         "dining_welcome":"いらっしゃいませ",
         "dining_type_tips":"店内かお持ち帰りかを選択してください",
+        "checkout_type_tips":"お会計かお持ち帰りかを選択してください",
 
       };
     }else if(languageCode == 'CH'){
@@ -359,7 +360,8 @@ class GString{
         "pay_success_title":"支付成功\n感谢您的使用",
         "scan_order_detail_title":"订单",
         "dining_welcome":"    欢 迎 光 临",
-        "dining_type_tips":"     请选择堂食还是外带"
+        "dining_type_tips":"     请选择堂食还是外带",
+        "checkout_type_tips": "     请选择决算还是外带",
 
 
       };
@@ -538,7 +540,8 @@ class GString{
         "pay_success_title":"Payment Successful\nThank you for your use",
         "scan_order_detail_title":"Order",
         "dining_welcome":"Welcome",
-        "dining_type_tips":"Would you like to dine in or take out"
+        "dining_type_tips":"Would you like to dine in or take out",
+        "checkout_type_tips": "Would you like to Check Out or take out",
         
       };
     }else if(languageCode == 'KO'){
@@ -717,7 +720,8 @@ class GString{
         "pay_success_title":"결제가 성공했습니다\n이용해 주셔서 감사합니다",
         "scan_order_detail_title":"주문",
         "dining_welcome":"어서 오세요",
-        "dining_type_tips":"매장 식사 또는 테이크아웃 중 선택해 주세요"
+        "dining_type_tips":"매장 식사 또는 테이크아웃 중 선택해 주세요",
+        "checkout_type_tips": "합의 또는 테이크아웃 중 선택해 주세요",
       };
     }
 

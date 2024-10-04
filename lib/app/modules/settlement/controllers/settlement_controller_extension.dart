@@ -90,6 +90,7 @@ extension SettlementControllerExtension on SettlementController {
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");
       if (result > 0) {
+        hasStartPayflow = true;
         timer?.cancel();
         getPutMoney.value = result.toString();
         debugPrint("getPutMoney.value==${getPutMoney.value}");
