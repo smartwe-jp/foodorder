@@ -114,7 +114,7 @@ class ScanCodeView extends GetView<CheckoutPageController> {
                             ),
                             Text(
                               GString.getToString(
-                                  controller.checkLanguage.value,
+                                  controller.localkey,
                                   "checkoutScanTitle"),
                               style: TextStyle(
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -165,7 +165,7 @@ class ScanCodeView extends GetView<CheckoutPageController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.checkLanguage.value,
+                                  controller.localkey,
                                   "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#000000"),

@@ -571,7 +571,7 @@ class MenuPageController extends GetxController with StateMixin {
                 _addOptionPrice;
           }
         }
-        update();
+        //update();
         change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);

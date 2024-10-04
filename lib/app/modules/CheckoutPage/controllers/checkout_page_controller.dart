@@ -1,23 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:intl/intl.dart';
 
-import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 
@@ -36,7 +30,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxBool machineLanguages_CH = false.obs;
   RxBool machineLanguages_EN = false.obs;
   RxBool machineLanguages_KO = false.obs;
-  RxString settingLanguage = "JP".obs;
 
   RxString machineCode = "".obs;
   RxList homeList = [].obs;
@@ -95,8 +88,11 @@ class CheckoutPageController extends GetxController with StateMixin {
   int resetTime = 3;
   Timer? resetTimer;
 
+  final localkey = Get.locale?.languageCode.toUpperCase() ?? "JP";
+
   @override
   void onInit() {
+    print("CheckoutPageController new init");
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
@@ -225,8 +221,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   updateSettingLanguage(String language) async {
+    print(" updateSetting Language = $language");
     await HomeServices.updateSettingLanguage(language);
-    settingLanguage.value = language;
+    checkLanguage.value = language;
     var locale = Locale('${language.toLowerCase()}', '$language');
     Get.updateLocale(locale);
     //reload catagory...
@@ -272,8 +269,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       newList.add({
         "categoryCode": categoryList.first["categoryCode"],
         "image": null,
-        "categoryName":
-            GString.getToString(settingLanguage.value, "more_title"),
+        "categoryName": GString.getToString(checkLanguage.value, "more_title"),
         "showType": "1"
       });
       return newList;
@@ -282,8 +278,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       newList.add({
         "categoryCode": categoryList.first["categoryCode"],
         "image": null,
-        "categoryName":
-            GString.getToString(settingLanguage.value, "more_title"),
+        "categoryName": GString.getToString(checkLanguage.value, "more_title"),
         "showType": "1"
       });
       return newList;
@@ -484,7 +479,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     var formData = {
       "machineCode": machineCode.value,
-      "language": settingLanguage.value,
+      "language": checkLanguage.value,
       "takeout": "0",
     };
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
@@ -511,9 +506,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
-            title: GString.getToString(settingLanguage.value, "tag_title"),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle:
-                GString.getToString(settingLanguage.value, "tag_button_yes"),
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
             confirm: () {
           getBookingBootIndexCagegory();
         }));

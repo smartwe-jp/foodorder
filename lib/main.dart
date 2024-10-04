@@ -113,9 +113,10 @@ void main() {
                     getPages: AppPages.routes,
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
-                      if (value?.current == Routes.MENU_PAGE) {
+                      if (value?.current == Routes.MENU_PAGE || value?.current == Routes.SCANCODE_PAGE) {
                         resetTimer.startTimer();
-                      } else if (value?.current == Routes.ENTRY_HOME || value?.current == Routes.SETTLEMENT) {
+                      } else if (value?.current == Routes.ENTRY_HOME || 
+                                  value?.current == Routes.SETTLEMENT) {
                         resetTimer.cancelTimer();
                       }
                     },
@@ -173,10 +174,12 @@ class ResetToHomeTimer {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
-        if (Get.routing.current == Routes.ENTRY_HOME) {
+        if (Get.routing.current == Routes.ENTRY_HOME || Get.routing.current == Routes.CHECKOUT_PAGE) {
           cancelTimer();
           return;
         }
+       
+        Get.updateLocale(Locale('jp', 'JP'));
         //清空购物车
         if (Get.isRegistered<OrderSqlController>()) {
           final ordersqlcontroller = Get.find<OrderSqlController>();

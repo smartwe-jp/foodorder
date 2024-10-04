@@ -13,7 +13,6 @@ import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -23,7 +22,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
-import 'ScanCode.dart';
+
 
 class CheckoutPageView extends GetView {
   final CheckoutPageController controller = Get.put(CheckoutPageController());
@@ -67,7 +66,7 @@ class CheckoutPageView extends GetView {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
-        selected: e["language"] == controller.settingLanguage.value,
+        selected: e["language"] == controller.checkLanguage.value,
         onTap: () {
           controller.updateSettingLanguage(e["language"] as String);
         },
@@ -285,7 +284,7 @@ class CheckoutPageView extends GetView {
               final result = await Get.toNamed(jumpUrl, arguments: {
                 "classTag": e["categoryCode"] ?? "",
                 "menuList": controller.categoryList,
-                "checkLanguage": controller.settingLanguage.value,
+                "checkLanguage": controller.checkLanguage.value,
                 "mealType": mealType
               });
               if (result == true) {
@@ -411,7 +410,7 @@ class CheckoutPageView extends GetView {
               child: BookingTypeButton(
                 icon: eatInShopImage,
                 title: GString.getToString(
-                    controller.settingLanguage.value, "settlement_button"),
+                    controller.checkLanguage.value, "settlement_button"),
                 selected: controller.mealTypeStatus == 1,
                 onTap: () {
                   //controller.updateDingType(1);
@@ -428,7 +427,7 @@ class CheckoutPageView extends GetView {
               child: BookingTypeButton(
                 icon: eatOutImage,
                 title: GString.getToString(
-                    controller.settingLanguage.value, "take_out"),
+                    controller.checkLanguage.value, "take_out"),
                 selected: controller.mealTypeStatus == 2,
                 onTap: () {
                   controller.updateDingType(2);
@@ -463,50 +462,50 @@ class CheckoutPageView extends GetView {
                   //height: ScreenAdapter.height(1920),
                   child: Column(
                     children: [
-                      Container(
-                        height: 0,
-                        padding: EdgeInsets.only(left: 20),
-                        child: Row(
-                          children: <Widget>[
-                            Expanded(
-                                child: TextField(
-                              keyboardType: TextInputType.text,
-                              autofocus: true,
-                              showCursor: true, // 显示光标
-                              //readOnly: true,
-                              controller: controller.scanQrCodeController,
-                              focusNode: controller.scanQrCodeFocusNode,
-                              decoration: InputDecoration(
-                                hintText: "请扫码",
-                                border: InputBorder.none,
-                                isDense: true,
-                              ),
-                              style: TextStyle(
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(11.0)),
-                              onChanged: (value) {
-                                //print(value);
-                                if (value.length == 1) {
-                                  controller.showOrderEasyLoading();
-                                }
-                              },
-                              onSubmitted: (value) {
-                                Future.delayed(Duration(milliseconds: 150), () {
-                                  if (Platform.isAndroid) {
-                                    controller.doNextHomePay();
-                                  } else {
-                                    controller.requestOrderList(
-                                        controller.scanQrCodeController,
-                                        controller.scanQrCodeFocusNode);
-                                  }
-                                });
-                              },
+                      // Container(
+                      //   height: 0,
+                      //   padding: EdgeInsets.only(left: 20),
+                      //   child: Row(
+                      //     children: <Widget>[
+                      //       Expanded(
+                      //           child: TextField(
+                      //         keyboardType: TextInputType.text,
+                      //         autofocus: true,
+                      //         showCursor: true, // 显示光标
+                      //         //readOnly: true,
+                      //         controller: controller.scanQrCodeController,
+                      //         focusNode: controller.scanQrCodeFocusNode,
+                      //         decoration: InputDecoration(
+                      //           hintText: "请扫码",
+                      //           border: InputBorder.none,
+                      //           isDense: true,
+                      //         ),
+                      //         style: TextStyle(
+                      //             fontFamily: GFont.getFontFamily(),
+                      //             fontSize: ScreenAdapter.fontSize(11.0)),
+                      //         onChanged: (value) {
+                      //           //print(value);
+                      //           if (value.length == 1) {
+                      //             controller.showOrderEasyLoading();
+                      //           }
+                      //         },
+                      //         onSubmitted: (value) {
+                      //           Future.delayed(Duration(milliseconds: 150), () {
+                      //             if (Platform.isAndroid) {
+                      //               controller.doNextHomePay();
+                      //             } else {
+                      //               controller.requestOrderList(
+                      //                   controller.scanQrCodeController,
+                      //                   controller.scanQrCodeFocusNode);
+                      //             }
+                      //           });
+                      //         },
 
-                              /// 扫码密码
-                            )),
-                          ],
-                        ),
-                      ),
+                      //         /// 扫码密码
+                      //       )),
+                      //     ],
+                      //   ),
+                      // ),
                       Container(
                         height: ScreenAdapter.height(400),
                         child: Swiper(

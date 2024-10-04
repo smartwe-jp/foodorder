@@ -491,7 +491,6 @@ class SettlementController extends GetxController with StateMixin {
     if (machineCode.value != "" &&
         scanQrCodeController.text != "" &&
         orderId.value != null) {
-      hasStartPayflow = true;
       //_showEasyLoading();
       showEasyLoadingScan();
       var formData = {
@@ -653,7 +652,6 @@ class SettlementController extends GetxController with StateMixin {
   //pos机相关
   payconnectSocker({questData = ""}) async {
     //判断socket请求次数
-    hasStartPayflow = true;
     socketNumberTimes.value++;
     if (socketNumberTimes.value > 20) {
       _showScanCodeNoOpenDialog(
