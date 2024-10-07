@@ -417,9 +417,9 @@ class Exchangeview extends StatelessWidget {
       case '二千円':
         return moneyCount > 1;
       case '五千円':
-        return moneyCount > 1;
+        return moneyCount > 0;
       case '一万円':
-        return moneyCount > 1;
+        return moneyCount > 0;
       default:
         return false;
     }

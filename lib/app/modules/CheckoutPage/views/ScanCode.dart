@@ -2,23 +2,18 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
-import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
-import 'Appointment.dart';
 
-class ScanCodeView extends GetView<CheckoutPageController> {
-  // final CheckoutPageController controller = Get.put(CheckoutPageController());
+class ScanCodeView extends GetView {
+  final CheckoutPageController controller = Get.put(CheckoutPageController());
   // ScanCodeView({Key? key}) : super(key: key);
 
   @override

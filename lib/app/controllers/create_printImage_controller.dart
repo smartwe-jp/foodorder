@@ -28,7 +28,7 @@ class CreatePrintImageController extends GetxController {
   final printMenuFont = TextStyle(
     fontFamily: 'NotoSansJP',
     color: Colors.black,
-    fontSize: 30,
+    fontSize: 28,
     fontWeight: FontWeight.w400,
   );
 
@@ -537,7 +537,7 @@ class CreatePrintImageController extends GetxController {
                             textDirection: TextDirection.ltr,
                             child: Expanded(
                               child: Text(
-                                "${lineVosList["menuName"]+ takeoutTag + ' x' + lineVosList["menuQty"]}",
+                                "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: printMenuFont,
@@ -557,7 +557,7 @@ class CreatePrintImageController extends GetxController {
                         //       ),
                       ],
                     ),
-                    
+
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
@@ -565,11 +565,9 @@ class CreatePrintImageController extends GetxController {
                           alignment: Alignment.centerRight,
                           child: Text(
                             "￥${formatMoney(lineVosList["price"])}",
-                            style:
-                                printMenuFont, 
+                            style: printMenuFont,
                           ),
-                        )
-                    ),
+                        )),
                     // Row(
                     //   mainAxisAlignment: MainAxisAlignment.end,
                     //   crossAxisAlignment: CrossAxisAlignment.end,
@@ -596,7 +594,7 @@ class CreatePrintImageController extends GetxController {
                     //           child: Text(
                     //             "￥${formatMoney(lineVosList["price"])}",
                     //             style:
-                    //                 printMenuFont, 
+                    //                 printMenuFont,
                     //           ),
                     //         )),
                     //   ],
@@ -637,7 +635,9 @@ class CreatePrintImageController extends GetxController {
                     //         style: printMenuFont,
                     //       ),
                     //     )),
-                    SizedBox(width: ScreenAdapter.width(30),),
+                    SizedBox(
+                      width: ScreenAdapter.width(30),
+                    ),
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
@@ -899,25 +899,23 @@ class CreatePrintImageController extends GetxController {
         //crossAxisAlignment: CrossAxisAlignment.start,
         textDirection: TextDirection.rtl,
         children: [
-            //base64Image to Image
-            Container(
+          //base64Image to Image
+          Container(
               padding: EdgeInsets.only(
-                top: ScreenAdapter.height(10), 
-                bottom: ScreenAdapter.height(30), 
-                left: ScreenAdapter.width(30), 
-                right: ScreenAdapter.width(30)),
-                height: ScreenAdapter.height(200),
-                decoration:BoxDecoration(
+                  top: ScreenAdapter.height(10),
+                  bottom: ScreenAdapter.height(30),
+                  left: ScreenAdapter.width(30),
+                  right: ScreenAdapter.width(30)),
+              height: ScreenAdapter.height(200),
+              decoration: BoxDecoration(
                 //color: Colors.green,
-                  image: DecorationImage(
-                    image: CachedNetworkImageProvider(printLogoImage.value),
-                    fit: BoxFit.fitHeight,
-                  ),
-                )
-              ),
+                image: DecorationImage(
+                  image: CachedNetworkImageProvider(printLogoImage.value),
+                  fit: BoxFit.fitHeight,
+                ),
+              )),
           ...categoryMenus,
-          
-          ],
+        ],
       ),
     );
     //categoryMenus

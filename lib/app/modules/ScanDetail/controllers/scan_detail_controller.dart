@@ -56,7 +56,9 @@ class ScanDetailController extends GetxController with StateMixin {
 
       if (response['code'] == 200 &&
           response["data"] != null &&
-          response["data"].isNotEmpty) {
+          response["data"].isNotEmpty && 
+          response["data"]["orderId"] != null
+          ) {
         if (response["data"]["totalPrice"] > 0) {
           orderId = response["data"]["orderId"].toString();
           totlaPrice = response["data"]["totalPrice"].toString();

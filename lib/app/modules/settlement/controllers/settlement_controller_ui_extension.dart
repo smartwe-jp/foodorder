@@ -107,9 +107,10 @@ extension SettlementControllerUIExtension on SettlementController {
                 Text(
                     GString.getToString(checkLanguage.value,
                         "settlement_posPay_loadint_title"),
+                    maxLines: 2,
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(36),
+                      fontSize: ScreenAdapter.fontSize(34),
                       fontWeight: FontWeight.w600,
                       color: ColorsUtil.hexToColor("#000000"),
                     ))

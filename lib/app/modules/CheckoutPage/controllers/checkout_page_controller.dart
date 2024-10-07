@@ -88,11 +88,12 @@ class CheckoutPageController extends GetxController with StateMixin {
   int resetTime = 3;
   Timer? resetTimer;
 
-  final localkey = Get.locale?.languageCode.toUpperCase() ?? "JP";
+  String localkey = Get.locale?.languageCode.toUpperCase() ?? "JP";
 
   @override
   void onInit() {
     print("CheckoutPageController new init");
+    print("localkey = $localkey");
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
@@ -611,7 +612,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeFocusNode.requestFocus();
     //scanQrCodeHomeFocusNode.requestFocus();
     Get.dialog(SelectPaymentPage(
-        checkLanguage: checkLanguage.value,
+        checkLanguage:localkey,
         menuCount: 0,
         //mealType:_mealType,
         isAllowPos: isAllowPos.value,
@@ -714,7 +715,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeController.text = "";
     //scanQrCodeHomeController.text = "";
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": checkLanguage.value,
+      "checkLanguage": localkey,
       "machineCode": machineCode.value,
       "orderId": orderId.value,
       "totalPrice": totlaPrice.value,

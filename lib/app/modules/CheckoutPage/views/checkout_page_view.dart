@@ -414,9 +414,7 @@ class CheckoutPageView extends GetView {
                 selected: controller.mealTypeStatus == 1,
                 onTap: () {
                   //controller.updateDingType(1);
-                  Get.toNamed("/scancode-page", arguments: {
-                    "checkLanguage": controller.checkLanguage.value
-                  });
+                  Get.toNamed("/scancode-page");
                 },
               ),
             ),
