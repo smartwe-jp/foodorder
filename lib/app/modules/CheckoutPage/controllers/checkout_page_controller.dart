@@ -88,7 +88,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   int resetTime = 30;
   Timer? resetTimer;
 
-  String localkey = Get.locale?.languageCode.toUpperCase() ?? "JP";
+  RxString localkey = "JP".obs;
 
   @override
   void onInit() {
@@ -225,6 +225,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     print(" updateSetting Language = $language");
     await HomeServices.updateSettingLanguage(language);
     checkLanguage.value = language;
+    localkey.value = language;
     var locale = Locale('${language.toLowerCase()}', '$language');
     Get.updateLocale(locale);
     //reload catagory...
@@ -610,9 +611,10 @@ class CheckoutPageController extends GetxController with StateMixin {
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
+    debugPrint('localkey = $localkey');
     //scanQrCodeHomeFocusNode.requestFocus();
     Get.dialog(SelectPaymentPage(
-        checkLanguage:Get.locale?.languageCode.toUpperCase() ?? "JP",//padding and need improve
+        checkLanguage: localkey.value, //padding and need improve
         menuCount: 0,
         //mealType:_mealType,
         isAllowPos: isAllowPos.value,
@@ -715,7 +717,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeController.text = "";
     //scanQrCodeHomeController.text = "";
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": Get.locale?.languageCode.toUpperCase() ?? "JP",//padding and need improve,
+      "checkLanguage": localkey.value, //padding and need improve,
       "machineCode": machineCode.value,
       "orderId": orderId.value,
       "totalPrice": totlaPrice.value,

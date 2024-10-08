@@ -25,7 +25,7 @@ import 'Appointment.dart';
 
 
 class CheckoutPageView extends GetView {
-  final CheckoutPageController controller = Get.put(CheckoutPageController());
+  final CheckoutPageController controller = Get.find();
   CheckoutPageView({Key? key}) : super(key: key);
 
   languageSelectView() {
