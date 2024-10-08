@@ -116,7 +116,9 @@ void main() {
                       if (value?.current == Routes.MENU_PAGE || value?.current == Routes.SCANCODE_PAGE) {
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ENTRY_HOME || 
-                                  value?.current == Routes.SETTLEMENT) {
+                                  value?.current == Routes.SETTLEMENT ||
+                                  value?.current == Routes.SETTING
+                                  ) {
                         resetTimer.cancelTimer();
                       }
                     },
@@ -164,7 +166,7 @@ class MyHttpOverrides extends HttpOverrides {
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 10;
+  final int timeSeconds = 180;
   int _timeoutSeconds = 180; // 3分钟
 
   void startTimer() {
@@ -211,7 +213,7 @@ class ResetToHomeTimer {
   }
 
   void cancelTimer() {
-    //debugPrint("cancelTimer");
+    debugPrint("--cancelTimer--");
     _timer?.cancel();
     _timer = null;
   }

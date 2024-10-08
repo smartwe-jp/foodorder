@@ -85,7 +85,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
   int mealTypeStatus = 0;
-  int resetTime = 3;
+  int resetTime = 30;
   Timer? resetTimer;
 
   String localkey = Get.locale?.languageCode.toUpperCase() ?? "JP";
@@ -247,7 +247,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       resetTime--;
       if (resetTime == 0) {
         resetTimer?.cancel();
-        resetTime = 3;
+        resetTime = 30;
         mealTypeStatus = 0;
         debugPrint("startResetTimer end");
         update();
@@ -612,7 +612,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeFocusNode.requestFocus();
     //scanQrCodeHomeFocusNode.requestFocus();
     Get.dialog(SelectPaymentPage(
-        checkLanguage:localkey,
+        checkLanguage:Get.locale?.languageCode.toUpperCase() ?? "JP",//padding and need improve
         menuCount: 0,
         //mealType:_mealType,
         isAllowPos: isAllowPos.value,
@@ -715,7 +715,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeController.text = "";
     //scanQrCodeHomeController.text = "";
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": localkey,
+      "checkLanguage": Get.locale?.languageCode.toUpperCase() ?? "JP",//padding and need improve,
       "machineCode": machineCode.value,
       "orderId": orderId.value,
       "totalPrice": totlaPrice.value,
