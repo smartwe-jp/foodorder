@@ -192,7 +192,7 @@ class SettlementController extends GetxController with StateMixin {
     }
     paymentTimer?.cancel();
     allowtimer?.cancel();
-    timer?.cancel();
+    timer?.cancel();    
     stoptimer?.cancel();
     //outtimer?.cancel();
     outmoneytimer?.cancel();
@@ -1412,6 +1412,7 @@ class SettlementController extends GetxController with StateMixin {
       var result = await Paycube.getPayCubeMoney;
       if (int.parse(result) > 0) {
         hasStartPayflow = true;
+        paymentTimer?.cancel();
         getPutMoney.value = result;
         scanQrCodeFocusNode.unfocus();
         int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
