@@ -74,15 +74,38 @@ extension CycleCashSettingView on SettingView {
               ),
               ...controller.cashInfoList.entries.map((element) {
                 return Container(
-                  height: 80,
-                  alignment: Alignment.center,
-                  child: Text("${element.value}",
-                      style: TextStyle(
-                        fontFamily: 'NotoSansJP',
-                        fontSize: ScreenAdapter.fontSize(20),
-                        fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor("#000000"),
-                      )),
+                  padding: EdgeInsets.only(
+                    left: ScreenAdapter.width(15),
+                    right: ScreenAdapter.width(15),
+                    top: ScreenAdapter.height(10),
+                    bottom: ScreenAdapter.height(10)
+                  ),
+                  child: Column (
+                    children: [
+                      Container(
+                        height: 30,
+                        alignment: Alignment.centerLeft,
+                        child: Text("${element.value}",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(20),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#000000"),
+                            )),
+                      ),
+                      Container(
+                        height: 30,
+                        alignment: Alignment.centerRight,
+                        child: Text("/${controller.getCashCountMaxVal(element.key)}",
+                            style: TextStyle(
+                              fontFamily: 'NotoSansJP',
+                              fontSize: ScreenAdapter.fontSize(20),
+                              fontWeight: FontWeight.w600,
+                              color: ColorsUtil.hexToColor("#000000"),
+                            )),
+                      ),
+                    ],
+                  ),
                 );
               }).toList()
               ]

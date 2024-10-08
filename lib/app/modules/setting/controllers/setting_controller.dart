@@ -178,6 +178,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   printRejishimei(printLength, data) async {
+    print('printRejishimei:$printLength, data:$data');
     if (data.isEmpty) {
       EasyLoading.dismiss();
       Get.back();
@@ -195,38 +196,50 @@ class SettingController extends GetxController with StateMixin {
   }
 
   directPrintRejishimei(printLength, data) async {
+    final printView = PrintView(isPrint: true, printInfo: data);
+
     final printWidget = Container(
       width: 385,
       height: printLength + 150,
-      child: PrintView(isPrint: true, printInfo: data),
+      child: printView,
     );
+    debugPrint('directPrintRejishimei : $printLength, data: $data');
     await sendToUsePrinter(printWidget);
-    await Future.delayed(Duration(seconds: 3));
-    EasyLoading.dismiss();
-    Get.back();
-    clearTask();
-    showToast('完了しました');
+
+    commonHandleDialog('完了しました', confirm: () {
+      Get.back();
+      Get.back();
+      clearTask();
+    });
+
+    // await Future.delayed(Duration(seconds: 5), () {
+    //   EasyLoading.dismiss();
+    //   Get.back();
+    //   clearTask();
+    //   showToast('完了しました');
+    // });
   }
 
   showRejishimeiView() async {
     hasOutMoney = false;
     Get.dialog(RejishiMeRequestView(
-        machineCode: machineCode.value,
-        // resetCash: (length, data) async {
-        //   await printRejishimei();
-        // },
-        // updatePrintInfo: (length, data) {
-        //   printLength = length;
-        //   printInfo = data;
-        // },
-        // recycleCash: (p0) async {
-        //   debugPrint("recycleCashOut p0 = ${p0}");
-        //   Map result = await recycleCashOut(p0);
-        //   //debugPrint("recycleCashOut result = ${result}");
+      machineCode: machineCode.value,
+      // resetCash: (length, data) async {
+      //   await printRejishimei();
+      // },
+      // updatePrintInfo: (length, data) {
+      //   printLength = length;
+      //   printInfo = data;
+      // },
+      // recycleCash: (p0) async {
+      //   debugPrint("recycleCashOut p0 = ${p0}");
+      //   Map result = await recycleCashOut(p0);
+      //   //debugPrint("recycleCashOut result = ${result}");
 
-        //   return result;
-        // },
-        settingController: this,));
+      //   return result;
+      // },
+      settingController: this,
+    ));
   }
 
   showRecycleAlert() {
@@ -549,7 +562,7 @@ class SettingController extends GetxController with StateMixin {
               debugPrint("recycleCash onSuccess");
               EasyLoading.dismiss();
               await clearTask();
-              commonHandleDialog('リサイクルしました');
+              commonHandleDialog('回收しました');
               //showToast('回收成功');
             },
             onRetry: () {
@@ -573,10 +586,10 @@ class SettingController extends GetxController with StateMixin {
 
         if (response != null && response['code'] == 200) {
           await getPaycubeChangeState();
-          commonHandleDialog('リサイクル成功');
+          commonHandleDialog('回收成功');
         } else {
-          showToast('リサイクルに失敗しました');
-          commonHandleDialog("リサイクルに失敗しました：${response['code']}");
+          showToast('回收に失敗しました');
+          commonHandleDialog("回收に失敗しました：${response['code']}");
         }
       });
     }
@@ -697,6 +710,34 @@ class SettingController extends GetxController with StateMixin {
     }
   }
 
+
+  getCashCountMaxVal(type) {
+    switch (type) {
+      case "一万円":
+        return "100";
+      case "五千円":
+        return "100";
+      case "二千円":
+        return "200";
+      case "千円":
+        return "200";
+      case "五百円":
+        return "105";
+      case "百円":
+        return "160";
+      case "五十円":
+        return "120";
+      case "十円":
+        return "160";
+      case "五円":
+        return "120";
+      case "一円":
+        return "160";
+      default:
+        return "0";
+    }
+  }
+
   //根据数值获取钱币显示名称
   String getCashName(String value) {
     switch (value) {
@@ -782,6 +823,7 @@ class SettingController extends GetxController with StateMixin {
     //Get.offAllNamed('/transit-page');
     //Get.toNamed('/transit-page');
     //Get.offNamedUntil('/transit-page', ModalRoute.withName('/home'));
+    Get.updateLocale(Locale('jp', 'JP'));
     Get.offNamedUntil('/transit-page',
         (route) => route.isFirst); //, arguments: {'toView2': true}
 
