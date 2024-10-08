@@ -1,9 +1,11 @@
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
+import 'package:foodorder/app/services/ScreenAdapter.dart';
 
 class BookingTypeButton extends StatelessWidget {
   final ImageProvider icon;
@@ -21,8 +23,8 @@ class BookingTypeButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return GestureDetector(
           onTap: () => onTap?.call(),
-          child: AspectRatio(
-            aspectRatio: 2.5,
+          // child: AspectRatio(
+          //   aspectRatio: 2.5,
             child:Container(
             padding: EdgeInsets.all(30),
             decoration: BoxDecoration(
@@ -40,21 +42,29 @@ class BookingTypeButton extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                RectangleImageView(
+                Container(
+                  height: ScreenAdapter.height(120),
+                  child: RectangleImageView(
                     image: icon, radius: 0),
-                    
-                Text(
-                  title,
-                  style: TextStyle(
-                    color: selected ? Colors.white : const Color.fromARGB(255, 53,59,80),
-                    fontSize: 50,
-                    fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w600,
-                  ),
                 ),
+                
+                    
+                
+                  Text(
+                    title,
+                    //overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      color: selected ? Colors.white : const Color.fromARGB(255, 53,59,80),
+                      fontSize: 50,
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                
               ],
             ),
-          )),
+          )
+          //),
     );
   }
 }

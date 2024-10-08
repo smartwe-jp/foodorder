@@ -17,8 +17,8 @@ import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/menu_page_controller.dart';
 
-class MenuPageView extends GetView {
-  final MenuPageController controller = Get.put(MenuPageController());
+class MenuPageView extends GetView<MenuPageController> {
+  final MenuPageController controller = Get.find<MenuPageController>();
   MenuPageView({Key? key}) : super(key: key);
 
   //中间分类页面
@@ -121,15 +121,18 @@ class MenuPageView extends GetView {
                           controller.checkLanguage.value,"select_option") : "",
       aspectRatio: aspectRatio,
       onTap: () async {
+        debugPrint("GridItemView onTap");
         if (item['qtyBounds'] == 0) {
               return;
         } else if (item['qtyBounds'] > 0) {
+          debugPrint("GridItemView onTap qtyBounds $item");
           //请求限定接口
           if (controller.canAddCart.value)
           await controller.checkQtyBoundsCount(item, "",popupType,context);
 
         }else{
           //如果option 存在，则弹出option
+          debugPrint("GridItemView onTap option");
           if(item['optionGroupVoList']?.length > 0){
             if(popupType == "v1"){
               controller.publicShowOneItemWidgetv1(item);

@@ -81,7 +81,7 @@ class RejishimePrintViewState extends State<PrintView> {
   }
 
   Widget printView() {
-    //debugPrint("printView　printInfo: $printInfo");
+    debugPrint("printView　printInfo: $printInfo");
     return Container(
         padding: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
         child: _miroWidget());

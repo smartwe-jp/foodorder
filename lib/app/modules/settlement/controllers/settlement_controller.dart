@@ -401,10 +401,10 @@ class SettlementController extends GetxController with StateMixin {
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {
       print("过来删除menu了");
-      Get.delete<MenuPageController>(); // 手动删除控制器实例
-      Get.delete<OrderHomeController>();
+      // Get.delete<MenuPageController>(); // 手动删除控制器实例
+      // Get.delete<OrderHomeController>();
       //Get.offAllNamed("/entry-home");
-      Get.offNamedUntil('/entry-home', (route) => route.isFirst);
+      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/home');
     }
   }
@@ -417,11 +417,11 @@ class SettlementController extends GetxController with StateMixin {
     if (machineMode.value == "1") {
       if (is_back_home.value == "0") {
         debugPrint("普通支付返回首页");
-        Get.delete<MenuPageController>(); // 手动删除控制器实例
-        Get.delete<OrderHomeController>();
+        // Get.delete<MenuPageController>(); // 手动删除控制器实例
+        // Get.delete<OrderHomeController>();
         //Get.offAllNamed("/entry-home");
         //Get.offNamedUntil('/entry-home', ModalRoute.withName('/home'));
-        Get.offNamedUntil('/entry-home', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
         //Navigator.pushNamed(context, '/home');
       } else {
         // eventBus.fire(new clearCartEvent('支付成功...'));
@@ -432,7 +432,7 @@ class SettlementController extends GetxController with StateMixin {
         }
       }
     } else if (machineMode.value == "3") {
-      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.offAllNamed("/selfservice-page");
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       // if(is_back_home.value == "0"){
@@ -449,7 +449,7 @@ class SettlementController extends GetxController with StateMixin {
       //
       // }
     } else {
-      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.offAllNamed("/checkout-page");

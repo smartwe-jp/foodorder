@@ -104,10 +104,11 @@ class MenuPageController extends GetxController with StateMixin {
   RxList homeImages = [].obs;
   RxBool canAddCart = true.obs;
 
-  late AudioPlayer player;
+  AudioPlayer? player;
 
   @override
   void onInit() {
+    print("---MenuPageController onInit");
     readyQueryData();
     player = AudioPlayer();
     super.onInit();
@@ -115,12 +116,14 @@ class MenuPageController extends GetxController with StateMixin {
 
   @override
   void onReady() {
+    print("---MenuPageController onReady");
     super.onReady();
   }
 
   @override
   void onClose() {
-    player.dispose();
+    print("---MenuPageController onClose");
+    player?.dispose();
     super.onClose();
   }
 
@@ -134,8 +137,8 @@ class MenuPageController extends GetxController with StateMixin {
           : false;
       classTag.value =
           (Get.arguments["classTag"] != null) ? Get.arguments["classTag"] : "";
-      topMenu.value =
-          (Get.arguments["menuList"] != null) ? Get.arguments["menuList"] : [];
+      // topMenu.value =
+      //     (Get.arguments["menuList"] != null) ? Get.arguments["menuList"] : [];
     }
 
     _getMachineInfo();
@@ -190,11 +193,12 @@ class MenuPageController extends GetxController with StateMixin {
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
+    debugPrint("classTag.value = ${classTag.value}");
     //if (classTag.value == "") {
     getBookingBootIndexCagegory(classTag.value); //新版新获取分类
-    //  } else {
-    //    getBookingBootIndexMenu(classTag.value);
-    //  }
+    // } else {
+    //   getBookingBootIndexMenu(classTag.value);
+    // }
     _getHomeImageList();
   }
 
@@ -258,7 +262,7 @@ class MenuPageController extends GetxController with StateMixin {
           if (menuIndex >= 5) menuIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
-          topMenu.value.add({
+          topMenu.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
@@ -267,7 +271,7 @@ class MenuPageController extends GetxController with StateMixin {
           menuIndex++;
           //配置顶部菜单默认项
           if (i == 0) classTag.value = categoryVoList['categoryCode'];
-          showItem.value[categoryVoList['categoryCode']] =
+          showItem[categoryVoList['categoryCode']] =
               categoryVoList['menuVoList'];
 
           //该分类下有option，先初始化页面数据
@@ -309,21 +313,18 @@ class MenuPageController extends GetxController with StateMixin {
                   }
                 }
                 //需要创建的小组件
-                menuOption.value[menuVoList['menuCode']] = attr;
-                noChangeinitialmenuOption.value[menuVoList['menuCode']] =
-                    initalCode;
-                initialMenuOption.value[menuVoList['menuCode']] =
-                    tempArr; //tempArr;
-                selectedMenuOptionList.value[menuVoList['menuCode']] = tempArr;
-                selectedMenuOptionCheckedNum.value[menuVoList['menuCode']] =
-                    checkNum;
+                menuOption[menuVoList['menuCode']] = attr;
+                noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
+                initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
+                selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+                selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
                 attr = [];
                 tempArr = [];
                 checkNum = 0;
               }
-              selectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
+              selectedMenuOptionChangePrice[menuVoList['menuCode']] =
                   menuVoList['currentPrice'];
-              addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
+              addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
                   _addOptionPrice;
             }
           }
@@ -385,8 +386,8 @@ class MenuPageController extends GetxController with StateMixin {
     debugPrint("getBookingBootIndexCagegory formData: $formData");
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
         .then((val) {
+      debugPrint("getBookingBootIndexCagegory request done");
       var response = json.decode(val.toString());
-
       if (response['code'] == 200) {
         //debugPrint("getBookingBootIndexCagegory response: $response");
         //2、保存商品信息
@@ -493,13 +494,14 @@ class MenuPageController extends GetxController with StateMixin {
     debugPrint("formData:${formData}");
     request('webBootIndexMenuv3', method: 'POST', parameters: formData)
         .then((val) {
+      debugPrint("getBookingBootIndexMenu request done");
       var response = json.decode(val.toString());
 
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data'];
         //如果菜单为空则返回言语选择页面并给出提示
-        if (myList.length == 0 || null == myList || "" == myList) {
+        if (myList.length == 0 || "" == myList) {
           //showToast("少々お待ちください");
           Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
               title: GString.getToString(checkLanguage.value, "tag_title"),
@@ -553,26 +555,24 @@ class MenuPageController extends GetxController with StateMixin {
                 }
               }
               //需要创建的小组件
-              menuOption.value[menuVoList['menuCode']] = attr;
-              noChangeinitialmenuOption.value[menuVoList['menuCode']] =
-                  initalCode;
-              initialMenuOption.value[menuVoList['menuCode']] =
-                  tempArr; //tempArr;
-              selectedMenuOptionList.value[menuVoList['menuCode']] = tempArr;
-              selectedMenuOptionCheckedNum.value[menuVoList['menuCode']] =
-                  checkNum;
+              menuOption[menuVoList['menuCode']] = attr;
+              noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
+              initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
+              selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+              selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
               attr = [];
               tempArr = [];
               checkNum = 0;
             }
-            selectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
+            selectedMenuOptionChangePrice[menuVoList['menuCode']] =
                 menuVoList['currentPrice'];
-            addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] =
+            addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
                 _addOptionPrice;
           }
         }
         //update();
         change(null, status: RxStatus.success());
+        debugPrint("getBookingBootIndexMenu request update");
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
@@ -1027,23 +1027,25 @@ class MenuPageController extends GetxController with StateMixin {
         volume: 0.3,
       );
     } else {
-      //try {
-      await player.setVolume(1.2);
-      //await player.play(DeviceFileSource("assets/audios/14428.wav"));
-      await player.setSource(AssetSource('audios/14428.wav'));
-      await player.resume();
-
-      // } catch (e) {
-      //   debugPrint("playQRScannerSound error: $e");
-      //   FToast fToast = FToast();
-      //   if (Get.context != null) {
-      //     fToast.init(Get.context!);
-      //     fToast.showToast(
-      //       child: Text("playQRScannerSound error: $e"),
-      //       gravity: ToastGravity.CENTER,
-      //     );
-      //   }
-      // }
+      try {
+        if (player == null) {
+          player = AudioPlayer();
+        }
+        await player?.setVolume(1.2);
+        //await player.play(DeviceFileSource("assets/audios/14428.wav"));
+        await player?.setSource(AssetSource('audios/14428.wav'));
+        await player?.resume();
+      } catch (e) {
+        debugPrint("playQRScannerSound error: $e");
+        FToast fToast = FToast();
+        if (Get.context != null) {
+          fToast.init(Get.context!);
+          fToast.showToast(
+            child: Text("playQRScannerSound error: $e"),
+            gravity: ToastGravity.CENTER,
+          );
+        }
+      }
     }
   }
 
@@ -1055,21 +1057,24 @@ class MenuPageController extends GetxController with StateMixin {
         volume: 0.8,
       );
     } else {
-      await player.setVolume(0.9);
-      await player.play(DeviceFileSource("assets/audios/697.wav"));
+      if (player == null) {
+        player = AudioPlayer();
+      }
+      await player?.setVolume(0.9);
+      await player?.play(DeviceFileSource("assets/audios/697.wav"));
     }
   }
 
   changeOptionv1(menuCode, groupCode, optionCode, setMenuState) {
     //playQRScannerSound();
 
-    var attr = menuOption.value[menuCode];
+    var attr = menuOption[menuCode];
     for (var i = 0; i < attr.length; i++) {
       if (attr[i]["groupCode"] == groupCode) {
         //如果是多选，那么需要判断该组option数量是否超过最大值
         if (int.parse(attr[i]["multipleState"]) > 1) {
           var current_option_checked = 0;
-          var current_incloud_option_checked = 0;
+          //var current_incloud_option_checked = 0;
           for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
             if (attr[i]['optionVoList'][n]["checked"] == true &&
                 attr[i]['optionVoList'][n]["optionCode"] != optionCode) {
@@ -1121,7 +1126,7 @@ print("加1了");
         }
       }
     }
-    menuOption.value[menuCode] = attr;
+    menuOption[menuCode] = attr;
 
     _getSelectedAttrValuev1(menuCode, attr, setMenuState);
     update();
@@ -1149,8 +1154,8 @@ print("加1了");
       }
     }
 
-    selectedMenuOptionList.value[menuCode] = tempArr;
-    addselectedMenuOptionChangePrice.value[menuCode] = selectPrice;
+    selectedMenuOptionList[menuCode] = tempArr;
+    addselectedMenuOptionChangePrice[menuCode] = selectPrice;
     tempArr = [];
     update();
   }
@@ -1194,6 +1199,7 @@ print("加1了");
   publicShowOneItemWidget(item) {
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50), () async {
+      debugPrint("changeInitialAllOption $item['menuCode']");
       Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
     });
   }
@@ -1201,6 +1207,11 @@ print("加1了");
   publicShowOneItemWidgetv1(item) {
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50), () async {
+      //debugPrint("changeInitialAllOptionv1 $item['menuCode']");
+      debugPrint(
+          "selectedMenuOptionChangePrice: $selectedMenuOptionChangePrice");
+      debugPrint(
+          "addselectedMenuOptionChangePrice: $addselectedMenuOptionChangePrice");
       Get.dialog(
           barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
     });
@@ -1208,8 +1219,13 @@ print("加1了");
 
   //初始化默认option选项
   changeInitialAllOption(menuCode) {
-    var attr = menuOption.value[menuCode];
-    var initMenuOption = noChangeinitialmenuOption.value[menuCode];
+    debugPrint("changeInitialAllOption $menuCode");
+    var attr = menuOption[menuCode];
+    //debugPrint("changeInitialAllOption attr $attr");
+    var initMenuOption = noChangeinitialmenuOption[menuCode];
+    debugPrint(
+        "changeInitialAllOption noChangeinitialmenuOption $noChangeinitialmenuOption");
+    debugPrint("changeInitialAllOption initMenuOption $initMenuOption");
     num _addOptionPrice = 0;
 
     if (attr != null) {
@@ -1227,9 +1243,10 @@ print("加1了");
       }
     }
 
-    menuOption.value[menuCode] = attr;
-    selectedMenuOptionList.value[menuCode] = initialMenuOption.value[menuCode];
-    addselectedMenuOptionChangePrice.value[menuCode] = _addOptionPrice;
+    menuOption[menuCode] = attr;
+    selectedMenuOptionList[menuCode] = initialMenuOption[menuCode];
+    addselectedMenuOptionChangePrice[menuCode] = _addOptionPrice;
+    debugPrint("changeInitialAllOption done");
   }
 
   //获取选中的值
@@ -1253,8 +1270,8 @@ print("加1了");
       }
     }
 
-    selectedMenuOptionList.value[menuCode] = tempArr;
-    addselectedMenuOptionChangePrice.value[menuCode] = selectPrice;
+    selectedMenuOptionList[menuCode] = tempArr;
+    addselectedMenuOptionChangePrice[menuCode] = selectPrice;
     tempArr = [];
   }
 

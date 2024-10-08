@@ -220,7 +220,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
               final result = await Get.toNamed(jumpUrl, arguments: {
                 "classTag": e["categoryCode"] ?? "",
-                "menuList": controller.homeList.value,
+                //"menuList": controller.homeList,
                 "checkLanguage": controller.settingLanguage.value,
                 "mealType": mealType
               });

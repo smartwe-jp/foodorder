@@ -13,8 +13,9 @@ import '../../../services/ScreenAdapter.dart';
 import '../controllers/checkout_page_controller.dart';
 
 class ScanCodeView extends GetView {
-  final CheckoutPageController controller = Get.put(CheckoutPageController());
+  final CheckoutPageController controller = Get.find();
   // ScanCodeView({Key? key}) : super(key: key);
+  final localKey = Get.locale?.languageCode.toUpperCase() ?? "JP";
 
   @override
   Widget build(BuildContext context) {
@@ -24,6 +25,7 @@ class ScanCodeView extends GetView {
           (state) => AnnotatedRegion(
             value: SystemUiOverlayStyle.light,
             child: Container(
+              color: Colors.white,
               padding: EdgeInsets.zero,
               child: Column(
                 children: [
@@ -59,7 +61,9 @@ class ScanCodeView extends GetView {
                               if (Platform.isAndroid) {
                                 controller.doNextPay();
                               } else {
-                                controller.requestOrderList(controller.scanQrCode2Controller, controller.scanQrCode2FocusNode);
+                                controller.requestOrderList(
+                                    controller.scanQrCode2Controller,
+                                    controller.scanQrCode2FocusNode);
                               }
                             });
                           },
@@ -109,8 +113,7 @@ class ScanCodeView extends GetView {
                             ),
                             Text(
                               GString.getToString(
-                                  controller.localkey,
-                                  "checkoutScanTitle"),
+                                  localKey, "checkoutScanTitle"),
                               style: TextStyle(
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w600,
@@ -142,10 +145,10 @@ class ScanCodeView extends GetView {
                         InkWell(
                           onTap: () {
                             //try {
-                              //showCancelConfirm();
-                              //Navigator.pop(context);
-                              //Get.back();
-                              controller.backCheckHome();
+                            //showCancelConfirm();
+                            //Navigator.pop(context);
+                            //Get.back();
+                            controller.backCheckHome();
                             //} catch (_) {}
                           },
                           child: Container(
@@ -160,8 +163,7 @@ class ScanCodeView extends GetView {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.localkey,
-                                  "settlement_back"),
+                                  localKey, "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#000000"),
                                   fontWeight: FontWeight.w500,

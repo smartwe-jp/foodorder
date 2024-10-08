@@ -386,6 +386,7 @@ class TransitPageController extends GetxController {
   }
 
   void _goNext(checkmachineMode) async {
+    Get.updateLocale(Locale('jp', 'JP'));
     if (checkmachineMode == "2") {
       _goCheckOut();
     } else if (checkmachineMode == "3") {

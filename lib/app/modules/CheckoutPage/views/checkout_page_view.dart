@@ -354,7 +354,7 @@ class CheckoutPageView extends GetView {
                   ),
                   Text(
                       GString.getToString(
-                          Get.locale?.languageCode.toUpperCase() ?? "JP",
+                          controller.checkLanguage.value,
                           "dining_welcome"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(80),
@@ -367,7 +367,7 @@ class CheckoutPageView extends GetView {
                   ),
                   Text(
                       GString.getToString(
-                          Get.locale?.languageCode.toUpperCase() ?? "JP",
+                          controller.checkLanguage.value,
                           "checkout_type_tips"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(56),
@@ -403,6 +403,7 @@ class CheckoutPageView extends GetView {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
+
             SizedBox(
               width: ScreenAdapter.width(70),
             ),
@@ -421,6 +422,8 @@ class CheckoutPageView extends GetView {
             SizedBox(
               width: ScreenAdapter.height(70),
             ),
+
+            if (controller.takeOut.value) 
             Expanded(
               child: BookingTypeButton(
                 icon: eatOutImage,
@@ -432,9 +435,11 @@ class CheckoutPageView extends GetView {
                 },
               ),
             ),
+            if (controller.takeOut.value) 
             SizedBox(
               width: ScreenAdapter.width(70),
             ),
+            
           ],
         ),
       ),
