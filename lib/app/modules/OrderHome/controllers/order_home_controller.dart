@@ -39,7 +39,7 @@ class OrderHomeController extends GetxController with StateMixin {
   RxList homeImages = [].obs;
   RxBool mealType = false.obs;
   int mealTypeStatus = 0;
-  int resetTime = 3;
+  int resetTime = 30;
   Timer? resetTimer;
 
   @override
@@ -66,7 +66,7 @@ class OrderHomeController extends GetxController with StateMixin {
       resetTime--;
       if (resetTime == 0) {
         resetTimer?.cancel();
-        resetTime = 3;
+        resetTime = 30;
         mealTypeStatus = 0;
         debugPrint("startResetTimer end");
         update();
