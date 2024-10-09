@@ -182,6 +182,7 @@ class GString{
         "dining_welcome":"いらっしゃいませ",
         "dining_type_tips":"店内かお持ち帰りかを選択してください",
         "checkout_type_tips":"お会計かお持ち帰りかを選択してください",
+        'cash_pay_checkout_tips':'支払い金額が更新されました。引き続き現金を投入してください。',
 
       };
     }else if(languageCode == 'CH'){
@@ -362,6 +363,7 @@ class GString{
         "dining_welcome":"    欢 迎 光 临",
         "dining_type_tips":"     请选择堂食还是外带",
         "checkout_type_tips": "     请选择决算还是外带",
+        'cash_pay_checkout_tips':'支付金额更新，请继续投币。',
 
 
       };
@@ -542,6 +544,7 @@ class GString{
         "dining_welcome":"Welcome",
         "dining_type_tips":"Would you like to dine in or take out",
         "checkout_type_tips": "Would you like to Check Out or take out",
+        'cash_pay_checkout_tips':'Payment amount updated, please continue inserting cash.',
         
       };
     }else if(languageCode == 'KO'){
@@ -722,6 +725,7 @@ class GString{
         "dining_welcome":"어서 오세요",
         "dining_type_tips":"매장 식사 또는 테이크아웃 중 선택해 주세요",
         "checkout_type_tips": "합의 또는 테이크아웃 중 선택해 주세요",
+        'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 계속 현금을 넣어주세요.',
       };
     }
 
