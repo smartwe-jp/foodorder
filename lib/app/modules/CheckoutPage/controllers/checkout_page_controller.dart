@@ -411,27 +411,26 @@ class CheckoutPageController extends GetxController with StateMixin {
     return formatter.format(sum);
   }
 
-  requestOrderList(
-      TextEditingController textController, FocusNode focus) async {
-    debugPrint('qrCodeString: ${textController.text}');
+  requestOrderList({goDetail = true}) async {
+    debugPrint('qrCodeString: ${scanQrCode2Controller.text}');
 
-    String orderKey = textController.text;
+    String orderKey = scanQrCode2Controller.text;
     if (orderKey.isEmpty) return;
 
     if (orderKey.contains('?p=') == true) {
       //正则实现截取'?p='之后的字符串
-      orderKey = _getOrderKey(textController.text);
+      orderKey = _getOrderKey(scanQrCode2Controller.text);
     }
 
     debugPrint('orderKey : $orderKey');
-    textController.text = "";
-    focus.requestFocus();
+    // textController.text = "";
+    // focus.requestFocus();
 
-    debugPrint('/scan-detail');
-    Get.toNamed('/scan-detail',
-        arguments: {'machineCode': machineCode.value, 'orderKey': orderKey});
+    // debugPrint('/scan-detail');
+    // Get.toNamed('/scan-detail',
+    //     arguments: {'machineCode': machineCode.value, 'orderKey': orderKey});
 
-    return;
+    // return;
     var formData = {
       "orderKey": orderKey,
       "language": checkLanguage.value,
@@ -449,7 +448,9 @@ class CheckoutPageController extends GetxController with StateMixin {
 
       if (response['code'] == 200 &&
           response["data"] != null &&
-          response["data"].isNotEmpty) {
+          response["data"].isNotEmpty &&
+          response["data"]["orderId"] != null
+          ) {
         if (response["data"]["totalPrice"] > 0) {
           // scanQrCodeController.text = "";
           // scanQrCodeFocusNode.requestFocus();
@@ -457,19 +458,25 @@ class CheckoutPageController extends GetxController with StateMixin {
           totlaPrice.value = response["data"]["totalPrice"].toString();
           tableNum.value = response["data"]["tableNum"].toString();
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
-          debugPrint('/scan-detail');
-          Get.toNamed('/scan-detail');
-          textController.text = "";
-          focus.requestFocus();
+
+          if (goDetail) {
+            debugPrint('/scan-detail');
+            Get.toNamed('/scan-detail');
+          } else {
+            update();
+          }
+
+          // scanQrCode2Controller.text = "";
+          // scanQrCode2FocusNode.requestFocus();
         } else {
-          textController.text = "";
-          focus.requestFocus();
+          scanQrCode2Controller.text = "";
+          scanQrCode2FocusNode.requestFocus();
         }
       } else {
-        textController.text = "";
+        scanQrCode2Controller.text = "";
 
         _showDialogError(response['msg']);
-        focus.requestFocus(); // 获取焦点
+        scanQrCode2FocusNode.requestFocus(); // 获取焦点
       }
     }).catchError((error) {
       print('webBootCalculateV2 error:${error.toString()}');
@@ -645,7 +652,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         shopCartTotalPrice: totlaPrice.value,
         tableNum: tableNum.value,
         onConfrimClick: (String isAllowPosstr, String payment_method_numcheck,
-            String receiptPrintTypeString) {
+            String receiptPrintTypeString) async {
           isAllowPos.value = isAllowPosstr;
           payment_method_num.value = payment_method_numcheck;
           receiptPrintType.value = receiptPrintTypeString;
@@ -659,7 +666,7 @@ class CheckoutPageController extends GetxController with StateMixin {
             getPosSettingInfo();
           } else {
             //postNewOrderId();
-            goToSettlement();
+            await goToSettlement();
           }
         },
         onCancelClick: (String isBack) {
@@ -713,10 +720,11 @@ class CheckoutPageController extends GetxController with StateMixin {
     goToSettlement();
   }
 
-  goToSettlement() {
+  goToSettlement() async {
     scanQrCodeController.text = "";
     //scanQrCodeHomeController.text = "";
-    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+    final result =
+        await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": localkey.value, //padding and need improve,
       "machineCode": machineCode.value,
       "orderId": orderId.value,
@@ -750,6 +758,11 @@ class CheckoutPageController extends GetxController with StateMixin {
       "showDiscover": showDiscover.value,
       "showOpenPayment": showOpenPayment.value
     });
+    if (result == true) {
+      debugPrint('settlement back');
+      Get.back();
+      requestOrderList(goDetail: false);
+    }
   }
 
   backCheckHome() {

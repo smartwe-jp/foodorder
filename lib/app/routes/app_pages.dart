@@ -77,7 +77,7 @@ class AppPages {
     GetPage(
       name: _Paths.SCAN_DETAIL,
       page: () => ScanDetailView(),
-      binding: ScanDetailBinding(),
+      binding: CheckoutPageBinding(),
     ),
     GetPage(
       name: _Paths.OPOS_APG,

@@ -314,7 +314,7 @@ extension SettlementControllerUIExtension on SettlementController {
 
   }
 
-  showEasyLoading() {
+  showEasyLoading({message}) {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
@@ -339,7 +339,7 @@ extension SettlementControllerUIExtension on SettlementController {
           ));
     }
     EasyLoading.show(
-      //status: 'loading...',
+      status: message,
       indicator: Container(
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
@@ -350,6 +350,8 @@ extension SettlementControllerUIExtension on SettlementController {
             _showTag,
             InkWell(
               onLongPress: () {
+                // allowClick.value = true;
+                // isPrintClick.value = false;
                 EasyLoading.dismiss();
               },
               child: Container(

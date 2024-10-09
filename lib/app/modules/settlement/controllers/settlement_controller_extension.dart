@@ -159,6 +159,10 @@ extension SettlementControllerExtension on SettlementController {
         });
   }
 
+  cashPayCheck() async {
+    
+  }
+
   //打印小票之后在关闭现金机
   gloryPayFlow(printType) async {
     // debugPrint("nextOper");

@@ -14,22 +14,22 @@ class ScanDetailController extends GetxController with StateMixin {
   String tableNum = "0";
   Map orderInfoMap = {};
 
-  final CheckoutPageController checkoutPageController =
-      Get.put(CheckoutPageController());
+  final CheckoutPageController checkoutPageController = Get.find();
 
   @override
   void onInit() {
-    final machineCode = Get.arguments['machineCode'] ?? "";
-    final orderKey = Get.arguments['orderKey'] ?? "";
+    // final machineCode = Get.arguments['machineCode'] ?? "";
+    // final orderKey = Get.arguments['orderKey'] ?? "";
 
     super.onInit();
 
-    requestOrderList(orderKey, machineCode);
+    //requestOrderList(orderKey, machineCode);
   }
 
   @override
   void onReady() {
     super.onReady();
+    change(null, status: RxStatus.success());
   }
 
   @override
@@ -56,9 +56,8 @@ class ScanDetailController extends GetxController with StateMixin {
 
       if (response['code'] == 200 &&
           response["data"] != null &&
-          response["data"].isNotEmpty && 
-          response["data"]["orderId"] != null
-          ) {
+          response["data"].isNotEmpty &&
+          response["data"]["orderId"] != null) {
         if (response["data"]["totalPrice"] > 0) {
           orderId = response["data"]["orderId"].toString();
           totlaPrice = response["data"]["totalPrice"].toString();
@@ -68,12 +67,11 @@ class ScanDetailController extends GetxController with StateMixin {
         }
       } else {
         Get.dialog(
-          barrierDismissible: false,
-          DialogUtils.alertOneButton(
-          response['msg'], confirm: () {
-          Get.back();
-          Get.back();
-        }));
+            barrierDismissible: false,
+            DialogUtils.alertOneButton(response['msg'], confirm: () {
+              Get.back();
+              Get.back();
+            }));
         //debugPrint(response['msg']);
       }
     }).catchError((error) {
@@ -82,7 +80,8 @@ class ScanDetailController extends GetxController with StateMixin {
   }
 
   checkOut() {
-    checkoutPageController.detaiCheckPayment(orderId, totlaPrice, tableNum);
+    //checkoutPageController.detaiCheckPayment(orderId, totlaPrice, tableNum);
+    checkoutPageController.showSelectMealTypeAndPaymentMethodDialog();
   }
 
   returnBack() {

@@ -61,9 +61,7 @@ class ScanCodeView extends GetView {
                               if (Platform.isAndroid) {
                                 controller.doNextPay();
                               } else {
-                                controller.requestOrderList(
-                                    controller.scanQrCode2Controller,
-                                    controller.scanQrCode2FocusNode);
+                                controller.requestOrderList();
                               }
                             });
                           },

@@ -1275,15 +1275,7 @@ class SettlementView extends GetView {
                                   if (controller.allowClick.value == true ) {
                                     controller.allowClick.value = false;
                                     controller.isPrintClick.value = true;
-
-                                    controller.showEasyLoading();
-
-                                    if (Platform.isAndroid) {
-                                      controller.doPrintOrderMenu(controller.receiptPrintType.value);
-                                    } else {
-                                      controller.gloryPayFlow(controller.receiptPrintType.value);
-                                    }
-
+                                    controller.cashPayCheck();
                                   }
                                 },
                                 child: Container(

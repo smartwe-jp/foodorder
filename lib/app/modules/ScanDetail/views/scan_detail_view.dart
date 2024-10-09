@@ -7,14 +7,16 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/fontSize.dart';
 import 'package:foodorder/app/config/imageData.dart';
 import 'package:foodorder/app/config/string.dart';
-import 'package:foodorder/app/modules/ScanDetail/controllers/scan_detail_controller.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 
 // GString.getToString(
 //                                   controller.checkLanguage.value,
 //                                   "checkoutScanTitle"
-class ScanDetailView extends GetView<ScanDetailController> {
+class ScanDetailView extends GetView<CheckoutPageController> {
+
+  final CheckoutPageController checkoutPageController = Get.find();
   _orderItem(title, qty) {
     return 
 
@@ -74,7 +76,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(GString.getToString(controller.languageKey, "show_check_tableno"),
+        Text(GString.getToString(controller.checkLanguage.value, "show_check_tableno"),
             style: TextStyle(
                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                 fontWeight: FontWeight.w600,
@@ -99,7 +101,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
           children: [
             Text(
                 GString.getToString(
-                        controller.languageKey, "settlement_total_price") +
+                        controller.checkLanguage.value, "settlement_total_price") +
                     ' :',
                 style: TextStyle(
                     //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -122,7 +124,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                   ),
                   children: [
                     TextSpan(
-                      text: int.parse(controller.totlaPrice).formatSum(),
+                      text: int.parse(controller.totlaPrice.value).formatSum(),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
                             GFontSize.menusettlementBottomPrice),
@@ -133,7 +135,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                     ),
                     TextSpan(
                       text:
-                          "（${GString.getToString(controller.languageKey, "show_price_front")}）", //" 円",
+                          "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
                             GFontSize.menusettlementBottomPriceRight),
@@ -151,7 +153,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<ScanDetailController>(builder: (controller) {
+      body: GetBuilder<CheckoutPageController>(builder: (controller) {
         return controller.obx(
           (state) => AnnotatedRegion(
             value: SystemUiOverlayStyle.light,
@@ -185,7 +187,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                           width: ScreenAdapter.width(20),
                         ),
                         Text(
-                          GString.getToString(controller.languageKey,
+                          GString.getToString(controller.checkLanguage.value,
                               "scan_order_detail_title"),
                           style: TextStyle(
                               //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -199,7 +201,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
-                  _tableNumber(controller.tableNum),
+                  _tableNumber(controller.tableNum.value),
                   _publicSplitLine(),
                   SizedBox(
                     height: ScreenAdapter.height(30),
@@ -223,7 +225,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
-                  _payCountTitle(int.parse(controller.totlaPrice)),
+                  _payCountTitle(int.parse(controller.totlaPrice.value)),
                   SizedBox(
                     height: ScreenAdapter.height(30),
                   ),
@@ -244,7 +246,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                       children: [
                         InkWell(
                           onTap: () {
-                            controller.returnBack();
+                            controller.backCheckHome();
                           },
                           child: Container(
                             alignment: Alignment.center,
@@ -258,7 +260,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.languageKey, "settlement_back"),
+                                  controller.checkLanguage.value, "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#000000"),
                                   fontWeight: FontWeight.w500,
@@ -270,7 +272,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                         InkWell(
                           onTap: () {
                             //try {
-                            controller.checkOut();
+                            controller.showSelectMealTypeAndPaymentMethodDialog();
                             //} catch (_) {}
                           },
                           child: Container(
@@ -285,7 +287,7 @@ class ScanDetailView extends GetView<ScanDetailController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.languageKey, "settlement_button"),
+                                  controller.checkLanguage.value, "settlement_button"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w500,
