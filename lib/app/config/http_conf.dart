@@ -83,5 +83,6 @@ const servicePath = {
 
   'webBootTroubleNotify': base_url + 'pad/web/boot/notice',
 
+  'webBootCalculateConfirm': base_url + 'web/boot/calculate/confirm',
 
 };

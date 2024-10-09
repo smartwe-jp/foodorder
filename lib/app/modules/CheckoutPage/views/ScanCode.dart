@@ -143,8 +143,8 @@ class ScanCodeView extends GetView {
                           try {
                             //showCancelConfirm();
                             //Navigator.pop(context);
-                            Get.back();
-                            //controller.backCheckHome();
+                            //Get.back();
+                            controller.backCheckHome();
 
                           } catch (_) {}
                         },

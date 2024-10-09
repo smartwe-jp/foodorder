@@ -83,7 +83,8 @@ class TransitPageController extends GetxController {
     //   await _getSmartweSystemSettingInfo();
     //   return;
     // }
-    if(_loadActiveInfo.value == false && !_checkShouldActive()){
+    bool shouldActive = await _checkShouldActive();
+    if(_loadActiveInfo.value == false && !shouldActive){
       _actuarial.value = true;
       await _getSmartweSystemSettingInfo();
       return;
@@ -214,10 +215,10 @@ class TransitPageController extends GetxController {
         })
   );
 
-  _checkShouldActive() async {
+  Future<bool> _checkShouldActive() async {
     var now = DateTime.now();
     var lastActiveTime = await HomeServices.getActiveTimeInfo();
-    if (lastActiveTime != "" && lastActiveTime != null) {
+    if (lastActiveTime != null && lastActiveTime != "") {
       var last = DateTime.parse(lastActiveTime);
       var diff = now.difference(last).inDays;
       if (diff > 1) {//超过一天 重新激活

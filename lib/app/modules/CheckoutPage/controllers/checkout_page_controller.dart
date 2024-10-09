@@ -76,6 +76,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
+  bool isFirstPage = true;
 
   @override
   void onInit() {
@@ -300,7 +301,8 @@ class CheckoutPageController extends GetxController with StateMixin {
     return regExp.stringMatch(qrCodeString).toString().substring(3);
   }
 
-  doNextPay(){
+  doNextPay({showPayment=true}){
+    isFirstPage = false;
     var _orderkey = scanQrCodeController.text;//print(_orderkey);
     if(scanQrCodeController.text !=""){
       //_showOrderEasyLoading();
@@ -320,10 +322,22 @@ class CheckoutPageController extends GetxController with StateMixin {
         //print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           if(response["data"]["totalPrice"] >0){
-              orderId.value = response["data"]["orderId"].toString();
-              totlaPrice.value = response["data"]["totalPrice"].toString();
-              tableNum.value = response["data"]["tableNum"].toString();
-            _showSelectMealTypeAndPaymentMethodDialog();
+            bool shouldBack = false;
+            orderId.value = response["data"]["orderId"].toString();
+            if (totlaPrice.value != '0' && totlaPrice.value != response["data"]["totalPrice"].toString())
+              shouldBack = true;
+            totlaPrice.value = response["data"]["totalPrice"].toString();
+            tableNum.value = response["data"]["tableNum"].toString();
+
+            if (shouldBack) {
+              debugPrint('---- reload ----');
+              Get.back();
+              _showSelectMealTypeAndPaymentMethodDialog();
+              update();
+            }
+
+            if (showPayment)
+              _showSelectMealTypeAndPaymentMethodDialog();
           }else{
             scanQrCodeController.text = "";
             scanQrCodeFocusNode.requestFocus();
@@ -339,7 +353,8 @@ class CheckoutPageController extends GetxController with StateMixin {
     }
   }
 
-  doNextHomePay(){
+  doNextHomePay({showPayment = true}){
+    isFirstPage = true;
     var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
     if(scanQrCodeHomeController.text !=""){
       //_showOrderEasyLoading();
@@ -356,13 +371,27 @@ class CheckoutPageController extends GetxController with StateMixin {
       request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-        //print(response);
+        print(response);
         if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
           if(response["data"]["totalPrice"] >0){
+            bool shouldBack = false;
             orderId.value = response["data"]["orderId"].toString();
+            if (totlaPrice.value != '0' && totlaPrice.value != response["data"]["totalPrice"].toString())
+              shouldBack = true;
             totlaPrice.value = response["data"]["totalPrice"].toString();
             tableNum.value = response["data"]["tableNum"].toString();
+
+            if (shouldBack) {
+              debugPrint('---- reload ----');
+              Get.back();
+              _showSelectMealTypeAndPaymentMethodDialog();
+              update();
+            }
+
+            if (showPayment)
             _showSelectMealTypeAndPaymentMethodDialog();
+
+
           }else{
             scanQrCodeHomeController.text = "";
             scanQrCodeHomeFocusNode.requestFocus();
@@ -419,8 +448,8 @@ class CheckoutPageController extends GetxController with StateMixin {
                 payment_method_num.value = payment_method_numcheck;
                 receiptPrintType.value = receiptPrintTypeString;
                 //checkLanguage.value = "JP";
-                scanQrCodeController.text = "";
-                scanQrCodeHomeController.text = "";
+                // scanQrCodeController.text = "";
+                // scanQrCodeHomeController.text = "";
                 showOpenPayment.value = true;
 
               var paymentMethod = ["3","4","5","6","7","8","9","10"];
@@ -487,10 +516,10 @@ class CheckoutPageController extends GetxController with StateMixin {
     //postNewOrderId();
     goToSettlement();
   }
-  goToSettlement(){
-    scanQrCodeController.text = "";
-    scanQrCodeHomeController.text = "";
-    Get.toNamed('/settlement',preventDuplicates: false,
+  goToSettlement() async {
+    // scanQrCodeController.text = "";
+    // scanQrCodeHomeController.text = "";
+    final result = await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage": checkLanguage.value,
           "machineCode": machineCode.value,
@@ -525,12 +554,23 @@ class CheckoutPageController extends GetxController with StateMixin {
           "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
+    if (result == true) {
+      debugPrint('---settlement back---');
+      if (isFirstPage) {
+        doNextHomePay(showPayment: false);
+      } else {
+        doNextPay(showPayment: false);
+      }
+
+    }
   }
 
   backCheckHome(){
-    Get.back();
     scanQrCodeFocusNode.requestFocus();// 获取焦点
-
+    scanQrCodeHomeFocusNode.requestFocus();
+    scanQrCodeController.text = "";
+    scanQrCodeHomeController.text = "";
+    Get.back();
   }
 
 

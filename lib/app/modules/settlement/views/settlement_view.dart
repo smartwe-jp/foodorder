@@ -1273,9 +1273,9 @@ class SettlementView extends GetView {
                                     controller.allowClick.value = false;
                                     controller.isPrintClick.value = true;
 
-                                    controller.showEasyLoading();
+                                    //controller.showEasyLoading();
 
-                                    controller.doPrintOrderMenu(controller.receiptPrintType.value);
+                                    controller.cashPayCheck();
                                   }
                                 },
                                 child: Container(

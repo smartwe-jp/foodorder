@@ -254,6 +254,7 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     _getSystemSettingInfo();
+    requestLatestCheckoutInfo();
 
   }
 
@@ -328,7 +329,7 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
     EasyLoading.dismiss();
-    Get.back();
+    Get.back(result: true);
   }
 
   goToNewMyHome() {
@@ -545,6 +546,55 @@ class SettlementController extends GetxController with StateMixin {
             }
           });
         });
+  }
+
+  //request latest checkout info
+  requestLatestCheckoutInfo() async {
+    bool goNext = false;
+    var formData = {
+      "orderId": orderId.value,
+    };
+    await request('webBootCalculateConfirm',
+        method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+      debugPrint("webBootCalculateConfirm:$response");
+      if (response['code'] == 200 && response['data'] != null) {
+        String finalTotal = response['data'].toString();
+        debugPrint('finalTotal $finalTotal');
+        if (totalPrice.value == finalTotal) {
+          goNext = true;
+        } else {
+          totalPrice.value = finalTotal;
+          var outMoney = int.parse(getPutMoney.value) - int.parse(totalPrice.value); //找零金额
+          showOutMoney.value = outMoney < 0 ? '0':outMoney.toString();
+          goNext = false;
+        }
+      }
+    });
+    return goNext;
+  }
+
+  cashPayCheck() async {
+    showEasyLoading();
+    bool result = await requestLatestCheckoutInfo();
+
+    if (!result) {
+      EasyLoading.dismiss();
+      allowClick.value = true;
+      isPrintClick.value = false;
+      showPrintButton.value = false;
+      update();
+      Get.dialog(
+          barrierDismissible: false,
+          DialogUtils.alertOneButton(
+              GString.getToString(
+                  checkLanguage.value, "cash_pay_checkout_tips"), confirm: () {
+            Get.back();
+          }));
+    } else {
+      doPrintOrderMenu(receiptPrintType.value);
+    }
   }
 
   doScanCodeTimeOutLastQuery() {
