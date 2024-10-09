@@ -1050,6 +1050,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   deleteItemSound() async {
+    debugPrint('---deleteItemSound');
     if (Platform.isAndroid) {
       await AssetsAudioPlayer.newPlayer().open(
         Audio("assets/audios/697.wav"),
@@ -1060,8 +1061,9 @@ class MenuPageController extends GetxController with StateMixin {
       if (player == null) {
         player = AudioPlayer();
       }
-      await player?.setVolume(0.9);
-      await player?.play(DeviceFileSource("assets/audios/697.wav"));
+      await player?.setVolume(1.2);
+      await player?.setSource(AssetSource('audios/697.wav'));
+      await player?.resume();
     }
   }
 
