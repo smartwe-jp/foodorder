@@ -117,9 +117,9 @@ class GString{
         "cash_change_error_title":"現金払い",
         "cash_change_error_tips_up":"現在、現金機に通障害が発生しており、現金でのお支払いはご利用いただけません。",
         "cash_change_error_tips_down":"キャッシュレスの支払い方法に変更するか、アプリを再起動してみてください。",
-        "reboot_app":"再起動",
+        "reboot_app":"アプリ再起動",
         "change_payment":"支払い方法を変更",
-        "launch_error_tips":"異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
+        "launch_error_tips":"インターネットが接続していません。ネット環境及び機器の接続状況をご確認の上、券売君アプリを再起動してください。",
 
 
         "select_option":"選択",
