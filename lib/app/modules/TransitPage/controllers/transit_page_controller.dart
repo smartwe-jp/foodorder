@@ -95,7 +95,8 @@ class TransitPageController extends GetxController {
     //   return;
     // }
     debugPrint("getMachineActivate");
-    if (_loadActiveInfo.value == false) {
+    bool shouldActive = await _checkShouldActive();
+    if (_loadActiveInfo.value == false && !shouldActive) {
       _actuarial.value = true;
       await _getSmartweSystemSettingInfo();
       return;
@@ -292,7 +293,7 @@ class TransitPageController extends GetxController {
   _checkShouldActive() async {
     var now = DateTime.now();
     var lastActiveTime = await HomeServices.getActiveTimeInfo();
-    if (lastActiveTime != "" && lastActiveTime != null) {
+    if (lastActiveTime != null && lastActiveTime != "") {
       var last = DateTime.parse(lastActiveTime);
       var diff = now.difference(last).inDays;
       if (diff > 1) {
