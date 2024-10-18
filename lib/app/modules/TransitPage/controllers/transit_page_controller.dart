@@ -201,9 +201,9 @@ class TransitPageController extends GetxController {
 
   _showErrorDialog({error}) =>
   Get.dialog(
-        DialogUtils.alertOneButton("異常が生じてます。先に、インターネットの接続のご確認をお願いします、再度お試しください。",
+        DialogUtils.alertOneButton("インターネットが接続していません。ネット環境及び機器の接続状況をご確認の上、券売君アプリを再起動してください。",
         title: "お知らせ",
-        confirmtitle: "再度お起動",
+        confirmtitle: "アプリ再起動",
         confirm: () {
         Future.delayed(Duration(milliseconds: 200), () {
           Get.back();

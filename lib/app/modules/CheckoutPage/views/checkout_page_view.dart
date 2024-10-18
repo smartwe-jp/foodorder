@@ -17,7 +17,8 @@ import 'Appointment.dart';
 import 'ScanCode.dart';
 
 class CheckoutPageView extends GetView {
-  final CheckoutPageController controller = Get.put(CheckoutPageController());
+  //final CheckoutPageController controller = Get.put(CheckoutPageController());
+  final CheckoutPageController controller = Get.find();
   CheckoutPageView({Key? key}) : super(key: key);
 
   //展示外带按钮
@@ -104,7 +105,6 @@ class CheckoutPageView extends GetView {
 
 
               Get.toNamed("/scancode-page",arguments: {"checkLanguage": controller.checkLanguage.value});
-
 
             },
             child: Container(
@@ -237,7 +237,7 @@ class CheckoutPageView extends GetView {
                                 },
                                 onSubmitted: (value){
                                   Future.delayed(Duration(milliseconds: 150), () {
-                                  controller.doNextHomePay();
+                                    controller.requestOrderList(value, firstPage: true);
                                   });
 
 

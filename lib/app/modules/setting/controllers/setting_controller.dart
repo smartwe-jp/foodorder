@@ -372,18 +372,18 @@ class SettingController extends GetxController with StateMixin {
     if (machine_mode.value == "1") {
       if (Get.isRegistered<MenuPageController>()) {
         Get.find<MenuPageController>().clearCartList();
-        Get.delete<MenuPageController>();
+        //Get.delete<MenuPageController>();
       }// 手动删除控制器实例
     } else if (machine_mode.value == "2") {
       if (Get.isRegistered<CheckoutPageController>()) {
-        Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+        //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       }
     } else if (machine_mode.value == "3") {
-      if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
+      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
 
-      if (Get.isRegistered<SelfservicePageController>())
-      Get.delete<SelfservicePageController>();
+      //if (Get.isRegistered<SelfservicePageController>())
+      //Get.delete<SelfservicePageController>();
     }
     if (Get.isRegistered<SettingController>())
     Get.delete<SettingController>(); // 手动删除控制器实例

@@ -262,7 +262,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             child: Center(
                               //加上Center让文字居中
                               child: Text(
-                                '한국말',
+                                '한국어',
                                 style: TextStyle(
                                     fontSize: ScreenAdapter.fontSize(36.0),
                                     fontFamily: "NotoSansKR",

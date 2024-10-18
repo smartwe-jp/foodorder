@@ -338,7 +338,10 @@ class SettlementController extends GetxController with StateMixin {
     EasyLoading.dismiss();
     Get.back();
     if(machineMode.value == "2") {
-      Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+      if (Get.isRegistered<CheckoutPageController>()) {
+        Get.find<CheckoutPageController>().checkLanguage.value = 'JP';
+      }
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.toNamed("/checkout-page");
@@ -346,14 +349,14 @@ class SettlementController extends GetxController with StateMixin {
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }else if(machineMode.value == "3") {
-      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.toNamed("/selfservice-page");
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/selfServiceHomePage');
     } else {print("过来删除menu了");
-    Get.delete<MenuPageController>(); // 手动删除控制器实例
+    //Get.delete<MenuPageController>(); // 手动删除控制器实例
     //Get.toNamed("/order-home");
-    Get.offNamedUntil('/order-home', (route) => route.isFirst);
+    Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/home');
     }
   }
@@ -364,9 +367,9 @@ class SettlementController extends GetxController with StateMixin {
     Get.back();
     if (machineMode.value == "1") {
       if(is_back_home.value == "0"){
-        Get.delete<MenuPageController>(); // 手动删除控制器实例
+        //Get.delete<MenuPageController>(); // 手动删除控制器实例
         //Get.toNamed("/order-home");
-        Get.offNamedUntil('/order-home', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
         //Navigator.pushNamed(context, '/home');
       }else{
         // eventBus.fire(new clearCartEvent('支付成功...'));
@@ -379,7 +382,7 @@ class SettlementController extends GetxController with StateMixin {
       }
 
     }else if (machineMode.value == "3") {
-      Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.toNamed("/selfservice-page");
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       // if(is_back_home.value == "0"){
@@ -397,7 +400,10 @@ class SettlementController extends GetxController with StateMixin {
       // }
 
     } else {
-      Get.delete<CheckoutPageController>();// 手动删除控制器实例
+      //Get.delete<CheckoutPageController>();// 手动删除控制器实例
+      if (Get.isRegistered<CheckoutPageController>()) {
+        Get.find<CheckoutPageController>().checkLanguage.value = 'JP';
+      }
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.toNamed("/checkout-page");
@@ -570,6 +576,7 @@ class SettlementController extends GetxController with StateMixin {
           showOutMoney.value = outMoney < 0 ? '0':outMoney.toString();
           goNext = false;
         }
+        update();
       }
     });
     return goNext;

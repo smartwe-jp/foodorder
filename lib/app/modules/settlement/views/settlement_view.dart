@@ -1346,7 +1346,7 @@ class SettlementView extends GetView {
 
                                 controller.showPosCancelAlert();
                               }else{
-                                Get.back();
+                                Get.back(result: true);
                               }
                               /*if (controller.payment_method_num.value == "3" ||
                                   controller.payment_method_num.value == "4") {

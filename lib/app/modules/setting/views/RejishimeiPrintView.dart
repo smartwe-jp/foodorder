@@ -141,7 +141,7 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                           _twoContentRow("au_Pay", "¥ ${formatSum(printInfo['au_PayTotal'])}"),
                           _twoContentRow("d_Pay", "¥ ${formatSum(printInfo['d_PayTotal'])}"),
                           _twoContentRow("m_Pay", "¥ ${formatSum(printInfo['m_PayTotal'])}"),
-                          _twoContentRow("交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
+                          //_twoContentRow("交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
                         ],
                       )
                 ),

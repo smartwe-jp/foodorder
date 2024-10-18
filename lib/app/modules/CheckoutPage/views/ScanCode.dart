@@ -16,7 +16,8 @@ import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
 
 class ScanCodeView extends GetView {
-  final CheckoutPageController controller = Get.put(CheckoutPageController());
+  //final CheckoutPageController controller = Get.put(CheckoutPageController());
+  final CheckoutPageController controller = Get.find();
   ScanCodeView({Key? key}) : super(key: key);
 
   @override
@@ -57,7 +58,7 @@ class ScanCodeView extends GetView {
                             },
                             onSubmitted: (value){
                               Future.delayed(Duration(milliseconds: 150), () {
-                              controller.doNextPay();
+                                controller.requestOrderList(value);
                               });
 
 
@@ -144,7 +145,7 @@ class ScanCodeView extends GetView {
                             //showCancelConfirm();
                             //Navigator.pop(context);
                             //Get.back();
-                            controller.backCheckHome();
+                            controller.backCheckHome(resetLanguage: true);
 
                           } catch (_) {}
                         },

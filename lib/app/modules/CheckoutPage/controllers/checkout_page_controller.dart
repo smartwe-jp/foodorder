@@ -16,6 +16,8 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
+import '../../scan_detail_page/logic.dart';
+import '../../scan_detail_page/view.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
   //TODO: Implement CheckoutPageController
@@ -76,10 +78,15 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
-  bool isFirstPage = true;
+  bool isFirstPage = false;
+
+
+  RxMap orderInfoMap = {}.obs;
+  late String scanTextValue;
 
   @override
   void onInit() {
+    debugPrint("CheckoutPageController init");
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
     //Get.focusScope.requestFocus(scanQrCodeFocusNode);
@@ -210,205 +217,87 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   }
 
-  _showDialogError(msg){
-    //查询订单弹出提示
-    /*Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child:  Text(GString.getToString(checkLanguage.value, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
-              ),
-              children: <Widget>[
-                Container(
-                  width: ScreenAdapter.width(650),
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(30),right: ScreenAdapter.width(30)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onLongPress: (){
-                              EasyLoading.dismiss();
-                            },
-                            child: Container(
-                              //width: ScreenAdapter.width(400),
-                              //margin: EdgeInsets.only(top: 60),
-                              height: ScreenAdapter.height(75),
-                              child: Image.asset(GImage.getImageString("imgpublic", "error_public"),fit: BoxFit.fitHeight),
-                            ),
-                          ),
-                          Expanded(
-                              child: Container(
-                                  padding: EdgeInsets.only(left: ScreenAdapter.width(25),right: ScreenAdapter.width(25)),
-                                  child: Text(msg,style: TextStyle(fontSize: ScreenAdapter.fontSize(28)))
-                              )
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                            alignment: Alignment.center,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 70.0),
-                              child: TextButton(
-                                child: Text(
-                                  GString.getToString(this._checkLanguage, "settlement_change_method"),
-                                  style: TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  //Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                          ),
-                    ],
-                  ),
-                ),
-              ]
-          ),
-        )
-    );*/
 
-    Get.dialog(
-        DialogUtils.alertOneButton(msg,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-            contentTagImg:"error_public",
-            confirm: () {
-              Get.back();
-            })
-    );
+  requestOrderList(String scanText, {goDetail = true, firstPage = false}) async {
+    isFirstPage = firstPage;
+    debugPrint('qrCodeString: $scanText');
+    scanTextValue = scanText;
+    String orderKey = scanText;
+    if (orderKey.isEmpty) return;
+
+    if (orderKey.contains('?p=') == true) {
+      //正则实现截取'?p='之后的字符串
+      orderKey = _getOrderKey(scanText);
+    }
+    debugPrint('orderKey : $orderKey');
+    var formData = {
+      "orderKey": orderKey,
+      "language": checkLanguage.value,
+      "machineCode": machineCode.value
+    };
+
+    debugPrint('formData: $formData');
+
+    request('webBootCalculateV2', method: 'POST', parameters: formData)
+        .then((val) {
+      print('webBootCalculateV2:$val');
+
+      var response = json.decode(val.toString());
+      EasyLoading.dismiss();
+
+      if (response['code'] == 200 &&
+          response["data"] != null &&
+          response["data"].isNotEmpty &&
+          response["data"]["orderId"] != null
+      ) {
+        if (response["data"]["totalPrice"] > 0) {
+
+          orderId.value = response["data"]["orderId"].toString();
+          totlaPrice.value = response["data"]["totalPrice"].toString();
+          tableNum.value = response["data"]["tableNum"].toString();
+          orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
+
+          if (goDetail) {
+            debugPrint('/scan-detail');
+            Get.to(()=>ScanDetailPagePage());
+          } else {
+            if (Get.isRegistered<ScanDetailPageLogic>())
+              Get.find<ScanDetailPageLogic>().update();
+            update();
+          }
+        } else {
+          _resetScanState();
+        }
+      } else {
+        _resetScanState();
+        _showDialogError(response['msg']);
+      }
+    }).catchError((error) {
+      print('webBootCalculateV2 error:${error.toString()}');
+    });
   }
+
+
 
   _getOrderKey(qrCodeString) {
     RegExp regExp = new RegExp(r"\?p=(.*)");
     return regExp.stringMatch(qrCodeString).toString().substring(3);
   }
 
-  doNextPay({showPayment=true}){
-    isFirstPage = false;
-    var _orderkey = scanQrCodeController.text;//print(_orderkey);
-    if(scanQrCodeController.text !=""){
-      //_showOrderEasyLoading();
-      if(scanQrCodeController.text.contains('?p=') == true){
-        //正则实现截取'?p='之后的字符串
-        _orderkey = _getOrderKey(scanQrCodeController.text);
-      }
-      //自定义声音
-      //playQRScannerSound();
-
-      var formData = {
-        "orderKey": _orderkey
-      };
-      request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
-        EasyLoading.dismiss();
-        //print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          if(response["data"]["totalPrice"] >0){
-            bool shouldBack = false;
-            orderId.value = response["data"]["orderId"].toString();
-            if (totlaPrice.value != '0' && totlaPrice.value != response["data"]["totalPrice"].toString())
-              shouldBack = true;
-            totlaPrice.value = response["data"]["totalPrice"].toString();
-            tableNum.value = response["data"]["tableNum"].toString();
-
-            if (shouldBack) {
-              debugPrint('---- reload ----');
-              Get.back();
-              _showSelectMealTypeAndPaymentMethodDialog();
-              update();
-            }
-
-            if (showPayment)
-              _showSelectMealTypeAndPaymentMethodDialog();
-          }else{
-            scanQrCodeController.text = "";
-            scanQrCodeFocusNode.requestFocus();
-          }
-
-        }else{
-          scanQrCodeController.text = "";
-
-          _showDialogError(response['msg']);
-          scanQrCodeFocusNode.requestFocus();// 获取焦点
-        }
-      });
-    }
-  }
-
-  doNextHomePay({showPayment = true}){
-    isFirstPage = true;
-    var _orderkey = scanQrCodeHomeController.text;//print(_orderkey);
-    if(scanQrCodeHomeController.text !=""){
-      //_showOrderEasyLoading();
-      if(_orderkey.contains('?p=') == true){
-        //正则实现截取'?p='之后的字符串
-        _orderkey = _getOrderKey(scanQrCodeHomeController.text);
-      }
-      //自定义声音
-      //playQRScannerSound();
-
-      var formData = {
-        "orderKey": _orderkey
-      };
-      request('webBootCalculate', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
-        EasyLoading.dismiss();
-        print(response);
-        if (response['code'] == 200 && response["data"] !=null && response["data"].isNotEmpty) {
-          if(response["data"]["totalPrice"] >0){
-            bool shouldBack = false;
-            orderId.value = response["data"]["orderId"].toString();
-            if (totlaPrice.value != '0' && totlaPrice.value != response["data"]["totalPrice"].toString())
-              shouldBack = true;
-            totlaPrice.value = response["data"]["totalPrice"].toString();
-            tableNum.value = response["data"]["tableNum"].toString();
-
-            if (shouldBack) {
-              debugPrint('---- reload ----');
-              Get.back();
-              _showSelectMealTypeAndPaymentMethodDialog();
-              update();
-            }
-
-            if (showPayment)
-            _showSelectMealTypeAndPaymentMethodDialog();
 
 
-          }else{
-            scanQrCodeHomeController.text = "";
-            scanQrCodeHomeFocusNode.requestFocus();
-          }
-
-        }else{
-          scanQrCodeHomeController.text = "";
-
-          _showDialogError(response['msg']);
-          scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
-        }
-      });
-    }
+  _showDialogError(msg){
+      Get.dialog(DialogUtils.alertOneButton(msg,
+      title: GString.getToString(checkLanguage.value, "tag_title"),
+      confirmtitle:
+      GString.getToString(checkLanguage.value, "tag_button_yes"),
+      contentTagImg: "error_public", confirm: () {
+        Get.back();
+      }));
   }
 
   //选择食用方式和支付方式
-  _showSelectMealTypeAndPaymentMethodDialog() async {
+  showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
     scanQrCodeHomeFocusNode.requestFocus();
     Get.dialog(
@@ -556,21 +445,36 @@ class CheckoutPageController extends GetxController with StateMixin {
         });
     if (result == true) {
       debugPrint('---settlement back---');
-      if (isFirstPage) {
-        doNextHomePay(showPayment: false);
-      } else {
-        doNextPay(showPayment: false);
+      if (result == true) {
+        debugPrint('settlement back');
+        Get.back();
+        showOrderEasyLoading();
+        requestOrderList(scanTextValue, goDetail: false);
       }
-
     }
   }
 
-  backCheckHome(){
-    scanQrCodeFocusNode.requestFocus();// 获取焦点
-    scanQrCodeHomeFocusNode.requestFocus();
-    scanQrCodeController.text = "";
-    scanQrCodeHomeController.text = "";
+  backCheckHome({resetLanguage = false}) {
+
+    final reset = isFirstPage || resetLanguage;
+    debugPrint('backCheckHome isFirstPage:$isFirstPage, reset:$resetLanguage');
+    if (reset)
+    checkLanguage.value = 'JP';
+
+    _resetScanState();
     Get.back();
+  }
+
+  _resetScanState() {
+    if (isFirstPage) {
+      scanQrCodeHomeController.text = "";
+      scanQrCodeHomeFocusNode.requestFocus();
+      scanQrCodeFocusNode.unfocus();
+    } else {
+      scanQrCodeController.text = "";
+      scanQrCodeFocusNode.requestFocus();// 获取焦点
+      scanQrCodeHomeFocusNode.unfocus();
+    }
   }
 
 
