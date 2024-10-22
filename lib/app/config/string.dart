@@ -127,7 +127,7 @@ class GString{
         "load_menu_failure_title" : "メニューの読み込みに異常が発生しました。",
         "load_menu_failure_content" : "@seconds秒後にホーム画面に戻りますので、\n再度お試しください。",
         "load_menu_failure_back" : "ホームに戻る",
-        'cash_pay_checkout_tips':'支払い金額が更新されました。引き続き現金を投入してください。',
+        'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
         "scan_order_detail_title":"ご注文",
 
       };
@@ -251,7 +251,7 @@ class GString{
         "load_menu_failure_title" : "菜单加载异常。",
         "load_menu_failure_content" : "@seconds秒后将返回首页,请重试。",
         "load_menu_failure_back" : "返回首页",
-        'cash_pay_checkout_tips':'支付金额更新，请继续投币。',
+        'cash_pay_checkout_tips':'支付金额更新，请确认并支付。',
         "scan_order_detail_title":"订单",
       };
     }else if(languageCode == 'EN'){
@@ -374,7 +374,7 @@ class GString{
         "load_menu_failure_title" : "Menu loading error.",
         "load_menu_failure_content" : "Returning to the home screen in @seconds seconds, please try again.",
         "load_menu_failure_back" : "Back to home",
-        'cash_pay_checkout_tips':'Payment amount updated, please continue inserting cash.',
+        'cash_pay_checkout_tips':'Payment amount updated, Please confirm and pay.',
         "scan_order_detail_title":"Order",
       };
     }else if(languageCode == 'KO'){
@@ -498,7 +498,7 @@ class GString{
         "load_menu_failure_title" : "메뉴 로딩 오류。",
         "load_menu_failure_content" : "@seconds초 후 홈 화면으로 돌아갑니다,\n다시 시도하십시오。",
         "load_menu_failure_back" : "홈으로",
-        'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 계속 현금을 넣어주세요.',
+        'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 확인 후 결제해 주세요.',
         'scan_order_detail_title':'주문'
       };
     }

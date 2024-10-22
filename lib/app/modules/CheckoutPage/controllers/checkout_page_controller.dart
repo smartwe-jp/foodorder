@@ -266,10 +266,10 @@ class CheckoutPageController extends GetxController with StateMixin {
             update();
           }
         } else {
-          _resetScanState();
+          _resetScanState(false);
         }
       } else {
-        _resetScanState();
+        _resetScanState(false);
         _showDialogError(response['msg']);
       }
     }).catchError((error) {
@@ -461,19 +461,26 @@ class CheckoutPageController extends GetxController with StateMixin {
     if (reset)
     checkLanguage.value = 'JP';
 
-    _resetScanState();
+    _resetScanState(resetLanguage);
     Get.back();
   }
 
-  _resetScanState() {
+  _resetScanState(resetLanguage) {
     if (isFirstPage) {
+      debugPrint('isFirstPage = true');
       scanQrCodeHomeController.text = "";
       scanQrCodeHomeFocusNode.requestFocus();
       scanQrCodeFocusNode.unfocus();
     } else {
+      debugPrint('isFirstPage = false');
       scanQrCodeController.text = "";
       scanQrCodeFocusNode.requestFocus();// 获取焦点
-      scanQrCodeHomeFocusNode.unfocus();
+      if (resetLanguage) {//返回到首页需要重置首页扫码
+        scanQrCodeHomeFocusNode.requestFocus();
+      } else {
+        scanQrCodeHomeFocusNode.unfocus();
+      }
+
     }
   }
 
