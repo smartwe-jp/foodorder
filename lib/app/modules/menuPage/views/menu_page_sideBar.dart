@@ -39,7 +39,7 @@ extension MenuPageSideBar on MenuPageView {
                           decoration: BoxDecoration(
                               color: item['categoryCode'] ==
                                       controller.classTag.value
-                                  ? ColorsUtil.hexToColor(Gcolor.greenThemeColor)
+                                  ? ColorsUtil.hexToColor(item['showColor'] ?? Gcolor.greenThemeColor)
                                   : Color.fromARGB(255, 245,247,247),
                               borderRadius: BorderRadius.only(topRight: Radius.circular(index == 0 ? 40:0 )),
                             ),

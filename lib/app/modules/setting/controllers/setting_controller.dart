@@ -207,9 +207,13 @@ class SettingController extends GetxController with StateMixin {
     await sendToUsePrinter(printWidget);
 
     commonHandleDialog('完了しました', confirm: () {
+      debugPrint('commonHandleDialog confirm');
       Get.back();
       Get.back();
-      clearTask();
+      clearTask(syncCash: false);
+      //Future.delayed(Duration(milliseconds: 500), () {
+        gloryConfirmSync();
+      //});
     });
 
     // await Future.delayed(Duration(seconds: 5), () {
@@ -354,17 +358,6 @@ class SettingController extends GetxController with StateMixin {
     });
     Get.toNamed('/receipt-query',
         arguments: {"machineCode": machineCode.value});
-  }
-
-  getMachineCashInfo() async {
-    var cashInfo = "";
-    await CashChanger.getCashBalance(onSuccess: (value) {
-      cashInfo = value;
-    }, catchError: (error) {
-      errorHandleDialog(GString.getToString(checkLanguage.value, error));
-    });
-    debugPrint('machine cashInfo: $cashInfo');
-    return cashInfo;
   }
 
   String findChange(String cashStatus, int changeCount) {
@@ -709,7 +702,6 @@ class SettingController extends GetxController with StateMixin {
         return "";
     }
   }
-
 
   getCashCountMaxVal(type) {
     switch (type) {

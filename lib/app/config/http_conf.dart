@@ -98,6 +98,9 @@ const servicePath = {
   //Glory supplement
   'webBootGlorySupplement': base_url + 'web/glory/supplement', //Glory补充
 
+  //Groly sync
+  'webGloryConfirmSync': base_url + 'web/glory/confirm/sync',
+
   //Glory exchange
   'webBootGloryExchange': base_url + 'web/glory/exchange', //Glory兑换
 
@@ -109,6 +112,8 @@ const servicePath = {
 
   //Glory information
   'webBootGloryInformation': base_url + 'web/glory/information', //Glory信息
+
+  'webBootCalculateConfirm': base_url + 'web/boot/calculate/confirm',
 };
 
 

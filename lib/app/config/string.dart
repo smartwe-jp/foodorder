@@ -182,7 +182,7 @@ class GString{
         "dining_welcome":"いらっしゃいませ",
         "dining_type_tips":"店内かお持ち帰りかを選択してください",
         "checkout_type_tips":"お会計かお持ち帰りかを選択してください",
-        'cash_pay_checkout_tips':'支払い金額が更新されました。引き続き現金を投入してください。',
+        'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
 
       };
     }else if(languageCode == 'CH'){

@@ -125,7 +125,7 @@ class MenuPageView extends GetView<MenuPageController> {
         if (item['qtyBounds'] == 0) {
               return;
         } else if (item['qtyBounds'] > 0) {
-          debugPrint("GridItemView onTap qtyBounds $item");
+          //debugPrint("GridItemView onTap qtyBounds $item");
           //请求限定接口
           if (controller.canAddCart.value)
           await controller.checkQtyBoundsCount(item, "",popupType,context);
@@ -135,8 +135,10 @@ class MenuPageView extends GetView<MenuPageController> {
           debugPrint("GridItemView onTap option");
           if(item['optionGroupVoList']?.length > 0){
             if(popupType == "v1"){
+              debugPrint("GridItemView onTap option 1");
               controller.publicShowOneItemWidgetv1(item);
             }else{
+              debugPrint("GridItemView onTap option 0");
               controller.publicShowOneItemWidget(item);
             }
 

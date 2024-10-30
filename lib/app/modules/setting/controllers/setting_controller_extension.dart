@@ -309,7 +309,7 @@ extension SettingControllerExtension on SettingController {
     if (result) {
       return result;
     } else {
-      String machineCash = await getMachineCashInfo();
+      String machineCash = await getMachineCashInfo() ?? '';
       if (machineCash.isEmpty) return false;
       String outMoneyString = await findChange(machineCash, count);
       if (outMoneyString.isEmpty) {
@@ -419,6 +419,44 @@ extension SettingControllerExtension on SettingController {
         params: PrinterInfo(usbDevice: curUsbPrinter),
       ),
     );
+  }
+
+  gloryConfirmSync() async {
+    debugPrint("---gloryConfirmSync---");
+
+    //
+    showEasyLoading(content: "データを同期中");
+    Map machineCash = await getMachineCashInfos() ?? {};
+    if (machineCash.isEmpty) return false;
+    debugPrint("gloryConfirmSync: $machineCash");
+
+    var formData = {
+      'changeInfoMap': machineCash,
+      'machineCode': machineCode.value,
+      'shopCode': shopCode.value,
+    };
+    debugPrint("formData: $formData");
+    request(
+      'webGloryConfirmSync',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) async {
+      debugPrint("gloryConfirmSync value: $value");
+      final response = json.decode(value.toString());
+      debugPrint("response: $response");
+      EasyLoading.dismiss();
+      if (response["code"] == 200) {
+        showToast('完了しました');
+        getServerCashInfo();
+      } else {
+        commonHandleDialog('同期失败!');
+        errorHandleDialogTwo('同期失败', gloryConfirmSync());
+      }
+    }).catchError((error) {
+      debugPrint("reportReplanishInfo error: $error");
+      EasyLoading.dismiss();
+      errorHandleDialogTwo('同期失败', gloryConfirmSync());
+    });
   }
 
   //上报
@@ -533,7 +571,8 @@ extension SettingControllerExtension on SettingController {
     return result;
   }
 
-  clearTask() async {
+  clearTask({syncCash = true}) async {
+    debugPrint('---clearTask---');
     //
     //isStartPutMoney.value = false;
     hasOutMoney = false;
@@ -542,7 +581,7 @@ extension SettingControllerExtension on SettingController {
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
     isStartPutMoney.value = false;
-    getServerCashInfo();
+    if (syncCash) getServerCashInfo();
     //update();
   }
 
@@ -561,6 +600,23 @@ extension SettingControllerExtension on SettingController {
           } else {
             Get.back();
           }
+        }));
+  }
+
+  errorHandleDialogTwo(String message, Function confirm) {
+    EasyLoading.dismiss();
+    debugPrint("errorHandleDialogTwo: $message");
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alert(message,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            confirm: () {
+          confirm();
+          Get.back();
+        }, cancle: () {
+          Get.back();
         }));
   }
 }

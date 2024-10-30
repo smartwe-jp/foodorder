@@ -23,7 +23,7 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   getServerCashInfo() async {
-    debugPrint('getServerCashInfo');
+    debugPrint('---getServerCashInfo---');
     var formData = {
       'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4',
     };
@@ -60,7 +60,8 @@ extension ExchangeControllerExtension on SettingController {
     return newCashInfoList;
   }
 
-  Future<String?> getMachineCashInfo() async {
+  Future<String?> getMachineCashInfo({Function? retry}) async {
+    debugPrint("getMachineCashInfo 0");
     var result = null;
     await CashChanger.getCashBalance(
       onSuccess: (value) {
@@ -70,7 +71,12 @@ extension ExchangeControllerExtension on SettingController {
       },
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
-        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        if (retry == null) {
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        } else {
+          errorHandleDialogTwo(
+              GString.getToString(checkLanguage.value, error), retry);
+        }
       },
     );
     return result;
@@ -284,7 +290,8 @@ extension ExchangeControllerExtension on SettingController {
 
     if (change == null) {
       EasyLoading.dismiss();
-      errorHandleDialog("現在の組み合わせは両替できません、キャンセルしてやり直してください。"); //localized needed
+      errorHandleDialog(
+          "現在の組み合わせは両替できません、キャンセルしてやり直してください。"); //localized needed
       return;
     }
 
@@ -312,9 +319,9 @@ extension ExchangeControllerExtension on SettingController {
         'val': count,
       },
       ...change.map((item) => {
-        'catVal': catValFromInt(item.key),
-        'val': item.value,
-      })
+            'catVal': catValFromInt(item.key),
+            'val': item.value,
+          })
     ];
 
     debugPrint('pops: $pops');

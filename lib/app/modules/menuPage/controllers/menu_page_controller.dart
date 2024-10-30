@@ -1187,8 +1187,10 @@ print("加1了");
       if (item['optionGroupVoList']?.length > 0) {
         //publicShowOneItemWidget(item);
         if (popupType == "v1") {
+          debugPrint("11111111111111");
           publicShowOneItemWidgetv1(item);
         } else {
+          debugPrint("00000000000000");
           publicShowOneItemWidget(item);
         }
       } else {
