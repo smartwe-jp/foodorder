@@ -4,11 +4,9 @@ import 'dart:typed_data';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
-import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -20,17 +18,11 @@ import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.d
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
-import '../../settlement/views/receipt_constrained_box.dart';
-import 'package:android_usb_printer/android_usb_printer.dart';
-import 'package:foodorder/app/config/printer_info.dart';
-import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 class RejishiMeRequestView extends StatefulWidget {
   final String machineCode;
   final Function(double, Map)? resetCash;
-  final Future<Map?> Function(int)? recycleCash;
-  final Function(double, Map)? updatePrintInfo;
-  final Map? usbDevice;
+  final Function? recycleCash;
   final SettingController? settingController;
 
   const RejishiMeRequestView(
@@ -38,8 +30,6 @@ class RejishiMeRequestView extends StatefulWidget {
       required this.machineCode,
       this.resetCash,
       this.recycleCash,
-      this.usbDevice,
-      this.updatePrintInfo,
       this.settingController});
 
   @override
@@ -55,14 +45,14 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   double printLength = 2352;
   //Function _resetCash = () {};
   int _recycleCash = 0;
-  Function _updatePrintInfo = () {};
+  //Function _updatePrintInfo = () {};
 
   final TextEditingController _verifyCodeController = TextEditingController();
 
   @override
   void initState() {
     //_resetCash = widget.resetCash;
-    _updatePrintInfo = widget.updatePrintInfo ?? () {};
+    //_updatePrintInfo = widget.updatePrintInfo ?? () {};
     super.initState();
     _loadMailAddress();
   }
@@ -362,8 +352,12 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                                     _verifyCodeController.text.substring(0, 3);
                                 return;
                               }
-
-                              _requestShimeInfo(_verifyCodeController.text);
+                              if (widget.recycleCash != null) {
+                                Get.back();
+                                widget.recycleCash!(_verifyCodeController.text, selectMail);
+                              } else {
+                                _requestShimeInfo(_verifyCodeController.text);
+                              }
                             },
                           ),
                         ],

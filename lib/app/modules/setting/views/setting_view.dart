@@ -867,7 +867,7 @@ class SettingView extends GetView<SettingController> {
                           isAllowRejishime: controller.isAllowRejishime.value,
                           machineCode: controller.machineCode.value,
                           recycleCash: () {
-                            controller.recycleCash();
+                            controller.recycleCash('','');
                           },
                           adjustCash: (type, number) {
                             controller.adjustCash(type, number);
@@ -881,7 +881,7 @@ class SettingView extends GetView<SettingController> {
                                 catVal, number, deposit, qty);
                           },
                           resetCash: () {
-                            controller.recycleCash();
+                            controller.recycleCash('','');
                           },
                         ),
 

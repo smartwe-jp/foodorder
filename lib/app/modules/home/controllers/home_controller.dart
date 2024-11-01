@@ -180,10 +180,13 @@ class HomeController extends GetxController {
         }
       }
       //send failure email
-      showCashTimer?.cancel();
-      _isCashState.value = false;
-      await _sendFailureEmail();
-      await prohibitOneCash();
+      if (_openCount == 3) {
+        showCashTimer?.cancel();
+        _isCashState.value = false;
+        await _sendFailureEmail();
+        await prohibitOneCash();
+      }
+      
       //print("机器未打开lib未null，重新打开并连接了");
     } else {
       await Paycube.setReceiveEvent;
@@ -351,6 +354,7 @@ class HomeController extends GetxController {
   }
 
   goMain() async {
+    showCashTimer?.cancel();
     debugPrint("goMain 1");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => TransitPageView());

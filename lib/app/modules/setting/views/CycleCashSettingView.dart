@@ -11,7 +11,7 @@ extension CycleCashSettingView on SettingView {
   cycleCashSetting() {
     //final cashListInfo = controller.cashInfoList.value;
 
-    return Obx(()=> Container(
+    return Container(
         child: Column(children: [
       Container(
         alignment: Alignment.center,
@@ -75,12 +75,11 @@ extension CycleCashSettingView on SettingView {
               ...controller.cashInfoList.entries.map((element) {
                 return Container(
                   padding: EdgeInsets.only(
-                    left: ScreenAdapter.width(15),
-                    right: ScreenAdapter.width(15),
-                    top: ScreenAdapter.height(10),
-                    bottom: ScreenAdapter.height(10)
-                  ),
-                  child: Column (
+                      left: ScreenAdapter.width(15),
+                      right: ScreenAdapter.width(15),
+                      top: ScreenAdapter.height(10),
+                      bottom: ScreenAdapter.height(10)),
+                  child: Column(
                     children: [
                       Container(
                         height: 30,
@@ -96,7 +95,8 @@ extension CycleCashSettingView on SettingView {
                       Container(
                         height: 30,
                         alignment: Alignment.centerRight,
-                        child: Text("/${controller.getCashCountMaxVal(element.key)}",
+                        child: Text(
+                            "/${controller.getCashCountMaxVal(element.key)}",
                             style: TextStyle(
                               fontFamily: 'NotoSansJP',
                               fontSize: ScreenAdapter.fontSize(20),
@@ -108,12 +108,9 @@ extension CycleCashSettingView on SettingView {
                   ),
                 );
               }).toList()
-              ]
-            )
-          ]
-        ),
-
-        Table(
+            ])
+          ]),
+      Table(
           border: TableBorder.all(
             color: Colors.grey.shade400,
             width: 1.0,
@@ -122,48 +119,51 @@ extension CycleCashSettingView on SettingView {
             0: FixedColumnWidth(100),
           },
           children: [
-              TableRow(
-                children: [
-                  Container(
-                    height: 80,
-                    alignment: Alignment.center,
-                    child: Text("操作",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          fontSize: ScreenAdapter.fontSize(20),
-                          fontWeight: FontWeight.w600,
-                          color: ColorsUtil.hexToColor("#000000"),
-                        )),
-                  ),
-
-                  (controller.isAllowRejishime.value || Platform.isWindows) ? 
-                  RecycleButton(title: "レジ締め", onPressed: (){
-                    controller.showRejishimeiView();
-                  },) : 
-                  RecycleButton(title: "預り金回収", onPressed: (){
-                    controller.showRecycleAlert();
-                  },),
-
-                  RecycleButton(title: "全回収", onPressed: (){
-                    controller.showRecycleAlert();
-                  },),
-
-                  RecycleButton(title: "補充", onPressed: (){
-                    controller.showReplenishAlert();
-                  },),
-                  
-                  RecycleButton(title: "両替", onPressed: () async {
-                    await controller.showExchangeAlert();
-                  },) 
-
-                ]
+            TableRow(children: [
+              Container(
+                height: 80,
+                alignment: Alignment.center,
+                child: Text("操作",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(20),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    )),
+              ),
+              (controller.isAllowRejishime.value || Platform.isWindows)
+                  ? RecycleButton(
+                      title: "レジ締め",
+                      onPressed: () {
+                        controller.showRejishimeiView();
+                      },
+                    )
+                  : RecycleButton(
+                      title: "預り金回収",
+                      onPressed: () {
+                        controller.showRecycleAlert();
+                      },
+                    ),
+              RecycleButton(
+                title: "全回収",
+                onPressed: () {
+                  controller.showRecycleAlert();
+                },
+              ),
+              RecycleButton(
+                title: "補充",
+                onPressed: () {
+                  controller.showReplenishAlert();
+                },
+              ),
+              RecycleButton(
+                title: "両替",
+                onPressed: () async {
+                  await controller.showExchangeAlert();
+                },
               )
-            
-          ]
-        )
-    
-       ]
-      )
-    ));
+            ])
+          ])
+    ]));
   }
 }

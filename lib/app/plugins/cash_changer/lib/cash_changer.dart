@@ -13,6 +13,7 @@ class CashChanger {
   static String payCubeEndTradeStatus = "Error";
 
   static Function(int)? onGetPutMoneyStringChange;
+  static Function(String)? onStatusUpdateEventChange;
   static Function(OpenChangerResult)? onOpenResultReponse;
 
   //set event listener
@@ -27,11 +28,45 @@ class CashChanger {
           onGetPutMoneyStringChange?.call(putMoney ?? 0);
           break;
         case 'StatusUpdateEvent':
+          onStatusUpdateEventChange?.call(getStatusEventMessage(call.arguments));
           break;
         default:
           debugPrint('No method found');
       }
     });
+  }
+
+  static String getStatusEventMessage(int value) {
+    final result =
+        cashStatusEventValuse[value] ?? StatusUpdateEvent.ChanStatusOk;
+    switch (result) {
+      case StatusUpdateEvent.ChanStatusOk:
+        return 'OK';
+      case StatusUpdateEvent.OPOS_SUE_POWER_ONLINE:
+        return '電源オンでかつレディ状態です';
+      case StatusUpdateEvent.OPOS_SUE_POWER_OFF:
+        return '電源オフまたは本体に接続されていません';
+      case StatusUpdateEvent.OPOS_SUE_POWER_OFFLINE:
+        return '電源オンですがノットレディ状態です';
+      case StatusUpdateEvent.CHAN_STATUS_JAM:
+        return '機器障害が生じました';
+      case StatusUpdateEvent.CHAN_STATUS_JAMOK:
+        return '機器障害が解消しました';
+      case StatusUpdateEvent.CHAN_STATUS_EMPTY:
+        return 'エンプティの金種があります';
+      case StatusUpdateEvent.CHAN_STATUS_NEAREMPTY:
+        return 'ニアエンプティの金種があります';
+      case StatusUpdateEvent.CHAN_STATUS_EMPTYOK:
+        return 'OK';//'エンプティ，ニアエンプティの状態が解除されました';
+      case StatusUpdateEvent.CHAN_STATUS_FULL:
+        return 'FULL';
+      case StatusUpdateEvent.CHAN_STATUS_NEARFULL:
+        return 'NEARFULL';
+      case StatusUpdateEvent.CHAN_STATUS_FULLOK:
+        return 'OK';//'フル，ニアフルの状態が解除されました';
+      case StatusUpdateEvent.CHAN_STATUS_ASYNC:
+        return '非同期動作が終了しました';
+    }
   }
 
   //remove event listener
@@ -396,6 +431,22 @@ class CashChanger {
     402: OpenChangerResult.OPOS_ORS_NOPORTED,
     403: OpenChangerResult.OPOS_ORS_CONFIG,
     450: OpenChangerResult.OPOS_SPECIFIC,
+  };
+
+  static Map<int, StatusUpdateEvent> cashStatusEventValuse = {
+    2001: StatusUpdateEvent.OPOS_SUE_POWER_ONLINE,
+    2002: StatusUpdateEvent.OPOS_SUE_POWER_OFF,
+    2003: StatusUpdateEvent.OPOS_SUE_POWER_OFFLINE,
+    31: StatusUpdateEvent.CHAN_STATUS_JAM,
+    32: StatusUpdateEvent.CHAN_STATUS_JAMOK,
+    11: StatusUpdateEvent.CHAN_STATUS_EMPTY,
+    12: StatusUpdateEvent.CHAN_STATUS_NEAREMPTY,
+    13: StatusUpdateEvent.CHAN_STATUS_EMPTYOK,
+    21: StatusUpdateEvent.CHAN_STATUS_FULL,
+    22: StatusUpdateEvent.CHAN_STATUS_NEARFULL,
+    23: StatusUpdateEvent.CHAN_STATUS_FULLOK,
+    91: StatusUpdateEvent.CHAN_STATUS_ASYNC,
+    0: StatusUpdateEvent.ChanStatusOk,
   };
 
   static Future openChangerNext(

@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
@@ -146,6 +147,37 @@ extension SettingControllerExtension on SettingController {
         //_getInputMoneyInfo();
         _supplyCounts();
       }
+    };
+
+    CashChanger.onStatusUpdateEventChange = (String result) async {
+      debugPrint("onStatusUpdateEventChange : $result");
+      if (result == 'OK') {
+        return;
+      }
+      // if (result == 'NEARFULL') {
+      //   //获取机器信息
+      //   return;
+      // }
+      if (result == 'FULL' || result == 'NEARFULL') {
+        //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
+        String? machineChangeInfo = await getMachineCashInfo();
+        if (machineChangeInfo == null) {
+          return;
+        }
+
+        String cashList = machineChangeInfo.findMaxCash();
+
+        errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
+          //找钱失败一律退单和退回入金
+          // CashChanger.fixDeposit;
+          // CashChanger.depositRepay;
+          Get.back();
+          cancelTimer();
+          //Get.back();
+        });
+        return;
+      }
+      errorHandleDialog(result);
     };
   }
 
@@ -347,7 +379,7 @@ extension SettingControllerExtension on SettingController {
 
   //清空上报
 
-  gloryEmptyReport() async {
+  gloryEmptyReport(String verifyCode, String verifyEmail) async {
     debugPrint("gloryEmptyReposrt");
 
     var success = false;
@@ -362,6 +394,8 @@ extension SettingControllerExtension on SettingController {
       'changeInfoMap': machineChangeInfo,
       'machineCode': machineCode.value,
       'shopCode': shopCode.value,
+      'verifyCode': verifyCode,
+      'verifyEmail': verifyEmail,
     };
 
     debugPrint("gloryEmptyReposrt formData: $formData");

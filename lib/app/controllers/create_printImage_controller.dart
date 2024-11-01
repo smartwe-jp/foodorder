@@ -68,7 +68,7 @@ class CreatePrintImageController extends GetxController {
   }
 
   UsbDeviceInfo? get curUsbPrinter {
-    if (usbDevice.value.isEmpty) {
+    if (usbDevice.isEmpty) {
       print("usbDevice is empty");
       DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
         Get.back();
@@ -655,7 +655,7 @@ class CreatePrintImageController extends GetxController {
       }
     }
     //print("总行数${menuNum}");
-    //addRowHight += 33 * linNum;
+    addRowHight += 15;
     categoryMenus.add(SizedBox(
       height: 10,
     ));
@@ -664,6 +664,7 @@ class CreatePrintImageController extends GetxController {
       Directionality(
           textDirection: TextDirection.ltr,
           child: Container(
+            height: 42,
             margin: EdgeInsets.only(bottom: 3),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -680,7 +681,7 @@ class CreatePrintImageController extends GetxController {
                 Directionality(
                     textDirection: TextDirection.ltr,
                     child: Container(
-                      width: ScreenAdapter.width(130),
+                      //width: ScreenAdapter.width(130),
                       alignment: Alignment.centerRight,
                       child: Text(
                         "￥${formatMoney(printData["price"])}",

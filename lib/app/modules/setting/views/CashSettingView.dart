@@ -1,22 +1,12 @@
 import 'dart:developer';
-import 'dart:ffi';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart';
-import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/AdjustModalView.dart';
-import 'package:foodorder/app/modules/setting/views/NumberAdjustWidget.dart';
-import 'package:foodorder/app/modules/setting/views/NumberListView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
-import 'package:foodorder/app/modules/setting/views/SegmentControl.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../systemSettingPage/views/SetPassword.dart';
 
 class CashSettingView extends StatefulWidget {
   final Map? cashInfoList;

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/color.dart';
@@ -10,11 +9,10 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
-import 'package:foodorder/app/modules/TransitPage/views/transit_page_view.dart';
+import 'package:foodorder/app/modules/rejishimei/view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
-import 'package:foodorder/app/modules/setting/views/RecycleAlert.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
@@ -212,7 +210,7 @@ class SettingController extends GetxController with StateMixin {
       Get.back();
       clearTask(syncCash: false);
       //Future.delayed(Duration(milliseconds: 500), () {
-        gloryConfirmSync();
+      gloryConfirmSync();
       //});
     });
 
@@ -226,34 +224,48 @@ class SettingController extends GetxController with StateMixin {
 
   showRejishimeiView() async {
     hasOutMoney = false;
-    Get.dialog(RejishiMeRequestView(
-      machineCode: machineCode.value,
-      // resetCash: (length, data) async {
-      //   await printRejishimei();
-      // },
-      // updatePrintInfo: (length, data) {
-      //   printLength = length;
-      //   printInfo = data;
-      // },
-      // recycleCash: (p0) async {
-      //   debugPrint("recycleCashOut p0 = ${p0}");
-      //   Map result = await recycleCashOut(p0);
-      //   //debugPrint("recycleCashOut result = ${result}");
+    // Get.dialog(RejishiMeRequestView(
+    //   machineCode: machineCode.value,
+    //   settingController: this,
+    // ));
 
-      //   return result;
-      // },
-      settingController: this,
-    ));
+    Get.dialog(
+        RejishimeView(
+          settingController: this,
+        ),
+        arguments: {'machineCode':machineCode.value});
   }
 
   showRecycleAlert() {
     hasOutMoney = false;
-    Get.dialog(RecycleAlert(onConfirm: () {
-      recycleCash(isRejishimei: false);
-      Get.back();
-    }, onCancel: () {
-      Get.back();
-    }));
+
+    Get.dialog(
+        RejishimeView(
+          isRejishime: false,
+          settingController: this,
+        ),
+        arguments: {'machineCode':machineCode.value});
+
+    // Get.to(RejishimeView(
+    //   machineCode: machineCode.value,
+    //   isRejishime: false,
+    // ));
+    // Get.dialog(RecycleAlert(onConfirm: () {
+    //   recycleCash(isRejishimei: false);
+    //   Get.back();
+    // }, onCancel: () {
+    //   Get.back();
+    // }));
+
+    // Get.dialog(RejishiMeRequestView(
+    //   machineCode: machineCode.value,
+    //   recycleCash: (code, email) async {
+
+    //     recycleCash(code, email);
+
+    //   },
+    //   settingController: this,
+    // ));
   }
 
   showReplenishAlert() {
@@ -536,38 +548,33 @@ class SettingController extends GetxController with StateMixin {
     return null;
   }
 
-  recycleCash({isRejishimei = true}) async {
+  recycleCash(String verifyCode, String verifyEmail) async {
     if (Platform.isWindows) {
-      if (isRejishimei) {
-        //clearTask();
-        //commonHandleDialog('完了しました');
-      } else {
-        showEasyLoading();
-        if (!await gloryEmptyReport()) {
-          //commonHandleDialog("回收失败：Glory机器未清空");
-          EasyLoading.dismiss();
-          return;
-        }
-        final result = await CashChanger.collectAll(); //该步骤失败如何处理
-        await CashChanger.changerResultNext(
-            resultCode: result,
-            onSuccess: () async {
-              debugPrint("recycleCash onSuccess");
-              EasyLoading.dismiss();
-              await clearTask();
-              commonHandleDialog('回收しました');
-              //showToast('回收成功');
-            },
-            onRetry: () {
-              recycleCash();
-            },
-            showError: (String error) {
-              EasyLoading.dismiss();
-              debugPrint("recycleCash error: $error");
-              //showToast('回收失败');
-              commonHandleDialog("回收失败：$error");
-            });
+      showEasyLoading();
+      if (!await gloryEmptyReport(verifyCode, verifyEmail)) {
+        //commonHandleDialog("回收失败：Glory机器未清空");
+        EasyLoading.dismiss();
+        return;
       }
+      final result = await CashChanger.collectAll(); //该步骤失败如何处理
+      await CashChanger.changerResultNext(
+          resultCode: result,
+          onSuccess: () async {
+            debugPrint("recycleCash onSuccess");
+            EasyLoading.dismiss();
+            await clearTask();
+            commonHandleDialog('回收しました');
+            //showToast('回收成功');
+          },
+          onRetry: () {
+            recycleCash(verifyCode, verifyEmail);
+          },
+          showError: (String error) {
+            EasyLoading.dismiss();
+            debugPrint("recycleCash error: $error");
+            //showToast('回收失败');
+            commonHandleDialog("回收失败：$error");
+          });
     } else {
       var formData = {
         "machineCode": machineCode.value,

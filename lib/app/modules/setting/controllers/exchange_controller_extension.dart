@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
@@ -148,6 +149,30 @@ extension ExchangeControllerExtension on SettingController {
         getPutMoney.value = result;
         getInputMoneyInfo();
       }
+    };
+
+    CashChanger.onStatusUpdateEventChange = (String result) async {
+      debugPrint("onStatusUpdateEventChange : $result");
+      if (result == 'OK') {
+        return;
+      }
+      if (result == 'FULL' || result == 'NEARFULL') {
+        //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
+        String? machineChangeInfo = await getMachineCashInfo();
+        if (machineChangeInfo == null) {
+          return;
+        }
+
+        String cashList = machineChangeInfo.findMaxCash();
+
+        errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
+
+          Get.back();
+          cancelTimer(shouldBack: false);
+        });
+        return;
+      }
+      errorHandleDialog(result);
     };
   }
 

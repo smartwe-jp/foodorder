@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
@@ -112,6 +113,39 @@ extension SettlementControllerExtension on SettlementController {
         update();
       }
     };
+
+    CashChanger.onStatusUpdateEventChange = (String result) async {
+      debugPrint("onStatusUpdateEventChange : $result");
+      if (result == 'OK') {
+        return;
+      }
+      // if (result == 'NEARFULL') {
+      //   //获取机器信息
+
+      //   return;
+      // }
+      if (result == 'FULL' || result == 'NEARFULL') {
+        //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
+        String? machineChangeInfo = await getMachineCashInfo();
+        if (machineChangeInfo == null) {
+          return;
+        }
+
+        String cashList = machineChangeInfo.findMaxCash();
+
+        errorHandleDialog(
+            GString.getToString(checkLanguage.value, 'cash_full_tips')
+                .trParams({'cash': '$cashList'}), confirm: () {
+          //找钱失败一律退单和退回入金
+          CashChanger.fixDeposit;
+          CashChanger.depositRepay;
+          Get.back();
+          Get.back();
+        });
+        return;
+      }
+      errorHandleDialog(result);
+    };
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束
@@ -159,9 +193,7 @@ extension SettlementControllerExtension on SettlementController {
         });
   }
 
-  cashPayCheck() async {
-    
-  }
+  cashPayCheck() async {}
 
   //打印小票之后在关闭现金机
   gloryPayFlow(printType) async {
@@ -200,6 +232,28 @@ extension SettlementControllerExtension on SettlementController {
       //已经结束入金，处理取引终了
       _getInputMoneyInfo();
     }
+  }
+
+  Future<String?> getMachineCashInfo({Function? retry}) async {
+    debugPrint("getMachineCashInfo 0");
+    var result = null;
+    await CashChanger.getCashBalance(
+      onSuccess: (value) {
+        debugPrint("getMachineCashInfo 1");
+
+        result = value;
+      },
+      catchError: (error) {
+        debugPrint("getMachineCashInfo error: $error");
+        if (retry == null) {
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        } else {
+          errorHandleDialogTwo(
+              GString.getToString(checkLanguage.value, error), retry);
+        }
+      },
+    );
+    return result;
   }
 
   _startOutputMoney(outMoney) async {
@@ -415,6 +469,23 @@ extension SettlementControllerExtension on SettlementController {
           } else {
             Get.back();
           }
+        }));
+  }
+
+  errorHandleDialogTwo(String message, Function confirm) {
+    EasyLoading.dismiss();
+    debugPrint("errorHandleDialogTwo: $message");
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alert(message,
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle:
+                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            confirm: () {
+          confirm();
+          Get.back();
+        }, cancle: () {
+          Get.back();
         }));
   }
 }

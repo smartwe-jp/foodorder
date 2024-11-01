@@ -110,6 +110,22 @@ enum OpenChangerResult {
   NONE,
 }
 
+enum StatusUpdateEvent {
+  ChanStatusOk,
+  OPOS_SUE_POWER_ONLINE,
+  OPOS_SUE_POWER_OFF,
+  OPOS_SUE_POWER_OFFLINE,
+  CHAN_STATUS_JAM,
+  CHAN_STATUS_JAMOK,
+  CHAN_STATUS_EMPTY,
+  CHAN_STATUS_NEAREMPTY,
+  CHAN_STATUS_EMPTYOK,
+  CHAN_STATUS_FULL,
+  CHAN_STATUS_NEARFULL,
+  CHAN_STATUS_FULLOK,
+  CHAN_STATUS_ASYNC,
+}
+
 class OposResult {
   late final HealthResultCode resultCode;
   late final ResultCodeExtended resultCodeExtended;
