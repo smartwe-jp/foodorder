@@ -21,6 +21,7 @@ import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
+import '../../../models/ItemModel.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -103,6 +104,8 @@ class MenuPageController extends GetxController with StateMixin {
   //如果下单时候报错，则查看是否因为库存不足
   RxMap menuLackMap = {}.obs;
   RxString doSubmitOrderId = "".obs;
+
+  bool showShopCart = false;
 
 
   @override
@@ -562,10 +565,51 @@ class MenuPageController extends GetxController with StateMixin {
     var totalNum = await ordersqlcontroller.getCartTotalNum();
     showCartTotalGoodsNum.value = totalNum;
 
+    if (showCartTotalGoodsNum.value == 0) {
+      showShopCart = false;
+    }
 
     showCartItems.value = ordersqlcontroller.cartItems;
 
     update();
+  }
+
+  publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
+    var cartItem = {
+      "cartId": d.id,
+      "menuCode": d.menuCode,
+      "unitPrice": d.unitPrice,
+      "goodsNum": 1,
+      "qtyBounds": d.qtyBounds
+    };
+    if (d.goodsNum <= 1 && isAdd == false) {
+      Get.dialog(DialogUtils.alert(
+          GString.getToString(checkLanguage.value, "show_del_cart_item_tag"),
+          title: GString.getToString(checkLanguage.value, "tag_title"),
+          canceltitle:
+          GString.getToString(checkLanguage.value, "show_del_cart_item_no"),
+          confirmtitle: GString.getToString(
+              checkLanguage.value, "show_del_cart_item_yes"), confirm: () {
+        //widget.confirmCallback('确定');
+        ordersqlcontroller.removeFromCart(d.id ?? 0);
+        //print("Item removed from cart successfully");
+        //删除商品声音
+        deleteItemSound();
+        ordersqlcontroller.getCardList();
+        //更改显示购物车价格
+        getCartPriceTotal();
+
+        Get.back();
+      }, cancle: () {
+        Get.back();
+      }));
+    } else {
+      final action = isAdd ? "add" : "reduce";
+      publicChangeCartMenuCount(cartItem, action).then((val) {
+        //更改显示购物车价格
+        getCartPriceTotal();
+      });
+    }
   }
 
   backToNewHome() async {

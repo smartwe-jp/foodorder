@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/menuPage/views/LoadingFailPage.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/car_item_view.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
@@ -3026,6 +3028,25 @@ class MenuPageView extends GetView {
     );
   }
 
+  publicCartView() {
+    return ListView(
+      shrinkWrap: true,
+      children: controller.showCartItems
+          .map((d) => CarItemView(
+        title: d.mainTitle,
+        image: CachedNetworkImageProvider(d.image),
+        onReduce: (value) {
+          controller.publicChangeCartItemCreate(d,false);
+        },
+        onIncrease: (value) {
+          controller.publicChangeCartItemCreate(d,true);
+        },
+        price: "${d.unitPrice}",
+        quantity: d.goodsNum,))
+          .toList(),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -3035,40 +3056,78 @@ class MenuPageView extends GetView {
       body: GetBuilder<MenuPageController>(builder: (controller){
         return controller.obx((state) => AnnotatedRegion(
           value: SystemUiOverlayStyle.light,
-          child: Column(
+          child: Stack(
             children: [
-              //顶部导航
-              Container(
-                width: ScreenAdapter.getScreenWidth(),
-                height: ScreenAdapter.height(95),
-                padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
-                alignment: Alignment.center,
-                decoration: BoxDecoration(
-                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                  /*image: new DecorationImage(
-                alignment: Alignment.centerRight,
-                fit: BoxFit.fitHeight,
-                image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
-              ),*/
-                ),
-                child: showTopCategoryMenu(),
-              ),
-
-              Expanded(
-                  child: RepaintBoundary(
-                    child: Container(
+              Column(
+                children: [
+                  //顶部导航
+                  Container(
+                    width: ScreenAdapter.getScreenWidth(),
+                    height: ScreenAdapter.height(95),
+                    padding: EdgeInsets.only(left: ScreenAdapter.width(10), right: ScreenAdapter.width(20)),
+                    alignment: Alignment.center,
+                    decoration: BoxDecoration(
                       color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                      height: ScreenAdapter.height(1480),
-                      alignment: Alignment.center,
-                      child: showMiddleMenuList(context),
+                      /*image: new DecorationImage(
+                    alignment: Alignment.centerRight,
+                    fit: BoxFit.fitHeight,
+                    image: AssetImage(GImage.getImageString(_shopInfo, "logo")),
+                  ),*/
                     ),
-                  )),
+                    child: showTopCategoryMenu(),
+                  ),
 
-              Container(
-                  height: ScreenAdapter.height(330),
-                  child: publicShowCartView()
+                  Expanded(
+                      child: RepaintBoundary(
+                        child: Container(
+                          color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                          //height: ScreenAdapter.height(1480),
+                          alignment: Alignment.center,
+                          child: showMiddleMenuList(context),
+                        ),
+                      )),
+
+                  // Container(
+                  //
+                  //     height: ScreenAdapter.height(330),
+                  //     child: publicShowCartView()
+                  // ),
+
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    height: controller.showCartTotalGoodsNum.value > 0 ? ScreenAdapter.height(200): 0,
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.3),
+                          spreadRadius: 3,
+                          blurRadius: 3,
+                          offset: Offset(0, 1), // changes position of shadow
+                        ),
+                      ],
+                    ),
+                    //child: publicShowCartView(),
+
+                  )
+
+                ],
               ),
 
+              shoppingCar(),
+
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                height: controller.showCartTotalGoodsNum.value > 0
+                    ? ScreenAdapter.height(200)
+                    : 0,
+                width: ScreenAdapter.getScreenWidth(),
+                right: ScreenAdapter.width(0),
+                bottom: controller.showCartTotalGoodsNum.value > 0
+                    ? ScreenAdapter.height(0)
+                    : -ScreenAdapter.height(200),
+                child: publicShowCartView(),
+              ),
             ],
           ),
         ),

@@ -24,4 +24,5 @@ class Gcolor{
   static const String settlementTitleColor = "#AE6C31";
   static const String cartListColor = "#F3F3F3";
   static const String mainBottomSettlementColor = "#000000";
+  static const String greenThemeColor = "#2B9F93";
 }

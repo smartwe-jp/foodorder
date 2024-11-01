@@ -656,6 +656,8 @@ class SettlementController extends GetxController with StateMixin {
           payconnectSocker(questData: questData);
         }
 
+      } else {
+        //需要添加提醒，并取消当前流程。
       }
     }
   }
