@@ -1,12 +1,35 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
-extension Shoppingcar on MenuPageView {
+import '../../controllers/menu_page_controller.dart';
+import 'car_item_view.dart';
+
+extension Shoppingcar on MenuPageController {
+
+  publicCartView() {
+    return ListView(
+      shrinkWrap: true,
+      children: showCartItems
+          .map((d) => CarItemView(
+        title: d.mainTitle,
+        image: CachedNetworkImageProvider(d.image),
+        onReduce: (value) {
+          publicChangeCartItemCreate(d,false);
+        },
+        onIncrease: (value) {
+          publicChangeCartItemCreate(d,true);
+        },
+        price: "${d.unitPrice}",
+        quantity: d.goodsNum,))
+          .toList(),
+    );
+  }
   shoppingCar() {
     return //全屏蒙版
       Visibility(
-          visible: controller.showShopCart,
+          visible: showShopCart,
           //duration: Duration(milliseconds: 300),
           child: Container(
             width: ScreenAdapter.getScreenWidth(),
@@ -16,8 +39,8 @@ extension Shoppingcar on MenuPageView {
               children: [
                 GestureDetector(
                   onTap: () {
-                    controller.showShopCart = false;
-                    controller.update();
+                    showShopCart = false;
+                    update();
                   },
                   child: Container(
                     width: ScreenAdapter.getScreenWidth(),

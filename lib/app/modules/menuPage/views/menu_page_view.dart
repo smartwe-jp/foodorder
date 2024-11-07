@@ -3028,25 +3028,6 @@ class MenuPageView extends GetView {
     );
   }
 
-  publicCartView() {
-    return ListView(
-      shrinkWrap: true,
-      children: controller.showCartItems
-          .map((d) => CarItemView(
-        title: d.mainTitle,
-        image: CachedNetworkImageProvider(d.image),
-        onReduce: (value) {
-          controller.publicChangeCartItemCreate(d,false);
-        },
-        onIncrease: (value) {
-          controller.publicChangeCartItemCreate(d,true);
-        },
-        price: "${d.unitPrice}",
-        quantity: d.goodsNum,))
-          .toList(),
-    );
-  }
-
 
   @override
   Widget build(BuildContext context) {
@@ -3114,7 +3095,7 @@ class MenuPageView extends GetView {
                 ],
               ),
 
-              shoppingCar(),
+              controller.shoppingCar(),
 
               AnimatedPositioned(
                 duration: const Duration(milliseconds: 300),

@@ -619,8 +619,9 @@ class MenuPageController extends GetxController with StateMixin {
 
   //公共设置菜单Title
   publicShowMenuTitle(mainTitle, mainTitleFontSize, mainTitleFontColor) {
-    return Text(
+    return AutoSizeText(
       mainTitle,
+      textAlign: TextAlign.left,
       overflow: TextOverflow.ellipsis, //长度溢出后显示省略号
       maxLines: 2,
       style: TextStyle(

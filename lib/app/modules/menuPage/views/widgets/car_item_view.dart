@@ -120,10 +120,10 @@ class CarItemView extends StatelessWidget {
                 children: [
                   Container(
                     alignment: Alignment.center,
-                    width: ScreenAdapter.width(42),
-                    height: ScreenAdapter.width(42),
+                    width: ScreenAdapter.width(52),
+                    height: ScreenAdapter.width(52),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(21),
+                      borderRadius: BorderRadius.circular(26),
                       border: Border.all(color: Colors.grey),
                     ),
                     child: IconButton(
@@ -139,17 +139,17 @@ class CarItemView extends StatelessWidget {
                     "$quantity",
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
-                      fontSize: 30,
+                      fontSize: 34,
                       color: Color.fromARGB(255, 70, 69, 69),
                     ),
                   ),
                   SizedBox(width: ScreenAdapter.width(20)),
                   Container(
                     alignment: Alignment.center,
-                    width: ScreenAdapter.width(42),
-                    height: ScreenAdapter.width(42),
+                    width: ScreenAdapter.width(52),
+                    height: ScreenAdapter.width(52),
                     decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(21),
+                      borderRadius: BorderRadius.circular(26),
                       color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                     ),
                     child: IconButton(

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
@@ -1961,7 +1962,7 @@ class MenuzongPageView extends GetView {
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             mainAxisSpacing: ScreenAdapter.height(10),
             crossAxisCount: 2,
-            childAspectRatio: 0.76),
+            childAspectRatio: 0.73),
         itemBuilder: (BuildContext context, int index) {
           return showCategorySixItemOne(items[index],context,popupType:popupType);
         },
@@ -2006,6 +2007,7 @@ class MenuzongPageView extends GetView {
                   //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
                     color: ColorsUtil.hexToColor("#f0f0f0"),
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 540.0, imgHeight: 540.0, subTitle: item['subtitle'],),
@@ -2911,90 +2913,115 @@ class MenuzongPageView extends GetView {
       body: GetBuilder<MenuPageController>(builder: (controller){
         return controller.obx((state) => AnnotatedRegion(
           value: SystemUiOverlayStyle.light,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.start,
+          child: Stack(
             children: [
-              Container(
-                height: ScreenAdapter.height(1585),
-                //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                color: ColorsUtil.hexToColor("#FFFFFF"),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                        height: ScreenAdapter.height(1585),
-                        width: ScreenAdapter.width(80),
-                        padding: EdgeInsets.only(top: ScreenAdapter.height(8),left: ScreenAdapter.width(2)),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            Container(
-                              child: InkWell(
-                                enableFeedback: false,
-                                onTap: () {
-                                  controller.gotoLanguageHome();
-                                  //controller.ordersqlcontroller.removeAllFromCart();
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Container(
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                      //height: ScreenAdapter.height(1585),
+                      width: ScreenAdapter.width(80),
+                      padding: EdgeInsets.only(top: ScreenAdapter.height(8),left: ScreenAdapter.width(2)),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          Container(
+                            child: InkWell(
+                              enableFeedback: false,
+                              onTap: () {
+                                controller.gotoLanguageHome();
+                                //controller.ordersqlcontroller.removeAllFromCart();
 
-                                },
-                                child: Container(
-                                  margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-                                  width: ScreenAdapter.width(75),
-                                  height: ScreenAdapter.height(125),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color: ColorsUtil.hexToColor("#A61C1C"),
+                              },
+                              child: Container(
+                                margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                                width: ScreenAdapter.width(75),
+                                height: ScreenAdapter.height(125),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: ColorsUtil.hexToColor("#A61C1C"),
 
-                                  ),
-                                  child: Center(
-                                    //加上Center让文字居中
-                                    child: Column(
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      children: [
+                                ),
+                                child: Center(
+                                  //加上Center让文字居中
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
 
-                                        Container(
-                                          width: ScreenAdapter.width(30),
-                                          child: RotatedBox(quarterTurns: 1,child: Text(
-                                            GString.getToString(controller.checkLanguage.value, "top_back_button"),
-                                            style: TextStyle(
+                                      Container(
+                                        width: ScreenAdapter.width(30),
+                                        child: RotatedBox(quarterTurns: 1,child: Text(
+                                          GString.getToString(controller.checkLanguage.value, "top_back_button"),
+                                          style: TextStyle(
                                               fontFamily: GFont.getFontFamily(),
-                                                fontSize: ScreenAdapter.fontSize(26),
-                                                color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                                fontWeight: FontWeight.w600),
-                                          )),
-                                        ),
-                                      ],
-                                    ),
+                                              fontSize: ScreenAdapter.fontSize(26),
+                                              color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                                              fontWeight: FontWeight.w600),
+                                        )),
+                                      ),
+                                    ],
                                   ),
                                 ),
                               ),
                             ),
-                            Expanded(
-                                child: showLeftCategoryMenu()
-                            ),
-                          ],
+                          ),
+                          Expanded(
+                              child: showLeftCategoryMenu()
+                          ),
+                        ],
+                      )
+                  ),
+
+                  Expanded(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Container(
+                            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
+                            child: showMiddleMenuList(context),
+                          ),
+                        ),
+
+                        AnimatedContainer(
+                          duration: const Duration(milliseconds: 300),
+                          height: controller.showCartTotalGoodsNum.value > 0 ? ScreenAdapter.height(200): 0,
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.3),
+                                spreadRadius: 3,
+                                blurRadius: 3,
+                                offset: Offset(0, 1), // changes position of shadow
+                              ),
+                            ],
+                          ),
+                          //child: publicShowCartView(),
+
                         )
+                      ],
                     ),
-                    Expanded(child: RepaintBoundary(
-                      child: Container(
-                        height: ScreenAdapter.height(1585),
-                        width: ScreenAdapter.width(1000),
-                        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                        padding: EdgeInsets.only(left: ScreenAdapter.width(5),right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: showMiddleMenuList(context),
-                      ),
-                    )),
-                  ],
-                ),
-              ),
+                  )
 
-              Container(
-                  height: ScreenAdapter.height(330),
-                  child: publicShowCartView()
+                ],
               ),
-
+              controller.shoppingCar(),
+              AnimatedPositioned(
+                duration: const Duration(milliseconds: 300),
+                height: controller.showCartTotalGoodsNum.value > 0
+                    ? ScreenAdapter.height(200)
+                    : 0,
+                left: ScreenAdapter.width(0),
+                right: ScreenAdapter.width(0),
+                bottom: controller.showCartTotalGoodsNum.value > 0
+                    ? ScreenAdapter.height(0)
+                    : -ScreenAdapter.height(200),
+                child: publicShowCartView(),
+              ),
             ],
           ),
         ),
