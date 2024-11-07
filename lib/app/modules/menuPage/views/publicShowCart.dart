@@ -332,12 +332,12 @@ class publicShowCartView extends GetView {
                   top: ScreenAdapter.height(2),
                   right: ScreenAdapter.width(5),
                   bottom: ScreenAdapter.height(2)),
-              decoration: BoxDecoration(
-                //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-                border: Border(
-                  top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
-                ),
-              ),
+              // decoration: BoxDecoration(
+              //   //color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+              //   border: Border(
+              //     top: BorderSide(color: ColorsUtil.hexToColor("#e5e5e5"), width: 8),
+              //   ),
+              // ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -351,7 +351,7 @@ class publicShowCartView extends GetView {
                             //_showEmptyTips();
                             return;
                           }
-                          controller.showShopCart = true;
+                          controller.showShopCart = !controller.showShopCart;
                           controller.update();
                         },
                         child: Row(
@@ -473,7 +473,7 @@ class publicShowCartView extends GetView {
                           },
                           child: Container(
                             width: ScreenAdapter.width(300),
-                            height: ScreenAdapter.height(125),
+                            height: ScreenAdapter.height(145),
                             //margin: EdgeInsets.only(bottom: ScreenAdapter.height(10)),
                             alignment: Alignment.center,
                             decoration: BoxDecoration(

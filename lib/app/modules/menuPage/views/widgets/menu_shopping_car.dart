@@ -28,7 +28,7 @@ extension Shoppingcar on MenuPageView {
                 Container(
                     alignment: Alignment.bottomCenter,
                     margin:
-                    EdgeInsets.only(bottom: ScreenAdapter.height(240)),
+                    EdgeInsets.only(bottom: ScreenAdapter.height(220)),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
