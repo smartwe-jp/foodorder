@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -429,13 +430,13 @@ class publicShowCartView extends GetView {
                                       children: <TextSpan>[
                                         TextSpan(text: '￥', style: TextStyle(
                                           fontFamily: GFont.getFontFamily(),
-                                          fontSize: 32,
+                                          fontSize: 36,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
                                         TextSpan(text: "${formatMoney(controller.shopCartTotalPrice.value)}",style: TextStyle(
                                           fontFamily: GFont.getFontFamily(),
-                                          fontSize: 46,
+                                          fontSize: 50,
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
@@ -466,7 +467,13 @@ class publicShowCartView extends GetView {
                             /*if(_isAllowPos == "0"){
                                   _doSubmitOrder();
                                 }else{*/
-                            controller.doSubmitOrder();
+                            //
+                            if (controller.recommendFoods.isNotEmpty) {
+                              controller.showRecommendView();
+                            } else {
+                              controller.doSubmitOrder();
+                            }
+
                             //_showSelectMealTypeAndPaymentMethodDialog();
                             //}
 

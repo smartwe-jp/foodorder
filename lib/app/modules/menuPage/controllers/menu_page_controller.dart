@@ -107,6 +107,9 @@ class MenuPageController extends GetxController with StateMixin {
 
   bool showShopCart = false;
 
+  List recommendFoods = [];
+  List recommendBookList = [];
+
 
   @override
   void onInit() {
@@ -367,6 +370,7 @@ class MenuPageController extends GetxController with StateMixin {
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
+        recommendFoods = response['data']['recommendMenus'] ?? [];
         //如果菜单为空则返回言语选择页面并给出提示
         if(myList.length == 0 || null == myList || "" == myList){
           //showToast("少々お待ちください");
