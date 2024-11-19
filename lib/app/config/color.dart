@@ -32,4 +32,6 @@ class Gcolor {
   static const String greenThemeColor = "#2B9F93";
   static const String greenThemeColorLight = "#39d393";
   static const String greenThemeColorSuperL = "#9dd3c6";
+
+  static const String buttonRedColor = "#A61C1C";
 }

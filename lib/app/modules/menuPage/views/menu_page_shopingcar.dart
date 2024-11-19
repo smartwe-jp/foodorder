@@ -50,7 +50,7 @@ extension Shoppingcar on MenuPageView {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              child: publicCartView(),
+                              child: controller.publicCartView(),
                             ),
                             CustomPaint(
                               size: Size(ScreenAdapter.width(60),

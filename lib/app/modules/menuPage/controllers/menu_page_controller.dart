@@ -2,11 +2,13 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
+import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 
@@ -103,6 +105,11 @@ class MenuPageController extends GetxController with StateMixin {
 
   RxList homeImages = [].obs;
   RxBool canAddCart = true.obs;
+
+  List recommendFoods = [];
+  List recommendBookList = [];
+  bool showRecommend = false;
+  bool showCartView = false;
 
   AudioPlayer? player;
 
@@ -392,6 +399,7 @@ class MenuPageController extends GetxController with StateMixin {
         //debugPrint("getBookingBootIndexCagegory response: $response");
         //2、保存商品信息
         List myList = response['data']['categoryVoList'];
+        recommendFoods = response['data']['recommendMenus'] ?? [];
         //如果菜单为空则返回言语选择页面并给出提示
         if (myList.length == 0 || null == myList || "" == myList) {
           //showToast("少々お待ちください");
@@ -570,7 +578,8 @@ class MenuPageController extends GetxController with StateMixin {
                 _addOptionPrice;
           }
         }
-        //update();
+        //
+        classTag.value = queryCategoryCode;
         change(null, status: RxStatus.success());
         debugPrint("getBookingBootIndexMenu request update");
       } else {
@@ -622,7 +631,9 @@ class MenuPageController extends GetxController with StateMixin {
 
   backToNewHome() async {
     Get.delete<MenuPageController>(); // 手动删除控制器实例
+
     Get.delete<OrderSqlController>(); // 手动删除控制器实例
+
     //Get.toNamed("/order-home");
     Get.offNamedUntil('/transit-page', (route) => route.isFirst);
   }
@@ -852,6 +863,26 @@ class MenuPageController extends GetxController with StateMixin {
         height: 0,
       );
     }
+  }
+
+  publicCartView() {
+    return ListView(
+      shrinkWrap: true,
+      children: showCartItems
+          .map((d) => CarItemView(
+                title: d.mainTitle,
+                image: CachedNetworkImageProvider(d.image),
+                onReduce: (value) {
+                  publicChangeCartItemCreate(d, false);
+                },
+                onIncrease: (value) {
+                  publicChangeCartItemCreate(d, true);
+                },
+                price: "${d.unitPrice}",
+                quantity: d.goodsNum,
+              ))
+          .toList(),
+    );
   }
 
   //公共加入购物车
@@ -1570,8 +1601,8 @@ print("加1了");
 
   //切换顶部菜单分类
   changeCategory(categoryCode) {
-    classTag.value = categoryCode;
-    getBookingBootIndexMenu(classTag.value);
+    
+    getBookingBootIndexMenu(categoryCode);
     //update();
   }
 
@@ -1579,8 +1610,8 @@ print("加1了");
     ordersqlcontroller.removeAllFromCart();
     ordersqlcontroller.getCardList();
     //debugPrint("topMenu.value: ${topMenu.value}");
-    if (topMenu.value.length > 0) {
-      classTag.value = topMenu.value.first["categoryCode"];
+    if (topMenu.length > 0) {
+      classTag.value = topMenu.first["categoryCode"];
     }
     //
     menuLackMap.value = {};
@@ -1588,7 +1619,9 @@ print("加1了");
   }
 
   gotoLanguageHome() {
-    clearCartList();
+    //clearCartList();
+    ordersqlcontroller.removeAllFromCart();
+    ordersqlcontroller.getCardList();
     //getBookingBootMenu();
     //Future.delayed(Duration(milliseconds: 100),() async {
     Get.back(result: true);

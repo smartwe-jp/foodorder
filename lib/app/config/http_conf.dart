@@ -114,6 +114,14 @@ const servicePath = {
   'webBootGloryInformation': base_url + 'web/glory/information', //Glory信息
 
   'webBootCalculateConfirm': base_url + 'web/boot/calculate/confirm',
+
+  //full notify
+  'webMachineNearFull': base_url + 'web/glory/full/notice',
+
+  'webMachineFull': base_url + 'web/glory/stop/notice',
+
+
+
 };
 
 

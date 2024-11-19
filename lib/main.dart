@@ -148,7 +148,7 @@ void main() {
     //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
-    print('runZonedGuarded: Caught error in my root zone.');
+    print('runZonedGuarded: Caught error in my root zone.:: $error');
     if (Platform.isAndroid) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }

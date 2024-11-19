@@ -41,48 +41,51 @@ class GridItemView extends StatelessWidget {
               Container(
                 child: Column(
                   children: [
-
                     Container(
                       child: Stack(
                         alignment: Alignment.bottomLeft,
                         children: [
                           RectangleImageView(
-                        image: image, radius: imageRadius, onTap: onTap, aspectRatio: aspectRatio),
+                              image: image,
+                              radius: imageRadius,
+                              onTap: onTap,
+                              aspectRatio: aspectRatio),
                           //subtitle 底部叠在图片上，限制两行
                           if (subtitle.isNotEmpty)
-                          Container(
-                            padding: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10),
-                                top: ScreenAdapter.width(5),
-                                bottom: ScreenAdapter.width(5)),
-                            decoration: BoxDecoration(
-                              color: const Color.fromARGB(169, 255, 255, 255),
-                              borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                            ),
-                            child: Text(
-                              subtitle,
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                              style: TextStyle(
-                                fontSize: ScreenAdapter.fontSize(20),
-                                fontWeight: FontWeight.w500,
-                                fontFamily: GFont.getFontFamily(),
-                                color: ColorsUtil.hexToColor(Gcolor.itemSubTitleColor),
+                            Container(
+                              padding: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10),
+                                  right: ScreenAdapter.width(10),
+                                  top: ScreenAdapter.width(5),
+                                  bottom: ScreenAdapter.width(5)),
+                              decoration: BoxDecoration(
+                                color: const Color.fromARGB(169, 255, 255, 255),
+                                borderRadius:
+                                    BorderRadius.all(Radius.circular(5.0)),
+                              ),
+                              child: Text(
+                                subtitle,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                  fontSize: ScreenAdapter.fontSize(20),
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: GFont.getFontFamily(),
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.itemSubTitleColor),
+                                ),
                               ),
                             ),
-                          ),
-
-
                         ],
                       ),
                     ),
-                    Expanded(child: ItemInfoArea(
-                        title: title,
-                        subtitle: price,
-                        option: option,
-                        onTap: onTap),)
-                    
+                    Expanded(
+                      child: ItemInfoArea(
+                          title: title,
+                          subtitle: price,
+                          option: option,
+                          onTap: onTap),
+                    )
                   ],
                 ),
               ),
@@ -100,7 +103,11 @@ class RectangleImageView extends StatelessWidget {
   final double aspectRatio;
 
   RectangleImageView(
-      {Key? key, required this.image, this.radius = 10.0, this.onTap, this.aspectRatio = 1.0});
+      {Key? key,
+      required this.image,
+      this.radius = 10.0,
+      this.onTap,
+      this.aspectRatio = 1.0});
 
   @override
   Widget build(BuildContext context) {
@@ -144,8 +151,7 @@ class ItemInfoArea extends StatelessWidget {
         //标题
         MainTitle(title: title),
         //价格
-        Row(mainAxisAlignment: MainAxisAlignment.start,
-        children: [
+        Row(mainAxisAlignment: MainAxisAlignment.start, children: [
           SubTitle(title: subtitle),
           //SizedBox(width: ScreenAdapter.width(20)),
           //option button
@@ -166,22 +172,21 @@ class MainTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: 
-        Container(
-          alignment: Alignment.centerLeft,
-          child: AutoSizeText(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(22),
-              fontWeight: FontWeight.w500,
-              fontFamily: GFont.getFontFamily(),
-              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
-            ),
-          ),
-        ));
+        child: Container(
+      alignment: Alignment.centerLeft,
+      child: AutoSizeText(
+        title,
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+        textAlign: TextAlign.left,
+        style: TextStyle(
+          fontSize: ScreenAdapter.fontSize(22),
+          fontWeight: FontWeight.w500,
+          fontFamily: GFont.getFontFamily(),
+          color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+        ),
+      ),
+    ));
   }
 }
 
@@ -193,33 +198,29 @@ class SubTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        alignment: Alignment.centerLeft,
-        child: 
-        Row(
-          children: [
-            Text(
-            "¥",
+      alignment: Alignment.centerLeft,
+      child: Row(children: [
+        Text("¥",
             style: TextStyle(
               fontSize: ScreenAdapter.fontSize(22),
               fontWeight: FontWeight.w500,
               fontFamily: GFont.getFontFamily(),
               color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
-            )
-            ),
-            SizedBox(width: ScreenAdapter.width(5),),
-            Text(
-            title,
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(28),
-              fontWeight: FontWeight.w500,
-              fontFamily: GFont.getFontFamily(),
-              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
-            ),
-            )
-          ]
+            )),
+        SizedBox(
+          width: ScreenAdapter.width(5),
         ),
-        
-        );
+        Text(
+          title,
+          style: TextStyle(
+            fontSize: ScreenAdapter.fontSize(28),
+            fontWeight: FontWeight.w500,
+            fontFamily: GFont.getFontFamily(),
+            color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+          ),
+        )
+      ]),
+    );
   }
 }
 
@@ -262,23 +263,23 @@ class GridMenuView extends StatelessWidget {
   final double? crossAxisSpacing;
   final int? crossAxisCount;
   final double? childAspectRatio;
+  final EdgeInsetsGeometry padding;
   final bool canScroll;
 
-  GridMenuView({
-    Key? key,
-    required this.children,
-    this.mainAxisSpacing,
-    this.crossAxisSpacing,
-    this.crossAxisCount, 
-    this.childAspectRatio,
-    this.canScroll = true
-  });
+  GridMenuView(
+      {Key? key,
+      required this.children,
+      this.mainAxisSpacing,
+      this.crossAxisSpacing,
+      this.crossAxisCount,
+      this.childAspectRatio,
+      this.padding = EdgeInsets.zero,
+      this.canScroll = true});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: EdgeInsets.only(
-          top: ScreenAdapter.height(0), bottom: ScreenAdapter.height(0)),
+      padding: padding,
       child: GridView.builder(
         padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
         physics: canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
@@ -299,7 +300,6 @@ class GridMenuView extends StatelessWidget {
   }
 }
 
-
 class GridMenuViews extends StatefulWidget {
   final MenuPageController controller;
   final List<String> categories; // 每个页面的类别
@@ -314,9 +314,9 @@ class GridMenuViews extends StatefulWidget {
     required this.categories,
     this.mainAxisSpacing,
     this.crossAxisSpacing,
-    this.crossAxisCount, 
+    this.crossAxisCount,
     this.childAspectRatio,
-    this.canScroll = true, 
+    this.canScroll = true,
     required this.controller,
   });
 
@@ -344,12 +344,9 @@ class _GridMenuViewState extends State<GridMenuViews> {
     // 模拟网络请求，根据类别获取数据
     await Future.delayed(Duration(seconds: 2));
     // 返回模拟数据
-    return List.generate(10, (index) => Card(child: Center(child: Text('$category Item $index'))));
+    return List.generate(10,
+        (index) => Card(child: Center(child: Text('$category Item $index'))));
   }
-
-
-
-  
 
   @override
   Widget build(BuildContext context) {
@@ -378,16 +375,18 @@ class _GridMenuViewState extends State<GridMenuViews> {
               } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
                 return Center(child: Text('No data available'));
               } else {
-
-
                 return GridView.builder(
                   padding: EdgeInsets.zero,
-                  physics: widget.canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
+                  physics: widget.canScroll
+                      ? ScrollPhysics()
+                      : NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   addAutomaticKeepAlives: true,
                   gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                      mainAxisSpacing: widget.mainAxisSpacing ?? ScreenAdapter.height(40),
-                      crossAxisSpacing: widget.crossAxisSpacing ?? ScreenAdapter.width(20),
+                      mainAxisSpacing:
+                          widget.mainAxisSpacing ?? ScreenAdapter.height(40),
+                      crossAxisSpacing:
+                          widget.crossAxisSpacing ?? ScreenAdapter.width(20),
                       crossAxisCount: widget.crossAxisCount ?? 3,
                       childAspectRatio: widget.childAspectRatio ?? 0.76),
                   itemBuilder: (BuildContext context, int index) {
@@ -403,4 +402,3 @@ class _GridMenuViewState extends State<GridMenuViews> {
     );
   }
 }
-

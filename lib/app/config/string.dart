@@ -185,6 +185,9 @@ class GString{
         'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
 
         'cash_full_tips':'金種@cash が上限に達しました。「確定」をクリックすると入金が返金されます。他の通貨や支払い方法をご利用いただくか、店舗にお問い合わせください。ご不便をおかけして申し訳ございません。',
+        "skip_button":"スキップ",
+        "next_button":"進む",
+        "suggest_title":"ご一緒にいかがですか",
 
       };
     }else if(languageCode == 'CH'){
@@ -367,6 +370,9 @@ class GString{
         "checkout_type_tips": "     请选择决算还是外带",
         'cash_pay_checkout_tips':'支付金额更新，请继续投币。',
         'cash_full_tips':'现金币种@cash 满了，点击\'确定\'将退还入金，请使用其他币种或者其他支付方式，也可以联系店家处理该问题，谢谢。非常抱歉给你带来不便',
+        "skip_button":"跳过",
+        "next_button":"下一步",
+        "suggest_title":"您可能还喜欢",
 
 
       };
@@ -549,6 +555,10 @@ class GString{
         "checkout_type_tips": "Would you like to Check Out or take out",
         'cash_pay_checkout_tips':'Payment amount updated, please continue inserting cash.',
         'cash_full_tips':'The cash denomination of @cash has reached its limit. Click \'Confirm\' to refund the deposit. Please use other currencies or payment methods, or contact the store to address this issue. We apologize for any inconvenience caused.',
+
+        "skip_button":"Skip",
+        "next_button":"Next",
+        "suggest_title":"You may also like",
         
       };
     }else if(languageCode == 'KO'){
@@ -731,6 +741,10 @@ class GString{
         "checkout_type_tips": "합의 또는 테이크아웃 중 선택해 주세요",
         'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 계속 현금을 넣어주세요.',
         'cash_full_tips':'현금 단위 @cash원이 한도에 도달했습니다. \'확인\'을 클릭하면 입금이 환불됩니다. 다른 통화나 결제 방법을 사용하시거나 매장에 문의하여 이 문제를 해결해 주시기 바랍니다. 불편을 드려 대단히 죄송합니다',
+
+        "skip_button":"건너뛰기",
+        "next_button":"다음",
+        "suggest_title":"함께 보면 좋을 것들",
       };
     }
 

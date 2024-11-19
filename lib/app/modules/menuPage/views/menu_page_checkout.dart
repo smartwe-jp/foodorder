@@ -3,6 +3,7 @@ import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/modules/menuPage/views/components/recommendView.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/formatMoney.dart';
@@ -156,7 +157,12 @@ extension CheckoutButton on MenuPageView {
                           _showEmptyTips();
                           return;
                         }
-                        controller.doSubmitOrder();
+
+                        if (controller.recommendFoods.isNotEmpty) {
+                          controller.showRecommendView();
+                        } else {
+                          controller.doSubmitOrder();
+                        }
                       },
                       child: Container(
                           alignment: Alignment.center,
