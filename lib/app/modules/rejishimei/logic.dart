@@ -74,7 +74,7 @@ class RejishimeLogic extends GetxController {
       state.isRequesting = false;
       update();
       var response = json.decode(val.toString());
-      
+
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
@@ -158,10 +158,16 @@ class RejishimeLogic extends GetxController {
     });
   }
 
-  _comfirmGloryShimeInfo(
-      code, printData, SettingController settingController) async {
+  _comfirmGloryShimeInfo(code, printData, SettingController settingController,
+      {skip = false}) async {
+    final outResult = await _outCash(settingController, () {
+      _comfirmGloryShimeInfo(code, printData, settingController, skip: true);
+    }); 
+
+    if (outResult == null && skip == false) return;
+
     final result =
-        await _comfirmGloryShimeInfos(code, printData, settingController);
+        await _comfirmGloryShimeInfos(code, printData, outResult ?? {});
     if (!result) return;
     await _printRejishime(printData, state.printLength, settingController);
   }
@@ -194,8 +200,15 @@ class RejishimeLogic extends GetxController {
     settingController.recycleCash(state.verifyCode, state.selectMail);
   }
 
-  _comfirmGloryShimeInfos(
-      code, printData, SettingController settingController) async {
+  _outCash(SettingController settingController, Function skipAction) async {
+    Map? result = await settingController.recycleCashOut(149580, skipAction);
+
+    debugPrint("recycleCash result: $result");
+
+    return result;
+  }
+
+  _comfirmGloryShimeInfos(code, printData, result) async {
     debugPrint("_comfirmGloryShimeInfo");
     var success = false;
 
@@ -206,13 +219,6 @@ class RejishimeLogic extends GetxController {
     //   showToast('印刷に失敗しました');
     //   return success;
     // }
-
-    Map? result = await settingController.recycleCashOut(state.recycleCash);
-    debugPrint("recycleCash result: $result");
-    if (result == null) {
-      EasyLoading.dismiss();
-      return success;
-    }
 
     final param = {
       "changeInfoMap": result,

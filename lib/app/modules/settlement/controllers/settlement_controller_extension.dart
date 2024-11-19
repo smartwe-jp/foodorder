@@ -119,13 +119,13 @@ extension SettlementControllerExtension on SettlementController {
       if (result == 'OK') {
         return;
       }
-      // if (result == 'NEARFULL') {
-      //   //获取机器信息
-
-      //   return;
-      // }
-      if (result == 'FULL' || result == 'NEARFULL') {
+      if (result == 'NEARFULL') {
+        _notifyMachineFull(false);
+        return;
+      }
+      if (result == 'FULL') {
         //GString.getToString(language, 'load_menu_failure_content').trParams({'cash': '$_countdown'}),
+        _notifyMachineFull(true);
         String? machineChangeInfo = await getMachineCashInfo();
         if (machineChangeInfo == null) {
           return;
@@ -136,7 +136,6 @@ extension SettlementControllerExtension on SettlementController {
         errorHandleDialog(
             GString.getToString(checkLanguage.value, 'cash_full_tips')
                 .trParams({'cash': '$cashList'}), confirm: () {
-          //找钱失败一律退单和退回入金
           CashChanger.fixDeposit;
           CashChanger.depositRepay;
           Get.back();
@@ -146,6 +145,22 @@ extension SettlementControllerExtension on SettlementController {
       }
       errorHandleDialog(result);
     };
+  }
+
+  _notifyMachineFull(bool isFull) {
+    debugPrint("发送通知邮件");
+    var formData = {
+      "machineCode": machineCode.value,
+    };
+
+    final String domain = isFull ? 'webMachineFull' : 'webMachineNearFull';
+
+    request(domain, method: "POST", parameters: formData).then((value) {
+      var response = json.decode(value.toString());
+      debugPrint("发送通知邮件 response:$response");
+      if (response != null && response['code'] == 200) {
+      } else {}
+    });
   }
 
   //入金开始-入金结束-交易结束-出金开始-交易结束

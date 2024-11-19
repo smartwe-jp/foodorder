@@ -531,10 +531,10 @@ class SettingController extends GetxController with StateMixin {
     });
   }
 
-  recycleCashOut(count) async {
+  recycleCashOut(count, Function skipAction) async {
     debugPrint("recycleCashOut count = ${count}");
     var outResult = false;
-    if (!hasOutMoney) outResult = await dispenseCashCount(count);
+    if (!hasOutMoney) outResult = await dispenseCashCount(count, skipAction);
     debugPrint("recycleCashOut result = ${outResult}");
     if (!outResult && !hasOutMoney) {
       return null;

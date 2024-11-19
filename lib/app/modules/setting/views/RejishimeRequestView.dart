@@ -201,7 +201,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     //   return success;
     // }
 
-    Map? result = await widget.settingController?.recycleCashOut(_recycleCash);
+    Map? result =
+        await widget.settingController?.recycleCashOut(_recycleCash, () {});
     debugPrint("recycleCash result: $result");
     if (result == null) {
       EasyLoading.dismiss();
@@ -354,7 +355,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                               }
                               if (widget.recycleCash != null) {
                                 Get.back();
-                                widget.recycleCash!(_verifyCodeController.text, selectMail);
+                                widget.recycleCash!(
+                                    _verifyCodeController.text, selectMail);
                               } else {
                                 _requestShimeInfo(_verifyCodeController.text);
                               }

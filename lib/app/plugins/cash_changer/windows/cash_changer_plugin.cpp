@@ -539,7 +539,7 @@ void CashChangerPlugin::HandleMethodCall(
     }
 
     long lngChange = get<int>(it->second);
-
+    pCashChanger->CurrentExit = 1;
     long lngRet = pCashChanger->DispenseChange(lngChange);
     cerr << "DispenseChange result 。。 " << lngRet << endl;
     if (lngRet == OposSuccess) {
@@ -958,8 +958,8 @@ void CashChangerPlugin::HandleMethodCall(
             return;
         }
         
-
-
+        
+        pCashChanger->CurrentExit = 1;
         DirectIOMethod(move(result), CHAN_DI_DISPENSECASHOUTSIDE, lngData, cashInfo);
         
         return;
@@ -995,7 +995,7 @@ void CashChangerPlugin::HandleMethodCall(
         }
         
 
-
+        pCashChanger->CurrentExit = 1;
         DirectIOMethod(move(result), CHAN_DI_DISPENSECHANGEOUTSIDE, lngData, cashInfo);
         
         return;

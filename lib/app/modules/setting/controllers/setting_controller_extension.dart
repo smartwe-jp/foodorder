@@ -302,7 +302,7 @@ extension SettingControllerExtension on SettingController {
     });
   }
 
-  cancelReplanish({shouldBack = true}) async {
+  cancelReplanish({shouldBack = true, skip = false}) async {
     debugPrint("cancelReplanish");
 
     ignoreNotify.value = true;
@@ -312,9 +312,11 @@ extension SettingControllerExtension on SettingController {
       clearTask();
       taskTouch = false;
     } else {
-      final result =
-          await dispenseCashOutside(getNoneZeroInfo(getPutMoneyCurrency.value));
-      if (result) {
+      final result = await dispenseCashOutside(
+          getNoneZeroInfo(getPutMoneyCurrency.value), () {
+        //cancelReplanish(skip: true);
+      });
+      if (result || skip) {
         final result = await supplyCountsClear();
         if (result) {
           if (shouldBack) Get.back();
@@ -327,8 +329,8 @@ extension SettingControllerExtension on SettingController {
     EasyLoading.dismiss();
   }
 
-  dispenseCashCount(count) async {
-    debugPrint("dispenseCashCount");
+  dispenseCashCount(count, Function skipAction) async {
+    debugPrint("dispenseCashCount: $count");
 
     bool? result =
         await CashChanger.dispenseChangeOutside(count, onSuccess: () {
@@ -341,23 +343,28 @@ extension SettingControllerExtension on SettingController {
     if (result) {
       return result;
     } else {
-      String machineCash = await getMachineCashInfo() ?? '';
+      String machineCash = await getMachineCashInfo() ??
+          ''; //'1:46,5:21,10:31,50:40,100:51,500:18,1000:143,5000:4,10000:14';
+      debugPrint("machineCash : $machineCash");
       if (machineCash.isEmpty) return false;
       String outMoneyString = await findChange(machineCash, count);
+      debugPrint("outMoneyString: $outMoneyString");
       if (outMoneyString.isEmpty) {
         errorHandleDialog(GString.getToString(
             checkLanguage.value, 'cash_error_over_dispense'));
         return false;
       }
-      final result = await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
+      final result = await dispenseCashOutside(
+          getNoneZeroInfo(outMoneyString), skipAction);
       return result;
     }
   }
 
-  dispenseCashOutside(outInfo) async {
+  dispenseCashOutside(outInfo, Function skipAction) async {
     var success = false;
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
+    debugPrint("outInfo : $outInfo");
     final resultCode = await CashChanger.dispenseCashOutside(outInfo);
     await CashChanger.changerResultNext(
         resultCode: resultCode,
@@ -367,15 +374,20 @@ extension SettingControllerExtension on SettingController {
         },
         onRetry: () {
           debugPrint("dispenseCashOutside 2");
-          dispenseCashOutside(outInfo);
+          dispenseCashOutside(outInfo, skipAction);
         },
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          success = false;
+          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
+              confirmtitle: 'スキップ', () {
+            skipAction();
+          });
         });
     return success;
   }
+
+  continueRejishime() async {}
 
   //清空上报
 
@@ -637,16 +649,16 @@ extension SettingControllerExtension on SettingController {
         }));
   }
 
-  errorHandleDialogTwo(String message, Function confirm) {
+  errorHandleDialogTwo(String message, Function confirm, {confirmtitle = ""}) {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialogTwo: $message");
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alert(message,
             title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
-            confirm: () {
+            confirmtitle: confirmtitle == ""
+                ? GString.getToString(checkLanguage.value, "tag_button_yes")
+                : confirmtitle, confirm: () {
           confirm();
           Get.back();
         }, cancle: () {
