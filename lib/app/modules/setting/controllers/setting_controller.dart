@@ -233,7 +233,7 @@ class SettingController extends GetxController with StateMixin {
         RejishimeView(
           settingController: this,
         ),
-        arguments: {'machineCode':machineCode.value});
+        arguments: {'machineCode': machineCode.value});
   }
 
   showRecycleAlert() {
@@ -244,7 +244,7 @@ class SettingController extends GetxController with StateMixin {
           isRejishime: false,
           settingController: this,
         ),
-        arguments: {'machineCode':machineCode.value});
+        arguments: {'machineCode': machineCode.value});
 
     // Get.to(RejishimeView(
     //   machineCode: machineCode.value,
@@ -411,7 +411,7 @@ class SettingController extends GetxController with StateMixin {
       "machineCode": machineCode.value,
     };
     request('webBootChangeState', method: 'POST', parameters: formData)
-        .then((val) {
+        .then((val) async {
       var response = json.decode(val.toString());
       debugPrint(
           "SettingController _getPaycubeChangeState response = ${response}");
@@ -421,6 +421,8 @@ class SettingController extends GetxController with StateMixin {
         depositData.value = response['data'];
         cashList.value = response['data']['changeStates'];
         lastTotalList.value = response['data']['last7daysTotal'];
+        // final result = await getMachineCashInfo();
+        // debugPrint('MachineCashInfo: $result');
         update();
       } else {
         debugPrint("SettingController _getPaycubeChangeState 获取失败");

@@ -189,6 +189,8 @@ class GString{
         "next_button":"進む",
         "suggest_title":"ご一緒にいかがですか",
 
+        "repay_cash_error": "エラーが発生しました, スタッフに連絡してください。", 
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -374,6 +376,7 @@ class GString{
         "next_button":"下一步",
         "suggest_title":"您可能还喜欢",
 
+        "repay_cash_error": "发生错误, 请联系工作人员。", 
 
       };
     }else if(languageCode == 'EN'){
@@ -559,6 +562,8 @@ class GString{
         "skip_button":"Skip",
         "next_button":"Next",
         "suggest_title":"You may also like",
+
+        "repay_cash_error": "Error occurred. Please contact our staff.", 
         
       };
     }else if(languageCode == 'KO'){
@@ -745,6 +750,8 @@ class GString{
         "skip_button":"건너뛰기",
         "next_button":"다음",
         "suggest_title":"함께 보면 좋을 것들",
+
+        "repay_cash_error": "오류가 발생했습니다, 직원에게 문의하십시오.", 
       };
     }
 

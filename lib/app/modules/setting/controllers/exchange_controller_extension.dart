@@ -443,12 +443,12 @@ extension ExchangeControllerExtension on SettingController {
         //showToast('完了しました', context: Get.context);
       } else {
         success = false;
-        showToast('補充失败!', context: Get.context);
+        showToast('両替失败!', context: Get.context);
       }
     }).catchError((error) {
       success = false;
       EasyLoading.dismiss();
-      showToast('補充失败!', context: Get.context);
+      showToast('両替失败!', context: Get.context);
     });
     return success;
   }

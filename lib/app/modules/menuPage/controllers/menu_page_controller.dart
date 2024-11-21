@@ -110,6 +110,7 @@ class MenuPageController extends GetxController with StateMixin {
   List recommendBookList = [];
   bool showRecommend = false;
   bool showCartView = false;
+  String shopCode = '';
 
   AudioPlayer? player;
 
@@ -158,7 +159,7 @@ class MenuPageController extends GetxController with StateMixin {
     var machineCodeString = await HomeServices.getMachineInfo();
     if (machineCodeString != "") {
       machineCode.value = machineCodeString;
-
+    shopCode = await HomeServices.getShopCode();
       _getSystemSettingInfo();
     }
   }
@@ -1557,6 +1558,7 @@ print("加1了");
     await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "machineCode": machineCode.value,
+      "shopCode": shopCode,
       "orderId": doSubmitOrderId.value,
       "totalPrice": shopCartTotalPrice.value,
       "machineMode": "1",
@@ -1601,7 +1603,6 @@ print("加1了");
 
   //切换顶部菜单分类
   changeCategory(categoryCode) {
-    
     getBookingBootIndexMenu(categoryCode);
     //update();
   }

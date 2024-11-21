@@ -38,7 +38,9 @@ class Exchangeview extends StatelessWidget {
           ),
           GridMenuView(
             children: [
-              ...controller.cashInfoList.entries.map((element) {
+              ...controller.cashInfoList.entries.where((element) {
+                return element.key != '二千円';
+              }).map((element) {
                 return moneyItem(element.key, element.value);
               }).toList()
             ],
@@ -415,7 +417,7 @@ class Exchangeview extends StatelessWidget {
       case '千円':
         return moneyCount > 1;
       case '二千円':
-        return moneyCount > 1;
+        return moneyCount > 10000;
       case '五千円':
         return moneyCount > 0;
       case '一万円':
@@ -451,9 +453,10 @@ class Exchangeview extends StatelessWidget {
                     fontWeight: FontWeight.w600),
               ),
               style: ButtonStyle(
-                backgroundColor: WidgetStateProperty.all(_canExchange(moneyType, moneyCount)
-                    ? ColorsUtil.hexToColor("#409eff")
-                    : Colors.grey),
+                backgroundColor: WidgetStateProperty.all(
+                    _canExchange(moneyType, moneyCount)
+                        ? ColorsUtil.hexToColor("#409eff")
+                        : Colors.grey),
                 shape: WidgetStateProperty.all(RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(5.0))),
               ),

@@ -345,9 +345,10 @@ extension SettingControllerExtension on SettingController {
     } else {
       String machineCash = await getMachineCashInfo() ??
           ''; //'1:46,5:21,10:31,50:40,100:51,500:18,1000:143,5000:4,10000:14';
-      debugPrint("machineCash : $machineCash");
-      if (machineCash.isEmpty) return false;
-      String outMoneyString = await findChange(machineCash, count);
+      String countCashInfo = _filter2000Cash(machineCash);
+      debugPrint("machineCash : $countCashInfo");
+      if (countCashInfo.isEmpty) return false;
+      String outMoneyString = await findChange(countCashInfo, count);
       debugPrint("outMoneyString: $outMoneyString");
       if (outMoneyString.isEmpty) {
         errorHandleDialog(GString.getToString(
@@ -358,6 +359,15 @@ extension SettingControllerExtension on SettingController {
           getNoneZeroInfo(outMoneyString), skipAction);
       return result;
     }
+  }
+
+  String _filter2000Cash(String cashInfo) {
+    List<String> combinations = cashInfo.split(',');
+
+    List<String> filteredCombinations =
+        combinations.where((combo) => !combo.startsWith('2000:')).toList();
+
+    return filteredCombinations.join(',');
   }
 
   dispenseCashOutside(outInfo, Function skipAction) async {
@@ -378,11 +388,11 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
-          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
-              confirmtitle: 'スキップ', () {
-            skipAction();
-          });
+          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          // errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
+          //     confirmtitle: 'スキップ', () {
+          //   skipAction();
+          // });
         });
     return success;
   }

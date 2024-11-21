@@ -163,6 +163,7 @@ class SettlementController extends GetxController with StateMixin {
 
   Timer? paymentTimer;
   bool hasStartPayflow = false;
+  String shopCode = '';
 
   @override
   void onInit() {
@@ -209,6 +210,7 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint("readyQueryData");
     checkLanguage.value = Get.arguments['checkLanguage'];
     machineCode.value = Get.arguments['machineCode'];
+    shopCode = Get.arguments['shopCode'];
     orderId.value = Get.arguments['orderId'];
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
@@ -586,8 +588,9 @@ class SettlementController extends GetxController with StateMixin {
           goNext = true;
         } else {
           totalPrice.value = finalTotal;
-          var outMoney = int.parse(getPutMoney.value) - int.parse(totalPrice.value); //找零金额
-          showOutMoney.value = outMoney < 0 ? '0':outMoney.toString();
+          var outMoney =
+              int.parse(getPutMoney.value) - int.parse(totalPrice.value); //找零金额
+          showOutMoney.value = outMoney < 0 ? '0' : outMoney.toString();
           goNext = false;
         }
       }
@@ -1132,7 +1135,7 @@ class SettlementController extends GetxController with StateMixin {
         getPutMoney.value = "0";
         showPrintButton.value = false;
         if (Platform.isWindows) {
-          await endDeposit();
+          await endDeposit(repay: true);
         } else {
           Endtoubi();
         }

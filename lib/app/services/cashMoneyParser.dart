@@ -111,6 +111,38 @@ class MoneyParser {
     return intString;
   }
 
+  static Map migrationGloryToMap(String input) {
+    debugPrint("glory = ${input}");
+    if (input.length % 3 != 0 || input.length < 30) {
+      throw Exception('Invalid input');
+    }
+    Map info = {};
+    final int en500Amout = int.parse(input.substring(0, 3));
+    if (en500Amout > 0) {
+      info['66'] = en500Amout;
+    }
+    final int en100Amout = int.parse(input.substring(3, 6));
+    if (en100Amout > 0) {info['65'] = en100Amout;}
+    final int en50Amout = int.parse(input.substring(6, 9));
+    if (en50Amout > 0) {info['64'] = en50Amout;}
+    final int en10Amout = int.parse(input.substring(9, 12));
+    if (en10Amout > 0) {info['63'] = en10Amout;}
+    final int en5Amout = int.parse(input.substring(12, 15));
+    if (en5Amout > 0) {info['62'] = en5Amout;}
+    final int en1Amout = int.parse(input.substring(15, 18));
+    if (en1Amout > 0) {info['61'] = en1Amout;}
+    final int en10000Amout = int.parse(input.substring(18, 21));
+    if (en10000Amout > 0) {info['8A'] = en10000Amout;}
+    final int en5000Amout = int.parse(input.substring(21, 24));
+    if (en5000Amout > 0) {info['89'] = en5000Amout;}
+    final int en2000Amout = int.parse(input.substring(24, 27));
+    if (en2000Amout > 0) {info['88'] = en2000Amout;}
+    final int en1000Amout = int.parse(input.substring(27, 30));
+    if (en1000Amout > 0) {info['87'] = en1000Amout;}
+
+    return info;
+  }
+
   static String migrationGloryToHexString(String input,
       {bool isOutMoney = false}) {
     debugPrint("glory = ${input}");

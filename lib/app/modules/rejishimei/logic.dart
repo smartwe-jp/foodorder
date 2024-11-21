@@ -201,7 +201,7 @@ class RejishimeLogic extends GetxController {
   }
 
   _outCash(SettingController settingController, Function skipAction) async {
-    Map? result = await settingController.recycleCashOut(149580, skipAction);
+    Map? result = await settingController.recycleCashOut(state.recycleCash, skipAction);
 
     debugPrint("recycleCash result: $result");
 

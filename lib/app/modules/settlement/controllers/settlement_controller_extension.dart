@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/cashMoneyParser.dart';
@@ -176,6 +177,11 @@ extension SettlementControllerExtension on SettlementController {
     //getPutMoney.value = depositAmount.toString();
     //sleep(Duration(milliseconds: 300));
 
+    if (repay) {
+      _repayFlow();
+      return;
+    }
+
     final resultCode = await CashChanger.endDeposit(
         repay ? DepositAction.repay.index : DepositAction.noChange.index);
 
@@ -204,7 +210,10 @@ extension SettlementControllerExtension on SettlementController {
         showError: (String error) {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(GString.getToString(checkLanguage.value, error),
+              confirm: () {
+            _repayFlow();
+          });
         });
   }
 
@@ -298,12 +307,70 @@ extension SettlementControllerExtension on SettlementController {
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             //找钱失败一律退单和退回入金
-            CashChanger.depositRepay;
+
+            //Get.back();
             Get.back();
-            Get.back();
+            _repayFlow();
           });
         });
     return success;
+  }
+
+  _repayFlow() async {
+    showEasyLoading();
+    final result = await CashChanger.depositRepay;
+    await CashChanger.changerResultNext(
+        resultCode: result,
+        onSuccess: () {
+          //if (getPutMoney.value == '2000') {
+            _getPayCubeOutMoney(reportWithOrder: false);
+          // } else {
+          //   EasyLoading.dismiss();
+          //   Get.back();
+          // }
+        },
+        onRetry: () {
+          debugPrint("depositRepay 2");
+          _repayFlow();
+        },
+        showError: (String error) {
+          debugPrint("depositRepay error: $error");
+          // errorHandleDialog(GString.getToString(checkLanguage.value, error),
+          //     confirm: () {
+          //   Get.back();
+
+          // });
+
+          gloryOutputMoney(int.parse(getPutMoney.value));
+        });
+  }
+
+  gloryOutputMoney(outMoney) async {
+    //debugPrint("startOutPutMoney");
+    print("outMoney: $outMoney");
+    //var outStringMoney = outMoney.toString();
+    bool? result =
+        await CashChanger.dispenseChangeOutside(outMoney, onSuccess: () {
+      //已经结束入金，处理取引终了
+      _getPayCubeOutMoney(reportWithOrder: false);
+    }, catchError: (error) {
+      debugPrint("startOutPutMoney error: $error");
+      // _errorHandleDialog(GString.getToString(checkLanguage.value, error),
+      // confirm: () {
+      //   Get.back();
+      // });
+    });
+
+    debugPrint("resultCode: $result");
+    if (!result) {
+      EasyLoading.dismiss();
+      errorHandleDialog(
+          GString.getToString(checkLanguage.value, 'repay_cash_error'),
+          confirm: () {
+        Get.back();
+        Get.back();
+      });
+    }
   }
 
   reportChange(changeString) {
@@ -368,7 +435,7 @@ extension SettlementControllerExtension on SettlementController {
     _payCubeCloseTransaction(false);
   }
 
-  _getPayCubeOutMoney() async {
+  _getPayCubeOutMoney({reportWithOrder = true}) async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
     OutMoneytimer?.cancel();
 
@@ -401,8 +468,58 @@ extension SettlementControllerExtension on SettlementController {
         MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
 
     getOutMoneyString.value == false;
+    if (reportWithOrder) {
+      _reportOutMoney();
+    } else {
+      Map inputInfo = MoneyParser.migrationGloryToMap(putMoneyCurrency);
+      List<Map> puts = inputInfo.entries.map((entry) {
+        return {'catVal': entry.key, 'val': entry.value};
+      }).toList();
 
-    _reportOutMoney();
+      final outInfo = MoneyParser.migrationGloryToMap(currency);
+      List<Map> pops = outInfo.entries.map((entry) {
+        return {'catVal': entry.key, 'val': entry.value};
+      }).toList();
+
+      reportExchange(puts, pops);
+    }
+  }
+
+  reportExchange(puts, pops) async {
+    var success = false;
+    debugPrint('reportExchange');
+    var formData = {
+      'machineCode': machineCode.value,
+      'puts': puts,
+      'pops': pops,
+      'shopCode': shopCode,
+    };
+
+    debugPrint('formData: $formData');
+
+    await request(
+      'webBootGloryExchange',
+      method: 'POST',
+      parameters: formData,
+    ).then((value) {
+      final response = json.decode(value.toString());
+      debugPrint("response: $response");
+      EasyLoading.dismiss();
+      Get.back();
+      if (response["code"] == 200) {
+        success = true;
+        //showToast('完了しました', context: Get.context);
+      } else {
+        success = false;
+        //showToast('両替失败!', context: Get.context);
+      }
+    }).catchError((error) {
+      success = false;
+      EasyLoading.dismiss();
+      Get.back();
+      //showToast('両替失败!', context: Get.context);
+    });
+    return success;
   }
 
   //汇报出金币种,请求后台
