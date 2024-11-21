@@ -76,6 +76,7 @@ flutter:
     - assets/images/ichixianjia/
     - assets/images/gongcha/
     - assets/audios/
+    #- assets/smartwe.exe
   fonts: 
     - family: KoruriLightNew
       fonts: 

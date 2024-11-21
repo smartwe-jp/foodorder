@@ -1,7 +1,8 @@
 //const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-const base_url = "https://api.smartwe.jp/";  //new生产环境地址
-//const base_url = "https://sit-api.smartwe.jp/";  //测试环境地址
+//const base_url = "https://api.smartwe.jp/";  //new生产环境地址
+const base_url = "https://sit-api.smartwe.jp/"; //测试环境地址
 
+const file_url = "https://app.smartwe.co.jp/";
 
 const oa_base_url = "https://oa.gutingjun.com/api/"; //刷脸正式环境地址
 
@@ -34,7 +35,8 @@ const servicePath = {
   'webBootToPrintV5':
       base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
-  'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToPrintV7':
+      base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
@@ -42,7 +44,8 @@ const servicePath = {
   'webBootChangeInfo': base_url + 'pad/web/boot/information', //机器零钱状态
   'webBootChangeReset': base_url + 'pad/web/boot/reset', //重置机器零钱状态
   'webBootChangeSet': base_url + 'pad/web/boot/change/add', //设置机器零钱状态
-  'webBootLinePayConfirm': base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
+  'webBootLinePayConfirm':
+      base_url + 'pad/web/boot/linePay/confirm', //扫码超时后再次确认
 
   'webBootCreditCard': base_url + 'pad/web/boot/creditCard', //请求刷卡返回的字符串
   'webBootCreditCardCancel':
@@ -81,9 +84,11 @@ const servicePath = {
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
 
   //领收书相关
-  'webBootReceiptQuery': base_url + 'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
+  'webBootReceiptQuery': base_url +
+      'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
   //レジ締め
-  'webBootRejishimeiPrintInfo': base_url + 'pad/web/boot/query/printInfo', //レジ締め 获取打印信息
+  'webBootRejishimeiPrintInfo':
+      base_url + 'pad/web/boot/query/printInfo', //レジ締め 获取打印信息
   'webGloryRejishimeiPrintInfo': base_url + 'pad/web/glory/query/printInfo',
   'webBootEmailList': base_url + 'pad/web/boot/emails', //レジ締め 获取邮件列表
   'webBootAdminVerify': base_url + 'pad/web/boot/sendVerifyCode', //レジ締め 发送验证码
@@ -93,7 +98,6 @@ const servicePath = {
   'webBootPosTest': base_url + 'pad/web/boot/pos/test', //Pos测试接口
 
   'webBootTroubleNotify': base_url + 'pad/web/boot/notice', //Pos测试接口
-
 
   //Glory supplement
   'webBootGlorySupplement': base_url + 'web/glory/supplement', //Glory补充
@@ -119,9 +123,4 @@ const servicePath = {
   'webMachineNearFull': base_url + 'web/glory/full/notice',
 
   'webMachineFull': base_url + 'web/glory/stop/notice',
-
-
-
 };
-
-

@@ -1,9 +1,13 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/http_conf.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
+import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
@@ -107,7 +111,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   _getPackageInfo() async {
     //PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value =
-        "1.0.0"; //packageInfo.version;//+"+"+packageInfo.buildNumber
+        "1.0.4"; //packageInfo.version;//+"+"+packageInfo.buildNumber
 
     _getSystemSettingInfo();
   }
@@ -216,7 +220,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //支付状态
 
     Get.dialog(Container(
-      width: ScreenAdapter.width(950),
+      //width: ScreenAdapter.width(950),
       child: SimpleDialog(
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(5),
@@ -230,17 +234,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
                       fontWeight: FontWeight.w600))),
           children: <Widget>[
             Container(
-              width: ScreenAdapter.width(650),
+              width: ScreenAdapter.width(500),
               child: Column(
                 children: <Widget>[
-                  /*SizedBox(
-                          height: 10,
-                        ),
-                        Align(
-                          child: Text("确定已经接收到更新App的通知？",
-                              style: TextStyle(fontSize: ScreenAdapter.fontSize(28))),
-                          alignment: Alignment(0, 0),
-                        ),*/
                   SizedBox(
                     height: 10,
                   ),
@@ -248,41 +244,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
                     thickness: 1.0,
                     color: Colors.black12,
                   ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 70.0),
-                        child: TextButton(
-                          child: Text(
-                            "キャンセル",
-                            style: TextStyle(
-                                color: Colors.lightBlue,
-                                fontSize: ScreenAdapter.fontSize(32.0)),
-                          ),
-                          onPressed: () {
-                            //sleep(Duration(milliseconds: 3000));
-                            Get.back();
-                          },
-                        ),
-                      ),
-                      //垂直分割线
-                      SizedBox(
-                        width: 1,
-                        height: 40,
-                        child: DecoratedBox(
-                          decoration: BoxDecoration(color: Colors.black12),
-                        ),
-                      ),
-                      Divider(
-                        thickness: 1.0,
-                        color: Colors.black12,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.only(left: 70.0),
+                  Container(
+                    height: 60,
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Expanded(
+                          child: Container(
                             child: TextButton(
                               child: Text(
                                 "キャンセル",
@@ -297,16 +265,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
                               },
                             ),
                           ),
-                          //垂直分割线
-                          SizedBox(
-                            width: 1,
-                            height: 40,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(color: Colors.black12),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 70.0),
+                        ),
+                        //垂直分割线
+
+                        VerticalDivider(
+                          thickness: 1.0,
+                          color: Colors.black12,
+                        ),
+
+                        Expanded(
+                          child: Container(
                             child: TextButton(
                               child: Text(
                                 "アップデート",
@@ -320,14 +288,17 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 Get.back();
                                 Get.dialog(showSpeedView());
                                 //https://app.gutingjun.com/kanran-release.apk
-                                downloadAndroid(
-                                    "https://app.smartwe.co.jp/smartwe_ticket_machine.apk");
+                                String fileName = Platform.isAndroid
+                                    ? 'smartwe_ticket_machine.apk'
+                                    : 'smartwe_ticket_machine.exe';
+                                downloadAndroid(file_url + fileName);
+                                //testReadAndInstall();
                               },
                             ),
-                          )
-                        ],
-                      ),
-                    ],
+                          ),
+                        )
+                      ],
+                    ),
                   ),
                 ],
               ),
@@ -352,42 +323,18 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   ///开始下载
   startDownLoad(String url) async {
-    /*EasyLoading.show(
-      //status: 'loading...',
-      indicator: Container(
-        width: ScreenAdapter.width(550),
-        height:ScreenAdapter.height(450),
-        padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text("アップデート中……",
-                style: TextStyle(
-                  fontSize: ScreenAdapter.fontSize(25),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor("#000000"),
-                )),
-            SizedBox(height: ScreenAdapter.height(30),),
-            Container(
-              //width: ScreenAdapter.width(400),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
-            ),
-          ],
-        ),
-      ),
-      maskType: EasyLoadingMaskType.black,
-    );*/
-
     /// 创建存储文件
     //print(url);
     Directory storageDir = await getTemporaryDirectory();
     String storagePath = storageDir.path;
-    final path = storagePath + '/smartwe_ticket_machine.apk';
+    String fileName = Platform.isAndroid
+        ? '/smartwe_ticket_machine.apk'
+        : '/smartwe_ticket_machine.exe';
+    final path = storagePath + fileName;
     try {
       var dio = Dio();
-      final Response response =
-          await dio.download(url, path, onReceiveProgress: (received, total) {
+      final Response response = await dio.download(url, path,
+          onReceiveProgress: (received, total) async {
         /*if (total == -1) {
           progressValue = 0.1;
         } else {
@@ -400,7 +347,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
         if (received / total == 1) {
           Get.back();
           //下载完成，跳转到程序安装界面
-          openApk(path);
+          if (Platform.isAndroid) {
+            openApk(path);
+          } else {
+            await installExe(path);
+          }
         }
       });
       //print(response.data);
@@ -408,6 +359,58 @@ class SystemSettingPageController extends GetxController with StateMixin {
       print('$e');
       //progressValue = 0;
     }
+  }
+
+  Future<Uint8List> loadAsset(String assetPath) async {
+    final ByteData data = await rootBundle.load(assetPath);
+    return data.buffer.asUint8List();
+  }
+
+  Future<File> writeAssetToFile(Uint8List data, String filename) async {
+    final Directory tempDir = await getTemporaryDirectory();
+    final File file = File('${tempDir.path}/$filename');
+    return file.writeAsBytes(data, flush: true);
+  }
+
+  Future<void> testReadAndInstall() async {
+    final Uint8List assetData = await loadAsset('assets/smartwe.exe');
+    final File file = await writeAssetToFile(assetData, 'smartwe.exe');
+    print('File written to ${file.path}');
+
+    Get.back();
+    // 执行安装
+    await installExe(file.path);
+  }
+
+  /// 安装 EXE 文件
+  installExe(String path) async {
+    try {
+      ProcessResult result = await Process.run(path, []);
+
+      if (result.exitCode == 0) {
+        //print('Installation completed successfully.');
+        showUpgradeResult('インストールが完了しました、券売君アプリを再起動する必要があります。');
+      } else {
+        //print('インストールエラー: ${result.exitCode}');
+        showUpgradeResult('インストールエラー: ${result.exitCode}', success: false);
+      }
+    } catch (e) {
+      //print('インストール中にエラーが発生しました: $e');
+      showUpgradeResult('インストール中にエラーが発生しました: $e', success: false);
+    }
+  }
+
+  showUpgradeResult(msg, {success = true}) {
+    Get.dialog(
+        DialogUtils.alertOneButton(msg, confirm: () {
+          if (success) {
+            //restart
+            Appset.restartApp;
+          } else {
+            Get.back();
+          }
+        }),
+        barrierDismissible: false);
   }
 
 //打开apk 开始安装

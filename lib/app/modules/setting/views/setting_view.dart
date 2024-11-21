@@ -828,7 +828,7 @@ class SettingView extends GetView<SettingController> {
                           padding:
                               EdgeInsets.only(right: ScreenAdapter.width(18)),
                           child: Text(
-                            "Version：1.0.3",
+                            "Version：1.0.4",
                             style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 color: Colors.grey[500],
