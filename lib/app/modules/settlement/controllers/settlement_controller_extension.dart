@@ -593,7 +593,7 @@ extension SettlementControllerExtension on SettlementController {
         DialogUtils.alertOneButton(error,
             title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
+                GString.getToString(checkLanguage.value, "cash_full_confirm"),
             confirm: () {
           allowClick.value == true;
           if (confirm != null) {

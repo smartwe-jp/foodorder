@@ -2,6 +2,7 @@ import 'dart:ffi';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -211,7 +212,7 @@ class SubTitle extends StatelessWidget {
           width: ScreenAdapter.width(5),
         ),
         Text(
-          title,
+          title.formatSum(),
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(28),
             fontWeight: FontWeight.w500,

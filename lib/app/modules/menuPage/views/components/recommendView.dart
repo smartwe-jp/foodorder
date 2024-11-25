@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
+import 'package:foodorder/app/services/formatMoney.dart';
 import 'package:foodorder/app/widget/CustomButton.dart';
 import 'package:get/get.dart';
 import '../../../../config/color.dart';
@@ -224,6 +225,45 @@ extension RecommendView on MenuPageController {
     );
   }
 
+  Widget priceText() {
+    return Row(children: [
+      Text(GString.getToString(checkLanguage.value, "settlement_total_price"),
+          style: TextStyle(
+            fontSize: 36,
+            fontWeight: FontWeight.w600,
+            fontFamily: GFont.getFontFamily(),
+            color: Colors.black,
+          )),
+          SizedBox(width: 20,),
+      Align(
+          alignment: Alignment.center,
+          child: RichText(
+            text: TextSpan(
+              children: <TextSpan>[
+                TextSpan(
+                  text: '￥',
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: 36,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+                TextSpan(
+                  text: "${formatMoney(shopCartTotalPrice.value)}",
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: 48,
+                    fontWeight: FontWeight.w600,
+                    color: Colors.black,
+                  ),
+                ),
+              ],
+            ),
+          )),
+    ]);
+  }
+
   dismissAction(context, {bool isBack = false}) {
     showRecommend = false;
     showCartView = false;
@@ -243,15 +283,51 @@ extension RecommendView on MenuPageController {
             height: 20,
           ),
           Container(
-            child:
-                Text(GString.getToString(checkLanguage.value, 'suggest_title'),
-                    style: TextStyle(
-                      fontSize: 36,
-                      fontWeight: FontWeight.w600,
-                      fontFamily: GFont.getFontFamily(),
-                      color: Colors.black,
-                    )),
-          ),
+                height: 60,
+                child: Stack(
+                  alignment: AlignmentDirectional.center,
+                  children: [
+                    Container(
+                      child: Text(
+                          GString.getToString(
+                              checkLanguage.value, 'suggest_title'),
+                          style: TextStyle(
+                            fontSize: 36,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: GFont.getFontFamily(),
+                            color: Colors.black,
+                          )),
+                    ),
+                    Row(children: [
+                      SizedBox(width: 20,),
+                      GestureDetector(
+                        onTap: () {dismissAction(context,isBack: true);},
+                        child: Container(
+                          height: 50,
+                          child: Row(
+                            //mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Icon(Icons.arrow_back, color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
+                              SizedBox(width: 4),
+                              Text(
+                                GString.getToString(
+                                    checkLanguage.value, 'settlement_back'),
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  fontWeight: FontWeight.w400,
+                                  fontFamily: GFont.getFontFamily(),
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      Spacer()
+                    ])
+                  ],
+                )
+            ),
           SizedBox(
             height: 20,
           ),
@@ -265,17 +341,14 @@ extension RecommendView on MenuPageController {
                 BoxDecoration(color: const Color.fromARGB(255, 223, 223, 223)),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
                 carbutton(),
-                CustomButton(
-                    title: GString.getToString(
-                        checkLanguage.value, "settlement_back"),
-                    bgColor: Colors.white,
-                    titleColor: Colors.black,
-                    onTap: () {
-                      dismissAction(context, isBack: true);
-                    }),
+                SizedBox(
+                    width: 30,
+                ),
+                priceText(),
+                Spacer(),
                 if (recommendBookList.isEmpty)
                   CustomButton(
                       title: GString.getToString(
