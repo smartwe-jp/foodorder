@@ -1,4 +1,6 @@
 
+import 'package:intl/intl.dart';
+
 extension CashString on String {
     String findMaxCash() {
     final currencies = this.split(',');
@@ -62,4 +64,11 @@ extension CashString on String {
         return '';
     }
   }
+
+
+  String formatSum() {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(int.parse(this));
+  }
+
 }
