@@ -167,7 +167,7 @@ extension SettingControllerExtension on SettingController {
 
         String cashList = machineChangeInfo.findMaxCash();
 
-        errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
+        errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります. $cashList', confirm: () {
           //找钱失败一律退单和退回入金
           // CashChanger.fixDeposit;
           // CashChanger.depositRepay;
