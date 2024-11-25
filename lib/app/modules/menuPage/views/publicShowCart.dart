@@ -373,7 +373,7 @@ class publicShowCartView extends GetView {
                                       decoration: BoxDecoration(
                                         image: DecorationImage(
                                           image: AssetImage(
-                                              'assets/images/public/iov-shopping.png'),
+                                              'assets/images/public/shopping-cart.png'),
                                           fit: BoxFit.cover,
                                         ),
                                       ),

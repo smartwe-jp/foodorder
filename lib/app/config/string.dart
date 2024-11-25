@@ -130,6 +130,10 @@ class GString{
         'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
         "scan_order_detail_title":"ご注文",
 
+        "skip_button":"スキップ",
+        "next_button":"進む",
+        "suggest_title":"ご一緒にいかがですか",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -253,6 +257,10 @@ class GString{
         "load_menu_failure_back" : "返回首页",
         'cash_pay_checkout_tips':'支付金额更新，请确认并支付。',
         "scan_order_detail_title":"订单",
+
+        "skip_button":"跳过",
+        "next_button":"下一步",
+        "suggest_title":"您可能还喜欢",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -376,6 +384,10 @@ class GString{
         "load_menu_failure_back" : "Back to home",
         'cash_pay_checkout_tips':'Payment amount updated, Please confirm and pay.',
         "scan_order_detail_title":"Order",
+
+        "skip_button":"Skip",
+        "next_button":"Next",
+        "suggest_title":"You may also like",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -499,7 +511,11 @@ class GString{
         "load_menu_failure_content" : "@seconds초 후 홈 화면으로 돌아갑니다,\n다시 시도하십시오。",
         "load_menu_failure_back" : "홈으로",
         'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 확인 후 결제해 주세요.',
-        'scan_order_detail_title':'주문'
+        'scan_order_detail_title':'주문',
+
+        "skip_button":"건너뛰기",
+        "next_button":"다음",
+        "suggest_title":"함께 보면 좋을 것들",
       };
     }
 

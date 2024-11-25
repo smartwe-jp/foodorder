@@ -2147,17 +2147,19 @@ class MenuPageView extends GetView {
                         publicShowMenuImage(imgPath:item['homeImage'], imgWidth: 350.0, imgHeight: 440.0,subTitle:item["subtitle"]),
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
-                        Container(
-                          //width: ScreenAdapter.width(20),
-                          height: ScreenAdapter.height(70),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
-                              item['mainTitle'],
-                              GFontSize.menuTwoListTitle,
-                              Gcolor.mainTitleColor),
+                        Expanded(
+                          child: Container(
+                            //width: ScreenAdapter.width(20),
+                            //height: ScreenAdapter.height(70),
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                            padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            child: controller.publicShowMenuTitle(
+                                item['mainTitle'],
+                                GFontSize.menuTwoListTitle,
+                                Gcolor.mainTitleColor),
+                          ),
                         ),
 
                         Container(

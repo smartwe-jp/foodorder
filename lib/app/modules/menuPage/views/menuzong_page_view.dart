@@ -694,16 +694,18 @@ class MenuzongPageView extends GetView {
 
                         Divider(height: 1.5,indent: 0.0,color: ColorsUtil.hexToColor("#DDDDDD"),),
 
-                        Container(
-                          //height: ScreenAdapter.height(68),
-                          margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
-                              item['mainTitle'],
-                              GFontSize.menuTwoListTitle,
-                              Gcolor.mainTitleColor),
+                        Expanded(
+                          child: Container(
+                            //height: ScreenAdapter.height(68),
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
+                            padding: EdgeInsets.only(
+                                left: ScreenAdapter.width(10),
+                                right: ScreenAdapter.width(10)),
+                            child: controller.publicShowMenuTitle(
+                                item['mainTitle'],
+                                GFontSize.menuTwoListTitle,
+                                Gcolor.mainTitleColor),
+                          ),
                         ),
                         Container(
                           //width: ScreenAdapter.width(125),

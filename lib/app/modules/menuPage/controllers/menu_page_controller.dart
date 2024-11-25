@@ -109,6 +109,8 @@ class MenuPageController extends GetxController with StateMixin {
 
   List recommendFoods = [];
   List recommendBookList = [];
+  bool showRecommend = false;
+  bool showCartView = false;
 
 
   @override
@@ -531,7 +533,7 @@ class MenuPageController extends GetxController with StateMixin {
             addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] = _addOptionPrice;
           }
         }
-        update();
+        classTag.value = queryCategoryCode;
         change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
@@ -1454,8 +1456,8 @@ print("加1了");
 
   //切换顶部菜单分类
   changeCategory(categoryCode){
-    classTag.value = categoryCode;
-    getBookingBootIndexMenu(classTag.value);
+
+    getBookingBootIndexMenu(categoryCode);
     //update();
   }
 
@@ -1468,7 +1470,9 @@ print("加1了");
   }
 
   gotoLanguageHome(){
-    clearCartList();
+    //clearCartList();
+    ordersqlcontroller.removeAllFromCart();
+    ordersqlcontroller.getCardList();
     //getBookingBootMenu();
     //Future.delayed(Duration(milliseconds: 100),() async {
       Get.back();
