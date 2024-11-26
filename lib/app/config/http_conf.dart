@@ -1,6 +1,6 @@
 //const base_url = "https://waiter.smartwe.co.jp/";  //生产环境地址
-//const base_url = "https://api.smartwe.jp/";  //new生产环境地址
-const base_url = "https://sit-api.smartwe.jp/"; //测试环境地址
+const base_url = "https://api.smartwe.jp/";  //new生产环境地址
+//const base_url = "https://sit-api.smartwe.jp/"; //测试环境地址
 
 const file_url = "https://app.smartwe.co.jp/";
 
