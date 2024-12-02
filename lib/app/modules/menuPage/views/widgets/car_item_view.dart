@@ -32,7 +32,7 @@ class CarItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: ScreenAdapter.height(120),
+      height: ScreenAdapter.height(175),
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(10),
           right: ScreenAdapter.width(10),
@@ -70,10 +70,10 @@ class CarItemView extends StatelessWidget {
                       ),
 
                       //subtitle
-                      if (subtitle != null)
-                        Text(
-                          subtitle ?? "",
-                          maxLines: 1,
+                      if (subtitle != null &&  subtitle != "")
+                        AutoSizeText(
+                          subtitle! + subtitle!,
+                          maxLines: 2,
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: 32,

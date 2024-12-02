@@ -14,6 +14,7 @@ extension Shoppingcar on MenuPageController {
       children: showCartItems
           .map((d) => CarItemView(
         title: d.mainTitle,
+        subtitle: d.optionVoListMsg,
         image: CachedNetworkImageProvider(d.image),
         onReduce: (value) {
           publicChangeCartItemCreate(d,false);
@@ -58,7 +59,7 @@ extension Shoppingcar on MenuPageController {
                           Container(
                             constraints: BoxConstraints(
                               maxHeight: ScreenAdapter.height(1000),
-                              maxWidth: ScreenAdapter.width(900),
+                              maxWidth: ScreenAdapter.width(1000),
                               minWidth: ScreenAdapter.width(500),
                               //minHeight: ScreenAdapter.height(500),
                             ),
