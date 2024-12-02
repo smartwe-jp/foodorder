@@ -1406,7 +1406,7 @@ print("加1了");
 
 
   gotoSettlement() async {
-    await Get.toNamed('/settlement',preventDuplicates: false,
+    final result = await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineCode.value,
@@ -1441,6 +1441,9 @@ print("加1了");
           "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
+    if (result == 'Done') {
+      _resetToFirstCategory();
+    }
   }
 
   CancelOrder() {
@@ -1451,6 +1454,13 @@ print("加1了");
     };
     request('webBootCancelV1', method: 'POST', parameters: formData);
 
+  }
+
+  _resetToFirstCategory() {
+    final firstCategory = topMenu.first['categoryCode'];
+    if (firstCategory != null) {
+      changeCategory(firstCategory);
+    }
   }
 
 

@@ -364,7 +364,7 @@ class SettlementController extends GetxController with StateMixin {
   gotonewBack() {
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
-    Get.back();
+    Get.back(result: 'Done');
     if (machineMode.value == "1") {
       if(is_back_home.value == "0"){
         //Get.delete<MenuPageController>(); // 手动删除控制器实例
