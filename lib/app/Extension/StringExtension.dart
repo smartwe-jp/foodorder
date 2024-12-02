@@ -15,3 +15,10 @@ extension NumberFormatting on int {
     return formatter.format(this);
   }
 }
+
+extension StringFormatting on String {
+  String formatSum() {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(int.parse(this));
+  }
+}

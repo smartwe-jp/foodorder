@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
@@ -22,7 +23,7 @@ extension Shoppingcar on MenuPageController {
         onIncrease: (value) {
           publicChangeCartItemCreate(d,true);
         },
-        price: "${d.unitPrice}",
+        price: "${d.unitPrice}".formatSum(),
         quantity: d.goodsNum,))
           .toList(),
     );
