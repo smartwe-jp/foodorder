@@ -13,9 +13,12 @@ import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/modules/WATextPage/views/windows_test_view.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/services/customLogger.dart';
+import 'package:foodorder/app/widget/DialogUtils.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:logging/logging.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
@@ -90,6 +93,7 @@ void main() {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
+    await CustomLogHandler.initializeLogging();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
       runApp(ScreenUtilInit(
@@ -113,12 +117,12 @@ void main() {
                     getPages: AppPages.routes,
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
-                      if (value?.current == Routes.MENU_PAGE || value?.current == Routes.SCANCODE_PAGE) {
+                      if (value?.current == Routes.MENU_PAGE ||
+                          value?.current == Routes.SCANCODE_PAGE) {
                         resetTimer.startTimer();
-                      } else if (value?.current == Routes.ENTRY_HOME || 
-                                  value?.current == Routes.SETTLEMENT ||
-                                  value?.current == Routes.SETTING
-                                  ) {
+                      } else if (value?.current == Routes.ENTRY_HOME ||
+                          value?.current == Routes.SETTLEMENT ||
+                          value?.current == Routes.SETTING) {
                         resetTimer.cancelTimer();
                       }
                     },
@@ -148,7 +152,9 @@ void main() {
     //隐藏状态栏导航栏
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersive, overlays: []);
   }, (error, stackTrace) {
-    print('runZonedGuarded: Caught error in my root zone.:: $error');
+    //debugPrint('runZonedGuarded: Caught error in my root zone.:: $error');
+    //final logger = Logger('main');
+    Logger('main').info('-- Caught error in my root zone.:: $error --');
     if (Platform.isAndroid) {
       FirebaseCrashlytics.instance.recordError(error, stackTrace);
     }
@@ -176,11 +182,12 @@ class ResetToHomeTimer {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
-        if (Get.routing.current == Routes.ENTRY_HOME || Get.routing.current == Routes.CHECKOUT_PAGE) {
+        if (Get.routing.current == Routes.ENTRY_HOME ||
+            Get.routing.current == Routes.CHECKOUT_PAGE) {
           cancelTimer();
           return;
         }
-       
+
         Get.updateLocale(Locale('jp', 'JP'));
         //清空购物车
         if (Get.isRegistered<OrderSqlController>()) {

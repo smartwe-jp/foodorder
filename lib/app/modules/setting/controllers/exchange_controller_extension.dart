@@ -64,14 +64,16 @@ extension ExchangeControllerExtension on SettingController {
   Future<String?> getMachineCashInfo({Function? retry}) async {
     debugPrint("getMachineCashInfo 0");
     var result = null;
+    logger.info('-- getMachineCashInfo --');
     await CashChanger.getCashBalance(
       onSuccess: (value) {
         debugPrint("getMachineCashInfo 1");
-
+        logger.info('-- getMachineCashInfo : $value --');
         result = value;
       },
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
+        logger.info('-- getMachineCashInfo error: $error --');
         if (retry == null) {
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
         } else {
@@ -117,11 +119,13 @@ extension ExchangeControllerExtension on SettingController {
 
   //投币BEGINDEPOSITOUTSIDE
   beginDepositOutside() async {
+    logger.info('-- beginDepositOutside --');
     final result = await CashChanger.beginDepositOutside;
     debugPrint('beginDepositOutside: $result');
     await CashChanger.changerResultNext(
         resultCode: result,
         onSuccess: () {
+          logger.info('-- beginDepositOutside success--');
           debugPrint("beginDepositOutside 1");
           _getOutsideInputMoney();
         },
@@ -131,6 +135,7 @@ extension ExchangeControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("beginDepositOutside error: $error");
+          logger.info('-- beginDepositOutside error: ${GString.getToString(checkLanguage.value, error)} --');
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
@@ -140,6 +145,7 @@ extension ExchangeControllerExtension on SettingController {
     await CashChanger.setEventsListener();
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange _getOutsideInputMoney");
+      logger.info('-- onGetPutMoneyStringChange: $result --');
       if (ignoreNotify.value) {
         return;
       }
@@ -153,6 +159,7 @@ extension ExchangeControllerExtension on SettingController {
 
     CashChanger.onStatusUpdateEventChange = (String result) async {
       debugPrint("onStatusUpdateEventChange : $result");
+      logger.info('-- onStatusUpdateEventChange: $result --');
       if (result == 'OK') {
         return;
       }
@@ -294,7 +301,7 @@ extension ExchangeControllerExtension on SettingController {
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
     debugPrint('exChangeFlow: $type, $count, $disconut');
-
+    
     showEasyLoading();
 
     debugPrint(
@@ -389,12 +396,14 @@ extension ExchangeControllerExtension on SettingController {
   gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
     //debugPrint("startOutPutMoney");
     print("outMoney: $outMoney");
+    logger.info('-- gloryOutputMoney: $outMoney --');
     await CashChanger.removeEventsListener();
     bool success = false;
     final resultCode = await CashChanger.dispenseCashOutside(outMoney);
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
+          logger.info('-- gloryOutputMoney: success --');
           debugPrint("startOutPutMoney 1");
           success = true;
           if (fromeError != null && fromeError) {
@@ -407,6 +416,7 @@ extension ExchangeControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("startOutPutMoney error: $error");
+          logger.info('-- gloryOutputMoney error: $error --');
           success = false;
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {

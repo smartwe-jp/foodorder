@@ -816,7 +816,7 @@ class SettingView extends GetView<SettingController> {
                       ),
                       InkWell(
                         onTap: () {
-                          //controller.uploadErrorLog();//windows not support
+                          controller.uploadErrorLog();//windows not support
                           //controller.showSignOut.value = !controller.showSignOut.value;
                         },
                         onLongPress: () {
@@ -828,7 +828,7 @@ class SettingView extends GetView<SettingController> {
                           padding:
                               EdgeInsets.only(right: ScreenAdapter.width(18)),
                           child: Text(
-                            "Version：1.0.4",
+                            "Version：1.0.5",
                             style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 color: Colors.grey[500],

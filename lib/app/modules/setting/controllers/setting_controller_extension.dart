@@ -32,11 +32,13 @@ extension SettingControllerExtension on SettingController {
 
   _startSupply() async {
     debugPrint("startSupply");
+    logger.info('-- startSupply --');
     final resultCode = await CashChanger.startSupply;
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("startSupply 1");
+          logger.info('-- startSupply success --');
           checkChangerStatus();
           //_getInputMoney();
         },
@@ -46,15 +48,18 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("startSupply error: $error");
+          logger.info('-- startSupply error: $error --');
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
 
   _supplyCounts() async {
     debugPrint("supplyCounts");
+    logger.info('-- supplyCounts --');
     await CashChanger.supplyCounts(
       0x00,
       onSuccess: (value) {
+        logger.info('-- supplyCounts success: $value --');
         //获取=号与;号之间的数据
         final supplyString = value.split('=')[1];
         //再截取;号与;号之间的数据
@@ -70,6 +75,8 @@ extension SettingControllerExtension on SettingController {
         update();
       },
       catchError: (error) {
+        logger.info(
+            '-- supplyCounts error: ${GString.getToString(checkLanguage.value, error)} --');
         errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
@@ -77,11 +84,14 @@ extension SettingControllerExtension on SettingController {
 
   supplyCountsClear() async {
     debugPrint("_supplyCountsClear");
-
+    logger.info('-- supplyCountsClear --');
     return await CashChanger.supplyCounts(
       0x01,
-      onSuccess: (value) {},
+      onSuccess: (value) {
+        logger.info('-- supplyCountsClear success --');
+      },
       catchError: (error) {
+        logger.info('-- supplyCountsClear error: $error --');
         errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
     );
@@ -89,7 +99,9 @@ extension SettingControllerExtension on SettingController {
 
   checkChangerStatus() async {
     debugPrint("checkChangerStatus 1");
+    logger.info('-- checkChangerStatus --');
     var resultCode = await CashChanger.checkChangerStatus;
+    logger.info('-- checkChangerStatus resultCode: $resultCode  --');
     if (resultCode == null) {
       debugPrint("Unknown error");
       checkChangerStatus();
@@ -100,6 +112,7 @@ extension SettingControllerExtension on SettingController {
       resultCode = 100;
     }
     HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode - 100];
+    logger.info('-- checkChangerStatus resultCodeEnum: $resultCodeEnum  --');
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
@@ -131,6 +144,7 @@ extension SettingControllerExtension on SettingController {
     await CashChanger.setEventsListener();
     debugPrint("getPutInMoney");
     CashChanger.onGetPutMoneyStringChange = (int result) {
+      logger.info('-- onGetPutMoneyStringChange: $result  --');
       debugPrint("onGetPutMoneyStringChange");
       if (ignoreNotify.value) {
         return;
@@ -151,6 +165,7 @@ extension SettingControllerExtension on SettingController {
 
     CashChanger.onStatusUpdateEventChange = (String result) async {
       debugPrint("onStatusUpdateEventChange : $result");
+      logger.info('-- onStatusUpdateEventChange: $result  --');
       if (result == 'OK') {
         return;
       }
@@ -183,6 +198,7 @@ extension SettingControllerExtension on SettingController {
 
   getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
+    logger.info('-- getInputMoneyInfo  --');
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(
         0x04); //'0000010000000000000000000000000010000000000000000000000000000000';
     //await CashChanger.changerDIStatus(0x04);
@@ -207,13 +223,13 @@ extension SettingControllerExtension on SettingController {
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToIntString(putMoneyCurrency);
-
+    logger.info('-- getInputMoneyInfo : ${getPutMoneyCurrency.value}  --');
     update();
   }
 
   getInAndOutMoney() async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
-
+    logger.info('-- getInAndOutMoney --');
     debugPrint("_getPayCubeOutMoney");
     //获取硬币入金出金币种
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
@@ -240,14 +256,17 @@ extension SettingControllerExtension on SettingController {
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToIntString(putMoneyCurrency);
     getOutMoneyCurrency.value = MoneyParser.migrationGloryToIntString(currency);
-
+    logger.info('-- getPutMoneyCurrency : ${getPutMoneyCurrency.value}  --');
+    logger.info('-- getOutMoneyCurrency : ${getOutMoneyCurrency.value}  --');
     return true;
   }
 
   Future<bool> closeDeposit() async {
     debugPrint("closeDeposit");
     //await Future.delayed(Duration(seconds: 1));
+    logger.info('-- closeDeposit  --');
     bool success = false;
+    logger.info('-- fixDeposit  --');
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
     final resultCode =
@@ -255,6 +274,7 @@ extension SettingControllerExtension on SettingController {
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
+          logger.info('-- end Deposit success --');
           debugPrint("closeDeposit 1");
           success = true;
         },
@@ -264,6 +284,7 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("closeDeposit error: $error");
+          logger.info('-- end Deposit error: $error --');
           success = false;
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
@@ -304,7 +325,7 @@ extension SettingControllerExtension on SettingController {
 
   cancelReplanish({shouldBack = true, skip = false}) async {
     debugPrint("cancelReplanish");
-
+    logger.info('-- cancelReplanish --');
     ignoreNotify.value = true;
     if (getPutMoney.value == 0) {
       await closeDeposit();
@@ -331,12 +352,14 @@ extension SettingControllerExtension on SettingController {
 
   dispenseCashCount(count, Function skipAction) async {
     debugPrint("dispenseCashCount: $count");
-
+    logger.info('-- dispenseCashCount: $count --');
     bool? result =
         await CashChanger.dispenseChangeOutside(count, onSuccess: () {
       debugPrint("dispenseCashCount 1");
+      logger.info('-- dispenseCashCount success --');
     }, catchError: (error) {
       debugPrint("dispenseCashCount error: $error");
+      logger.info('-- dispenseCashCount error: $error --');
       //errorHandleDialog(GString.getToString(checkLanguage.value, error));
     });
     debugPrint("dispenseCashCount result: $result");
@@ -375,11 +398,13 @@ extension SettingControllerExtension on SettingController {
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
     debugPrint("outInfo : $outInfo");
+    logger.info('-- dispenseCashOutside --');
     final resultCode = await CashChanger.dispenseCashOutside(outInfo);
     await CashChanger.changerResultNext(
         resultCode: resultCode,
         onSuccess: () {
           debugPrint("dispenseCashOutside 1");
+          logger.info('-- dispenseCashOutside success --');
           success = true;
         },
         onRetry: () {
@@ -388,6 +413,7 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
+          logger.info('-- dispenseCashOutside error: ${GString.getToString(checkLanguage.value, error)}');
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
           // errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
           //     confirmtitle: 'スキップ', () {

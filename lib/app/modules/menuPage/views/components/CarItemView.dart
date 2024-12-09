@@ -89,14 +89,14 @@ class CarItemView extends StatelessWidget {
                           children: <TextSpan>[
                             TextSpan(text: '￥', style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
-                              fontSize: 28,
-                              fontWeight: FontWeight.w400,
+                              fontSize: 24,
+                              fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 96,98,102),
                             ),),
                             TextSpan(text: price,style: TextStyle(
                               fontFamily: GFont.getFontFamily(),
                               fontSize: 32,
-                              fontWeight: FontWeight.w400,
+                              fontWeight: FontWeight.w500,
                               color: Color.fromARGB(255, 96,98,102),
                             ),),
                           ],

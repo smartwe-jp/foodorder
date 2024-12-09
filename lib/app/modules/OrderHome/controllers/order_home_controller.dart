@@ -13,6 +13,7 @@ import 'package:foodorder/app/widget/DialogUtils.dart';
 // import 'package:foodorder/app/services/showToast.dart';
 // import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
+import 'package:logging/logging.dart';
 
 import '../../../controllers/order_sql_controller.dart';
 import '../../../services/HomeServices.dart';
@@ -41,6 +42,7 @@ class OrderHomeController extends GetxController with StateMixin {
   int mealTypeStatus = 0;
   int resetTime = 30;
   Timer? resetTimer;
+  final logger = Logger('OrderHomeController');
 
   @override
   Future<void> onInit() async {

@@ -18,6 +18,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 
 import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
@@ -164,6 +165,8 @@ class SettlementController extends GetxController with StateMixin {
   Timer? paymentTimer;
   bool hasStartPayflow = false;
   String shopCode = '';
+
+  final logger = Logger('SettlementController');
 
   @override
   void onInit() {
@@ -1135,7 +1138,7 @@ class SettlementController extends GetxController with StateMixin {
         getPutMoney.value = "0";
         showPrintButton.value = false;
         if (Platform.isWindows) {
-          await endDeposit(repay: true);
+          await endDeposit(repay: false);
         } else {
           Endtoubi();
         }
@@ -1159,6 +1162,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType, {retry = true}) async {
+    logger.info('-- doPrintOrderMenu --');
     debugPrint("doPrintOrderMenu");
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
@@ -1200,9 +1204,10 @@ class SettlementController extends GetxController with StateMixin {
       //queryUrl = "webBootToPrintV5";
       //queryUrl = "webBootToPrintV6"; //23新修改小票
       queryUrl = "webBootToPrintV7"; //230704新修改小票
-
+      logger.info('-- doPrintOrderMenu request --');
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         debugPrint("doPrintOrderMenu==val");
+        logger.info('-- doPrintOrderMenu done --');
         var response = json.decode(val.toString());
         debugPrint("doPrintOrderMenu==$response");
         //LogUtil.d(response);
@@ -1255,6 +1260,7 @@ class SettlementController extends GetxController with StateMixin {
         }
       }).catchError((e) {
         //错误后重新调用一次
+        logger.info('-- doPrintOrderMenu request error:${e.toString()} --');
         if (retry) {
           doPrintOrderMenu(printType, retry: false);
         } else {
@@ -1756,6 +1762,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //汇报入金币种,请求后台
   reportPutMoneyCurrency({retry = true}) {
+    logger.info('reportPutMoneyCurrency');
     if (isReportCash.value == true) {
       debugPrint("已汇报过");
       return;
@@ -1785,6 +1792,7 @@ class SettlementController extends GetxController with StateMixin {
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {
       debugPrint("----上报订单成功----");
+      logger.info('reportPutMoneyCurrency done');
       //var response = json.decode(value.toString());
       // if (response['code'] == 200) {
       ///if (isReportOutMoney.value == true) {
@@ -1794,6 +1802,7 @@ class SettlementController extends GetxController with StateMixin {
       //}
     }).catchError((e) {
       //后期优化，上报失败存储本地，下次再上报。
+      logger.info('reportPutMoneyCurrency error:${e.toString()}');
       debugPrint("----上报订单失败----");
       if (!retry && Platform.isAndroid) {
         FirebaseAnalytics.instance

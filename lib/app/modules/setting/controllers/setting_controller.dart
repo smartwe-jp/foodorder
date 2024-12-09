@@ -17,8 +17,10 @@ import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/Storage.dart';
+import 'package:foodorder/app/services/customLogger.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
+import 'package:logging/logging.dart';
 import 'package:package_info/package_info.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
@@ -74,6 +76,7 @@ class SettingController extends GetxController with StateMixin {
   // Map printInfo = {};
   // double printLength = 2048;
   Timer? showCashTimer;
+  final logger = Logger('SettingController');
 
   @override
   void onInit() {
@@ -156,7 +159,14 @@ class SettingController extends GetxController with StateMixin {
   //上传现金机log
   uploadErrorLog() async {
     showEasyLoading();
+
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    if (Platform.isWindows) {
+      logfile = await CustomLogHandler.exportLogs();
+      //saveLogToD();
+
+      //return;
+    }
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
@@ -174,6 +184,25 @@ class SettingController extends GetxController with StateMixin {
       }
     });
   }
+
+  // Future<void> saveLogToD() async {
+  //   String logfilePath = await CustomLogHandler.exportLogs();
+  //   File sourceFile = File(logfilePath);
+
+  //   // 获取文件名
+  //   String fileName = sourceFile.path.split('/').last;
+
+  //   // 创建目标文件路径
+  //   String destinationPath = 'D:\\$fileName';
+
+  //   try {
+  //     // 复制文件
+  //     await sourceFile.copy(destinationPath);
+  //     print('日志文件已成功保存到: $destinationPath');
+  //   } catch (e) {
+  //     print('保存日志文件时出错: $e');
+  //   }
+  // }
 
   printRejishimei(printLength, data) async {
     print('printRejishimei:$printLength, data:$data');

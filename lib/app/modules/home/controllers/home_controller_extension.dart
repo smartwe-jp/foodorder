@@ -12,10 +12,11 @@ extension HomeControllerExtension on HomeController {
 
   checkChangerStatus() async {
     debugPrint("checkChangerStatus 1");
-
+    logger.info('-- checkChangerStatus --');
     countDownTimer();
 
     int? resultCode = await CashChanger.checkChangerStatus;
+    logger.info('-- checkChangerStatus : $resultCode --');
     debugPrint("checkChangerStatus resultCode:  " + resultCode.toString());
     if (resultCode == null) {
       debugPrint("Unknown error");
@@ -56,18 +57,21 @@ extension HomeControllerExtension on HomeController {
     debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
     //如果检测现金机打开错误，则重新打开一下
+    logger.info('-- openCashChanger --');
     bool retCode = await CashChanger.openCashChanger(
       onSuccess: () async {
         debugPrint("OpenPayCube 6");
+        logger.info('-- openCashChanger success --');
         await Future.delayed(Duration(milliseconds: 200));
         startDeposit();
-      }, 
+      },
       catchError: (retCode, error) async {
         debugPrint("OpenPayCube error: $error");
-          if (retCode == 225) {
-            //已打开 // clearinput?
-            _calculateAmount();
-          }
+        logger.info('-- openCashChanger error: $error --');
+        if (retCode == 225) {
+          //已打开 // clearinput?
+          _calculateAmount();
+        }
       },
     );
   }
@@ -84,12 +88,14 @@ extension HomeControllerExtension on HomeController {
       debugPrint("Starttoubi getIsFirstOpen");
       getIsFirstOpen();
     }
-
+    logger.info('-- startDeposit --');
     await CashChanger.startDeposit(onSuccess: () async {
       debugPrint("Starttoubi success");
+      logger.info('-- startDeposit success --');
       await Future.delayed(Duration(milliseconds: 200));
       _calculateAmount();
     }, catchError: (error) {
+      logger.info('-- startDeposit error: $error --');
       debugPrint("Starttoubi error: $error");
     });
   }
@@ -97,6 +103,7 @@ extension HomeControllerExtension on HomeController {
   //计算投币金额
   void _calculateAmount() async {
     debugPrint("CalculateAmount 1");
+    logger.info('-- calculateAmount --');
     //int connectCount = 0;
     //计算投币金额
     final result = await CashChanger.depositAmount; //这一步有问题，如果获取金额不为0，需要退金。
@@ -104,6 +111,7 @@ extension HomeControllerExtension on HomeController {
         resultCode: result,
         onSuccess: () async {
           debugPrint("CalculateAmount 2");
+          logger.info('-- depositAmount success --');
           await Future.delayed(Duration(milliseconds: 200));
           stopCashChanger(DepositAction.repay.index, true);
         },
@@ -113,6 +121,7 @@ extension HomeControllerExtension on HomeController {
           _calculateAmount();
         },
         showError: (String error) {
+          logger.info('-- depositAmount error: $error --');
           stopCashChanger(DepositAction.repay.index, true);
           debugPrint("CalculateAmount error: $error");
         });
@@ -121,11 +130,13 @@ extension HomeControllerExtension on HomeController {
   stopCashChanger(action, next) async {
     debugPrint("stopPaycube 1");
     checkSteeps.value = 3;
+    logger.info('-- stopCashChanger --');
     int? result = await CashChanger.endDeposit(action);
     await CashChanger.changerResultNext(
         resultCode: result,
         onSuccess: () async {
           debugPrint("stopPaycube 3");
+          logger.info('-- stopCashChanger success --');
           await Future.delayed(Duration(milliseconds: 200));
           if (next) {
             closeCashChanger();
@@ -137,6 +148,7 @@ extension HomeControllerExtension on HomeController {
           stopCashChanger(action, true);
         },
         showError: (String error) async {
+          logger.info('-- stopCashChanger error: $error --');
           debugPrint("stopCashChanger error: $error");
         });
   }

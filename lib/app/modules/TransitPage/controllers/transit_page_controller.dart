@@ -5,10 +5,9 @@ import 'dart:io';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/string.dart';
-import 'package:foodorder/app/modules/OrderHome/views/entry_home_view.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
-import 'package:package_info/package_info.dart';
+import 'package:logging/logging.dart';
 
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
@@ -17,9 +16,6 @@ import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../CheckoutPage/views/checkout_page_view.dart';
-import '../../OrderHome/views/order_home_view.dart';
-import '../../SelfservicePage/views/selfservice_page_view.dart';
 
 class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
@@ -31,6 +27,7 @@ class TransitPageController extends GetxController {
   RxBool _loadActiveInfo = false.obs;
 
   String languageCode = "JP";
+  final logger = Logger('TransitPageController');
 
   @override
   Future<void> onInit() async {
@@ -186,6 +183,7 @@ class TransitPageController extends GetxController {
         var _discover = shopData["linePayChannelMap"]["Discover"] != null
             ? shopData["linePayChannelMap"]["Discover"]
             : false;
+        logger.info('-- server cash state = $_showCash --');
         var machineActivateData = {
           "showCash": (_isCashState.value == true) ? _showCash : false,
           "showWechat": _showWechat,

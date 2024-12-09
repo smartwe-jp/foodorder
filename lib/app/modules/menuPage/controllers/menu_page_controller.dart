@@ -14,6 +14,7 @@ import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart'
 
 import 'package:get/get.dart';
 import 'package:get/get_rx/get_rx.dart';
+import 'package:logging/logging.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -111,6 +112,7 @@ class MenuPageController extends GetxController with StateMixin {
   bool showRecommend = false;
   bool showCartView = false;
   String shopCode = '';
+  final logger = Logger('MenuPageController');
 
   AudioPlayer? player;
 
@@ -503,9 +505,9 @@ class MenuPageController extends GetxController with StateMixin {
     debugPrint("formData:${formData}");
     request('webBootIndexMenuv3', method: 'POST', parameters: formData)
         .then((val) {
-      debugPrint("getBookingBootIndexMenu request done");
+      
       var response = json.decode(val.toString());
-
+      debugPrint("getBookingBootIndexMenu request :$response");
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data'];
@@ -1235,7 +1237,7 @@ print("加1了");
   publicShowOneItemWidget(item) {
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50), () async {
-      debugPrint("changeInitialAllOption $item['menuCode']");
+      //debugPrint("changeInitialAllOption $item['menuCode']");
       Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
     });
   }
@@ -1458,6 +1460,7 @@ print("加1了");
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
+    logger.info('-- paymentMethodDialog cash state = ${showCash.value} --');
     Get.dialog(
         barrierDismissible: false,
         SelectPaymentPage(

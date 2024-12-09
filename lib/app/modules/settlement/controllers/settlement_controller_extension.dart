@@ -19,15 +19,18 @@ extension SettlementControllerExtension on SettlementController {
   startDeposit() async {
     debugPrint("startDeposit");
     var ret = 'failure';
+    logger.info('--start Deposit--');
     await CashChanger.startDeposit(
       onSuccess: () {
         debugPrint("startDeposit 1");
+        logger.info('--start Deposit success--');
         ret = 'success';
         _checkChangerStatus();
       },
       catchError: (error) {
         debugPrint("startDeposit error: $error");
         ret = GString.getToString(checkLanguage.value, error);
+        logger.info('--start Deposit error: $ret--');
         //"サービスは利用できません。スタッフに連絡してください。";
         //errorHandleDialog(GString.getToString(checkLanguage.value, error));
       },
@@ -37,6 +40,7 @@ extension SettlementControllerExtension on SettlementController {
 
   _checkChangerStatus() async {
     debugPrint("checkChangerStatus 1");
+    logger.info('--start checkChangerStatus--');
     var resultCode = await CashChanger.checkChangerStatus;
     if (resultCode == null) {
       debugPrint("Unknown error");
@@ -48,6 +52,7 @@ extension SettlementControllerExtension on SettlementController {
       resultCode = 100;
     }
     HealthResultCode resultCodeEnum = HealthResultCode.values[resultCode - 100];
+    logger.info('-- checkChangerStatus : $resultCodeEnum--');
     switch (resultCodeEnum) {
       case HealthResultCode.OPOS_SUCCESS:
       case HealthResultCode.OPOS_E_ILLEGAL:
@@ -75,7 +80,9 @@ extension SettlementControllerExtension on SettlementController {
   _getInputMoney() async {
     debugPrint("_getInputMoney");
     //await Paycube.setReceiveEvent;
+    logger.info('-- getInputMoney --');
     int totalPriceResult = int.tryParse(totalPrice.value) ?? 0;
+    logger.info('-- getInputMoney totalPriceResult: $totalPriceResult--');
     if (totalPriceResult == 0) {
       debugPrint('totalPriceResult == 0');
       scanQrCodeFocusNode.unfocus();
@@ -91,6 +98,7 @@ extension SettlementControllerExtension on SettlementController {
 
     CashChanger.onGetPutMoneyStringChange = (int result) {
       debugPrint("onGetPutMoneyStringChange");
+      logger.info('-- getInputMoney onGetPutMoneyStringChange: $result--');
       if (result > 0) {
         hasStartPayflow = true;
         timer?.cancel();
@@ -108,14 +116,17 @@ extension SettlementControllerExtension on SettlementController {
 
           var outMoney = result - int.parse(totalPrice.value); //找零金额
           showOutMoney.value = outMoney.toString(); //找零金额
+          logger.info('-- getInputMoney showOutMoney: $outMoney --');
         } else {
           showOutMoney.value = "0"; //找零金额
+          logger.info('-- getInputMoney showOutMoney: 0 --');
         }
         update();
       }
     };
 
     CashChanger.onStatusUpdateEventChange = (String result) async {
+      logger.info('-- onStatusUpdateEventChange: $result --');
       debugPrint("onStatusUpdateEventChange : $result");
       if (result == 'OK') {
         return;
@@ -166,11 +177,14 @@ extension SettlementControllerExtension on SettlementController {
 
   //入金开始-入金结束-交易结束-出金开始-交易结束
   endDeposit({repay = false}) async {
+    logger.info('-- end Deposit and isRepay?: $repay --');
     debugPrint("endDeposit repay: $repay");
     //sleep(Duration(milliseconds: 300));
+    logger.info('-- end Deposit fixDeposit --');
     final result = await CashChanger.fixDeposit;
     if (result != 0) {
       debugPrint("endDeposit error: $result");
+      logger.info('-- end Deposit fixDeposit error: $result--');
       // errorHandleDialog('OPOS_fixDeposit_FAILURE');
       // return;
     }
@@ -181,6 +195,7 @@ extension SettlementControllerExtension on SettlementController {
       _repayFlow();
       return;
     }
+    logger.info('-- end Deposit --');
 
     final resultCode = await CashChanger.endDeposit(
         repay ? DepositAction.repay.index : DepositAction.noChange.index);
@@ -201,6 +216,7 @@ extension SettlementControllerExtension on SettlementController {
           //     _payCubeCloseTransaction();
           //   }
           // }
+          logger.info('-- end Deposit success --');
           _payCubeCloseTransaction(true);
         },
         onRetry: () {
@@ -210,6 +226,7 @@ extension SettlementControllerExtension on SettlementController {
         showError: (String error) {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
+          logger.info('-- end Deposit error: $error --');
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             _repayFlow();
@@ -245,6 +262,7 @@ extension SettlementControllerExtension on SettlementController {
 
   gloryNextOper() async {
     debugPrint("nextOper");
+    logger.info('-- gloryNextOper nextOper --');
     CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
     // var depositAmount = await CashChanger.depositAmount;
@@ -281,12 +299,14 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   _startOutputMoney(outMoney) async {
+    logger.info('-- startOutPutMoney : $outMoney --');
     var success = false;
     debugPrint("startOutPutMoney");
     CashStep.value = 3;
     outStringMoney.value = outMoney.toString();
     final result =
         await CashChanger.dispenseChange(int.parse(outStringMoney.value));
+    logger.info('-- startOutPutMoney result: $result --');
     if (result == null) return;
     debugPrint("resultCode: $result");
 
@@ -304,6 +324,7 @@ extension SettlementControllerExtension on SettlementController {
         showError: (String error) {
           success = false;
           debugPrint("startOutPutMoney error: $error");
+          logger.info('-- startOutPutMoney error: $error --');
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
             //找钱失败一律退单和退回入金
@@ -318,12 +339,14 @@ extension SettlementControllerExtension on SettlementController {
 
   _repayFlow() async {
     showEasyLoading();
+    logger.info('-- start repayFlow --');
     final result = await CashChanger.depositRepay;
     await CashChanger.changerResultNext(
         resultCode: result,
         onSuccess: () {
+          logger.info('-- start repayFlow depositRepay success --');
           //if (getPutMoney.value == '2000') {
-            _getPayCubeOutMoney(reportWithOrder: false);
+          _getPayCubeOutMoney(reportWithOrder: false);
           // } else {
           //   EasyLoading.dismiss();
           //   Get.back();
@@ -335,6 +358,7 @@ extension SettlementControllerExtension on SettlementController {
         },
         showError: (String error) {
           debugPrint("depositRepay error: $error");
+          logger.info('-- start repayFlow depositRepay error: $error --');
           // errorHandleDialog(GString.getToString(checkLanguage.value, error),
           //     confirm: () {
           //   Get.back();
@@ -347,13 +371,16 @@ extension SettlementControllerExtension on SettlementController {
 
   gloryOutputMoney(outMoney) async {
     //debugPrint("startOutPutMoney");
+    logger.info('-- start gloryOutputMoney: $outMoney --');
     print("outMoney: $outMoney");
     //var outStringMoney = outMoney.toString();
     bool? result =
         await CashChanger.dispenseChangeOutside(outMoney, onSuccess: () {
       //已经结束入金，处理取引终了
+      logger.info('-- start gloryOutputMoney success --');
       _getPayCubeOutMoney(reportWithOrder: false);
     }, catchError: (error) {
+      logger.info('-- start gloryOutputMoney error: $error --');
       debugPrint("startOutPutMoney error: $error");
       // _errorHandleDialog(GString.getToString(checkLanguage.value, error),
       // confirm: () {
@@ -413,6 +440,7 @@ extension SettlementControllerExtension on SettlementController {
 
   _getInputMoneyInfo() async {
     debugPrint("_getInputMoneyInfo");
+    logger.info('-- getInputMoneyInfo --');
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
     debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
 
@@ -430,8 +458,10 @@ extension SettlementControllerExtension on SettlementController {
         currencyCashStringresult.length > 24) {
       putMoneyCurrency += currencyCashStringresult.substring(0, 12);
     }
+
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+    logger.info('-- getInputMoneyInfo: ${getPutMoneyCurrency.value}--');
     _payCubeCloseTransaction(false);
   }
 
@@ -440,12 +470,17 @@ extension SettlementControllerExtension on SettlementController {
     OutMoneytimer?.cancel();
 
     debugPrint("_getPayCubeOutMoney");
+    logger.info('-- getPayCubeOutMoney --');
     //获取硬币入金出金币种
     String? currencyCoinStringresult = await CashChanger.changerDIStatus(0x04);
     debugPrint("currencyCoinStringresult==${currencyCoinStringresult}");
+    logger.info(
+        '-- getPayCubeOutMoney currencyCoinStringresult==${currencyCoinStringresult} --');
 
     String? currencyCashStringresult = await CashChanger.changerDIStatus(0x82);
     debugPrint("currencyCashStringresult==${currencyCashStringresult}");
+    logger.info(
+        '-- getPayCubeOutMoney currencyCashStringresult==${currencyCashStringresult} --');
 
     var putMoneyCurrency = "";
     var currency = "";
@@ -464,8 +499,10 @@ extension SettlementControllerExtension on SettlementController {
 
     getPutMoneyCurrency.value =
         MoneyParser.migrationGloryToHexString(putMoneyCurrency);
+    logger.info('-- getPayCubeMoney put==${getPutMoneyCurrency} --');
     currencyString.value =
         MoneyParser.migrationGloryToHexString(currency, isOutMoney: true);
+    logger.info('-- getPayCubeMoney out==${currencyString} --');
 
     getOutMoneyString.value == false;
     if (reportWithOrder) {
@@ -486,6 +523,7 @@ extension SettlementControllerExtension on SettlementController {
   }
 
   reportExchange(puts, pops) async {
+    logger.info('-- getPayCubeMoney reportExchange --');
     var success = false;
     debugPrint('reportExchange');
     var formData = {
@@ -503,6 +541,7 @@ extension SettlementControllerExtension on SettlementController {
       parameters: formData,
     ).then((value) {
       final response = json.decode(value.toString());
+      logger.info('-- getPayCubeMoney reportExchange success --');
       debugPrint("response: $response");
       EasyLoading.dismiss();
       Get.back();
@@ -514,6 +553,8 @@ extension SettlementControllerExtension on SettlementController {
         //showToast('両替失败!', context: Get.context);
       }
     }).catchError((error) {
+      logger.info(
+          '-- getPayCubeMoney reportExchange error:${error.toString()} --');
       success = false;
       EasyLoading.dismiss();
       Get.back();

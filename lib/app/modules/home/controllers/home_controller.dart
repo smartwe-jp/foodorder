@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/home/controllers/home_controller_extension
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:appset/appset.dart';
+import 'package:logging/logging.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:paycube/paycube.dart';
@@ -39,6 +40,7 @@ class HomeController extends GetxController {
   var _allowStatus;
   var _stopStatus;
   var _closeStatus;
+  final logger = Logger('SettingController');
 
   @override
   void onInit() {
@@ -328,7 +330,8 @@ class HomeController extends GetxController {
   //禁用一元入金和出金
   prohibitOneCash() async {
     //var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
-    debugPrint("prohibitOneCashStatus _isCashState:${_isCashState.value}");
+    logger.info('-- prohibitOneCash : isCashState = ${_isCashState.value} --');
+    //debugPrint("prohibitOneCashStatus _isCashState:${_isCashState.value}");
     var cashShowData = {
       "isCash": _isCashState.value,
     };

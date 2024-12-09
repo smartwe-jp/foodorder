@@ -198,7 +198,9 @@ class EntryHomeView extends GetView<OrderHomeController> {
     if (url.isEmpty) {
       return AssetImage("assets/images/public/app_viewmore_icon.png");
     } else {
-      return CachedNetworkImageProvider(url);
+      return CachedNetworkImageProvider(url, errorListener: (error) {
+        controller.logger.info('-- CachedNetworkImageProvider Error : $error --');
+      },);
     }
   }
 
