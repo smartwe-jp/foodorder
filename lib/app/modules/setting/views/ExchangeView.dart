@@ -25,7 +25,7 @@ class Exchangeview extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         children: <Widget>[
           Text(
-            "両替したい通貨を選択してください",
+            "両替したい金種を選択してください",
             style: TextStyle(
                 color: ColorsUtil.hexToColor("#A61C1C"),
                 fontSize: ScreenAdapter.fontSize(26),
@@ -59,7 +59,7 @@ class Exchangeview extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                "両替通貨：${controller.exchangeFromInfo.keys.first}",
+                "両替金種：${controller.exchangeFromInfo.keys.first}",
                 style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(26),
                     fontFamily: GFont.getFontFamily(),
