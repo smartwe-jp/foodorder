@@ -29,7 +29,7 @@ class ActivationController extends GetxController {
 
   void _goMain() async {
     Future.delayed(Duration(milliseconds: 300), () {
-      Get.toNamed("/transit-page", arguments: {"loadActive": true});
+      Get.toNamed("/transit-page", arguments: {"loadActive": true, "machineCode":machineCodeController.text});
     });
   }
 
@@ -39,13 +39,6 @@ class ActivationController extends GetxController {
       showToast('コードを入力してください。');
       //Get.snackbar("お知らせ","コードを入力してください。",maxWidth: ScreenAdapter.width(500),duration: const Duration(milliseconds: 1500));
     }else {
-      //保存机器信息
-      Storage.setString('machineInfo', machineCodeController.text);
-      Storage.setBool('homeOpen', true);
-
-      GetxStorage.setData('machineInfo', machineCodeController.text);
-      GetxStorage.setData('homeOpen', true);
-
       _goMain();
 
     }

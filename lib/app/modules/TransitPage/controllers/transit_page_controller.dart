@@ -20,7 +20,7 @@ import '../../../widget/DialogUtils.dart';
 class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
   RxString _machineCode = "".obs;
-  var _machineMode = "1"; //1 券卖机  2 精算机 3 自助收银
+  //var _machineMode = "1"; //1 券卖机  2 精算机 3 自助收银
   RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
@@ -53,11 +53,25 @@ class TransitPageController extends GetxController {
     Map systemSettingInfo = await HomeServices.getIsShowCash();
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
       _loadActiveInfo.value = Get.arguments['loadActive'];
+      _machineCode.value = Get.arguments['machineCode'] ?? "";
     }
     _isCashState.value = systemSettingInfo['isCash'];
     debugPrint("isCashState: ${_isCashState.value}");
 
-    await _getMachineInfo();
+    if (_machineCode.isNotEmpty) {
+      firstActive();
+    } else {
+      _getMachineInfo();
+    }
+
+  }
+
+  firstActive() async {
+    if (Platform.isWindows) {
+        await _getMachineActivate(isFirst:true);
+      } else {
+        await _getPackageInfo();
+      }
   }
 
   _getMachineInfo() async {
@@ -85,7 +99,7 @@ class TransitPageController extends GetxController {
     await _getMachineActivate();
   }
 
-  _getMachineActivate() async {
+  _getMachineActivate({isFirst = false}) async {
     // var shouldActive = await _checkShouldActive();
     // if (!shouldActive) {
     //   await _getSmartweSystemSettingInfo();
@@ -106,9 +120,9 @@ class TransitPageController extends GetxController {
     print(formData);
     request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
-
+      LogUtil.d(response);
       if (response != null && response['code'] == 200 && response['data'] != null) {
-        LogUtil.d(response);
+        
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
@@ -244,7 +258,12 @@ class TransitPageController extends GetxController {
         if (Platform.isAndroid) {
           FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
         }
-        await _getSmartweSystemSettingInfo();
+        if (isFirst) {
+          await _saveActiveCode(_machineCode.value);
+        } else {
+          await _getSmartweSystemSettingInfo();
+        }
+        
       } else {
         if (Platform.isAndroid) {
           FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
@@ -305,6 +324,17 @@ class TransitPageController extends GetxController {
       Storage.setString('activeTimeInfo', now.toString());
       return true;
     }
+  }
+
+  _saveActiveCode(String code) async {
+          //保存机器信息
+      Storage.setString('machineInfo', code);
+      Storage.setBool('homeOpen', true);
+
+      GetxStorage.setData('machineInfo', code);
+      GetxStorage.setData('homeOpen', true);
+
+      await _getSmartweSystemSettingInfo();
   }
 
   _getSmartweSystemSettingInfo() async {
