@@ -1138,7 +1138,7 @@ class SettlementController extends GetxController with StateMixin {
         getPutMoney.value = "0";
         showPrintButton.value = false;
         if (Platform.isWindows) {
-          await endDeposit(repay: false);
+          await endDeposit();
         } else {
           Endtoubi();
         }
