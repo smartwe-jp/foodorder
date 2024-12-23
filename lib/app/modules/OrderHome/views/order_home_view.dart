@@ -113,13 +113,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('jp', 'JP');
-                              Get.updateLocale(locale);
-                              Get.toNamed(jumpUrl,arguments: {
-                                "checkLanguage": "JP",
-                                "mealType":mealType
-                              });
-
+                              var local = Locale('jp', 'JP');
+                              controller.goMenu(local, jumpUrl, 'JP', mealType);
                             }else{
                               _showSelectMealTypeDialog("JP", controller.menu_direction.value);
                             }
@@ -157,12 +152,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('ch', 'CH');
-                              Get.updateLocale(locale);
-                              Get.toNamed(jumpUrl,arguments: {
-                                "checkLanguage": "CH",
-                                "mealType":mealType
-                              });
+                              var local = Locale('ch', 'CH');
+                              controller.goMenu(local, jumpUrl, 'CH', mealType);
                             }else{
                               _showSelectMealTypeDialog("CH", controller.menu_direction.value);
                             }
@@ -198,12 +189,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('en', 'US');
-                              Get.updateLocale(locale);
-                              Get.toNamed(jumpUrl,arguments: {
-                                "checkLanguage": "EN",
-                                "mealType":mealType
-                              });
+                              var local = Locale('en', 'US');
+                              controller.goMenu(local, jumpUrl, 'EN', mealType);
                             }else{
                               _showSelectMealTypeDialog("EN", controller.menu_direction.value);
                             }
@@ -239,12 +226,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var locale = Locale('ko', 'KR');
-                              Get.updateLocale(locale);
-                              Get.toNamed(jumpUrl,arguments: {
-                                "checkLanguage": "KO",
-                                "mealType":mealType
-                              });
+                              var local = Locale('ko', 'KR');
+                              controller.goMenu(local, jumpUrl, 'KR', mealType);
                             }else{
                               _showSelectMealTypeDialog("KO", controller.menu_direction.value);
                             }

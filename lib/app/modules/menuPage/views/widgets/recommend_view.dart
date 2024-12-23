@@ -76,7 +76,8 @@ extension RecommendView on MenuPageController {
           debounce(showCartTotalGoodsNum, (count) {
             if (count == 0 && showCartView) {
               showCartView = false;
-              Navigator.pop(context);
+              //Navigator.pop(context);
+              Get.back();
             }
           });
           return GetBuilder<MenuPageController>(
@@ -126,7 +127,9 @@ extension RecommendView on MenuPageController {
           debounce(showCartTotalGoodsNum, (count) {
             if (count == 0 && showRecommend) {
               showRecommend = false;
-              Navigator.pop(context);
+              //debugPrint('Navigator:$Navigator, context:$context');
+              //Navigator.pop(context);
+              Get.back();
             }
           });
           return GetBuilder<MenuPageController>(

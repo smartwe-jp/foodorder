@@ -73,6 +73,15 @@ class OrderHomeController extends GetxController with StateMixin {
 
   }
 
+  goMenu(Locale local, String jumpUrl, String lan, bool mealType) {
+
+    Get.updateLocale(local);
+    Get.toNamed(jumpUrl,arguments: {
+      "checkLanguage": lan,
+      "mealType":mealType
+    });
+  }
+
   getmenchineLanguages() async {
     debugPrint("获取机器语言");
     var languageJP = false;

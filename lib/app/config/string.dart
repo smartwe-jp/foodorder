@@ -134,6 +134,9 @@ class GString{
         "next_button":"進む",
         "suggest_title":"ご一緒にいかがですか",
 
+        "network_error_tips":"申し訳ございません。ネットワークの異常により、一時的にご利用いただけません。店員にお問い合わせいただくか、取引をキャンセルしてください。",
+        "pos_notwork_tips":"申し訳ございません。POS端末が応答しません。店員に対応を依頼してください。ありがとうございます。",
+
       };
     }else if(languageCode == 'CH'){
       languagePack = {
@@ -261,6 +264,9 @@ class GString{
         "skip_button":"跳过",
         "next_button":"下一步",
         "suggest_title":"您可能还喜欢",
+
+        "network_error_tips":"非常抱歉，网络异常，暂时无法使用，请联系店员或者取消交易。",
+        "pos_notwork_tips":"非常抱歉，POS机无响应，请联系店员处理，谢谢。",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -388,6 +394,9 @@ class GString{
         "skip_button":"Skip",
         "next_button":"Next",
         "suggest_title":"You may also like",
+
+        "network_error_tips":"We are very sorry, there is a network issue, and the service is temporarily unavailable. Please contact the staff or cancel the transaction.",
+        "pos_notwork_tips":"We are very sorry, the POS machine is not responding. Please contact the staff for assistance. Thank you.",
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -516,6 +525,9 @@ class GString{
         "skip_button":"건너뛰기",
         "next_button":"다음",
         "suggest_title":"함께 보면 좋을 것들",
+
+        "network_error_tips":"죄송합니다. 네트워크 문제로 인해 서비스를 일시적으로 사용할 수 없습니다. 직원에게 문의하거나 거래를 취소해 주십시오.",
+        "pos_notwork_tips":"죄송합니다. POS 기기가 응답하지 않습니다. 직원에게 도움을 요청해 주십시오. 감사합니다.",
       };
     }
 

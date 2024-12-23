@@ -302,6 +302,7 @@ class TransitPageController extends GetxController {
 
 
   void _goMain() async {
+    debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => OrderHomeView());
       Get.toNamed("/order-home");

@@ -22,6 +22,7 @@ import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'app/services/ResetToHomeTimer.dart';
 import 'firebase_options.dart';
 
 //打印图层生成成功
@@ -76,32 +77,40 @@ void main() {
             minTextAdapt: true,
             splitScreenMode: true,
             builder: (context , child) {
-              return  GetMaterialApp(
-                debugShowCheckedModeBanner: false,
-                title: "券売君",
-                //配置主题
-                /*theme: ThemeData(
-                  primarySwatch: Colors.white,
-                  //fontFamily: "IBMPlexSansJP",
-                ),*/
-                theme: ThemeData(
-                  primaryColor: Gcolor.primaryColor,  // 设置主体颜色
-                ),
-                home: child,
-                //initialRoute: AppPages.INITIAL,
-                //配置ios动画
-                locale: Locale('jp', 'JP'), // 默认语言
-                fallbackLocale: Locale('jp', 'JP'), // 备用语言
-                defaultTransition:Transition.fadeIn,
-                getPages: AppPages.routes,
-                builder: (context, widget) {
-                  return MediaQuery(
-                    ///设置文字大小不随系统设置改变
-                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
-                    child: FlutterEasyLoading(child:widget),
-                  );
-                },
-              );
+              return  GlobalEventListener(
+                  appBuilder: (context, resetTimer) => GetMaterialApp(
+                    debugShowCheckedModeBanner: false,
+                    title: "券売君",
+                    theme: ThemeData(
+                      primaryColor: Gcolor.primaryColor, // 设置主体颜色
+                    ),
+                    home: child,
+                    //initialRoute: AppPages.INITIAL,
+                    //配置ios动画
+                    locale: Locale('jp', 'JP'), // 默认语言
+                    fallbackLocale: Locale('jp', 'JP'), // 备用语言
+                    defaultTransition: Transition.fadeIn,
+                    getPages: AppPages.routes,
+                    routingCallback: (value) {
+                      debugPrint("routingCallback : ${value?.current}");
+                      if (value?.current == Routes.MENU_PAGE ||
+                          value?.current == Routes.SCANCODE_PAGE) {
+                        resetTimer.startTimer();
+                      } else if (value?.current == Routes.ORDER_HOME ||
+                          value?.current == Routes.SETTLEMENT ||
+                          value?.current == Routes.SETTING) {
+                        resetTimer.cancelTimer();
+                      }
+                    },
+                    builder: (context, widget) {
+                      return MediaQuery(
+                        ///设置文字大小不随系统设置改变
+                        data: MediaQuery.of(context)
+                            .copyWith(textScaleFactor: 1.0),
+                        child: FlutterEasyLoading(child: widget),
+                      );
+                    },
+                  ));
             },
           child: Scaffold(
             body: PrintImageGenerateWidget(

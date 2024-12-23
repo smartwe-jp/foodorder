@@ -300,7 +300,7 @@ extension SettlementControllerUIExtension on SettlementController {
             title: GString.getToString(checkLanguage.value, "tag_title"),
             confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
-              if(resultString !="M10" && resultString !="L06"){
+              if(resultString !="M10" && resultString !="L06" && resultString !="L05"){
                 getPaymentCancelPosData();
               }
 
