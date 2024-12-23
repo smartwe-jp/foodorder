@@ -28,7 +28,7 @@ class PosSocketManager {
 
   int _socketNumberTimes = 0;
   String _eventReportString = "";
-  PosAction _posAction = PosAction.Close;
+  PosAction _posAction = PosAction.None;
 
   Function(String e)? _onError;
   Function(int mode)? _onLoading;
