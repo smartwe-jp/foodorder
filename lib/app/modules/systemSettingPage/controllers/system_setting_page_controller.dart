@@ -638,7 +638,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
       this._socket?.write(questData);
       EasyLoading.dismiss();
-      showTestResultDialog("POS Test Success");
+      showTestResultDialog("POS Connectd");
 
       this._socket?.listen(
         (List<int> event) {
