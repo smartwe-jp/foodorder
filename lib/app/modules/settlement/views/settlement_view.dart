@@ -151,7 +151,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.showPosCancelAlert();
                               //showCancelConfirm();
                             } catch (_) {}
                           },

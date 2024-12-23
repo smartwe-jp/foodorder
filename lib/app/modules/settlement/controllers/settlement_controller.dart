@@ -12,6 +12,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/controllers/pos_pay_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
@@ -40,6 +41,7 @@ import '../../menuPage/controllers/menu_page_controller.dart';
 class SettlementController extends GetxController with StateMixin {
   //TODO: Implement SettlementController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  final posManager = PosSocketManager();
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
 
@@ -185,10 +187,8 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   @override
-  void onClose() {
-    if (socketState.value == true) {
-      this._socket?.close();
-    }
+  Future<void> onClose() async {
+    await posManager.closePos();
     if (Platform.isAndroid) {
       Paycube.stopListening();
     } else {
@@ -213,7 +213,7 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint("readyQueryData");
     checkLanguage.value = Get.arguments['checkLanguage'];
     machineCode.value = Get.arguments['machineCode'];
-    shopCode = Get.arguments['shopCode'];
+    shopCode = Get.arguments['shopCode'] ?? "";
     orderId.value = Get.arguments['orderId'];
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
@@ -537,7 +537,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //三种扫码支付都未开通，弹出dialog
   _showScanCodeNoOpenDialog(checknum, showContent, {payType: "qr"}) {
-    EasyLoading.dismiss();
+    //EasyLoading.dismiss();
     scanQrCodeController.text = "";
     //_scanQrCode = "";
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode); // 获取焦点
@@ -710,6 +710,59 @@ class SettlementController extends GetxController with StateMixin {
 
   //pos机相关
   payconnectSocker({questData = ""}) async {
+    debugPrint('start connect pos');
+    posManager.payConnectSocket(payment_method_num.value, pos_ip.value,
+        int.parse(pos_port.value), machineCode.value, questData: questData,
+        onRequestPayData: () {
+          debugPrint('onRequestPayData');
+          _getPaymentPosData();
+        },
+        onLoading: (mode) {
+          if (mode == 0) {
+            showEasyLoading();
+          } else {
+            showPosEasyLoading();
+          }
+        },
+        onLoadingEnd: () {
+          EasyLoading.dismiss();
+        },
+        onCancel: (result, msg) =>
+            showPosCancelEasyLoading(result, resultPFSString: msg),
+        onDone: (action) {
+          debugPrint('onDone $action');
+          if (action == PosAction.Cancel) {
+            CancelOrder();
+          }
+          else if (action == PosAction.WritePay) {
+            gotonewMenuPage();
+            //goToNewMyHome();
+          }
+        },
+        onSuccess: (msg) {
+          CreditCardPayReport(msg);
+        },
+        onError: (error) {
+          EasyLoading.dismiss();
+          debugPrint('onError pos $error');
+
+          Get.dialog(
+              barrierDismissible: false,
+              DialogUtils.alertOneButton(error, confirm: () {
+                posManager.resetState();
+                Get.back();
+                CancelOrder();
+              }));
+        },
+        onTimeOut: () {
+          debugPrint('onTimeOut');
+          _showScanCodeNoOpenDialog(
+              3,
+              GString.getToString(
+                  checkLanguage.value, "settlement_posPay_connect_error"),
+              payType: "pos");
+        });
+    return;
     //判断socket请求次数
     socketNumberTimes.value++;
     if (socketNumberTimes.value > 20) {
@@ -778,39 +831,6 @@ class SettlementController extends GetxController with StateMixin {
           print("resultString==${resultString}");
           print("resultMPFSString==${resultMPFSString}");
           print(eventReportString.value.length);
-
-          if (posTest) {
-            //测试代码 发版时posTest必需为false
-            String errorString = eventReportString.value.substring(130, 133);
-            print("errorString==${errorString}");
-            if (errorString == "801") {
-              if (get801Flag.value == false) {
-                LogUtil.d("Get 801 Send 491");
-                get801Flag.value = true;
-                showCheckLoading();
-                this._socket?.write(create491Message());
-              } else {
-                EasyLoading.dismiss();
-                _showScanCodeNoOpenDialog(
-                    3,
-                    GString.getToString(checkLanguage.value,
-                        "settlement_posPay_error_connect_worker"),
-                    payType: "pos");
-              }
-
-              return;
-            } else if (errorString == "803" || errorString == "802") {
-              Get.dialog(DialogUtils.alertOneButton(
-                  "取引が不明な状態で終了しました（コード${errorString}）。端末の指示に従って操作してください。",
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(
-                      checkLanguage.value, "tag_button_yes"), confirm: () {
-                Get.back();
-              }));
-              return;
-            }
-          }
-
           //支付成功 打印，返回首页 除了成功都取消
           if (transactionType == "900") {
             if (FirstString == "3" &&
@@ -1004,7 +1024,9 @@ class SettlementController extends GetxController with StateMixin {
 
             posResultReportData.value = response['data'];
             //判断不为空则POS机
-            this._socket?.write(resultData["requestInfo"]);
+            //this._socket?.write(resultData["requestInfo"]);
+            posManager.posActionWithData(
+                PosAction.WritePay, resultData["requestInfo"]);
           } else {
             _showScanCodeNoOpenDialog(3, resultData["exceptionMessage"]);
           }
@@ -1021,7 +1043,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   showPosCancelAlert() {
-    if (socketPosCancel.value == true) return;
+    //if (socketPosCancel.value == true) return;
 
     Future.delayed(Duration(milliseconds: 50), () async {
       Get.dialog(
@@ -1058,15 +1080,16 @@ class SettlementController extends GetxController with StateMixin {
       LogUtil.d(response);
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
-        this._socket?.write(response['data']);
+        //this._socket?.write(response['data']);
+        posManager.posActionWithData(PosAction.Cancel, response['data']);
       }
     });
   }
 
 //刷卡机nfc支付汇报
   CreditCardPayReport(eventString) {
-    posResultReportData.value["result"] = true;
-    posResultReportData.value["paymentInfo"] =
+    posResultReportData["result"] = true;
+    posResultReportData["paymentInfo"] =
         eventString; //LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport',
             method: 'POST', parameters: posResultReportData.value)
@@ -1086,7 +1109,7 @@ class SettlementController extends GetxController with StateMixin {
   _startPaymentTimer() async {
     debugPrint("startResetTimer");
     paymentTimer?.cancel();
-    paymentTimer = Timer(Duration(seconds: 180), () async {
+    paymentTimer = Timer(Duration(seconds: 200), () async {
       paymentTimer?.cancel();
       if (hasStartPayflow) return;
       commonCancel();

@@ -507,7 +507,7 @@ class MenuPageController extends GetxController with StateMixin {
         .then((val) {
       
       var response = json.decode(val.toString());
-      debugPrint("getBookingBootIndexMenu request :$response");
+      //debugPrint("getBookingBootIndexMenu request :$response");
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data'];
