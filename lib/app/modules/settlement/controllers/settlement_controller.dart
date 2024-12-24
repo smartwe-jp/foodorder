@@ -365,6 +365,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         } else {
           //print("普通支付请求了new order id");
+          Get.find<MenuPageController>().getBookingBootIndexCagegory("");
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
@@ -432,6 +433,7 @@ class SettlementController extends GetxController with StateMixin {
         // eventBus.fire(new clearCartEvent('支付成功...'));
         //有弹窗选择支付才在关闭一个
         Get.find<MenuPageController>().getCartPriceTotal();
+        Get.find<MenuPageController>().getBookingBootIndexCagegory("");
         if (showOpenPayment.value == true) {
           Get.back();
         }
@@ -712,7 +714,8 @@ class SettlementController extends GetxController with StateMixin {
   payconnectSocker({questData = ""}) async {
     debugPrint('start connect pos');
     posManager.payConnectSocket(payment_method_num.value, pos_ip.value,
-        int.parse(pos_port.value), machineCode.value, questData: questData,
+        int.parse(pos_port.value), machineCode.value,
+        questData: questData,
         onRequestPayData: () {
           debugPrint('onRequestPayData');
           _getPaymentPosData();
@@ -733,8 +736,7 @@ class SettlementController extends GetxController with StateMixin {
           debugPrint('onDone $action');
           if (action == PosAction.Cancel) {
             CancelOrder();
-          }
-          else if (action == PosAction.WritePay) {
+          } else if (action == PosAction.WritePay) {
             gotonewMenuPage();
             //goToNewMyHome();
           }
@@ -1379,7 +1381,8 @@ class SettlementController extends GetxController with StateMixin {
         nextOper(orderId);
       } else {
         showSuccessAlert(() {
-          goToNewMyHome();
+          //goToNewMyHome();
+          gotonewBack();
         });
       }
     });

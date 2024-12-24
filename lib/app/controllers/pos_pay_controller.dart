@@ -248,10 +248,12 @@ class PosSocketManager {
                 String reportString = eventString.substring(0, 169);
                 if (_payProcess)
                 onSuccess?.call(reportString);
+                resetState();
                 _payProcess = false;
               } else {
                 if (_payProcess)
                 onSuccess?.call(_eventReportString);
+                resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
@@ -278,10 +280,12 @@ class PosSocketManager {
                 String reportString = eventString.substring(0, 169);
                 if (_payProcess)
                 onSuccess?.call(reportString);
+                resetState();
                 _payProcess = false;
               } else {
                 if (_payProcess)
                 onSuccess?.call(eventString);
+                resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
