@@ -340,7 +340,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取页面分类
-  getBookingBootIndexCagegory(){
+  getBookingBootIndexCagegory({isReset = false}){
     topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -405,7 +405,11 @@ class MenuPageController extends GetxController with StateMixin {
           if (i == 0) classTag.value = categoryVoList['categoryCode'];
 
         }
-        getBookingBootIndexMenu(classTag.value);
+        if (isReset) {
+          _resetToFirstCategory();
+        } else {
+          getBookingBootIndexMenu(classTag.value);
+        }
 
         //update();
         //change(null, status: RxStatus.success());
@@ -1442,7 +1446,7 @@ print("加1了");
           "showOpenPayment":showOpenPayment.value
         });
     if (result == 'Done') {
-      _resetToFirstCategory();
+      await getBookingBootIndexCagegory(isReset: true);
     }
   }
 

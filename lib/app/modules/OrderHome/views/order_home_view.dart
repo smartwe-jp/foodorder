@@ -227,7 +227,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                               var mealType = (controller.dining_type.value == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
                               var local = Locale('ko', 'KR');
-                              controller.goMenu(local, jumpUrl, 'KR', mealType);
+                              controller.goMenu(local, jumpUrl, 'KO', mealType);
                             }else{
                               _showSelectMealTypeDialog("KO", controller.menu_direction.value);
                             }

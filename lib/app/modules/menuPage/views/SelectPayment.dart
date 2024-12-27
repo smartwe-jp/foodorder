@@ -166,6 +166,18 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
 
   }
 
+  @override
+  void dispose() {
+    debugPrint('SelectPaymentPage dispose');
+    super.dispose();
+  }
+
+  @override
+  void reassemble() {
+    debugPrint('SelectPaymentPage reassemble');
+    super.reassemble();
+  }
+
   updateCashShow(){
     setState(() {
       _showCash = false;

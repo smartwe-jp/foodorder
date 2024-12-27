@@ -20,9 +20,10 @@ import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../controllers/menu_page_controller.dart';
+import 'LoadingFailPage.dart';
 
 class MenuzongPageView extends GetView {
-  final MenuPageController controller = Get.put(MenuPageController());
+  final MenuPageController controller = Get.find();
   MenuzongPageView({Key? key}) : super(key: key);
 
   //左侧分类导航
@@ -30,7 +31,7 @@ class MenuzongPageView extends GetView {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
     int _categoryNum = 1;
 
-    for (var item in controller.topMenu.value) {
+    for (var item in controller.topMenu) {
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
@@ -2908,6 +2909,64 @@ class MenuzongPageView extends GetView {
     );
   }
 
+   Widget _leftMenuBar() {
+    return Container(
+        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+        //height: ScreenAdapter.height(1585),
+        width: ScreenAdapter.width(80),
+        padding: EdgeInsets.only(top: ScreenAdapter.height(8),left: ScreenAdapter.width(2)),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            Container(
+              child: InkWell(
+                enableFeedback: false,
+                onTap: () {
+                  controller.gotoLanguageHome();
+                  //controller.ordersqlcontroller.removeAllFromCart();
+
+                },
+                child: Container(
+                  margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
+                  width: ScreenAdapter.width(75),
+                  //height: ScreenAdapter.height(125),
+                  alignment: Alignment.center,
+                  decoration: BoxDecoration(
+                    color: ColorsUtil.hexToColor("#A61C1C"),
+
+                  ),
+                  child: Center(
+                    //加上Center让文字居中
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+
+                        Container(
+                          width: ScreenAdapter.width(30),
+                          child: RotatedBox(quarterTurns: 1,child: Text(
+                            GString.getToString(controller.checkLanguage.value, "top_back_button"),
+                            style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(26),
+                                color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
+                                fontWeight: FontWeight.w600),
+                          )),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            Expanded(
+                child: showLeftCategoryMenu()
+            ),
+          ],
+        )
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -2920,61 +2979,8 @@ class MenuzongPageView extends GetView {
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Container(
-                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                      //height: ScreenAdapter.height(1585),
-                      width: ScreenAdapter.width(80),
-                      padding: EdgeInsets.only(top: ScreenAdapter.height(8),left: ScreenAdapter.width(2)),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          Container(
-                            child: InkWell(
-                              enableFeedback: false,
-                              onTap: () {
-                                controller.gotoLanguageHome();
-                                //controller.ordersqlcontroller.removeAllFromCart();
 
-                              },
-                              child: Container(
-                                margin: EdgeInsets.only(bottom: ScreenAdapter.height(5)),
-                                width: ScreenAdapter.width(75),
-                                height: ScreenAdapter.height(125),
-                                alignment: Alignment.center,
-                                decoration: BoxDecoration(
-                                  color: ColorsUtil.hexToColor("#A61C1C"),
-
-                                ),
-                                child: Center(
-                                  //加上Center让文字居中
-                                  child: Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-
-                                      Container(
-                                        width: ScreenAdapter.width(30),
-                                        child: RotatedBox(quarterTurns: 1,child: Text(
-                                          GString.getToString(controller.checkLanguage.value, "top_back_button"),
-                                          style: TextStyle(
-                                              fontFamily: GFont.getFontFamily(),
-                                              fontSize: ScreenAdapter.fontSize(26),
-                                              color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
-                                              fontWeight: FontWeight.w600),
-                                        )),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                              child: showLeftCategoryMenu()
-                          ),
-                        ],
-                      )
-                  ),
+                  _leftMenuBar(),
 
                   Expanded(
                     child: Column(
@@ -3033,6 +3039,9 @@ class MenuzongPageView extends GetView {
               valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
             ),
           ),
+          onError: (error) => LoadingFailedWidget(onBack: (){
+            controller.backToNewHome();
+          },),
         );
       }),
     );

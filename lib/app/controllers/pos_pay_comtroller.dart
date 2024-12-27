@@ -245,10 +245,12 @@ class PosSocketManager {
                 String reportString = eventString.substring(0, 169);
                 if (_payProcess)
                 onSuccess?.call(reportString);
+                resetState();
                 _payProcess = false;
               } else {
                 if (_payProcess)
                 onSuccess?.call(_eventReportString);
+                resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
@@ -275,15 +277,18 @@ class PosSocketManager {
                 String reportString = eventString.substring(0, 169);
                 if (_payProcess)
                 onSuccess?.call(reportString);
+                resetState();
                 _payProcess = false;
               } else {
                 if (_payProcess)
                 onSuccess?.call(eventString);
+                resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
             } else {
               if (resultString.trim() != "") {
+                _needInterActive = true;
                 debugPrint("---Recorde error to firebase old---");
                 //T10 交通系等待时间超过30-40后自动返回
                 var posErrorCode = ["L11", "T10"];
@@ -292,7 +297,6 @@ class PosSocketManager {
                   Future.delayed(Duration(milliseconds: 2500), () async {
                     debugPrint("Pos error done order");
                     //if (!_needInterActive) onDone?.call(_posAction);
-                    _needInterActive = true;
                     _onError?.call(resultString);
                     //gotonewMenuPage(); backAction
                   });
@@ -302,7 +306,7 @@ class PosSocketManager {
               }
             }
           } else {
-            onError?.call(resultString);
+            //onError?.call(resultString);
           }
         },
         onDone: () {

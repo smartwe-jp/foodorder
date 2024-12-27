@@ -27,11 +27,11 @@ class ResetToHomeTimer {
           return;
         } else if (Get.routing.current == Routes.MENU_PAGE) {
           Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-          final isBackHome = systemSettingInfo['isAllowBackHome'];
-          if (isBackHome.value != "0") {
+          final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+          if (isBackHome != "0") {
             cancelTimer();
+            return;
           }
-          return;
         }
 
         Get.updateLocale(Locale('jp', 'JP'));

@@ -330,6 +330,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         }else{
           //print("普通支付请求了new order id");
+          Get.find<MenuPageController>().getBookingBootIndexCagegory();
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
@@ -706,6 +707,10 @@ class SettlementController extends GetxController with StateMixin {
         onError: (error) {
           EasyLoading.dismiss();
           debugPrint('onError pos $error');
+          if (error == "L11") {
+            gotonewMenuPage();
+            return;
+          }
 
           Get.dialog(
               barrierDismissible: false,
@@ -1115,7 +1120,6 @@ class SettlementController extends GetxController with StateMixin {
         Get.back();
       }
     }
-    Get.back();
   }
 
   CancelOrder() {
@@ -1335,7 +1339,8 @@ class SettlementController extends GetxController with StateMixin {
       if (payment_method_num.value == "1") {
         nextOper();
       } else {
-        goToNewMyHome();
+        //goToNewMyHome();
+        gotonewBack();
       }
 
     });
