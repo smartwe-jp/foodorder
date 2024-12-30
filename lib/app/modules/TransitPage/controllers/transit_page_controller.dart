@@ -1,12 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
 
 
 import '../../../plugins/paycube/lib/paycube.dart';
@@ -180,6 +183,7 @@ class TransitPageController extends GetxController {
         _actuarial.value = shopData["actuarial"];
 
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+        await downloadAndSaveImage(shopData["logoImage"]);
         await _getSmartweSystemSettingInfo();
       } else {
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
@@ -214,6 +218,78 @@ class TransitPageController extends GetxController {
 
         })
   );
+
+  Future<void> downloadAndStoreImage(String imageUrl) async {
+    try {
+      // 下载图片
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // 将图片转换为字节数组
+        Uint8List imageBytes = response.bodyBytes;
+
+        // 将字节数组转换为base64字符串
+        String base64Image = base64Encode(imageBytes);
+        LogUtil.d("base64Image:$base64Image");
+        // 存储base64字符串到SharedPreferences
+        //SharedPreferences prefs = await SharedPreferences.getInstance();
+        await Storage.setString('smartwe_logoImageData', base64Image);
+        await GetxStorage.setData('smartwe_logoImageData', base64Image);
+
+        print('Image downloaded and stored successfully');
+      } else {
+        print('Failed to download image');
+      }
+    } catch (e) {
+      print('Error downloading image: $e');
+    }
+  }
+
+  Future<void> downloadAndSaveImage(String imageUrl) async {
+    try {
+      // 下载图片
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        // 获取应用文档目录
+        final directory = await getApplicationDocumentsDirectory();
+
+        // 从Content-Type头部获取实际的MIME类型
+        final mimeType = response.headers['content-type'];
+
+        // 根据MIME类型选择正确的文件扩展名
+        String extension = '.png'; // 默认为png
+        if (mimeType != null) {
+          if (mimeType.contains('jpeg') || mimeType.contains('jpg')) {
+            extension = '.jpg';
+          } else if (mimeType.contains('bmp')) {
+            extension = '.bmp';
+          } else if (mimeType.contains('gif')) {
+            extension = '.gif';
+          } else if (mimeType.contains('webp')) {
+            extension = '.webp';
+          }
+        }
+
+        final filePath = '${directory.path}/smartwe_logoImage$extension';
+
+        // 将图片保存到本地文件
+        File file = File(filePath);
+        debugPrint('filePath:$filePath');
+        await file.writeAsBytes(response.bodyBytes);
+
+      // 将文件路径存储到 SharedPreferences
+        //SharedPreferences prefs = await SharedPreferences.getInstance();
+        //await prefs.setString('smartwe_logoImageData', filePath);
+        await Storage.setString('smartwe_logoImageData', filePath);
+        await GetxStorage.setData('smartwe_logoImageData', filePath);
+
+        print('Image downloaded and path stored successfully');
+      } else {
+        print('Failed to download image');
+      }
+    } catch (e) {
+      print('Error downloading image: $e');
+    }
+  }
 
   Future<bool> _checkShouldActive() async {
     var now = DateTime.now();

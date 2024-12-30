@@ -1,10 +1,11 @@
 
 import 'dart:convert';
-import 'dart:typed_data';
-import 'dart:ui';
-
+import 'dart:io';
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
+
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get_rx/src/rx_types/rx_types.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
 import 'package:get/get_state_manager/src/simple/get_controllers.dart';
@@ -20,6 +21,7 @@ class CreatePrintImageController extends GetxController {
   RxString machineCode = "".obs;
   RxString machineMode = "1".obs;
   RxString printLogoImage = "".obs;
+  String? printLogoImageData;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -67,7 +69,16 @@ class CreatePrintImageController extends GetxController {
     }
 
     machineCode.value = await HomeServices.getMachineInfo();
+
+    await getImageDataForPlugin();
     //change(null, status: RxStatus.success());
+  }
+
+  Future getImageDataForPlugin() async {
+    String logoImageInfo = await HomeServices.getSmartweLogoImage();
+    if(logoImageInfo != ""){
+      printLogoImageData = logoImageInfo;
+    }
   }
 
   tpPrintnew(print_paper_txt_size, printData, printType) async {
@@ -370,6 +381,41 @@ class CreatePrintImageController extends GetxController {
 
   tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
+
+
+    if(printLogoImageData != null) {
+      //Uint8List imageBytes = base64Decode(printLogoImageData!);
+      debugPrint('imagePath:$printLogoImageData');
+      // categoryMenus.add(
+      //     Container(
+      //       height: 170,
+      //       margin: EdgeInsets.all(20),
+      //       decoration: BoxDecoration(
+      //         image: DecorationImage(
+      //           image: AssetImage('assets/images/gongcha/doujing.bmp'),
+      //           fit: BoxFit.contain,
+      //         ),
+      //       ),
+      //     )
+      //   );
+
+
+      categoryMenus.add(
+          Container(
+            height: 170, // 设置容器宽度，根据需要调整
+            margin: EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: FileImage(File(printLogoImageData!)),
+                fit: BoxFit.contain, // 可以根据需要调整fit属性
+              ),
+            ),
+          )
+      );
+    }
+
+
+
     var menuVos = printData["details"];
     var lineHight = 580;
     var lineZeng = 0;
@@ -774,7 +820,7 @@ class CreatePrintImageController extends GetxController {
     //お明細は上記のとおりです。
     categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight+addRowHight;
+    var totalHight = lineZeng + lineHight+addRowHight + 170;
 
     ByteData byteData = await WidgetToImage.widgetToImage(Container(
       width: 385,
@@ -795,8 +841,9 @@ class CreatePrintImageController extends GetxController {
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
     //Future.delayed(Duration(milliseconds: 200), () async {
+    LogUtil.d('printLogoImageData:$printLogoImageData');
     String base64Image = base64Encode(imageBytes);
-    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",printLogoImage.value);
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", printLogoImageData);
     Future.delayed(Duration(milliseconds: 300), () async {
       await FlutterPluginMsprinter.sendPrintCut("1");
     });

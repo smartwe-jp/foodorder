@@ -275,6 +275,18 @@ class HomeServices{
     return smartweLogoImagesInfo;
   }
 
+  static getSmartweLogoImage() async{
+    var smartweLogoImagesInfo;
+    try {
+      var logoImageData = await Storage.getString('smartwe_logoImageData');
+      //GetxStorage.setData('smartwe_logoImage', logoImageData);
+      smartweLogoImagesInfo = logoImageData;
+    } catch (e) {
+      smartweLogoImagesInfo = "";
+    }
+    return smartweLogoImagesInfo;
+  }
+
   //首图
   static getSmartweReimburseData() async{
     var smartweReimburseInfo;
