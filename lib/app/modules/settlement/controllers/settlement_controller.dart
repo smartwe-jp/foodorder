@@ -1087,7 +1087,7 @@ class SettlementController extends GetxController with StateMixin {
   _startPaymentTimer() async {
     debugPrint("startResetTimer");
     paymentTimer?.cancel();
-    paymentTimer = Timer(Duration(seconds: 180), () async {
+    paymentTimer = Timer(Duration(seconds: 10), () async {
       paymentTimer?.cancel();
       if (hasStartPayflow) return;
       debugPrint('cancel Timer trigger');
@@ -1103,15 +1103,18 @@ class SettlementController extends GetxController with StateMixin {
       var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
       if (paymentMethod.contains(payment_method_num.value) == true) {
         socketPosCancel.value = true;
-        if(posManager.posAction() == PosAction.Cancel
-            || posManager.posAction() == PosAction.WritePay
-            ) {
-          posManager.setPosPadding();
-          commonErrorAlert(GString.getToString(checkLanguage.value, "pos_notwork_tips"));
+        // if(posManager.posAction() == PosAction.Cancel
+        //     || posManager.posAction() == PosAction.WritePay
+        //     ) {
+        //   posManager.setPosPadding();
+        //   commonErrorAlert(GString.getToString(checkLanguage.value, "pos_notwork_tips"));
+        //   return;
+        // } else if (posManager.posAction() == PosAction.Connect){
+        //   Get.back();
+        //   gotonewMenuPage();
+        // }
+        if (posManager.posAction() == PosAction.Cancel) {
           return;
-        } else if (posManager.posAction() == PosAction.Connect){
-          Get.back();
-          gotonewMenuPage();
         } else {
           getPaymentCancelPosData();
         }
