@@ -282,7 +282,7 @@ extension SettlementControllerUIExtension on SettlementController {
       _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
 
       if (resultString.contains("L10")) {
-        goToNewMyHome(); //返回首页
+        gotonewMenuPage(); //返回首页
         return;
       }
 
@@ -310,7 +310,8 @@ extension SettlementControllerUIExtension on SettlementController {
               Future.delayed(Duration(milliseconds: 1500),() async {
                 CancelOrder();
               });
-            })
+            }),
+      barrierDismissible: false
     );
 
   }

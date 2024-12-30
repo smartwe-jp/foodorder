@@ -13,12 +13,12 @@ enum PosAction {
 }
 
 class PosSocketManager {
-  static final bool posTest = false;
-  static final PosSocketManager _instance = PosSocketManager._internal();
-  factory PosSocketManager() => _instance;
-
-  // Private constructor
-  PosSocketManager._internal();
+  final bool posTest = false;
+  // static final PosSocketManager _instance = PosSocketManager._internal();
+  // factory PosSocketManager() => _instance;
+  //
+  // // Private constructor
+  // PosSocketManager._internal();
 
   // Socket instance
   Socket? _socket;
@@ -57,7 +57,7 @@ class PosSocketManager {
     _needInterActive = true;
   }
 
-  Future posActionWithData(PosAction action, String writeData) async {
+  Future posActionWithData(PosAction action, String writeData, {Function? backTask = null}) async {
     //Logger('').info('posActionWithData action:$action data:$writeData');
     _posAction = action;
     switch (action) {
@@ -70,8 +70,13 @@ class PosSocketManager {
       case PosAction.Cancel:
         _socketNumberTimes = 0;
         if (_isConnected == false) {
-          _onDone?.call(action);
-          _onDone = null;
+          if (_onDone == null) {
+            backTask?.call();
+          } else {
+            _onDone?.call(action);
+            _onDone = null;
+          }
+
         } else {
           _onLoading?.call(0);
         }
@@ -79,6 +84,9 @@ class PosSocketManager {
         break;
       case PosAction.Close:
         _socketNumberTimes = 0;
+        break;
+      case PosAction.None:
+        // TODO: Handle this case.
         break;
     }
 
@@ -297,6 +305,7 @@ class PosSocketManager {
                   Future.delayed(Duration(milliseconds: 2500), () async {
                     debugPrint("Pos error done order");
                     //if (!_needInterActive) onDone?.call(_posAction);
+                    if (_posAction != PosAction.None)
                     _onError?.call(resultString);
                     //gotonewMenuPage(); backAction
                   });
@@ -313,13 +322,14 @@ class PosSocketManager {
           debugPrint('pos is done');
           _socketNumberTimes = 0;
           _isConnected = false;
-          if (!_needInterActive) onDone?.call(_posAction);
+          if (!_needInterActive && _posAction != PosAction.None)
+            onDone?.call(_posAction);
         },
         onError: (e) {
           debugPrint('pos is error: $e');
           _socketNumberTimes = 0;
           _isConnected = false;
-          if (!_needInterActive)
+          if (!_needInterActive && _posAction != PosAction.None)
           onError?.call(e.toString());
           _needInterActive = true;
 

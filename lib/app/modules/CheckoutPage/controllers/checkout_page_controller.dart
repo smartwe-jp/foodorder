@@ -408,7 +408,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   goToSettlement() async {
     // scanQrCodeController.text = "";
     // scanQrCodeHomeController.text = "";
-    final result = await Get.toNamed('/settlement',preventDuplicates: false,
+    Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage": checkLanguage.value,
           "machineCode": machineCode.value,
@@ -443,15 +443,22 @@ class CheckoutPageController extends GetxController with StateMixin {
           "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
-    if (result == true) {
-      debugPrint('---settlement back---');
-      if (result == true) {
-        debugPrint('settlement back');
-        Get.back();
-        showOrderEasyLoading();
-        requestOrderList(scanTextValue, goDetail: false);
-      }
-    }
+    // if (result == true) {
+    //   debugPrint('---settlement back---');
+    //   if (result == true) {
+    //     debugPrint('settlement back');
+    //     Get.back();
+    //     showOrderEasyLoading();
+    //     requestOrderList(scanTextValue, goDetail: false);
+    //   }
+    // }
+  }
+
+  resetStateBack() {
+    debugPrint('settlement back');
+    Get.back();
+    showOrderEasyLoading();
+    requestOrderList(scanTextValue, goDetail: false);
   }
 
   backCheckHome({resetLanguage = false}) {
