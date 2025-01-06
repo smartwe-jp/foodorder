@@ -1413,9 +1413,13 @@ print("加1了");
     gotoSettlement();
   }
 
+  resetToFirstPage() async {
+    await getBookingBootIndexCagegory(isReset: true);
+  }
+
 
   gotoSettlement() async {
-    final result = await Get.toNamed('/settlement',preventDuplicates: false,
+  await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineCode.value,
@@ -1450,9 +1454,6 @@ print("加1了");
           "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
-    if (result == 'Done') {
-      await getBookingBootIndexCagegory(isReset: true);
-    }
   }
 
   CancelOrder() {

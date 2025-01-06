@@ -154,7 +154,7 @@ class SettlementController extends GetxController with StateMixin {
 
   RxInt CashStep = 1.obs;
   RxInt socketNumberTimes = 0.obs;
-  RxBool socketPosCancel = false.obs;
+  //RxBool socketPosCancel = false.obs;
 
   int timeOffset = 0;
   bool posTest = false;
@@ -325,6 +325,7 @@ class SettlementController extends GetxController with StateMixin {
         if(machineMode.value == "2") {//精算时候请求
           //print("精算请求了new order id");
           Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
+          Get.find<CheckoutPageController>().resetStateBack();
         }else if(machineMode.value == "3"){
           //print("自助精算请求了new order id");
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
@@ -336,7 +337,12 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
     EasyLoading.dismiss();
-    Get.back(result: true);
+    Get.back();
+  }
+
+  checkOutModeBack() async {
+    if (Get.isRegistered<CheckoutPageController>())
+    Get.find<CheckoutPageController>().resetStateBack();
   }
 
   goToNewMyHome() {
@@ -371,7 +377,7 @@ class SettlementController extends GetxController with StateMixin {
   gotonewBack() {
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
-    Get.back(result: 'Done');
+    Get.back();
     if (machineMode.value == "1") {
       if(is_back_home.value == "0"){
         //Get.delete<MenuPageController>(); // 手动删除控制器实例
@@ -381,6 +387,7 @@ class SettlementController extends GetxController with StateMixin {
       }else{
         // eventBus.fire(new clearCartEvent('支付成功...'));
         //有弹窗选择支付才在关闭一个
+        Get.find<MenuPageController>().resetToFirstPage();
         Get.find<MenuPageController>().getCartPriceTotal();
         if(showOpenPayment.value == true){
           Get.back();
@@ -994,7 +1001,9 @@ class SettlementController extends GetxController with StateMixin {
             posResultReportData.value = response['data'];
             //判断不为空则POS机
             //this._socket?.write(resultData["requestInfo"]);
-            posManager.posActionWithData(PosAction.WritePay, resultData["requestInfo"]);
+            posManager.posActionWithData(
+                PosAction.WritePay,
+                resultData["requestInfo"]);
           }else{
             _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
           }
@@ -1025,7 +1034,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   showPosCancelAlert(){
-    if(socketPosCancel.value == true) return;
+    //if(socketPosCancel.value == true) return;
 
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
@@ -1035,7 +1044,7 @@ class SettlementController extends GetxController with StateMixin {
               confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
               confirm: () {
                 Get.back();
-                socketPosCancel.value = true;
+                //socketPosCancel.value = true;
                 getPaymentCancelPosData();
               },
               cancle: () {
@@ -1059,7 +1068,9 @@ class SettlementController extends GetxController with StateMixin {
       if (response['code'] == 200) {
         //var _queryString =       "2101500001       00509                  000000120221114093225";
         //this._socket?.write(response['data']);
-        posManager.posActionWithData(PosAction.Cancel, response['data']);
+        posManager.posActionWithData(PosAction.Cancel, response['data'], backTask: (){
+          gotonewMenuPage();
+        });
       }
     }).onError((error, stackTrace) {
       commonErrorAlert(GString.getToString(checkLanguage.value, "network_error_tips"));
@@ -1102,7 +1113,7 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
       if (paymentMethod.contains(payment_method_num.value) == true) {
-        socketPosCancel.value = true;
+        //socketPosCancel.value = true;
         // if(posManager.posAction() == PosAction.Cancel
         //     || posManager.posAction() == PosAction.WritePay
         //     ) {
