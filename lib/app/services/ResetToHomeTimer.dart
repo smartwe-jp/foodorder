@@ -30,6 +30,11 @@ class ResetToHomeTimer {
           final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
           if (isBackHome != "0") {
             cancelTimer();
+            if (Get.isRegistered<OrderSqlController>()) {
+              final orderSqlController = Get.find<OrderSqlController>();
+              orderSqlController.removeAllFromCart();
+              orderSqlController.getCardList();
+            }
             return;
           }
         }
