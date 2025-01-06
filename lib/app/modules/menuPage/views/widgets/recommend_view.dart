@@ -271,18 +271,20 @@ extension RecommendView on MenuPageController {
                       GestureDetector(
                         onTap: () {dismissAction(context,isBack: true);},
                         child: Container(
-                          height: 50,
+                          height: 60,
                           child: Row(
                             //mainAxisSize: MainAxisSize.max,
                             children: [
-                              Icon(Icons.arrow_back, color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
+                              Icon(Icons.arrow_back,
+                                  size: 40,
+                                  color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
                               SizedBox(width: 4),
                               Text(
                                 GString.getToString(
                                     checkLanguage.value, 'settlement_back'),
                                 style: TextStyle(
-                                  fontSize: 30,
-                                  fontWeight: FontWeight.w400,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w500,
                                   fontFamily: GFont.getFontFamily(),
                                   color: Colors.black,
                                 ),

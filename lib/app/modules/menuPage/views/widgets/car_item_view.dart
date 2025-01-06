@@ -57,17 +57,50 @@ class CarItemView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //title
-                      AutoSizeText(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
-                          fontSize: 30,
-                          fontWeight: FontWeight.w500,
-                        ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: AutoSizeText(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: 30,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 20,),
+
+                          Container(
+                            //width: ScreenAdapter.width(160),
+                            child: RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(text: '￥', style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: 24,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 96,98,102),
+                                  ),),
+                                  TextSpan(text: price,style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 96,98,102),
+                                  ),),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        ],
                       ),
+
 
                       //subtitle
                       if (subtitle != null &&  subtitle != "")
@@ -86,87 +119,71 @@ class CarItemView extends StatelessWidget {
                       // SizedBox(
                       //   height: 10,
                       // ),
-                      RichText(
-                        text: TextSpan(
-                          children: <TextSpan>[
-                            TextSpan(text: '￥', style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: 28,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromARGB(255, 96,98,102),
-                            ),),
-                            TextSpan(text: price,style: TextStyle(
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: 32,
-                              fontWeight: FontWeight.w400,
-                              color: Color.fromARGB(255, 96,98,102),
-                            ),),
-                          ],
-                        ),
-                      )
+
+                      Row(
+                        children: [
+                          Container(
+                              alignment: Alignment.bottomCenter,
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: ScreenAdapter.width(92),
+                                    height: ScreenAdapter.height(62),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(31),
+                                      border: Border.all(color: Colors.grey),
+                                    ),
+                                    child: IconButton(
+                                      iconSize: 50,
+                                      padding: EdgeInsets.all(0),
+                                      icon: Icon(Icons.remove, color: Colors.grey, weight: 800,),
+                                      onPressed: () {
+                                        onReduce(1);
+                                      },
+                                    ),
+                                  ),
+                                  SizedBox(width: ScreenAdapter.width(20)),
+                                  Text(
+                                    "$quantity",
+                                    style: TextStyle(
+                                      fontFamily: GFont.getFontFamily(),
+                                      fontSize: 36,
+                                      color: Color.fromARGB(255, 70, 69, 69),
+                                    ),
+                                  ),
+                                  SizedBox(width: ScreenAdapter.width(20)),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    width: ScreenAdapter.width(92),
+                                    height: ScreenAdapter.height(62),
+                                    decoration: BoxDecoration(
+                                      borderRadius: BorderRadius.circular(31),
+                                      color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                                    ),
+                                    child: IconButton(
+                                      iconSize: 50,
+                                      padding: EdgeInsets.all(0),
+                                      icon: Icon(Icons.add,
+                                          color: Colors.white, weight: 800,),
+                                      onPressed: () {
+                                        onIncrease(1);
+                                      },
+                                    ),
+                                  )
+                                ],
+                              )
+                          ),
+                          Spacer()
+                        ],
+                      ),
 
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-
-          //Spacer(),
-
-          SizedBox(width: ScreenAdapter.width(20)),
-
-          Container(
-              alignment: Alignment.bottomCenter,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Container(
-                    alignment: Alignment.center,
-                    width: ScreenAdapter.width(52),
-                    height: ScreenAdapter.width(52),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
-                      border: Border.all(color: Colors.grey),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.all(0),
-                      icon: Icon(Icons.remove, color: Colors.grey,),
-                      onPressed: () {
-                        onReduce(1);
-                      },
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(20)),
-                  Text(
-                    "$quantity",
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: 34,
-                      color: Color.fromARGB(255, 70, 69, 69),
-                    ),
-                  ),
-                  SizedBox(width: ScreenAdapter.width(20)),
-                  Container(
-                    alignment: Alignment.center,
-                    width: ScreenAdapter.width(52),
-                    height: ScreenAdapter.width(52),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(26),
-                      color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-                    ),
-                    child: IconButton(
-                      padding: EdgeInsets.all(0),
-                      icon: Icon(Icons.add,
-                          color: Colors.white),
-                      onPressed: () {
-                        onIncrease(1);
-                      },
-                    ),
-                  )
-
-                ],
-              )
           ),
         ],
       ),

@@ -1087,7 +1087,7 @@ class SettlementController extends GetxController with StateMixin {
   _startPaymentTimer() async {
     debugPrint("startResetTimer");
     paymentTimer?.cancel();
-    paymentTimer = Timer(Duration(seconds: 10), () async {
+    paymentTimer = Timer(Duration(seconds: 180), () async {
       paymentTimer?.cancel();
       if (hasStartPayflow) return;
       debugPrint('cancel Timer trigger');

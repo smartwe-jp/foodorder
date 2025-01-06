@@ -615,6 +615,11 @@ class MenuPageController extends GetxController with StateMixin {
       }));
     } else {
       final action = isAdd ? "add" : "reduce";
+      if (isAdd) {
+        playQRScannerSound();
+      } else {
+        deleteItemSound();
+      }
       publicChangeCartMenuCount(cartItem, action).then((val) {
         //更改显示购物车价格
         getCartPriceTotal();

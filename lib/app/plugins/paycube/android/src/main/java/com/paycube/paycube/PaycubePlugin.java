@@ -2,7 +2,6 @@ package com.paycube.paycube;
 
 import androidx.annotation.NonNull;
 
-
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
@@ -15,6 +14,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Handler;
 import android.os.Looper;
+import android.content.Context;
 
 import java.nio.ByteBuffer;
 import java.util.Arrays;
@@ -43,6 +43,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     private ReceiveEventListener chargingStateChangeReceiver;
     private Handler handler;
     private int count = 0;
+    private Context appliactionContext;
 
 
 
@@ -88,6 +89,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
+        appliactionContext = flutterPluginBinding.getApplicationContext();
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "paycube");
         channel.setMethodCallHandler(this);
     }
@@ -103,12 +105,12 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             if (operEvent.equals("openPayCube")) {
                 try {
                     if (lib == null) {
-                        lib = new COMLibImpl();
+                        lib = new COMLibImpl(appliactionContext);
                         System.out.println("现金机重新初始化开启");
-                        lib.open("/dev/ttyS4");
+                        lib.open(appliactionContext);//"/dev/ttyS4"
                         //result.success("openSuccess");
                     } else {
-                        lib.open("/dev/ttyS4");
+                        lib.open(appliactionContext);//"/dev/ttyS4"
                         System.out.println("现金机重新开启");
                         //result.success("openSuccess");
                     }

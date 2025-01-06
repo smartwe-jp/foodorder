@@ -496,7 +496,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
 
                                             checkoptionGroupList.forEach((key, value) {
                                               optionTitle += (optionTitle != "")
-                                                  ? "," + value['groupTitle']+":"+value['optionTitles']
+                                                  ? "　" + value['groupTitle']+":"+value['optionTitles']
                                                   : value['groupTitle']+":"+value['optionTitles'];
                                             });
 

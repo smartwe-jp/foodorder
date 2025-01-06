@@ -1,9 +1,16 @@
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:get/get.dart';
 
+import '../../../../config/color.dart';
+import '../../../../config/colorsUtil.dart';
+import '../../../../config/font.dart';
+import '../../../../config/string.dart';
+import '../../../../widget/CustomButton.dart';
 import '../../controllers/menu_page_controller.dart';
 import 'car_item_view.dart';
 
@@ -53,29 +60,70 @@ extension Shoppingcar on MenuPageController {
                 Container(
                     alignment: Alignment.bottomCenter,
                     margin:
-                    EdgeInsets.only(bottom: ScreenAdapter.height(220)),
+                    EdgeInsets.only(bottom: ScreenAdapter.height(200)),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              maxHeight: ScreenAdapter.height(1000),
-                              maxWidth: ScreenAdapter.width(1000),
-                              minWidth: ScreenAdapter.width(500),
-                              //minHeight: ScreenAdapter.height(500),
-                            ),
-                            //margin: EdgeInsets.only(left: ScreenAdapter.width(100),right: ScreenAdapter.width(100)),
-                            padding: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10),
-                                top: ScreenAdapter.width(14),
-                                bottom: ScreenAdapter.width(14)),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
-                            ),
-                            child: publicCartView(),
+                        Container(
+                          //margin: EdgeInsets.only(left: ScreenAdapter.width(100),right: ScreenAdapter.width(100)),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10),
+                              top: ScreenAdapter.width(14),
+                              bottom: ScreenAdapter.width(14)),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(15),
                           ),
+                          child: Column(
+                            children: [
+                              Container(
+                                child: Row(children: [
+                                  SizedBox(width: 20,),
+                                  GestureDetector(
+                                    onTap: () {
+                                      showShopCart = false;
+                                      update();
+                                    },
+                                    child: Container(
+                                      height: 60,
+                                      child: Row(
+                                        //mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          Icon(Icons.arrow_back,
+                                              size: 40,
+                                              color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            GString.getToString(
+                                                checkLanguage.value, 'settlement_back'),
+                                            style: TextStyle(
+                                              fontSize: 32,
+                                              fontWeight: FontWeight.w500,
+                                              fontFamily: GFont.getFontFamily(),
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  Spacer()
+                                ]),
+                              ),
+                              Container(
+                                constraints: BoxConstraints(
+                                  maxHeight: ScreenAdapter.width(1000),
+                                  maxWidth: double.infinity,
+                                  minWidth: ScreenAdapter.width(500),
+                                  //minHeight: ScreenAdapter.height(500),
+                                ),
+                                child: publicCartView(),
+                              )
+
+                            ],
+                          ),
+                        ),
                           CustomPaint(
                             size: Size(ScreenAdapter.width(60),
                                 ScreenAdapter.height(20)),

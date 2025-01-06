@@ -1,18 +1,22 @@
 import 'dart:convert';
 import 'dart:developer';
-
+import 'dart:io';
+import 'package:archive/archive_io.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:package_info/package_info.dart';
+import 'package:path_provider/path_provider.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
+import '../../../config/system_config.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
@@ -113,7 +117,12 @@ class SettingController extends GetxController with StateMixin {
   //上传现金机log
   uploadErrorLog() async {
     _showEasyLoading();
-    var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    if (isAndroid11)  {
+      logfile = await compressFiles();
+    }
+
+    if (logfile == null) return;
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
@@ -130,6 +139,57 @@ class SettingController extends GetxController with StateMixin {
         showToast('上传失败!');
       }
     });
+  }
+  //20241128PT3_OperationLog.log.zip
+  //20241129PT3_OperationLog.log
+
+  Future<String?> compressFiles() async {
+    // 获取临时目录路径
+    final tempDir = await getTemporaryDirectory();
+    final logPathPrefix = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
+    final outputPath = '${tempDir.path}/${_getDate()}PT3Combined_logs.zip';
+
+    // 创建一个ZipFileEncoder对象
+    try {
+      final zipEncoder = ZipFileEncoder();
+      zipEncoder.create(outputPath);
+
+      // 添加第一个文件（zip文件）
+      final zipFile = File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
+      if (await zipFile.exists()) {
+        zipEncoder.addFile(zipFile);
+      }
+
+      // 添加第二个文件（普通日志文件）
+      final logFile = File(logPathPrefix + '${_getDate()}PT3_OperationLog.log');
+      if (await logFile.exists()) {
+        zipEncoder.addFile(logFile);
+      }
+
+      // 完成压缩
+      zipEncoder.close();
+
+      return outputPath;
+    } catch (e) {
+      showToast('上传失败! ${e.toString()}');
+      return null;
+    }
+
+
+
+    print('Files compressed successfully. Output: $outputPath');
+  }
+
+  _getDate() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyyMMdd').format(now);
+    return formattedDate;
+  }
+
+  _getYestodayDate() {
+    DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
+    String formattedDate = DateFormat('yyyyMMdd').format(yesterday);
+    return formattedDate;
   }
 
   //获取版本号

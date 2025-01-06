@@ -365,13 +365,13 @@ class CreatePrintImageController extends GetxController {
     if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
-      Future.delayed(Duration(milliseconds: 300), () async {
+      Future.delayed(Duration(milliseconds: 800), () async {
         await FlutterPluginMsprinter.sendPrintCut("1");
         tpPrintReceipt(print_paper_txt_size, printData);
       });
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0"," ");
-      Future.delayed(Duration(milliseconds: 300), () async {
+      Future.delayed(Duration(milliseconds: 800), () async {
         await FlutterPluginMsprinter.sendPrintCut("0");
       });
     }
