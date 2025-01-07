@@ -282,6 +282,9 @@ class TransitPageController extends GetxController {
         await Storage.setString('smartwe_logoImageData', filePath);
         await GetxStorage.setData('smartwe_logoImageData', filePath);
 
+        if (Get.context != null)
+          await precacheImage(FileImage(File(filePath)), Get.context!);
+
         print('Image downloaded and path stored successfully');
       } else {
         print('Failed to download image');
@@ -298,6 +301,7 @@ class TransitPageController extends GetxController {
       var last = DateTime.parse(lastActiveTime);
       var diff = now.difference(last).inDays;
       if (diff > 1) {//超过一天 重新激活
+        Storage.setString('activeTimeInfo', now.toString());
         return true;
       } else {
         return false;

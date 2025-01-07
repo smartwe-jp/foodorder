@@ -4,11 +4,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
-import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/services/logUtil.dart';
-import 'package:get/get_rx/src/rx_types/rx_types.dart';
-import 'package:get/get_state_manager/src/rx_flutter/rx_notifier.dart';
-import 'package:get/get_state_manager/src/simple/get_controllers.dart';
+import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 import '../config/colorsUtil.dart';
@@ -51,9 +48,9 @@ class CreatePrintImageController extends GetxController {
   );
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
-    _getPrintLogoImageData();
+    await _getPrintLogoImageData();
   }
 
 
@@ -386,20 +383,6 @@ class CreatePrintImageController extends GetxController {
     if(printLogoImageData != null) {
       //Uint8List imageBytes = base64Decode(printLogoImageData!);
       debugPrint('imagePath:$printLogoImageData');
-      // categoryMenus.add(
-      //     Container(
-      //       height: 170,
-      //       margin: EdgeInsets.all(20),
-      //       decoration: BoxDecoration(
-      //         image: DecorationImage(
-      //           image: AssetImage('assets/images/gongcha/doujing.bmp'),
-      //           fit: BoxFit.contain,
-      //         ),
-      //       ),
-      //     )
-      //   );
-
-
       categoryMenus.add(
           Container(
             height: 170, // 设置容器宽度，根据需要调整
@@ -820,9 +803,9 @@ class CreatePrintImageController extends GetxController {
     //お明細は上記のとおりです。
     categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight+addRowHight + 170;
+    var totalHight = lineZeng + lineHight+addRowHight + 380;
 
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+    final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
       height: totalHight.toDouble(),
@@ -834,20 +817,47 @@ class CreatePrintImageController extends GetxController {
         textDirection: TextDirection.rtl,
         children: categoryMenus,
       ),
-    ),
+    );
+
+    ByteData byteData = await WidgetToImage.widgetToImage(printWidget,
         size: Size(385, totalHight.toDouble())
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
 
-    //Future.delayed(Duration(milliseconds: 200), () async {
-    LogUtil.d('printLogoImageData:$printLogoImageData');
     String base64Image = base64Encode(imageBytes);
+
+    //_showAndPrint(base64Image, printWidget);
+
     await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", printLogoImageData);
     Future.delayed(Duration(milliseconds: 300), () async {
       await FlutterPluginMsprinter.sendPrintCut("1");
     });
-    //});
+
+  }
+
+
+  _showAndPrint(String imageData, Widget widget) {
+    Get.dialog(
+      Container(
+        child: Column(
+          children: [
+            widget,
+            SizedBox(height: 20,),
+            ElevatedButton(onPressed: () async {
+              await FlutterPluginMsprinter.sendPrintImgNew(imageData, "1", "1", printLogoImageData);
+              Future.delayed(Duration(milliseconds: 300), () async {
+                await FlutterPluginMsprinter.sendPrintCut("1");
+              });
+              Get.back();
+              Get.back();
+            }, child: Text('Print')
+            ),
+
+          ],
+        ),
+      )
+    );
 
   }
 
