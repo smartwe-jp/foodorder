@@ -390,7 +390,7 @@ class CreatePrintImageController extends GetxController {
             decoration: BoxDecoration(
               image: DecorationImage(
                 image: FileImage(File(printLogoImageData!)),
-                fit: BoxFit.contain, // 可以根据需要调整fit属性
+                //fit: BoxFit.contain, // 可以根据需要调整fit属性
               ),
             ),
           )
