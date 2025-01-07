@@ -119,10 +119,8 @@ class SettingController extends GetxController with StateMixin {
     _showEasyLoading();
     String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
     if (isAndroid11)  {
-      logfile = await compressFiles();
+      logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
     }
-
-    if (logfile == null) return;
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
