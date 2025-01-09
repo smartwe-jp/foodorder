@@ -233,6 +233,7 @@ class PosSocketManager {
               //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
               var posErrorCode = ["L06"];
               if (posErrorCode.contains(resultString) == true) {
+                _needInterActive = true;
                 if (onCancel != null) onCancel(resultString, resultMPFSString);
               }
             } else {
@@ -264,6 +265,7 @@ class PosSocketManager {
               _eventReportString = "";
             } else {
               if (resultString.trim() != "") {
+                _needInterActive = true;
                 onCancel?.call(resultString, resultMPFSString);
               }
             }
