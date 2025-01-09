@@ -385,7 +385,7 @@ class CreatePrintImageController extends GetxController {
       debugPrint('imagePath:$printLogoImageData');
       categoryMenus.add(
           Container(
-            height: 170, // 设置容器宽度，根据需要调整
+            height: 150, // 设置容器宽度，根据需要调整
             margin: EdgeInsets.all(20),
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -803,7 +803,7 @@ class CreatePrintImageController extends GetxController {
     //お明細は上記のとおりです。
     categoryMenus.add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight+addRowHight + 380;
+    var totalHight = lineZeng + lineHight+addRowHight + 150;
 
     final printWidget = Container(
       width: 385,
