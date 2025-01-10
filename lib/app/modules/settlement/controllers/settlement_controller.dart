@@ -729,6 +729,8 @@ class SettlementController extends GetxController with StateMixin {
         },
         onTimeOut: () {
           debugPrint('onTimeOut');
+          EasyLoading.dismiss();
+          posManager.resetState();
           _showScanCodeNoOpenDialog(
               3,
               GString.getToString(
