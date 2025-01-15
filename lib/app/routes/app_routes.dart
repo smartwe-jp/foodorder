@@ -25,6 +25,7 @@ abstract class Routes {
   static const REIMBURSE_ORDER = _Paths.REIMBURSE_ORDER;
   static const ERROR_PAGE = _Paths.ERROR_PAGE;
   static const RECEIPT_QUERY = _Paths.RECEIPT_QUERY;
+  static const SELECT_PAYMENT_PAGE = _Paths.SELECT_PAYMENT_PAGE;
 }
 
 abstract class _Paths {
@@ -40,6 +41,7 @@ abstract class _Paths {
   static const SELFSERVICE_PAGE = '/selfservice-page';
   static const CHECKOUT_PAGE = '/checkout-page';
   static const SCANCODE_PAGE = '/scancode-page';
+  static const SELECT_PAYMENT_PAGE = '/SelectPaymentPage';
   static const MENU_PAGE = '/menu-page';
   static const MENUZONG_PAGE = '/menuzong-page';
   static const SETTLEMENT = '/settlement';

@@ -116,7 +116,8 @@ extension RecommendView on MenuPageController {
                     ),
                     onTap: () {
                       showCartView = false;
-                      Navigator.pop(context);
+                      //Navigator.pop(context);
+                      Get.back();
                     }),
               ],
             )),

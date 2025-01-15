@@ -113,7 +113,9 @@ void main() {
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE ||
-                          value?.current == Routes.SCANCODE_PAGE) {
+                          value?.current == Routes.SCANCODE_PAGE || 
+                          value?.current == Routes.SELECT_PAYMENT_PAGE
+                          ) {
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ENTRY_HOME ||
                           value?.current == Routes.SETTLEMENT ||

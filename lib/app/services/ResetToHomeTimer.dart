@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
 class ResetToHomeTimer {
@@ -21,6 +23,24 @@ class ResetToHomeTimer {
         if (Get.routing.current == Routes.ENTRY_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {
           cancelTimer();
+          return;
+        } else if (Get.routing.current == Routes.MENU_PAGE) {
+          Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+          final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+          debugPrint("timer isBackHome:$isBackHome");
+          if (isBackHome != "0") {
+            cancelTimer();
+            if (Get.isRegistered<OrderSqlController>()) {
+              final orderSqlController = Get.find<OrderSqlController>();
+              orderSqlController.removeAllFromCart();
+
+              if (Get.isRegistered<MenuPageController>())
+                Get.find<MenuPageController>().clearOrderList();
+            }
+            return;
+          }
+        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
+          Get.back();
           return;
         }
 
