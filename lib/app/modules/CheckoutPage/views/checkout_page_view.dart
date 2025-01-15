@@ -368,7 +368,7 @@ class CheckoutPageView extends GetView {
                   Text(
                       GString.getToString(
                           controller.checkLanguage.value,
-                          "checkout_type_tips"),
+                          controller.takeOut.value ? "checkout_type_tips" : "amount_tips"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(56),
                         fontFamily: GFont.getFontFamily(),
