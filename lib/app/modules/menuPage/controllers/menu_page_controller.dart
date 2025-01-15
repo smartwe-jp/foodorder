@@ -1489,37 +1489,30 @@ print("加1了");
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
-    logger.info('-- paymentMethodDialog cash state = ${machinInfo.showCash} --');
+    logger
+        .info('-- paymentMethodDialog cash state = ${machinInfo.showCash} --');
     paymentIsShow = true;
-    Get.to(() => SelectPaymentPage(
-            checkLanguage: checkLanguage.value,
-            menuCount: showCartTotalGoodsNum.value,
-            shopCartTotalPrice: shopCartTotalPrice.value,
-            tableNum: "",
-            onConfrimClick: () {
-              showOpenPayment.value = true;
-              //230629点击弹出支付方式后，需要重新请求下后台获得orderid
-
-              // var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
-              // if (paymentMethod.contains(machinInfo.paymentMethod) == true) {
-              //   //_getPosSettingInfo();
-              //   gotoSettlement();
-              // } else {
-              //   //postNewOrderId();
-              //   gotoSettlement();
-              // }
-              gotoSettlement();
-            },
-            onCancelClick: (String isBack) async {
-              // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
-              //   await CashChanger.endDeposit(DepositAction.repay.index);
-              // }
-              debugPrint('onCancelClick');
-              paymentIsShow = false;
-              if (isBack == "back") {
-                CancelOrder();
-              }
-            }),
+    Get.to(
+      () => SelectPaymentPage(
+          checkLanguage: checkLanguage.value,
+          menuCount: showCartTotalGoodsNum.value,
+          shopCartTotalPrice: shopCartTotalPrice.value,
+          tableNum: "",
+          onConfrimClick: () {
+            showOpenPayment.value = true;
+            machinInfo.showReceiptPage = true;
+            gotoSettlement();
+          },
+          onCancelClick: (String isBack) async {
+            // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
+            //   await CashChanger.endDeposit(DepositAction.repay.index);
+            // }
+            debugPrint('onCancelClick');
+            paymentIsShow = false;
+            if (isBack == "back") {
+              CancelOrder();
+            }
+          }),
       transition: Transition.fadeIn,
       fullscreenDialog: true,
       opaque: false,
@@ -1609,7 +1602,7 @@ print("加1了");
       // "showAmericanExpress": showAmericanExpress.value,
       // "showDinersClub": showDinersClub.value,
       // "showDiscover": showDiscover.value,
-       "showOpenPayment": showOpenPayment.value
+      "showOpenPayment": showOpenPayment.value
     });
   }
 

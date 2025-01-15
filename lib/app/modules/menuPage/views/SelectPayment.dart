@@ -17,7 +17,7 @@ import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
   MachineInfoController machinInfo = Get.find();
-  MenuPageController menuPageController = Get.find();
+  //MenuPageController menuPageController = Get.find();
 
   SelectPaymentPage(
       {Key? key,
@@ -53,7 +53,7 @@ class SelectPaymentPage extends StatelessWidget {
                 // });
                 machinInfo.receiptPrintType = '1';
                 machinInfo.showReceiptPage = false;
-                menuPageController.update();
+                machinInfo.update();
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -107,7 +107,7 @@ class SelectPaymentPage extends StatelessWidget {
                 // });
                 machinInfo.receiptPrintType = '2';
                 machinInfo.showReceiptPage = false;
-                menuPageController.update();
+                machinInfo.update();
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -164,7 +164,7 @@ class SelectPaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext pcontext) {
-    return GetBuilder<MenuPageController>(builder: (controller) {
+    return GetBuilder<MachineInfoController>(builder: (controller) {
       return Container(
           color: Colors.black.withOpacity(0.5),
           child: Column(children: <Widget>[
@@ -1656,6 +1656,7 @@ class SelectPaymentPage extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             try {
+                              machinInfo.showReceiptPage = true;
                               Navigator.pop(pcontext);
                               onCancelClick("back");
                             } catch (_) {}

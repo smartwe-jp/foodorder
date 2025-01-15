@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
@@ -39,7 +40,11 @@ class ResetToHomeTimer {
             }
             return;
           }
-        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
+        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE ||
+            Get.routing.current == Routes.SCAN_DETAIL) {
+          if (Get.isRegistered<MachineInfoController>()) {
+            Get.find<MachineInfoController>().showReceiptPage = true;
+          }
           Get.back();
           return;
         }

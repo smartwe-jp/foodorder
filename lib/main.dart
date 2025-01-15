@@ -114,7 +114,8 @@ void main() {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE || 
-                          value?.current == Routes.SELECT_PAYMENT_PAGE
+                          value?.current == Routes.SELECT_PAYMENT_PAGE ||
+                          value?.current == Routes.SCAN_DETAIL
                           ) {
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ENTRY_HOME ||

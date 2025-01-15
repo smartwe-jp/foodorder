@@ -561,7 +561,7 @@ class CheckoutPageView extends GetView {
                   child: InkWell(
                     onLongPress: () {
                       Get.toNamed('/middlewaresettingpage', arguments: {
-                        "machineCode": controller.machineCode.value
+                        "machineCode": controller.machineInfo.machineCode
                       });
                     },
                     child: Container(
