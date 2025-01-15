@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:logging/logging.dart';
 
 enum PosAction {
   Connect,
@@ -13,12 +14,12 @@ enum PosAction {
 }
 
 class PosSocketManager {
-  static final bool posTest = false;
-  static final PosSocketManager _instance = PosSocketManager._internal();
-  factory PosSocketManager() => _instance;
-
-  // Private constructor
-  PosSocketManager._internal();
+  final bool posTest = false;
+  // static final PosSocketManager _instance = PosSocketManager._internal();
+  // factory PosSocketManager() => _instance;
+  //
+  // // Private constructor
+  // PosSocketManager._internal();
 
   // Socket instance
   Socket? _socket;
@@ -57,12 +58,13 @@ class PosSocketManager {
     _needInterActive = true;
   }
 
-  Future posActionWithData(PosAction action, String writeData) async {
-    //Logger('').info('posActionWithData action:$action data:$writeData');
+  Future posActionWithData(PosAction action, String writeData,
+      {Function? backTask = null}) async {
+    Logger('').info('posActionWithData action:$action data:$writeData');
     _posAction = action;
     switch (action) {
       case PosAction.Connect:
-      // TODO: Handle this case.
+        // TODO: Handle this case.
         break;
       case PosAction.WritePay:
         _socketNumberTimes = 0;
@@ -70,8 +72,14 @@ class PosSocketManager {
       case PosAction.Cancel:
         _socketNumberTimes = 0;
         if (_isConnected == false) {
-          _onDone?.call(action);
-          _onDone = null;
+          Logger('').info('_isConnected = false onDone = $_onDone');
+          if (_onDone == null) {
+            resetState();
+            backTask?.call();
+          } else {
+            _onDone?.call(action);
+            _onDone = null;
+          }
         } else {
           _onLoading?.call(0);
         }
@@ -105,22 +113,21 @@ class PosSocketManager {
       _socket?.destroy();
       _socket = null;
     }
-
   }
 
   //pos机相关
   Future payConnectSocket(
       String payment, String pos_ip, int pos_port, String machineCode,
       {questData = "",
-        bool isRetry = false,
-        Function(String)? onError,
-        Function(int)? onLoading,
-        Function? onLoadingEnd,
-        Function(String)? onSuccess,
-        Function? onRequestPayData,
-        Function(PosAction)? onDone,
-        Function? onTimeOut,
-        Function(String, String)? onCancel}) async {
+      bool isRetry = false,
+      Function(String)? onError,
+      Function(int)? onLoading,
+      Function? onLoadingEnd,
+      Function(String)? onSuccess,
+      Function? onRequestPayData,
+      Function(PosAction)? onDone,
+      Function? onTimeOut,
+      Function(String, String)? onCancel}) async {
     debugPrint('payConnectSocket $payment $pos_ip:$pos_port $machineCode');
     debugPrint('questData : $questData');
     _eventReportString = "";
@@ -152,7 +159,7 @@ class PosSocketManager {
     //判断socket请求次数
     _posAction = PosAction.Connect;
     _socketNumberTimes++;
-    if (_socketNumberTimes > 20) {
+    if (_socketNumberTimes > 6) {
       //return posPayUtil;
       onTimeOut?.call();
       return;
@@ -188,7 +195,7 @@ class PosSocketManager {
       }
 
       _socket?.listen(
-            (List<int> event) {
+        (List<int> event) {
           for (var i = 0; i < event.length; i++) {
             if (event[i] > 127) {
               event[i] = 32;
@@ -209,9 +216,11 @@ class PosSocketManager {
           String resultString = _eventReportString.substring(10, 13);
           String resultMPFSString = _eventReportString.substring(13, 16);
           //
-          debugPrint("FirstString==${FirstString} SecondString==${SecondString}");
+          debugPrint(
+              "FirstString==${FirstString} SecondString==${SecondString}");
           debugPrint("transaction_type==${transactionType}");
-          debugPrint("resultString==${resultString} resultMPFSString==${resultMPFSString}");
+          debugPrint(
+              "resultString==${resultString} resultMPFSString==${resultMPFSString}");
 
           _checkIfTestMode();
 
@@ -228,6 +237,7 @@ class PosSocketManager {
               //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
               var posErrorCode = ["L06"];
               if (posErrorCode.contains(resultString) == true) {
+                _needInterActive = true;
                 if (onCancel != null) onCancel(resultString, resultMPFSString);
               }
             } else {
@@ -246,19 +256,18 @@ class PosSocketManager {
               var thincaCloud = ["5", "6", "7", "8", "9", "10"];
               if (thincaCloud.contains(payment) == true) {
                 String reportString = eventString.substring(0, 169);
-                if (_payProcess)
-                onSuccess?.call(reportString);
+                if (_payProcess) onSuccess?.call(reportString);
                 resetState();
                 _payProcess = false;
               } else {
-                if (_payProcess)
-                onSuccess?.call(_eventReportString);
+                if (_payProcess) onSuccess?.call(_eventReportString);
                 resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
             } else {
               if (resultString.trim() != "") {
+                _needInterActive = true;
                 onCancel?.call(resultString, resultMPFSString);
               }
             }
@@ -278,19 +287,18 @@ class PosSocketManager {
               var thincaCloud = ["5", "6", "7", "8", "9", "10"];
               if (thincaCloud.contains(payment) == true) {
                 String reportString = eventString.substring(0, 169);
-                if (_payProcess)
-                onSuccess?.call(reportString);
+                if (_payProcess) onSuccess?.call(reportString);
                 resetState();
                 _payProcess = false;
               } else {
-                if (_payProcess)
-                onSuccess?.call(eventString);
+                if (_payProcess) onSuccess?.call(eventString);
                 resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
             } else {
               if (resultString.trim() != "") {
+                _needInterActive = true;
                 debugPrint("---Recorde error to firebase old---");
                 //T10 交通系等待时间超过30-40后自动返回
                 var posErrorCode = ["L11", "T10"];
@@ -299,8 +307,8 @@ class PosSocketManager {
                   Future.delayed(Duration(milliseconds: 2500), () async {
                     debugPrint("Pos error done order");
                     //if (!_needInterActive) onDone?.call(_posAction);
-                    _needInterActive = true;
-                    _onError?.call(resultString);
+                    if (_posAction != PosAction.None)
+                      _onError?.call(resultString);
                     //gotonewMenuPage(); backAction
                   });
                 } else {
@@ -309,29 +317,29 @@ class PosSocketManager {
               }
             }
           } else {
-            onError?.call(resultString);
+            //onError?.call(resultString);
           }
         },
         onDone: () {
           debugPrint('pos is done');
           _socketNumberTimes = 0;
           _isConnected = false;
-          if (!_needInterActive) onDone?.call(_posAction);
+          if (!_needInterActive && _posAction != PosAction.None)
+            onDone?.call(_posAction);
         },
         onError: (e) {
           debugPrint('pos is error: $e');
           _socketNumberTimes = 0;
           _isConnected = false;
-          if (!_needInterActive)
-          onError?.call(e.toString());
+          if (!_needInterActive && _posAction != PosAction.None)
+            onError?.call(e.toString());
           _needInterActive = true;
-
-
         },
       );
     } catch (e) {
       _isConnected = false;
       debugPrint('Unable to connect pos: $e');
+      if (_posAction == PosAction.None) return;
       Future.delayed(Duration(milliseconds: 400), () async {
         await payConnectSocket(payment, pos_ip, pos_port, machineCode,
             isRetry: true, onTimeOut: onTimeOut, onError: onError);
