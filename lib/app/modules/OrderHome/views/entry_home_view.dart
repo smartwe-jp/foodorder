@@ -18,30 +18,30 @@ import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
-import 'SelectDiningMethod.dart';
+//import 'SelectDiningMethod.dart';
 
 class EntryHomeView extends GetView<OrderHomeController> {
   final OrderHomeController controller = Get.put(OrderHomeController());
   EntryHomeView({Key? key}) : super(key: key);
 
-  _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {
-    Get.dialog(SelectDiningMethodPage(
-      checkLanguage: checkedLanguage,
-      dining_type: controller.dining_type.value,
-      menu_direction: controller.menu_direction.value,
-      onConfrimClick:
-          (bool mealType, String dining_type_num, String menuDirection) {
-        var jumpUrl = (controller.menu_direction.value == "1")
-            ? '/menu-page'
-            : '/menuzong-page';
+  // _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {
+  //   Get.dialog(SelectDiningMethodPage(
+  //     checkLanguage: checkedLanguage,
+  //     dining_type: controller.machineInfo.diningType,
+  //     menu_direction: controller.menu_direction.value,
+  //     onConfrimClick:
+  //         (bool mealType, String dining_type_num, String menuDirection) {
+  //       var jumpUrl = (controller.menu_direction.value == "1")
+  //           ? '/menu-page'
+  //           : '/menuzong-page';
 
-        Get.toNamed(jumpUrl, arguments: {
-          "checkLanguage": checkedLanguage,
-          "mealType": mealType
-        });
-      },
-    ));
-  }
+  //       Get.toNamed(jumpUrl, arguments: {
+  //         "checkLanguage": checkedLanguage,
+  //         "mealType": mealType
+  //       });
+  //     },
+  //   ));
+  // }
 
   _catagoryLoading() {
     return Center(
@@ -160,7 +160,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
       child: InkWell(
         onLongPress: () {
           Get.toNamed('/middlewaresettingpage',
-              arguments: {"machineCode": controller.machineCode.value});
+              arguments: {"machineCode": controller.machineInfo.machineCode});
         },
         child: Container(
           height: ScreenAdapter.height(150),
@@ -213,8 +213,8 @@ class EntryHomeView extends GetView<OrderHomeController> {
             onTap: () async {
               controller.resetTimer?.cancel();
               controller.mealTypeStatus = 0;
-              var mealType = controller.mealType.value ||
-                  controller.dining_type.value == "2";
+              // var mealType = controller.machineInfo.mealType ||
+              //     controller.machineInfo.diningType == "2";
 
               var jumpUrl = (controller.menu_direction.value == "1")
                   ? '/menu-page'
@@ -224,7 +224,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                 "classTag": e["categoryCode"] ?? "",
                 //"menuList": controller.homeList,
                 "checkLanguage": controller.settingLanguage.value,
-                "mealType": mealType
+                //"mealType": mealType
               });
               if (result == true) {
                 controller.mealTypeStatus = 0;
@@ -250,7 +250,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
           childAspectRatio: 0.9,
         ),
       ),
-      if (controller.dining_type.value == "3" && controller.mealTypeStatus == 0)
+      if (controller.machineInfo.diningType == "3" && controller.mealTypeStatus == 0)
         ClipRect(
             child: Stack(
           children: [
@@ -377,7 +377,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                     //   height: ScreenAdapter.height(70),
                     // ),
 
-                    if (controller.dining_type.value == "3")
+                    if (controller.machineInfo.diningType == "3")
                       Expanded(
                         flex: 3,
                         child: Container(

@@ -1,3 +1,4 @@
+import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:get/get.dart';
 
@@ -7,9 +8,12 @@ class MenuPageBinding extends Bindings {
   @override
   void dependencies() {
     Get.put(OrderSqlController()); //Fix crash when tap takeout
-    //Get.put(MenuPageController());
+    
     Get.lazyPut<MenuPageController>(
       () => MenuPageController(),
     );
+    // Get.lazyPut<MachineInfoController>(
+    //   () => MachineInfoController(),
+    // );
   }
 }

@@ -23,7 +23,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
     Get.dialog(
         SelectDiningMethodPage(
           checkLanguage: checkedLanguage,
-          dining_type: controller.dining_type.value,
+          dining_type: controller.machineInfo.diningType,
           menu_direction:controller.menu_direction.value,
           onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
             var locale = Locale('$checkedLanguage', '$checkedLanguage');
@@ -78,7 +78,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                 top: ScreenAdapter.height(20),
                 child: InkWell(
                   onLongPress: (){
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
+                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
                   },
                   child: Container(
                     height: ScreenAdapter.height(150),
@@ -110,8 +110,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                         InkWell(
                           onTap: () {
                             //_clearCartList();
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
+                            if(controller.machineInfo.diningType =="1" || controller.machineInfo.diningType =="2"){
+                              var mealType = (controller.machineInfo.diningType == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
                               var locale = Locale('jp', 'JP');
                               Get.updateLocale(locale);
@@ -154,8 +154,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_CH.value == true)
                         InkWell(
                           onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
+                            if(controller.machineInfo.diningType =="1" || controller.machineInfo.diningType =="2"){
+                              var mealType = (controller.machineInfo.diningType == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
                               var locale = Locale('ch', 'CH');
                               Get.updateLocale(locale);
@@ -195,8 +195,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_EN.value == true)
                         InkWell(
                           onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
+                            if(controller.machineInfo.diningType =="1" || controller.machineInfo.diningType =="2"){
+                              var mealType = (controller.machineInfo.diningType == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
                               var locale = Locale('en', 'US');
                               Get.updateLocale(locale);
@@ -236,8 +236,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       if(controller.machineLanguages_KO.value == true)
                         InkWell(
                           onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
+                            if(controller.machineInfo.diningType =="1" || controller.machineInfo.diningType =="2"){
+                              var mealType = (controller.machineInfo.diningType == "2") ? true: false;
                               var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
                               var locale = Locale('ko', 'KR');
                               Get.updateLocale(locale);

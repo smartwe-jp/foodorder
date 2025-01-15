@@ -114,7 +114,7 @@ class MenuPageView extends GetView<MenuPageController> {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
-      subtitle: "${item['subtitle'] ?? ""}",
+      subtitle: controller.publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
       image: CachedNetworkImageProvider(item['homeImage'] ?? ""),
       option: item['optionGroupVoList']?.length > 0

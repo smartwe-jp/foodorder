@@ -162,7 +162,7 @@ extension SettlementControllerExtension on SettlementController {
   _notifyMachineFull(bool isFull) {
     debugPrint("发送通知邮件");
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
     };
 
     final String domain = isFull ? 'webMachineFull' : 'webMachineNearFull';
@@ -410,7 +410,7 @@ extension SettlementControllerExtension on SettlementController {
 
     var formData = {
       "responseMessage": changeString,
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "orderId": orderId,
     };
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
@@ -527,10 +527,10 @@ extension SettlementControllerExtension on SettlementController {
     var success = false;
     debugPrint('reportExchange');
     var formData = {
-      'machineCode': machineCode.value,
+      'machineCode': machineInfo.machineCode,
       'puts': puts,
       'pops': pops,
-      'shopCode': shopCode,
+      'shopCode': machineInfo.shopCode,
     };
 
     debugPrint('formData: $formData');

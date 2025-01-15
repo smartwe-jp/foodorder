@@ -409,7 +409,7 @@ class publicShowCartView extends GetView {
                         InkWell(
                             onLongPress: (){
                               if(int.parse(controller.shopCartTotalPrice.value) >0){
-                                Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
+                                Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machinInfo.machineCode});
                               }
 
                             },

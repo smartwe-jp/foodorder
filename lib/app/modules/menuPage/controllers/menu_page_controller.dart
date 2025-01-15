@@ -7,13 +7,12 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
-import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 
 import 'package:get/get.dart';
-import 'package:get/get_rx/get_rx.dart';
 import 'package:logging/logging.dart';
 
 import '../../../config/color.dart';
@@ -35,21 +34,21 @@ import '../views/showOneItemOptionWidgetV1.dart';
 class MenuPageController extends GetxController with StateMixin {
   //TODO: Implement MenuPageController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
-
+  MachineInfoController machinInfo = Get.find();
   FToast? fToast;
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
 
-  RxString machineCode = "".obs;
-  RxBool mealType = false.obs; //用于判断下单
-  RxString dining_type = "1".obs; //1 堂食  2 外袋  3两种都可以支付
-  RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
-  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
-  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
-  RxString pos_ip = "".obs;
-  RxString pos_port = "".obs;
-  RxString payment_method_num = "0".obs; //支付类型选择
+  //RxString machineCode = "".obs;
+  //RxBool mealType = false.obs; //用于判断下单
+  // RxString dining_type = "1".obs; //1 堂食  2 外袋  3两种都可以支付
+  // RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
+  // RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
+  // RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
+  // RxString pos_ip = "".obs;
+  // RxString pos_port = "".obs;
+  //RxString payment_method_num = "0".obs; //支付类型选择
 
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
@@ -69,32 +68,32 @@ class MenuPageController extends GetxController with StateMixin {
   RxInt showCartTotalGoodsNum = 0.obs;
 
   //顶部展示支付类型
-  RxBool showWechat = false.obs;
-  RxBool showAlipay = false.obs;
-  RxBool showPayPay = false.obs;
-  RxBool showCreditCard = false.obs;
-  RxBool showCash = false.obs;
+  // RxBool showWechat = false.obs;
+  // RxBool showAlipay = false.obs;
+  // RxBool showPayPay = false.obs;
+  // RxBool showCreditCard = false.obs;
+  // RxBool showCash = false.obs;
 
-  RxBool showauPay = false.obs;
-  RxBool showdPay = false.obs;
-  RxBool showrPay = false.obs;
-  RxBool showmPay = false.obs;
+  // RxBool showauPay = false.obs;
+  // RxBool showdPay = false.obs;
+  // RxBool showrPay = false.obs;
+  // RxBool showmPay = false.obs;
 
-  RxBool showPosEdy = false.obs;
-  RxBool showPosiD = false.obs;
-  RxBool showPosIC = false.obs;
-  RxBool showPosQUICPay = false.obs;
-  RxBool showPosWAON = false.obs;
-  RxBool showPosnanaco = false.obs;
+  // RxBool showPosEdy = false.obs;
+  // RxBool showPosiD = false.obs;
+  // RxBool showPosIC = false.obs;
+  // RxBool showPosQUICPay = false.obs;
+  // RxBool showPosWAON = false.obs;
+  // RxBool showPosnanaco = false.obs;
   RxBool showOpenPayment = false.obs;
 
-  RxBool showVisa = false.obs;
-  RxBool showMaster = false.obs;
-  RxBool showJcb = false.obs;
-  RxBool showUnionPay = false.obs;
-  RxBool showAmericanExpress = false.obs;
-  RxBool showDinersClub = false.obs;
-  RxBool showDiscover = false.obs;
+  // RxBool showVisa = false.obs;
+  // RxBool showMaster = false.obs;
+  // RxBool showJcb = false.obs;
+  // RxBool showUnionPay = false.obs;
+  // RxBool showAmericanExpress = false.obs;
+  // RxBool showDinersClub = false.obs;
+  // RxBool showDiscover = false.obs;
 
   RxInt optionMaxNum = 120.obs;
   RxInt optionGroupMaxNum = 100.obs;
@@ -116,10 +115,13 @@ class MenuPageController extends GetxController with StateMixin {
 
   AudioPlayer? player;
 
+  bool paymentIsShow = false;
+  bool returnFromeCancelOrder = false;
+
   @override
-  void onInit() {
+  Future<void> onInit() async {
     print("---MenuPageController onInit");
-    readyQueryData();
+    await readyQueryData();
     player = AudioPlayer();
     super.onInit();
   }
@@ -137,71 +139,75 @@ class MenuPageController extends GetxController with StateMixin {
     super.onClose();
   }
 
-  readyQueryData() {
+  readyQueryData() async {
     if (Get.arguments != null) {
       checkLanguage.value = (Get.arguments['checkLanguage'] != null)
           ? Get.arguments['checkLanguage']
           : "JP";
-      mealType.value = (Get.arguments["mealType"] != null)
-          ? Get.arguments["mealType"]
-          : false;
+      // mealType.value = (Get.arguments["mealType"] != null)
+      //     ? Get.arguments["mealType"]
+      //     : false;
       classTag.value =
           (Get.arguments["classTag"] != null) ? Get.arguments["classTag"] : "";
       // topMenu.value =
       //     (Get.arguments["menuList"] != null) ? Get.arguments["menuList"] : [];
     }
 
-    _getMachineInfo();
+    //_getMachineInfo();
 
-    getCartPriceTotal();
+    await _getHomeImageList();
+
+    await getBookingBootIndexCagegory(classTag.value); //新版新获取分类
+
+    await getCartPriceTotal();
   }
 
   //获取机器信息
-  _getMachineInfo() async {
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
-    shopCode = await HomeServices.getShopCode();
-      _getSystemSettingInfo();
-    }
-  }
+  // _getMachineInfo() async {
+  //   var machineCodeString = await HomeServices.getMachineInfo();
+  //   if (machineCodeString != "") {
+  //     //machineCode.value = machineCodeString;
+  //     shopCode = await HomeServices.getShopCode();
+  //     _getSystemSettingInfo();
+  //   }
+  // }
 
-  _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    dining_type.value = systemSettingInfo['diningType'];
-    isAllowPos.value = systemSettingInfo['isAllowPos'];
-    isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
-    _getMachineActivateInfo();
-  }
+  // _getSystemSettingInfo() async {
+  //   Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+  //   dining_type.value = systemSettingInfo['diningType'];
+  //   isAllowPos.value = systemSettingInfo['isAllowPos'];
+  //   isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
+  //   _getMachineActivateInfo();
+  // }
 
   //获取展示支付方式
   _getMachineActivateInfo() async {
-    Map systemSettingInfo = await HomeServices.getMachineActivateData();
-    showCash.value = systemSettingInfo['showCash'];
-    showWechat.value = systemSettingInfo['showWechat'];
-    showAlipay.value = systemSettingInfo['showAlipay'];
-    showPayPay.value = systemSettingInfo['showPayPay'];
-    showCreditCard.value = systemSettingInfo['showCreditCard'];
+    // Map systemSettingInfo = await HomeServices.getMachineActivateData();
+    // showCash.value = systemSettingInfo['showCash'];
+    // showWechat.value = systemSettingInfo['showWechat'];
+    // showAlipay.value = systemSettingInfo['showAlipay'];
+    // showPayPay.value = systemSettingInfo['showPayPay'];
+    // showCreditCard.value = systemSettingInfo['showCreditCard'];
 
-    showauPay.value = systemSettingInfo['au_Pay'];
-    showdPay.value = systemSettingInfo['d_Pay'];
-    showrPay.value = systemSettingInfo['R_Pay'];
-    showmPay.value = systemSettingInfo['m_Pay'];
+    // showauPay.value = systemSettingInfo['au_Pay'];
+    // showdPay.value = systemSettingInfo['d_Pay'];
+    // showrPay.value = systemSettingInfo['R_Pay'];
+    // showmPay.value = systemSettingInfo['m_Pay'];
 
-    showPosEdy.value = systemSettingInfo['pos_Edy'];
-    showPosiD.value = systemSettingInfo['pos_iD'];
-    showPosIC.value = systemSettingInfo['pos_IC'];
-    showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
-    showPosWAON.value = systemSettingInfo['pos_WAON'];
-    showPosnanaco.value = systemSettingInfo['pos_nanaco'];
+    // showPosEdy.value = systemSettingInfo['pos_Edy'];
+    // showPosiD.value = systemSettingInfo['pos_iD'];
+    // showPosIC.value = systemSettingInfo['pos_IC'];
+    // showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
+    // showPosWAON.value = systemSettingInfo['pos_WAON'];
+    // showPosnanaco.value = systemSettingInfo['pos_nanaco'];
 
-    showVisa.value = systemSettingInfo['show_visa'];
-    showMaster.value = systemSettingInfo['show_master'];
-    showJcb.value = systemSettingInfo['show_jcb'];
-    showUnionPay.value = systemSettingInfo['show_unionPay'];
-    showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
-    showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    showDiscover.value = systemSettingInfo['show_discover'];
+    // showVisa.value = systemSettingInfo['show_visa'];
+    // showMaster.value = systemSettingInfo['show_master'];
+    // showJcb.value = systemSettingInfo['show_jcb'];
+    // showUnionPay.value = systemSettingInfo['show_unionPay'];
+    // showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
+    // showDinersClub.value = systemSettingInfo['show_dinersClub'];
+    // showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
     debugPrint("classTag.value = ${classTag.value}");
     //if (classTag.value == "") {
@@ -217,7 +223,7 @@ class MenuPageController extends GetxController with StateMixin {
     topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
-    switch (dining_type.value) {
+    switch (machinInfo.diningType) {
       case "1":
         queryTakeout = "2";
         break;
@@ -225,7 +231,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-        if (mealType.value == true) {
+        if (machinInfo.mealType == true) {
           queryTakeout = "0";
         } else {
           queryTakeout = "2";
@@ -235,7 +241,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "2";
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machinInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
     };
@@ -367,11 +373,11 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取页面分类
-  getBookingBootIndexCagegory(String category) {
+  getBookingBootIndexCagegory(String category, {bool isReset = false}) {
     topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
-    switch (dining_type.value) {
+    switch (machinInfo.diningType) {
       case "1":
         queryTakeout = "2";
         break;
@@ -379,7 +385,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-        if (mealType.value == true) {
+        if (machinInfo.mealType == true) {
           queryTakeout = "0";
         } else {
           queryTakeout = "2";
@@ -389,7 +395,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "2";
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machinInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
     };
@@ -443,7 +449,11 @@ class MenuPageController extends GetxController with StateMixin {
             classTag.value = categoryVoList['categoryCode'];
           }
         }
-        getBookingBootIndexMenu(category);
+        if (isReset) {
+          _resetToFirstCategory();
+        } else {
+          getBookingBootIndexMenu(classTag.value);
+        }
 
         //update();
         //change(null, status: RxStatus.success());
@@ -463,14 +473,14 @@ class MenuPageController extends GetxController with StateMixin {
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance.logEvent(
             name: 'load_menu_category_failure',
-            parameters: {'machineCode': machineCode.value});
+            parameters: {'machineCode': machinInfo.machineCode});
       }
       change(null, status: RxStatus.error('Failed to load data'));
     }).timeout(Duration(seconds: 60), onTimeout: () {
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance.logEvent(
             name: 'load_menu_category_timeout',
-            parameters: {'machineCode': machineCode.value});
+            parameters: {'machineCode': machinInfo.machineCode});
       }
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
@@ -479,7 +489,7 @@ class MenuPageController extends GetxController with StateMixin {
   getBookingBootIndexMenu(queryCategoryCode) {
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
-    switch (dining_type.value) {
+    switch (machinInfo.diningType) {
       case "1":
         queryTakeout = "2";
         break;
@@ -487,7 +497,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-        if (mealType.value == true) {
+        if (machinInfo.mealType == true) {
           queryTakeout = "0";
         } else {
           queryTakeout = "2";
@@ -497,7 +507,7 @@ class MenuPageController extends GetxController with StateMixin {
         queryTakeout = "2";
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machinInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
       "categoryCode": queryCategoryCode
@@ -505,7 +515,6 @@ class MenuPageController extends GetxController with StateMixin {
     debugPrint("formData:${formData}");
     request('webBootIndexMenuv3', method: 'POST', parameters: formData)
         .then((val) {
-      
       var response = json.decode(val.toString());
       //debugPrint("getBookingBootIndexMenu request :$response");
       if (response['code'] == 200) {
@@ -601,14 +610,14 @@ class MenuPageController extends GetxController with StateMixin {
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance.logEvent(
             name: 'load_menu_failure',
-            parameters: {'machineCode': machineCode.value});
+            parameters: {'machineCode': machinInfo.machineCode});
       }
       change(null, status: RxStatus.error('Failed to load data'));
     }).timeout(Duration(seconds: 60), onTimeout: () {
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance.logEvent(
             name: 'load_menu_timeout',
-            parameters: {'machineCode': machineCode.value});
+            parameters: {'machineCode': machinInfo.machineCode});
       }
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
@@ -781,6 +790,18 @@ class MenuPageController extends GetxController with StateMixin {
     );
   }
 
+  publicMenuSubtitle(subtitleList) {
+    var subtitle = "";
+    if (subtitleList != null && subtitleList.length > 0) {
+      if (subtitleList != null && subtitleList?.length > 0) {
+        for (var i = 0; i < subtitleList.length; i++) {
+          subtitle += subtitleList[i];
+        }
+      }
+    }
+    return subtitle;
+  }
+
   //公共设置标签 subTitle
   publicShowMenuSubtitle(subtitleList) {
     //标签循环相关
@@ -874,6 +895,7 @@ class MenuPageController extends GetxController with StateMixin {
       children: showCartItems
           .map((d) => CarItemView(
                 title: d.mainTitle,
+                subtitle: d.optionVoListMsg,
                 image: CachedNetworkImageProvider(d.image),
                 onReduce: (value) {
                   publicChangeCartItemCreate(d, false);
@@ -1363,7 +1385,7 @@ print("加1了");
 
   //提交订单
   doSubmitOrder() {
-    if (machineCode.value != "") {
+    if (machinInfo.machineCode != "") {
       _showOrderEasyLoading();
 
       //自定义声音
@@ -1393,11 +1415,11 @@ print("加1了");
       var orderTotlaPrice = getItemTotal(ordersqlcontroller.cartItems);
       var formData = {
         "language": checkLanguage.value,
-        "machineCode": machineCode.value,
+        "machineCode": machinInfo.machineCode,
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout": mealType.value,
+        "takeout": machinInfo.mealType,
       };
       debugPrint("doSubmitOrde formData: $formData");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
@@ -1430,7 +1452,7 @@ print("加1了");
           if (Platform.isAndroid) {
             FirebaseAnalytics.instance
                 .logEvent(name: "submit_order_fail", parameters: {
-              "machineCode": machineCode.value,
+              "machineCode": machinInfo.machineCode,
             });
           }
           if (response != null &&
@@ -1452,78 +1474,62 @@ print("加1了");
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance
             .logEvent(name: "submit_order_error", parameters: {
-          "machineCode": machineCode.value,
+          "machineCode": machinInfo.machineCode,
         });
       }
     }
   }
 
+  _resetToFirstCategory() {
+    final firstCategory = topMenu.first['categoryCode'];
+    if (firstCategory != null) {
+      changeCategory(firstCategory);
+    }
+  }
+
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
-    logger.info('-- paymentMethodDialog cash state = ${showCash.value} --');
-    Get.dialog(
-        barrierDismissible: false,
-        SelectPaymentPage(
+    logger.info('-- paymentMethodDialog cash state = ${machinInfo.showCash} --');
+    paymentIsShow = true;
+    Get.to(() => SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
-            //mealType:_mealType.value,
-            isAllowPos: isAllowPos.value,
-            isAllowReceipt: isAllowReceipt.value,
-            payment_method_num: payment_method_num.value,
-            showCash: showCash.value,
-            showWechat: showWechat.value,
-            showAlipay: showAlipay.value,
-            showPayPay: showPayPay.value,
-            showauPay: showauPay.value,
-            showdPay: showdPay.value,
-            showrPay: showrPay.value,
-            showmPay: showmPay.value,
-            showCreditCard: showCreditCard.value,
-            showPosEdy: showPosEdy.value,
-            showPosiD: showPosiD.value,
-            showPosIC: showPosIC.value,
-            showPosQUICPay: showPosQUICPay.value,
-            showPosWAON: showPosWAON.value,
-            showPosnanaco: showPosnanaco.value,
-            showVisa: showVisa.value,
-            showMaster: showMaster.value,
-            showJcb: showJcb.value,
-            showUnionPay: showUnionPay.value,
-            showAmericanExpress: showAmericanExpress.value,
-            showDinersClub: showDinersClub.value,
-            showDiscover: showDiscover.value,
             shopCartTotalPrice: shopCartTotalPrice.value,
             tableNum: "",
-            onConfrimClick: (String isAllowPosString,
-                String payment_method_num_string, String receiptTypeString) {
-              isAllowPos.value = isAllowPosString;
-              payment_method_num.value = payment_method_num_string;
-              receiptPrintType.value = receiptTypeString;
+            onConfrimClick: () {
               showOpenPayment.value = true;
               //230629点击弹出支付方式后，需要重新请求下后台获得orderid
 
-              var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
-              if (paymentMethod.contains(payment_method_num.value) == true) {
-                _getPosSettingInfo();
-              } else {
-                //postNewOrderId();
-                gotoSettlement();
-              }
+              // var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
+              // if (paymentMethod.contains(machinInfo.paymentMethod) == true) {
+              //   //_getPosSettingInfo();
+              //   gotoSettlement();
+              // } else {
+              //   //postNewOrderId();
+              //   gotoSettlement();
+              // }
+              gotoSettlement();
             },
             onCancelClick: (String isBack) async {
               // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
               //   await CashChanger.endDeposit(DepositAction.repay.index);
               // }
+              debugPrint('onCancelClick');
+              paymentIsShow = false;
               if (isBack == "back") {
                 CancelOrder();
               }
-            }));
+            }),
+      transition: Transition.fadeIn,
+      fullscreenDialog: true,
+      opaque: false,
+    );
   }
 
   postNewOrderId() {
     var formData = {
       "orderId": doSubmitOrderId.value,
-      "machineCode": machineCode.value,
+      "machineCode": machinInfo.machineCode,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData)
         .then((val) {
@@ -1549,55 +1555,67 @@ print("加1了");
     });
   }
 
-  _getPosSettingInfo() async {
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    pos_ip.value = posSettingInfo['posIp'];
-    pos_port.value = posSettingInfo['posPort'];
-    //postNewOrderId();
-    gotoSettlement();
+  // _getPosSettingInfo() async {
+  //   Map posSettingInfo = await HomeServices.getPosSettingInfo();
+  //   pos_ip.value = posSettingInfo['posIp'];
+  //   pos_port.value = posSettingInfo['posPort'];
+  //   //postNewOrderId();
+  //   gotoSettlement();
+  // }
+
+  resetToFirstPage() async {
+    await getBookingBootIndexCagegory(classTag.value, isReset: true);
+  }
+
+  clearOrderList() async {
+    if (paymentIsShow) {
+      Get.back();
+      paymentIsShow = false;
+    }
+    getCartPriceTotal();
   }
 
   gotoSettlement() async {
     await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
-      "machineCode": machineCode.value,
-      "shopCode": shopCode,
+      //"machineCode": machinInfo.machineCode,
+      //"shopCode": shopCode,
       "orderId": doSubmitOrderId.value,
       "totalPrice": shopCartTotalPrice.value,
       "machineMode": "1",
-      "isAllowPos": isAllowPos.value,
-      "receiptPrintType": receiptPrintType.value,
-      "posIp": pos_ip.value,
-      "posPort": pos_port.value,
-      "paymentMethod": payment_method_num.value,
-      "showWechat": showWechat.value,
-      "showAlipay": showAlipay.value,
-      "showPayPay": showPayPay.value,
-      "showCreditCard": showCreditCard.value,
-      "showauPay": showauPay.value,
-      "showdPay": showdPay.value,
-      "showrPay": showrPay.value,
-      "showmPay": showmPay.value,
-      "showPosEdy": showPosEdy.value,
-      "showPosiD": showPosiD.value,
-      "showPosIC": showPosIC.value,
-      "showPosQUICPay": showPosQUICPay.value,
-      "showPosWAON": showPosWAON.value,
-      "showPosnanaco": showPosnanaco.value,
-      "showVisa": showVisa.value,
-      "showMaster": showMaster.value,
-      "showJcb": showJcb.value,
-      "showUnionPay": showUnionPay.value,
-      "showAmericanExpress": showAmericanExpress.value,
-      "showDinersClub": showDinersClub.value,
-      "showDiscover": showDiscover.value,
-      "showOpenPayment": showOpenPayment.value
+      // "isAllowPos": isAllowPos.value,
+      // "receiptPrintType": receiptPrintType.value,
+      // "posIp": pos_ip.value,
+      // "posPort": pos_port.value,
+      //"paymentMethod": payment_method_num.value,
+      // "showWechat": showWechat.value,
+      // "showAlipay": showAlipay.value,
+      // "showPayPay": showPayPay.value,
+      // "showCreditCard": showCreditCard.value,
+      // "showauPay": showauPay.value,
+      // "showdPay": showdPay.value,
+      // "showrPay": showrPay.value,
+      // "showmPay": showmPay.value,
+      // "showPosEdy": showPosEdy.value,
+      // "showPosiD": showPosiD.value,
+      // "showPosIC": showPosIC.value,
+      // "showPosQUICPay": showPosQUICPay.value,
+      // "showPosWAON": showPosWAON.value,
+      // "showPosnanaco": showPosnanaco.value,
+      // "showVisa": showVisa.value,
+      // "showMaster": showMaster.value,
+      // "showJcb": showJcb.value,
+      // "showUnionPay": showUnionPay.value,
+      // "showAmericanExpress": showAmericanExpress.value,
+      // "showDinersClub": showDinersClub.value,
+      // "showDiscover": showDiscover.value,
+       "showOpenPayment": showOpenPayment.value
     });
   }
 
   CancelOrder() {
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machinInfo.machineCode,
       "orderId": doSubmitOrderId.value,
       "model": "0",
     };

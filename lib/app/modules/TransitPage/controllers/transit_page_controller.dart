@@ -467,11 +467,13 @@ class TransitPageController extends GetxController {
     // if (Get.isRegistered<PosPayController>()) Get.delete<PosPayController>();
     // Get.put(PosPayController());
 
-    if (Get.isRegistered<MachineInfoController>())
-      Get.delete<MachineInfoController>();
-    Get.put(MachineInfoController());
+    //  if (Get.isRegistered<MachineInfoController>()){
+    //   Get.delete<MachineInfoController>();
+    //  } 
 
-    await _goNext(checkmachineMode);
+     Get.put(MachineInfoController());
+     
+     await _goNext(checkmachineMode);
   }
 
   Future _goNext(checkmachineMode) async {

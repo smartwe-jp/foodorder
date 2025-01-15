@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/controllers/machine_info_controller.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 // import 'package:foodorder/app/config/string.dart';
@@ -21,11 +23,12 @@ import '../../../services/HomeServices.dart';
 class OrderHomeController extends GetxController with StateMixin {
   //TODO: Implement OrderHomeController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  MachineInfoController machineInfo = Get.find();
 
-  RxString machineCode = "".obs;
+  //RxString machineCode = "".obs;
 
   RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
-  RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
+  //RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
 
   RxBool machineLanguages_JP = false.obs;
   RxBool machineLanguages_CH = false.obs;
@@ -38,7 +41,7 @@ class OrderHomeController extends GetxController with StateMixin {
 
   RxList homeList = [].obs;
   RxList homeImages = [].obs;
-  RxBool mealType = false.obs;
+  //RxBool mealType = false.obs;
   int mealTypeStatus = 0;
   int resetTime = 30;
   Timer? resetTimer;
@@ -79,10 +82,17 @@ class OrderHomeController extends GetxController with StateMixin {
   //获取机器信息
   _getMachineInfo() async {
     debugPrint("获取机器信息");
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
-    }
+
+    if (Get.isRegistered<MachineInfoController>())
+      debugPrint("MachineInfoController register");
+
+    if (Get.isRegistered<TransitPageController>())
+      debugPrint("TransitPageController register");
+
+    // var machineCodeString = await HomeServices.getMachineInfo();
+    // if (machineCodeString != "") {
+    //   machineCode.value = machineCodeString;
+    // }
     await _getSettingLanguage();
     //首页图片
     await _getHomeImageList();
@@ -103,10 +113,10 @@ class OrderHomeController extends GetxController with StateMixin {
             SystemSettingInfo["menuDirection"] != null)
         ? SystemSettingInfo["menuDirection"]
         : "1";
-    dining_type.value = (SystemSettingInfo["diningType"] != "" &&
-            SystemSettingInfo["diningType"] != null)
-        ? SystemSettingInfo["diningType"]
-        : "1";
+    // dining_type.value = (SystemSettingInfo["diningType"] != "" &&
+    //         SystemSettingInfo["diningType"] != null)
+    //     ? SystemSettingInfo["diningType"]
+    //     : "1";
     await getmenchineLanguages();
   }
 
@@ -116,9 +126,9 @@ class OrderHomeController extends GetxController with StateMixin {
     mealTypeStatus = type;
     //dining_type.value = type;
     if (type == 2) {
-      mealType.value = true;
+      machineInfo.mealType = true;
     } else {
-      mealType.value = false;
+      machineInfo.mealType = false;
     }
     // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     // debugPrint("SystemSettingInfo $systemSettingInfo");
@@ -182,7 +192,7 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("homeList.length > 0");
 
     var showItemCount = 9;
-    if (dining_type.value == "3") {
+    if (machineInfo.diningType == "3") {
       showItemCount = 6;
     }
     if (homeList.length >= showItemCount - 1) {
@@ -216,7 +226,7 @@ class OrderHomeController extends GetxController with StateMixin {
     homeList.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
-    switch (dining_type.value) {
+    switch (machineInfo.diningType) {
       case "1":
         queryTakeout = "2";
         break;
@@ -224,7 +234,7 @@ class OrderHomeController extends GetxController with StateMixin {
         queryTakeout = "0";
         break;
       case "3":
-        if (mealType.value == true) {
+        if (machineInfo.mealType == true) {
           queryTakeout = "0";
         } else {
           queryTakeout = "2";
@@ -234,7 +244,7 @@ class OrderHomeController extends GetxController with StateMixin {
         queryTakeout = "2";
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "language": settingLanguage.value,
       "takeout": queryTakeout,
     };
