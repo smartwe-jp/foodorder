@@ -663,7 +663,8 @@ extension SettingControllerExtension on SettingController {
     getPutMoneyCurrency.value = "";
     getPutMoney.value = 0;
     isStartPutMoney.value = false;
-    if (syncCash) getServerCashInfo();
+    //await gloryConfirmSync();
+    if (syncCash) gloryConfirmSync();
     //update();
   }
 
