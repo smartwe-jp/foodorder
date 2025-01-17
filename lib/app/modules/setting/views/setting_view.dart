@@ -856,7 +856,7 @@ class SettingView extends GetView<SettingController> {
                       // SizedBox(
                       //   height: ScreenAdapter.height(20),
                       // ),
-                      getLastOrderTotalShow(),
+                      //getLastOrderTotalShow(),
                       SizedBox(
                         height: ScreenAdapter.height(20),
                       ),
