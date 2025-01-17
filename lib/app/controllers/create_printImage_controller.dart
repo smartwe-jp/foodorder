@@ -343,7 +343,7 @@ class CreatePrintImageController extends GetxController {
     );
 
     //print("总行数${menuNum}");
-    var totalHight = addRowHight + lineHight + 20;
+    var totalHight = addRowHight + lineHight + 25;
     if (menuNum == 1) {
       totalHight += 15;
     }
