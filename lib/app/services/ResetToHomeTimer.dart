@@ -7,6 +7,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
+import '../modules/menuPage/controllers/menu_page_controller.dart';
 import 'HomeServices.dart';
 
 class ResetToHomeTimer {
@@ -33,10 +34,15 @@ class ResetToHomeTimer {
             if (Get.isRegistered<OrderSqlController>()) {
               final orderSqlController = Get.find<OrderSqlController>();
               orderSqlController.removeAllFromCart();
-              orderSqlController.getCardList();
+
+              if (Get.isRegistered<MenuPageController>())
+                Get.find<MenuPageController>().clearOrderList();
             }
             return;
           }
+        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
+          Get.back();
+          return;
         }
 
         Get.updateLocale(Locale('jp', 'JP'));

@@ -111,6 +111,7 @@ class MenuPageController extends GetxController with StateMixin {
   List recommendBookList = [];
   bool showRecommend = false;
   bool showCartView = false;
+  bool paymentIsShow = false;
 
 
   @override
@@ -1307,62 +1308,68 @@ print("加1了");
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
-    Get.dialog(
-        barrierDismissible:false,
-        SelectPaymentPage(
-            checkLanguage: checkLanguage.value,
-            menuCount: showCartTotalGoodsNum.value,
-            //mealType:_mealType.value,
-            isAllowPos:isAllowPos.value,
-            isAllowReceipt:isAllowReceipt.value,
-            payment_method_num:payment_method_num.value,
-            showCash: showCash.value,
-            showWechat: showWechat.value,
-            showAlipay: showAlipay.value,
-            showPayPay: showPayPay.value,
-            showauPay: showauPay.value,
-            showdPay: showdPay.value,
-            showrPay: showrPay.value,
-            showmPay: showmPay.value,
-            showCreditCard: showCreditCard.value,
-            showPosEdy: showPosEdy.value,
-            showPosiD: showPosiD.value,
-            showPosIC: showPosIC.value,
-            showPosQUICPay: showPosQUICPay.value,
-            showPosWAON: showPosWAON.value,
-            showPosnanaco: showPosnanaco.value,
-            showVisa: showVisa.value,
-            showMaster: showMaster.value,
-            showJcb: showJcb.value,
-            showUnionPay: showUnionPay.value,
-            showAmericanExpress: showAmericanExpress.value,
-            showDinersClub: showDinersClub.value,
-            showDiscover: showDiscover.value,
-            shopCartTotalPrice:shopCartTotalPrice.value,
-            tableNum: "",
-            onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptTypeString) {
+    paymentIsShow = true;
+    Get.to(
+          () => SelectPaymentPage(
+          checkLanguage: checkLanguage.value,
+          menuCount: showCartTotalGoodsNum.value,
+          //mealType:_mealType.value,
+          isAllowPos: isAllowPos.value,
+          isAllowReceipt: isAllowReceipt.value,
+          payment_method_num: payment_method_num.value,
+          showCash: showCash.value,
+          showWechat: showWechat.value,
+          showAlipay: showAlipay.value,
+          showPayPay: showPayPay.value,
+          showauPay: showauPay.value,
+          showdPay: showdPay.value,
+          showrPay: showrPay.value,
+          showmPay: showmPay.value,
+          showCreditCard: showCreditCard.value,
+          showPosEdy: showPosEdy.value,
+          showPosiD: showPosiD.value,
+          showPosIC: showPosIC.value,
+          showPosQUICPay: showPosQUICPay.value,
+          showPosWAON: showPosWAON.value,
+          showPosnanaco: showPosnanaco.value,
+          showVisa: showVisa.value,
+          showMaster: showMaster.value,
+          showJcb: showJcb.value,
+          showUnionPay: showUnionPay.value,
+          showAmericanExpress: showAmericanExpress.value,
+          showDinersClub: showDinersClub.value,
+          showDiscover: showDiscover.value,
+          shopCartTotalPrice: shopCartTotalPrice.value,
+          tableNum: "",
+          onConfrimClick: (String isAllowPosString,
+              String payment_method_num_string, String receiptTypeString) {
+            isAllowPos.value = isAllowPosString;
+            payment_method_num.value = payment_method_num_string;
+            receiptPrintType.value = receiptTypeString;
+            showOpenPayment.value = true;
+            //230629点击弹出支付方式后，需要重新请求下后台获得orderid
 
-              isAllowPos.value = isAllowPosString;
-              payment_method_num.value = payment_method_num_string;
-              receiptPrintType.value = receiptTypeString;
-              showOpenPayment.value = true;
-              //230629点击弹出支付方式后，需要重新请求下后台获得orderid
-
-              var paymentMethod = ["3","4","5","6","7","8","9","10"];
-                if (paymentMethod.contains(payment_method_num.value) == true) {
-                  _getPosSettingInfo();
-                }else{
-                  //postNewOrderId();
-                  gotoSettlement();
-                }
-
-            },
-            onCancelClick: (String isBack){
-              if(isBack == "back"){
-                CancelOrder();
-              }
+            var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
+            if (paymentMethod.contains(payment_method_num.value) == true) {
+              _getPosSettingInfo();
+            } else {
+              //postNewOrderId();
+              gotoSettlement();
             }
-        )
+          },
+          onCancelClick: (String isBack) async {
+            // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
+            //   await CashChanger.endDeposit(DepositAction.repay.index);
+            // }
+            debugPrint('onCancelClick');
+            paymentIsShow = false;
+            if (isBack == "back") {
+              CancelOrder();
+            }
+          }),
+      transition: Transition.fadeIn,
+      fullscreenDialog: true,
+      opaque: false,
     );
   }
 
@@ -1466,6 +1473,14 @@ print("加1了");
     if (firstCategory != null) {
       changeCategory(firstCategory);
     }
+  }
+
+  clearOrderList() async {
+    if (paymentIsShow) {
+      Get.back();
+      paymentIsShow = false;
+    }
+    getCartPriceTotal();
   }
 
 

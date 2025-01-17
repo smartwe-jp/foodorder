@@ -300,7 +300,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
     scanQrCodeHomeFocusNode.requestFocus();
-    Get.dialog(
+    Get.to(
+          () =>
         SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: 0,
@@ -358,7 +359,10 @@ class CheckoutPageController extends GetxController with StateMixin {
               scanQrCodeFocusNode.requestFocus();// 获取焦点
               scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
             }
-        )
+        ),
+      transition: Transition.fadeIn,
+      fullscreenDialog: true,
+      opaque: false,
     );
   }
 
