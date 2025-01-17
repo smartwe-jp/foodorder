@@ -335,6 +335,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
+      posManager.resetState();// if pos reset
     }
     EasyLoading.dismiss();
     Get.back();

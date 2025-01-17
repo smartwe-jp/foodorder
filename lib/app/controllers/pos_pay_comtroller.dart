@@ -71,6 +71,7 @@ class PosSocketManager {
         _socketNumberTimes = 0;
         if (_isConnected == false) {
           if (_onDone == null) {
+            resetState();
             backTask?.call();
           } else {
             _onDone?.call(action);
