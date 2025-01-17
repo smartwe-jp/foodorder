@@ -309,9 +309,9 @@ class SelectPaymentPage extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  if (machinInfo.showAlipay == true ||
-                                      machinInfo.showWechat == true ||
-                                      machinInfo.showPayPay == true)
+                                  if(machinInfo.showAlipay || machinInfo.showWechat || machinInfo.showPayPay||
+                                      machinInfo.showAuPay || machinInfo.showDPay || machinInfo.showRPay || machinInfo.showMPay)
+
                                     InkWell(
                                       onTap: () {
                                         machinInfo.paymentMethod = '2';
