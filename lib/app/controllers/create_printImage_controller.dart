@@ -354,8 +354,25 @@ class CreatePrintImageController extends GetxController {
         );
       }
     }
+
+    categoryMenus.add(
+      Container(
+        alignment: Alignment.bottomRight,
+        margin: EdgeInsets.only(top: 10),
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: Text(printData["orderDate"],
+                style: TextStyle(
+                  fontSize: print_menu_txt_size * 0.8,
+                  fontFamily: 'NotoSansJP',
+                  fontWeight: FontWeight.w200,
+                  color: ColorsUtil.hexToColor("#000000"),
+                ))),
+      ),
+    );
+
     //print("总行数${menuNum}");
-    var totalHight = addRowHight + lineHight;
+    var totalHight = addRowHight + lineHight + 20;
     if (menuNum == 1) {
       totalHight += 15;
     }
