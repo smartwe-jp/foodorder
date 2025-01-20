@@ -14,7 +14,7 @@ import '../../../widget/DialogUtils.dart';
 import '../controllers/menu_page_controller.dart';
 
 class publicShowCartView extends GetView {
-  final MenuPageController controller = Get.put(MenuPageController());
+  final MenuPageController controller = Get.find();
   publicShowCartView({Key? key}) : super(key: key);
 
   showCartListMenu(BuildContext context){
