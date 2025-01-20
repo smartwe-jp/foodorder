@@ -40,16 +40,6 @@ class MenuPageController extends GetxController with StateMixin {
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
 
-  //RxString machineCode = "".obs;
-  //RxBool mealType = false.obs; //用于判断下单
-  // RxString dining_type = "1".obs; //1 堂食  2 外袋  3两种都可以支付
-  // RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
-  // RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
-  // RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
-  // RxString pos_ip = "".obs;
-  // RxString pos_port = "".obs;
-  //RxString payment_method_num = "0".obs; //支付类型选择
-
   RxString classTag = "".obs;
   RxList topMenu = [].obs;
   RxList showCartItems = [].obs;
@@ -67,33 +57,7 @@ class MenuPageController extends GetxController with StateMixin {
   RxString shopCartTotalPrice = "0".obs;
   RxInt showCartTotalGoodsNum = 0.obs;
 
-  //顶部展示支付类型
-  // RxBool showWechat = false.obs;
-  // RxBool showAlipay = false.obs;
-  // RxBool showPayPay = false.obs;
-  // RxBool showCreditCard = false.obs;
-  // RxBool showCash = false.obs;
-
-  // RxBool showauPay = false.obs;
-  // RxBool showdPay = false.obs;
-  // RxBool showrPay = false.obs;
-  // RxBool showmPay = false.obs;
-
-  // RxBool showPosEdy = false.obs;
-  // RxBool showPosiD = false.obs;
-  // RxBool showPosIC = false.obs;
-  // RxBool showPosQUICPay = false.obs;
-  // RxBool showPosWAON = false.obs;
-  // RxBool showPosnanaco = false.obs;
   RxBool showOpenPayment = false.obs;
-
-  // RxBool showVisa = false.obs;
-  // RxBool showMaster = false.obs;
-  // RxBool showJcb = false.obs;
-  // RxBool showUnionPay = false.obs;
-  // RxBool showAmericanExpress = false.obs;
-  // RxBool showDinersClub = false.obs;
-  // RxBool showDiscover = false.obs;
 
   RxInt optionMaxNum = 120.obs;
   RxInt optionGroupMaxNum = 100.obs;
@@ -160,62 +124,6 @@ class MenuPageController extends GetxController with StateMixin {
     await getBookingBootIndexCagegory(classTag.value); //新版新获取分类
 
     await getCartPriceTotal();
-  }
-
-  //获取机器信息
-  // _getMachineInfo() async {
-  //   var machineCodeString = await HomeServices.getMachineInfo();
-  //   if (machineCodeString != "") {
-  //     //machineCode.value = machineCodeString;
-  //     shopCode = await HomeServices.getShopCode();
-  //     _getSystemSettingInfo();
-  //   }
-  // }
-
-  // _getSystemSettingInfo() async {
-  //   Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-  //   dining_type.value = systemSettingInfo['diningType'];
-  //   isAllowPos.value = systemSettingInfo['isAllowPos'];
-  //   isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
-  //   _getMachineActivateInfo();
-  // }
-
-  //获取展示支付方式
-  _getMachineActivateInfo() async {
-    // Map systemSettingInfo = await HomeServices.getMachineActivateData();
-    // showCash.value = systemSettingInfo['showCash'];
-    // showWechat.value = systemSettingInfo['showWechat'];
-    // showAlipay.value = systemSettingInfo['showAlipay'];
-    // showPayPay.value = systemSettingInfo['showPayPay'];
-    // showCreditCard.value = systemSettingInfo['showCreditCard'];
-
-    // showauPay.value = systemSettingInfo['au_Pay'];
-    // showdPay.value = systemSettingInfo['d_Pay'];
-    // showrPay.value = systemSettingInfo['R_Pay'];
-    // showmPay.value = systemSettingInfo['m_Pay'];
-
-    // showPosEdy.value = systemSettingInfo['pos_Edy'];
-    // showPosiD.value = systemSettingInfo['pos_iD'];
-    // showPosIC.value = systemSettingInfo['pos_IC'];
-    // showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
-    // showPosWAON.value = systemSettingInfo['pos_WAON'];
-    // showPosnanaco.value = systemSettingInfo['pos_nanaco'];
-
-    // showVisa.value = systemSettingInfo['show_visa'];
-    // showMaster.value = systemSettingInfo['show_master'];
-    // showJcb.value = systemSettingInfo['show_jcb'];
-    // showUnionPay.value = systemSettingInfo['show_unionPay'];
-    // showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
-    // showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    // showDiscover.value = systemSettingInfo['show_discover'];
-    //getBookingBootMenu();
-    debugPrint("classTag.value = ${classTag.value}");
-    //if (classTag.value == "") {
-    getBookingBootIndexCagegory(classTag.value); //新版新获取分类
-    // } else {
-    //   getBookingBootIndexMenu(classTag.value);
-    // }
-    _getHomeImageList();
   }
 
   //获取菜单
@@ -1576,32 +1484,6 @@ print("加1了");
       "orderId": doSubmitOrderId.value,
       "totalPrice": shopCartTotalPrice.value,
       "machineMode": "1",
-      // "isAllowPos": isAllowPos.value,
-      // "receiptPrintType": receiptPrintType.value,
-      // "posIp": pos_ip.value,
-      // "posPort": pos_port.value,
-      //"paymentMethod": payment_method_num.value,
-      // "showWechat": showWechat.value,
-      // "showAlipay": showAlipay.value,
-      // "showPayPay": showPayPay.value,
-      // "showCreditCard": showCreditCard.value,
-      // "showauPay": showauPay.value,
-      // "showdPay": showdPay.value,
-      // "showrPay": showrPay.value,
-      // "showmPay": showmPay.value,
-      // "showPosEdy": showPosEdy.value,
-      // "showPosiD": showPosiD.value,
-      // "showPosIC": showPosIC.value,
-      // "showPosQUICPay": showPosQUICPay.value,
-      // "showPosWAON": showPosWAON.value,
-      // "showPosnanaco": showPosnanaco.value,
-      // "showVisa": showVisa.value,
-      // "showMaster": showMaster.value,
-      // "showJcb": showJcb.value,
-      // "showUnionPay": showUnionPay.value,
-      // "showAmericanExpress": showAmericanExpress.value,
-      // "showDinersClub": showDinersClub.value,
-      // "showDiscover": showDiscover.value,
       "showOpenPayment": showOpenPayment.value
     });
   }

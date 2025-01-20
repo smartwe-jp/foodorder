@@ -25,10 +25,7 @@ class OrderHomeController extends GetxController with StateMixin {
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MachineInfoController machineInfo = Get.find();
 
-  //RxString machineCode = "".obs;
-
   RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
-  //RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
 
   RxBool machineLanguages_JP = false.obs;
   RxBool machineLanguages_CH = false.obs;
@@ -83,16 +80,12 @@ class OrderHomeController extends GetxController with StateMixin {
   _getMachineInfo() async {
     debugPrint("获取机器信息");
 
-    if (Get.isRegistered<MachineInfoController>())
-      debugPrint("MachineInfoController register");
+    // if (Get.isRegistered<MachineInfoController>())
+    //   debugPrint("MachineInfoController register");
 
-    if (Get.isRegistered<TransitPageController>())
-      debugPrint("TransitPageController register");
+    // if (Get.isRegistered<TransitPageController>())
+    //   debugPrint("TransitPageController register");
 
-    // var machineCodeString = await HomeServices.getMachineInfo();
-    // if (machineCodeString != "") {
-    //   machineCode.value = machineCodeString;
-    // }
     await _getSettingLanguage();
     //首页图片
     await _getHomeImageList();
@@ -124,17 +117,13 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("updateDingType $type");
     startResetTimer();
     mealTypeStatus = type;
-    //dining_type.value = type;
+
     if (type == 2) {
       machineInfo.mealType = true;
     } else {
       machineInfo.mealType = false;
     }
-    // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    // debugPrint("SystemSettingInfo $systemSettingInfo");
-    // systemSettingInfo["diningType"] = type;
-    // debugPrint("SystemSettingInfo new $systemSettingInfo");
-    // await HomeServices.updateSystemSettingInfo(systemSettingInfo);
+
     await getBookingBootIndexCagegory();
   }
 

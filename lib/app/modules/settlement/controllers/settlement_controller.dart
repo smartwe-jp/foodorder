@@ -49,8 +49,6 @@ class SettlementController extends GetxController with StateMixin {
 
   MachineInfoController machineInfo = Get.find();
 
-  //RxString machineCode = "".obs;
-
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
 
@@ -117,32 +115,6 @@ class SettlementController extends GetxController with StateMixin {
   RxString wlan_print_port_two = "".obs;
   RxString is_allow_wlanPrint_Two_continuous =
       "0".obs; //0 单票  1 连票  Print Continuous
-
-  //顶部展示支付类型
-  // RxBool showWechat = false.obs;
-  // RxBool showAlipay = false.obs;
-  // RxBool showPayPay = false.obs;
-  // RxBool showCreditCard = false.obs;
-
-  // RxBool showauPay = false.obs;
-  // RxBool showdPay = false.obs;
-  // RxBool showrPay = false.obs;
-  // RxBool showmPay = false.obs;
-
-  // RxBool showPosEdy = false.obs;
-  // RxBool showPosiD = false.obs;
-  // RxBool showPosIC = false.obs;
-  // RxBool showPosQUICPay = false.obs;
-  // RxBool showPosWAON = false.obs;
-  // RxBool showPosnanaco = false.obs;
-
-  // RxBool showVisa = false.obs;
-  // RxBool showMaster = false.obs;
-  // RxBool showJcb = false.obs;
-  // RxBool showUnionPay = false.obs;
-  // RxBool showAmericanExpress = false.obs;
-  // RxBool showDinersClub = false.obs;
-  // RxBool showDiscover = false.obs;
 
   //用于控制返回是否多关闭页面
   RxBool showOpenPayment = false.obs;
@@ -213,40 +185,8 @@ class SettlementController extends GetxController with StateMixin {
   readyQueryData() async {
     debugPrint("readyQueryData");
     checkLanguage.value = Get.arguments['checkLanguage'];
-    //machineCode.value = Get.arguments['machineCode'];
-    //shopCode = Get.arguments['shopCode'] ?? "";
     orderId.value = Get.arguments['orderId'];
-    //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
-    //isAllowPos.value = Get.arguments['isAllowPos'];
-    // receiptPrintType.value = Get.arguments['receiptPrintType'];
-    // pos_ip.value = Get.arguments['posIp'];
-    // pos_port.value = Get.arguments['posPort'];
-    // payment_method_num.value = Get.arguments['paymentMethod'];
-
-    // showWechat.value = Get.arguments['showWechat'];
-    // showAlipay.value = Get.arguments['showAlipay'];
-    // showPayPay.value = Get.arguments['showPayPay'];
-    // showCreditCard.value = Get.arguments['showCreditCard'];
-
-    // showauPay.value = Get.arguments['showauPay'];
-    // showdPay.value = Get.arguments['showdPay'];
-    // showrPay.value = Get.arguments['showrPay'];
-    // showmPay.value = Get.arguments['showmPay'];
-    // showPosEdy.value = Get.arguments['showPosEdy'];
-    // showPosiD.value = Get.arguments['showPosiD'];
-    // showPosIC.value = Get.arguments['showPosIC'];
-    // showPosQUICPay.value = Get.arguments['showPosQUICPay'];
-    // showPosWAON.value = Get.arguments['showPosWAON'];
-    // showPosnanaco.value = Get.arguments['showPosnanaco'];
-
-    // showVisa.value = Get.arguments["showVisa"];
-    // showMaster.value = Get.arguments["showMaster"];
-    // showJcb.value = Get.arguments["showJcb"];
-    // showUnionPay.value = Get.arguments["showUnionPay"];
-    // showAmericanExpress.value = Get.arguments["showAmericanExpress"];
-    // showDinersClub.value = Get.arguments["showDinersClub"];
-    // showDiscover.value = Get.arguments["showDiscover"];
     showOpenPayment.value = Get.arguments['showOpenPayment'];
 
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
