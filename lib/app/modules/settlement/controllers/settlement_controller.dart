@@ -391,9 +391,9 @@ class SettlementController extends GetxController with StateMixin {
         Get.find<MenuPageController>().resetToFirstPage();
         Get.find<MenuPageController>().getCartPriceTotal();
         if(showOpenPayment.value == true){
+          Get.find<MenuPageController>().paymentIsShow = false;
           Get.back();
         }
-
       }
 
     }else if (machineMode.value == "3") {

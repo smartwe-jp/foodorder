@@ -35,12 +35,21 @@ class ResetToHomeTimer {
               final orderSqlController = Get.find<OrderSqlController>();
               orderSqlController.removeAllFromCart();
 
-              if (Get.isRegistered<MenuPageController>())
+              if (Get.isRegistered<MenuPageController>()) {
                 Get.find<MenuPageController>().clearOrderList();
+                Get.find<MenuPageController>().resetToFirstPage();
+              }
+
             }
             return;
           }
         } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
+
+          if (Get.isRegistered<MenuPageController>()) {
+            Get.find<MenuPageController>().paymentIsShow = false;
+            Get.find<MenuPageController>().clearOrderList();
+            Get.find<MenuPageController>().resetToFirstPage();
+          }
           Get.back();
           return;
         }
@@ -69,12 +78,16 @@ class ResetToHomeTimer {
   }
 
   void resetTimer() {
-    // if (_timer != null) {
-    //   _timer!.cancel();
-    //   startTimer();
-    // }
-    //debugPrint("resetTimer");
-    _timeoutSeconds = timeSeconds;
+
+    if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
+      debugPrint("event startTimer");
+      startTimer();
+    } else {
+      if (_timer != null) {
+        debugPrint("event resetTimer");
+        _timeoutSeconds = timeSeconds;
+      }
+    }
   }
 
   void cancelTimer() {
