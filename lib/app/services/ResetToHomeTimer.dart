@@ -11,8 +11,8 @@ import 'package:get/get.dart';
 
 class ResetToHomeTimer {
   Timer? _timer;
-  final int timeSeconds = 180;
-  int _timeoutSeconds = 180; // 3分钟
+  final int timeSeconds = 18;
+  int _timeoutSeconds = 18; // 3分钟
 
   void startTimer() {
     cancelTimer();
@@ -21,6 +21,14 @@ class ResetToHomeTimer {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
+        if (Get.isRegistered<MachineInfoController>()) {
+          if (Get.find<MachineInfoController>().editMode == true) {
+            HomeServices.setEditMode(false);
+            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+            return;
+          }
+        }
+
         if (Get.routing.current == Routes.ENTRY_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {
           cancelTimer();
@@ -35,8 +43,11 @@ class ResetToHomeTimer {
               final orderSqlController = Get.find<OrderSqlController>();
               orderSqlController.removeAllFromCart();
 
-              if (Get.isRegistered<MenuPageController>())
+              if (Get.isRegistered<MenuPageController>()) {
                 Get.find<MenuPageController>().clearOrderList();
+                Get.find<MenuPageController>().resetToFirstPage();
+              }
+                
             }
             return;
           }
@@ -45,6 +56,11 @@ class ResetToHomeTimer {
           if (Get.isRegistered<MachineInfoController>()) {
             Get.find<MachineInfoController>().showReceiptPage = true;
           }
+
+          if (Get.isRegistered<MenuPageController>()) {
+            Get.find<MenuPageController>().paymentIsShow = false;
+          }
+
           Get.back();
           return;
         }
@@ -73,12 +89,16 @@ class ResetToHomeTimer {
   }
 
   void resetTimer() {
-    // if (_timer != null) {
-    //   _timer!.cancel();
-    //   startTimer();
-    // }
-    //debugPrint("resetTimer");
-    _timeoutSeconds = timeSeconds;
+    
+    if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
+      debugPrint("event startTimer");
+      startTimer();
+    } else {
+      if (_timer != null) {
+        debugPrint("event resetTimer");
+      _timeoutSeconds = timeSeconds;
+      }
+    }
   }
 
   void cancelTimer() {

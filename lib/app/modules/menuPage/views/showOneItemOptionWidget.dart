@@ -233,6 +233,7 @@ class showOneItemOptionWidgetView extends GetView {
   @override
   Widget build(BuildContext context) {
     var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']];
+    controller.paymentIsShow = true;
     return GetBuilder<MenuPageController>(
         builder: (controller) {
           return RepaintBoundary(
@@ -331,6 +332,7 @@ class showOneItemOptionWidgetView extends GetView {
                                 children: [
                                   InkWell(
                                     onTap: (){
+                                      controller.paymentIsShow = false;
                                       Get.back();
                                     },
                                     child: Container(
@@ -409,7 +411,7 @@ class showOneItemOptionWidgetView extends GetView {
                                       InkWell(
                                         enableFeedback: false,
                                         onTap: () {
-
+                                          controller.paymentIsShow = false;
                                           //判断选择后option是否与optiongroup相等
                                           var currentPrice = item['currentPrice'];
                                           var optionCodeList = "";
