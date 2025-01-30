@@ -26,34 +26,34 @@ import 'app/services/ResetToHomeTimer.dart';
 import 'firebase_options.dart';
 
 //打印图层生成成功
-Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
+Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
   //final imageBytes = imgdata.data;
-  final printTask = imgdata.taskItem;
+  final printTask = imgData.taskItem;
 
   //指定的打印机
   final printerInfo = printTask.params as PrinterInfo;
   //打印票据类型（标签、小票）
   final printTypeEnum = printTask.printTypeEnum;
 
-  final imageBytes = await imgdata.convertUint8List(imageByteFormat:ImageByteFormat.rawRgba);
+  final imageBytes = await imgData.convertUint8List(imageByteFormat:ImageByteFormat.rawRgba);
   //也可以使用 ImageByteFormat.png
-  final argbWidth = imgdata.imageWidth;
-  final argbHeight = imgdata.imageHeight;
+  final argbWidth = imgData.imageWidth;
+  final argbHeight = imgData.imageHeight;
   if (imageBytes == null) {
     return;
   }
-  if (imageBytes != null) {
-    var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
-      printType: printTypeEnum,
-      argbWidthPx: argbWidth,
-      argbHeightPx: argbHeight,
-    );
 
-    // 网络 打印
-    final conn = printerPlus.NetConn(printerInfo.ip!);
-    conn.writeMultiBytes(printData);
-  }
+  var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+    imgData: imageBytes,
+    printType: printTypeEnum,
+    argbWidthPx: argbWidth,
+    argbHeightPx: argbHeight,
+  );
+
+  // 网络 打印
+  final conn = printerPlus.NetConn(printerInfo.ip!);
+  conn.writeMultiBytes(printData);
+
 }
 
 void main() {
