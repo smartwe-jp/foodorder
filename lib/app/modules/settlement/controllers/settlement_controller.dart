@@ -320,6 +320,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   gotonewMenuPage() {
+    debugPrint('---gotonewMenuPage---');
     if(isPayConfirmOrderId.value == true){
       if(payment_method_num.value == "0" || payment_method_num.value == "1"){
         if(machineMode.value == "2") {//精算时候请求
@@ -331,7 +332,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         }else{
           //print("普通支付请求了new order id");
-          Get.find<MenuPageController>().getBookingBootIndexCagegory();
+          Get.find<MenuPageController>().getBookingBootIndexCategory();
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
@@ -347,6 +348,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   goToNewMyHome() {
+    debugPrint('---goToNewMyHome---');
     ordersqlcontroller.removeAllFromCart();
 
     EasyLoading.dismiss();
@@ -376,6 +378,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   gotonewBack() {
+    debugPrint('---gotonewBack---');
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -389,7 +392,6 @@ class SettlementController extends GetxController with StateMixin {
         // eventBus.fire(new clearCartEvent('支付成功...'));
         //有弹窗选择支付才在关闭一个
         Get.find<MenuPageController>().resetToFirstPage();
-        Get.find<MenuPageController>().getCartPriceTotal();
         if(showOpenPayment.value == true){
           Get.find<MenuPageController>().paymentIsShow = false;
           Get.back();

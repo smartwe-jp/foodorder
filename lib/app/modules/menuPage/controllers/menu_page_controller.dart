@@ -194,155 +194,17 @@ class MenuPageController extends GetxController with StateMixin {
     showDinersClub.value = systemSettingInfo['show_dinersClub'];
     showDiscover.value = systemSettingInfo['show_discover'];
     //getBookingBootMenu();
-    getBookingBootIndexCagegory(); //新版新获取分类
-  }
-
-  //获取菜单
-  getBookingBootMenu() {
-  topMenu.value = [];
-    var queryTakeout = "2";
-    //queryTakeout 0外卖 1都可 2店内
-    switch(dining_type.value){
-      case "1":
-        queryTakeout = "2";
-        break;
-      case "2":
-        queryTakeout = "0";
-        break;
-      case "3":
-        if(mealType.value == true){
-          queryTakeout = "0";
-        }else{
-          queryTakeout = "2";
-        }
-        break;
-      default:
-        queryTakeout = "2";
-    }
-    var formData = {
-      "machineCode": machineCode.value,
-      "language": checkLanguage.value,
-      "takeout":queryTakeout,
-    };
-    request('webBootIndexv1', method: 'POST', parameters: formData).then((val) {
-      var response = json.decode(val.toString());
-
-      if (response['code'] == 200) {
-        //2、保存商品信息
-        List myList = response['data']['categoryVoList'];
-        //如果菜单为空则返回言语选择页面并给出提示
-        if(myList.length == 0 || null == myList || "" == myList){
-          //showToast("少々お待ちください");
-          Get.dialog(
-              DialogUtils.alertOneButton("少々お待ちください",
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-                  confirm: () {
-                    Get.back();
-                  })
-          );
-          sleep(Duration(milliseconds: 2000));
-          Get.back();
-        }
-
-        List MenuColor = ["#F05F32","#50CAC0","#ABC251","#89A0F0","#E78BC5","#F05F32"];
-        var menuIndex = 0;
-          for (var i = 0; i < myList.length; i++) {
-            if(menuIndex >=5) menuIndex = 0;
-            var categoryVoList = myList[i];
-            //配置顶部菜单
-            topMenu.value.add({
-              "categoryCode": categoryVoList['categoryCode'],
-              "categoryName": categoryVoList['categoryName'],
-              "showType": categoryVoList['showType'],
-              "showColor":MenuColor[menuIndex]
-            });
-            menuIndex++;
-            //配置顶部菜单默认项
-            if (i == 0) classTag.value = categoryVoList['categoryCode'];
-            showItem.value[categoryVoList['categoryCode']] = categoryVoList['menuVoList'];
-
-            //该分类下有option，先初始化页面数据
-            if (categoryVoList['menuVoList']?.length > 0) {
-              for (var menuVoList in categoryVoList['menuVoList']) {
-                num _addOptionPrice = 0;
-                if (menuVoList['optionGroupVoList'] != null &&
-                    menuVoList['optionGroupVoList']?.length > 0 &&
-                    menuVoList['optionGroupVoList'] != "") {
-                  //初始化菜品option选项
-                  //属性循环相关
-                  var attr = menuVoList['optionGroupVoList'];
-                  var nochangeattr = menuVoList['optionGroupVoList'];
-                  List tempArr = [];
-                  List initalCode = [];
-                  var checkNum = 0;
-
-
-                  for (var m = 0; m < attr.length; m++) {
-                    for (var n = 0; n < attr[m]['optionVoList'].length; n++) {
-                      /*attr[m]['optionVoList'][n]["checked"] = false;
-                      if(n == 0){
-                        tempArr.add(attr[m]['optionVoList'][n]);
-                      }*/
-                      if (attr[m]['optionVoList'][n]["standard"] == 1) {
-                        attr[m]['optionVoList'][n]["checked"] = true;
-                        nochangeattr[m]['optionVoList'][n]["checked"] = true;
-                        attr[m]['optionVoList'][n]["groupTitle"]=attr[m]["groupName"];
-                        tempArr.add(attr[m]['optionVoList'][n]);
-                        initalCode.add(attr[m]['optionVoList'][n]['optionCode']);
-
-                        _addOptionPrice += attr[m]['optionVoList'][n]["currentPrice"];
-                        checkNum++;
-                      } else {
-                        attr[m]['optionVoList'][n]["checked"] = false;
-                        nochangeattr[m]['optionVoList'][n]["checked"] = false;
-                      }
-                    }
-                  }
-                  //需要创建的小组件
-                  menuOption.value[menuVoList['menuCode']] = attr;
-                  noChangeinitialmenuOption.value[menuVoList['menuCode']] = initalCode;
-                  initialMenuOption.value[menuVoList['menuCode']] = tempArr;//tempArr;
-                  selectedMenuOptionList.value[menuVoList['menuCode']] = tempArr;
-                  selectedMenuOptionCheckedNum.value[menuVoList['menuCode']] = checkNum;
-                  attr = [];
-                  tempArr = [];
-                  checkNum = 0;
-                }
-                selectedMenuOptionChangePrice.value[menuVoList['menuCode']] = menuVoList['currentPrice'];
-                addselectedMenuOptionChangePrice.value[menuVoList['menuCode']] = _addOptionPrice;
-              }
-            }
-
-
-          }
-          update();
-        change(null, status: RxStatus.success());
-      } else {
-        //showToast(response['msg']);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['msg'],
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-                confirm: () {
-                  Get.back();
-                })
-        );
-        sleep(Duration(milliseconds: 2000));
-        Get.back();
-      }
-    })
-    .catchError((e){
-      change(null, status: RxStatus.error('Failed to load data'));
-    })
-    .timeout(Duration(seconds: 15), onTimeout: (){
-      change(null, status: RxStatus.error('Failed to load data Timeout'));
-    });
+    getBookingBootIndexCategory(); //新版新获取分类
   }
 
   //获取页面分类
-  getBookingBootIndexCagegory({isReset = false}){
-    topMenu.value = [];
+  getBookingBootIndexCategory({isReset = false}){
+    debugPrint('getBookingBootIndexCategory');
+    if (isReset) {
+      change(null, status: RxStatus.loading());
+    } else {
+      topMenu.value = [];
+    }
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch(dining_type.value){
@@ -391,11 +253,12 @@ class MenuPageController extends GetxController with StateMixin {
 
         List MenuColor = ["#F05F32","#98b9b3","#ABC251","#89A0F0","#E78BC5","#F05F32"];
         var menuIndex = 0;
+        topMenu.value = [];
         for (var i = 0; i < myList.length; i++) {
           if(menuIndex >=5) menuIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
-          topMenu.value.add({
+          topMenu.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
@@ -439,6 +302,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   getBookingBootIndexMenu(queryCategoryCode){
+    debugPrint('getBookingBootIndexMenu');
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch(dining_type.value){
@@ -566,7 +430,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   getCartPriceTotal() async {
-
+    debugPrint('getCartPriceTotal');
     ordersqlcontroller.getCardList();
     var total = await ordersqlcontroller.getCartAllPrice();
     if(total != null){
@@ -1416,7 +1280,10 @@ print("加1了");
   }
 
   resetToFirstPage() async {
-    await getBookingBootIndexCagegory(isReset: true);
+    await getBookingBootIndexCategory(isReset: true);
+    debugPrint('getBookingBootIndexCategory done');
+    await getCartPriceTotal();
+    //await _resetToFirstCategory();
   }
 
 
@@ -1472,6 +1339,8 @@ print("加1了");
     final firstCategory = topMenu.first['categoryCode'];
     if (firstCategory != null) {
       changeCategory(firstCategory);
+    } else {
+      changeCategory(classTag.value);
     }
   }
 
