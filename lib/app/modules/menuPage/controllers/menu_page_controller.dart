@@ -1345,6 +1345,7 @@ print("加1了");
   }
 
   clearOrderList() async {
+    await ordersqlcontroller.removeAllFromCart();
     if (paymentIsShow) {
       Get.back();
       paymentIsShow = false;

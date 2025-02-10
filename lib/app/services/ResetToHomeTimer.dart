@@ -31,26 +31,21 @@ class ResetToHomeTimer {
           final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
           if (isBackHome != "0") {
             cancelTimer();
-            if (Get.isRegistered<OrderSqlController>()) {
-              final orderSqlController = Get.find<OrderSqlController>();
-              orderSqlController.removeAllFromCart();
 
-              if (Get.isRegistered<MenuPageController>()) {
-                Get.find<MenuPageController>().clearOrderList();
-                Get.find<MenuPageController>().resetToFirstPage();
-              }
-
+            if (Get.isRegistered<MenuPageController>()) {
+              Get.find<MenuPageController>().clearOrderList();
+              Get.find<MenuPageController>().resetToFirstPage();
             }
+
             return;
           }
         } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
-
+          Get.back();
           if (Get.isRegistered<MenuPageController>()) {
             Get.find<MenuPageController>().paymentIsShow = false;
             Get.find<MenuPageController>().clearOrderList();
             Get.find<MenuPageController>().resetToFirstPage();
           }
-          Get.back();
           return;
         }
 
