@@ -322,13 +322,14 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
 
   @override
   Widget build(BuildContext pcontext) {
-    return SimpleDialog(
-      contentPadding: EdgeInsets.only(top: 0,bottom: 0,left: 0,right: 0),
-      backgroundColor: ColorsUtil.hexToColor("#DCDCDC"),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(5),
-        ),
-        children: <Widget>[
+    return Container(
+
+        color: Colors.black.withOpacity(0.5),
+          child:
+          Column(
+          children:
+          <Widget>[
+          Spacer(),
           Container(
             color: ColorsUtil.hexToColor("#FFFFFF"),
             width: ScreenAdapter.width(1000),
@@ -429,7 +430,7 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
                                 ),
                               ),
                             ),
-                            if(_showAlipay == true || _showWechat == true || _showPayPay == true)
+                            if(_showAlipay || _showWechat || _showPayPay|| _showauPay || _showdPay || _showrPay || _showmPay)
                               InkWell(
                                 onTap: (){
                                   setState(() {
@@ -1297,7 +1298,8 @@ class _SelectPaymentPageState extends State<SelectPaymentPage> {
               ],
             ),
           ),
+            Spacer()
         ]
-    );
+    ));
   }
 }

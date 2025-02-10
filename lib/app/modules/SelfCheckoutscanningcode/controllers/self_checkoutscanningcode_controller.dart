@@ -483,8 +483,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
-    Get.dialog(
-        SelectPaymentPage(
+    Get.to(
+            () =>
+            SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
             //mealType:_mealType.value,
@@ -537,7 +538,10 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
                 CancelOrder();
               }
             }
-        )
+        ),
+      transition: Transition.fadeIn,
+      fullscreenDialog: true,
+      opaque: false,
     );
   }
 

@@ -71,6 +71,7 @@ class PosSocketManager {
         _socketNumberTimes = 0;
         if (_isConnected == false) {
           if (_onDone == null) {
+            resetState();
             backTask?.call();
           } else {
             _onDone?.call(action);
@@ -157,7 +158,7 @@ class PosSocketManager {
     //判断socket请求次数
     _posAction = PosAction.Connect;
     _socketNumberTimes++;
-    if (_socketNumberTimes > 20) {
+    if (_socketNumberTimes > 6) {
       //return posPayUtil;
       onTimeOut?.call();
       return;
@@ -341,6 +342,7 @@ class PosSocketManager {
     } catch (e) {
       _isConnected = false;
       debugPrint('Unable to connect pos: $e');
+      if (_posAction == PosAction.None) return;
       Future.delayed(Duration(milliseconds: 400), () async {
         await payConnectSocket(payment, pos_ip, pos_port, machineCode,
             isRetry: true, onTimeOut: onTimeOut, onError: onError);

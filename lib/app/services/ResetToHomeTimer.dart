@@ -7,6 +7,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 
+import '../modules/menuPage/controllers/menu_page_controller.dart';
 import 'HomeServices.dart';
 
 class ResetToHomeTimer {
@@ -30,13 +31,22 @@ class ResetToHomeTimer {
           final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
           if (isBackHome != "0") {
             cancelTimer();
-            if (Get.isRegistered<OrderSqlController>()) {
-              final orderSqlController = Get.find<OrderSqlController>();
-              orderSqlController.removeAllFromCart();
-              orderSqlController.getCardList();
+
+            if (Get.isRegistered<MenuPageController>()) {
+              Get.find<MenuPageController>().clearOrderList();
+              Get.find<MenuPageController>().resetToFirstPage();
             }
+
             return;
           }
+        } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE) {
+          Get.back();
+          if (Get.isRegistered<MenuPageController>()) {
+            Get.find<MenuPageController>().paymentIsShow = false;
+            Get.find<MenuPageController>().clearOrderList();
+            Get.find<MenuPageController>().resetToFirstPage();
+          }
+          return;
         }
 
         Get.updateLocale(Locale('jp', 'JP'));
@@ -63,12 +73,16 @@ class ResetToHomeTimer {
   }
 
   void resetTimer() {
-    // if (_timer != null) {
-    //   _timer!.cancel();
-    //   startTimer();
-    // }
-    //debugPrint("resetTimer");
-    _timeoutSeconds = timeSeconds;
+
+    if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
+      debugPrint("event startTimer");
+      startTimer();
+    } else {
+      if (_timer != null) {
+        debugPrint("event resetTimer");
+        _timeoutSeconds = timeSeconds;
+      }
+    }
   }
 
   void cancelTimer() {
