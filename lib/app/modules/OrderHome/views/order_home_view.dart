@@ -1,16 +1,20 @@
+import 'package:animated_widgets/widgets/rotation_animated.dart';
+import 'package:animated_widgets/widgets/scale_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/config/localString.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/ShakeWidget.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/languageButton.dart';
 
 import 'package:get/get.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 
 
 import '../../../config/colorsUtil.dart';
-import '../../../config/imageData.dart';
+import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
-import '../../menuPage/views/menu_page_view.dart';
-import '../../menuPage/views/menuzong_page_view.dart';
 import '../controllers/order_home_controller.dart';
 import 'SelectDiningMethod.dart';
 
@@ -36,6 +40,73 @@ class OrderHomeView extends GetView<OrderHomeController> {
             });
 
           },
+        )
+    );
+  }
+
+
+  languageSelectView() {
+    List languages = [];
+    if (controller.machineLanguages_JP.value == true)
+      languages.add({
+        "language": "JP",
+        "text": "日本語",
+        "selected": controller.machineLanguages_JP.value,
+        "icon": AssetImage("assets/images/public/language_Japanese.png"),
+      });
+
+    if (controller.machineLanguages_CH.value == true)
+      languages.add({
+        "language": "CH",
+        "text": "中文",
+        "selected": controller.machineLanguages_CH.value,
+        "icon": AssetImage("assets/images/public/language_Chinese.png"),
+      });
+
+    if (controller.machineLanguages_EN.value == true)
+      languages.add({
+        "language": "EN",
+        "text": "English",
+        "selected": controller.machineLanguages_EN.value,
+        "icon": AssetImage("assets/images/public/language_English.png"),
+      });
+
+    if (controller.machineLanguages_KO.value == true)
+      languages.add({
+        "language": "KO",
+        "text": "한국어",
+        "selected": controller.machineLanguages_KO.value,
+        "icon": AssetImage("assets/images/public/language_Korean.png"),
+      });
+
+    final buttonList = languages.map((e) {
+      return LanguageButton(
+        icon: e["icon"] as ImageProvider,
+        title: e["text"] as String,
+        selected: e["language"] == controller.selectLanguage,
+        onTap: () {
+          controller.updateSettingLanguage(e["language"] as String);
+          controller.startShake = true;
+          Future.delayed(Duration(milliseconds: 600),(){
+            controller.startShake = false;
+            controller.update();
+          });
+        },
+      );
+    }).toList();
+
+    return Container(
+        alignment: Alignment.center,
+        height: ScreenAdapter.height(100),
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(20),
+          left: ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
+          bottom: ScreenAdapter.height(20),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [...buttonList],
         )
     );
   }
@@ -98,165 +169,94 @@ class OrderHomeView extends GetView<OrderHomeController> {
                   ),
                 ),
               ),
+
+
               Positioned(
-                top: ScreenAdapter.height(1450),
+                bottom: ScreenAdapter.height(400),
                 child: Container(
                   width: ScreenAdapter.width(1080),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if(controller.machineLanguages_JP.value == true)
-                        InkWell(
-                          onTap: () {
-                            //_clearCartList();
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
-                              var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var local = Locale('jp', 'JP');
-                              controller.goMenu(local, jumpUrl, 'JP', mealType);
-                            }else{
-                              _showSelectMealTypeDialog("JP", controller.menu_direction.value);
-                            }
-
-
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '日本語',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    fontFamily: "NotoSansJP",
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
+                    children: [
+                      ScaleAnimatedWidget.tween(
+                          enabled: controller.startShake,
+                          duration: Duration(milliseconds: 300),
+                          scaleDisabled: 1,
+                          scaleEnabled: 0.5,
+                          child:
+                          InkWell(
+                            onTap: (){
+                              controller.goMenu(controller.selectLanguage, false);
+                            },
+                            child:
+                            Container(
+                              alignment: Alignment.center,
+                              height:ScreenAdapter.height(150),
+                              width: ScreenAdapter.width(300),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Colors.orange, Colors.red],
+                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
+                              child: Text('menu_dingtype_eatin'.localized(),style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w600,
+                              ),),
                             ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(controller.machineLanguages_CH.value == true)
-                        InkWell(
-                          onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
-                              var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var local = Locale('ch', 'CH');
-                              controller.goMenu(local, jumpUrl, 'CH', mealType);
-                            }else{
-                              _showSelectMealTypeDialog("CH", controller.menu_direction.value);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '中文',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    fontFamily: "NotoSansCN",
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
+                          )
+                      ),
+                      SizedBox(width: ScreenAdapter.width(50),),
+                      ScaleAnimatedWidget.tween(
+                          enabled: controller.startShake,
+                          duration: Duration(milliseconds: 300),
+                          scaleDisabled: 1,
+                          scaleEnabled: 0.5,
+                          child:
+                          InkWell(
+                            onTap: (){
+                              controller.goMenu(controller.selectLanguage, true);
+                            },
+                            child:
+                            Container(
+                              alignment: Alignment.center,
+                              height:ScreenAdapter.height(150),
+                              width: ScreenAdapter.width(300),
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                  colors: [Colors.orange, Colors.red],
+                                ),
+                                borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
+                              child: Text('menu_dingtype_takeout'.localized(),style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 50,
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w600,
+                              ),),
                             ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(controller.machineLanguages_EN.value == true)
-                        InkWell(
-                          onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
-                              var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var local = Locale('en', 'US');
-                              controller.goMenu(local, jumpUrl, 'EN', mealType);
-                            }else{
-                              _showSelectMealTypeDialog("EN", controller.menu_direction.value);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            margin: EdgeInsets.only(right: ScreenAdapter.width(35)),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                'English',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    fontFamily: "NotoSans",
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
-                      //SizedBox(width:ScreenAdapter.width(35)),
-                      if(controller.machineLanguages_KO.value == true)
-                        InkWell(
-                          onTap: () {
-                            if(controller.dining_type.value =="1" || controller.dining_type.value =="2"){
-                              var mealType = (controller.dining_type.value == "2") ? true: false;
-                              var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-                              var local = Locale('ko', 'KR');
-                              controller.goMenu(local, jumpUrl, 'KO', mealType);
-                            }else{
-                              _showSelectMealTypeDialog("KO", controller.menu_direction.value);
-                            }
-                          },
-                          child: Container(
-                            width: ScreenAdapter.width(217),
-                            height: ScreenAdapter.height(90),
-                            decoration: BoxDecoration(
-                              //color: Color(0x11111111),
-                              image: DecorationImage(
-                                //alignment: Alignment.topCenter,
-                                  image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                                  fit: BoxFit.fill),
-                            ),
-                            child: Center(
-                              //加上Center让文字居中
-                              child: Text(
-                                '한국어',
-                                style: TextStyle(
-                                    fontSize: ScreenAdapter.fontSize(36.0),
-                                    fontFamily: "NotoSansKR",
-                                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                                    fontWeight: FontWeight.w600),
-                              ),
-                            ),
-                          ),
-                        ),
+                          )
+                      )
                     ],
                   ),
+
+                ),
+              ),
+
+
+              Positioned(
+                bottom: ScreenAdapter.height(150),
+                child: Container(
+                  width: ScreenAdapter.width(1080),
+                  height: ScreenAdapter.height(200),
+                  child: languageSelectView()
                 ),
               )
 

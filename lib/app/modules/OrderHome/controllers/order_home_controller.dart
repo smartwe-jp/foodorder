@@ -20,6 +20,10 @@ class OrderHomeController extends GetxController with StateMixin {
   RxBool machineLanguages_EN = false.obs;
   RxBool machineLanguages_KO = false.obs;
 
+  String selectLanguage = 'JP';
+  bool startShake = false;
+
+
   RxList homeList = [].obs;
 
   @override
@@ -73,9 +77,9 @@ class OrderHomeController extends GetxController with StateMixin {
 
   }
 
-  goMenu(Locale local, String jumpUrl, String lan, bool mealType) {
-
-    Get.updateLocale(local);
+  goMenu(String lan, bool mealType) {
+    var jumpUrl = (menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+    startShake = false;
     Get.toNamed(jumpUrl,arguments: {
       "checkLanguage": lan,
       "mealType":mealType
@@ -114,5 +118,14 @@ class OrderHomeController extends GetxController with StateMixin {
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
   }
+
+  void updateSettingLanguage(String language) async {
+    //await HomeServices.updateSettingLanguage(language);
+    selectLanguage = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
+  }
+
+
 
 }
