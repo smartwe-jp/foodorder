@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
@@ -9,23 +12,22 @@ import '../../../services/HomeServices.dart';
 class OrderHomeController extends GetxController with StateMixin {
   //TODO: Implement OrderHomeController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-
-  RxString machineCode = "".obs;
-
-  RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
-  RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
+  MachineInfoController machineInfo = Get.find();
 
   RxBool machineLanguages_JP = false.obs;
   RxBool machineLanguages_CH = false.obs;
   RxBool machineLanguages_EN = false.obs;
   RxBool machineLanguages_KO = false.obs;
 
-  RxList homeList = [].obs;
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isAnimating = false;
+
 
   @override
   Future<void> onInit() async {
     EasyLoading.dismiss();
-    await _getMachineInfo();
+    await getmenchineLanguages();
 
     super.onInit();
   }
@@ -33,49 +35,36 @@ class OrderHomeController extends GetxController with StateMixin {
   @override
   void onReady() {
     super.onReady();
+    startRepeatingAnimation();
   }
 
   @override
   void onClose() {
     super.onClose();
+    stopRepeatingAnimation();
   }
 
-  //获取机器信息
-  _getMachineInfo() async {
-    debugPrint("获取机器信息");
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
-
-    }
-    //首页图片
-    await _getHomeImageList();
+  void startRepeatingAnimation() {
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
+      }
+      startShake = !startShake;
+      update();
+    });
   }
 
-  _getHomeImageList() async {
-    debugPrint("获取首页图片");
-    var homeimageList = await HomeServices.getSmartweHomeImagesData();
-
-    homeList.value = homeimageList;
-
-    await getSystemSettingInfo();
-
+  void stopRepeatingAnimation() {
+    isAnimating = false;
+    startShake = false;
+    update();
   }
 
-  getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-      menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
-      dining_type.value = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
-
-
-    await getmenchineLanguages();
-
-  }
-
-  goMenu(Locale local, String jumpUrl, String lan, bool mealType) {
-
-    Get.updateLocale(local);
+  goMenu(String lan, bool mealType) {
+    var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menuzong-page';
+    startShake = false;
     Get.toNamed(jumpUrl,arguments: {
       "checkLanguage": lan,
       "mealType":mealType
@@ -114,5 +103,14 @@ class OrderHomeController extends GetxController with StateMixin {
   clearCartList() {
     ordersqlcontroller.removeAllFromCart();
   }
+
+  void updateSettingLanguage(String language) async {
+    //await HomeServices.updateSettingLanguage(language);
+    selectLanguage = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
+  }
+
+
 
 }

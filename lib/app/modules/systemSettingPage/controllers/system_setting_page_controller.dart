@@ -401,8 +401,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _updateSystemSetting("diningType", dining_type_tmp);
     //该处逻辑需要修改，如果切换模式会有获取不到Controller的问题。
     if(machine_mode == "1"){
-      if (Get.isRegistered<OrderHomeController>())
-      Get.find<OrderHomeController>().getSystemSettingInfo();
+      //if (Get.isRegistered<OrderHomeController>())
+      //Get.find<OrderHomeController>().getSystemSettingInfo();
     }else if(machine_mode == "2"){
       if (Get.isRegistered<CheckoutPageController>())
       Get.find<CheckoutPageController>().getSystemSettingInfo();
@@ -414,8 +414,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     menu_direction.value = checkedType;
     _updateSystemSetting("menuDirection", checkedType);
-    if(Get.isRegistered<OrderHomeController>())
-    Get.find<OrderHomeController>().getSystemSettingInfo();
+    //if(Get.isRegistered<OrderHomeController>())
+    //Get.find<OrderHomeController>().getSystemSettingInfo();
   }
 
   checkPrintPaperTxtSize(checkedType) async {

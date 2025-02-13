@@ -320,7 +320,9 @@ class publicShowCartView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<MenuPageController>(builder: (controller){
+      body: GetBuilder<MenuPageController>(
+          id: 'shopping_cart',
+          builder: (controller){
         return Obx(() => RepaintBoundary(
           child: Container(
             //height: ScreenAdapter.height(330),
@@ -353,7 +355,8 @@ class publicShowCartView extends GetView {
                             return;
                           }
                           controller.showShopCart = !controller.showShopCart;
-                          controller.update();
+                          controller.update(['shopping_cart']);
+                          //controller.update();
                         },
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceAround,
