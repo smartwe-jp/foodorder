@@ -9,6 +9,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -20,6 +21,7 @@ import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
+import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/HomeServices.dart';
@@ -37,7 +39,7 @@ import '../views/showOneItemOptionWidgetV1.dart';
 class MenuPageController extends GetxController with StateMixin {
   //TODO: Implement MenuPageController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
-
+  MachineInfoController machineInfo = Get.find();
    FToast? fToast;
 
   //默认语言包选择
@@ -105,6 +107,8 @@ class MenuPageController extends GetxController with StateMixin {
   RxMap menuLackMap = {}.obs;
   RxString doSubmitOrderId = "".obs;
 
+  RxBool canAddCart = true.obs;
+
   bool showShopCart = false;
 
   List recommendFoods = [];
@@ -112,6 +116,15 @@ class MenuPageController extends GetxController with StateMixin {
   bool showRecommend = false;
   bool showCartView = false;
   bool paymentIsShow = false;
+
+  int selectIndex = 0;
+  bool isChangingPage = false;
+  //MenuSidebarInfo? sidebarInfo;
+  late List menuList;
+  late List<String> menuCategory;
+  final PageController pageController = PageController();
+  bool forceUpdate = false;
+
 
 
   @override
@@ -269,14 +282,15 @@ class MenuPageController extends GetxController with StateMixin {
           if (i == 0) classTag.value = categoryVoList['categoryCode'];
 
         }
-        if (isReset) {
-          _resetToFirstCategory();
-        } else {
-          getBookingBootIndexMenu(classTag.value);
-        }
+        // if (isReset) {
+        //   _resetToFirstCategory();
+        // } else {
+        //   //getBookingBootIndexMenu(classTag.value);
+        //   getCategoryMenu();
+        // }
 
-        //update();
-        //change(null, status: RxStatus.success());
+        // update();
+        change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
         Get.dialog(
@@ -299,6 +313,12 @@ class MenuPageController extends GetxController with StateMixin {
       FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineCode.value});
       change(null, status: RxStatus.error('Failed to load data Timeout'));
     });
+  }
+
+  forceUpdateUI() {
+    forceUpdate = true;
+    update();
+    forceUpdate = false;
   }
 
   getBookingBootIndexMenu(queryCategoryCode){
@@ -445,8 +465,7 @@ class MenuPageController extends GetxController with StateMixin {
     }
 
     showCartItems.value = ordersqlcontroller.cartItems;
-
-    update();
+    update(['shopping_cart','shoppingCar']);
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
@@ -645,6 +664,18 @@ class MenuPageController extends GetxController with StateMixin {
     }
   }
 
+  publicMenuSubtitle(subtitleList) {
+    var subtitle = "";
+    if (subtitleList != null && subtitleList.length > 0) {
+      if (subtitleList != null && subtitleList?.length > 0) {
+        for (var i = 0; i < subtitleList.length; i++) {
+          subtitle += subtitleList[i];
+        }
+      }
+    }
+    return subtitle;
+  }
+
   //公共设置售罄
   publicShowMenuSellOut(bounds) {
     if (bounds == 0) {
@@ -727,7 +758,7 @@ class MenuPageController extends GetxController with StateMixin {
       print(e);
       result = false;
     }
-    update();
+    //update();
     return result;
   }
 

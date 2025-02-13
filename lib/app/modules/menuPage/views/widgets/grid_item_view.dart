@@ -279,8 +279,8 @@ class GridMenuView extends StatelessWidget {
     return Padding(
       padding: padding,
       child: GridView.builder(
-        padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-        physics: canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
+        padding: EdgeInsets.all(ScreenAdapter.height(30)),
+        physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: true,
         //addRepaintBoundaries:false,

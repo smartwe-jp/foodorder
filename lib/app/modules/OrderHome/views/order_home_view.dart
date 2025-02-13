@@ -22,27 +22,6 @@ class OrderHomeView extends GetView<OrderHomeController> {
   final OrderHomeController controller = Get.put(OrderHomeController());
   OrderHomeView({Key? key}) : super(key: key);
 
-  //选择食用方式和支付方式
-  _showSelectMealTypeDialog(checkedLanguage, menu_direction) async {
-    Get.dialog(
-        SelectDiningMethodPage(
-          checkLanguage: checkedLanguage,
-          dining_type: controller.dining_type.value,
-          menu_direction:controller.menu_direction.value,
-          onConfrimClick: (bool mealType, String dining_type_num, String menuDirection) {
-            var locale = Locale('$checkedLanguage', '$checkedLanguage');
-            Get.updateLocale(locale);
-            var jumpUrl = (controller.menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
-
-            Get.toNamed(jumpUrl,arguments: {
-              "checkLanguage": checkedLanguage,
-              "mealType":mealType
-            });
-
-          },
-        )
-    );
-  }
 
 
   languageSelectView() {
@@ -128,20 +107,20 @@ class OrderHomeView extends GetView<OrderHomeController> {
                   //itemHeight: 200,
                   itemBuilder: (BuildContext context,int index){
                     // 配置图片地址
-                    return publicShowMenuImage(imgPath:controller.homeList.value[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                    return publicShowMenuImage(imgPath:controller.machineInfo.homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
                   },
                   // 配置图片数量
-                  itemCount: controller.homeList.value.length,
+                  itemCount: controller.machineInfo.homeList.length,
                   // 底部分页器
                   //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
                   // 左右箭头
                   //control: new SwiperControl(),
                   // 无限循环
-                  loop: (controller.homeList.value.length >1) ?true :false,
+                  loop: (controller.machineInfo.homeList.length >1) ?true :false,
                   duration: 1000,
                   autoplayDelay:12000,
                   // 自动轮播
-                  autoplay: (controller.homeList.value.length >1) ?true :false,
+                  autoplay: (controller.machineInfo.homeList.length >1) ?true :false,
                 ),
               ),
               Positioned(
@@ -149,7 +128,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                 top: ScreenAdapter.height(20),
                 child: InkWell(
                   onLongPress: (){
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
+                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
                   },
                   child: Container(
                     height: ScreenAdapter.height(150),
@@ -183,7 +162,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                           enabled: controller.startShake,
                           duration: Duration(milliseconds: 300),
                           scaleDisabled: 1,
-                          scaleEnabled: 0.5,
+                          scaleEnabled: 0.8,
                           child:
                           InkWell(
                             onTap: (){
@@ -192,8 +171,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             child:
                             Container(
                               alignment: Alignment.center,
-                              height:ScreenAdapter.height(150),
-                              width: ScreenAdapter.width(300),
+                              height:ScreenAdapter.height(200),
+                              width: ScreenAdapter.width(350),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,
@@ -202,7 +181,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                                 ),
                                 borderRadius: BorderRadius.all(Radius.circular(10)),
                               ),
-                              child: Text('menu_dingtype_eatin'.localized(),style: TextStyle(
+                              child:
+                              Text('menu_dingtype_eatin'.localized(),style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 50,
                                 fontFamily: GFont.getFontFamily(),
@@ -215,8 +195,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                       ScaleAnimatedWidget.tween(
                           enabled: controller.startShake,
                           duration: Duration(milliseconds: 300),
-                          scaleDisabled: 1,
-                          scaleEnabled: 0.5,
+                          scaleDisabled: 0.8,
+                          scaleEnabled: 1,
                           child:
                           InkWell(
                             onTap: (){
@@ -225,8 +205,8 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             child:
                             Container(
                               alignment: Alignment.center,
-                              height:ScreenAdapter.height(150),
-                              width: ScreenAdapter.width(300),
+                              height:ScreenAdapter.height(200),
+                              width: ScreenAdapter.width(350),
                               decoration: BoxDecoration(
                                 gradient: LinearGradient(
                                   begin: Alignment.topLeft,

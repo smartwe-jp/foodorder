@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
@@ -9,11 +10,7 @@ import '../../../services/HomeServices.dart';
 class OrderHomeController extends GetxController with StateMixin {
   //TODO: Implement OrderHomeController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-
-  RxString machineCode = "".obs;
-
-  RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
-  RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
+  MachineInfoController machineInfo = Get.find();
 
   RxBool machineLanguages_JP = false.obs;
   RxBool machineLanguages_CH = false.obs;
@@ -24,12 +21,10 @@ class OrderHomeController extends GetxController with StateMixin {
   bool startShake = false;
 
 
-  RxList homeList = [].obs;
-
   @override
   Future<void> onInit() async {
     EasyLoading.dismiss();
-    await _getMachineInfo();
+    await getmenchineLanguages();
 
     super.onInit();
   }
@@ -44,41 +39,9 @@ class OrderHomeController extends GetxController with StateMixin {
     super.onClose();
   }
 
-  //获取机器信息
-  _getMachineInfo() async {
-    debugPrint("获取机器信息");
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
-
-    }
-    //首页图片
-    await _getHomeImageList();
-  }
-
-  _getHomeImageList() async {
-    debugPrint("获取首页图片");
-    var homeimageList = await HomeServices.getSmartweHomeImagesData();
-
-    homeList.value = homeimageList;
-
-    await getSystemSettingInfo();
-
-  }
-
-  getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-      menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
-      dining_type.value = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
-
-
-    await getmenchineLanguages();
-
-  }
 
   goMenu(String lan, bool mealType) {
-    var jumpUrl = (menu_direction.value == "1") ? '/menu-page' :'/menuzong-page';
+    var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menuzong-page';
     startShake = false;
     Get.toNamed(jumpUrl,arguments: {
       "checkLanguage": lan,

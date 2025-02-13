@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
 
 import '../../controllers/menu_page_controller.dart';
 import 'car_item_view.dart';
@@ -13,78 +14,84 @@ extension Shoppingcar on MenuPageController {
     return ListView(
       shrinkWrap: true,
       children: showCartItems
-          .map((d) => CarItemView(
-        title: d.mainTitle,
-        subtitle: d.optionVoListMsg,
-        image: CachedNetworkImageProvider(d.image),
-        onReduce: (value) {
-          publicChangeCartItemCreate(d,false);
-        },
-        onIncrease: (value) {
-          publicChangeCartItemCreate(d,true);
-        },
-        price: "${d.unitPrice}".formatSum(),
-        quantity: d.goodsNum,))
+          .map((d) =>
+          CarItemView(
+            title: d.mainTitle,
+            subtitle: d.optionVoListMsg,
+            image: CachedNetworkImageProvider(d.image),
+            onReduce: (value) {
+              publicChangeCartItemCreate(d, false);
+            },
+            onIncrease: (value) {
+              publicChangeCartItemCreate(d, true);
+            },
+            price: "${d.unitPrice}".formatSum(),
+            quantity: d.goodsNum,))
           .toList(),
     );
   }
+
   shoppingCar() {
     return //全屏蒙版
-      Visibility(
-          visible: showShopCart,
-          //duration: Duration(milliseconds: 300),
-          child: Container(
-            width: ScreenAdapter.getScreenWidth(),
-            height: ScreenAdapter.getScreenHeight(),
-            color: Color.fromRGBO(0, 0, 0, 0.5),
-            child: Stack(
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    showShopCart = false;
-                    update();
-                  },
-                  child: Container(
-                    width: ScreenAdapter.getScreenWidth(),
-                    height: ScreenAdapter.getScreenHeight(),
-                    color: Color.fromRGBO(0, 0, 0, 0.1),
+      GetBuilder<MenuPageController>(
+          id: 'shopping_cart',
+          builder: (logic) {
+        return Visibility(
+            visible: showShopCart,
+            //duration: Duration(milliseconds: 300),
+            child: Container(
+              width: ScreenAdapter.getScreenWidth(),
+              height: ScreenAdapter.getScreenHeight(),
+              color: Color.fromRGBO(0, 0, 0, 0.5),
+              child: Stack(
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      showShopCart = false;
+                      update(['shopping_cart']);
+                    },
+                    child: Container(
+                      width: ScreenAdapter.getScreenWidth(),
+                      height: ScreenAdapter.getScreenHeight(),
+                      color: Color.fromRGBO(0, 0, 0, 0.1),
+                    ),
                   ),
-                ),
-                Container(
-                    alignment: Alignment.bottomCenter,
-                    margin:
-                    EdgeInsets.only(bottom: ScreenAdapter.height(220)),
-                    child: Column(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          Container(
-                            constraints: BoxConstraints(
-                              maxHeight: ScreenAdapter.height(1000),
-                              maxWidth: ScreenAdapter.width(1000),
-                              minWidth: ScreenAdapter.width(500),
-                              //minHeight: ScreenAdapter.height(500),
+                  Container(
+                      alignment: Alignment.bottomCenter,
+                      margin:
+                      EdgeInsets.only(bottom: ScreenAdapter.height(220)),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            Container(
+                              constraints: BoxConstraints(
+                                maxHeight: ScreenAdapter.height(1000),
+                                maxWidth: ScreenAdapter.width(1000),
+                                minWidth: ScreenAdapter.width(500),
+                                //minHeight: ScreenAdapter.height(500),
+                              ),
+                              //margin: EdgeInsets.only(left: ScreenAdapter.width(100),right: ScreenAdapter.width(100)),
+                              padding: EdgeInsets.only(
+                                  left: ScreenAdapter.width(10),
+                                  right: ScreenAdapter.width(10),
+                                  top: ScreenAdapter.width(14),
+                                  bottom: ScreenAdapter.width(14)),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(15),
+                              ),
+                              child: publicCartView(),
                             ),
-                            //margin: EdgeInsets.only(left: ScreenAdapter.width(100),right: ScreenAdapter.width(100)),
-                            padding: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10),
-                                top: ScreenAdapter.width(14),
-                                bottom: ScreenAdapter.width(14)),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(15),
+                            CustomPaint(
+                              size: Size(ScreenAdapter.width(60),
+                                  ScreenAdapter.height(20)),
+                              painter: TrainglePainter(),
                             ),
-                            child: publicCartView(),
-                          ),
-                          CustomPaint(
-                            size: Size(ScreenAdapter.width(60),
-                                ScreenAdapter.height(20)),
-                            painter: TrainglePainter(),
-                          ),
-                        ]))
-              ],
-            ),
-          ));
+                          ]))
+                ],
+              ),
+            ));
+      });
   }
 }
 

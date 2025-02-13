@@ -9,6 +9,7 @@ import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
 
 
+import '../../../controllers/machine_info.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
@@ -192,7 +193,7 @@ class TransitPageController extends GetxController {
       //print("error: $e");
       _showErrorDialog(error: e);
     })
-    .timeout(Duration(seconds: 15), onTimeout: () {
+    .timeout(Duration(seconds: 30), onTimeout: () {
       FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
       //print('timeout');
       _showErrorDialog();
@@ -291,6 +292,8 @@ class TransitPageController extends GetxController {
   }
 
   void _goNext(checkmachineMode) async {
+    Get.put(MachineInfoController());
+
     if(checkmachineMode == "2"){
       _goCheckOut();
     }else if(checkmachineMode == "3"){
