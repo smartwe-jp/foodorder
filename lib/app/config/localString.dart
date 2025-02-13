@@ -28,7 +28,7 @@ extension LocalizedString on String {
         "menu_dingtype_title_tag":"店内またはテイクアウトをお選びください",
         "menu_dingtype_eatin_tag":"店内でお召し上がりのお客様はこちら",
         "menu_dingtype_takeout_tag":"テイクアウトのお客様はこちら",
-
+        "menu_ding_type_tips":"いずれかお選びください",
 
         "cart_tag":"メニューをお選びください",
 
@@ -154,6 +154,7 @@ extension LocalizedString on String {
         "menu_dingtype_title_tag":"请选择堂食或者打包",
         "menu_dingtype_eatin_tag":"堂食请点击此处",
         "menu_dingtype_takeout_tag":"打包请点击此处",
+        "menu_ding_type_tips":"请选择",
 
         "cart_tag":"请选择菜品",
 
@@ -276,6 +277,7 @@ extension LocalizedString on String {
         "menu_dingtype_title_tag":"Choose eat-in or takeout",
         "menu_dingtype_eatin_tag":"Click here for customers who eat in the store",
         "menu_dingtype_takeout_tag":"Click here for takeaway customers",
+        "menu_ding_type_tips":"Please choose",
 
         "cart_tag":"Please select dishes",
 
@@ -398,6 +400,7 @@ extension LocalizedString on String {
         "menu_dingtype_title_tag":"매장 내 식사 또는 테이크아웃을 선택하세요.",
         "menu_dingtype_eatin_tag":"식사는 여기를 클릭하십시오",
         "menu_dingtype_takeout_tag":"테이크아웃여기를 클릭",
+        "menu_ding_type_tips":"하나를 선택하십시오",
 
         "cart_tag":"요리를 선택해주세요",
 

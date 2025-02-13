@@ -40,10 +40,10 @@ class LanguageButton extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [selected ? Colors.orange : Colors.white, selected ? Colors.red:Colors.white],
+            colors: [selected ? Colors.white : Colors.green, selected ? Colors.white:Colors.lightGreen],
           ),
-          borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: Colors.red, width: 2),
+          //borderRadius: BorderRadius.circular(15),
+          //border: Border.all(color: Colors.red, width: 2),
         ),
 
         child: Row(
@@ -58,7 +58,7 @@ class LanguageButton extends StatelessWidget {
               Text(
                 title,
                 style: TextStyle(
-                  color: selected ? Colors.white : Colors.black,
+                  color: selected ? Colors.black : Colors.white,
                   fontSize: 22,
                   fontWeight: FontWeight.w500,
                 ),

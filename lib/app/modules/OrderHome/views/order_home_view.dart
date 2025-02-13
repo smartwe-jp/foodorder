@@ -1,9 +1,12 @@
+import 'dart:ui';
+
 import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/config/localString.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/BookingTypeButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/widgets/ShakeWidget.dart';
 import 'package:foodorder/app/modules/OrderHome/views/widgets/languageButton.dart';
 
@@ -62,14 +65,9 @@ class OrderHomeView extends GetView<OrderHomeController> {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
-        selected: e["language"] == controller.selectLanguage,
+        selected: false,//e["language"] == controller.selectLanguage,
         onTap: () {
           controller.updateSettingLanguage(e["language"] as String);
-          controller.startShake = true;
-          Future.delayed(Duration(milliseconds: 600),(){
-            controller.startShake = false;
-            controller.update();
-          });
         },
       );
     }).toList();
@@ -149,6 +147,53 @@ class OrderHomeView extends GetView<OrderHomeController> {
                 ),
               ),
 
+              Positioned(
+                bottom: ScreenAdapter.height(720),
+                child: Container(
+                  width: ScreenAdapter.width(1080),
+                  child: Column(
+                    children: [
+                      Text(
+                        'menu_dingtype_title'.localized(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                          fontSize: 80,
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: Colors.white,
+                              offset: Offset(3.0, -4.0),
+                              blurRadius: 1.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                      Text(
+                        'menu_ding_type_tips'.localized(),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                          fontSize: 40,
+                          fontFamily: GFont.getFontFamily(),
+                          fontWeight: FontWeight.w600,
+                          shadows: [
+                            Shadow(
+                              color: Colors.white,
+                              offset: Offset(2.0, -2.0),
+                              blurRadius: 2.0,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                )
+              ),
+
 
               Positioned(
                 bottom: ScreenAdapter.height(400),
@@ -159,70 +204,30 @@ class OrderHomeView extends GetView<OrderHomeController> {
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       ScaleAnimatedWidget.tween(
-                          enabled: controller.startShake,
-                          duration: Duration(milliseconds: 300),
-                          scaleDisabled: 1,
-                          scaleEnabled: 0.8,
-                          child:
-                          InkWell(
-                            onTap: (){
-                              controller.goMenu(controller.selectLanguage, false);
-                            },
-                            child:
-                            Container(
-                              alignment: Alignment.center,
-                              height:ScreenAdapter.height(200),
-                              width: ScreenAdapter.width(350),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [Colors.orange, Colors.red],
+                        enabled: controller.startShake,
+                        duration: Duration(milliseconds: 500),
+                        scaleDisabled: 1.0,
+                        scaleEnabled: 0.9,
+                        child:BookingTypeButton(
+                                  icon: AssetImage("assets/images/public/eat_in_on.png"),
+                                  title: 'menu_dingtype_eatin'.localized(),
+                                  selected: false,
+                                  onTap: ()=>controller.goMenu(controller.selectLanguage, false),
                                 ),
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                              ),
-                              child:
-                              Text('menu_dingtype_eatin'.localized(),style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 50,
-                                fontFamily: GFont.getFontFamily(),
-                                fontWeight: FontWeight.w600,
-                              ),),
-                            ),
-                          )
                       ),
+
                       SizedBox(width: ScreenAdapter.width(50),),
                       ScaleAnimatedWidget.tween(
                           enabled: controller.startShake,
-                          duration: Duration(milliseconds: 300),
-                          scaleDisabled: 0.8,
-                          scaleEnabled: 1,
-                          child:
-                          InkWell(
-                            onTap: (){
-                              controller.goMenu(controller.selectLanguage, true);
-                            },
-                            child:
-                            Container(
-                              alignment: Alignment.center,
-                              height:ScreenAdapter.height(200),
-                              width: ScreenAdapter.width(350),
-                              decoration: BoxDecoration(
-                                gradient: LinearGradient(
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                  colors: [Colors.orange, Colors.red],
-                                ),
-                                borderRadius: BorderRadius.all(Radius.circular(10)),
-                              ),
-                              child: Text('menu_dingtype_takeout'.localized(),style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 50,
-                                fontFamily: GFont.getFontFamily(),
-                                fontWeight: FontWeight.w600,
-                              ),),
-                            ),
-                          )
+                          duration: Duration(milliseconds: 500),
+                          scaleDisabled: 0.9,
+                          scaleEnabled: 1.0,
+                          child:BookingTypeButton(
+                            icon: AssetImage("assets/images/public/eat_out_on.png"),
+                            title: 'menu_dingtype_takeout'.localized(),
+                            selected: false,
+                            onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+                          ),
                       )
                     ],
                   ),
@@ -238,7 +243,21 @@ class OrderHomeView extends GetView<OrderHomeController> {
                   height: ScreenAdapter.height(200),
                   child: languageSelectView()
                 ),
+              ),
+
+              Positioned(
+                bottom: ScreenAdapter.height(120),
+                child: Container(
+                    width: ScreenAdapter.width(1080),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey[300],
+                      indent: 50,
+                      endIndent: 50,
+                    )
+                ),
               )
+
 
             ],
           ),

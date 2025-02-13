@@ -1096,6 +1096,9 @@ class SettlementController extends GetxController with StateMixin {
         //_doScanCodeTimeOut();
         showPosCancelEasyLoading("900");
       }
+    }).catchError((error){
+      //TODO//提示具体错误，和询问重试
+
     });
 
   }
