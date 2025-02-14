@@ -1,7 +1,15 @@
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
+enum MachineType{
+  new_panel,
+  new_panel_max,
+  old_panel
+}
+
 class MachineInfoController extends GetxController {
+
+  MachineType machineType = MachineType.new_panel_max;
   //base info
   late String machineCode;
   late String shopCode;

@@ -3,9 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/LoadingFailPage.dart';
 import 'package:foodorder/app/modules/menuPage/views/publicShowCart.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/check_out_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_page_sideBar.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
@@ -208,6 +210,38 @@ class MenuPageView extends GetView {
         ));
   }
 
+  bottomCart() {
+    return GetBuilder<MenuPageController>(
+        id: 'shopping_cart',
+        builder: (logic) {
+          return AnimatedContainer(
+            duration: const Duration(
+                milliseconds: 300),
+            height:
+            controller.showCartTotalGoodsNum
+                .value >
+                0
+                ? ScreenAdapter.height(200)
+                : 0,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey
+                      .withOpacity(
+                      0.3),
+                  spreadRadius: 3,
+                  blurRadius: 3,
+                  offset: Offset(
+                      0,
+                      1), // changes position of shadow
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -220,7 +254,10 @@ class MenuPageView extends GetView {
                 children: [
                   Column(
                     children: [
+                      if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                        topArea(),
                       //顶部导航
+                      if (controller.machineInfo.machineType != MachineType.new_panel_max)
                       GetBuilder<MenuPageController>(
                           id: 'side_bar',
                           builder: (logic) {
@@ -244,52 +281,27 @@ class MenuPageView extends GetView {
                         child: Row(
                           children: [
                             //侧栏
-                            //sideBarMenu(),
+                            if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                            sideBarMenu(),
                             Expanded(
                                 child:
                                 Column(
                                   children: [
-                                    //menuItemListView(context),
-                                    //menuItemListView(context),
-
                                     Expanded(
                                         child: MenuView(state: controller)),
 
-                                    GetBuilder<MenuPageController>(
-                                        id: 'shopping_cart',
-                                        builder: (logic) {
-                                          return AnimatedContainer(
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                            height:
-                                            controller.showCartTotalGoodsNum
-                                                .value >
-                                                0
-                                                ? ScreenAdapter.height(200)
-                                                : 0,
-                                            decoration: BoxDecoration(
-                                              color: Colors.white,
-                                              boxShadow: [
-                                                BoxShadow(
-                                                  color: Colors.grey
-                                                      .withOpacity(
-                                                      0.3),
-                                                  spreadRadius: 3,
-                                                  blurRadius: 3,
-                                                  offset: Offset(
-                                                      0,
-                                                      1), // changes position of shadow
-                                                ),
-                                              ],
-                                            ),
-                                          );
-                                        })
+                                    if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                                      bottomCart()
                                   ],
                                 )
                             ),
                           ],
                         ),
                       ),
+
+                      if (controller.machineInfo.machineType != MachineType.new_panel_max)
+                      bottomCart()
+
 
                     ],
                   ),
@@ -309,7 +321,7 @@ class MenuPageView extends GetView {
                           bottom: controller.showCartTotalGoodsNum.value > 0
                               ? ScreenAdapter.height(0)
                               : -ScreenAdapter.height(200),
-                          child: publicShowCartView(),
+                          child: controller.machineInfo.machineType == MachineType.new_panel_max ? checkOutButton() : publicShowCartView(),
                         );
                       }),
                 ],
