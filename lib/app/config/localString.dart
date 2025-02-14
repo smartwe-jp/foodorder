@@ -132,6 +132,9 @@ extension LocalizedString on String {
         "load_menu_failure_back" : "ホームに戻る",
         'cash_pay_checkout_tips':'支払い金額が更新されました。引き続き現金を投入してください。',
         "scan_order_detail_title":"ご注文",
+
+        "tag_amount":"合計",
+        "tag_checkout":"お会計",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -255,6 +258,9 @@ extension LocalizedString on String {
         "load_menu_failure_back" : "返回首页",
         'cash_pay_checkout_tips':'支付金额更新，请继续投币。',
         "scan_order_detail_title":"订单",
+
+        "tag_amount":"共计",
+        "tag_checkout":"去结算",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -378,6 +384,9 @@ extension LocalizedString on String {
         "load_menu_failure_back" : "Back to home",
         'cash_pay_checkout_tips':'Payment amount updated, please continue inserting cash.',
         "scan_order_detail_title":"Order",
+
+        "tag_amount":"Total",
+        "tag_checkout":"Check Out",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -502,6 +511,9 @@ extension LocalizedString on String {
         "load_menu_failure_back" : "홈으로",
         'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 계속 현금을 넣어주세요.',
         "scan_order_detail_title":"주문",
+
+        "tag_amount":"총액",
+        "tag_checkout":"계산",
       }
       // 添加更多语言...한국말 =>  한국어
     };

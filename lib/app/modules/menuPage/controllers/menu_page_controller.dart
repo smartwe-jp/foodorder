@@ -289,7 +289,6 @@ class MenuPageController extends GetxController with StateMixin {
         //   _resetToFirstCategory();
         // } else {
         //   //getBookingBootIndexMenu(classTag.value);
-        //   getCategoryMenu();
         // }
 
         // update();
