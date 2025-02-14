@@ -1387,7 +1387,6 @@ print("加1了");
 
   //切换顶部菜单分类
   changeCategory(categoryCode){
-
     getBookingBootIndexMenu(categoryCode);
     //update();
   }

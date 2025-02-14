@@ -209,7 +209,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                         scaleDisabled: 1.0,
                         scaleEnabled: 0.9,
                         child:BookingTypeButton(
-                                  icon: AssetImage("assets/images/public/eat_in_on.png"),
+                                  icon: AssetImage("assets/images/public/eat_in_off.png"),
                                   title: 'menu_dingtype_eatin'.localized(),
                                   selected: false,
                                   onTap: ()=>controller.goMenu(controller.selectLanguage, false),
@@ -223,7 +223,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                           scaleDisabled: 0.9,
                           scaleEnabled: 1.0,
                           child:BookingTypeButton(
-                            icon: AssetImage("assets/images/public/eat_out_on.png"),
+                            icon: AssetImage("assets/images/public/eat_out_off.png"),
                             title: 'menu_dingtype_takeout'.localized(),
                             selected: false,
                             onTap: ()=>controller.goMenu(controller.selectLanguage, false),

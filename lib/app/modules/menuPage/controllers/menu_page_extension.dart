@@ -24,7 +24,7 @@ extension MenuPageControllerExtension on MenuPageController {
     //   }
     // }
 
-    update();
+    update(['side_bar']);
   }
 
   _updateOptionsInfo(List menuList) {
@@ -235,10 +235,10 @@ extension MenuPageControllerExtension on MenuPageController {
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
         } else if (item['showType'] == "mixed_two_column") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context);
+          return showCategorySix(showItem[classTag.value], context);
         } else if (item['showType'] == "mixed_two_column_v1") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context,
+          return showCategorySix(showItem[classTag.value], context,
               popupType: "v1");
         } else {
           return showCategoryTwo(showItem[classTag.value], context);

@@ -49,8 +49,12 @@ class LanguageButton extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            RectangleImageView(
-                image: icon, radius: 0),
+            Container(
+              width: 50,
+              child: RectangleImageView(
+                  image: icon, radius: 0),
+            ),
+
             SizedBox(width: 20,),
             Container(
               alignment: Alignment.center,
@@ -59,8 +63,8 @@ class LanguageButton extends StatelessWidget {
                 title,
                 style: TextStyle(
                   color: selected ? Colors.black : Colors.white,
-                  fontSize: 22,
-                  fontWeight: FontWeight.w500,
+                  fontSize: 32,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
             )

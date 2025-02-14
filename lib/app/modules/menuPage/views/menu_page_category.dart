@@ -455,7 +455,8 @@ extension MenuPageCategory on MenuPageController {
 //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    for (var item in topMenu.value) {
+    int index = 0;
+    for (var item in topMenu) {
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
