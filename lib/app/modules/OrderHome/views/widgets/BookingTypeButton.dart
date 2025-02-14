@@ -42,29 +42,35 @@ class BookingTypeButton extends StatelessWidget {
             // ],
           ),
 
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          child: Stack(
+            //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                height: ScreenAdapter.height(180),
+                alignment: Alignment.center,
+                height: ScreenAdapter.height(140),
                 child: RectangleImageView(
                     image: icon, radius: 0),
               ),
 
-              Expanded(child:
-              Text(
-                title,
-                maxLines: 2,
-                textAlign: TextAlign.center,
-                overflow: TextOverflow.ellipsis,
-                style: TextStyle(
-                  color: selected ? Colors.white : Colors.white,//const Color.fromARGB(255, 53,59,80),
-                  fontSize: 60,
-                  fontFamily: GFont.getFontFamily(),
-                  fontWeight: FontWeight.w600,
+              //Expanded(child:
+              Container(
+                padding: EdgeInsets.only(bottom: 40),
+                alignment: Alignment.bottomCenter,
+                child: Text(
+                  title,
+                  maxLines: 2,
+                  textAlign: TextAlign.center,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: selected ? Colors.white : Colors.white,//const Color.fromARGB(255, 53,59,80),
+                    fontSize: 60,
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
-              ),
               )
+
+              //)
             ],
           ),
         )

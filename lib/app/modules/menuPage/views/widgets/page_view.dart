@@ -77,6 +77,7 @@ class MenuView extends StatelessWidget {
       },
       itemBuilder: (context, pageIndex) {
         debugPrint('MenuSidebarItemInfo itemBuilder = $pageIndex');
+        state.classTag.value = state.topMenu[pageIndex]['categoryCode'];
         //Map pageInfo = state.topMenu[pageIndex];
 
         return NotificationListener<ScrollNotification>(
