@@ -266,18 +266,21 @@ class MenuPageController extends GetxController with StateMixin {
 
         List MenuColor = ["#F05F32","#98b9b3","#ABC251","#89A0F0","#E78BC5","#F05F32"];
         var menuIndex = 0;
+        var colorIndex = 0;
         topMenu.value = [];
         for (var i = 0; i < myList.length; i++) {
-          if(menuIndex >=5) menuIndex = 0;
+          if(colorIndex >=5) colorIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
           topMenu.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
-            "showColor":categoryVoList['color'] ?? MenuColor[menuIndex]
+            "showColor":categoryVoList['color'] ?? MenuColor[menuIndex],
+            "index":menuIndex
           });
           menuIndex++;
+          colorIndex++;
           //配置顶部菜单默认项
           if (i == 0) classTag.value = categoryVoList['categoryCode'];
 

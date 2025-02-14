@@ -142,13 +142,21 @@ extension MenuPageControllerExtension on MenuPageController {
     return menuWidget;
   }
 
+  _itemImage(String? url) {
+    if (url == null || url.isEmpty) {
+      return AssetImage('assets/images/public/food.png');
+    }
+    return CachedNetworkImageProvider(url);
+
+  }
+
   menuItemView(item, context, {popupType: "old", aspectRatio: 1.0}) {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
-      image: CachedNetworkImageProvider(item['homeImage'] ?? ""),
+      image: _itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
           ? GString.getToString(checkLanguage.value, "select_option")
           : "",
