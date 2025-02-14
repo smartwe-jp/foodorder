@@ -31,7 +31,7 @@ extension MenuPageSideBar on MenuPageView {
                   itemBuilder: (context, index) {
                     var item = controller.topMenu[index];
 
-                    return Column(
+                    return Stack(
                       children: [
                         GestureDetector(
                           onTap: () {
@@ -61,24 +61,20 @@ extension MenuPageSideBar on MenuPageView {
                             padding: EdgeInsets.only(
                                 left: ScreenAdapter.width(30),
                                 right: ScreenAdapter.width(20),
-                                top: ScreenAdapter.height(30),
-                                bottom: ScreenAdapter.height(30)
+                                top: ScreenAdapter.height(10),
+                                bottom: ScreenAdapter.height(20)
                             ),
 
                             child: Container(
                               //加上Center让文字居中
                               alignment: Alignment.centerLeft,
-                              child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minWidth: ScreenAdapter.width(20),
-                                  maxWidth: ScreenAdapter.width(165),
-                                  minHeight: ScreenAdapter.height(30),
-                                  maxHeight: ScreenAdapter.height(65),
-                                ),
-                                child: AutoSizeText(
+                              height: ScreenAdapter.height(80),
+                              child: Expanded(
+                                child:
+                                Text(
                                   "${item['categoryName']}",
                                   style: TextStyle(
-                                      fontSize: ScreenAdapter.fontSize(32),
+                                      fontSize: ScreenAdapter.fontSize(28),
                                       color: item['categoryCode'] ==
                                           controller.classTag.value
                                           ? Colors.white
@@ -87,12 +83,25 @@ extension MenuPageSideBar on MenuPageView {
                                       fontWeight: FontWeight.w400),
                                   maxLines: 2,
                                   overflow: TextOverflow.ellipsis,
-                                  textAlign: TextAlign.center,
+                                  textAlign: TextAlign.left,
                                 ),
                               ),
                             ),
                           ),
                         ),
+
+                        Container(
+
+                          decoration: BoxDecoration(
+                            color: item['categoryCode'] ==
+                                controller.classTag.value
+                                ? ColorsUtil.hexToColor(item['showColor']):Colors.transparent
+                          ),
+                          width: ScreenAdapter.width(15),
+                          height: ScreenAdapter.height(50),
+                          margin: EdgeInsets.only(top: ScreenAdapter.height(30)),
+                        )
+
                       ],
                     );
                   }),
