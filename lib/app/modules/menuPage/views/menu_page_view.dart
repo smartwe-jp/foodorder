@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +11,10 @@ import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.d
 import 'package:foodorder/app/modules/menuPage/views/widgets/page_view.dart';
 
 import 'package:get/get.dart';
+import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/font.dart';
+import '../../../config/imageData.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/menu_page_controller.dart';
 
@@ -18,6 +22,136 @@ class MenuPageView extends GetView {
   final MenuPageController controller = Get.put(MenuPageController());
 
   MenuPageView({Key? key}) : super(key: key);
+
+  //顶部分类导航
+  showTopCategoryMenu() {
+    List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
+    for (var item in controller.topMenu) {
+      categoryMenus.add(InkWell(
+        //enableFeedback: false,
+        onTap: () {
+          //controller.changeCategory(item['categoryCode']);
+          controller.pageController.animateToPage(
+            item['index'],
+            duration: const Duration(milliseconds: 30),
+            curve: Curves.easeInOut,
+          );
+          //controller.classTag.value = item['categoryCode'];
+        },
+        child: Stack(
+          children: [
+            Container(
+              margin: EdgeInsets.only(
+                  right: ScreenAdapter.width(6), top: ScreenAdapter.height(5)),
+              padding: EdgeInsets.only(
+                  left: ScreenAdapter.width(5), right: ScreenAdapter.width(5)),
+              width: ScreenAdapter.width(165),
+              //height: (classTag == item['categoryCode']) ? ScreenAdapter.height(75) : ScreenAdapter.height(65),
+              //height: ScreenAdapter.height(90),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                //背景颜色
+                color: ColorsUtil.hexToColor(item['showColor']),
+                borderRadius: BorderRadius.vertical(top: Radius.circular(5)),
+              ),
+              child: Center(
+                //加上Center让文字居中
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: ScreenAdapter.width(20),
+                    maxWidth: ScreenAdapter.width(165),
+                    minHeight: ScreenAdapter.height(30),
+                    maxHeight: ScreenAdapter.height(65),
+                  ),
+                  child: AutoSizeText(
+                    "${item['categoryName']}",
+                    style: TextStyle(
+                        fontSize: ScreenAdapter.fontSize(30),
+                        color: ColorsUtil.hexToColor(
+                            Gcolor.categoryTitleSelected),
+                        fontWeight: FontWeight.w600
+                    ),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ),
+            (controller.classTag.value == item['categoryCode'])
+                ? Positioned.fill(
+              child: Align(
+                alignment: Alignment.bottomCenter,
+                child: Container(
+                    padding: EdgeInsets.zero,
+                    //width: ScreenAdapter.width(10),
+                    //color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    child: Image.asset(
+                      GImage.getImageString("imgpublic", "menu_up"),
+                      height: ScreenAdapter.width(20),
+                      fit: BoxFit.fitHeight,
+                      color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                    )
+                ),
+              ),
+            )
+                : Container(
+              height: 0,
+            ),
+          ],
+        ),
+      )
+      );
+    }
+
+    //categoryMenus.add();
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      //mainAxisAlignment: MainAxisAlignment.spaceAround,
+      children: [
+        Expanded(
+          child: Container(
+            width: ScreenAdapter.width(900),
+            child: ListView(
+              scrollDirection: Axis.horizontal,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: categoryMenus,
+                )
+              ],
+            ),
+          ),
+        ),
+        Container(
+          //alignment: Alignment.centerRight,
+          child: InkWell(
+            enableFeedback: false,
+            onTap: () {
+              //controller.ordersqlcontroller.removeAllFromCart();
+              controller.gotoLanguageHome();
+            },
+            child: Container(
+              padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
+              margin: EdgeInsets.only(left: ScreenAdapter.width(10),
+                top: ScreenAdapter.height(10),
+                right: ScreenAdapter.width(5),),
+              width: ScreenAdapter.width(95),
+              height: ScreenAdapter.height(85),
+              //alignment: Alignment.center,
+              decoration: BoxDecoration(
+                image: new DecorationImage(
+                  fit: BoxFit.fitHeight,
+                  image: AssetImage("assets/images/public/language.png"),
+                ),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
 
   menuItemListView(context) {
     return Expanded(
@@ -87,7 +221,22 @@ class MenuPageView extends GetView {
                   Column(
                     children: [
                       //顶部导航
-                      //topArea(),
+                      GetBuilder<MenuPageController>(
+                          id: 'side_bar',
+                          builder: (logic) {
+                        return Container(
+                          width: ScreenAdapter.getScreenWidth(),
+                          height: ScreenAdapter.height(95),
+                          padding: EdgeInsets.only(
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(20)),
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                          ),
+                          child: showTopCategoryMenu(),
+                        );
+                      }),
 
                       SizedBox(height: ScreenAdapter.height(30)),
 
@@ -95,7 +244,7 @@ class MenuPageView extends GetView {
                         child: Row(
                           children: [
                             //侧栏
-                            sideBarMenu(),
+                            //sideBarMenu(),
                             Expanded(
                                 child:
                                 Column(
@@ -150,19 +299,19 @@ class MenuPageView extends GetView {
                   GetBuilder<MenuPageController>(
                       id: 'shopping_cart',
                       builder: (logic) {
-                    return AnimatedPositioned(
-                      duration: const Duration(milliseconds: 300),
-                      height: controller.showCartTotalGoodsNum.value > 0
-                          ? ScreenAdapter.height(200)
-                          : 0,
-                      width: ScreenAdapter.getScreenWidth(),
-                      right: ScreenAdapter.width(0),
-                      bottom: controller.showCartTotalGoodsNum.value > 0
-                          ? ScreenAdapter.height(0)
-                          : -ScreenAdapter.height(200),
-                      child: publicShowCartView(),
-                    );
-                  }),
+                        return AnimatedPositioned(
+                          duration: const Duration(milliseconds: 300),
+                          height: controller.showCartTotalGoodsNum.value > 0
+                              ? ScreenAdapter.height(200)
+                              : 0,
+                          width: ScreenAdapter.getScreenWidth(),
+                          right: ScreenAdapter.width(0),
+                          bottom: controller.showCartTotalGoodsNum.value > 0
+                              ? ScreenAdapter.height(0)
+                              : -ScreenAdapter.height(200),
+                          child: publicShowCartView(),
+                        );
+                      }),
                 ],
               ),
             ),
