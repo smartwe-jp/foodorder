@@ -2,6 +2,7 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -83,7 +84,7 @@ class CarItemView extends StatelessWidget {
                                 children: <TextSpan>[
                                   TextSpan(text: '￥', style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
-                                    fontSize: 24,
+                                    fontSize: 18,
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 96,98,102),
                                   ),),

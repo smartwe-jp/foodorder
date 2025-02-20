@@ -253,6 +253,7 @@ class showOneItemOptionWidgetVOneView extends GetView {
     var itemPrice = controller.selectedMenuOptionChangePrice.value[item['menuCode']];
     controller.paymentIsShow = true;
     return GetBuilder<MenuPageController>(
+        id: 'option_view',
         builder: (controller) {
           return RepaintBoundary(
             child: UnconstrainedBox(

@@ -1,5 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -206,7 +207,7 @@ class SubTitle extends StatelessWidget {
             ),
             SizedBox(width: ScreenAdapter.width(5),),
             Text(
-              title,
+              title.formatSum(),
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(28),
                 fontWeight: FontWeight.w500,
@@ -279,7 +280,11 @@ class GridMenuView extends StatelessWidget {
     return Padding(
       padding: padding,
       child: GridView.builder(
-        padding: EdgeInsets.all(ScreenAdapter.height(30)),
+        padding: EdgeInsets.only(
+            left:ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
+          bottom: ScreenAdapter.height(30)
+        ),
         physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : NeverScrollableScrollPhysics(),
         shrinkWrap: true,
         addAutomaticKeepAlives: true,

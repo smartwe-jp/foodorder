@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 import 'package:foodorder/app/widget/CustomButton.dart';
 import 'package:get/get.dart';
@@ -17,9 +18,9 @@ extension RecommendView on MenuPageController {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
-      subtitle: "${item['subtitle'] ?? ""}",
+      subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
-      image: CachedNetworkImageProvider(item['homeImage'] ?? ""),
+      image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
           ? GString.getToString(checkLanguage.value, "select_option")
           : "",

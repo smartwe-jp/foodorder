@@ -1,7 +1,6 @@
-
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/Extension/StringExtension.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 
@@ -18,7 +17,7 @@ extension Shoppingcar on MenuPageController {
           CarItemView(
             title: d.mainTitle,
             subtitle: d.optionVoListMsg,
-            image: CachedNetworkImageProvider(d.image),
+            image: itemImage(d.image),
             onReduce: (value) {
               publicChangeCartItemCreate(d, false);
             },

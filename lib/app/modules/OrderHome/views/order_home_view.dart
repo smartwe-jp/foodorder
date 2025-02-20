@@ -22,42 +22,42 @@ import '../controllers/order_home_controller.dart';
 import 'SelectDiningMethod.dart';
 
 class OrderHomeView extends GetView<OrderHomeController> {
-  final OrderHomeController controller = Get.put(OrderHomeController());
+  final OrderHomeController controller = Get.find();
   OrderHomeView({Key? key}) : super(key: key);
 
 
 
   languageSelectView() {
     List languages = [];
-    if (controller.machineLanguages_JP.value == true)
+    if (controller.machineLanguages_JP == true)
       languages.add({
         "language": "JP",
         "text": "日本語",
-        "selected": controller.machineLanguages_JP.value,
+        "selected": controller.machineLanguages_JP,
         "icon": AssetImage("assets/images/public/language_Japanese.png"),
       });
 
-    if (controller.machineLanguages_CH.value == true)
+    if (controller.machineLanguages_CH == true)
       languages.add({
         "language": "CH",
         "text": "中文",
-        "selected": controller.machineLanguages_CH.value,
+        "selected": controller.machineLanguages_CH,
         "icon": AssetImage("assets/images/public/language_Chinese.png"),
       });
 
-    if (controller.machineLanguages_EN.value == true)
+    if (controller.machineLanguages_EN == true)
       languages.add({
         "language": "EN",
         "text": "English",
-        "selected": controller.machineLanguages_EN.value,
+        "selected": controller.machineLanguages_EN,
         "icon": AssetImage("assets/images/public/language_English.png"),
       });
 
-    if (controller.machineLanguages_KO.value == true)
+    if (controller.machineLanguages_KO == true)
       languages.add({
         "language": "KO",
         "text": "한국어",
-        "selected": controller.machineLanguages_KO.value,
+        "selected": controller.machineLanguages_KO,
         "icon": AssetImage("assets/images/public/language_Korean.png"),
       });
 
@@ -85,6 +85,83 @@ class OrderHomeView extends GetView<OrderHomeController> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         )
+    );
+  }
+
+  _diningSelectArea() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ScaleAnimatedWidget.tween(
+          enabled: controller.startShake,
+          duration: Duration(milliseconds: 500),
+          scaleDisabled: 1.0,
+          scaleEnabled: 0.9,
+          child:BookingTypeButton(
+            icon: Icon(
+              Icons.dining,
+              color: Colors.blueGrey[100],
+              size: 120,
+            ),
+            title: 'menu_dingtype_eatin'.localized(),
+            selected: false,
+            onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+          ),
+        ),
+
+        SizedBox(width: ScreenAdapter.width(50),),
+        ScaleAnimatedWidget.tween(
+          enabled: controller.startShake,
+          duration: Duration(milliseconds: 500),
+          scaleDisabled: 0.9,
+          scaleEnabled: 1.0,
+          child:BookingTypeButton(
+            icon: Icon(
+              Icons.shopping_bag,
+              color: Colors.blueGrey[100],
+              size: 120,
+            ),
+            title: 'menu_dingtype_takeout'.localized(),
+            selected: false,
+            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
+          ),
+        )
+      ],
+    );
+  }
+
+  _startButton() {
+    return ScaleAnimatedWidget.tween(
+      enabled: controller.startShake,
+      duration: Duration(milliseconds: 500),
+      scaleDisabled: 0.9,
+      scaleEnabled: 1.0,
+      child:
+      InkWell(
+        onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+        child: Container(
+          padding: EdgeInsets.all(10),
+          height:ScreenAdapter.height(260),
+          width: ScreenAdapter.width(600),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.green[900],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'order_start'.localized(),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white,//const Color.fromARGB(255, 53,59,80),
+              fontSize: 80,
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -171,6 +248,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
                           ],
                         ),
                       ),
+                      if (controller.machineInfo.diningType == "3")
                       Text(
                         'menu_ding_type_tips'.localized(),
                         maxLines: 2,
@@ -197,40 +275,12 @@ class OrderHomeView extends GetView<OrderHomeController> {
 
               Positioned(
                 bottom: ScreenAdapter.height(400),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      ScaleAnimatedWidget.tween(
-                        enabled: controller.startShake,
-                        duration: Duration(milliseconds: 500),
-                        scaleDisabled: 1.0,
-                        scaleEnabled: 0.9,
-                        child:BookingTypeButton(
-                                  icon: AssetImage("assets/images/public/eat_in_off.png"),
-                                  title: 'menu_dingtype_eatin'.localized(),
-                                  selected: false,
-                                  onTap: ()=>controller.goMenu(controller.selectLanguage, false),
-                                ),
-                      ),
-
-                      SizedBox(width: ScreenAdapter.width(50),),
-                      ScaleAnimatedWidget.tween(
-                          enabled: controller.startShake,
-                          duration: Duration(milliseconds: 500),
-                          scaleDisabled: 0.9,
-                          scaleEnabled: 1.0,
-                          child:BookingTypeButton(
-                            icon: AssetImage("assets/images/public/eat_out_off.png"),
-                            title: 'menu_dingtype_takeout'.localized(),
-                            selected: false,
-                            onTap: ()=>controller.goMenu(controller.selectLanguage, false),
-                          ),
-                      )
-                    ],
-                  ),
+                width: ScreenAdapter.width(1080),
+                child: Center(
+                  child:
+                    controller.machineInfo.diningType == "3" ?
+                      _diningSelectArea()
+                    : _startButton()
 
                 ),
               ),

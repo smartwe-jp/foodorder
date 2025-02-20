@@ -373,7 +373,7 @@ class TransitPageController extends GetxController {
 
   void _goNext(checkmachineMode) async {
     Get.put(MachineInfoController());
-
+    debugPrint('put MachineInfoController');
     if(checkmachineMode == "2"){
       _goCheckOut();
     }else if(checkmachineMode == "3"){
