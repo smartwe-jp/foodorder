@@ -8,7 +8,7 @@ import 'package:foodorder/app/services/ScreenAdapter.dart';
 import '../../../menuPage/views/widgets/car_item_view.dart';
 
 class BookingTypeButton extends StatelessWidget {
-  final ImageProvider icon;
+  final Icon icon;
   final String title;
   final bool selected;
   final Function? onTap;
@@ -32,7 +32,7 @@ class BookingTypeButton extends StatelessWidget {
           width: ScreenAdapter.width(400),
           decoration: BoxDecoration(
             color: selected ? ColorsUtil.hexToColor(Gcolor.greenThemeColor) : Colors.green[900],
-            borderRadius: BorderRadius.circular(1),
+            borderRadius: BorderRadius.circular(10),
             // boxShadow: [
             //   BoxShadow(
             //     color: Colors.grey.withOpacity(0.2),
@@ -48,8 +48,7 @@ class BookingTypeButton extends StatelessWidget {
               Container(
                 alignment: Alignment.center,
                 height: ScreenAdapter.height(140),
-                child: RectangleImageView(
-                    image: icon, radius: 0),
+                child: icon,
               ),
 
               //Expanded(child:

@@ -42,7 +42,7 @@ class LanguageButton extends StatelessWidget {
             end: Alignment.bottomRight,
             colors: [selected ? Colors.white : Colors.green, selected ? Colors.white:Colors.lightGreen],
           ),
-          //borderRadius: BorderRadius.circular(15),
+          borderRadius: BorderRadius.circular(5),
           //border: Border.all(color: Colors.red, width: 2),
         ),
 

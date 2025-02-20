@@ -106,7 +106,7 @@ extension CheckoutButton on MenuPageView {
                           if (controller.showCartTotalGoodsNum.value > 0)
                             Text("tag_amount".localized(),
                                 style: TextStyle(
-                                  fontSize: 32,
+                                  fontSize: 24,
                                   fontFamily: GFont.getFontFamily(),
                                   color: Colors.white,
                                 )),

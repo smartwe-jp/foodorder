@@ -20,7 +20,7 @@ extension MenuPageSideBar on MenuPageView {
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 245, 247, 247),
           borderRadius: BorderRadius.only(
-            topRight: Radius.circular(40),
+            topRight: Radius.circular(5),
           ),
         ),
         child: Column(
@@ -52,11 +52,11 @@ extension MenuPageSideBar on MenuPageView {
                             decoration: BoxDecoration(
                               color: item['categoryCode'] ==
                                   controller.classTag.value
-                                  ? ColorsUtil.hexToColor(Gcolor.priceColor)
+                                  ? ColorsUtil.hexToColor(item['showColor'])
                                   : Color.fromARGB(255, 245, 247, 247),
                               borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(
-                                      index == 0 ? 40 : 0)),
+                                      index == 0 ? 5 : 0)),
                             ),
                             padding: EdgeInsets.only(
                                 left: ScreenAdapter.width(30),
@@ -69,7 +69,7 @@ extension MenuPageSideBar on MenuPageView {
                               //加上Center让文字居中
                               alignment: Alignment.centerLeft,
                               height: ScreenAdapter.height(80),
-                              child: Expanded(
+                              //child: Expanded(
                                 child:
                                 Text(
                                   "${item['categoryName']}",
@@ -85,7 +85,7 @@ extension MenuPageSideBar on MenuPageView {
                                   overflow: TextOverflow.ellipsis,
                                   textAlign: TextAlign.left,
                                 ),
-                              ),
+                              //),
                             ),
                           ),
                         ),
@@ -95,9 +95,9 @@ extension MenuPageSideBar on MenuPageView {
                           decoration: BoxDecoration(
                             color: item['categoryCode'] ==
                                 controller.classTag.value
-                                ? ColorsUtil.hexToColor(item['showColor']):Colors.transparent
+                                ? Colors.white:Colors.transparent
                           ),
-                          width: ScreenAdapter.width(15),
+                          width: ScreenAdapter.width(10),
                           height: ScreenAdapter.height(50),
                           margin: EdgeInsets.only(top: ScreenAdapter.height(30)),
                         )
@@ -116,8 +116,8 @@ extension MenuPageSideBar on MenuPageView {
               child: Container(
                   alignment: Alignment.center,
                   margin: EdgeInsets.only(
-                    left: ScreenAdapter.width(10),
-                    right: ScreenAdapter.width(10),
+                    left: ScreenAdapter.width(20),
+                    right: ScreenAdapter.width(20),
                   ),
                   padding: EdgeInsets.only(
                       left: ScreenAdapter.width(10),
@@ -127,7 +127,7 @@ extension MenuPageSideBar on MenuPageView {
                   ),
                   decoration: BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.all(Radius.circular(20)),
+                    borderRadius: BorderRadius.all(Radius.circular(10)),
                     //阴影
                     boxShadow: [
                       BoxShadow(
@@ -139,35 +139,31 @@ extension MenuPageSideBar on MenuPageView {
                     ],
                   ),
                   child:
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   crossAxisAlignment: CrossAxisAlignment.center,
+                  //   children: [
                       Container(
-                        width: ScreenAdapter.width(65),
-                        height: ScreenAdapter.height(65),
+                        // width: ScreenAdapter.width(65),
+                        // height: ScreenAdapter.height(65),
                         alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          image: DecorationImage(
-                            image:
-                            AssetImage('assets/images/public/language.png'),
-                            fit: BoxFit.contain,
-                          ),
+                        // decoration: BoxDecoration(
+                        //   image: DecorationImage(
+                        //     image:
+                        //     AssetImage('assets/images/public/language.png'),
+                        //     fit: BoxFit.contain,
+                        //   ),
+                        // ),
+                        child: Icon(
+                          Icons.home,
+                          color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                          size: 100,
                         ),
                       ),
-                      SizedBox(width: ScreenAdapter.width(10),),
-                      // Text(
-                      //   GString.getToString(
-                      //       controller.checkLanguage.value,
-                      //       "main_page"),
-                      //   style: TextStyle(
-                      //       fontSize: 26,
-                      //       fontWeight: FontWeight.w600,
-                      //       fontFamily: GFont.getFontFamily(),
-                      //       color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
-                      // )
-                    ],
-                  )),
+                  //     SizedBox(width: ScreenAdapter.width(10),),
+                  //   ],
+                  // )
+              ),
             ),
 
             SizedBox(

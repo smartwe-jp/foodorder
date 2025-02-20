@@ -14,10 +14,10 @@ class OrderHomeController extends GetxController with StateMixin {
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MachineInfoController machineInfo = Get.find();
 
-  RxBool machineLanguages_JP = false.obs;
-  RxBool machineLanguages_CH = false.obs;
-  RxBool machineLanguages_EN = false.obs;
-  RxBool machineLanguages_KO = false.obs;
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
 
   String selectLanguage = 'JP';
   bool startShake = false;
@@ -25,10 +25,9 @@ class OrderHomeController extends GetxController with StateMixin {
 
 
   @override
-  Future<void> onInit() async {
+  void onInit() async {
     EasyLoading.dismiss();
-    await getmenchineLanguages();
-
+    getmenchineLanguages();
     super.onInit();
   }
 
@@ -40,11 +39,12 @@ class OrderHomeController extends GetxController with StateMixin {
 
   @override
   void onClose() {
+    //stopRepeatingAnimation();
     super.onClose();
-    stopRepeatingAnimation();
   }
 
   void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
     isAnimating = true;
     Timer.periodic(Duration(milliseconds: 1200), (timer) {
       if (!isAnimating) {
@@ -57,13 +57,15 @@ class OrderHomeController extends GetxController with StateMixin {
   }
 
   void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
     isAnimating = false;
     startShake = false;
     update();
   }
 
   goMenu(String lan, bool mealType) {
-    var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menuzong-page';
+    machineInfo.mealType = mealType;
+    var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menu-page';
     startShake = false;
     Get.toNamed(jumpUrl,arguments: {
       "checkLanguage": lan,
@@ -73,27 +75,11 @@ class OrderHomeController extends GetxController with StateMixin {
 
   getmenchineLanguages() async {
     debugPrint("获取机器语言");
-    var languageJP = false;
-    var languageCH = false;
-    var languageEN = false;
-    var languageKO = false;
-    var menchineLanguagesData = await HomeServices.getMachineLanguages();
-    for (var item in menchineLanguagesData) {
-      if(item == "JP"){
-        languageJP = true;
-      }else if(item == "CH"){
-        languageCH = true;
-      }else if(item == "EN"){
-        languageEN = true;
-      }else if(item == "KO"){
-        languageKO = true;
-      }
-    }
 
-    machineLanguages_JP.value = languageJP;
-    machineLanguages_CH.value = languageCH;
-    machineLanguages_EN.value = languageEN;
-    machineLanguages_KO.value = languageKO;
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
     debugPrint("获取机器语言结束");
     update();
     change(null, status: RxStatus.success());

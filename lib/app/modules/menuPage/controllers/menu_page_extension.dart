@@ -142,7 +142,7 @@ extension MenuPageControllerExtension on MenuPageController {
     return menuWidget;
   }
 
-  _itemImage(String? url) {
+  itemImage(String? url) {
     if (url == null || url.isEmpty) {
       return AssetImage('assets/images/public/food.png');
     }
@@ -156,7 +156,7 @@ extension MenuPageControllerExtension on MenuPageController {
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
-      image: _itemImage(item['homeImage']),
+      image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
           ? GString.getToString(checkLanguage.value, "select_option")
           : "",

@@ -2,6 +2,7 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -57,16 +58,48 @@ class CarItemView extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       //title
-                      AutoSizeText(
-                        title,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        textAlign: TextAlign.left,
-                        style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
-                          fontSize: 30,
-                          fontWeight: FontWeight.w500,
-                        ),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: AutoSizeText(
+                              title,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: 30,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          SizedBox(width: 20,),
+
+                          Container(
+                            //width: ScreenAdapter.width(160),
+                            child: RichText(
+                              text: TextSpan(
+                                children: <TextSpan>[
+                                  TextSpan(text: '￥', style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 96,98,102),
+                                  ),),
+                                  TextSpan(text: price,style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w500,
+                                    color: Color.fromARGB(255, 96,98,102),
+                                  ),),
+                                ],
+                              ),
+                            ),
+                          ),
+
+                        ],
                       ),
 
                       //subtitle

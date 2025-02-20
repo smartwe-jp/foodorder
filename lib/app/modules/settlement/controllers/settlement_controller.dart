@@ -240,6 +240,15 @@ class SettlementController extends GetxController with StateMixin {
       //打开现金机
       _countDownTimer("1");
       Starttoubi();
+      if (totalPrice.value == '0') {
+        if(isCancel.value == false){
+          showPrintButton.value = true;
+        }else{
+          showPrintButton.value = false;
+        }
+        showOutMoney.value = '0';
+        update();
+      }
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();
@@ -869,8 +878,8 @@ class SettlementController extends GetxController with StateMixin {
         showPosCancelEasyLoading("900");
       }
     }).catchError((error){
-      //TODO//提示具体错误，和询问重试
-
+      //TODO 提示具体错误，和询问重试
+      _checkOutErrorHandle('提示具体错误，和询问重试');
     });
 
   }
@@ -1340,12 +1349,12 @@ class SettlementController extends GetxController with StateMixin {
         }
       } else if (stopStatus.value == "Error-A0--02") {
         debugPrint("stopStatus Error-A0--02");
-        if (executeCount == 1) {
-          await Paycube.sendPutCashDetail;
-        } else {
-          await Paycube.endPayCube;
-        }
-        executeCount++;
+         if (executeCount == 1) {
+           await Paycube.sendPutCashDetail;
+         } else {
+           await Paycube.endPayCube;
+         }
+         executeCount++;
       } else if (stopStatus.value == "Sending") {
         debugPrint("Sending just wait");
       } else {

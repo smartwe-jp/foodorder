@@ -926,7 +926,7 @@ print("加1了");
 
 
     _getSelectedAttrValuev1(menuCode, attr, setMenuState);
-    update();
+    update(['option_view']);
   }
 
   //获取选中的值
@@ -957,7 +957,7 @@ print("加1了");
     selectedMenuOptionList.value[menuCode] = tempArr;
     addselectedMenuOptionChangePrice.value[menuCode] = selectPrice;
     tempArr = [];
-    update();
+    update(['option_view']);
   }
 
 //限量商品请求接口

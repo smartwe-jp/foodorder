@@ -236,7 +236,7 @@ class HomeServices{
 
   //多语言
   static getMachineLanguages() async{
-    var machineLanguages;
+    var machineLanguages = [];
     try {
       var machineLanguagesDatatmp = await Storage.getString('smartwe_machineLanguages');
       var machineLanguagesData = json.decode(machineLanguagesDatatmp!);

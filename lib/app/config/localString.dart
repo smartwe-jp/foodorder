@@ -135,6 +135,7 @@ extension LocalizedString on String {
 
         "tag_amount":"合計",
         "tag_checkout":"お会計",
+        "order_start":"注文",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -261,6 +262,7 @@ extension LocalizedString on String {
 
         "tag_amount":"共计",
         "tag_checkout":"去结算",
+        "order_start":"下单",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -387,6 +389,7 @@ extension LocalizedString on String {
 
         "tag_amount":"Total",
         "tag_checkout":"Check Out",
+        "order_start":"Order",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -514,6 +517,7 @@ extension LocalizedString on String {
 
         "tag_amount":"총액",
         "tag_checkout":"계산",
+        "order_start":"시작",
       }
       // 添加更多语言...한국말 =>  한국어
     };
