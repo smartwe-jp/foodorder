@@ -37,7 +37,7 @@ class CheckoutPageView extends GetView {
           onTap: () {
             var jumpUrl = (controller.menu_direction.value == "1")
                 ? '/menu-page'
-                : '/menuzong-page';
+                : '/menu-page';
             Get.toNamed(jumpUrl, arguments: {
               "checkLanguage": "${item["value"]}",
               "mealType": true

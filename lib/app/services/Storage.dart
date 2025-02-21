@@ -10,6 +10,12 @@ class Storage{
     SharedPreferences sp=await SharedPreferences.getInstance();
     sp.setDouble(key, value);
   }
+
+  static Future<void> setInt(key,value) async{
+    SharedPreferences sp=await SharedPreferences.getInstance();
+    sp.setInt(key, value);
+  }
+
   static Future<String?> getString(key) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
        return sp.getString(key);

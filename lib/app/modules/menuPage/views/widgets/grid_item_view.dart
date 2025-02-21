@@ -277,8 +277,7 @@ class GridMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
+    return Center(
       child: GridView.builder(
         padding: EdgeInsets.only(
             left:ScreenAdapter.width(30),

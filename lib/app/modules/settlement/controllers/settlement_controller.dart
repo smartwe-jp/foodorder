@@ -370,7 +370,7 @@ class SettlementController extends GetxController with StateMixin {
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.toNamed("/checkout-page");
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }else if(machineMode.value == "3") {
@@ -433,7 +433,7 @@ class SettlementController extends GetxController with StateMixin {
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.toNamed("/checkout-page");
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }
@@ -583,7 +583,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //request latest checkout info
   requestLatestCheckoutInfo() async {
-    bool goNext = false;
+    bool goNext = true;
     var formData = {
       "orderId": orderId.value,
     };

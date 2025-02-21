@@ -80,6 +80,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
 
+  List<String> panelTypes = ['Mini','Max'];
+  String panelType = "Mini";
+
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -148,6 +151,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       showPrintType.value = int.parse(systemSettingInfo['showPrintType']);
       is_allow_wlanPrint_Two.value = systemSettingInfo['isAllowWlanPrintTwo'];
       is_allow_wlanPrint_Two_continuous.value = systemSettingInfo['isAllowWlanPrintTwoContinuous'];
+      panelType = systemSettingInfo['panelType'] ?? 'Mini';
 
       if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
         pos_ip.value = posSettingInfo['posIp'];
@@ -187,6 +191,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "showPrintType": showPrintType.value.toString(), //0receipt 1label
     "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
     "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
+    "panelType":panelType
   };
 
   showDownloadingAlert() {
@@ -416,6 +421,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
     _updateSystemSetting("menuDirection", checkedType);
     //if(Get.isRegistered<OrderHomeController>())
     //Get.find<OrderHomeController>().getSystemSettingInfo();
+  }
+
+  checkPanelType(String type){
+    panelType = type;
+    _updateSystemSetting("panelType", type);
   }
 
   checkPrintPaperTxtSize(checkedType) async {

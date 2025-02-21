@@ -254,11 +254,11 @@ class MenuPageView extends GetView {
                 children: [
                   Column(
                     children: [
-                      if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                      if (controller.machineInfo.machineType == MachineType.new_panel_max && controller.machineInfo.menu_direction != "1")
                         topArea(),
 
                       //顶部导航
-                      if (controller.machineInfo.machineType != MachineType.new_panel_max)
+                      if (controller.machineInfo.menu_direction == "1")
                       GetBuilder<MenuPageController>(
                           id: 'side_bar',
                           builder: (logic) {
@@ -282,7 +282,7 @@ class MenuPageView extends GetView {
                         child: Row(
                           children: [
                             //侧栏
-                            if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                            if (controller.machineInfo.menu_direction != '1')
                             sideBarMenu(),
                             Expanded(
                                 child:
@@ -291,7 +291,7 @@ class MenuPageView extends GetView {
                                     Expanded(
                                         child: MenuView(state: controller)),
 
-                                    if (controller.machineInfo.machineType == MachineType.new_panel_max)
+                                    if (controller.machineInfo.menu_direction != '1')
                                       bottomCart()
                                   ],
                                 )
@@ -300,7 +300,7 @@ class MenuPageView extends GetView {
                         ),
                       ),
 
-                      if (controller.machineInfo.machineType != MachineType.new_panel_max)
+                      if (controller.machineInfo.menu_direction == '1')
                       bottomCart()
 
 
@@ -322,7 +322,7 @@ class MenuPageView extends GetView {
                           bottom: controller.showCartTotalGoodsNum.value > 0
                               ? ScreenAdapter.height(0)
                               : -ScreenAdapter.height(200),
-                          child: controller.machineInfo.machineType == MachineType.new_panel_max ? checkOutButton() : publicShowCartView(),
+                          child: controller.machineInfo.menu_direction != '1' ? checkOutButton() : publicShowCartView(),
                         );
                       }),
                 ],

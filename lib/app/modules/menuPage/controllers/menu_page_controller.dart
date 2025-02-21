@@ -242,6 +242,7 @@ class MenuPageController extends GetxController with StateMixin {
       "language": checkLanguage.value,
       "takeout":queryTakeout,
     };
+    debugPrint('formData:$formData');
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
 
