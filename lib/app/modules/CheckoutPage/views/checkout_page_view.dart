@@ -17,7 +17,7 @@ import 'Appointment.dart';
 import 'ScanCode.dart';
 
 class CheckoutPageView extends GetView {
-  //final CheckoutPageController controller = Get.put(CheckoutPageController());
+
   final CheckoutPageController controller = Get.find();
   CheckoutPageView({Key? key}) : super(key: key);
 
@@ -32,10 +32,10 @@ class CheckoutPageView extends GetView {
 
     List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
     for (var item in languagesButton) {
-      if(controller.machineLanguagesList.value.contains(item["value"]) == true) {
+      if(controller.machineInfo.supportLanguages.contains(item["value"]) == true) {
         takeoutMenus.add(InkWell(
           onTap: () {
-            var jumpUrl = (controller.menu_direction.value == "1")
+            var jumpUrl = (controller.machineInfo.menu_direction == "1")
                 ? '/menu-page'
                 : '/menu-page';
             Get.toNamed(jumpUrl, arguments: {
@@ -96,7 +96,7 @@ class CheckoutPageView extends GetView {
     if(languagesButton.length >0){
       List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
       for (var item in languagesButton) {
-        if(controller.machineLanguagesList.value.contains(item["value"]) == true){
+        if(controller.machineInfo.supportLanguages.contains(item["value"]) == true){
           billMenus.add(InkWell(
             onTap: () {
               controller.checkLanguage.value = item["value"]!;
@@ -258,20 +258,20 @@ class CheckoutPageView extends GetView {
                         //itemHeight: 200,
                         itemBuilder: (BuildContext context,int index){
                           // 配置图片地址
-                          return publicShowMenuImage(imgPath:controller.homeList.value[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                          return publicShowMenuImage(imgPath:controller.machineInfo.homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
                         },
                         // 配置图片数量
-                        itemCount: controller.homeList.value.length,
+                        itemCount: controller.machineInfo.homeList.length,
                         // 底部分页器
                         //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
                         // 左右箭头
                         //control: new SwiperControl(),
                         // 无限循环
-                        loop: (controller.homeList.value.length >1) ?true :false,
+                        loop: (controller.machineInfo.homeList.length >1) ?true :false,
                         duration: 1000,
                         autoplayDelay:12000,
                         // 自动轮播
-                        autoplay: (controller.homeList.value.length >1) ?true :false,
+                        autoplay: (controller.machineInfo.homeList.length >1) ?true :false,
                       ),
                     ),
                   ],
@@ -283,7 +283,7 @@ class CheckoutPageView extends GetView {
                 top: ScreenAdapter.height(20),
                 child: InkWell(
                   onLongPress: (){
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineCode.value});
+                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
                   },
                   child: Container(
                     height: ScreenAdapter.height(150),
