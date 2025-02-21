@@ -198,6 +198,59 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+  setMachineType() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child:
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 200,
+              child: DropdownButtonFormField<String>(
+                value: controller.panelType,
+                onChanged: (String? newValue) {
+
+                  controller.checkPanelType(newValue ?? 'Mini');
+
+                },
+                items: controller.panelTypes.map<DropdownMenuItem<String>>((String key) {
+                  return DropdownMenuItem<String>(
+                    value: key,
+                    child: Text(key, style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(18.0),
+                    ),),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
+                ),
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                isExpanded: true,
+              ),
+            ),
+          )
+
+
+
+
+    );
+  }
+
   //设置打印菜单部分文字大小
   setPrintPaperTxtSize() {
     return Container(
@@ -2234,6 +2287,23 @@ class SystemSettingPageView extends GetView {
                                           ),
                                         ),
                                         setMenuDirection(),//菜单方向
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "マシンタイプ",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setMachineType(),//菜单方向
                                       ]
                                   ),
                                   TableRow(

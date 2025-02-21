@@ -279,10 +279,10 @@ extension LocalizedString on String {
         "tag_button_no":"No",
         "tag_checkOut":"Please scan QR code.",
 
-        "menu_dingtype_eatin":"Eat in",
-        "menu_dingtype_takeout":"Take out",
+        "menu_dingtype_eatin":"Eat-in",
+        "menu_dingtype_takeout":"Takeout",
         "menu_dingtype_title":"Welcome",
-        "menu_dingtype_title_tag":"Choose eat-in or takeout",
+        "menu_dingtype_title_tag":"Choose Eat-in or Takeout",
         "menu_dingtype_eatin_tag":"Click here for customers who eat in the store",
         "menu_dingtype_takeout_tag":"Click here for takeaway customers",
         "menu_ding_type_tips":"Please choose",

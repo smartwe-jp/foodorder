@@ -82,7 +82,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
 
   RxMap orderInfoMap = {}.obs;
-  late String scanTextValue;
+  String scanTextValue = '';
 
   @override
   void onInit() {
@@ -223,7 +223,10 @@ class CheckoutPageController extends GetxController with StateMixin {
     debugPrint('qrCodeString: $scanText');
     scanTextValue = scanText;
     String orderKey = scanText;
-    if (orderKey.isEmpty) return;
+    if (orderKey.isEmpty) {
+      EasyLoading.dismiss();
+      return;
+    }
 
     if (orderKey.contains('?p=') == true) {
       //正则实现截取'?p='之后的字符串
