@@ -17,7 +17,7 @@ extension CheckoutButton on MenuPageView {
       mainAxisAlignment: MainAxisAlignment.end,
       children: [
         SizedBox(
-          width: ScreenAdapter.width(200),
+          width: ScreenAdapter.width(240),
         ),
         Expanded(
           child: Container(
@@ -28,7 +28,7 @@ extension CheckoutButton on MenuPageView {
                 right: ScreenAdapter.width(40)),
             decoration: BoxDecoration(
               color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-              borderRadius: BorderRadius.circular(75),
+              borderRadius: BorderRadius.circular(15),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -44,7 +44,7 @@ extension CheckoutButton on MenuPageView {
                         return;
                       }
                       controller.showShopCart.value = true;
-                      controller.update();
+                      controller.update(['shopping_cart']);
                     },
                     child: Row(
                       children: [
@@ -134,6 +134,13 @@ extension CheckoutButton on MenuPageView {
                             ),
                           )
                         ),
+                        Spacer(),
+                          Icon(
+                            Icons.edit,
+                            color: Colors.white,
+                            size: 50,
+
+                          ),
                         SizedBox(
                           width: ScreenAdapter.width(40),
                         ),

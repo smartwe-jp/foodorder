@@ -1,0 +1,418 @@
+import 'dart:math';
+import 'dart:ui';
+
+import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/edit_page/state.dart';
+import 'package:get/get.dart';
+import 'package:get/get_state_manager/src/simple/get_state.dart';
+import '../../../services/ScreenAdapter.dart';
+import '../logic.dart';
+
+typedef ParamSingleCallback<D> = dynamic Function(D data);
+
+class MenuSideBar extends StatelessWidget {
+  const MenuSideBar({
+    Key? key,
+    required this.data,
+    required this.onTap,
+  }) : super(key: key);
+
+  final EditPageState data;
+  final ParamSingleCallback<MenuSidebarItemInfo> onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return _buildBg(children: [
+      _buildItemListBg(itemBuilder: (item) {
+        return [
+          _buildTitle(item?.title ?? ""),
+          _buildSideBar(item, subBuilder: (subItem) {
+            return [
+              //选中红色长方形条块
+              _buildRedTag(subItem),
+
+              //描述
+              _buildItemDesc(subItem),
+            ];
+          })
+        ];
+      }),
+      //const Spacer(),
+      SizedBox(
+        height: 20.dp,
+      ),
+      Container(
+          margin: EdgeInsets.only(left: 30.dp, right: 50.dp),
+          child: ElevatedButton(
+              onPressed: () {
+                Get.back();
+              },
+              child: Text(
+                '戻る',
+                style: 
+                TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: 36,
+                  fontWeight: FontWeight.w500,
+                ),
+              ))),
+      SizedBox(
+        height: 30.dp,
+      )
+    ]);
+  }
+
+  Widget _buildItemDesc(MenuSidebarItemInfo subItem) {
+    return Container(
+      margin: EdgeInsets.only(left: 10.dp),
+      child: GetBuilder<EditPageLogic>(
+        builder: (logic) {
+          return Container(
+            alignment: Alignment.centerLeft,
+            child: AutoSizeText(
+              subItem.title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                color: subItem.isSelected ? Colors.white : Colors.grey[700],
+                fontWeight: FontWeight.w600,
+                fontFamily: GFont.getFontFamily(),
+                fontSize: 30,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  // Widget _buildItemIcon(MenuSidebarItemInfo subItem) {
+  //   return GetBuilder<HelpOrderPageLogic>(
+  //     builder: (logic) {
+  //       return Icon(
+  //         subItem.icon,
+  //         size: 18,
+  //         color: subItem.isSelected ? Colors.blueAccent : Colors.black,
+  //       );
+  //     },
+  //   );
+  // }
+
+  Widget _buildRedTag(MenuSidebarItemInfo subItem) {
+    return GetBuilder<EditPageLogic>(
+      builder: (logic) {
+        return Container(
+          height: 17.dp,
+          width: 2.dp,
+          color: subItem.isSelected ? Colors.white : Colors.transparent,
+          margin: EdgeInsets.only(right: 21.dp),
+        );
+      },
+    );
+  }
+
+  Widget _buildTitle(String title) {
+    return Container(
+      margin: EdgeInsets.only(left: 23.dp, top: 1.dp, bottom: 5.dp),
+      child: Text(
+        title,
+        style: TextStyle(
+          fontSize: 14.sp,
+          color: Colors.grey,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildItemListBg({
+    required List<Widget> Function(MenuSidebarInfo? item) itemBuilder,
+  }) {
+    return Expanded(
+      child: Scrollbar(
+        child: CustomSingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: itemBuilder(data.sidebarInfo),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildSideBar(MenuSidebarInfo? info,
+      {required List<Widget> Function(MenuSidebarItemInfo itemInfo)
+          subBuilder}) {
+    return Column(
+      children: List.generate(info?.sidebarItemList.length ?? 0, (index) {
+        return InkWell(
+          onTap: () => onTap(info?.sidebarItemList[index]),
+          child: Container(
+            decoration: BoxDecoration(
+                color: info?.sidebarItemList[index].isSelected
+                    ? ColorsUtil.hexToColor(info?.sidebarItemList[index].color)
+                    : null),
+            padding: EdgeInsets.symmetric(vertical: 20.dp),
+            child: Row(children: subBuilder(info?.sidebarItemList[index])),
+          ),
+        );
+      }),
+    );
+  }
+
+  Widget _buildBg({required List<Widget> children}) {
+    return Container(
+      color: Colors.grey.withOpacity(0.06),
+      padding: EdgeInsets.only(top: 18.dp),
+      width: 240.dp,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: children,
+      ),
+    );
+  }
+}
+
+class MenuSidebarInfo {
+  MenuSidebarInfo({required this.title, required this.sidebarItemList});
+
+  String title;
+
+  List<dynamic> sidebarItemList;
+}
+
+class MenuSidebarItemInfo {
+  MenuSidebarItemInfo({
+    required this.title,
+    this.subTitle,
+    this.tag,
+    this.icon,
+    required this.index,
+    this.color = "#2B9F93",
+    this.menuData = const [],
+    this.isSelected = false,
+  });
+
+  ///按钮名称
+  String title;
+
+  int index;
+
+  ///子标题
+  String? subTitle;
+
+  ///按钮标识
+  String? tag;
+
+  ///正常情况图标
+  String? icon;
+
+  ///是否被选中
+  bool isSelected;
+
+  String? color;
+
+  List menuData;
+}
+
+extension NumExtend on num {
+  ///自动适配移动界面
+  double get dp {
+    //如果没初始化,需要初始化,防止web端直接导航页面报错
+    AutoUi().init();
+    return UiUtil().setWidth(this);
+  }
+
+  ///配置文字,文字适配请用sp单位
+  double get sp {
+    //如果没初始化,需要初始化,防止web端直接导航页面报错
+    AutoUi().init();
+    return UiUtil().setWidth(this);
+  }
+}
+
+class AutoUi {
+  factory AutoUi() => _getInstance();
+
+  AutoUi._();
+
+  static AutoUi? _instance;
+
+  static AutoUi _getInstance() => _instance ??= AutoUi._();
+
+  ///是否第一次初始化
+  bool first = true;
+
+  void init() {
+    if (Get.context == null || !first) return;
+    first = false;
+
+    UiUtil.init(
+      // 通过context获取设备像素大小
+      context: Get.context!,
+      // 设计尺寸(前期是先写布局，后做pc/web尺寸适配，故此处统一处理下)
+      designSize: const Size(1920 / 1.72, 1080 / 1.72),
+    );
+  }
+}
+
+class ScreenParam {
+  /// 每个逻辑像素的字体像素数，字体的缩放比例
+  static double get textScaleFactor => UiUtil.instance.textScaleFactor;
+
+  /// 设备的像素密度
+  static double get pixelRatio => UiUtil.instance.pixelRatio;
+
+  /// 状态栏高度 dp 刘海屏会更高
+  static double get statusBar => UiUtil.instance.statusBarHeight;
+
+  /// 底部安全区距离 dp
+  static double get bottomBar => UiUtil.instance.bottomBarHeight;
+}
+
+class UiUtil {
+  factory UiUtil() => instance;
+
+  static UiUtil? _instance;
+
+  static UiUtil get instance => _instance ??= UiUtil._internal();
+
+  static const Size _defaultSize = Size(360, 690);
+
+  /// UI设计中手机尺寸
+  late Size _uiSize;
+
+  /// 控制字体是否要根据系统的“字体大小”辅助选项来进行缩放。默认值为false。
+  late bool _allowFontScaling;
+
+  ///屏幕方向
+  late Orientation _orientation;
+
+  late double _pixelRatio;
+  late double _textScaleFactor;
+  late double _statusBarHeight;
+  late double _bottomBarHeight;
+
+  double? _screenWidth;
+  double? _screenHeight;
+
+  UiUtil._internal() {
+    var window = WidgetsBinding.instance.window;
+    _pixelRatio = window.devicePixelRatio;
+    _statusBarHeight = window.padding.top;
+    _bottomBarHeight = window.padding.bottom;
+    _textScaleFactor = window.textScaleFactor;
+    _allowFontScaling = false;
+    _uiSize = _defaultSize;
+  }
+
+  static void init({
+    required BuildContext context,
+    Size designSize = _defaultSize,
+    Orientation orientation = Orientation.portrait,
+    bool allowFontScaling = false,
+  }) {
+    instance._init(
+      context: context,
+      designSize: designSize,
+      orientation: orientation,
+      allowFontScaling: allowFontScaling,
+    );
+  }
+
+  void _init({
+    required BuildContext context,
+    required Size designSize,
+    Orientation orientation = Orientation.portrait,
+    bool allowFontScaling = false,
+  }) {
+    this._uiSize = designSize;
+    this._allowFontScaling = allowFontScaling;
+    this._orientation = orientation;
+
+    if (orientation == Orientation.portrait) {
+      this._screenWidth = MediaQuery.of(context).size.width;
+      this._screenHeight = MediaQuery.of(context).size.height;
+    } else {
+      this._screenWidth = MediaQuery.of(context).size.height;
+      this._screenHeight = MediaQuery.of(context).size.width;
+    }
+  }
+
+  ///获取屏幕方向
+  Orientation get orientation => _orientation;
+
+  /// 每个逻辑像素的字体像素数，字体的缩放比例
+  double get textScaleFactor => _textScaleFactor;
+
+  /// 设备的像素密度
+  double get pixelRatio => _pixelRatio;
+
+  /// 当前设备宽度 dp
+  double get screenWidth => _screenWidth ?? _defaultSize.width;
+
+  ///当前设备高度 dp
+  double get screenHeight => _screenHeight ?? _defaultSize.height;
+
+  /// 状态栏高度 dp 刘海屏会更高
+  double get statusBarHeight => _statusBarHeight / _pixelRatio;
+
+  /// 底部安全区距离 dp
+  double get bottomBarHeight => _bottomBarHeight / _pixelRatio;
+
+  /// 实际尺寸与UI设计的比例
+  double get scaleWidth => (_screenWidth ?? _uiSize.width) / _uiSize.width;
+
+  double get scaleHeight => (_screenWidth ?? _uiSize.height) / _uiSize.height;
+
+  double get scaleText => min(scaleWidth, scaleHeight);
+
+  /// 根据UI设计的设备宽度适配
+  double setWidth(num width) => width * scaleWidth;
+
+  /// 根据UI设计的设备高度适配
+  /// 高度适配主要针对想根据UI设计的一屏展示一样的效果
+  double setHeight(num height) => height * scaleHeight;
+
+  ///根据宽度或高度中的较小值进行适配
+  double radius(num r) => r * scaleText;
+
+  ///字体大小适配方法
+  double setSp(num fontSize, {bool? allowFontScalingSelf}) =>
+      allowFontScalingSelf == null
+          ? (_allowFontScaling
+              ? (fontSize * scaleText) * _textScaleFactor
+              : (fontSize * scaleText))
+          : (allowFontScalingSelf
+              ? (fontSize * scaleText) * _textScaleFactor
+              : (fontSize * scaleText));
+}
+
+class CustomSingleChildScrollView extends StatelessWidget {
+  const CustomSingleChildScrollView({Key? key, this.child}) : super(key: key);
+
+  final Widget? child;
+
+  @override
+  Widget build(BuildContext context) {
+    return ScrollConfiguration(
+      behavior: MyCustomScrollBehavior(),
+      child: SingleChildScrollView(
+        controller: ScrollController(),
+        child: child,
+      ),
+    );
+  }
+}
+
+///自定义手势滑动
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Set<PointerDeviceKind> get dragDevices => {
+        PointerDeviceKind.touch,
+        PointerDeviceKind.mouse,
+      };
+}

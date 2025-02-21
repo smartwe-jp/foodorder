@@ -29,11 +29,7 @@ class GetxStorage {
   static getBool(String key) async {
     try {
       bool tempData =getStorage.read(key);
-      if (tempData != null) {
-        return tempData;
-      } else {
-        return false;
-      }
+      return tempData;
     } catch (e) {
       return false;
     }

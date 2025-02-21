@@ -94,35 +94,35 @@ class EntryHomeView extends GetView<OrderHomeController> {
 
   languageSelectView() {
     List languages = [];
-    if (controller.machineLanguages_JP.value == true)
+    if (controller.machineLanguages_JP == true)
       languages.add({
         "language": "JP",
         "text": "日本語",
-        "selected": controller.machineLanguages_JP.value,
+        "selected": controller.machineLanguages_JP,
         "icon": AssetImage("assets/images/public/language_Japanese.png"),
       });
 
-    if (controller.machineLanguages_CH.value == true)
+    if (controller.machineLanguages_CH == true)
       languages.add({
         "language": "CH",
         "text": "中文",
-        "selected": controller.machineLanguages_CH.value,
+        "selected": controller.machineLanguages_CH,
         "icon": AssetImage("assets/images/public/language_Chinese.png"),
       });
 
-    if (controller.machineLanguages_EN.value == true)
+    if (controller.machineLanguages_EN == true)
       languages.add({
         "language": "EN",
         "text": "English",
-        "selected": controller.machineLanguages_EN.value,
+        "selected": controller.machineLanguages_EN,
         "icon": AssetImage("assets/images/public/language_English.png"),
       });
 
-    if (controller.machineLanguages_KO.value == true)
+    if (controller.machineLanguages_KO == true)
       languages.add({
         "language": "KO",
         "text": "한국어",
-        "selected": controller.machineLanguages_KO.value,
+        "selected": controller.machineLanguages_KO,
         "icon": AssetImage("assets/images/public/language_Korean.png"),
       });
 
@@ -392,7 +392,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                 width: ScreenAdapter.width(70),
                               ),
                               Expanded(
-                                child: BookingTypeButton(
+                                child: BookingTypeButtonOld(
                                   icon: eatInShopImage,
                                   title: GString.getToString(
                                       controller.settingLanguage.value,
@@ -407,7 +407,7 @@ class EntryHomeView extends GetView<OrderHomeController> {
                                 width: ScreenAdapter.height(70),
                               ),
                               Expanded(
-                                child: BookingTypeButton(
+                                child: BookingTypeButtonOld(
                                   icon: eatOutImage,
                                   title: GString.getToString(
                                       controller.settingLanguage.value,

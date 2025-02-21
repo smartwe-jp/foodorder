@@ -348,7 +348,9 @@ class publicShowCartView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<MenuPageController>(builder: (controller){
+      body: GetBuilder<MenuPageController>(
+        id: 'shopping_cart',
+        builder: (controller){
         return Obx(() => RepaintBoundary(
           child: Container(
             height: ScreenAdapter.height(330),

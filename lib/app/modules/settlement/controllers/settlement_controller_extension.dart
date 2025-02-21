@@ -236,7 +236,7 @@ extension SettlementControllerExtension on SettlementController {
 
   cashPayCheck() async {}
 
-  //打印小票之后在关闭现金机
+  //先找零钱后打印
   gloryPayFlow(printType) async {
     // debugPrint("nextOper");
     // CashStep.value = 2;
@@ -250,6 +250,7 @@ extension SettlementControllerExtension on SettlementController {
 
       //找零
       if (await _startOutputMoney(giveChangeMoney.value)) {
+        //TODO 如果已经找钱但是 后续失败了。如何恢复或者下一步。
         doPrintOrderMenu(printType);
       }
     } else {

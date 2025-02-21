@@ -1,4 +1,4 @@
-import 'package:foodorder/app/modules/ScanDetail/bindings/scan_detail_binding.dart';
+import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
 import 'package:get/get.dart';
@@ -40,6 +40,7 @@ import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../modules/OrderHome/views/opos_apg.dart';
 import '../modules/WATextPage/views/windows_test_view.dart';
+import '../modules/edit_page/view.dart' deferred as edit_page;
 
 part 'app_routes.dart';
 
@@ -163,5 +164,42 @@ class AppPages {
       page: () => ReceiptQueryView(),
       binding: ReceiptQueryBinding(),
     ),
+
+    GetPage(
+      name: _Paths.SETTING_EDIT_PAGE,
+      page: () => DeferredRouter(
+        future: edit_page.loadLibrary(),
+        builder: (_) => edit_page.EditPage(),
+      ),
+    ),
   ];
+}
+
+class DeferredRouter extends StatelessWidget {
+  const DeferredRouter({
+    Key? key,
+    required this.future,
+    required this.builder,
+  }) : super(key: key);
+
+  final Future future;
+
+  final WidgetBuilder builder;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: future,
+      builder: (context, snapshot) {
+        // web scene
+        if (snapshot.hasError) {
+          return Text('Error: ${snapshot.error}');
+        }
+        if (snapshot.connectionState != ConnectionState.done) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        return builder(context);
+      },
+    );
+  }
 }

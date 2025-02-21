@@ -11,6 +11,10 @@ class MachineInfoController extends GetxController {
   late String isAllowReceipt;
   late String receiptPrintType;
   late bool showReceiptPage;
+  late bool editMode;
+  late List homeList;
+  late String menu_direction;
+  late List supportLanguages;
 
   //payment info
   late bool showCash;
@@ -58,6 +62,7 @@ class MachineInfoController extends GetxController {
 
   Future loadMachineSettingInfo() async {
     print('loadMachineSettingInfo');
+    receiptPrintType = '1';
     mealType = false;
     var machineCodeString = await HomeServices.getMachineInfo();
     if (machineCodeString != "") {
@@ -72,6 +77,16 @@ class MachineInfoController extends GetxController {
     isAllowReceipt = systemSettingInfo0['isAllowReceipt'];
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
+
+    menu_direction = (systemSettingInfo0["menuDirection"] !="" && systemSettingInfo0["menuDirection"]!=null) ? systemSettingInfo0["menuDirection"] :"1";
+
+    final homeImageList = await HomeServices.getSmartweHomeImagesData();
+
+    homeList = homeImageList ?? [];
+
+    supportLanguages = await HomeServices.getMachineLanguages();
+
+    editMode = await HomeServices.getEditMode();
 
     print('loadMachineSettingInfo 1');
     Map systemSettingInfo = await HomeServices.getMachineActivateData();

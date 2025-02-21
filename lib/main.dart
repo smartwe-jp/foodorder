@@ -118,7 +118,7 @@ void main() {
                           value?.current == Routes.SCAN_DETAIL
                           ) {
                         resetTimer.startTimer();
-                      } else if (value?.current == Routes.ENTRY_HOME ||
+                      } else if (value?.current == Routes.ORDER_HOME ||
                           value?.current == Routes.SETTLEMENT ||
                           value?.current == Routes.SETTING) {
                         resetTimer.cancelTimer();

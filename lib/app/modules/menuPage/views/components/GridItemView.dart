@@ -1,4 +1,3 @@
-import 'dart:ffi';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
@@ -6,6 +5,7 @@ import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
@@ -279,19 +279,18 @@ class GridMenuView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: padding,
+    return Center(
       child: GridView.builder(
-        padding: EdgeInsets.only(bottom: ScreenAdapter.height(30)),
-        physics: canScroll ? ScrollPhysics() : NeverScrollableScrollPhysics(),
-        shrinkWrap: true,
-        addAutomaticKeepAlives: true,
-        //addRepaintBoundaries:false,
-        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: mainAxisSpacing ?? ScreenAdapter.height(40),
-            crossAxisSpacing: crossAxisSpacing ?? ScreenAdapter.width(20),
-            crossAxisCount: crossAxisCount ?? 3,
-            childAspectRatio: childAspectRatio ?? 0.76),
+            padding: EdgeInsets.all(20.dp),
+            physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : const NeverScrollableScrollPhysics(), // 允许 GridView 滚动BouncingScrollPhysics NeverScrollableScrollPhysics
+            shrinkWrap: true,
+            addAutomaticKeepAlives: true,
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              mainAxisSpacing: mainAxisSpacing ?? 40.dp,
+              crossAxisSpacing: crossAxisSpacing ?? 20.dp,
+              crossAxisCount: crossAxisCount ?? 3,
+              childAspectRatio: childAspectRatio ?? 0.76,
+            ),
         itemBuilder: (BuildContext context, int index) {
           return children[index];
         },
@@ -379,7 +378,7 @@ class _GridMenuViewState extends State<GridMenuViews> {
                 return GridView.builder(
                   padding: EdgeInsets.zero,
                   physics: widget.canScroll
-                      ? ScrollPhysics()
+                      ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics())
                       : NeverScrollableScrollPhysics(),
                   shrinkWrap: true,
                   addAutomaticKeepAlives: true,

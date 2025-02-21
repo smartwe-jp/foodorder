@@ -29,7 +29,7 @@ class ResetToHomeTimer {
           }
         }
 
-        if (Get.routing.current == Routes.ENTRY_HOME ||
+        if (Get.routing.current == Routes.ORDER_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {
           cancelTimer();
           return;
@@ -53,9 +53,9 @@ class ResetToHomeTimer {
           }
         } else if (Get.routing.current == Routes.SELECT_PAYMENT_PAGE ||
             Get.routing.current == Routes.SCAN_DETAIL) {
-          if (Get.isRegistered<MachineInfoController>()) {
-            Get.find<MachineInfoController>().showReceiptPage = true;
-          }
+          // if (Get.isRegistered<MachineInfoController>()) {
+          //   Get.find<MachineInfoController>().showReceiptPage = true;
+          // }
 
           if (Get.isRegistered<MenuPageController>()) {
             Get.find<MenuPageController>().paymentIsShow = false;

@@ -6,6 +6,7 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:foodorder/app/services/Storage.dart';
 
 import 'package:get/get.dart';
@@ -221,6 +222,30 @@ class SettingView extends GetView<SettingController> {
                   )),
             ),
           ),
+        InkWell(
+          onTap: () async {
+            Get.toNamed(Routes.SETTING_EDIT_PAGE);
+          },
+          child: Container(
+            margin: EdgeInsets.only(
+                left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+            width: ScreenAdapter.width(180),
+            height: ScreenAdapter.height(65),
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: ColorsUtil.hexToColor("#A61C1C"),
+              //设置圆角
+              borderRadius: new BorderRadius.circular((16.0)),
+            ),
+            child: Text("メンユー管理",
+                style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: ScreenAdapter.fontSize(24),
+                  fontWeight: FontWeight.w600,
+                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                )),
+          ),
+        ),
       ],
     ));
   }
@@ -816,7 +841,7 @@ class SettingView extends GetView<SettingController> {
                       ),
                       InkWell(
                         onTap: () {
-                          controller.uploadErrorLog();//windows not support
+                          controller.uploadErrorLog(); //windows not support
                           //controller.showSignOut.value = !controller.showSignOut.value;
                         },
                         onLongPress: () {
@@ -867,7 +892,7 @@ class SettingView extends GetView<SettingController> {
                           isAllowRejishime: controller.isAllowRejishime.value,
                           machineCode: controller.machineCode.value,
                           recycleCash: () {
-                            controller.recycleCash('','');
+                            controller.recycleCash('', '');
                           },
                           adjustCash: (type, number) {
                             controller.adjustCash(type, number);
@@ -881,7 +906,7 @@ class SettingView extends GetView<SettingController> {
                                 catVal, number, deposit, qty);
                           },
                           resetCash: () {
-                            controller.recycleCash('','');
+                            controller.recycleCash('', '');
                           },
                         ),
 

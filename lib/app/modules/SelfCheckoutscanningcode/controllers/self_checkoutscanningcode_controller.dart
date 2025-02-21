@@ -464,7 +464,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             tableNum: "",
             onConfrimClick: () {
               showOpenPayment.value = true;
-              machineInfo.showReceiptPage = true;
               gotoSettlement();
 
             },

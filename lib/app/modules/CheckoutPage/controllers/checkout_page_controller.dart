@@ -29,19 +29,25 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   MachineInfoController machineInfo = Get.find();
 
-  RxBool machineLanguages_JP = false.obs;
-  RxBool machineLanguages_CH = false.obs;
-  RxBool machineLanguages_EN = false.obs;
-  RxBool machineLanguages_KO = false.obs;
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
+
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isAnimating = false;
 
   //RxString machineCode = "".obs;
-  RxList homeList = [].obs;
+  //RxList homeList = [].obs;
   RxList categoryList = [].obs;
 
-  RxBool actuarial = false.obs;
-  RxBool lineup = false.obs;
-  RxBool takeOut = false.obs; //是否允许外带
-  RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
+  get takeOut => machineInfo.diningType == "2" || machineInfo.diningType == "3";
+
+  // RxBool actuarial = false.obs;
+  // RxBool lineup = false.obs;
+  // RxBool takeOut = false.obs; //是否允许外带
+  // RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
   RxString isReservation = "0".obs;
   RxBool showOpenPayment = false.obs;
 
@@ -74,12 +80,13 @@ class CheckoutPageController extends GetxController with StateMixin {
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
     //Get.focusScope.requestFocus(scanQrCodeFocusNode);
-    getMachineInfo();
+    getMenchineLanguages();
     super.onInit();
   }
 
   @override
   void onReady() {
+    startRepeatingAnimation();
     super.onReady();
   }
 
@@ -96,104 +103,58 @@ class CheckoutPageController extends GetxController with StateMixin {
     // }
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
 
-    getHomeImageList();
+    //getHomeImageList();
   }
 
-  getHomeImageList() async {
-    List homeimageList = await HomeServices.getSmartweHomeImagesData();
-    homeList.value = homeimageList;
+  // getHomeImageList() async {
+  //   List homeimageList = await HomeServices.getSmartweHomeImagesData();
+  //   homeList.value = homeimageList;
 
-    getSmartweMachineSettingData();
-    update();
-  }
+  //   getSmartweMachineSettingData();
+  //   update();
+  // }
 
   getSmartweMachineSettingData() async {
-    var smartweMachineSetting =
-        await HomeServices.getSmartweMachineSettingData();
-    actuarial.value = smartweMachineSetting["machineActuarial"];
-    lineup.value = smartweMachineSetting["machineLineup"];
+    // var smartweMachineSetting =
+    //     await HomeServices.getSmartweMachineSettingData();
+    // actuarial.value = smartweMachineSetting["machineActuarial"];
+    // lineup.value = smartweMachineSetting["machineLineup"];
 
     getSystemSettingInfo();
   }
 
   getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+    // Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-    menu_direction.value = (SystemSettingInfo["menuDirection"] != "" &&
-            SystemSettingInfo["menuDirection"] != null)
-        ? SystemSettingInfo["menuDirection"]
-        : "1";
-    isReservation.value = SystemSettingInfo["isReservation"];
-    // isAllowPos.value = SystemSettingInfo['isAllowPos'];
-    // isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
-    takeOut.value = (SystemSettingInfo['diningType'] == "2" ||
-            SystemSettingInfo['diningType'] == "3")
-        ? true
-        : false;
+    // menu_direction.value = (SystemSettingInfo["menuDirection"] != "" &&
+    //         SystemSettingInfo["menuDirection"] != null)
+    //     ? SystemSettingInfo["menuDirection"]
+    //     : "1";
+    // isReservation.value = SystemSettingInfo["isReservation"];
+    // // isAllowPos.value = SystemSettingInfo['isAllowPos'];
+    // // isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
+    // takeOut.value = (SystemSettingInfo['diningType'] == "2" ||
+    //         SystemSettingInfo['diningType'] == "3")
+    //     ? true
+    //     : false;
 
-    getmenchineLanguages();
+    getMenchineLanguages();
   }
 
-  getmenchineLanguages() async {
-    var menchineLanguagesData = await HomeServices.getMachineLanguages();
+  getMenchineLanguages() async {
     debugPrint("获取机器语言");
-    var languageJP = false;
-    var languageCH = false;
-    var languageEN = false;
-    var languageKO = false;
 
-    for (var item in menchineLanguagesData) {
-      if (item == "JP") {
-        languageJP = true;
-      } else if (item == "CH") {
-        languageCH = true;
-      } else if (item == "EN") {
-        languageEN = true;
-      } else if (item == "KO") {
-        languageKO = true;
-      }
-    }
-
-    machineLanguages_JP.value = languageJP;
-    machineLanguages_CH.value = languageCH;
-    machineLanguages_EN.value = languageEN;
-    machineLanguages_KO.value = languageKO;
-
-    machineLanguagesList.value = menchineLanguagesData;
-
-    getMachineActivateInfo();
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
+    debugPrint("获取机器语言结束");
+    update();
+    change(null, status: RxStatus.success());
   }
 
   //获取展示支付方式
   getMachineActivateInfo() async {
-    // Map systemSettingInfo = await HomeServices.getMachineActivateData();
-
-    // showCash.value = systemSettingInfo['showCash'];
-    // showWechat.value = systemSettingInfo['showWechat'];
-    // showAlipay.value = systemSettingInfo['showAlipay'];
-    // showPayPay.value = systemSettingInfo['showPayPay'];
-    // showCreditCard.value = systemSettingInfo['showCreditCard'];
-
-    // showauPay.value = systemSettingInfo['au_Pay'];
-    // showdPay.value = systemSettingInfo['d_Pay'];
-    // showrPay.value = systemSettingInfo['R_Pay'];
-    // showmPay.value = systemSettingInfo['m_Pay'];
-
-    // showPosEdy.value = systemSettingInfo['pos_Edy'];
-    // showPosiD.value = systemSettingInfo['pos_iD'];
-    // showPosIC.value = systemSettingInfo['pos_IC'];
-    // showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
-    // showPosWAON.value = systemSettingInfo['pos_WAON'];
-    // showPosnanaco.value = systemSettingInfo['pos_nanaco'];
-
-    // showVisa.value = systemSettingInfo['show_visa'];
-    // showMaster.value = systemSettingInfo['show_master'];
-    // showJcb.value = systemSettingInfo['show_jcb'];
-    // showUnionPay.value = systemSettingInfo['show_unionPay'];
-    // showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
-    // showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    // showDiscover.value = systemSettingInfo['show_discover'];
-
     await getBookingBootIndexCagegory();
   }
 
@@ -210,11 +171,11 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   updateDingType(int type) async {
     debugPrint("updateDingType $type");
-    startResetTimer();
+    startResetTimer(); // Restart the timer when updating the dining type
     mealTypeStatus = type;
     update();
 
-    //await getBookingBootIndexCagegory();
+    await getBookingBootIndexCagegory(); // Uncommenting to fetch categories after updating the dining type
   }
 
   startResetTimer() async {
@@ -230,6 +191,26 @@ class CheckoutPageController extends GetxController with StateMixin {
         update();
       }
     });
+  }
+
+  void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
+      }
+      startShake = !startShake;
+      update();
+    });
+  }
+
+  void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
+    isAnimating = false;
+    startShake = false;
+    update();
   }
 
   get showCatagory {
@@ -385,6 +366,15 @@ class CheckoutPageController extends GetxController with StateMixin {
   String formatSum(int sum) {
     final formatter = NumberFormat('#,###');
     return formatter.format(sum);
+  }
+
+  goMenu(String lan, bool mealType) {
+    machineInfo.mealType = mealType;
+    var jumpUrl =
+        (machineInfo.menu_direction == "1") ? '/menu-page' : '/menuzong-page';
+    startShake = false;
+    Get.toNamed(jumpUrl,
+        arguments: {"checkLanguage": lan, "mealType": mealType});
   }
 
   requestOrderList({goDetail = true}) async {
@@ -596,30 +586,28 @@ class CheckoutPageController extends GetxController with StateMixin {
     debugPrint('localkey = $localkey');
     //scanQrCodeHomeFocusNode.requestFocus();
     Get.to(
-          () => SelectPaymentPage(
-        checkLanguage: localkey.value, //padding and need improve
-        menuCount: 0,
-        //mealType:_mealType,
-        shopCartTotalPrice: totlaPrice.value,
-        tableNum: tableNum.value,
-        onConfrimClick: () async {
-          //checkLanguage.value = "JP";
-          scanQrCodeController.text = "";
-          //scanQrCodeHomeController.text = "";
-          showOpenPayment.value = true;
-          machineInfo.showReceiptPage = true;
-
-          goToSettlement();
-        },
-        onCancelClick: (String isBack) {
-          if (isBack == "back") {
+      () => SelectPaymentPage(
+          checkLanguage: localkey.value, //padding and need improve
+          menuCount: 0,
+          //mealType:_mealType,
+          shopCartTotalPrice: totlaPrice.value,
+          tableNum: tableNum.value,
+          onConfrimClick: () async {
+            //checkLanguage.value = "JP";
             scanQrCodeController.text = "";
             //scanQrCodeHomeController.text = "";
-          }
-          scanQrCodeFocusNode.requestFocus(); // 获取焦点
-          //scanQrCodeHomeFocusNode.requestFocus(); // 获取焦点
-        }
-      ),
+            showOpenPayment.value = true;
+
+            goToSettlement();
+          },
+          onCancelClick: (String isBack) {
+            if (isBack == "back") {
+              scanQrCodeController.text = "";
+              //scanQrCodeHomeController.text = "";
+            }
+            scanQrCodeFocusNode.requestFocus(); // 获取焦点
+            //scanQrCodeHomeFocusNode.requestFocus(); // 获取焦点
+          }),
       transition: Transition.fadeIn,
       fullscreenDialog: true,
       opaque: false,
@@ -676,7 +664,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "totalPrice": totlaPrice.value,
       "machineMode": "2",
-      "showOpenPayment":showOpenPayment.value
+      "showOpenPayment": showOpenPayment.value
     });
     if (result == true) {
       debugPrint('settlement back');

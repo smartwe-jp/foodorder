@@ -25,6 +25,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.0.2+4"
+  animated_widgets:
+    dependency: "direct main"
+    description:
+      name: animated_widgets
+      sha256: "2d6b77a77fc733b06e185553ec0b8225ffd1dd0e6fa327900ff26f1e04995eda"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.1.0"
   animations:
     dependency: transitive
     description:
@@ -483,6 +491,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.0.4"
+  flutter_switch:
+    dependency: "direct main"
+    description:
+      name: flutter_switch
+      sha256: b91477f926bba135d2d203d7b24367492662d8d9c3aa6adb960b14c1087d3c41
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.2"
   flutter_test:
     dependency: "direct dev"
     description: flutter

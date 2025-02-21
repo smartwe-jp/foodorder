@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 
 import 'package:get/get.dart';
+import 'package:get/get_connect/http/src/utils/utils.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
@@ -2067,6 +2068,82 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+  setIsEditMode() {
+        return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsEditMode(false);
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: !controller.is_edit_mode.value ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オフ",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: !controller.is_edit_mode.value ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              debugPrint('checkIsEditMode true');
+              controller.checkIsEditMode(true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: controller.is_edit_mode.value ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("オン",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: controller.is_edit_mode.value ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
   showSettingPassword() async {
     Get.dialog(
         SetPasswordPage()
@@ -2463,6 +2540,23 @@ class SystemSettingPageView extends GetView {
                                           ),
                                         ),
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "編集モデ",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsEditMode(),//是否结算完后回到首页
                                       ]
                                   ),
                                   if (Platform.isAndroid)

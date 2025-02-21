@@ -1,6 +1,3 @@
-import 'dart:io';
-
-import 'package:flutter/foundation.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -16,8 +13,8 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
-  MachineInfoController machinInfo = Get.find();
-  //MenuPageController menuPageController = Get.find();
+  MachineInfoController machineInfo = Get.find();
+  MenuPageController menuPageController = Get.find();
 
   SelectPaymentPage(
       {Key? key,
@@ -51,9 +48,9 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _receiptPrintType = "1";
                 //   _showReceiptPage = false;
                 // });
-                machinInfo.receiptPrintType = '1';
-                machinInfo.showReceiptPage = false;
-                machinInfo.update();
+                machineInfo.receiptPrintType = '1';
+                menuPageController.showReceiptPage = false;
+                menuPageController.update(['selectPayment']);
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -105,9 +102,9 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _receiptPrintType = "2";
                 //   _showReceiptPage = false;
                 // });
-                machinInfo.receiptPrintType = '2';
-                machinInfo.showReceiptPage = false;
-                machinInfo.update();
+                machineInfo.receiptPrintType = '2';
+                menuPageController.showReceiptPage = false;
+                menuPageController.update(['selectPayment']);
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -164,7 +161,9 @@ class SelectPaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext pcontext) {
-    return GetBuilder<MachineInfoController>(builder: (controller) {
+    return GetBuilder<MenuPageController>(
+      id:'selectPayment',
+      builder: (controller) {
       return Container(
           color: Colors.black.withOpacity(0.5),
           child: Column(children: <Widget>[
@@ -186,7 +185,7 @@ class SelectPaymentPage extends StatelessWidget {
                         bottom: ScreenAdapter.height(30)),
                     //width: ScreenAdapter.width(650),
 
-                    child: machinInfo.showReceiptPage
+                    child: menuPageController.showReceiptPage
                         ? selectPrintType()
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.center,
@@ -209,11 +208,11 @@ class SelectPaymentPage extends StatelessWidget {
                                 mainAxisAlignment:
                                     MainAxisAlignment.spaceAround,
                                 children: <Widget>[
-                                  if (machinInfo.showCash == true)
+                                  if (machineInfo.showCash == true)
                                     InkWell(
                                       onTap: () {
                                         //payment_method_num = "1";
-                                        machinInfo.paymentMethod = '1';
+                                        machineInfo.paymentMethod = '1';
                                         //Navigator.pop(pcontext);
                                         onConfrimClick();
                                       },
@@ -309,12 +308,12 @@ class SelectPaymentPage extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                  if(machinInfo.showAlipay || machinInfo.showWechat || machinInfo.showPayPay||
-                                      machinInfo.showAuPay || machinInfo.showDPay || machinInfo.showRPay || machinInfo.showMPay)
+                                  if(machineInfo.showAlipay || machineInfo.showWechat || machineInfo.showPayPay||
+                                      machineInfo.showAuPay || machineInfo.showDPay || machineInfo.showRPay || machineInfo.showMPay)
 
                                     InkWell(
                                       onTap: () {
-                                        machinInfo.paymentMethod = '2';
+                                        machineInfo.paymentMethod = '2';
                                         //Navigator.pop(pcontext);
                                         onConfrimClick();
                                       },
@@ -364,7 +363,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       alignment:
                                                           WrapAlignment.center,
                                                       children: [
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                 .showPayPay ==
                                                             true)
                                                           Container(
@@ -402,7 +401,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                 .showAlipay ==
                                                             true)
                                                           Container(
@@ -440,7 +439,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                 .showWechat ==
                                                             true)
                                                           Container(
@@ -478,13 +477,13 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                     .showCreditCard ==
                                                                 true &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .isAllowPos ==
                                                                 "1" &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .showAuPay ==
                                                                 true)
                                                           Container(
@@ -522,13 +521,13 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                     .showCreditCard ==
                                                                 true &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .isAllowPos ==
                                                                 "1" &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .showDPay ==
                                                                 true)
                                                           Container(
@@ -566,13 +565,13 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                     .showCreditCard ==
                                                                 true &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .isAllowPos ==
                                                                 "1" &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .showRPay ==
                                                                 true)
                                                           Container(
@@ -610,13 +609,13 @@ class SelectPaymentPage extends StatelessWidget {
                                                                   .fitWidth,
                                                             ),
                                                           ),
-                                                        if (machinInfo
+                                                        if (machineInfo
                                                                     .showCreditCard ==
                                                                 true &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .isAllowPos ==
                                                                 "1" &&
-                                                            machinInfo
+                                                            machineInfo
                                                                     .showMPay ==
                                                                 true)
                                                           Container(
@@ -693,21 +692,21 @@ class SelectPaymentPage extends StatelessWidget {
                               SizedBox(
                                 height: ScreenAdapter.height(60),
                               ),
-                              if (machinInfo.isAllowPos == "1" &&
-                                  machinInfo.showCreditCard == true &&
-                                  (machinInfo.showVisa == true ||
-                                      machinInfo.showMaster == true ||
-                                      machinInfo.showJcb == true ||
-                                      machinInfo.showUnionPay == true ||
-                                      machinInfo.showAmericanExpress == true ||
-                                      machinInfo.showDinersClub == true))
+                              if (machineInfo.isAllowPos == "1" &&
+                                  machineInfo.showCreditCard == true &&
+                                  (machineInfo.showVisa == true ||
+                                      machineInfo.showMaster == true ||
+                                      machineInfo.showJcb == true ||
+                                      machineInfo.showUnionPay == true ||
+                                      machineInfo.showAmericanExpress == true ||
+                                      machineInfo.showDinersClub == true))
                                 Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: <Widget>[
                                     InkWell(
                                       onTap: () {
-                                        machinInfo.isAllowPos = "1";
-                                        machinInfo.paymentMethod = "3";
+                                        machineInfo.isAllowPos = "1";
+                                        machineInfo.paymentMethod = "3";
 
                                         //Navigator.pop(pcontext);
                                         onConfrimClick();
@@ -774,7 +773,7 @@ class SelectPaymentPage extends StatelessWidget {
                                               alignment: WrapAlignment.center,
                                               //mainAxisAlignment: MainAxisAlignment.center,
                                               children: [
-                                                if (machinInfo.showVisa == true)
+                                                if (machineInfo.showVisa == true)
                                                   Container(
                                                     width: ScreenAdapter.width(
                                                         110),
@@ -805,7 +804,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo.showJcb == true)
+                                                if (machineInfo.showJcb == true)
                                                   Container(
                                                     width: ScreenAdapter.width(
                                                         110),
@@ -836,7 +835,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo.showMaster ==
+                                                if (machineInfo.showMaster ==
                                                     true)
                                                   Container(
                                                     width: ScreenAdapter.width(
@@ -868,7 +867,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo.showUnionPay ==
+                                                if (machineInfo.showUnionPay ==
                                                     true)
                                                   Container(
                                                     width: ScreenAdapter.width(
@@ -900,7 +899,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo
+                                                if (machineInfo
                                                         .showAmericanExpress ==
                                                     true)
                                                   Container(
@@ -933,7 +932,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo.showDinersClub ==
+                                                if (machineInfo.showDinersClub ==
                                                     true)
                                                   Container(
                                                     width: ScreenAdapter.width(
@@ -965,7 +964,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                       fit: BoxFit.fitWidth,
                                                     ),
                                                   ),
-                                                if (machinInfo.showDiscover ==
+                                                if (machineInfo.showDiscover ==
                                                     true)
                                                   Container(
                                                     width: ScreenAdapter.width(
@@ -1058,13 +1057,13 @@ class SelectPaymentPage extends StatelessWidget {
                                 ),*/
                                   ],
                                 ),
-                              if (machinInfo.isAllowPos == "1" &&
-                                  (machinInfo.showPosEdy == true ||
-                                      machinInfo.showPosiD == true ||
-                                      machinInfo.showPosIC == true ||
-                                      machinInfo.showPosQUICPay == true ||
-                                      machinInfo.showPosWAON == true ||
-                                      machinInfo.showPosnanaco == true))
+                              if (machineInfo.isAllowPos == "1" &&
+                                  (machineInfo.showPosEdy == true ||
+                                      machineInfo.showPosiD == true ||
+                                      machineInfo.showPosIC == true ||
+                                      machineInfo.showPosQUICPay == true ||
+                                      machineInfo.showPosWAON == true ||
+                                      machineInfo.showPosnanaco == true))
                                 Container(
                                   margin: EdgeInsets.only(
                                       top: ScreenAdapter.height(50)),
@@ -1094,11 +1093,11 @@ class SelectPaymentPage extends StatelessWidget {
                                         runSpacing: ScreenAdapter.height(40),
                                         alignment: WrapAlignment.center,
                                         children: <Widget>[
-                                          if (machinInfo.showPosEdy == true)
+                                          if (machineInfo.showPosEdy == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "5";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "5";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1168,11 +1167,11 @@ class SelectPaymentPage extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                          if (machinInfo.showPosiD == true)
+                                          if (machineInfo.showPosiD == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "6";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "6";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1242,11 +1241,11 @@ class SelectPaymentPage extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                          if (machinInfo.showPosnanaco == true)
+                                          if (machineInfo.showPosnanaco == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "7";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "7";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1316,11 +1315,11 @@ class SelectPaymentPage extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                          if (machinInfo.showPosWAON == true)
+                                          if (machineInfo.showPosWAON == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "8";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "8";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1390,11 +1389,11 @@ class SelectPaymentPage extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                          if (machinInfo.showPosQUICPay == true)
+                                          if (machineInfo.showPosQUICPay == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "9";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "9";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1464,11 +1463,11 @@ class SelectPaymentPage extends StatelessWidget {
                                                 ),
                                               ),
                                             ),
-                                          if (machinInfo.showPosIC == true)
+                                          if (machineInfo.showPosIC == true)
                                             InkWell(
                                               onTap: () {
-                                                machinInfo.isAllowPos = "1";
-                                                machinInfo.paymentMethod = "10";
+                                                machineInfo.isAllowPos = "1";
+                                                machineInfo.paymentMethod = "10";
 
                                                 //Navigator.pop(pcontext);
                                                 onConfrimClick();
@@ -1656,7 +1655,6 @@ class SelectPaymentPage extends StatelessWidget {
                         InkWell(
                           onTap: () {
                             try {
-                              machinInfo.showReceiptPage = true;
                               Navigator.pop(pcontext);
                               onCancelClick("back");
                             } catch (_) {}

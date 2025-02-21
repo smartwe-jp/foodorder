@@ -9,15 +9,16 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/fontSize.dart';
 import 'package:foodorder/app/config/imageData.dart';
 import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
-import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/showImage.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:get/get.dart';
 import 'package:badges/badges.dart' as badges;
 
-extension MenuPageCategory on MenuPageView {
+extension MenuPageCategory on MenuPageController {
 
 showCategoryOne(showItemList,context) {
   Offset temp;
@@ -70,15 +71,15 @@ showCategoryOne(showItemList,context) {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Expanded(
-                          child: controller.publicShowMenuTitle(itemsFirst['mainTitle'],
+                          child: publicShowMenuTitle(itemsFirst['mainTitle'],
                               42.0, Gcolor.mainTitleColor),),
                         //价格展示 //itemsFirst['currentPrice']
                         Container(
                           alignment: Alignment.centerRight,
                           //width: ScreenAdapter.width(200),
                           padding:EdgeInsets.only(right: ScreenAdapter.width(15)),
-                          child: controller.publicShowMenuPrice(
-                              controller.selectedMenuOptionChangePrice.value[itemsFirst['menuCode']]+controller.addselectedMenuOptionChangePrice.value[itemsFirst['menuCode']],
+                          child: publicShowMenuPrice(
+                              selectedMenuOptionChangePrice.value[itemsFirst['menuCode']]+addselectedMenuOptionChangePrice.value[itemsFirst['menuCode']],
                               itemsFirst['price'],
                               45.0,
                               Gcolor.mainTitleColor,
@@ -106,7 +107,7 @@ showCategoryOne(showItemList,context) {
                             var optionCodeList = "";
                             var optionTitle = "";
                             //--------------检测option单选还是多选是否满足
-                            var attr = controller.menuOption.value[itemsFirst['menuCode']];
+                            var attr = menuOption.value[itemsFirst['menuCode']];
                             var nexOrder = true;
                             for (var i = 0; i < attr.length; i++) {
                               //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -119,12 +120,12 @@ showCategoryOne(showItemList,context) {
                                 }
                                 if(current_option_checked <int.parse(attr[i]["smallest"])){
                                   nexOrder = false;
-                                  var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                  var showTag = GString.getToString(checkLanguage.value, "menu_option_less_smallest");
                                   //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                   Get.dialog(
                                       DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          title: GString.getToString(checkLanguage.value, "tag_title"),
+                                          confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
                                           confirm: () {
                                             Get.back();
                                           })
@@ -137,7 +138,7 @@ showCategoryOne(showItemList,context) {
                             if(nexOrder == false) return;
                             //--------------end
                             var checkoptionGroupList = {};
-                            for (var optionItem in controller.selectedMenuOptionList.value[itemsFirst['menuCode']]) {
+                            for (var optionItem in selectedMenuOptionList.value[itemsFirst['menuCode']]) {
                               currentPrice += optionItem['currentPrice'];
 
                               optionCodeList += (optionCodeList != "")
@@ -169,16 +170,16 @@ showCategoryOne(showItemList,context) {
                               "qtyBounds": itemsFirst['qtyBounds'],
                               "unitPrice":currentPrice
                             };
-                            controller.publicAddCartMenu(cartItem, false).then((val) {
+                            publicAddCartMenu(cartItem, false).then((val) {
                               //_publicShowAddCart(temp,itemsFirst['homeImage']);
                               //更改显示购物车价格
                               //getCartPriceTotal();
                               if(val != false){
-                                controller.publicShowAddCartNew(context);
+                                publicShowAddCartNew(context);
                               }
 
 
-                              controller.changeInitialAllOption(itemsFirst['menuCode']);
+                              changeInitialAllOption(itemsFirst['menuCode']);
 
                             });
                           },
@@ -194,7 +195,7 @@ showCategoryOne(showItemList,context) {
                             ),
                             child: Text(
                                 GString.getToString(
-                                    controller.checkLanguage.value, "add_option_cart"),
+                                    checkLanguage.value, "add_option_cart"),
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
@@ -234,7 +235,7 @@ __publicShowMenuOptionGroupWidget(menuCode, setFirstMenuState) {
 }
 //获取第一个页面的option widget
 _getFirstOptionWidget(menuCode, setFirstState) {
-  var optionGroupVoList = controller.menuOption.value[menuCode];
+  var optionGroupVoList = menuOption.value[menuCode];
 
   List<Widget> options = []; //先建一个数组用于存放循环生成的widget
 
@@ -252,7 +253,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               RichText(
                 text: TextSpan(
                     text: "${optionGroupVoList[i]['groupName']}",
-                    //GString.getToString(controller.checkLanguage.value, "show_price_front"),
+                    //GString.getToString(checkLanguage.value, "show_price_front"),
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(24.0),
@@ -298,7 +299,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
         child: InkWell(
           //enableFeedback: true,
             onTap: () {
-              controller.changeOptionv1(
+              changeOptionv1(
                   menuCode, optionGroupVoList[i]["groupCode"],
                   optionVolistSon["optionCode"], setFirstState);
             },
@@ -454,12 +455,12 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 //顶部分类导航
   showTopCategoryMenu() {
     List<Widget> categoryMenus = []; //先建一个数组用于存放循环生成的widget
-    for (var item in controller.topMenu.value) {
+    for (var item in topMenu.value) {
       categoryMenus.add(InkWell(
         //enableFeedback: false,
         onTap: () {
-          controller.changeCategory(item['categoryCode']);
-          //controller.classTag.value = item['categoryCode'];
+          changeCategory(item['categoryCode']);
+          //classTag.value = item['categoryCode'];
         },
         child: Stack(
           children: [
@@ -501,7 +502,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 ),
               ),
             ),
-            (controller.classTag.value == item['categoryCode'])
+            (classTag.value == item['categoryCode'])
                 ? Positioned.fill(
                     child: Align(
                       alignment: Alignment.bottomCenter,
@@ -550,8 +551,8 @@ _getFirstOptionWidget(menuCode, setFirstState) {
           child: InkWell(
             enableFeedback: false,
             onTap: () {
-              //controller.ordersqlcontroller.removeAllFromCart();
-              controller.gotoLanguageHome();
+              //ordersqlremoveAllFromCart();
+              gotoLanguageHome();
             },
             child: Container(
               padding: EdgeInsets.only(top: ScreenAdapter.height(10)),
@@ -579,7 +580,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               /*child: Center(
                 //加上Center让文字居中
                 child: Text(
-                  GString.getToString(controller.checkLanguage.value, "top_back_button"),
+                  GString.getToString(checkLanguage.value, "top_back_button"),
                   style: TextStyle(
                       fontSize: ScreenAdapter.fontSize(22),
                       color: ColorsUtil.hexToColor(Gcolor.categoryTitleSelected),
@@ -651,7 +652,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                         crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           Expanded(
-                            child: controller.publicShowMenuTitle(
+                            child: publicShowMenuTitle(
                                 itemsFirst['mainTitle'],
                                 42.0,
                                 Gcolor.mainTitleColor),
@@ -662,10 +663,10 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                             //width: ScreenAdapter.width(200),
                             padding:
                                 EdgeInsets.only(right: ScreenAdapter.width(15)),
-                            child: controller.publicShowMenuPrice(
-                                controller.selectedMenuOptionChangePrice
+                            child: publicShowMenuPrice(
+                                selectedMenuOptionChangePrice
                                         .value[itemsFirst['menuCode']] +
-                                    controller.addselectedMenuOptionChangePrice
+                                    addselectedMenuOptionChangePrice
                                         .value[itemsFirst['menuCode']],
                                 itemsFirst['price'],
                                 45.0,
@@ -692,8 +693,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               var optionCodeList = "";
                               var optionTitle = "";
                               //--------------检测option单选还是多选是否满足
-                              var attr = controller
-                                  .menuOption.value[itemsFirst['menuCode']];
+                              var attr = menuOption.value[itemsFirst['menuCode']];
                               var nexOrder = true;
                               for (var i = 0; i < attr.length; i++) {
                                 //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -711,16 +711,16 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                       int.parse(attr[i]["smallest"])) {
                                     nexOrder = false;
                                     var showTag = GString.getToString(
-                                        controller.checkLanguage.value,
+                                        checkLanguage.value,
                                         "menu_option_less_smallest");
                                     //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                     Get.dialog(DialogUtils.alertOneButton(
                                         "${showTag.replaceAll("%%", attr[i]["groupName"])}",
                                         title: GString.getToString(
-                                            controller.checkLanguage.value,
+                                            checkLanguage.value,
                                             "tag_title"),
                                         confirmtitle: GString.getToString(
-                                            controller.checkLanguage.value,
+                                            checkLanguage.value,
                                             "tag_button_yes"), confirm: () {
                                       Get.back();
                                     }));
@@ -731,8 +731,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               if (nexOrder == false) return;
                               //--------------end
                               var checkoptionGroupList = {};
-                              for (var optionItem in controller
-                                  .selectedMenuOptionList
+                              for (var optionItem in selectedMenuOptionList
                                   .value[itemsFirst['menuCode']]) {
                                 currentPrice += optionItem['currentPrice'];
 
@@ -775,17 +774,16 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 "qtyBounds": itemsFirst['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              controller
-                                  .publicAddCartMenu(cartItem, false)
+                              publicAddCartMenu(cartItem, false)
                                   .then((val) {
                                 //_publicShowAddCart(temp,itemsFirst['homeImage']);
                                 //更改显示购物车价格
                                 //getCartPriceTotal();
                                 if (val != false) {
-                                  controller.publicShowAddCartNew(context);
+                                  publicShowAddCartNew(context);
                                 }
 
-                                controller.changeInitialAllOption(
+                                changeInitialAllOption(
                                     itemsFirst['menuCode']);
                               });
                             },
@@ -802,7 +800,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               ),
                               child: Text(
                                   GString.getToString(
-                                      controller.checkLanguage.value,
+                                      checkLanguage.value,
                                       "add_option_cart"),
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
@@ -843,7 +841,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
 
     //获取第一个页面的option widget
   getFirstOptionWidget(menuCode, setFirstState) {
-    var optionGroupVoList = controller.menuOption.value[menuCode];
+    var optionGroupVoList = menuOption.value[menuCode];
 
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
 
@@ -859,7 +857,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
             RichText(
               text: TextSpan(
                   text: "${optionGroupVoList[i]['groupName']}",
-                  //GString.getToString(controller.checkLanguage.value, "show_price_front"),
+                  //GString.getToString(checkLanguage.value, "show_price_front"),
                   style: TextStyle(
                     fontFamily: GFont.getFontFamily(),
                     fontSize: ScreenAdapter.fontSize(24.0),
@@ -902,7 +900,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
           child: InkWell(
               //enableFeedback: true,
               onTap: () {
-                controller.changeOptionv1(
+                changeOptionv1(
                     menuCode,
                     optionGroupVoList[i]["groupCode"],
                     optionVolistSon["optionCode"],
@@ -1178,7 +1176,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                       child: Container(
                                         padding: EdgeInsets.only(
                                             right: ScreenAdapter.width(15)),
-                                        child: controller.publicShowMenuTitle(
+                                        child: publicShowMenuTitle(
                                             item['mainTitle'],
                                             32.0,
                                             Gcolor.mainTitleColor),
@@ -1222,10 +1220,10 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 EdgeInsets.only(right: ScreenAdapter.width(30)),
                             //width: ScreenAdapter.width(200),
                             alignment: Alignment.bottomRight,
-                            child: controller.publicShowMenuPrice(
-                                controller.selectedMenuOptionChangePrice
+                            child: publicShowMenuPrice(
+                                selectedMenuOptionChangePrice
                                         .value[item['menuCode']] +
-                                    controller.addselectedMenuOptionChangePrice
+                                    addselectedMenuOptionChangePrice
                                         .value[item['menuCode']],
                                 item['price'],
                                 35.0,
@@ -1244,22 +1242,21 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 return;
                               } else if (item['qtyBounds'] > 0) {
                                 //请求限定接口
-                                var cartItemNum = await controller
-                                    .ordersqlcontroller
+                                var cartItemNum = await ordersqlcontroller
                                     .getCartItemNum(item['menuCode']);
                                 print(cartItemNum);
                                 if (cartItemNum >= item['qtyBounds']) {
                                   var showString = GString.getToString(
-                                      controller.checkLanguage.value,
+                                      checkLanguage.value,
                                       "show_storage_num_error");
                                   //showToast("${showString}");
                                   Get.dialog(DialogUtils.alertOneButton(
                                       showString,
                                       title: GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "tag_title"),
                                       confirmtitle: GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "tag_button_yes"), confirm: () {
                                     Get.back();
                                   }));
@@ -1275,8 +1272,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 //item['optionGroupVoList'].length
 
                                 //--------------检测option单选还是多选是否满足
-                                var attr = controller
-                                    .menuOption.value[item['menuCode']];
+                                var attr = menuOption.value[item['menuCode']];
                                 var nexOrder = true;
                                 for (var i = 0; i < attr.length; i++) {
                                   //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -1295,16 +1291,16 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                         int.parse(attr[i]["smallest"])) {
                                       nexOrder = false;
                                       var showTag = GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "menu_option_less_smallest");
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(DialogUtils.alertOneButton(
                                           "${showTag.replaceAll("%%", attr[i]["groupName"])}",
                                           title: GString.getToString(
-                                              controller.checkLanguage.value,
+                                              checkLanguage.value,
                                               "tag_title"),
                                           confirmtitle: GString.getToString(
-                                              controller.checkLanguage.value,
+                                              checkLanguage.value,
                                               "tag_button_yes"), confirm: () {
                                         Get.back();
                                       }));
@@ -1315,8 +1311,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 if (nexOrder == false) return;
                                 //--------------end
                                 var checkoptionGroupList = {};
-                                for (var optionItem in controller
-                                    .selectedMenuOptionList
+                                for (var optionItem in selectedMenuOptionList
                                     .value[item['menuCode']]) {
                                   currentPrice += optionItem['currentPrice'];
 
@@ -1360,16 +1355,14 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              controller
-                                  .publicAddCartMenu(cartItem, false)
+                              publicAddCartMenu(cartItem, false)
                                   .then((val) {
                                 //更改显示购物车价格
                                 //getCartPriceTotal();
                                 if (val != false) {
-                                  controller.publicShowAddCartNew(context);
+                                  publicShowAddCartNew(context);
                                 }
-                                controller
-                                    .changeInitialAllOption(item['menuCode']);
+                                changeInitialAllOption(item['menuCode']);
                               });
                             },
                             child: Container(
@@ -1387,7 +1380,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               ),
                               child: Text(
                                   GString.getToString(
-                                      controller.checkLanguage.value,
+                                      checkLanguage.value,
                                       "add_option_cart"),
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
@@ -1406,7 +1399,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               ),
             ),
             //绝对定位 盖章
-            controller.publicShowMenuSellOut(item['qtyBounds']),
+            publicShowMenuSellOut(item['qtyBounds']),
           ],
         ),
       ),
@@ -1414,13 +1407,13 @@ _getFirstOptionWidget(menuCode, setFirstState) {
   }
 
   getThreeOptionWidget(menuCode, setFirstState, qtyBounds) {
-    var optionGroupVoList = controller.menuOption.value[menuCode];
+    var optionGroupVoList = menuOption.value[menuCode];
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
     if (optionGroupVoList != null &&
         optionGroupVoList.length > 0 &&
         optionGroupVoList != "") {
       for (var i = 0; i < optionGroupVoList.length; i++) {
-        if (i >= controller.optionGroupMaxNum.value) break;
+        if (i >= optionGroupMaxNum.value) break;
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
         options.add(Container(
@@ -1458,7 +1451,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
         ));
 
         for (var j = 0; j < optionVoList.length; j++) {
-          if (j >= controller.optionMaxNum.value) break;
+          if (j >= optionMaxNum.value) break;
           var optionVolistSon = optionVoList[j];
           var buttonColor = [];
           if (optionVolistSon['buttonColorValue'] != null &&
@@ -1478,7 +1471,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               //enableFeedback: false,
               onTap: () {
                 if (qtyBounds != 0) {
-                  controller.changeOptionv1(
+                  changeOptionv1(
                       menuCode,
                       optionGroupVoList[i]["groupCode"],
                       optionVolistSon["optionCode"],
@@ -1687,17 +1680,17 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -1727,7 +1720,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
+                          child: publicShowMenuTitle(
                               item['mainTitle'],
                               GFontSize.menuTwoListTitle,
                               Gcolor.mainTitleColor),
@@ -1742,7 +1735,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuPrice(
+                          child: publicShowMenuPrice(
                               item['currentPrice'],
                               item['price'],
                               GFontSize.menuTwopriceLift,
@@ -1755,7 +1748,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),
@@ -1791,18 +1784,18 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
-                //controller.publicShowOneItemWidget(item);
+                //publicShowOneItemWidget(item);
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -1841,7 +1834,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                             children: [
                               //菜单Title
                               Expanded(
-                                  child: controller.publicShowMenuTitle(
+                                  child: publicShowMenuTitle(
                                       item['mainTitle'],
                                       GFontSize.menuFourListTitle,
                                       Gcolor.mainTitleColor)),
@@ -1861,7 +1854,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
                               //价格展示
-                              controller.publicShowMenuPrice(
+                              publicShowMenuPrice(
                                   item['currentPrice'],
                                   item['price'],
                                   GFontSize.menuFourpriceLift,
@@ -1876,7 +1869,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),
@@ -1997,7 +1990,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                       child: Container(
                                         padding: EdgeInsets.only(
                                             right: ScreenAdapter.width(15)),
-                                        child: controller.publicShowMenuTitle(
+                                        child: publicShowMenuTitle(
                                             item['mainTitle'],
                                             32.0,
                                             Gcolor.mainTitleColor),
@@ -2042,10 +2035,10 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                             //width: ScreenAdapter.width(200),
                             alignment: Alignment.bottomRight,
                             //alignment: Alignment.centerRight,
-                            child: controller.publicShowMenuPrice(
-                                controller.selectedMenuOptionChangePrice
+                            child: publicShowMenuPrice(
+                                selectedMenuOptionChangePrice
                                         .value[item['menuCode']] +
-                                    controller.addselectedMenuOptionChangePrice
+                                    addselectedMenuOptionChangePrice
                                         .value[item['menuCode']],
                                 item['price'],
                                 35.0,
@@ -2063,22 +2056,21 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 return;
                               } else if (item['qtyBounds'] > 0) {
                                 //请求限定接口
-                                var cartItemNum = await controller
-                                    .ordersqlcontroller
+                                var cartItemNum = await ordersqlcontroller
                                     .getCartItemNum(item['menuCode']);
                                 print(cartItemNum);
                                 if (cartItemNum >= item['qtyBounds']) {
                                   var showString = GString.getToString(
-                                      controller.checkLanguage.value,
+                                      checkLanguage.value,
                                       "show_storage_num_error");
                                   //showToast("${showString}");
                                   Get.dialog(DialogUtils.alertOneButton(
                                       showString,
                                       title: GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "tag_title"),
                                       confirmtitle: GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "tag_button_yes"), confirm: () {
                                     Get.back();
                                   }));
@@ -2094,8 +2086,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 //item['optionGroupVoList'].length
 
                                 //--------------检测option单选还是多选是否满足
-                                var attr = controller
-                                    .menuOption.value[item['menuCode']];
+                                var attr = menuOption.value[item['menuCode']];
                                 var nexOrder = true;
                                 for (var i = 0; i < attr.length; i++) {
                                   //如果是多选，那么需要判断该组option数量是否超过最大值
@@ -2114,16 +2105,16 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                         int.parse(attr[i]["smallest"])) {
                                       nexOrder = false;
                                       var showTag = GString.getToString(
-                                          controller.checkLanguage.value,
+                                          checkLanguage.value,
                                           "menu_option_less_smallest");
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(DialogUtils.alertOneButton(
                                           "${showTag.replaceAll("%%", attr[i]["groupName"])}",
                                           title: GString.getToString(
-                                              controller.checkLanguage.value,
+                                              checkLanguage.value,
                                               "tag_title"),
                                           confirmtitle: GString.getToString(
-                                              controller.checkLanguage.value,
+                                              checkLanguage.value,
                                               "tag_button_yes"), confirm: () {
                                         Get.back();
                                       }));
@@ -2134,8 +2125,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 if (nexOrder == false) return;
                                 //--------------end
                                 var checkoptionGroupList = {};
-                                for (var optionItem in controller
-                                    .selectedMenuOptionList
+                                for (var optionItem in selectedMenuOptionList
                                     .value[item['menuCode']]) {
                                   currentPrice += optionItem['currentPrice'];
 
@@ -2179,18 +2169,16 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                 "qtyBounds": item['qtyBounds'],
                                 "unitPrice": currentPrice
                               };
-                              controller
-                                  .publicAddCartMenu(cartItem, false)
+                              publicAddCartMenu(cartItem, false)
                                   .then((val) {
                                 //更改显示购物车价格
                                 //getCartPriceTotal();
                                 if (val != false) {
-                                  controller.publicShowAddCartNew(context);
+                                  publicShowAddCartNew(context);
                                 }
 
                                 if (item['optionGroupVoList']?.length > 0) {
-                                  controller
-                                      .changeInitialAllOption(item['menuCode']);
+                                  changeInitialAllOption(item['menuCode']);
                                 }
                               });
                             },
@@ -2209,7 +2197,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               ),
                               child: Text(
                                   GString.getToString(
-                                      controller.checkLanguage.value,
+                                      checkLanguage.value,
                                       "add_option_cart"),
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
@@ -2228,7 +2216,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               ),
             ),
             //绝对定位 盖章
-            controller.publicShowMenuSellOut(item['qtyBounds']),
+            publicShowMenuSellOut(item['qtyBounds']),
           ],
         ),
       ),
@@ -2236,13 +2224,13 @@ _getFirstOptionWidget(menuCode, setFirstState) {
   }
 
   getFiveOptionWidget(menuCode, setFirstState, qtyBounds) {
-    var optionGroupVoList = controller.menuOption.value[menuCode];
+    var optionGroupVoList = menuOption.value[menuCode];
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
     if (optionGroupVoList != null &&
         optionGroupVoList.length > 0 &&
         optionGroupVoList != "") {
       for (var i = 0; i < optionGroupVoList.length; i++) {
-        if (i >= controller.optionGroupMaxNum.value) break;
+        if (i >= optionGroupMaxNum.value) break;
         List<Widget> optionSons = [];
         var optionVoList = optionGroupVoList[i]['optionVoList'];
         options.add(Container(
@@ -2280,7 +2268,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
         ));
 
         for (var j = 0; j < optionVoList.length; j++) {
-          if (j >= controller.optionMaxNum.value) break;
+          if (j >= optionMaxNum.value) break;
           var optionVolistSon = optionVoList[j];
 
           var buttonColor = [];
@@ -2299,7 +2287,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               //enableFeedback: false,
               onTap: () {
                 if (qtyBounds != 0) {
-                  controller.changeOptionv1(
+                  changeOptionv1(
                       menuCode,
                       optionGroupVoList[i]["groupCode"],
                       optionVolistSon["optionCode"],
@@ -2518,17 +2506,17 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -2557,7 +2545,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
                           height: ScreenAdapter.height(68),
-                          child: controller.publicShowMenuTitle(
+                          child: publicShowMenuTitle(
                               item['mainTitle'],
                               GFontSize.menuTwoListTitle,
                               Gcolor.mainTitleColor),
@@ -2569,7 +2557,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuPrice(
+                          child: publicShowMenuPrice(
                               item['currentPrice'],
                               item['price'],
                               GFontSize.menuTwopriceLift,
@@ -2582,7 +2570,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),
@@ -2642,18 +2630,18 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
-                //controller.publicShowOneItemWidget(item);
+                //publicShowOneItemWidget(item);
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -2683,7 +2671,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
+                          child: publicShowMenuTitle(
                               item['mainTitle'],
                               GFontSize.menuTwoListTitle,
                               Gcolor.mainTitleColor),
@@ -2695,7 +2683,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuPrice(
+                          child: publicShowMenuPrice(
                               item['currentPrice'],
                               item['price'],
                               GFontSize.menuTwopriceLift,
@@ -2708,7 +2696,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),
@@ -2834,17 +2822,17 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -2874,7 +2862,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
+                          child: publicShowMenuTitle(
                               item['mainTitle'],
                               GFontSize.menuTwoListTitle,
                               Gcolor.mainTitleColor),
@@ -2889,7 +2877,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuPrice(
+                          child: publicShowMenuPrice(
                             item['currentPrice'],
                             item['price'],
                             GFontSize.menuTwopriceLift,
@@ -2903,7 +2891,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),
@@ -2986,13 +2974,13 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                   return;
                 //                 } else if (_leftItem['qtyBounds'] > 0) {
                 //                   //请求限定接口
-                //                   controller.checkQtyBoundsCount(
+                //                   checkQtyBoundsCount(
                 //                       _leftItem, "", popupType, context);
                 //                 } else {
                 //                   //如果option 存在，则弹出option
                 //                   if (_leftItem['optionGroupVoList']?.length >
                 //                       0) {
-                //                     //controller.publicShowOneItemWidget(_leftItem);
+                //                     //publicShowOneItemWidget(_leftItem);
                 //                     if (popupType == "v1") {
                 //                       controller
                 //                           .publicShowOneItemWidgetv1(_leftItem);
@@ -3001,7 +2989,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                           .publicShowOneItemWidget(_leftItem);
                 //                     }
                 //                   } else {
-                //                     controller.publicAddCart(
+                //                     publicAddCart(
                 //                         context, _leftItem);
                 //                   }
                 //                 }
@@ -3033,7 +3021,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                     padding: EdgeInsets.only(
                 //                         left: ScreenAdapter.width(10),
                 //                         right: ScreenAdapter.width(10)),
-                //                     child: controller.publicShowMenuTitle(
+                //                     child: publicShowMenuTitle(
                 //                         _leftItem['mainTitle'],
                 //                         GFontSize.menuTwoListTitle,
                 //                         Gcolor.mainTitleColor),
@@ -3051,7 +3039,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                       padding: EdgeInsets.only(
                 //                           left: ScreenAdapter.width(15),
                 //                           right: ScreenAdapter.width(10)),
-                //                       child: controller.publicShowMenuPrice(
+                //                       child: publicShowMenuPrice(
                 //                           _leftItem['currentPrice'],
                 //                           _leftItem['price'],
                 //                           GFontSize.menuTwopriceLift,
@@ -3086,12 +3074,12 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                   return;
                 //                 } else if (_rightTop['qtyBounds'] > 0) {
                 //                   //请求限定接口
-                //                   controller.checkQtyBoundsCount(
+                //                   checkQtyBoundsCount(
                 //                       _rightTop, "", popupType, context);
                 //                 } else {
                 //                   if (_rightTop['optionGroupVoList']?.length >
                 //                       0) {
-                //                     //controller.publicShowOneItemWidget(_rightTop);
+                //                     //publicShowOneItemWidget(_rightTop);
                 //                     if (popupType == "v1") {
                 //                       controller
                 //                           .publicShowOneItemWidgetv1(_rightTop);
@@ -3100,7 +3088,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                           .publicShowOneItemWidget(_rightTop);
                 //                     }
                 //                   } else {
-                //                     controller.publicAddCart(
+                //                     publicAddCart(
                 //                         context, _rightTop);
                 //                   }
                 //                 }
@@ -3137,7 +3125,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                         padding: EdgeInsets.only(
                 //                             left: ScreenAdapter.width(10),
                 //                             right: ScreenAdapter.width(10)),
-                //                         child: controller.publicShowMenuTitle(
+                //                         child: publicShowMenuTitle(
                 //                             _rightTop['mainTitle'],
                 //                             GFontSize.menuTwoListTitle,
                 //                             Gcolor.mainTitleColor),
@@ -3149,7 +3137,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                         padding: EdgeInsets.only(
                 //                             left: ScreenAdapter.width(15),
                 //                             right: ScreenAdapter.width(10)),
-                //                         child: controller.publicShowMenuPrice(
+                //                         child: publicShowMenuPrice(
                 //                             _rightTop['currentPrice'],
                 //                             _rightTop['price'],
                 //                             GFontSize.menuTwopriceLift,
@@ -3162,7 +3150,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                     ],
                 //                   )),
                 //                   //绝对定位 盖章
-                //                   controller.publicShowMenuSellOut(
+                //                   publicShowMenuSellOut(
                 //                       _rightTop['qtyBounds']),
                 //                 ],
                 //               )),
@@ -3181,22 +3169,22 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                   return;
                 //                 } else if (_rightBottom['qtyBounds'] > 0) {
                 //                   //请求限定接口
-                //                   controller.checkQtyBoundsCount(
+                //                   checkQtyBoundsCount(
                 //                       _rightBottom, "", popupType, context);
                 //                 } else {
                 //                   if (_rightBottom['optionGroupVoList']
                 //                           ?.length >
                 //                       0) {
-                //                     //controller.publicShowOneItemWidget(_rightBottom);
+                //                     //publicShowOneItemWidget(_rightBottom);
                 //                     if (popupType == "v1") {
-                //                       controller.publicShowOneItemWidgetv1(
+                //                       publicShowOneItemWidgetv1(
                 //                           _rightBottom);
                 //                     } else {
-                //                       controller.publicShowOneItemWidget(
+                //                       publicShowOneItemWidget(
                 //                           _rightBottom);
                 //                     }
                 //                   } else {
-                //                     controller.publicAddCart(
+                //                     publicAddCart(
                 //                         context, _rightBottom);
                 //                   }
                 //                 }
@@ -3234,7 +3222,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                         padding: EdgeInsets.only(
                 //                             left: ScreenAdapter.width(10),
                 //                             right: ScreenAdapter.width(10)),
-                //                         child: controller.publicShowMenuTitle(
+                //                         child: publicShowMenuTitle(
                 //                             _rightBottom['mainTitle'],
                 //                             GFontSize.menuTwoListTitle,
                 //                             Gcolor.mainTitleColor),
@@ -3246,7 +3234,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                         padding: EdgeInsets.only(
                 //                             left: ScreenAdapter.width(15),
                 //                             right: ScreenAdapter.width(10)),
-                //                         child: controller.publicShowMenuPrice(
+                //                         child: publicShowMenuPrice(
                 //                             _rightBottom['currentPrice'],
                 //                             _rightBottom['price'],
                 //                             GFontSize.menuTwopriceLift,
@@ -3259,7 +3247,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                 //                     ],
                 //                   )),
                 //                   //绝对定位 盖章
-                //                   controller.publicShowMenuSellOut(
+                //                   publicShowMenuSellOut(
                 //                       _rightBottom['qtyBounds']),
                 //                 ],
                 //               )),
@@ -3326,18 +3314,18 @@ _getFirstOptionWidget(menuCode, setFirstState) {
               return;
             } else if (item['qtyBounds'] > 0) {
               //请求限定接口
-              controller.checkQtyBoundsCount(item, "", popupType, context);
+              checkQtyBoundsCount(item, "", popupType, context);
             } else {
               //如果option 存在，则弹出option
               if (item['optionGroupVoList']?.length > 0) {
-                //controller.publicShowOneItemWidget(item);
+                //publicShowOneItemWidget(item);
                 if (popupType == "v1") {
-                  controller.publicShowOneItemWidgetv1(item);
+                  publicShowOneItemWidgetv1(item);
                 } else {
-                  controller.publicShowOneItemWidget(item);
+                  publicShowOneItemWidget(item);
                 }
               } else {
-                controller.publicAddCart(context, item);
+                publicAddCart(context, item);
               }
             }
           },
@@ -3366,7 +3354,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(10),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuTitle(
+                          child: publicShowMenuTitle(
                               item['mainTitle'],
                               GFontSize.menuTwoListTitle,
                               Gcolor.mainTitleColor),
@@ -3378,7 +3366,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                           padding: EdgeInsets.only(
                               left: ScreenAdapter.width(15),
                               right: ScreenAdapter.width(10)),
-                          child: controller.publicShowMenuPrice(
+                          child: publicShowMenuPrice(
                               item['currentPrice'],
                               item['price'],
                               GFontSize.menuTwopriceLift,
@@ -3391,7 +3379,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                       ],
                     )),
                 //绝对定位 盖章
-                controller.publicShowMenuSellOut(item['qtyBounds']),
+                publicShowMenuSellOut(item['qtyBounds']),
               ],
             ),
           )),

@@ -492,7 +492,7 @@ class TransitPageController extends GetxController {
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => EntryHomeView());
       //Get.offAllNamed('/entry-home');
-      Get.toNamed("/entry-home");
+      Get.toNamed("/order-home");
     });
   }
 

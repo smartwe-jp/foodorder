@@ -10,6 +10,8 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
+import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
+import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
 
 import 'package:get/get.dart';
@@ -81,6 +83,15 @@ class MenuPageController extends GetxController with StateMixin {
 
   bool paymentIsShow = false;
   bool returnFromeCancelOrder = false;
+  bool showReceiptPage = false;
+
+  //for page controller
+  bool isChangingPage = false;
+  int selectIndex = 0;
+  MenuSidebarInfo? sidebarInfo;
+  late List menuList;
+  late List<String> menuCategory;
+  final PageController pageController = PageController();
 
   @override
   Future<void> onInit() async {
@@ -282,7 +293,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   //获取页面分类
   getBookingBootIndexCagegory(String category, {bool isReset = false}) {
-    topMenu.value = [];
+    //topMenu.value = [];
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
     switch (machinInfo.diningType) {
@@ -340,31 +351,37 @@ class MenuPageController extends GetxController with StateMixin {
           "#F05F32"
         ];
         var menuIndex = 0;
+        var colorIndex = 0;
+        var menuCategorys = [];
         for (var i = 0; i < myList.length; i++) {
-          if (menuIndex >= 5) menuIndex = 0;
+          if (colorIndex >= 5) colorIndex = 0;
           var categoryVoList = myList[i];
           //配置顶部菜单
-          topMenu.add({
+          menuCategorys.add({
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
-            "showColor": categoryVoList['color'] ?? MenuColor[menuIndex]
+            "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
+            "index":menuIndex
           });
           menuIndex++;
+          colorIndex++;
           //配置顶部菜单默认项
           if (i == 0 && category.isEmpty) {
             category = categoryVoList['categoryCode'];
             classTag.value = categoryVoList['categoryCode'];
           }
         }
-        if (isReset) {
-          _resetToFirstCategory();
-        } else {
-          getBookingBootIndexMenu(classTag.value);
-        }
+        if (menuCategorys.length > 0)
+        topMenu.value = menuCategorys;
+        // if (isReset) {
+        //   _resetToFirstCategory();
+        // } else {
+        //   getBookingBootIndexMenu(classTag.value);
+        // }
 
-        //update();
-        //change(null, status: RxStatus.success());
+        update();
+        change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
@@ -546,7 +563,7 @@ class MenuPageController extends GetxController with StateMixin {
     if (showCartTotalGoodsNum.value == 0) {
       showShopCart.value = false;
     }
-    update();
+    update(['shopping_cart','shoppingCar']);
   }
 
   backToNewHome() async {
@@ -804,7 +821,7 @@ class MenuPageController extends GetxController with StateMixin {
           .map((d) => CarItemView(
                 title: d.mainTitle,
                 subtitle: d.optionVoListMsg,
-                image: CachedNetworkImageProvider(d.image),
+                image: itemImage(d.image),
                 onReduce: (value) {
                   publicChangeCartItemCreate(d, false);
                 },
@@ -850,7 +867,7 @@ class MenuPageController extends GetxController with StateMixin {
       print(e);
       result = false;
     }
-    update();
+    //update();
     return result;
   }
 
@@ -1095,7 +1112,7 @@ print("加1了");
     menuOption[menuCode] = attr;
 
     _getSelectedAttrValuev1(menuCode, attr, setMenuState);
-    update();
+    update(['option_view']);
   }
 
   //获取选中的值
@@ -1123,7 +1140,7 @@ print("加1了");
     selectedMenuOptionList[menuCode] = tempArr;
     addselectedMenuOptionChangePrice[menuCode] = selectPrice;
     tempArr = [];
-    update();
+    update(['option_view']);
   }
 
 //限量商品请求接口
@@ -1243,7 +1260,19 @@ print("加1了");
     tempArr = [];
   }
 
-  _showOrderEasyLoading({tag: true}) {
+  showSetSelloutAlert(menuId, name, bounds) {
+    bool isSellOut = bounds == 0;
+    String tips = isSellOut
+        ? 'このメニュー($name)を販売中に変更してもよろしいですか?'
+        : 'このメニュー($name)を本日売り切れに変更してもよろしいですか?';
+    Get.dialog(DialogUtils.alert(tips, confirm: () {
+      Get.back();
+    }, cancle: () {
+      Get.back();
+    }));
+  }
+
+  _showOrderEasyLoading({tag = true}) {
     var _showTag =
         Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
             style: TextStyle(
@@ -1400,6 +1429,7 @@ print("加1了");
     logger
         .info('-- paymentMethodDialog cash state = ${machinInfo.showCash} --');
     paymentIsShow = true;
+    showReceiptPage = machinInfo.showReceiptPage;
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,
@@ -1408,7 +1438,6 @@ print("加1了");
           tableNum: "",
           onConfrimClick: () {
             showOpenPayment.value = true;
-            machinInfo.showReceiptPage = true;
             gotoSettlement();
           },
           onCancelClick: (String isBack) async {
@@ -1465,7 +1494,7 @@ print("加1了");
   // }
 
   resetToFirstPage() async {
-    await getBookingBootIndexCagegory(classTag.value, isReset: true);
+    //await getBookingBootIndexCagegory(classTag.value, isReset: true);
   }
 
   clearOrderList() async {

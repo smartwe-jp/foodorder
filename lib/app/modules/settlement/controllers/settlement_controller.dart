@@ -339,7 +339,7 @@ class SettlementController extends GetxController with StateMixin {
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.offAllNamed("/checkout-page");
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     } else if (machineMode.value == "3") {
@@ -377,6 +377,7 @@ class SettlementController extends GetxController with StateMixin {
         Get.find<MenuPageController>().getCartPriceTotal();
         Get.find<MenuPageController>().getBookingBootIndexCagegory("");
         if (showOpenPayment.value == true) {
+          Get.find<MenuPageController>().paymentIsShow = false;
           Get.back();
         }
       }
@@ -402,7 +403,7 @@ class SettlementController extends GetxController with StateMixin {
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
         //Get.offAllNamed("/checkout-page");
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
     }
@@ -542,7 +543,7 @@ class SettlementController extends GetxController with StateMixin {
           showOutMoney.value = outMoney < 0 ? '0' : outMoney.toString();
           goNext = false;
         }
-      }
+      } 
     });
     return goNext;
   }
@@ -838,6 +839,9 @@ class SettlementController extends GetxController with StateMixin {
         //_doScanCodeTimeOut();
         showPosCancelEasyLoading("900");
       }
+    }).catchError((error){
+      //TODO//提示具体错误，和询问重试
+      _checkOutErrorHandle('提示具体错误，和询问重试');
     });
   }
 

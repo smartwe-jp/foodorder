@@ -27,10 +27,14 @@ class OrderHomeController extends GetxController with StateMixin {
 
   RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
 
-  RxBool machineLanguages_JP = false.obs;
-  RxBool machineLanguages_CH = false.obs;
-  RxBool machineLanguages_EN = false.obs;
-  RxBool machineLanguages_KO = false.obs;
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
+
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isAnimating = false;
 
   RxBool isLoading = true.obs;
 
@@ -45,15 +49,16 @@ class OrderHomeController extends GetxController with StateMixin {
   final logger = Logger('OrderHomeController');
 
   @override
-  Future<void> onInit() async {
+  void onInit() async {
     EasyLoading.dismiss();
-    await _getMachineInfo();
+    getmenchineLanguages();
     super.onInit();
   }
 
   @override
   void onReady() {
     super.onReady();
+    startRepeatingAnimation();
   }
 
   @override
@@ -74,6 +79,26 @@ class OrderHomeController extends GetxController with StateMixin {
         update();
       }
     });
+  }
+
+  void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
+      }
+      startShake = !startShake;
+      update();
+    });
+  }
+
+  void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
+    isAnimating = false;
+    startShake = false;
+    update();
   }
 
   //获取机器信息
@@ -113,6 +138,15 @@ class OrderHomeController extends GetxController with StateMixin {
     await getmenchineLanguages();
   }
 
+  goMenu(String lan, bool mealType) {
+    machineInfo.mealType = mealType;
+    var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menuzong-page';
+    startShake = false;
+    Get.toNamed(jumpUrl,arguments: {
+      "checkLanguage": lan,
+    });
+  }
+
   updateDingType(int type) async {
     debugPrint("updateDingType $type");
     startResetTimer();
@@ -129,32 +163,15 @@ class OrderHomeController extends GetxController with StateMixin {
 
   getmenchineLanguages() async {
     debugPrint("获取机器语言");
-    var languageJP = false;
-    var languageCH = false;
-    var languageEN = false;
-    var languageKO = false;
-    var menchineLanguagesData = await HomeServices.getMachineLanguages();
-    for (var item in menchineLanguagesData) {
-      if (item == "JP") {
-        languageJP = true;
-      } else if (item == "CH") {
-        languageCH = true;
-      } else if (item == "EN") {
-        languageEN = true;
-      } else if (item == "KO") {
-        languageKO = true;
-      }
-    }
 
-    machineLanguages_JP.value = languageJP;
-    machineLanguages_CH.value = languageCH;
-    machineLanguages_EN.value = languageEN;
-    machineLanguages_KO.value = languageKO;
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
     debugPrint("获取机器语言结束");
     update();
     change(null, status: RxStatus.success());
 
-    await getBookingBootIndexCagegory();
   }
 
   _getSettingLanguage() async {

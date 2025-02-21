@@ -58,6 +58,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxString is_allow_rejishime = "0".obs; //0 不开启  1 开启
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
   RxString is_allow_pos = "0".obs; //0 不开启  1 开启
+  RxBool is_edit_mode = false.obs; //0 不开启  1 开启
   RxString pos_ip = "".obs;
   RxString pos_port = "".obs;
 
@@ -134,6 +135,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
     usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
+
+    is_edit_mode.value = await HomeServices.getEditMode();
 
     dining_type.value = systemSettingInfo['diningType'];
     if (dining_type.value == "1") {
@@ -828,6 +831,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllowBackHome(checkedType) async {
     is_allow_backhome.value = checkedType;
     _updateSystemSetting("isAllowBackHome", checkedType);
+  }
+
+  checkIsEditMode(mode) async {
+    is_edit_mode.value = mode;
+    await HomeServices.setEditMode(mode);
+    update();
   }
 
   //上传现金机log
