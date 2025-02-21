@@ -86,7 +86,7 @@ class SettlementView extends GetView {
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      if (controller.payment_method_num.value == "1")
+                      if (controller.machineInfo.paymentMethod == "1")
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,7 +116,7 @@ class SettlementView extends GetView {
                             ),
                           ],
                         ),
-                      if (controller.payment_method_num.value == "2")
+                      if (controller.machineInfo.paymentMethod == "2")
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -142,7 +142,7 @@ class SettlementView extends GetView {
                             ),
                           ],
                         ),
-                      if (controller.payment_method_num.value == "3")
+                      if (controller.machineInfo.paymentMethod == "3")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -178,7 +178,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "4")
+                      if (controller.machineInfo.paymentMethod == "4")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -214,7 +214,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "5")
+                      if (controller.machineInfo.paymentMethod == "5")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -246,7 +246,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "6")
+                      if (controller.machineInfo.paymentMethod == "6")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -281,7 +281,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "7")
+                      if (controller.machineInfo.paymentMethod == "7")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -316,7 +316,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "8")
+                      if (controller.machineInfo.paymentMethod == "8")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -351,7 +351,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "9")
+                      if (controller.machineInfo.paymentMethod == "9")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -386,7 +386,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                      if (controller.payment_method_num.value == "10")
+                      if (controller.machineInfo.paymentMethod == "10")
                         InkWell(
                           enableFeedback: false,
                           onLongPress: () {
@@ -425,7 +425,7 @@ class SettlementView extends GetView {
                     ],
                   ),
                 ),
-                if (controller.payment_method_num.value == "1")
+                if (controller.machineInfo.paymentMethod == "1")
                   Container(
                     width: ScreenAdapter.width(1080),
                     alignment: Alignment.center,
@@ -444,7 +444,7 @@ class SettlementView extends GetView {
                       fadeInDuration: Duration(milliseconds: 100),
                     ),
                   ),
-                if (controller.payment_method_num.value == "2")
+                if (controller.machineInfo.paymentMethod == "2")
                   Container(
                     //height: ScreenAdapter.height(940),
                     child: Stack(
@@ -471,7 +471,7 @@ class SettlementView extends GetView {
                                   runSpacing: ScreenAdapter.height(5),
                                   alignment: WrapAlignment.center,
                                   children: [
-                                    if (controller.showPayPay.value == true)
+                                    if (controller.machineInfo.showPayPay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -488,7 +488,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showAlipay.value == true)
+                                    if (controller.machineInfo.showAlipay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -505,7 +505,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showWechat.value == true)
+                                    if (controller.machineInfo.showWechat == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -522,7 +522,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showCreditCard.value == true && controller.isAllowPos.value =="1" && controller.showauPay.value == true)
+                                    if (controller.machineInfo.showCreditCard == true && controller.machineInfo.isAllowPos =="1" && controller.machineInfo.showAuPay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -539,7 +539,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showCreditCard.value == true && controller.isAllowPos.value =="1" && controller.showdPay.value == true)
+                                    if (controller.machineInfo.showCreditCard == true && controller.machineInfo.isAllowPos =="1" && controller.machineInfo.showDPay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -556,7 +556,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showCreditCard.value == true && controller.isAllowPos.value =="1" && controller.showrPay.value == true)
+                                    if (controller.machineInfo.showCreditCard == true && controller.machineInfo.isAllowPos =="1" && controller.machineInfo.showRPay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -573,7 +573,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if (controller.showCreditCard.value == true && controller.isAllowPos.value =="1" && controller.showmPay.value == true)
+                                    if (controller.machineInfo.showCreditCard == true && controller.machineInfo.isAllowPos =="1" && controller.machineInfo.showMPay == true)
                                       Container(
                                         height: ScreenAdapter.height(130),
                                         padding: EdgeInsets.only(
@@ -596,7 +596,7 @@ class SettlementView extends GetView {
                       ],
                     ),
                   ),
-                if (controller.payment_method_num.value == "3")
+                if (controller.machineInfo.paymentMethod == "3")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(990),
@@ -624,7 +624,7 @@ class SettlementView extends GetView {
                             mainAxisAlignment: MainAxisAlignment.center,
                             crossAxisAlignment: CrossAxisAlignment.end,
                             children: [
-                              if(controller.showVisa.value == true)
+                              if(controller.machineInfo.showVisa == true)
                                 Container(
                                   //width: ScreenAdapter.width(120),
                                   //height: ScreenAdapter.height(90),
@@ -637,7 +637,7 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              if(controller.showJcb.value == true)
+                              if(controller.machineInfo.showJcb == true)
                                 Container(
                                   //width: ScreenAdapter.width(120),
                                   //height: ScreenAdapter.height(90),
@@ -650,7 +650,7 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              if(controller.showMaster.value == true)
+                              if(controller.machineInfo.showMaster == true)
                                 Container(
                                   // width: ScreenAdapter.width(120),
                                   //height: ScreenAdapter.height(90),
@@ -663,7 +663,7 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              if(controller.showUnionPay.value == true)
+                              if(controller.machineInfo.showUnionPay == true)
                                 Container(
                                   //width: ScreenAdapter.width(120),
                                   //height: ScreenAdapter.height(90),
@@ -676,7 +676,7 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              if(controller.showAmericanExpress.value == true)
+                              if(controller.machineInfo.showAmericanExpress == true)
                                 Container(
                                   //width: ScreenAdapter.width(120),
                                   //height: ScreenAdapter.height(90),
@@ -690,7 +690,7 @@ class SettlementView extends GetView {
                                   ),
                                 ),
 
-                              if(controller.showDinersClub.value == true)
+                              if(controller.machineInfo.showDinersClub == true)
                                 Container(
                                   //color: Colors.red,
                                   //width: ScreenAdapter.width(120),
@@ -704,7 +704,7 @@ class SettlementView extends GetView {
                                     fit: BoxFit.fitWidth,
                                   ),
                                 ),
-                              if (controller.showDiscover.value)
+                              if (controller.machineInfo.showDiscover)
                                 Container(
                                   //color: Colors.red,
                                   //width: ScreenAdapter.width(120),
@@ -724,7 +724,7 @@ class SettlementView extends GetView {
                       ],
                     ),
                   ),
-                if (controller.payment_method_num.value == "4")
+                if (controller.machineInfo.paymentMethod == "4")
                   Container(
                     //height: ScreenAdapter.height(940),
                     child: Stack(
@@ -755,7 +755,7 @@ class SettlementView extends GetView {
                                   alignment: WrapAlignment.center,
                                   //mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
-                                    if(controller.showVisa.value == true)
+                                    if(controller.machineInfo.showVisa == true)
                                       Container(
                                         //width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -768,7 +768,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if(controller.showJcb.value == true)
+                                    if(controller.machineInfo.showJcb == true)
                                       Container(
                                         //width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -781,7 +781,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if(controller.showMaster.value == true)
+                                    if(controller.machineInfo.showMaster == true)
                                       Container(
                                         // width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -794,7 +794,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if(controller.showUnionPay.value == true)
+                                    if(controller.machineInfo.showUnionPay == true)
                                       Container(
                                         //width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -807,7 +807,7 @@ class SettlementView extends GetView {
                                           fit: BoxFit.fitWidth,
                                         ),
                                       ),
-                                    if(controller.showAmericanExpress.value == true)
+                                    if(controller.machineInfo.showAmericanExpress == true)
                                       Container(
                                         //width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -821,7 +821,7 @@ class SettlementView extends GetView {
                                         ),
                                       ),
 
-                                    if(controller.showDinersClub.value == true)
+                                    if(controller.machineInfo.showDinersClub == true)
                                       Container(
                                         //width: ScreenAdapter.width(120),
                                         //height: ScreenAdapter.height(90),
@@ -844,7 +844,7 @@ class SettlementView extends GetView {
                       ],
                     ),
                   ),
-                if (controller.payment_method_num.value == "5")
+                if (controller.machineInfo.paymentMethod == "5")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
@@ -862,7 +862,7 @@ class SettlementView extends GetView {
                           fadeInDuration: Duration(milliseconds: 100),
                         ),
                   ),
-                if (controller.payment_method_num.value == "6")
+                if (controller.machineInfo.paymentMethod == "6")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
@@ -879,7 +879,7 @@ class SettlementView extends GetView {
                       fadeInDuration: Duration(milliseconds: 100),
                     ),
                   ),
-                if (controller.payment_method_num.value == "7")
+                if (controller.machineInfo.paymentMethod == "7")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
@@ -896,7 +896,7 @@ class SettlementView extends GetView {
                       fadeInDuration: Duration(milliseconds: 100),
                     ),
                   ),
-                if (controller.payment_method_num.value == "8")
+                if (controller.machineInfo.paymentMethod == "8")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
@@ -913,7 +913,7 @@ class SettlementView extends GetView {
                       fadeInDuration: Duration(milliseconds: 100),
                     ),
                   ),
-                if (controller.payment_method_num.value == "9")
+                if (controller.machineInfo.paymentMethod == "9")
                   Container(
                     alignment: Alignment.center,
                     //height: ScreenAdapter.height(940),
@@ -930,7 +930,7 @@ class SettlementView extends GetView {
                       fadeInDuration: Duration(milliseconds: 100),
                     ),
                   ),
-                if (controller.payment_method_num.value == "10")
+                if (controller.machineInfo.paymentMethod == "10")
                   Container(
                       alignment: Alignment.center,
                       //height: ScreenAdapter.height(940),
@@ -947,7 +947,7 @@ class SettlementView extends GetView {
                         fadeInDuration: Duration(milliseconds: 100),
                       )
                   ),
-                /*if (controller.payment_method_num.value == "5" || controller.payment_method_num.value == "6"|| controller.payment_method_num.value == "7"|| controller.payment_method_num.value == "8"|| controller.payment_method_num.value == "9"|| controller.payment_method_num.value == "10")
+                /*if (controller.machineInfo.paymentMethod == "5" || controller.machineInfo.paymentMethod == "6"|| controller.machineInfo.paymentMethod == "7"|| controller.machineInfo.paymentMethod == "8"|| controller.machineInfo.paymentMethod == "9"|| controller.machineInfo.paymentMethod == "10")
                   Container(
                     //height: ScreenAdapter.height(940),
                     child: Image.asset(
@@ -957,12 +957,12 @@ class SettlementView extends GetView {
                       fit: BoxFit.fitWidth,
                     ),
                   ),*/
-                if (controller.payment_method_num.value == "5" ||
-                    controller.payment_method_num.value == "6" ||
-                    controller.payment_method_num.value == "7" ||
-                    controller.payment_method_num.value == "8" ||
-                    controller.payment_method_num.value == "9" ||
-                    controller.payment_method_num.value == "10")
+                if (controller.machineInfo.paymentMethod == "5" ||
+                    controller.machineInfo.paymentMethod == "6" ||
+                    controller.machineInfo.paymentMethod == "7" ||
+                    controller.machineInfo.paymentMethod == "8" ||
+                    controller.machineInfo.paymentMethod == "9" ||
+                    controller.machineInfo.paymentMethod == "10")
                   Container(
                     alignment: Alignment.center,
                     padding: EdgeInsets.only(
@@ -1061,7 +1061,7 @@ class SettlementView extends GetView {
                             ],
                           ),
                         ),
-                        if (controller.payment_method_num.value == "1")
+                        if (controller.machineInfo.paymentMethod == "1")
                           Container(
                             margin: EdgeInsets.only(
                               top: ScreenAdapter.height(15),
@@ -1126,7 +1126,7 @@ class SettlementView extends GetView {
                               ],
                             ),
                           ),
-                        if (controller.payment_method_num.value == "1")
+                        if (controller.machineInfo.paymentMethod == "1")
                           Container(
                             margin: EdgeInsets.only(
                               top: ScreenAdapter.height(15),
@@ -1196,7 +1196,7 @@ class SettlementView extends GetView {
                     ),
                   ),
                 ),
-                if (controller.payment_method_num.value == "1")
+                if (controller.machineInfo.paymentMethod == "1")
                   Container(
                     width: ScreenAdapter.width(1080),
                     alignment: Alignment.center,
@@ -1208,7 +1208,7 @@ class SettlementView extends GetView {
                       fit: BoxFit.fitHeight,
                     ),
                   ),
-                if (controller.payment_method_num.value == "0" || controller.payment_method_num.value == "1")
+                if (controller.machineInfo.paymentMethod == "0" || controller.machineInfo.paymentMethod == "1")
                   Container(
                     //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                     height: ScreenAdapter.height(200),
@@ -1319,15 +1319,15 @@ class SettlementView extends GetView {
                       ],
                     ),
                   ),
-                if (controller.payment_method_num.value == "2" ||
-                    controller.payment_method_num.value == "3" ||
-                    controller.payment_method_num.value == "4" ||
-                    controller.payment_method_num.value == "5" ||
-                    controller.payment_method_num.value == "6" ||
-                    controller.payment_method_num.value == "7" ||
-                    controller.payment_method_num.value == "8" ||
-                    controller.payment_method_num.value == "9" ||
-                    controller.payment_method_num.value == "10")
+                if (controller.machineInfo.paymentMethod == "2" ||
+                    controller.machineInfo.paymentMethod == "3" ||
+                    controller.machineInfo.paymentMethod == "4" ||
+                    controller.machineInfo.paymentMethod == "5" ||
+                    controller.machineInfo.paymentMethod == "6" ||
+                    controller.machineInfo.paymentMethod == "7" ||
+                    controller.machineInfo.paymentMethod == "8" ||
+                    controller.machineInfo.paymentMethod == "9" ||
+                    controller.machineInfo.paymentMethod == "10")
                   Container(
                     //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
                     height: ScreenAdapter.height(200),
@@ -1342,15 +1342,15 @@ class SettlementView extends GetView {
                               //showCancelConfirm();
                               //EasyLoading.dismiss();
                               var paymentMethod = ["3","4","5","6","7","8","9","10"];
-                              if (paymentMethod.contains(controller.payment_method_num.value) == true) {
+                              if (paymentMethod.contains(controller.machineInfo.paymentMethod) == true) {
 
                                 controller.showPosCancelAlert();
                               }else{
                                 controller.checkOutModeBack();
                                 Get.back();
                               }
-                              /*if (controller.payment_method_num.value == "3" ||
-                                  controller.payment_method_num.value == "4") {
+                              /*if (controller.machineInfo.paymentMethod == "3" ||
+                                  controller.machineInfo.paymentMethod == "4") {
                                 _getPaymentCancelPosData();
                               } else {
                                 Navigator.pop(context);

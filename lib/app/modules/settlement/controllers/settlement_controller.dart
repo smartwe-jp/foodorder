@@ -16,6 +16,7 @@ import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
 import '../../../config/string.dart';
+import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../controllers/pos_pay_comtroller.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
@@ -41,7 +42,7 @@ class SettlementController extends GetxController with StateMixin {
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
 
-  RxString machineCode = "".obs;
+  MachineInfoController machineInfo = Get.find();
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
@@ -49,7 +50,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
   RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
   RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
-  RxString receiptPrintType = "2".obs;//1 打印  2 不打印
+
   RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
@@ -69,6 +70,8 @@ class SettlementController extends GetxController with StateMixin {
   RxInt outMonyNum = 0.obs;
   RxBool getputMoneyString = true.obs; //是否允许获取入金金额字符串
   RxInt putMonyNum = 0.obs;
+
+  RxBool showOpenPayment = false.obs;
 
   Timer? timer;
   Timer? allowtimer;
@@ -96,11 +99,8 @@ class SettlementController extends GetxController with StateMixin {
   RxBool showPrintButton = false.obs;  //如果投币金额不足，则不显示打印按钮
 
 
-  RxString isAllowPos = "0".obs;
-  RxString pos_ip = "".obs;
-  RxString pos_port = "".obs;
   RxString eventReportString = "".obs;
-  RxString payment_method_num = "0".obs; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
+ //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
   RxMap posResultReportData = {}.obs;
   RxInt showPrintType =0.obs; //0 receipt   1Lable
   RxString wlan_print_ip = "".obs;
@@ -110,36 +110,6 @@ class SettlementController extends GetxController with StateMixin {
   RxString wlan_print_port_two = "".obs;
   RxString is_allow_wlanPrint_Two_continuous = "0".obs;//0 单票  1 连票  Print Continuous
 
-
-
-  //顶部展示支付类型
-  RxBool showWechat = false.obs;
-  RxBool showAlipay = false.obs;
-  RxBool showPayPay = false.obs;
-  RxBool showCreditCard = false.obs;
-
-  RxBool showauPay = false.obs;
-  RxBool showdPay = false.obs;
-  RxBool showrPay = false.obs;
-  RxBool showmPay = false.obs;
-
-  RxBool showPosEdy = false.obs;
-  RxBool showPosiD = false.obs;
-  RxBool showPosIC = false.obs;
-  RxBool showPosQUICPay = false.obs;
-  RxBool showPosWAON = false.obs;
-  RxBool showPosnanaco = false.obs;
-
-  RxBool showVisa = false.obs;
-  RxBool showMaster = false.obs;
-  RxBool showJcb = false.obs;
-  RxBool showUnionPay = false.obs;
-  RxBool showAmericanExpress = false.obs;
-  RxBool showDinersClub = false.obs;
-  RxBool showDiscover = false.obs;
-
-  //用于控制返回是否多关闭页面
-  RxBool showOpenPayment = false.obs;
 
   //60秒内未接收现金机正确通知，则进行下一步操作
   Timer? showCashTimer;
@@ -200,43 +170,13 @@ class SettlementController extends GetxController with StateMixin {
 
   readyQueryData(){
     checkLanguage.value =Get.arguments['checkLanguage'];
-    machineCode.value = Get.arguments['machineCode'];
     orderId.value = Get.arguments['orderId'];
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
-    isAllowPos.value = Get.arguments['isAllowPos'];
-    receiptPrintType.value = Get.arguments['receiptPrintType'];
-    pos_ip.value = Get.arguments['posIp'];
-    pos_port.value = Get.arguments['posPort'];
-    payment_method_num.value = Get.arguments['paymentMethod'];
-
-    showWechat.value = Get.arguments['showWechat'];
-    showAlipay.value = Get.arguments['showAlipay'];
-    showPayPay.value = Get.arguments['showPayPay'];
-    showCreditCard.value = Get.arguments['showCreditCard'];
-
-    showauPay.value = Get.arguments['showauPay'];
-    showdPay.value = Get.arguments['showdPay'];
-    showrPay.value = Get.arguments['showrPay'];
-    showmPay.value= Get.arguments['showmPay'];
-    showPosEdy.value = Get.arguments['showPosEdy'];
-    showPosiD.value = Get.arguments['showPosiD'];
-    showPosIC.value = Get.arguments['showPosIC'];
-    showPosQUICPay.value = Get.arguments['showPosQUICPay'];
-    showPosWAON.value = Get.arguments['showPosWAON'];
-    showPosnanaco.value = Get.arguments['showPosnanaco'];
-
-    showVisa.value = Get.arguments["showVisa"];
-    showMaster.value = Get.arguments["showMaster"];
-    showJcb.value = Get.arguments["showJcb"];
-    showUnionPay.value = Get.arguments["showUnionPay"];
-    showAmericanExpress.value = Get.arguments["showAmericanExpress"];
-    showDinersClub.value = Get.arguments["showDinersClub"];
-    showDiscover.value = Get.arguments["showDiscover"];
     showOpenPayment.value = Get.arguments['showOpenPayment'];
 
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
-    if (payment_method_num.value == "0" || payment_method_num.value == "1") {
+    if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
       //打开现金机
       _countDownTimer("1");
       Starttoubi();
@@ -252,17 +192,17 @@ class SettlementController extends GetxController with StateMixin {
     } /*else if (payment_method_num.value == "2") {
     //检测是否需要连接socket
     checkpayconnectSocker();
-  }*/ else if (payment_method_num.value == "3" ||
-        payment_method_num.value == "4" ||
-        payment_method_num.value == "5" ||
-        payment_method_num.value == "6" ||
-        payment_method_num.value == "7" ||
-        payment_method_num.value == "8" ||
-        payment_method_num.value == "9" ||
-        payment_method_num.value == "10"
+  }*/ else if (machineInfo.paymentMethod == "3" ||
+        machineInfo.paymentMethod == "4" ||
+        machineInfo.paymentMethod == "5" ||
+        machineInfo.paymentMethod == "6" ||
+        machineInfo.paymentMethod == "7" ||
+        machineInfo.paymentMethod == "8" ||
+        machineInfo.paymentMethod == "9" ||
+        machineInfo.paymentMethod == "10"
     ) {
       //1链接socker 2 请求接口获得支付数据发送给pos机 3监听
-      if(pos_ip.value != "" && pos_port.value != ""){
+      if(machineInfo.pos_ip != "" && machineInfo.pos_port != ""){
         showEasyLoading();
         payConnectSocket();
       }
@@ -331,7 +271,7 @@ class SettlementController extends GetxController with StateMixin {
   gotonewMenuPage() {
     debugPrint('---gotonewMenuPage---');
     if(isPayConfirmOrderId.value == true){
-      if(payment_method_num.value == "0" || payment_method_num.value == "1"){
+      if(machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1"){
         if(machineMode.value == "2") {//精算时候请求
           //print("精算请求了new order id");
           Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
@@ -446,7 +386,7 @@ class SettlementController extends GetxController with StateMixin {
   //扫码支付T
   doToPay() {
     //不是扫码支付直接return
-    if (payment_method_num.value != "2") return;
+    if (machineInfo.paymentMethod != "2") return;
 
     /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
       _showScanCodeNoOpenDialog(1,"");
@@ -472,12 +412,12 @@ class SettlementController extends GetxController with StateMixin {
       }
     }*/
     //print(scanQrCodeController.text);
-    if (machineCode.value != "" && scanQrCodeController.text != "" && orderId.value != null) {
+    if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
       showEasyLoadingScan();
       var formData = {
         "auth_code": scanQrCodeController.text,
-        "machineCode": machineCode.value,
+        "machineCode": machineInfo.machineCode,
         "orderId": orderId.value,
         "payType":"",
       };//print(formData);
@@ -497,7 +437,7 @@ class SettlementController extends GetxController with StateMixin {
             }
           }else{
             if(resultData["result"] == true){
-              doPrintOrderMenu(receiptPrintType.value);
+              doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -576,7 +516,7 @@ class SettlementController extends GetxController with StateMixin {
             if (response['code'] == 200 && response['data'] == true) {
               //退出关闭
               confirmTimer.cancel();
-              doPrintOrderMenu(receiptPrintType.value);
+              doPrintOrderMenu(machineInfo.receiptPrintType);
             }
           });
         });
@@ -628,7 +568,7 @@ class SettlementController extends GetxController with StateMixin {
             Get.back();
           }));
     } else {
-      doPrintOrderMenu(receiptPrintType.value);
+      doPrintOrderMenu(machineInfo.receiptPrintType);
     }
   }
 
@@ -640,7 +580,7 @@ class SettlementController extends GetxController with StateMixin {
         .then((val) {
       var response = json.decode(val.toString());
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu(receiptPrintType.value);
+        doPrintOrderMenu(machineInfo.receiptPrintType);
       } else {
         _showScanCodeTimeOutDialog();
       }
@@ -678,9 +618,9 @@ class SettlementController extends GetxController with StateMixin {
       Map posSettingInfo = await HomeServices.getPosSettingInfo();
 
       if(posSettingInfo.isNotEmpty){
-        pos_ip.value = posSettingInfo['posIp'];
-        pos_port.value = posSettingInfo['posPort'];
-        if(pos_ip.value != "" && pos_port.value != ""){
+        machineInfo.pos_ip = posSettingInfo['posIp'];
+        machineInfo.pos_port = posSettingInfo['posPort'];
+        if(machineInfo.pos_ip != "" && machineInfo.pos_port != ""){
           payConnectSocket(questData: questData);
         }
 
@@ -693,8 +633,8 @@ class SettlementController extends GetxController with StateMixin {
   //pos机相关
   payConnectSocket({questData=""}) async {
     debugPrint('start connect pos');
-    posManager.payConnectSocket(payment_method_num.value, pos_ip.value,
-        int.parse(pos_port.value), machineCode.value, questData: questData,
+    posManager.payConnectSocket(machineInfo.paymentMethod, machineInfo.pos_ip,
+        int.parse(machineInfo.pos_port), machineInfo.machineCode, questData: questData,
         onRequestPayData: () {
           debugPrint('onRequestPayData');
           _getPaymentPosData();
@@ -765,13 +705,13 @@ class SettlementController extends GetxController with StateMixin {
     };
     var thincaCloud = ["5","6","7","8","9","10"];
     String? _payType = "";
-    if (thincaCloud.contains(payment_method_num.value) == true) {
-      _payType = payTypeData[payment_method_num.value];
+    if (thincaCloud.contains(machineInfo.paymentMethod) == true) {
+      _payType = payTypeData[machineInfo.paymentMethod];
     }
 
     var formData = {
       "auth_code": "0000000088888888",
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "orderId": orderId.value,
       "payType":_payType,
     };
@@ -844,7 +784,7 @@ class SettlementController extends GetxController with StateMixin {
   }
   getPaymentCancelPosData() {
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "orderId": orderId.value,
     };
 
@@ -872,7 +812,7 @@ class SettlementController extends GetxController with StateMixin {
       var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
-        doPrintOrderMenu(receiptPrintType.value);
+        doPrintOrderMenu(machineInfo.receiptPrintType);
       } else {
         //扫码后超时，再继续请求后台，1秒一次 20次
         //_doScanCodeTimeOut();
@@ -897,12 +837,12 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   commonCancel() async {
-    if (payment_method_num.value == "0" || payment_method_num.value == "1") {
+    if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
       showBackEasyLoading();
       CancelOrder();
     } else {
       var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
-      if (paymentMethod.contains(payment_method_num.value) == true) {
+      if (paymentMethod.contains(machineInfo.paymentMethod) == true) {
         //socketPosCancel.value = true;
         // if(posManager.posAction() == PosAction.Cancel
         //     || posManager.posAction() == PosAction.WritePay
@@ -934,7 +874,7 @@ class SettlementController extends GetxController with StateMixin {
     };
     request('webBootCancelV1', method: 'POST', parameters: formData);*/
 
-    if (payment_method_num.value == "1" || payment_method_num.value == "0") {
+    if (machineInfo.paymentMethod == "1" || machineInfo.paymentMethod == "0") {
       isCancel.value = true;
       isPayConfirmOrderId.value = true;
       //已投钱
@@ -978,7 +918,7 @@ class SettlementController extends GetxController with StateMixin {
         printType = "1";
     }
 
-    if (retry && (payment_method_num.value == "0" || payment_method_num.value == "1")) {
+    if (retry && (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
       printGoNext();
       await Future.delayed(Duration(milliseconds: 2000));
     }
@@ -988,7 +928,7 @@ class SettlementController extends GetxController with StateMixin {
       var formData = {
         "orderId": orderId.value,
         "payAmount": getPutMoney.value,
-        "machineCode":machineCode.value,
+        "machineCode": machineInfo.machineCode,
         "printType":(showPrintType.value ==1 && wlan_print_ip.value !="")?"Label":""
       };
       /*var formData = {
@@ -1030,7 +970,7 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
 
-          if ((payment_method_num.value != "0" && payment_method_num.value != "1")) {
+          if (machineInfo.paymentMethod != "0" && machineInfo.paymentMethod != "1") {
             printGoNext();
           }
 
@@ -1075,7 +1015,7 @@ class SettlementController extends GetxController with StateMixin {
               cancle: () {
                 Get.back();
                 //goToNewMyHome();
-                if (payment_method_num.value == "1") {
+                if (machineInfo.paymentMethod == "1") {
                   nextOper();
                 } else {
                   goToNewMyHome();
@@ -1133,14 +1073,14 @@ class SettlementController extends GetxController with StateMixin {
       } else if (machineMode.value == "2") {
         if (Get.isRegistered<MenuPageController>()) {
           MenuPageController controller = Get.find<MenuPageController>();
-          if (controller.mealType.value) {
+          if (controller.machineInfo.mealType) {
             controller.clearCartList();
           }
         }
       }
 
       //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
-      if (payment_method_num.value == "1") {
+      if (machineInfo.paymentMethod == "1") {
         nextOper();
       } else {
         //goToNewMyHome();
@@ -1168,7 +1108,7 @@ class SettlementController extends GetxController with StateMixin {
       } else if (_startCount == 5) {
         //打开失败
         FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
-          "machineCode":machineCode.value,
+          "machineCode": machineInfo.machineCode,
           "orderId":orderId.value,
         });
         showCashTimer?.cancel();
@@ -1193,7 +1133,7 @@ class SettlementController extends GetxController with StateMixin {
         showCashTimer?.cancel();
         //上报错误。。。
         FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
-          "machineCode":machineCode.value,
+          "machineCode": machineInfo.machineCode,
           "orderId":orderId.value,
         });
         Get.toNamed(Routes.ERROR_PAGE);
@@ -1232,7 +1172,7 @@ class SettlementController extends GetxController with StateMixin {
           showCashTimer?.cancel();
           //上报错误。。。
           FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
-            "machineCode":machineCode.value,
+            "machineCode": machineInfo.machineCode,
             "orderId":orderId.value,
           });
           Get.toNamed(Routes.ERROR_PAGE);
@@ -1550,7 +1490,7 @@ class SettlementController extends GetxController with StateMixin {
     var formData = {
       "paymentInfo": getPutMoneyCurrency.value.trim(),
       "changeInfo": currencyString.value.trim(),
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "orderId": orderId.value,
       "price": int.parse(getPutMoney.value),
       "operation": operation,
@@ -1572,7 +1512,7 @@ class SettlementController extends GetxController with StateMixin {
         if (!retry) {
           FirebaseAnalytics.instance.logEvent(
               name: "cash_report_error", parameters: {
-            "machineCode": machineCode.value,
+            "machineCode": machineInfo.machineCode,
             "orderId": orderId.value,
           });
           //发送邮件计划
@@ -1588,7 +1528,7 @@ class SettlementController extends GetxController with StateMixin {
     if (giveChangeMoney.value > 0) {
       var formData = {
         "changeInfo": currencyString.value.trim(),
-        "machineCode": machineCode.value,
+        "machineCode": machineInfo.machineCode,
         "orderId": orderId.value,
         "price": giveChangeMoney.value,
         "coinForbidden":int.parse(is_allow_oneyen.value)

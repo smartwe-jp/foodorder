@@ -4,6 +4,7 @@ import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 
 import '../../../config/imageData.dart';
@@ -18,6 +19,7 @@ import '../../menuPage/views/SelectPayment.dart';
 class SelfCheckoutscanningcodeController extends GetxController with StateMixin {
   //TODO: Implement SelfCheckoutscanningcodeController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
+  MachineInfoController machineInfo = Get.find();
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode(debugLabel: 'TextField');
@@ -34,41 +36,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxMap showItem = {}.obs;
   RxString shopCartTotalPrice = "0".obs;
   RxInt showCartTotalGoodsNum = 0.obs;
-
-  RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
-  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
-  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
-  RxString pos_ip = "".obs;
-  RxString pos_port = "".obs;
-  RxString payment_method_num = "0".obs; //支付类型选择
-
-  //顶部展示支付类型
-  RxBool showWechat = false.obs;
-  RxBool showAlipay = false.obs;
-  RxBool showPayPay = false.obs;
-  RxBool showCreditCard = false.obs;
-  RxBool showCash = false.obs;
-
-  RxBool showauPay = false.obs;
-  RxBool showdPay = false.obs;
-  RxBool showrPay = false.obs;
-  RxBool showmPay = false.obs;
-
-  RxBool showPosEdy = false.obs;
-  RxBool showPosiD = false.obs;
-  RxBool showPosIC = false.obs;
-  RxBool showPosQUICPay = false.obs;
-  RxBool showPosWAON = false.obs;
-  RxBool showPosnanaco = false.obs;
   RxBool showOpenPayment = false.obs;
-
-  RxBool showVisa = false.obs;
-  RxBool showMaster = false.obs;
-  RxBool showJcb = false.obs;
-  RxBool showUnionPay = false.obs;
-  RxBool showAmericanExpress = false.obs;
-  RxBool showDinersClub = false.obs;
-  RxBool showDiscover = false.obs;
 
   RxString doSubmitOrderId = "".obs;
 
@@ -91,58 +59,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   readyQueryData(){
     checkLanguage.value = Get.arguments['checkLanguage'];
     mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
-  _getMachineInfo();
+    getCartPriceTotal();
 
-  }
-
-  //获取机器信息
-  _getMachineInfo() async {
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
-
-      _getSystemSettingInfo();
-    }
-  }
-
-  _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    isAllowPos.value = systemSettingInfo['isAllowPos'];
-    isAllowReceipt.value = systemSettingInfo['isAllowReceipt'];
-    _getMachineActivateInfo();
-
-  }
-
-  //获取展示支付方式
-  _getMachineActivateInfo() async {
-    Map systemSettingInfo = await HomeServices.getMachineActivateData();
-    showCash.value = systemSettingInfo['showCash'];
-    showWechat.value = systemSettingInfo['showWechat'];
-    showAlipay.value = systemSettingInfo['showAlipay'];
-    showPayPay.value = systemSettingInfo['showPayPay'];
-    showCreditCard.value = systemSettingInfo['showCreditCard'];
-
-    showauPay.value = systemSettingInfo['au_Pay'];
-    showdPay.value = systemSettingInfo['d_Pay'];
-    showrPay.value = systemSettingInfo['R_Pay'];
-    showmPay.value = systemSettingInfo['m_Pay'];
-
-    showPosEdy.value = systemSettingInfo['pos_Edy'];
-    showPosiD.value = systemSettingInfo['pos_iD'];
-    showPosIC.value = systemSettingInfo['pos_IC'];
-    showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
-    showPosWAON.value = systemSettingInfo['pos_WAON'];
-    showPosnanaco.value = systemSettingInfo['pos_nanaco'];
-
-    showVisa.value = systemSettingInfo['show_visa'];
-    showMaster.value = systemSettingInfo['show_master'];
-    showJcb.value = systemSettingInfo['show_jcb'];
-    showUnionPay.value = systemSettingInfo['show_unionPay'];
-    showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
-    showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    showDiscover.value = systemSettingInfo['show_discover'];
-
-    getCartPriceTotal(); //新版新获取分类
   }
 
   getCartPriceTotal({hideLoading = true}) async {
@@ -489,48 +407,12 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
             //mealType:_mealType.value,
-            isAllowPos:isAllowPos.value,
-            isAllowReceipt: isAllowReceipt.value,
-            payment_method_num:payment_method_num.value,
-            showCash: showCash.value,
-            showWechat: showWechat.value,
-            showAlipay: showAlipay.value,
-            showPayPay: showPayPay.value,
-            showauPay: showauPay.value,
-            showdPay: showdPay.value,
-            showrPay: showrPay.value,
-            showmPay: showmPay.value,
-            showCreditCard: showCreditCard.value,
-            showPosEdy: showPosEdy.value,
-            showPosiD: showPosiD.value,
-            showPosIC: showPosIC.value,
-            showPosQUICPay: showPosQUICPay.value,
-            showPosWAON: showPosWAON.value,
-            showPosnanaco: showPosnanaco.value,
-            showVisa: showVisa.value,
-            showMaster: showMaster.value,
-            showJcb: showJcb.value,
-            showUnionPay: showUnionPay.value,
-            showAmericanExpress: showAmericanExpress.value,
-            showDinersClub: showDinersClub.value,
-            showDiscover: showDiscover.value,
             shopCartTotalPrice:shopCartTotalPrice.value,
             tableNum: "",
-            onConfrimClick: (String isAllowPosString, String payment_method_num_string, String receiptPrintTypeString) {
-
-              isAllowPos.value = isAllowPosString;
-              payment_method_num.value = payment_method_num_string;
-              receiptPrintType.value = receiptPrintTypeString;
-              showOpenPayment.value = true;
-              //230629点击弹出支付方式后，需要重新请求下后台获得orderid
-
-              var paymentMethod = ["3","4","5","6","7","8","9","10"];
-              if (paymentMethod.contains(payment_method_num.value) == true) {
-                _getPosSettingInfo();
-              }else{
-                //postNewOrderId();
+            onConfrimClick: () {
+                showOpenPayment.value = true;
+                machineInfo.showReceiptPage = true;
                 gotoSettlement();
-              }
 
             },
             onCancelClick: (String isBack){
@@ -576,14 +458,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  _getPosSettingInfo() async {
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    pos_ip.value = posSettingInfo['posIp'];
-    pos_port.value = posSettingInfo['posPort'];
-    //postNewOrderId();
-    gotoSettlement();
-  }
-
 
   gotoSettlement() async {
     await Get.toNamed('/settlement',preventDuplicates: false,
@@ -593,32 +467,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           "orderId" : doSubmitOrderId.value,
           "totalPrice" : shopCartTotalPrice.value,
           "machineMode":"1",
-          "isAllowPos":isAllowPos.value,
-          "receiptPrintType": receiptPrintType.value,
-          "posIp":pos_ip.value,
-          "posPort":pos_port.value,
-          "paymentMethod":payment_method_num.value,
-          "showWechat": showWechat.value,
-          "showAlipay": showAlipay.value,
-          "showPayPay": showPayPay.value,
-          "showCreditCard":showCreditCard.value,
-          "showauPay": showauPay.value,
-          "showdPay": showdPay.value,
-          "showrPay": showrPay.value,
-          "showmPay": showmPay.value,
-          "showPosEdy": showPosEdy.value,
-          "showPosiD": showPosiD.value,
-          "showPosIC": showPosIC.value,
-          "showPosQUICPay": showPosQUICPay.value,
-          "showPosWAON": showPosWAON.value,
-          "showPosnanaco": showPosnanaco.value,
-          "showVisa": showVisa.value,
-          "showMaster": showMaster.value,
-          "showJcb": showJcb.value,
-          "showUnionPay": showUnionPay.value,
-          "showAmericanExpress": showAmericanExpress.value,
-          "showDinersClub": showDinersClub.value,
-          "showDiscover": showDiscover.value,
           "showOpenPayment":showOpenPayment.value
         });
   }

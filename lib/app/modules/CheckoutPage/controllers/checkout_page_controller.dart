@@ -4,6 +4,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -27,56 +28,19 @@ class CheckoutPageController extends GetxController with StateMixin {
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
 
-  RxString machineCode = "".obs;
-  RxList homeList = [].obs;
+  MachineInfoController machineInfo = Get.find();
 
   RxBool actuarial = false.obs;
   RxBool lineup = false.obs;
   RxBool takeOut = false.obs; //是否允许外带
-  RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
+
   RxString isReservation = "0".obs;
-
-  RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
-  RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
-  RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
-  RxString pos_ip = "".obs;
-  RxString pos_port = "".obs;
-
-  RxList machineLanguagesList = [].obs;
-
-  //顶部展示支付类型
-  RxBool showWechat = false.obs;
-  RxBool showAlipay = false.obs;
-  RxBool showPayPay = false.obs;
-  RxBool showCreditCard = false.obs;
-  RxBool showCash = false.obs;
-
-  RxBool showauPay = false.obs;
-  RxBool showdPay = false.obs;
-  RxBool showrPay = false.obs;
-  RxBool showmPay = false.obs;
-
-  RxBool showPosEdy = false.obs;
-  RxBool showPosiD = false.obs;
-  RxBool showPosIC = false.obs;
-  RxBool showPosQUICPay = false.obs;
-  RxBool showPosWAON = false.obs;
-  RxBool showPosnanaco = false.obs;
   RxBool showOpenPayment = false.obs;
 
-  RxBool showVisa = false.obs;
-  RxBool showMaster = false.obs;
-  RxBool showJcb = false.obs;
-  RxBool showUnionPay = false.obs;
-  RxBool showAmericanExpress = false.obs;
-  RxBool showDinersClub = false.obs;
-  RxBool showDiscover = false.obs;
-
   RxString orderId = "".obs;
-  RxString totlaPrice = "0".obs;
+  RxString totalPrice = "0".obs;
   RxString tableNum = "0".obs;
 
-  RxString payment_method_num = "0".obs; //支付类型选择
   RxString checkLanguage = "JP".obs;
   bool isFirstPage = false;
 
@@ -90,7 +54,9 @@ class CheckoutPageController extends GetxController with StateMixin {
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
     //Get.focusScope.requestFocus(scanQrCodeFocusNode);
-    getMachineInfo();
+    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
+
+    change(null, status: RxStatus.success());
     super.onInit();
   }
 
@@ -106,86 +72,37 @@ class CheckoutPageController extends GetxController with StateMixin {
 
 
 //获取机器信息
-  getMachineInfo() async {
-    var machineCodestr = await HomeServices.getMachineInfo();
-    if (machineCodestr != "") {
-        machineCode.value = machineCodestr;
+//   getMachineInfo() async {
+//     var machineCodestr = await HomeServices.getMachineInfo();
+//     if (machineCodestr != "") {
+//         machineCode.value = machineCodestr;
+//
+//     }
+//     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+//
+//     getHomeImageList();
+//   }
 
-    }
-    //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
+  // getHomeImageList() async {
+  //   List homeimageList = await HomeServices.getSmartweHomeImagesData();
+  //   homeList.value = homeimageList;
+  //
+  //   getSmartweMachineSettingData();
+  //   update();
+  // }
 
-    getHomeImageList();
-  }
+  // getSmartweMachineSettingData() async {
+  //   var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
+  //   actuarial.value = smartweMachineSetting["machineActuarial"];
+  //   lineup.value = smartweMachineSetting["machineLineup"];
+  //
+  //   getSystemSettingInfo();
+  // }
 
-  getHomeImageList() async {
-    List homeimageList = await HomeServices.getSmartweHomeImagesData();
-    homeList.value = homeimageList;
 
-    getSmartweMachineSettingData();
-    update();
-  }
-
-  getSmartweMachineSettingData() async {
-    var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
-    actuarial.value = smartweMachineSetting["machineActuarial"];
-    lineup.value = smartweMachineSetting["machineLineup"];
-
-    getSystemSettingInfo();
-  }
-
-  getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-      menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
-      isReservation.value = SystemSettingInfo["isReservation"];
-      isAllowPos.value = SystemSettingInfo['isAllowPos'];
-      isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
-      takeOut.value = (SystemSettingInfo['diningType'] == "2" || SystemSettingInfo['diningType'] == "3") ? true : false;
-
-    getmenchineLanguages();
-
-  }
-
-  getmenchineLanguages() async {
-    var menchineLanguagesData = await HomeServices.getMachineLanguages();
-
-      machineLanguagesList.value = menchineLanguagesData;
-
-    getMachineActivateInfo();
-  }
 
   //获取展示支付方式
-  getMachineActivateInfo() async {
-    Map systemSettingInfo = await HomeServices.getMachineActivateData();
 
-    showCash.value = systemSettingInfo['showCash'];
-    showWechat.value = systemSettingInfo['showWechat'];
-    showAlipay.value = systemSettingInfo['showAlipay'];
-    showPayPay.value = systemSettingInfo['showPayPay'];
-    showCreditCard.value = systemSettingInfo['showCreditCard'];
-
-    showauPay.value = systemSettingInfo['au_Pay'];
-    showdPay.value = systemSettingInfo['d_Pay'];
-    showrPay.value = systemSettingInfo['R_Pay'];
-    showmPay.value = systemSettingInfo['m_Pay'];
-
-    showPosEdy.value = systemSettingInfo['pos_Edy'];
-    showPosiD.value = systemSettingInfo['pos_iD'];
-    showPosIC.value = systemSettingInfo['pos_IC'];
-    showPosQUICPay.value = systemSettingInfo['pos_QUICPay'];
-    showPosWAON.value = systemSettingInfo['pos_WAON'];
-    showPosnanaco.value = systemSettingInfo['pos_nanaco'];
-
-    showVisa.value = systemSettingInfo['show_visa'];
-    showMaster.value = systemSettingInfo['show_master'];
-    showJcb.value = systemSettingInfo['show_jcb'];
-    showUnionPay.value = systemSettingInfo['show_unionPay'];
-    showAmericanExpress.value = systemSettingInfo['show_americanExpress'];
-    showDinersClub.value = systemSettingInfo['show_dinersClub'];
-    showDiscover.value = systemSettingInfo['show_discover'];
-    update();
-    change(null, status: RxStatus.success());
-  }
 
 
   showOrderEasyLoading(){
@@ -236,7 +153,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     var formData = {
       "orderKey": orderKey,
       "language": checkLanguage.value,
-      "machineCode": machineCode.value
+      "machineCode": machineInfo.machineCode
     };
 
     debugPrint('formData: $formData');
@@ -256,7 +173,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         if (response["data"]["totalPrice"] > 0) {
 
           orderId.value = response["data"]["orderId"].toString();
-          totlaPrice.value = response["data"]["totalPrice"].toString();
+          totalPrice.value = response["data"]["totalPrice"].toString();
           tableNum.value = response["data"]["tableNum"].toString();
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
 
@@ -308,51 +225,12 @@ class CheckoutPageController extends GetxController with StateMixin {
         SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: 0,
-            //mealType:_mealType,
-            isAllowPos: isAllowPos.value,
-            isAllowReceipt: isAllowReceipt.value,
-            payment_method_num: payment_method_num.value,
-            showCash: showCash.value,
-            showWechat: showWechat.value,
-            showAlipay: showAlipay.value,
-            showPayPay: showPayPay.value,
-            showauPay: showauPay.value,
-            showdPay: showdPay.value,
-            showrPay: showrPay.value,
-            showmPay: showmPay.value,
-            showCreditCard: showCreditCard.value,
-            showPosEdy: showPosEdy.value,
-            showPosiD: showPosiD.value,
-            showPosIC: showPosIC.value,
-            showPosQUICPay: showPosQUICPay.value,
-            showPosWAON: showPosWAON.value,
-            showPosnanaco: showPosnanaco.value,
-            showVisa: showVisa.value,
-            showMaster: showMaster.value,
-            showJcb: showJcb.value,
-            showUnionPay: showUnionPay.value,
-            showAmericanExpress: showAmericanExpress.value,
-            showDinersClub:showDinersClub.value,
-            showDiscover: showDiscover.value,
-            shopCartTotalPrice:totlaPrice.value,
+            shopCartTotalPrice:totalPrice.value,
             tableNum: tableNum.value,
-            onConfrimClick: (String isAllowPosstr, String payment_method_numcheck, String receiptPrintTypeString) {
-                isAllowPos.value = isAllowPosstr;
-                payment_method_num.value = payment_method_numcheck;
-                receiptPrintType.value = receiptPrintTypeString;
-                //checkLanguage.value = "JP";
-                // scanQrCodeController.text = "";
-                // scanQrCodeHomeController.text = "";
+            onConfrimClick: () {
                 showOpenPayment.value = true;
-
-              var paymentMethod = ["3","4","5","6","7","8","9","10"];
-              if (paymentMethod.contains(payment_method_num.value) == true) {
-                getPosSettingInfo();
-              }else{
-                //postNewOrderId();
+                machineInfo.showReceiptPage = true;
                 goToSettlement();
-              }
-
             },
             onCancelClick: (String isBack){
               if(isBack == "back"){
@@ -377,7 +255,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     var formData = {
       "orderId": orderId.value,
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
@@ -402,53 +280,19 @@ class CheckoutPageController extends GetxController with StateMixin {
       }
     });
 
-
   }
 
-  getPosSettingInfo() async {
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    pos_ip.value = posSettingInfo['posIp'];
-    pos_port.value = posSettingInfo['posPort'];
-    //postNewOrderId();
-    goToSettlement();
-  }
   goToSettlement() async {
     // scanQrCodeController.text = "";
     // scanQrCodeHomeController.text = "";
     Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage": checkLanguage.value,
-          "machineCode": machineCode.value,
+          "machineCode": machineInfo.machineCode,
           "orderId" : orderId.value,
-          "totalPrice" : totlaPrice.value,
+          "totalPrice" : totalPrice.value,
           "machineMode":"2",
-          "isAllowPos": isAllowPos.value,
-          "receiptPrintType": receiptPrintType.value,
-          "posIp": pos_ip.value,
-          "posPort": pos_port.value,
-          "paymentMethod":payment_method_num.value,
-          "showWechat": showWechat.value,
-          "showAlipay": showAlipay.value,
-          "showPayPay": showPayPay.value,
-          "showCreditCard": showCreditCard.value,
-          "showauPay": showauPay.value,
-          "showdPay": showdPay.value,
-          "showrPay": showrPay.value,
-          "showmPay": showmPay.value,
-          "showPosEdy": showPosEdy.value,
-          "showPosiD": showPosiD.value,
-          "showPosIC": showPosIC.value,
-          "showPosQUICPay": showPosQUICPay.value,
-          "showPosWAON": showPosWAON.value,
-          "showPosnanaco": showPosnanaco.value,
-          "showVisa": showVisa.value,
-          "showMaster": showMaster.value,
-          "showJcb": showJcb.value,
-          "showUnionPay": showUnionPay.value,
-          "showAmericanExpress": showAmericanExpress.value,
-          "showDinersClub": showDinersClub.value,
-          "showDiscover": showDiscover.value,
-          "showOpenPayment":showOpenPayment.value
+          "showOpenPayment": showOpenPayment.value
         });
     // if (result == true) {
     //   debugPrint('---settlement back---');
