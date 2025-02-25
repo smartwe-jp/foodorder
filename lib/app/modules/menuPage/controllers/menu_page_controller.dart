@@ -1429,7 +1429,7 @@ print("加1了");
     logger
         .info('-- paymentMethodDialog cash state = ${machinInfo.showCash} --');
     paymentIsShow = true;
-    showReceiptPage = machinInfo.showReceiptPage;
+    machinInfo.showReceiptPage = machinInfo.isReceiptPageShow;
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,

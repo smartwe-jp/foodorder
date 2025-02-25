@@ -76,7 +76,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
         child: Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Text(GString.getToString(controller.checkLanguage.value, "show_check_tableno"),
+        Text(GString.getToString(controller.selectLanguage, "show_check_tableno"),
             style: TextStyle(
                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                 fontWeight: FontWeight.w600,
@@ -101,7 +101,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
           children: [
             Text(
                 GString.getToString(
-                        controller.checkLanguage.value, "settlement_total_price") +
+                        controller.selectLanguage, "settlement_total_price") +
                     ' :',
                 style: TextStyle(
                     //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -135,7 +135,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                     ),
                     TextSpan(
                       text:
-                          "（${GString.getToString(controller.checkLanguage.value, "show_price_front")}）", //" 円",
+                          "（${GString.getToString(controller.selectLanguage, "show_price_front")}）", //" 円",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
                             GFontSize.menusettlementBottomPriceRight),
@@ -187,7 +187,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                           width: ScreenAdapter.width(20),
                         ),
                         Text(
-                          GString.getToString(controller.checkLanguage.value,
+                          GString.getToString(controller.selectLanguage,
                               "scan_order_detail_title"),
                           style: TextStyle(
                               //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -260,7 +260,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.checkLanguage.value, "settlement_back"),
+                                  controller.selectLanguage, "settlement_back"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#000000"),
                                   fontWeight: FontWeight.w500,
@@ -287,7 +287,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                             ),
                             child: Text(
                               GString.getToString(
-                                  controller.checkLanguage.value, "settlement_button"),
+                                  controller.selectLanguage, "settlement_button"),
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w500,

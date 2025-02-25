@@ -58,12 +58,20 @@ class ScanDetailController extends GetxController with StateMixin {
           response["data"] != null &&
           response["data"].isNotEmpty &&
           response["data"]["orderId"] != null) {
-        if (response["data"]["totalPrice"] > 0) {
+        if (response["data"]["totalPrice"] >= 0) {
           orderId = response["data"]["orderId"].toString();
           totlaPrice = response["data"]["totalPrice"].toString();
           tableNum = response["data"]["tableNum"].toString();
           orderInfoMap = response["data"]["orderInfoMap"] ?? {};
           change(null, status: RxStatus.success());
+        } else {
+
+          Get.dialog(
+            barrierDismissible: false,
+            DialogUtils.alertOneButton(response['msg'], confirm: () {
+              Get.back();
+              Get.back();
+            }));
         }
       } else {
         Get.dialog(
@@ -76,6 +84,12 @@ class ScanDetailController extends GetxController with StateMixin {
       }
     }).catchError((error) {
       debugPrint('webBootCalculateV2 error:${error.toString()}');
+      Get.dialog(
+            barrierDismissible: false,
+            DialogUtils.alertOneButton(error.toString(), confirm: () {
+              Get.back();
+              Get.back();
+            }));
     });
   }
 

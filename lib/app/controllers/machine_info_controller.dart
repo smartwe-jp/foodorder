@@ -15,6 +15,7 @@ class MachineInfoController extends GetxController {
   late List homeList;
   late String menu_direction;
   late List supportLanguages;
+  bool isReceiptPageShow = false;
 
   //payment info
   late bool showCash;
@@ -77,6 +78,7 @@ class MachineInfoController extends GetxController {
     isAllowReceipt = systemSettingInfo0['isAllowReceipt'];
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
+    isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
     menu_direction = (systemSettingInfo0["menuDirection"] !="" && systemSettingInfo0["menuDirection"]!=null) ? systemSettingInfo0["menuDirection"] :"1";
 

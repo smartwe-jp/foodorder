@@ -14,7 +14,6 @@ import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
   MachineInfoController machineInfo = Get.find();
-  MenuPageController menuPageController = Get.find();
 
   SelectPaymentPage(
       {Key? key,
@@ -49,8 +48,8 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _showReceiptPage = false;
                 // });
                 machineInfo.receiptPrintType = '1';
-                menuPageController.showReceiptPage = false;
-                menuPageController.update(['selectPayment']);
+                machineInfo.showReceiptPage = false;
+                machineInfo.update(['selectPayment']);
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -103,8 +102,8 @@ class SelectPaymentPage extends StatelessWidget {
                 //   _showReceiptPage = false;
                 // });
                 machineInfo.receiptPrintType = '2';
-                menuPageController.showReceiptPage = false;
-                menuPageController.update(['selectPayment']);
+                machineInfo.showReceiptPage = false;
+                machineInfo.update(['selectPayment']);
               },
               child: Container(
                 width: ScreenAdapter.width(320),
@@ -161,7 +160,7 @@ class SelectPaymentPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext pcontext) {
-    return GetBuilder<MenuPageController>(
+    return GetBuilder<MachineInfoController>(
       id:'selectPayment',
       builder: (controller) {
       return Container(
@@ -185,7 +184,7 @@ class SelectPaymentPage extends StatelessWidget {
                         bottom: ScreenAdapter.height(30)),
                     //width: ScreenAdapter.width(650),
 
-                    child: menuPageController.showReceiptPage
+                    child: machineInfo.showReceiptPage
                         ? selectPrintType()
                         : Column(
                             crossAxisAlignment: CrossAxisAlignment.center,

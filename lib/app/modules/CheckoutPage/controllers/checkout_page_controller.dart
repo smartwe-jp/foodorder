@@ -38,34 +38,19 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool startShake = false;
   bool isAnimating = false;
 
-  //RxString machineCode = "".obs;
-  //RxList homeList = [].obs;
   RxList categoryList = [].obs;
 
   get takeOut => machineInfo.diningType == "2" || machineInfo.diningType == "3";
 
-  // RxBool actuarial = false.obs;
-  // RxBool lineup = false.obs;
-  // RxBool takeOut = false.obs; //是否允许外带
-  // RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
   RxString isReservation = "0".obs;
   RxBool showOpenPayment = false.obs;
 
-  // RxString isAllowPos = "0".obs; //1 使用信用卡刷卡  0 不可使用
-  // RxString isAllowReceipt = "2".obs; //1 直接打印領収書  ２ 实现打印領収書菜单
-  // RxString receiptPrintType = "2".obs; //1 打印領収書  ２ 不打印領収書
-  // RxString pos_ip = "".obs;
-  // RxString pos_port = "".obs;
-
-  RxList machineLanguagesList = [].obs;
 
   RxString orderId = "".obs;
   RxString totlaPrice = "0".obs;
   RxString tableNum = "0".obs;
   RxMap orderInfoMap = {}.obs;
 
-  //RxString payment_method_num = "0".obs; //支付类型选择
-  RxString checkLanguage = "JP".obs;
   int mealTypeStatus = 0;
   int resetTime = 30;
   Timer? resetTimer;
@@ -92,6 +77,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   @override
   void onClose() {
+    //stopRepeatingAnimation();
     super.onClose();
   }
 
@@ -161,12 +147,12 @@ class CheckoutPageController extends GetxController with StateMixin {
   updateSettingLanguage(String language) async {
     print(" updateSetting Language = $language");
     await HomeServices.updateSettingLanguage(language);
-    checkLanguage.value = language;
+    selectLanguage = language;
     localkey.value = language;
     var locale = Locale('${language.toLowerCase()}', '$language');
     Get.updateLocale(locale);
     //reload catagory...
-    await getBookingBootIndexCagegory();
+    //await getBookingBootIndexCagegory();
   }
 
   updateDingType(int type) async {
@@ -228,7 +214,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       newList.add({
         "categoryCode": categoryList.first["categoryCode"],
         "image": null,
-        "categoryName": GString.getToString(checkLanguage.value, "more_title"),
+        "categoryName": GString.getToString(selectLanguage, "more_title"),
         "showType": "1"
       });
       return newList;
@@ -237,7 +223,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       newList.add({
         "categoryCode": categoryList.first["categoryCode"],
         "image": null,
-        "categoryName": GString.getToString(checkLanguage.value, "more_title"),
+        "categoryName": GString.getToString(selectLanguage, "more_title"),
         "showType": "1"
       });
       return newList;
@@ -275,84 +261,11 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   _showDialogError(msg) {
-    //查询订单弹出提示
-    /*Get.dialog(
-        Container(
-          width: ScreenAdapter.width(950),
-          child: SimpleDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-              title: Align(
-                  alignment: Alignment.center,
-                  child:  Text(GString.getToString(checkLanguage.value, "tag_title"),style: TextStyle(fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
-              ),
-              children: <Widget>[
-                Container(
-                  width: ScreenAdapter.width(650),
-                  padding: EdgeInsets.only(left: ScreenAdapter.width(30),right: ScreenAdapter.width(30)),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: <Widget>[
-                      SizedBox(
-                        height: 10,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          InkWell(
-                            onLongPress: (){
-                              EasyLoading.dismiss();
-                            },
-                            child: Container(
-                              //width: ScreenAdapter.width(400),
-                              //margin: EdgeInsets.only(top: 60),
-                              height: ScreenAdapter.height(75),
-                              child: Image.asset(GImage.getImageString("imgpublic", "error_public"),fit: BoxFit.fitHeight),
-                            ),
-                          ),
-                          Expanded(
-                              child: Container(
-                                  padding: EdgeInsets.only(left: ScreenAdapter.width(25),right: ScreenAdapter.width(25)),
-                                  child: Text(msg,style: TextStyle(fontSize: ScreenAdapter.fontSize(28)))
-                              )
-                          ),
-                        ],
-                      ),
-                      SizedBox(
-                        height: 15,
-                      ),
-                      Container(
-                            alignment: Alignment.center,
-                            child: Padding(
-                              padding: const EdgeInsets.only(right: 70.0),
-                              child: TextButton(
-                                child: Text(
-                                  GString.getToString(this._checkLanguage, "settlement_change_method"),
-                                  style: TextStyle(
-                                      color: Colors.lightBlue,
-                                      fontSize: ScreenAdapter.fontSize(32.0)),
-                                ),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  //Navigator.pop(context);
-                                },
-                              ),
-                            ),
-                          ),
-                    ],
-                  ),
-                ),
-              ]
-          ),
-        )
-    );*/
-
+    debugPrint("showDialogError $msg & $selectLanguage");
     Get.dialog(DialogUtils.alertOneButton(msg,
-        title: GString.getToString(checkLanguage.value, "tag_title"),
+        title: GString.getToString(selectLanguage, "tag_title"),
         confirmtitle:
-            GString.getToString(checkLanguage.value, "tag_button_yes"),
+            GString.getToString(selectLanguage, "tag_button_yes"),
         contentTagImg: "error_public", confirm: () {
       Get.back();
     }));
@@ -399,7 +312,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     // return;
     var formData = {
       "orderKey": orderKey,
-      "language": checkLanguage.value,
+      "language": selectLanguage,
       "machineCode": machineInfo.machineCode
     };
 
@@ -416,7 +329,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           response["data"] != null &&
           response["data"].isNotEmpty &&
           response["data"]["orderId"] != null) {
-        if (response["data"]["totalPrice"] > 0) {
+        if (response["data"]["totalPrice"] >= 0) {
           // scanQrCodeController.text = "";
           // scanQrCodeFocusNode.requestFocus();
           orderId.value = response["data"]["orderId"].toString();
@@ -453,7 +366,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     var formData = {
       "machineCode": machineInfo.machineCode,
-      "language": checkLanguage.value,
+      "language": selectLanguage,
       "takeout": "0",
     };
     request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
@@ -480,9 +393,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
-            title: GString.getToString(checkLanguage.value, "tag_title"),
+            title: GString.getToString(selectLanguage, "tag_title"),
             confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
+                GString.getToString(selectLanguage, "tag_button_yes"),
             confirm: () {
           getBookingBootIndexCagegory();
         }));
@@ -585,6 +498,8 @@ class CheckoutPageController extends GetxController with StateMixin {
     scanQrCodeFocusNode.requestFocus();
     debugPrint('localkey = $localkey');
     //scanQrCodeHomeFocusNode.requestFocus();
+    machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
+    debugPrint('showReceiptPage = ${machineInfo.showReceiptPage}');
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: localkey.value, //padding and need improve
@@ -637,9 +552,9 @@ class CheckoutPageController extends GetxController with StateMixin {
       } else {
         //showToast(response['data']["message"]);
         Get.dialog(DialogUtils.alertOneButton("${response['data']["message"]}",
-            title: GString.getToString(checkLanguage.value, "tag_title"),
+            title: GString.getToString(selectLanguage, "tag_title"),
             confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
+                GString.getToString(selectLanguage, "tag_button_yes"),
             confirm: () {
           Get.back();
         }));

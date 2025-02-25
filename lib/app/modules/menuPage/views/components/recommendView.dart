@@ -346,6 +346,9 @@ extension RecommendView on MenuPageController {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
+                SizedBox(
+                    width: 50,
+                ),
                 carbutton(),
                 SizedBox(
                     width: 30,

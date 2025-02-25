@@ -10,6 +10,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/controllers/pos_pay_controller.dart';
@@ -295,7 +296,8 @@ class SettlementController extends GetxController with StateMixin {
   gotonewMenuPage() {
     debugPrint("----gotonewMenuPage----");
     if (isPayConfirmOrderId.value == true) {
-      if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
+      if (machineInfo.paymentMethod == "0" ||
+          machineInfo.paymentMethod == "1") {
         if (machineMode.value == "2") {
           //精算时候请求
           //print("精算请求了new order id");
@@ -310,7 +312,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
-      posManager.resetState();// if pos reset
+      posManager.resetState(); // if pos reset
     }
     EasyLoading.dismiss();
     Get.back(result: true);
@@ -522,7 +524,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //request latest checkout info
   requestLatestCheckoutInfo() async {
-    bool goNext = false;
+    bool goNext = true;
     var formData = {
       "orderId": orderId.value,
     };
@@ -543,7 +545,7 @@ class SettlementController extends GetxController with StateMixin {
           showOutMoney.value = outMoney < 0 ? '0' : outMoney.toString();
           goNext = false;
         }
-      } 
+      }
     });
     return goNext;
   }
@@ -687,7 +689,7 @@ class SettlementController extends GetxController with StateMixin {
           }
         },
         onSuccess: (msg) {
-          CreditCardPayReport(msg);
+          posPayReport(msg);
         },
         onError: (error) {
           EasyLoading.dismiss();
@@ -715,7 +717,6 @@ class SettlementController extends GetxController with StateMixin {
                   checkLanguage.value, "settlement_posPay_connect_error"),
               payType: "pos");
         });
-    
   }
 
   _getPaymentPosData() {
@@ -823,12 +824,13 @@ class SettlementController extends GetxController with StateMixin {
   }
 
 //刷卡机nfc支付汇报
-  CreditCardPayReport(eventString) {
+  posPayReport(String eventString, {int retryCount = 0}) {
+    debugPrint('posPayReport retryCount = $retryCount');
     posResultReportData["result"] = true;
     posResultReportData["paymentInfo"] =
         eventString; //LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport',
-            method: 'POST', parameters: posResultReportData.value)
+            method: 'POST', parameters: posResultReportData)
         .then((val) {
       var response = json.decode(val.toString()); //print(response);
 
@@ -839,9 +841,15 @@ class SettlementController extends GetxController with StateMixin {
         //_doScanCodeTimeOut();
         showPosCancelEasyLoading("900");
       }
-    }).catchError((error){
-      //TODO//提示具体错误，和询问重试
-      _checkOutErrorHandle('提示具体错误，和询问重试');
+    }).catchError((error) {
+      //TODO 默认重试3次
+      if (retryCount < 3) {
+        Future.delayed(Duration(milliseconds: 500), () {
+          posPayReport(eventString, retryCount: retryCount + 1);
+        });
+      } else {
+        _checkOutErrorHandle('pos_report_error_tips'.localized());
+      }
     });
   }
 
@@ -953,7 +961,8 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     if (retry &&
-        (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
+        (machineInfo.paymentMethod == "0" ||
+            machineInfo.paymentMethod == "1")) {
       printGoNext(orderId.value);
       if (Platform.isAndroid)
         await Future.delayed(Duration(milliseconds: 2000));

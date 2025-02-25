@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -101,7 +100,7 @@ class CheckoutPageView extends GetView {
 
     List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
     for (var item in languagesButton) {
-      if (controller.machineLanguagesList.contains(item["value"]) ==
+      if (controller.machineInfo.supportLanguages.contains(item["value"]) ==
           true) {
         takeoutMenus.add(InkWell(
           onTap: () {
@@ -165,18 +164,18 @@ class CheckoutPageView extends GetView {
     if (languagesButton.length > 0) {
       List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
       for (var item in languagesButton) {
-        if (controller.machineLanguagesList.value.contains(item["value"]) ==
+        if (controller.machineInfo.supportLanguages.contains(item["value"]) ==
             true) {
           billMenus.add(InkWell(
             onTap: () {
-              controller.checkLanguage.value = item["value"]!;
+              controller.selectLanguage = item["value"]!;
               controller.scanQrCodeController.text = "";
               controller.scanQrCodeFocusNode.requestFocus();
               final locale =
                   Locale('${item["value"]}'.toLowerCase(), '${item["value"]}');
               Get.updateLocale(locale);
               Get.toNamed("/scancode-page",
-                  arguments: {"checkLanguage": controller.checkLanguage.value});
+                  arguments: {"checkLanguage": controller.selectLanguage});
             },
             child: Container(
               width: ScreenAdapter.width(217),
@@ -286,7 +285,7 @@ class CheckoutPageView extends GetView {
               final result = await Get.toNamed(jumpUrl, arguments: {
                 "classTag": e["categoryCode"] ?? "",
                 "menuList": controller.categoryList,
-                "checkLanguage": controller.checkLanguage.value,
+                "checkLanguage": controller.selectLanguage,
                 "mealType": mealType
               });
               if (result == true) {
@@ -356,7 +355,7 @@ class CheckoutPageView extends GetView {
                   ),
                   Text(
                       GString.getToString(
-                          controller.checkLanguage.value,
+                          controller.selectLanguage,
                           "dining_welcome"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(80),
@@ -369,7 +368,7 @@ class CheckoutPageView extends GetView {
                   ),
                   Text(
                       GString.getToString(
-                          controller.checkLanguage.value,
+                          controller.selectLanguage,
                           controller.takeOut ? "checkout_type_tips" : "amount_tips"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(56),
@@ -413,7 +412,7 @@ class CheckoutPageView extends GetView {
               child: BookingTypeButtonOld(
                 icon: eatInShopImage,
                 title: GString.getToString(
-                    controller.checkLanguage.value, "settlement_button"),
+                    controller.selectLanguage, "settlement_button"),
                 selected: controller.mealTypeStatus == 1,
                 onTap: () {
                   //controller.updateDingType(1);
@@ -430,7 +429,7 @@ class CheckoutPageView extends GetView {
               child: BookingTypeButtonOld(
                 icon: eatOutImage,
                 title: GString.getToString(
-                    controller.checkLanguage.value, "take_out"),
+                    controller.selectLanguage, "take_out"),
                 selected: controller.mealTypeStatus == 2,
                 onTap: () {
                   controller.updateDingType(2);
@@ -503,7 +502,7 @@ class CheckoutPageView extends GetView {
       scaleEnabled: 1.0,
       child:
       InkWell(
-        onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+        onTap: ()=>Get.toNamed("/scancode-page"),
         child: Container(
           padding: EdgeInsets.all(10),
           height:ScreenAdapter.height(260),
