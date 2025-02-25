@@ -401,6 +401,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
+    machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
             () =>
             SelectPaymentPage(

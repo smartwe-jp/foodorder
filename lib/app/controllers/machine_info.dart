@@ -26,6 +26,7 @@ class MachineInfoController extends GetxController {
   late List homeList;
   late String menu_direction;
   late List supportLanguages;
+  bool isReceiptPageShow = false;
 
   //payment info
   late bool showCash;
@@ -89,6 +90,7 @@ class MachineInfoController extends GetxController {
     String panelType = systemSettingInfo['panelType'] ?? 'Mini';
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
+    isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
     menu_direction = (systemSettingInfo["menuDirection"] !="" && systemSettingInfo["menuDirection"]!=null) ? systemSettingInfo["menuDirection"] :"1";
     machineType = panelTypes[panelType] ?? MachineType.new_panel;

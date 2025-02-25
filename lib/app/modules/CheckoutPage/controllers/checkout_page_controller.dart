@@ -223,6 +223,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
     scanQrCodeHomeFocusNode.requestFocus();
+    machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
           () =>
         SelectPaymentPage(
