@@ -181,7 +181,7 @@ class HomeController extends GetxController {
       //send failure email
       showCashTimer?.cancel();
       _isCashState.value = false;
-      //await _sendFailureEmail();
+      await _sendFailureEmail();
       await prohibitOneCash();
       //print("机器未打开lib未null，重新打开并连接了");
     }else{

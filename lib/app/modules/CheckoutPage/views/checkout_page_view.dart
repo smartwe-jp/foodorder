@@ -1,7 +1,9 @@
+import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/localString.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -12,6 +14,8 @@ import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
+import '../../OrderHome/views/widgets/BookingTypeButton.dart';
+import '../../OrderHome/views/widgets/languageButton.dart';
 import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
 import 'ScanCode.dart';
@@ -20,182 +24,144 @@ class CheckoutPageView extends GetView {
 
   final CheckoutPageController controller = Get.find();
   CheckoutPageView({Key? key}) : super(key: key);
+  languageSelectView() {
+    List languages = [];
+    if (controller.machineLanguages_JP == true)
+      languages.add({
+        "language": "JP",
+        "text": "日本語",
+        "selected": controller.machineLanguages_JP,
+        "icon": AssetImage("assets/images/public/language_Japanese.png"),
+      });
 
-  //展示外带按钮
-  _showTakeoutButton() {
-    var languagesButton = [
-      {"name":"テイクアウト","value":"JP"},
-      {"name":"外卖","value":"CH"},
-      {"name":"Takeout","value":"EN"},
-      {"name":"테이크아웃","value":"KO"},
-    ];
+    if (controller.machineLanguages_CH == true)
+      languages.add({
+        "language": "CH",
+        "text": "中文",
+        "selected": controller.machineLanguages_CH,
+        "icon": AssetImage("assets/images/public/language_Chinese.png"),
+      });
 
-    List<Widget> takeoutMenus = []; //先建一个数组用于存放循环生成的widget
-    for (var item in languagesButton) {
-      if(controller.machineInfo.supportLanguages.contains(item["value"]) == true) {
-        takeoutMenus.add(InkWell(
-          onTap: () {
-            var jumpUrl = (controller.machineInfo.menu_direction == "1")
-                ? '/menu-page'
-                : '/menu-page';
-            Get.toNamed(jumpUrl, arguments: {
-              "checkLanguage": "${item["value"]}",
-              "mealType": true
-            });
-          },
-          child: Container(
-            width: ScreenAdapter.width(217),
-            height: ScreenAdapter.height(90),
-            margin: EdgeInsets.only(
-                left: ScreenAdapter.width(15), right: ScreenAdapter.width(15)),
-            decoration: BoxDecoration(
-              image: DecorationImage(
-                //alignment: Alignment.topCenter,
-                  image: AssetImage(
-                      GImage.getImageString("imgpublic", "home_button")),
-                  fit: BoxFit.fill),
-            ),
-            child: Center(
-              //加上Center让文字居中
-              child: Text(
-                '${item["name"]}',
-                style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(36.0),
-                    color: ColorsUtil.hexToColor("#F9F9F9"),
-                    fontWeight: FontWeight.w600),
-              ),
-            ),
-          ),
-        ));
-      }
+    if (controller.machineLanguages_EN == true)
+      languages.add({
+        "language": "EN",
+        "text": "English",
+        "selected": controller.machineLanguages_EN,
+        "icon": AssetImage("assets/images/public/language_English.png"),
+      });
 
-    }
+    if (controller.machineLanguages_KO == true)
+      languages.add({
+        "language": "KO",
+        "text": "한국어",
+        "selected": controller.machineLanguages_KO,
+        "icon": AssetImage("assets/images/public/language_Korean.png"),
+      });
+
+    final buttonList = languages.map((e) {
+      return LanguageButton(
+        icon: e["icon"] as ImageProvider,
+        title: e["text"] as String,
+        selected: false,//e["language"] == controller.checkLanguage.value,
+        onTap: () {
+          controller.updateSettingLanguage(e["language"] as String);
+        },
+      );
+    }).toList();
+
     return Container(
-      width: ScreenAdapter.width(1080),
-      height: ScreenAdapter.height(120),
-      margin: EdgeInsets.only(bottom: ScreenAdapter.height(60)),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: takeoutMenus,
-      ),
-    );
-
-
-  }
-
-
-  _showLanguagesButton() {
-    var languagesButton = [
-      {"name":"お会計","value":"JP"},
-      {"name":"结账","value":"CH"},
-      {"name":"Bill","value":"EN"},
-      {"name":"계산하다","value":"KO"},
-    ];
-    if(languagesButton.length >0){
-      List<Widget> billMenus = []; //先建一个数组用于存放循环生成的widget
-      for (var item in languagesButton) {
-        if(controller.machineInfo.supportLanguages.contains(item["value"]) == true){
-          billMenus.add(InkWell(
-            onTap: () {
-              controller.checkLanguage.value = item["value"]!;
-              controller.scanQrCodeHomeController.text = "";
-              controller.scanQrCodeHomeFocusNode.requestFocus();
-
-
-              Get.toNamed("/scancode-page",arguments: {"checkLanguage": controller.checkLanguage.value});
-
-            },
-            child: Container(
-              width: ScreenAdapter.width(217),
-              height: ScreenAdapter.height(90),
-              margin: EdgeInsets.only(left:ScreenAdapter.width(15),right: ScreenAdapter.width(15)),
-              decoration: BoxDecoration(
-                image: DecorationImage(
-                  //alignment: Alignment.topCenter,
-                    image: AssetImage(GImage.getImageString("imgpublic", "home_button")),
-                    fit: BoxFit.fill),
-              ),
-              child: Center(
-                //加上Center让文字居中
-                child: Text(
-                  "${item["name"]}",
-                  style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(36.0),
-                      color: ColorsUtil.hexToColor("#F9F9F9"),
-                      fontWeight: FontWeight.w600),
-                ),
-              ),
-            ),
-          ));
-        }
-
-      }
-      return Container(
-        width: ScreenAdapter.width(1080),
-        height: ScreenAdapter.height(120),
+        alignment: Alignment.center,
+        height: ScreenAdapter.height(100),
+        padding: EdgeInsets.only(
+          top: ScreenAdapter.height(20),
+          left: ScreenAdapter.width(30),
+          right: ScreenAdapter.width(30),
+          bottom: ScreenAdapter.height(20),
+        ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.end,
-          children: billMenus,
-        ),
-      );
-    }else{
-      return Container(height: 0,);
-    }
-
+          children: [...buttonList],
+        ));
   }
 
-  //展示预约排号按钮
-  _showLineUpButton() {
-    return Container(
-      width: ScreenAdapter.width(1080),
-      height: ScreenAdapter.height(120),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          InkWell(
-            onTap: () {
-              //显示预约弹出框
-              controller.showOrderEasyLoading();
-              _showMakeAnAppointmentDialog();
 
-            },
-            child: Container(
-              width: ScreenAdapter.width(460),
-              height: ScreenAdapter.height(100),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-
-                color: ColorsUtil.hexToColor("#4876FF"),
-                //设置圆角
-                borderRadius: new BorderRadius.circular((16.0)),
-              ),
-              child: Text("番号札発行 / Booking",
-                  style: TextStyle(
-                    fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(36),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(
-                        Gcolor.settlementBtnColor),
-                  )),
+  _diningSelectArea() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        ScaleAnimatedWidget.tween(
+          enabled: controller.startShake,
+          duration: Duration(milliseconds: 500),
+          scaleDisabled: 1.0,
+          scaleEnabled: 0.9,
+          child:BookingTypeButton(
+            icon: Icon(
+              Icons.qr_code,
+              color: Colors.blueGrey[100],
+              size: 120,
             ),
-          )
-        ],
+            title: 'settlement_button'.localized(),
+            selected: false,
+            onTap: ()=>Get.toNamed("/scancode-page"),
+          ),
+        ),
+
+        SizedBox(width: ScreenAdapter.width(50),),
+        ScaleAnimatedWidget.tween(
+          enabled: controller.startShake,
+          duration: Duration(milliseconds: 500),
+          scaleDisabled: 0.9,
+          scaleEnabled: 1.0,
+          child:BookingTypeButton(
+            icon: Icon(
+              Icons.shopping_bag,
+              color: Colors.blueGrey[100],
+              size: 120,
+            ),
+            title: 'menu_dingtype_takeout'.localized(),
+            selected: false,
+            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
+          ),
+        )
+      ],
+    );
+  }
+
+  _startButton() {
+    return ScaleAnimatedWidget.tween(
+      enabled: controller.startShake,
+      duration: Duration(milliseconds: 500),
+      scaleDisabled: 0.9,
+      scaleEnabled: 1.0,
+      child:
+      InkWell(
+        onTap: ()=>Get.toNamed("/scancode-page"),
+        child: Container(
+          padding: EdgeInsets.all(10),
+          height:ScreenAdapter.height(260),
+          width: ScreenAdapter.width(600),
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: Colors.green[900],
+            borderRadius: BorderRadius.circular(10),
+          ),
+          child: Text(
+            'settlement_button'.localized(),
+            maxLines: 2,
+            textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
+            style: TextStyle(
+              color: Colors.white,//const Color.fromARGB(255, 53,59,80),
+              fontSize: 80,
+              fontFamily: GFont.getFontFamily(),
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
       ),
     );
-
   }
 
-  //预约弹出框
-  _showMakeAnAppointmentDialog() async {
-    Get.dialog(
-        AppointmentPage()
-    );
-  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -205,79 +171,28 @@ class CheckoutPageView extends GetView {
           child: Stack(
             children: [
               Container(
-                padding: EdgeInsets.zero,
-                height: ScreenAdapter.height(1920),
-                child: Column(
-                  children: [
-                    Container(
-                      height: 0,
-                      padding: EdgeInsets.only(left: 20),
-                      child: Row(
-                        children: <Widget>[
-                          Expanded(
-                              child: TextField(
-                                keyboardType: TextInputType.text,
-                                autofocus: true,
-                                showCursor: true, // 显示光标
-                                //readOnly: true,
-                                controller: controller.scanQrCodeHomeController,
-                                focusNode: controller.scanQrCodeHomeFocusNode,
-                                decoration: InputDecoration(
-                                  hintText: "请扫码",
-                                  border: InputBorder.none,
-                                  isDense: true,
-                                ),
-                                style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(11.0)),
-                                onChanged: (value) {
-                                  //print(value);
-                                  if(value.length==1){
-                                    controller.showOrderEasyLoading();
-                                  }
-
-                                },
-                                onSubmitted: (value){
-                                  Future.delayed(Duration(milliseconds: 150), () {
-                                    controller.requestOrderList(value, firstPage: true);
-                                  });
-
-
-
-                                },
-
-                                /// 扫码密码
-                              )
-                          ),
-                        ],
-                      ),
-                    ),
-                    Container(
-                      width: MediaQuery.of(context).size.width,
-                     height: MediaQuery.of(context).size.height,
-                      padding: EdgeInsets.zero,
-                      child: Swiper(
-                        //itemHeight: 200,
-                        itemBuilder: (BuildContext context,int index){
-                          // 配置图片地址
-                          return publicShowMenuImage(imgPath:controller.machineInfo.homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
-                        },
-                        // 配置图片数量
-                        itemCount: controller.machineInfo.homeList.length,
-                        // 底部分页器
-                        //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                        // 左右箭头
-                        //control: new SwiperControl(),
-                        // 无限循环
-                        loop: (controller.machineInfo.homeList.length >1) ?true :false,
-                        duration: 1000,
-                        autoplayDelay:12000,
-                        // 自动轮播
-                        autoplay: (controller.machineInfo.homeList.length >1) ?true :false,
-                      ),
-                    ),
-                  ],
+                width: MediaQuery.of(context).size.width,
+                height: MediaQuery.of(context).size.height,
+                child: Swiper(
+                  //itemHeight: 200,
+                  itemBuilder: (BuildContext context,int index){
+                    // 配置图片地址
+                    return publicShowMenuImage(imgPath:controller.machineInfo.homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
+                  },
+                  // 配置图片数量
+                  itemCount: controller.machineInfo.homeList.length,
+                  // 底部分页器
+                  //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                  // 左右箭头
+                  //control: new SwiperControl(),
+                  // 无限循环
+                  loop: (controller.machineInfo.homeList.length >1) ?true :false,
+                  duration: 1000,
+                  autoplayDelay:12000,
+                  // 自动轮播
+                  autoplay: (controller.machineInfo.homeList.length >1) ?true :false,
                 ),
               ),
-
               Positioned(
                 right: ScreenAdapter.width(0),
                 top: ScreenAdapter.height(20),
@@ -303,27 +218,92 @@ class CheckoutPageView extends GetView {
                   ),
                 ),
               ),
-              Positioned(
-                top: ScreenAdapter.height(1370),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisSize: MainAxisSize.min,
-                    children: <Widget>[
-                      if(controller.takeOut.value == true)
-                        _showTakeoutButton(),
 
-                      _showLanguagesButton(),
-                      SizedBox(height: ScreenAdapter.height(40),),
-                      //是否展示预定排号
-                      if(controller.lineup.value == true && controller.isReservation.value == "1")
-                        _showLineUpButton(),
-                    ],
-                  ),
+              Positioned(
+                  bottom: ScreenAdapter.height(720),
+                  child: Container(
+                    width: ScreenAdapter.width(1080),
+                    child: Column(
+                      children: [
+                        Text(
+                          'menu_dingtype_title'.localized(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                            fontSize: 80,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.white,
+                                offset: Offset(3.0, -4.0),
+                                blurRadius: 1.0,
+                              ),
+                            ],
+                          ),
+                        ),
+                        if (controller.machineInfo.diningType == "3")
+                          Text(
+                            'menu_ding_type_tips'.localized(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                              fontSize: 40,
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white,
+                                  offset: Offset(2.0, -2.0),
+                                  blurRadius: 2.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                      ],
+                    ),
+                  )
+              ),
+
+
+              Positioned(
+                bottom: ScreenAdapter.height(400),
+                width: ScreenAdapter.width(1080),
+                child: Center(
+                    child:
+                    controller.machineInfo.diningType == "3" ?
+                    _diningSelectArea()
+                        : _startButton()
+
+                ),
+              ),
+
+
+              Positioned(
+                bottom: ScreenAdapter.height(150),
+                child: Container(
+                    width: ScreenAdapter.width(1080),
+                    height: ScreenAdapter.height(200),
+                    child: languageSelectView()
+                ),
+              ),
+
+              Positioned(
+                bottom: ScreenAdapter.height(120),
+                child: Container(
+                    width: ScreenAdapter.width(1080),
+                    child: Divider(
+                      height: 1,
+                      color: Colors.grey[300],
+                      indent: 50,
+                      endIndent: 50,
+                    )
                 ),
               )
+
+
             ],
           ),
         ),

@@ -57,7 +57,7 @@ class ScanDetailPagePage extends StatelessWidget {
                       ),
                       Text(
                         GString.getToString(
-                            checkoutLogic.checkLanguage.value, "scan_order_detail_title"),
+                            checkoutLogic.selectLanguage, "scan_order_detail_title"),
                         style: TextStyle(
                           //color: ColorsUtil.hexToColor("#FFFFFF"),
                             fontWeight: FontWeight.w600,
@@ -129,7 +129,7 @@ class ScanDetailPagePage extends StatelessWidget {
                           ),
                           child: Text(
                             GString.getToString(
-                                checkoutLogic.checkLanguage.value, "settlement_back"),
+                                checkoutLogic.selectLanguage, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
@@ -156,7 +156,7 @@ class ScanDetailPagePage extends StatelessWidget {
                           ),
                           child: Text(
                             GString.getToString(
-                                checkoutLogic.checkLanguage.value, "settlement_button"),
+                                checkoutLogic.selectLanguage, "settlement_button"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w500,
@@ -192,7 +192,7 @@ class ScanDetailPagePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(GString.getToString(checkoutLogic.checkLanguage.value, "show_check_tableno"),
+            Text(GString.getToString(checkoutLogic.selectLanguage, "show_check_tableno"),
                 style: TextStyle(
                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
@@ -217,7 +217,7 @@ class ScanDetailPagePage extends StatelessWidget {
           children: [
             Text(
                 GString.getToString(
-                    checkoutLogic.checkLanguage.value, "settlement_total_price") + ' :',
+                    checkoutLogic.selectLanguage, "settlement_total_price") + ' :',
                 style: TextStyle(
                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
@@ -251,7 +251,7 @@ class ScanDetailPagePage extends StatelessWidget {
                     TextSpan(
                       text:
                       "（${GString.getToString(
-                          checkoutLogic.checkLanguage.value, "show_price_front")}）", //" 円",
+                          checkoutLogic.selectLanguage, "show_price_front")}）", //" 円",
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
                             GFontSize.menusettlementBottomPriceRight),

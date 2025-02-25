@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
@@ -41,8 +42,14 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString totalPrice = "0".obs;
   RxString tableNum = "0".obs;
 
-  RxString checkLanguage = "JP".obs;
-  bool isFirstPage = false;
+
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isAnimating = false;
 
 
   RxMap orderInfoMap = {}.obs;
@@ -52,56 +59,53 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onInit() {
     debugPrint("CheckoutPageController init");
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
-    //Get.focusScope.unfocus();
-    //Get.focusScope.requestFocus(scanQrCodeFocusNode);
-    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
-
-    change(null, status: RxStatus.success());
+    _getMachineLanguages();
     super.onInit();
   }
 
   @override
   void onReady() {
     super.onReady();
+    startRepeatingAnimation();
   }
 
   @override
   void onClose() {
+    //stopRepeatingAnimation();
     super.onClose();
   }
 
+  _getMachineLanguages() async {
+    debugPrint("获取机器语言");
+    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
+    debugPrint("获取机器语言结束");
+    update();
+    change(null, status: RxStatus.success());
+  }
 
-//获取机器信息
-//   getMachineInfo() async {
-//     var machineCodestr = await HomeServices.getMachineInfo();
-//     if (machineCodestr != "") {
-//         machineCode.value = machineCodestr;
-//
-//     }
-//     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-//
-//     getHomeImageList();
-//   }
+  void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
+      }
+      startShake = !startShake;
+      update();
+    });
+  }
 
-  // getHomeImageList() async {
-  //   List homeimageList = await HomeServices.getSmartweHomeImagesData();
-  //   homeList.value = homeimageList;
-  //
-  //   getSmartweMachineSettingData();
-  //   update();
-  // }
-
-  // getSmartweMachineSettingData() async {
-  //   var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
-  //   actuarial.value = smartweMachineSetting["machineActuarial"];
-  //   lineup.value = smartweMachineSetting["machineLineup"];
-  //
-  //   getSystemSettingInfo();
-  // }
-
-
-
-  //获取展示支付方式
+  void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
+    isAnimating = false;
+    startShake = false;
+    update();
+  }
 
 
 
@@ -135,8 +139,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
 
-  requestOrderList(String scanText, {goDetail = true, firstPage = false}) async {
-    isFirstPage = firstPage;
+  requestOrderList(String scanText, {goDetail = true}) async {
     debugPrint('qrCodeString: $scanText');
     scanTextValue = scanText;
     String orderKey = scanText;
@@ -152,7 +155,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     debugPrint('orderKey : $orderKey');
     var formData = {
       "orderKey": orderKey,
-      "language": checkLanguage.value,
+      "language": selectLanguage,
       "machineCode": machineInfo.machineCode
     };
 
@@ -170,7 +173,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           response["data"].isNotEmpty &&
           response["data"]["orderId"] != null
       ) {
-        if (response["data"]["totalPrice"] > 0) {
+        if (response["data"]["totalPrice"] >= 0) {
 
           orderId.value = response["data"]["orderId"].toString();
           totalPrice.value = response["data"]["totalPrice"].toString();
@@ -208,9 +211,9 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   _showDialogError(msg){
       Get.dialog(DialogUtils.alertOneButton(msg,
-      title: GString.getToString(checkLanguage.value, "tag_title"),
+      title: GString.getToString(selectLanguage, "tag_title"),
       confirmtitle:
-      GString.getToString(checkLanguage.value, "tag_button_yes"),
+      GString.getToString(selectLanguage, "tag_button_yes"),
       contentTagImg: "error_public", confirm: () {
         Get.back();
       }));
@@ -223,7 +226,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     Get.to(
           () =>
         SelectPaymentPage(
-            checkLanguage: checkLanguage.value,
+            checkLanguage: selectLanguage,
             menuCount: 0,
             shopCartTotalPrice:totalPrice.value,
             tableNum: tableNum.value,
@@ -271,8 +274,8 @@ class CheckoutPageController extends GetxController with StateMixin {
         //showToast(response['data']["message"]);
         Get.dialog(
             DialogUtils.alertOneButton("${response['data']["message"]}",
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: GString.getToString(selectLanguage, "tag_title"),
+                confirmtitle: GString.getToString(selectLanguage,"tag_button_yes"),
                 confirm: () {
                   Get.back();
                 })
@@ -287,7 +290,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     // scanQrCodeHomeController.text = "";
     Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
-          "checkLanguage": checkLanguage.value,
+          "checkLanguage": selectLanguage,
           "machineCode": machineInfo.machineCode,
           "orderId" : orderId.value,
           "totalPrice" : totalPrice.value,
@@ -314,22 +317,22 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   backCheckHome({resetLanguage = false}) {
 
-    final reset = isFirstPage || resetLanguage;
-    debugPrint('backCheckHome isFirstPage:$isFirstPage, reset:$resetLanguage');
+    final reset = resetLanguage;
+    debugPrint('backCheckHome, reset:$resetLanguage');
     if (reset)
-    checkLanguage.value = 'JP';
+    selectLanguage = 'JP';
 
     _resetScanState(resetLanguage);
     Get.back();
   }
 
   _resetScanState(resetLanguage) {
-    if (isFirstPage) {
-      debugPrint('isFirstPage = true');
-      scanQrCodeHomeController.text = "";
-      scanQrCodeHomeFocusNode.requestFocus();
-      scanQrCodeFocusNode.unfocus();
-    } else {
+    // if (isFirstPage) {
+    //   debugPrint('isFirstPage = true');
+    //   scanQrCodeHomeController.text = "";
+    //   scanQrCodeHomeFocusNode.requestFocus();
+    //   scanQrCodeFocusNode.unfocus();
+    // } else {
       debugPrint('isFirstPage = false');
       scanQrCodeController.text = "";
       scanQrCodeFocusNode.requestFocus();// 获取焦点
@@ -339,7 +342,23 @@ class CheckoutPageController extends GetxController with StateMixin {
         scanQrCodeHomeFocusNode.unfocus();
       }
 
-    }
+    //}
+  }
+
+  goMenu(String lan, bool mealType) {
+    machineInfo.mealType = mealType;
+    var jumpUrl = '/menu-page';
+    startShake = false;
+    Get.toNamed(jumpUrl,
+        arguments: {"checkLanguage": lan, "mealType": mealType});
+  }
+
+  updateSettingLanguage(String language) async {
+
+    selectLanguage = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
+
   }
 
 

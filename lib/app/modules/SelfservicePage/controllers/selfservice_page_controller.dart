@@ -1,4 +1,8 @@
+import 'dart:async';
+
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/order_sql_controller.dart';
@@ -7,23 +11,21 @@ import '../../../services/HomeServices.dart';
 class SelfservicePageController extends GetxController with StateMixin {
   //TODO: Implement SelfservicePageController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  MachineInfoController machineInfo = Get.find();
 
-  RxString machineCode = "".obs;
-
-  RxString menu_direction = "1".obs;//1 默认顶部横向  2 左侧纵向
-  RxString dining_type = "0".obs; //就餐类型选择 1店内 2外卖 3全可以
-
-  RxBool machineLanguages_JP = false.obs;
-  RxBool machineLanguages_CH = false.obs;
-  RxBool machineLanguages_EN = false.obs;
-  RxBool machineLanguages_KO = false.obs;
-
-  RxList homeList = [].obs;
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isFirstPage = false;
+  bool isAnimating = false;
 
   @override
   void onInit() {
     EasyLoading.dismiss();
-    _getMachineInfo();
+    _getMachineLanguages();
 
     super.onInit();
   }
@@ -31,70 +33,71 @@ class SelfservicePageController extends GetxController with StateMixin {
   @override
   void onReady() {
     super.onReady();
+    startRepeatingAnimation();
   }
 
   @override
   void onClose() {
+    //stopRepeatingAnimation();
     super.onClose();
   }
 
-  //获取机器信息
-  _getMachineInfo() async {
-    var machineCodeString = await HomeServices.getMachineInfo();
-    if (machineCodeString != "") {
-      machineCode.value = machineCodeString;
 
-    }
-    //首页图片
-    _getHomeImageList();
-  }
-
-  _getHomeImageList() async {
-    var homeimageList = await HomeServices.getSmartweHomeImagesData();
-
-    homeList.value = homeimageList;
-
-    getSystemSettingInfo();
-
-  }
-
-  getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-    menu_direction.value = (SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1";
-    dining_type.value = (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1";
-
-
-    getmenchineLanguages();
-
-  }
-
-  getmenchineLanguages() async {
-    var languageJP = false;
-    var languageCH = false;
-    var languageEN = false;
-    var languageKO = false;
-    var menchineLanguagesData = await HomeServices.getMachineLanguages();
-    for (var item in menchineLanguagesData) {
-      if(item == "JP"){
-        languageJP = true;
-      }else if(item == "CH"){
-        languageCH = true;
-      }else if(item == "EN"){
-        languageEN = true;
-      }else if(item == "KO"){
-        languageKO = true;
+  void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
       }
-    }
+      startShake = !startShake;
+      update();
+    });
+  }
 
-    machineLanguages_JP.value = languageJP;
-    machineLanguages_CH.value = languageCH;
-    machineLanguages_EN.value = languageEN;
-    machineLanguages_KO.value = languageKO;
+  void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
+    isAnimating = false;
+    startShake = false;
+    update();
+  }
+
+
+
+  _getMachineLanguages() async {
+
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
 
     update();
     change(null, status: RxStatus.success());
+  }
 
+  goMenu(String lan, bool mealType) {
+    machineInfo.mealType = mealType;
+    var jumpUrl = '/menu-page';
+    startShake = false;
+    Get.toNamed(jumpUrl,arguments: {
+      "checkLanguage": lan,
+      "mealType":mealType
+    });
+  }
+
+  goSelfCheckout() {
+    Get.toNamed('/self-checkoutscanningcode',arguments: {
+      "checkLanguage": selectLanguage,
+      "mealType": machineInfo.mealType
+    });
+  }
+
+  void updateSettingLanguage(String language) async {
+    //await HomeServices.updateSettingLanguage(language);
+    selectLanguage = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
   }
 
 
