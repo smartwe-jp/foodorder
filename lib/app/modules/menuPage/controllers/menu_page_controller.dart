@@ -83,7 +83,6 @@ class MenuPageController extends GetxController with StateMixin {
 
   bool paymentIsShow = false;
   bool returnFromeCancelOrder = false;
-  bool showReceiptPage = false;
 
   //for page controller
   bool isChangingPage = false;

@@ -2,6 +2,11 @@ import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
 class MachineInfoController extends GetxController {
+
+  final Map systemSettingInfo;
+
+  MachineInfoController(this.systemSettingInfo);
+
   //base info
   late String machineCode;
   late String shopCode;
@@ -71,16 +76,16 @@ class MachineInfoController extends GetxController {
       shopCode = await HomeServices.getShopCode();
     }
     print('loadMachineSettingInfo 0');
-    Map systemSettingInfo0 = await HomeServices.getSystemSettingInfo();
-    diningType = systemSettingInfo0['diningType'];
+
+    diningType = systemSettingInfo['diningType'];
     print('loadMachineSettingInfo diningType : $diningType');
-    isAllowPos = systemSettingInfo0['isAllowPos'];
-    isAllowReceipt = systemSettingInfo0['isAllowReceipt'];
+    isAllowPos = systemSettingInfo['isAllowPos'];
+    isAllowReceipt = systemSettingInfo['isAllowReceipt'];
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
-    menu_direction = (systemSettingInfo0["menuDirection"] !="" && systemSettingInfo0["menuDirection"]!=null) ? systemSettingInfo0["menuDirection"] :"1";
+    menu_direction = (systemSettingInfo["menuDirection"] !="" && systemSettingInfo["menuDirection"]!=null) ? systemSettingInfo["menuDirection"] :"1";
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
@@ -91,32 +96,32 @@ class MachineInfoController extends GetxController {
     editMode = await HomeServices.getEditMode();
 
     print('loadMachineSettingInfo 1');
-    Map systemSettingInfo = await HomeServices.getMachineActivateData();
-    showCash = systemSettingInfo['showCash'];
-    showWechat = systemSettingInfo['showWechat'];
-    showAlipay = systemSettingInfo['showAlipay'];
-    showPayPay = systemSettingInfo['showPayPay'];
-    showCreditCard = systemSettingInfo['showCreditCard'];
+    Map machineActivateData = await HomeServices.getMachineActivateData();
+    showCash = machineActivateData['showCash'];
+    showWechat = machineActivateData['showWechat'];
+    showAlipay = machineActivateData['showAlipay'];
+    showPayPay = machineActivateData['showPayPay'];
+    showCreditCard = machineActivateData['showCreditCard'];
     print('loadMachineSettingInfo 2');
-    showAuPay = systemSettingInfo['au_Pay'];
-    showDPay = systemSettingInfo['d_Pay'];
-    showRPay = systemSettingInfo['R_Pay'];
-    showMPay = systemSettingInfo['m_Pay'];
+    showAuPay = machineActivateData['au_Pay'];
+    showDPay = machineActivateData['d_Pay'];
+    showRPay = machineActivateData['R_Pay'];
+    showMPay = machineActivateData['m_Pay'];
     print('loadMachineSettingInfo 3');
-    showPosEdy = systemSettingInfo['pos_Edy'];
-    showPosiD = systemSettingInfo['pos_iD'];
-    showPosIC = systemSettingInfo['pos_IC'];
-    showPosQUICPay = systemSettingInfo['pos_QUICPay'];
-    showPosWAON = systemSettingInfo['pos_WAON'];
-    showPosnanaco = systemSettingInfo['pos_nanaco'];
+    showPosEdy = machineActivateData['pos_Edy'];
+    showPosiD = machineActivateData['pos_iD'];
+    showPosIC = machineActivateData['pos_IC'];
+    showPosQUICPay = machineActivateData['pos_QUICPay'];
+    showPosWAON = machineActivateData['pos_WAON'];
+    showPosnanaco = machineActivateData['pos_nanaco'];
     print('loadMachineSettingInfo 4');
-    showVisa = systemSettingInfo['show_visa'];
-    showMaster = systemSettingInfo['show_master'];
-    showJcb = systemSettingInfo['show_jcb'];
-    showUnionPay = systemSettingInfo['show_unionPay'];
-    showAmericanExpress = systemSettingInfo['show_americanExpress'];
-    showDinersClub = systemSettingInfo['show_dinersClub'];
-    showDiscover = systemSettingInfo['show_discover'];
+    showVisa = machineActivateData['show_visa'];
+    showMaster = machineActivateData['show_master'];
+    showJcb = machineActivateData['show_jcb'];
+    showUnionPay = machineActivateData['show_unionPay'];
+    showAmericanExpress = machineActivateData['show_americanExpress'];
+    showDinersClub = machineActivateData['show_dinersClub'];
+    showDiscover = machineActivateData['show_discover'];
     print('loadMachineSettingInfo 5');
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     pos_ip = posSettingInfo['posIp'] ?? "";

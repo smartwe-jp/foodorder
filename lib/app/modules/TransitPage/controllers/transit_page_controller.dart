@@ -449,7 +449,6 @@ class TransitPageController extends GetxController {
     if (systemSettingData["isAllowOneYen"] == "0") {
       try {
         if (Platform.isAndroid) {
-          var prohibitOneCashStatus =
               await Paycube.prohibitOneCash.timeout(Duration(seconds: 10));
         }
       } on TimeoutException catch (e) {
@@ -460,10 +459,10 @@ class TransitPageController extends GetxController {
     }
 
     //_goNext(checkmachineMode);
-    await _injectControllers(checkmachineMode);
+    await _injectControllers(checkmachineMode, systemSettingData);
   }
 
-  Future _injectControllers(checkmachineMode) async {
+  Future _injectControllers(checkmachineMode, systemSettingData) async {
     // if (Get.isRegistered<PosPayController>()) Get.delete<PosPayController>();
     // Get.put(PosPayController());
 
@@ -471,7 +470,7 @@ class TransitPageController extends GetxController {
     //   Get.delete<MachineInfoController>();
     //  } 
 
-     Get.put(MachineInfoController());
+     Get.put(MachineInfoController(systemSettingData));
      
      await _goNext(checkmachineMode);
   }
