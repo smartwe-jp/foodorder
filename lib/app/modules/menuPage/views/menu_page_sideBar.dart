@@ -20,7 +20,7 @@ extension MenuPageSideBar on MenuPageView {
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 245, 247, 247),
           borderRadius: BorderRadius.only(
-            topRight: Radius.circular(40),
+            topRight: Radius.circular(5),
           ),
         ),
         child: Column(
@@ -56,7 +56,7 @@ extension MenuPageSideBar on MenuPageView {
                                   : Color.fromARGB(255, 245, 247, 247),
                               borderRadius: BorderRadius.only(
                                   topRight: Radius.circular(
-                                      index == 0 ? 40 : 0)),
+                                      index == 0 ? 5 : 0)),
                             ),
                             padding: EdgeInsets.only(
                                 left: ScreenAdapter.width(30),

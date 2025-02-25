@@ -281,7 +281,11 @@ class GridMenuView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Center(
       child: GridView.builder(
-            padding: EdgeInsets.all(20.dp),
+            padding: EdgeInsets.only(
+              left:ScreenAdapter.width(30),
+              right: ScreenAdapter.width(30),
+              bottom: ScreenAdapter.height(30)
+            ),
             physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : const NeverScrollableScrollPhysics(), // 允许 GridView 滚动BouncingScrollPhysics NeverScrollableScrollPhysics
             shrinkWrap: true,
             addAutomaticKeepAlives: true,
