@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
-import 'package:foodorder/app/services/formatMoney.dart';
 import 'package:foodorder/app/widget/CustomButton.dart';
 import 'package:get/get.dart';
 import '../../../../config/color.dart';
@@ -9,6 +8,7 @@ import '../../../../config/colorsUtil.dart';
 import '../../../../config/font.dart';
 import '../../../../config/string.dart';
 import '../../../../services/ScreenAdapter.dart';
+import '../../../../services/formatMoney.dart';
 import '../../controllers/menu_page_controller.dart';
 
 extension RecommendView on MenuPageController {
@@ -16,7 +16,7 @@ extension RecommendView on MenuPageController {
     //debugPrint("menuItemView: $item");
     return GridItemView(
       title: item['mainTitle'],
-      subtitle: "${item['subtitle'] ?? ""}",
+      subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
@@ -40,15 +40,6 @@ extension RecommendView on MenuPageController {
         } else {
           //如果option 存在，则弹出option
           debugPrint("GridItemView onTap option");
-          // if(item['optionGroupVoList']?.length > 0){
-          //   if(popupType == "v1"){
-          //     publicShowOneItemWidgetv1(item);
-          //   }else{
-          //     publicShowOneItemWidget(item);
-          //   }
-
-          // }else{
-          //if (canAddCart)
           recommendBookList.add(item);
           update();
           if (Get.context != null) publicAddCart(Get.context!, item);
@@ -71,28 +62,25 @@ extension RecommendView on MenuPageController {
   }
 
   showCarPopView() {
+    showCartView = true;
     showModalBottomSheet<void>(
-
-        //useSafeArea: true,
+        useSafeArea: true,
         backgroundColor: Colors.transparent,
         context: Get.context!,
         constraints: BoxConstraints(
             minHeight: ScreenAdapter.height(400),
-            //maxHeight: ScreenAdapter.height(1800),
+            //maxHeight: ScreenAdapter.height(1000),
             minWidth: double.infinity),
         builder: (BuildContext context) {
           debounce(showCartTotalGoodsNum, (count) {
             if (count == 0 && showCartView) {
               showCartView = false;
-              Get.back();
               //Navigator.pop(context);
+              Get.back();
             }
           });
           return GetBuilder<MenuPageController>(
             builder: (controller) => Container(
-                //width: 1080,
-                //decoration: BoxDecoration(color: Colors.white),
-
                 child: Column(
               children: [
                 Expanded(
@@ -116,42 +104,15 @@ extension RecommendView on MenuPageController {
                     ),
                     onTap: () {
                       showCartView = false;
-                      //Navigator.pop(context);
-                      Get.back();
+                      Navigator.pop(context);
                     }),
               ],
             )),
           );
         });
-
-    // Get.bottomSheet(GetBuilder<MenuPageController>(
-    //   builder: (controller) => Padding(
-    //     padding: const EdgeInsets.all(8.0),
-    //     child: Container(
-    //         width: 1080,
-    //         constraints: BoxConstraints(
-    //           minHeight: ScreenAdapter.height(300),
-    //           maxHeight: ScreenAdapter.height(800),
-    //         ),
-    //         decoration: BoxDecoration(
-    //           color: Colors.white
-    //         ),
-    //         child: publicCartView()),
-    //   ),
-    // ));
   }
 
   showRecommendView() {
-    // Get.dialog(
-    //   GetBuilder<MenuPageController>(
-    //     builder: (controller) => recommendView(),
-    //   ),
-    //   //Obx(() => recommendView()),
-    //   //barrierDismissible: false
-    // );
-    // showSugguest = true;
-    // update();
-
     showRecommend = true;
     showModalBottomSheet<void>(
         isDismissible: false,
@@ -165,6 +126,7 @@ extension RecommendView on MenuPageController {
           debounce(showCartTotalGoodsNum, (count) {
             if (count == 0 && showRecommend) {
               showRecommend = false;
+              //debugPrint('Navigator:$Navigator, context:$context');
               //Navigator.pop(context);
               Get.back();
             }
@@ -179,11 +141,7 @@ extension RecommendView on MenuPageController {
   }
 
   Widget carbutton() {
-    return InkWell(
-      onTap: () {
-        showCarPopView();
-      },
-      child: Stack(
+    return  Stack(
         children: [
           Container(
               width: ScreenAdapter.width(120),
@@ -224,7 +182,6 @@ extension RecommendView on MenuPageController {
               ),
             ),
         ],
-      ),
     );
   }
 
@@ -237,7 +194,7 @@ extension RecommendView on MenuPageController {
             fontFamily: GFont.getFontFamily(),
             color: Colors.black,
           )),
-          SizedBox(width: 20,),
+      SizedBox(width: 20,),
       Align(
           alignment: Alignment.center,
           child: RichText(
@@ -279,13 +236,15 @@ extension RecommendView on MenuPageController {
     return Container(
       decoration:
           BoxDecoration(color: const Color.fromARGB(255, 245, 245, 245)),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        children: [
-          SizedBox(
-            height: 20,
-          ),
-          Container(
+
+      child: Container(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.start,
+          children: [
+            SizedBox(
+              height: 20,
+            ),
+            Container(
                 height: 60,
                 child: Stack(
                   alignment: AlignmentDirectional.center,
@@ -310,8 +269,9 @@ extension RecommendView on MenuPageController {
                           child: Row(
                             //mainAxisSize: MainAxisSize.max,
                             children: [
-                              Icon(Icons.arrow_back, color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
-                              SizedBox(width: 4),
+                              Icon(Icons.arrow_back_ios,
+                                  size: 35,
+                                  color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
                               Text(
                                 GString.getToString(
                                     checkLanguage.value, 'settlement_back'),
@@ -331,55 +291,88 @@ extension RecommendView on MenuPageController {
                   ],
                 )
             ),
-          SizedBox(
-            height: 20,
-          ),
-          Expanded(
-            child: showRecommendItemList(recommendFoods),
-          ),
-          Container(
-            height: ScreenAdapter.height(180),
-            alignment: Alignment.center,
-            decoration:
-                BoxDecoration(color: const Color.fromARGB(255, 223, 223, 223)),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                SizedBox(
-                    width: 50,
-                ),
-                carbutton(),
-                SizedBox(
-                    width: 30,
-                ),
-                priceText(),
-                Spacer(),
-                if (recommendBookList.isEmpty)
-                  CustomButton(
-                      title: GString.getToString(
-                          checkLanguage.value, "skip_button"),
-                      bgColor: Colors.white,
-                      titleColor: Colors.black,
-                      onTap: () {
-                        dismissAction(context);
-                      }),
-                if (recommendBookList.isNotEmpty)
-                  CustomButton(
-                      title: GString.getToString(
-                          checkLanguage.value, "next_button"),
-                      bgColor: ColorsUtil.hexToColor(Gcolor.buttonRedColor),
-                      onTap: () {
-                        dismissAction(context);
-                      }),
-                SizedBox(
-                  width: 120,
-                )
-              ],
+            SizedBox(
+              height: 20,
             ),
-          )
-        ],
+            Expanded(
+              child: showRecommendItemList(recommendFoods),
+            ),
+            Container(
+              height: ScreenAdapter.height(180),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 223, 223, 223)),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
+                    child:
+                    GestureDetector(
+                      onTap: () {
+                        showCarPopView();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 223, 223, 223)),
+                        child: Row(
+                          children:
+                            [
+                          SizedBox(
+                            width: 50,
+                          ),
+                          carbutton(),
+                          SizedBox(
+                            width: 30,
+                          ),
+                          priceText(),
+
+                              Spacer(),
+                          Icon(
+                            Icons.edit,
+                            color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                            size: 40,
+                          ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                            ]),
+                      ),
+                    ),
+                  ),
+
+                  SizedBox(
+                    width: 30,
+                  ),
+
+                  if (recommendBookList.isEmpty)
+                    CustomButton(
+                        title: GString.getToString(
+                            checkLanguage.value, "skip_button"),
+                        bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                        titleColor: Colors.white,
+                        onTap: () {
+                          dismissAction(context);
+                        }),
+                  if (recommendBookList.isNotEmpty)
+                    CustomButton(
+                        title: GString.getToString(
+                            checkLanguage.value, "next_button"),
+                        bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                        onTap: () {
+                          dismissAction(context);
+                        }),
+                  SizedBox(
+                    width: 60,
+                  )
+                ],
+              ),
+            )
+          ],
+        ),
       ),
+      //skip$next
+      //),
     );
   }
 }

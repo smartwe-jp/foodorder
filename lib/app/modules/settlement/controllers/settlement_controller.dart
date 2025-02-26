@@ -101,11 +101,8 @@ class SettlementController extends GetxController with StateMixin {
 
   RxBool showPrintButton = false.obs; //如果投币金额不足，则不显示打印按钮
 
-  // RxString isAllowPos = "0".obs;
-  // RxString pos_ip = "".obs;
-  // RxString pos_port = "".obs;
+
   RxString eventReportString = "".obs;
-  //RxString payment_method_num = "0".obs; //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
   RxMap posResultReportData = {}.obs;
   RxInt showPrintType = 0.obs; //0 receipt   1Lable
   RxString wlan_print_ip = "".obs;

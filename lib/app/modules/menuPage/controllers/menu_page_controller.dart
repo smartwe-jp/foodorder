@@ -561,6 +561,7 @@ class MenuPageController extends GetxController with StateMixin {
     showCartItems.value = ordersqlcontroller.cartItems;
     if (showCartTotalGoodsNum.value == 0) {
       showShopCart.value = false;
+      showRecommend = false;
     }
     update(['shopping_cart','shoppingCar']);
   }
