@@ -143,11 +143,7 @@ extension RecommendView on MenuPageController {
   }
 
   Widget carbutton() {
-    return InkWell(
-      onTap: () {
-        showCarPopView();
-      },
-      child: Stack(
+    return  Stack(
         children: [
           Container(
               width: ScreenAdapter.width(120),
@@ -188,7 +184,6 @@ extension RecommendView on MenuPageController {
               ),
             ),
         ],
-      ),
     );
   }
 
@@ -276,8 +271,9 @@ extension RecommendView on MenuPageController {
                           child: Row(
                             //mainAxisSize: MainAxisSize.max,
                             children: [
-                              Icon(Icons.arrow_back, color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
-                              SizedBox(width: 4),
+                              Icon(Icons.arrow_back_ios,
+                                  size: 35,
+                                  color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
                               Text(
                                 GString.getToString(
                                     checkLanguage.value, 'settlement_back'),
@@ -312,15 +308,45 @@ extension RecommendView on MenuPageController {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    width: 50,
+                  Expanded(
+                    child:
+                    GestureDetector(
+                      onTap: () {
+                        showCarPopView();
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 223, 223, 223)),
+                        child: Row(
+                          children:
+                            [
+                          SizedBox(
+                            width: 50,
+                          ),
+                          carbutton(),
+                          SizedBox(
+                            width: 30,
+                          ),
+                          priceText(),
+
+                              Spacer(),
+                          Icon(
+                            Icons.edit,
+                            color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                            size: 40,
+                          ),
+                              SizedBox(
+                                width: 30,
+                              ),
+                            ]),
+                      ),
+                    ),
                   ),
-                  carbutton(),
+
                   SizedBox(
                     width: 30,
                   ),
-                  priceText(),
-                  Spacer(),
+
                   if (recommendBookList.isEmpty)
                     CustomButton(
                         title: GString.getToString(
@@ -334,12 +360,12 @@ extension RecommendView on MenuPageController {
                     CustomButton(
                         title: GString.getToString(
                             checkLanguage.value, "next_button"),
-                        bgColor: ColorsUtil.hexToColor(Gcolor.buttonRedColor),
+                        bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                         onTap: () {
                           dismissAction(context);
                         }),
                   SizedBox(
-                    width: 120,
+                    width: 60,
                   )
                 ],
               ),

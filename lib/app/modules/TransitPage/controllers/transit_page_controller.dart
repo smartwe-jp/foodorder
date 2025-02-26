@@ -283,7 +283,7 @@ class TransitPageController extends GetxController {
     //这里判断是否禁用1元
     if(systemSettingData["isAllowOneYen"] == "0"){
       try {
-        var prohibitOneCashStatus = await Paycube.prohibitOneCash.timeout(
+        await Paycube.prohibitOneCash.timeout(
             Duration(seconds: 10));
       } on TimeoutException catch (e) {
         print('Timeout: $e');
