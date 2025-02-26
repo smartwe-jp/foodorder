@@ -79,7 +79,6 @@ class MenuPageController extends GetxController with StateMixin {
   bool showRecommend = false;
   bool showCartView = false;
   bool paymentIsShow = false;
-  bool showReceiptPage = false;
 
   int selectIndex = 0;
   bool isChangingPage = false;
@@ -1127,7 +1126,7 @@ print("加1了");
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     paymentIsShow = true;
-    showReceiptPage = machineInfo.showReceiptPage;
+    machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
           () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,

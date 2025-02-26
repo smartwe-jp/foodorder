@@ -136,6 +136,8 @@ extension LocalizedString on String {
         "tag_amount":"合計",
         "tag_checkout":"お会計",
         "order_start":"注文",
+
+        "pos_report_error_tips":"申し訳ございません、決済失敗ので、店員に対応を依頼してください。",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -263,6 +265,8 @@ extension LocalizedString on String {
         "tag_amount":"共计",
         "tag_checkout":"去结算",
         "order_start":"下单",
+
+        "pos_report_error_tips":"非常抱歉，支付失败，请联系商家处理。",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -390,6 +394,8 @@ extension LocalizedString on String {
         "tag_amount":"Total",
         "tag_checkout":"Check Out",
         "order_start":"Order",
+
+        "pos_report_error_tips":"Payment failed. Please contact the staff!",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -518,6 +524,8 @@ extension LocalizedString on String {
         "tag_amount":"총액",
         "tag_checkout":"계산",
         "order_start":"시작",
+
+        "pos_report_error_tips":"결제 실패. 직원에게 문의하세요!",
       }
       // 添加更多语言...한국말 =>  한국어
     };

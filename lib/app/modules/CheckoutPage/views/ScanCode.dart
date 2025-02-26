@@ -108,7 +108,7 @@ class ScanCodeView extends GetView {
                             width: ScreenAdapter.width(20),
                           ),
                           Text(
-                            GString.getToString(controller.checkLanguage.value, "checkoutScanTitle"),
+                            GString.getToString(controller.selectLanguage, "checkoutScanTitle"),
                             style: TextStyle(
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w600,
@@ -160,7 +160,7 @@ class ScanCodeView extends GetView {
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
                           child: Text(
-                            GString.getToString(controller.checkLanguage.value, "settlement_back"),
+                            GString.getToString(controller.selectLanguage, "settlement_back"),
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,

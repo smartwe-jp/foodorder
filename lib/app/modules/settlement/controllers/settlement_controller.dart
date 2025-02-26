@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
@@ -305,7 +306,7 @@ class SettlementController extends GetxController with StateMixin {
     if(machineMode.value == "2") {
       //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       if (Get.isRegistered<CheckoutPageController>()) {
-        Get.find<CheckoutPageController>().checkLanguage.value = 'JP';
+        Get.find<CheckoutPageController>().selectLanguage = 'JP';
       }
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
@@ -369,7 +370,7 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       //Get.delete<CheckoutPageController>();// 手动删除控制器实例
       if (Get.isRegistered<CheckoutPageController>()) {
-        Get.find<CheckoutPageController>().checkLanguage.value = 'JP';
+        Get.find<CheckoutPageController>().selectLanguage = 'JP';
       }
       //精算页面
       Future.delayed(Duration(milliseconds: 100), () {
@@ -662,7 +663,7 @@ class SettlementController extends GetxController with StateMixin {
           }
         },
         onSuccess: (msg) {
-          CreditCardPayReport(msg);
+          posPayReport(msg);
         },
         onError: (error) {
           EasyLoading.dismiss();
@@ -804,11 +805,11 @@ class SettlementController extends GetxController with StateMixin {
     });
   }
 //刷卡机nfc支付汇报
-  CreditCardPayReport(eventString) {
-
-    posResultReportData.value["result"] = true;
-    posResultReportData.value["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
-    request('webBootPosPayReport', method: 'POST', parameters: posResultReportData.value).then((val) {
+  posPayReport(String eventString, {int retryCount = 0}) {
+    debugPrint('posPayReport retryCount = $retryCount');
+    posResultReportData["result"] = true;
+    posResultReportData["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
+    request('webBootPosPayReport', method: 'POST', parameters: posResultReportData).then((val) {
       var response = json.decode(val.toString());//print(response);
 
       if (response['code'] == 200 && response['data'] == true) {
@@ -819,8 +820,14 @@ class SettlementController extends GetxController with StateMixin {
         showPosCancelEasyLoading("900");
       }
     }).catchError((error){
-      //TODO 提示具体错误，和询问重试
-      _checkOutErrorHandle('提示具体错误，和询问重试');
+      //TODO 默认重试3次
+      if (retryCount < 3) {
+        Future.delayed(Duration(milliseconds: 500), (){
+          posPayReport(eventString, retryCount: retryCount + 1);
+        });
+      } else {
+        _checkOutErrorHandle('pos_report_error_tips'.localized());
+      }
     });
 
   }
@@ -1025,23 +1032,26 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  _checkOutErrorHandle(showDialogContent) async {
+  _checkOutErrorHandle(showDialogContent, {Function? retryAction}) async {
     EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alert(showDialogContent,
             title: GString.getToString(checkLanguage.value, "tag_title"),
             canceltitle: GString.getToString(checkLanguage.value,"cancel_order"),
-            confirmtitle: GString.getToString(checkLanguage.value,"show_del_cart_item_yes"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
-              // Get.back();
-              // doPrintOrderMenu(printType);
-              //发邮件和播放感谢语
-              _sendEmailAndPlayVoice();
+              Get.back();
+              //发邮件或者播放感谢语
+              if (retryAction != null) {
+                retryAction();
+              } else {
+                _sendEmailAndPlayVoice();
+              }
+
             },
             cancle: () {
               Get.back();
-              showEasyLoading();
-              CancelOrder();
+              commonCancel();
             })
     );
   }
