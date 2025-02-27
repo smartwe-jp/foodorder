@@ -138,6 +138,8 @@ extension LocalizedString on String {
         "order_start":"注文",
 
         "pos_report_error_tips":"申し訳ございません、決済失敗ので、店員に対応を依頼してください。",
+        "pay_success_title":"お支払いが成功しました\nご利用いただきありがとうございます",
+
       },
       'CH': {
         //"top_back_button":"言語",
@@ -267,6 +269,7 @@ extension LocalizedString on String {
         "order_start":"下单",
 
         "pos_report_error_tips":"非常抱歉，支付失败，请联系商家处理。",
+        "pay_success_title":"支付成功\n感谢您的使用",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -396,6 +399,7 @@ extension LocalizedString on String {
         "order_start":"Order",
 
         "pos_report_error_tips":"Payment failed. Please contact the staff!",
+        "pay_success_title":"Payment Successful\nThank you for your use",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -526,6 +530,7 @@ extension LocalizedString on String {
         "order_start":"시작",
 
         "pos_report_error_tips":"결제 실패. 직원에게 문의하세요!",
+        "pay_success_title":"결제가 성공했습니다\n이용해 주셔서 감사합니다",
       }
       // 添加更多语言...한국말 =>  한국어
     };
