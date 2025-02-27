@@ -561,7 +561,6 @@ class MenuPageController extends GetxController with StateMixin {
     showCartItems.value = ordersqlcontroller.cartItems;
     if (showCartTotalGoodsNum.value == 0) {
       showShopCart.value = false;
-      showRecommend = false;
     }
     update(['shopping_cart','shoppingCar']);
   }
@@ -922,8 +921,13 @@ class MenuPageController extends GetxController with StateMixin {
       }, cancle: () {
         Get.back();
       }));
-    } else {
+    } else {   
       final action = isAdd ? "add" : "reduce";
+      if (isAdd) {
+        playQRScannerSound();
+      } else {
+        deleteItemSound();
+      }
       publicChangeCartMenuCount(cartItem, action).then((val) {
         //更改显示购物车价格
         getCartPriceTotal();

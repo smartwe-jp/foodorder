@@ -11,6 +11,7 @@ import '../../../../services/ScreenAdapter.dart';
 import '../../../../services/formatMoney.dart';
 import '../../controllers/menu_page_controller.dart';
 
+
 extension RecommendView on MenuPageController {
   recommendItemView(item, {popupType: "old", aspectRatio: 1.0}) {
     //debugPrint("menuItemView: $item");
@@ -33,15 +34,15 @@ extension RecommendView on MenuPageController {
           //请求限定接口
           //if (canAddCart)
           if (Get.context != null) {
-            recommendBookList.add(item);
-            update();
+            //recommendBookList.add(item);
+            //update(['shopping_cart']);
             await checkQtyBoundsCount(item, "", popupType, Get.context);
           }
         } else {
           //如果option 存在，则弹出option
           debugPrint("GridItemView onTap option");
-          recommendBookList.add(item);
-          update();
+          //recommendBookList.add(item);
+          //update(['shopping_cart']);
           if (Get.context != null) publicAddCart(Get.context!, item);
           //}
         }
@@ -80,6 +81,7 @@ extension RecommendView on MenuPageController {
             }
           });
           return GetBuilder<MenuPageController>(
+            id: 'shopping_cart',
             builder: (controller) => Container(
                 child: Column(
               children: [
@@ -132,6 +134,7 @@ extension RecommendView on MenuPageController {
             }
           });
           return GetBuilder<MenuPageController>(
+            id: 'shopping_cart',
             builder: (controller) => Container(
                 //width: 1080,
 
@@ -140,7 +143,7 @@ extension RecommendView on MenuPageController {
         });
   }
 
-  Widget carbutton() {
+  Widget carButton() {
     return  Stack(
         children: [
           Container(
@@ -321,7 +324,7 @@ extension RecommendView on MenuPageController {
                           SizedBox(
                             width: 50,
                           ),
-                          carbutton(),
+                          carButton(),
                           SizedBox(
                             width: 30,
                           ),
