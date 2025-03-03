@@ -164,7 +164,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             }
                                             //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                                             // 当监听的服务发生变化时，调用_sendToFlutter向Flutter端发送通知
-                                            Log.logger.info("入金禁止监听状态");
+                                            Log.logger.info("入金禁止监听状态: " + _payCubeStopCashStatus);
                                             System.out.println("入金禁止监听状态 _payCubeStopCashStatus = " + _payCubeStopCashStatus);
                                             _sendToFlutter("onEndServiceChange",_payCubeStopCashStatus);
 
@@ -277,7 +277,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             buf.put(new byte[]{event.getReceiveData()[4], event.getReceiveData()[5]});
                                             // -- body --
                                             lib.write(buf.array());
-                                            //Log.logger.error("機器状態通知受信");
+                                            Log.logger.error("機器状態通知受信");
                                         } catch (Exception e) {
                                             Log.logger.error("機器状態通知受信Exception", e);
                                         }
@@ -304,7 +304,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                                             buf.put(new byte[]{event.getReceiveData()[4], event.getReceiveData()[5]});
                                             // -- body --
                                             lib.write(buf.array());
-                                            //Log.logger.error("下位装置専用通知");
+                                            Log.logger.error("下位装置専用通知");
                                         } catch (Exception e) {
                                             Log.logger.error("下位装置専用通知Exception", e);
                                         }
@@ -512,6 +512,10 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     System.out.println("---outPayCubeMoney: " + Arrays.toString(buf.array()));
                     result.success("outMoneySuccess");
                 } catch (COMException e) {
+                    e.printStackTrace();
+                    Log.logger.info("-----------------现金机 出金失败----------------- ");
+                    System.out.println("现金机出金失败Exception");
+                    result.success("outMoneyError");
                 }
 
 
@@ -534,6 +538,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     //lib.setReceiveEventEnable(false);
                 } catch (COMException e) {
                     e.printStackTrace();
+                    System.out.println("入金禁止失败Exception");
+                    result.success("endError");
                 }
 
             } else if (operEvent.equals("endTradePayCube")) {
@@ -571,6 +577,9 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     
                 } catch (COMException e) {
                     e.printStackTrace();
+                    System.out.println("取引终了失败Exception");
+                    result.success("endTradeError");
+
                     //result.success("endtradesuccess");
                 }
                 
@@ -589,6 +598,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
                 } catch (COMException e) {
                     e.printStackTrace();
+                    System.out.println("现金机关闭失败Exception");
                     //result.success("endtradesuccess");
                 }
 
