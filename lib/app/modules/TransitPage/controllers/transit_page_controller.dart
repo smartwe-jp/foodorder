@@ -237,6 +237,7 @@ class TransitPageController extends GetxController {
         Storage.setString(
             'smartwe_homeImages', json.encode(shopData["homeImages"]));
         Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+        Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
         Storage.setString('smartwe_reimburse', reimburse);
         Storage.setString('smartwe_shopCode', _shopCode);
 
@@ -247,6 +248,7 @@ class TransitPageController extends GetxController {
         GetxStorage.setData(
             'smartwe_homeImages', json.encode(shopData["homeImages"]));
         GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
+        GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
         GetxStorage.setData('smartwe_reimburse', reimburse);
 
         var machineSettingBool = {

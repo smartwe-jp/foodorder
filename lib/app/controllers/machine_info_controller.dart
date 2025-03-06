@@ -1,12 +1,17 @@
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
+enum MachineType { new_panel, new_panel_max, old_panel }
+
 class MachineInfoController extends GetxController {
-
   final Map systemSettingInfo;
-
   MachineInfoController(this.systemSettingInfo);
 
+  late MachineType machineType;
+  Map<String, MachineType> panelTypes = {
+    'Mini': MachineType.new_panel,
+    'Max': MachineType.new_panel_max
+  };
   //base info
   late String machineCode;
   late String shopCode;
@@ -16,11 +21,13 @@ class MachineInfoController extends GetxController {
   late String isAllowReceipt;
   late String receiptPrintType;
   late bool showReceiptPage;
-  late bool editMode;
   late List homeList;
+  late List headImageList;
   late String menu_direction;
   late List supportLanguages;
   bool isReceiptPageShow = false;
+  late String printLogoImageData;
+  late String machineMode;
 
   //payment info
   late bool showCash;
@@ -79,21 +86,30 @@ class MachineInfoController extends GetxController {
 
     diningType = systemSettingInfo['diningType'];
     print('loadMachineSettingInfo diningType : $diningType');
+    mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'];
     isAllowReceipt = systemSettingInfo['isAllowReceipt'];
+    String panelType = systemSettingInfo['panelType'] ?? 'Mini';
+    machineMode = systemSettingInfo["machineMode"];
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
-    menu_direction = (systemSettingInfo["menuDirection"] !="" && systemSettingInfo["menuDirection"]!=null) ? systemSettingInfo["menuDirection"] :"1";
+    menu_direction = (systemSettingInfo["menuDirection"] != "" &&
+            systemSettingInfo["menuDirection"] != null)
+        ? systemSettingInfo["menuDirection"]
+        : "1";
+    machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
     homeList = homeImageList ?? [];
 
+    headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
+
     supportLanguages = await HomeServices.getMachineLanguages();
 
-    editMode = await HomeServices.getEditMode();
+    printLogoImageData = await HomeServices.getSmartweLogoImagesData() ?? "";
 
     print('loadMachineSettingInfo 1');
     Map machineActivateData = await HomeServices.getMachineActivateData();

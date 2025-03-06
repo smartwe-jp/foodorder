@@ -161,11 +161,6 @@ extension MenuPageControllerExtension on MenuPageController {
       onTap: () async {
         debugPrint("GridItemView onTap");
 
-        if (machinInfo.editMode) {
-          showSetSelloutAlert(
-              item['menuCode'], item['mainTitle'], item['qtyBounds']);
-          return;
-        }
         if (item['qtyBounds'] == 0) {
           return;
         } else if (item['qtyBounds'] > 0) {

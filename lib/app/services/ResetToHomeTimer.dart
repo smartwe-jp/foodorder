@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
@@ -21,13 +20,6 @@ class ResetToHomeTimer {
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
       if (_timeoutSeconds == 0) {
-        if (Get.isRegistered<MachineInfoController>()) {
-          if (Get.find<MachineInfoController>().editMode == true) {
-            HomeServices.setEditMode(false);
-            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-            return;
-          }
-        }
 
         if (Get.routing.current == Routes.ORDER_HOME ||
             Get.routing.current == Routes.CHECKOUT_PAGE) {

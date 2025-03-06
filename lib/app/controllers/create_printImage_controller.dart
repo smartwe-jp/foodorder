@@ -363,9 +363,9 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text(printData["orderDate"],
                 style: TextStyle(
-                  fontSize: print_menu_txt_size * 0.8,
+                  fontSize: print_menu_txt_size*0.8,
                   fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w300,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),

@@ -47,7 +47,6 @@ class MenuPageView extends GetView<MenuPageController> {
         alignment: Alignment.center,
         child: Stack(
           children: [
-            if (!controller.machinInfo.editMode)
               Swiper(
                 //itemHeight: 200,
                 itemBuilder: (BuildContext context, int index) {
@@ -57,7 +56,7 @@ class MenuPageView extends GetView<MenuPageController> {
                       //color: Colors.green,
                       image: DecorationImage(
                         image: CachedNetworkImageProvider(
-                            controller.homeImages[index] ?? ""),
+                            controller.machinInfo.headImageList[index] ?? ""),
                         fit: BoxFit.cover,
                       ),
                     ),
@@ -65,17 +64,17 @@ class MenuPageView extends GetView<MenuPageController> {
                   );
                 },
                 // 配置图片数量
-                itemCount: controller.homeImages.length,
+                itemCount: controller.machinInfo.headImageList.length,
                 // 底部分页器
                 //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
                 // 左右箭头
                 //control: new SwiperControl(),
                 // 无限循环
-                loop: (controller.homeImages.length > 1) ? true : false,
+                loop: (controller.machinInfo.headImageList.length > 1) ? true : false,
                 duration: 1000,
                 autoplayDelay: 12000,
                 // 自动轮播
-                autoplay: (controller.homeImages.length > 1) ? true : false,
+                autoplay: (controller.machinInfo.headImageList.length > 1) ? true : false,
               ),
           ],
         ));

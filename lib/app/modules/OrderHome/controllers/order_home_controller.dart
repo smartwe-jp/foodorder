@@ -139,7 +139,12 @@ class OrderHomeController extends GetxController with StateMixin {
   }
 
   goMenu(String lan, bool mealType) {
-    machineInfo.mealType = mealType;
+    if (machineInfo.diningType == "2") {
+      machineInfo.mealType = true;
+    } else {
+      machineInfo.mealType = mealType;
+    }
+    
     var jumpUrl = (machineInfo.menu_direction == "1") ? '/menu-page' :'/menuzong-page';
     startShake = false;
     Get.toNamed(jumpUrl,arguments: {
