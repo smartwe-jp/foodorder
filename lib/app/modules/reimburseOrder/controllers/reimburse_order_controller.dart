@@ -163,17 +163,18 @@ LogUtil.d(response);
   }
 
   refoundOrder() async {
-    if (refundInfo.value["payChannel"] =="Edy") {
+    if (refundInfo["payChannel"] =="Edy") {
       refundFailedAlert();
-    } else if (refundInfo.value["payChannel"] =="Cash"){
+    } else if (refundInfo["payChannel"] =="Cash"){
       showPosEasyLoading();
       String strartPayCube = await Paycube.strartRefundPayCube;
       debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
       Paycube.getPayCubeListener();
-      startOutPutMoney(refundInfo.value["amount"]);
+      _setPayCubeListener();
+      startOutPutMoney(refundInfo["amount"]);
 
-    } else if (refundInfo.value["payChannel"] =="CreditCard") {
+    } else if (refundInfo["payChannel"] =="CreditCard") {
       showPosEasyLoading();
       refundCreditCard();
     } else{
@@ -443,80 +444,125 @@ LogUtil.d(response);
     });
   }
 
-
+  _setPayCubeListener() async {
+    await Paycube.setReceiveEvent;
+    Paycube.getPayCubeListener();
+    Paycube.onCashInfoChange = (CashInfo type, String value) {
+      switch (type) {
+        case CashInfo.putMoney:
+          debugPrint("putMoney==$value");
+          //_updatePutMoneyInfo(value);
+          break;
+        case CashInfo.putCurrency:
+          debugPrint("putCurrency==$value");
+          //_getPayCubePutMoneyCurrency(value);
+          break;
+        case CashInfo.currencyString:
+          debugPrint("currencyString==$value");
+          _getPayCubeOutMoney(value);
+          break;
+        default:
+          break;
+      }
+    };
+  }
 
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     var outStringMoney = outMoney.toString();
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
 
-    String outResult = await Paycube.outPayCubeMoney(outStringMoney);
+    bool outResult = await Paycube.outPayCubeMoney(outStringMoney, onSuccess: () {
+      debugPrint("出金成功");
+    }, catchError: (error) {
+      debugPrint("出金失败");
+    });
     debugPrint("出金结果 ${outResult}");
-    _countDownTimer("6");
+    //_countDownTimer("6");
 
-    outmoneytimer?.cancel();
-    outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
-      outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
+    // outmoneytimer?.cancel();
+    // outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
+    //   outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
-      if (outStatus.value == "OutSuccess") {
+      if (outResult) {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         seconds.value = 180;
         //如果取消不汇报，则出金后直接关闭 ？？？？？？
-        _getPayCubeOutMoney();
-
-        outmoneyt.cancel();
-      } else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
-        await Paycube.outPayCubeMoney(outStringMoney);
-      } else if (outStatus.value == "Error-F0--16") {
-          debugPrint("出金失败 Reason:error-F0--16, retry");
-          outmoneyt.cancel();
-          await Paycube.endTrade;
-          await startOutPutMoney(outStringMoney);
+        //_getPayCubeOutMoney();
+        await Paycube.setReceiveEvent;
+      } else {
+        cashErrorHandle();
       }
-      else {
-        await Paycube.outPayCubeMoney(outStringMoney);
-      }
-    });
+    //   else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
+    //     await Paycube.outPayCubeMoney(outStringMoney);
+    //   } else if (outStatus.value == "Error-F0--16") {
+    //       debugPrint("出金失败 Reason:error-F0--16, retry");
+    //       outmoneyt.cancel();
+    //       await Paycube.endTrade;
+    //       await startOutPutMoney(outStringMoney);
+    //   }
+    //   else {
+    //     await Paycube.outPayCubeMoney(outStringMoney);
+    //   }
+    // });
   }
 
-  _getPayCubeOutMoney() async {
+  cashErrorHandle() {
+    //现金机出错处理
+    EasyLoading.dismiss();
+    Get.dialog(
+        DialogUtils.alertOneButton(
+            '返金に失敗しました。現金機の状態を確認してください。ありがとうございます。',
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+            }),
+        barrierDismissible: false
+    );
+  }
+
+  _getPayCubeOutMoney(currencyStringResult) async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
-    OutMoneytimer?.cancel();
-    await Paycube.setReceiveEvent;
-    _countDownTimer("7");
+    //OutMoneytimer?.cancel();
+    //await Paycube.setReceiveEvent;
+    //_countDownTimer("7");
 
     var queryTimes = 0;
     // 循环一定要记得设置取消条件，手动取消
     //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
 
-    OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
+    //OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
 
       if(getOutMoneyString.value == true){
         // 循环一定要记得设置取消条件，手动取消
-        String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-        if (currencyStringresult.trim().length > 50) {
-          var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringresult.trim());
+        //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
+        debugPrint("currencyStringResult.trim().length : ${currencyStringResult.trim().length}");
+        if (currencyStringResult.trim().length > 50) {
+          var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringResult.trim());
           debugPrint("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
           if(outtotalAmount == refundInfo.value["amount"]){
             //如果打开了现金机，则去掉倒计时监听
-            showCashTimer?.cancel();
-            seconds.value = 180;
-            currencyString.value = currencyStringresult;
+            // showCashTimer?.cancel();
+            // seconds.value = 180;
+            currencyString.value = currencyStringResult;
             getOutMoneyString.value == false;
 
-            OutMoneytimer?.cancel();
+            //OutMoneytimer?.cancel();
 
-            payCubeCloseTransaction(currencyStringresult);
+            payCubeCloseTransaction(currencyStringResult);
           }
 
         }
       }
       queryTimes++;
-    });
+    //});
   }
 
   //汇报出金币种,请求后台
@@ -576,25 +622,39 @@ LogUtil.d(response);
 
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    debugPrint("取引终了结束交易${endTrade}");
-    //开启倒计时
     _countDownTimer("5");
-    await Paycube.setReceiveEvent;
-    endtimer?.cancel();
-    endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-      endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
-      if (endStatus.value == "EndSuccess") {
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        reportChange(cashOutString);
-        endtradet.cancel();
-      }else {
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.endTrade;
-      }
+    bool endTrade = await Paycube.endTrade(onSuccess: () {
+      debugPrint("取引终了结束交易成功");
+    }, catchError: (error) {
+      debugPrint("取引终了结束交易失败");
     });
+
+    if (endTrade) {
+      showCashTimer?.cancel();
+      seconds.value = 180;
+      reportChange(cashOutString);
+    }else {
+      debugPrint("取引终了结束交易失败");
+    }
+
+    // debugPrint("取引终了结束交易${endTrade}");
+    // //开启倒计时
+    // _countDownTimer("5");
+    // await Paycube.setReceiveEvent;
+    // endtimer?.cancel();
+    // endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
+    //   endStatus.value = await Paycube.getPayCubeEndTradeStatus;
+    //   // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
+    //   if (endStatus.value == "EndSuccess") {
+    //     showCashTimer?.cancel();
+    //     seconds.value = 180;
+    //     reportChange(cashOutString);
+    //     endtradet.cancel();
+    //   }else {
+    //     //sleep(Duration(milliseconds: 200));
+    //     await Paycube.endTrade;
+    //   }
+    // });
   }
 
   _printReimburseReceipt(Size size, Widget widget) async {

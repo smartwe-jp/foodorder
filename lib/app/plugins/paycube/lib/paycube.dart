@@ -1,8 +1,15 @@
 
 import 'dart:async';
+import 'dart:ffi';
 
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+enum CashInfo {
+  putMoney,
+  putCurrency,
+  currencyString,
+}
 
 class Paycube {
   static const MethodChannel _channel = const MethodChannel('paycube');
@@ -11,10 +18,22 @@ class Paycube {
   static String putCurrency = "";
   static String currencyString = ""; //币种 截取0B 81的43位开始
 
+  static Function(CashInfo, String)? onCashInfoChange;
+
   //监听几种状态
   static String payCubeStopCashStatus = "Error";
   static String payCubeOutMoneyStatus = "Error";
   static String payCubeEndTradeStatus = "Error";
+
+  static int _seqNo = 0;
+
+  static int getSeqNo() {
+    _seqNo++;
+    if (_seqNo == 0xFFFF) {
+      _seqNo = 1;
+    }
+    return _seqNo;
+  }
 
 
 
@@ -25,9 +44,11 @@ class Paycube {
     if (call.method == 'onGetPutMoneyStringChange') {
       //print(message);
       putMoney = call.arguments;
+      onCashInfoChange?.call(CashInfo.putMoney, call.arguments);
       //message = {"PutMoney":call.arguments};print(message);
     }else if (call.method == 'onGetPutMoneyCurrencyStringChange') {
       putCurrency = call.arguments;
+      onCashInfoChange?.call(CashInfo.putCurrency, call.arguments);
       //message = {"PutMoneyString":call.arguments};
     }else if (call.method == 'onEndServiceChange') {
       payCubeStopCashStatus = call.arguments;
@@ -38,6 +59,7 @@ class Paycube {
     }else if (call.method == 'getPayOutMoneyServiceChange') {
       //print("出金统计字符串${call.arguments}");
       currencyString = call.arguments;
+      onCashInfoChange?.call(CashInfo.currencyString, call.arguments);
       //message = {"PayOutMoneyStringServiceString":call.arguments};
     }else if (call.method == 'onEndTradeServiceChange') {
       payCubeEndTradeStatus = call.arguments;
@@ -79,7 +101,10 @@ class Paycube {
   }
   
   //开始入金
-  static Future<String> get strartPayCube async {
+  static Future<bool> startPayCube(
+      {required Function onSuccess,
+    required Function(String) catchError}) async {
+    var ret = false;
     putMoney = "0";
     putCurrency = "";
     currencyString = ""; //币种 截取0B 81的43位开始
@@ -88,10 +113,59 @@ class Paycube {
     payCubeStopCashStatus = "Error";
     payCubeOutMoneyStatus = "Error";
     payCubeEndTradeStatus = "Error";
+    int seqNo = getSeqNo();
+    debugPrint("seqNo: $seqNo");
+    await setReceiveEvent;
+    final String openStatus = await startPayCubeAction(seqNo);
+    if (openStatus == "AllowSuccess") {
+      onSuccess();
+      ret = true;
+    } else {
+      catchError(openStatus);
+      ret = false;
+    }
+    return ret;
+  }
 
-    Map<String, Object> map = {'operEvent': 'StartPayCubeMoney'};
-    final String openstatus = await _channel.invokeMethod('startOpenPayCube',map);
-    return openstatus;
+  static Future<String> startPayCubeAction(int seqNo, {int retryCount = 0}) async {
+    debugPrint("startPayCubeAction called with seqNo: $seqNo " + "retryCount: $retryCount");
+    Map<String, Object> map = {'operEvent': 'StartPayCubeMoney', 'seqNo': seqNo};
+    String openStatus = "Error";
+    try {
+      openStatus = await _channel.invokeMethod('startOpenPayCube', map)
+          .timeout(Duration(milliseconds: 3000));
+
+      if (openStatus == "AllowSuccess") {
+        return openStatus;
+      }
+
+    } catch (e) {
+      print("Attempt $retryCount failed: $e");
+    }
+
+    if (openStatus == "Error-F0--16"){
+      await endTrade(onSuccess: (){
+
+      },catchError: (e){
+
+      });
+
+      if (retryCount < 12) {
+        await Future.delayed(Duration(milliseconds: 550));
+        return startPayCubeAction(seqNo, retryCount: retryCount + 1);
+      } else {
+        return "startPayCubeAction Failed after $retryCount retries";
+      }
+
+    } else {
+      if (retryCount < 10) {
+        await Future.delayed(Duration(milliseconds: 550));
+        return startPayCubeAction(seqNo, retryCount: retryCount + 1);
+      } else {
+        return "startPayCubeAction Failed after $retryCount retries";
+      }
+    }
+
   }
 
   //入金许可状态
@@ -102,16 +176,46 @@ class Paycube {
   }
 
   //入金结束
-  static Future<String> get endPayCube async {
-    payCubeStopCashStatus = "Sending";
-    Map<String, Object> map = {'operEvent': 'endPayCube'};
-    final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
-    return inputAmount;
+  static Future<bool> endPayCube({required Function onSuccess, required Function(String) catchError}) async {
+    var ret = false;
+    await setReceiveEvent;
+    int seqNo = getSeqNo();
+    final String openStatus = await endPayCubeAction(seqNo);
+    if (openStatus == "StopSuccess") {
+      onSuccess();
+      ret = true;
+    } else {
+      catchError(openStatus);
+      ret = false;
+    }
+    return ret;
+  }
+
+  static Future<String> endPayCubeAction(int seqNo, {int retryCount = 0}) async {
+    debugPrint("endPayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
+    Map<String, Object> map = {'operEvent': 'endPayCube', 'seqNo': seqNo};
+    try {
+      final String openStatus = await _channel.invokeMethod('startOpenPayCube', map)
+          .timeout(Duration(milliseconds: 5000));
+
+      if (openStatus == "StopSuccess") {
+        return openStatus;
+      }
+    } catch (e) {
+      print("EndPayCube Attempt $retryCount failed: $e");
+    }
+
+    if (retryCount < 10) {
+      await Future.delayed(Duration(milliseconds: 550));
+      return endPayCubeAction(seqNo, retryCount: retryCount + 1);
+    } else {
+      return "endPayCube Failed after $retryCount retries";
+    }
   }
 
   static Future<String> get sendPutCashDetail async {
-
-    Map<String, Object> map = {'operEvent': 'sendPutCashDetail'};
+    await setReceiveEvent;
+    Map<String, Object> map = {'operEvent': 'sendPutCashDetail', 'seqNo': getSeqNo()};
     final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
     return inputAmount;
   }
@@ -125,12 +229,42 @@ class Paycube {
     return stopstatus;*/
   }
 
-  //交易结束
-  static Future<String> get endTrade async {
-    payCubeEndTradeStatus = "Sending";
-    Map<String, Object> map = {'operEvent': 'endTradePayCube'};
-    final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
-    return inputAmount;
+  static Future<bool> endTrade({required Function onSuccess, required Function(String) catchError}) async {
+    var ret = false;
+    await setReceiveEvent;
+    int seqNo = getSeqNo();
+    final String openStatus = await endTradePayCubeAction(seqNo);
+    if (openStatus == "EndSuccess") {
+      onSuccess();
+      ret = true;
+    } else {
+      catchError(openStatus);
+      ret = false;
+    }
+    return ret;
+  }
+
+  static Future<String> endTradePayCubeAction(int seqNo, {int retryCount = 0}) async {
+    debugPrint("endTradePayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
+    Map<String, Object> map = {'operEvent': 'endTradePayCube', 'seqNo': seqNo};
+
+    try {
+      final String openStatus = await _channel.invokeMethod('startOpenPayCube', map)
+          .timeout(Duration(milliseconds: 5000));
+
+      if (openStatus == "EndSuccess") {
+        return openStatus;
+      }
+    } catch (e) {
+      print("EndTrade Attempt $retryCount failed: $e");
+    }
+
+    //if (retryCount < 5) {
+      await Future.delayed(Duration(milliseconds: 550));
+      return endTradePayCubeAction(seqNo, retryCount: retryCount + 1);
+    //} else {
+    //  return "endTradePayCube Failed after $retryCount retries";
+    //}
   }
 
   //取引终了状态
@@ -175,10 +309,43 @@ class Paycube {
   }
 
   //出金金额
-  static Future<String> outPayCubeMoney(param) async {
-    Map<String, Object> map = {'operEvent': 'outPayCubeMoney','outMoney': param};
-    final String inputAmount = await _channel.invokeMethod('startOpenPayCube',map);
-    return inputAmount;
+
+  static Future<bool> outPayCubeMoney(param, {required Function onSuccess, required Function(String) catchError}) async {
+    var ret = false;
+    await setReceiveEvent;
+    int seqNo = getSeqNo();
+    final String openStatus = await outPayCubeAction(seqNo, param);
+    if (openStatus == "OutSuccess") {
+      onSuccess();
+      ret = true;
+    } else {
+      catchError(openStatus);
+      ret = false;
+    }
+    return ret;
+  }
+
+  static Future<String> outPayCubeAction(int seqNo, param, {int retryCount = 0}) async {
+    debugPrint("outPayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
+    Map<String, Object> map = {'operEvent': 'outPayCubeMoney', 'seqNo': seqNo,'outMoney': param};
+
+    try {
+      final String openStatus = await _channel.invokeMethod('startOpenPayCube', map)
+          .timeout(Duration(milliseconds: 10000));
+
+      if (openStatus == "OutSuccess") {
+        return openStatus;
+      }
+    } catch (e) {
+      print("Attempt $retryCount failed: $e");
+    }
+
+    if (retryCount < 10) {
+      await Future.delayed(Duration(milliseconds: 550));
+      return outPayCubeAction(seqNo, param, retryCount: retryCount + 1);
+    } else {
+      return "outPayCubeAction Failed after $retryCount retries";
+    }
   }
 
   //获取出金币种
@@ -219,14 +386,14 @@ class Paycube {
 
   //禁止一块入金和出金
   static Future<String> get prohibitOneCash async {
-    Map<String, Object> map = {'operEvent': 'prohibitOneCash'};
+    Map<String, Object> map = {'operEvent': 'prohibitOneCash', 'seqNo': getSeqNo()};
     final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
     return prohibitOneCashString;
   }
 
   //允许一块入金和出金
   static Future<String> get allowOneCash async {
-    Map<String, Object> map = {'operEvent': 'allowOneCash'};
+    Map<String, Object> map = {'operEvent': 'allowOneCash', 'seqNo': getSeqNo()};
     final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
     return prohibitOneCashString;
   }
