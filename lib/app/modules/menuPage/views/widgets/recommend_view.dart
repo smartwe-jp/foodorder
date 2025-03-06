@@ -35,14 +35,14 @@ extension RecommendView on MenuPageController {
           //请求限定接口
           //if (canAddCart)
           if (Get.context != null) {
-            //recommendBookList.add(item);
+            recommendBookList.add(item);
             //update(['shopping_cart']);
             await checkQtyBoundsCount(item, "", popupType, Get.context);
           }
         } else {
           //如果option 存在，则弹出option
           debugPrint("GridItemView onTap option");
-          //recommendBookList.add(item);
+          recommendBookList.add(item);
           //update(['shopping_cart']);
           if (Get.context != null) publicAddCart(Get.context!, item);
           //}
@@ -362,7 +362,7 @@ extension RecommendView on MenuPageController {
                     CustomButton(
                         title: GString.getToString(
                             checkLanguage.value, "next_button"),
-                        bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                        bgColor: ColorsUtil.hexToColor(Gcolor.priceColor),
                         onTap: () {
                           dismissAction(context);
                         }),

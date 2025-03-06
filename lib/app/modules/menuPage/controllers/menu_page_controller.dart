@@ -111,8 +111,6 @@ class MenuPageController extends GetxController with StateMixin {
   readyQueryData(){
     if(Get.arguments != null){
       checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
-      machineInfo.mealType = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
-
     }
 
     getBookingBootIndexCategory();

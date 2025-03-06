@@ -262,6 +262,20 @@ class HomeServices{
     return smartweHomeImagesInfo;
   }
 
+  //顶图
+  static getSmartweHeaderImagesData() async{
+    var smartweHomeImagesInfo;
+    try {
+      var homeImageDatatmp = await Storage.getString('smartwe_headerImages');
+      var homeImageData = json.decode(homeImageDatatmp!);
+      GetxStorage.setData('smartwe_headerImages', json.encode(homeImageData));
+      smartweHomeImagesInfo = homeImageData;
+    } catch (e) {
+      smartweHomeImagesInfo = [];
+    }
+    return smartweHomeImagesInfo;
+  }
+
   //首图
   static getSmartweLogoImagesData() async{
     var smartweLogoImagesInfo;

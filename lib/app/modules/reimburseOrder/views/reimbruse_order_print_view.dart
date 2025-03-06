@@ -63,7 +63,7 @@ class ReimbursePrintView extends StatelessWidget {
           children: [
             Container(
               margin: EdgeInsets.only(top: 10, bottom: 40),
-              width: 385,
+              width: 513,//385,
               color: Colors.white,
               child: Column(
                 children: categoryMenus,
@@ -83,7 +83,6 @@ class ReimbursePrintView extends StatelessWidget {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 0.5,
           color: ColorsUtil.hexToColor("#000000"),
-          width: 385,
         ));
   }
 

@@ -184,7 +184,7 @@ class MenuPageView extends GetView {
                     //color: Colors.green,
                     image: DecorationImage(
                       image: CachedNetworkImageProvider(
-                          controller.machineInfo.homeList[index] ?? ""),
+                          controller.machineInfo.headImageList[index] ?? ""),
                       fit: BoxFit.cover,
                     ),
                   ),
@@ -192,17 +192,17 @@ class MenuPageView extends GetView {
                 );
               },
               // 配置图片数量
-              itemCount: controller.machineInfo.homeList.length,
+              itemCount: controller.machineInfo.headImageList.length,
               // 底部分页器
               //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
               // 左右箭头
               //control: new SwiperControl(),
               // 无限循环
-              loop: (controller.machineInfo.homeList.length > 1) ? true : false,
+              loop: (controller.machineInfo.headImageList.length > 1) ? true : false,
               duration: 1000,
               autoplayDelay: 12000,
               // 自动轮播
-              autoplay: (controller.machineInfo.homeList.length > 1)
+              autoplay: (controller.machineInfo.headImageList.length > 1)
                   ? true
                   : false,
             ),

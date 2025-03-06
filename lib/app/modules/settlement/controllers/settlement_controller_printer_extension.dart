@@ -618,7 +618,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
 
   //打印label
   wifiNetworkLabelPrintData(extendPrintVo) async {
-    var printData = [];
+    debugPrint("wifiNetworkLabelPrintData: $extendPrintVo");
     for(var i=0;i<extendPrintVo.length;i++){
       // 生成打印图层任务，指定任务类型为标签
       PictureGeneratorProvider.instance.addPicGeneratorTask(
@@ -654,10 +654,39 @@ extension SettlementControllerPrinterExtension on SettlementController {
 
   }
 
+  _getOptions(String originString) {
+    List<String> parts = originString.split('\n');
+
+    // 2. 提取每个部分中 "：" 右边的内容
+    List<String> extractedValues = parts.map((part) {
+      int colonIndex = part.indexOf('：');
+      return part.substring(colonIndex + 1);
+    }).toList();
+
+    if (extractedValues.isEmpty) {
+      return originString;
+    }
+
+    if (extractedValues.length == 1) {
+      return extractedValues[0];
+    }
+
+    return extractedValues.join('、');
+  }
+
   Future<Widget> menuData(orderprintData) async {
 
     final printWidth = await HomeServices.getLabelPrintWidth() ?? 384.0;
     final rotate = await HomeServices.getPrintThreeDirection() == "1" ? pi : 0.0;
+    List<String> parts = orderprintData["printTitleText"].split('　');
+    String menuNumber = orderprintData["printTitleText"];
+    String menuTitle = orderprintData["printTitleText"];
+    if (parts.length > 1) {
+      menuNumber = parts[0];
+      menuTitle = parts[1];
+    }
+
+    String optionText = _getOptions(orderprintData["printText"]);
 
     return LabelConstrainedBox(
         Transform(
@@ -675,76 +704,58 @@ extension SettlementControllerPrinterExtension on SettlementController {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  textDirection: TextDirection.ltr,
+                  //textDirection: TextDirection.ltr,
                   children: [
-
-                    Container(
-                      decoration: BoxDecoration(
-                        //color: Colors.red,
-                        border: Border(
-                          bottom: BorderSide(
-                              color: ColorsUtil.hexToColor("#000000"), width: 2),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Directionality(
+                            textDirection: TextDirection.rtl,
+                            child: Container(child:
+                            Text(
+                              menuNumber,
+                              style: GoogleFonts.zenKakuGothicAntique(
+                                  fontSize: ScreenAdapter.fontSize(32),
+                                  fontWeight: FontWeight.w500),
+                              maxLines: 2,
+                              textAlign: TextAlign.right,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            )
                         ),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        textDirection: TextDirection.ltr,
-                        children: [
-                          Directionality(
-                              textDirection: TextDirection.ltr,
-                              child: Expanded(child: ConstrainedBox(
-                                constraints: BoxConstraints(
-                                  minWidth: ScreenAdapter.width(20),
-                                  maxWidth: ScreenAdapter.width(400),
-                                  minHeight: ScreenAdapter.height(30),
-                                  maxHeight: ScreenAdapter.height(75),
-                                ),
-                                child: AutoSizeText(
-                                  "${orderprintData["printTitleText"]}",
-                                  style: GoogleFonts.zenKakuGothicAntique(
-                                      fontSize: ScreenAdapter.fontSize(32),
-                                      fontWeight: FontWeight.w500),
-                                  maxLines: 2,
-                                  textAlign: TextAlign.left,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              )
-                              )
-                          ),
-                        ],
-                      ),
+                      ],
                     ),
 
-                    Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          textDirection: TextDirection.ltr,
-                          children: [
-                            Directionality(
-                                textDirection: TextDirection.ltr,
-                                child: Expanded(child: Container(
-                                  /*constraints: BoxConstraints(
-                                minWidth: ScreenAdapter.width(20),
-                                maxWidth: ScreenAdapter.width(400),
-                                minHeight: ScreenAdapter.height(30),
-                                maxHeight: ScreenAdapter.height(210),
-                              ),*/
-                                  child: Text(
-                                    orderprintData["printText"],
-                                    style: GoogleFonts.zenKakuGothicAntique(
-                                        fontSize: ScreenAdapter.fontSize(26),
-                                        fontWeight: FontWeight.w500),
-                                    maxLines: 4,
-                                    textAlign: TextAlign.left,
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                )
-                                )
-                            ),
-                          ],
+                    Directionality(
+                        textDirection: TextDirection.ltr,
+                        child: Container(
+                          child: AutoSizeText(
+                            menuTitle,
+                            style: GoogleFonts.zenKakuGothicAntique(
+                                fontSize: ScreenAdapter.fontSize(34),
+                                fontWeight: FontWeight.w500),
+                            maxLines: 2,
+                            textAlign: TextAlign.left,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         )
                     ),
 
+                    Expanded(
+                        child:
+                            Container(
+                              margin: EdgeInsets.only(top: 5),
+                              child: Text(
+                                optionText,
+                                style: GoogleFonts.zenKakuGothicAntique(
+                                    fontSize: ScreenAdapter.fontSize(26),
+                                    fontWeight: FontWeight.w500),
+                                maxLines: 4,
+                                textAlign: TextAlign.left,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            )
+                    ),
                   ],
                 ),
               ),
