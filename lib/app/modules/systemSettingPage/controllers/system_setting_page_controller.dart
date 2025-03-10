@@ -82,6 +82,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   List<String> panelTypes = ['Mini','Max'];
   String panelType = "Mini";
+  bool isAllow10000 = true;
+  bool isAllow5000 = true;
 
   @override
   void onInit() {
@@ -143,6 +145,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       isReservation.value = systemSettingInfo['isReservation'];
       is_allow_attendance.value = systemSettingInfo['isAllowAttendance'];
       is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
+      isAllow5000 = systemSettingInfo['isAllow5000'] == "1";
+      isAllow10000 = systemSettingInfo['isAllow10000'] == "1";
       is_allow_backhome.value = systemSettingInfo['isAllowBackHome'];
       is_allow_rejishime.value = systemSettingInfo['isAllowRejishime'] ?? "0";
       is_allow_pos.value = systemSettingInfo['isAllowPos'];
@@ -183,6 +187,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isReservation": isReservation.value, //是否开启预约服务
     "isAllowAttendance": is_allow_attendance.value, //0不开启 1开启
     "isAllowOneYen": is_allow_oneyen.value, //0禁用1元 1不禁用
+    "isAllow5000": isAllow5000 ? "1":"0",
+    "isAllow10000": isAllow10000 ? "1":"0",
     "isAllowRejishime": is_allow_rejishime.value, //0不开启 1开启
     "isAllowBackHome": is_allow_backhome.value, //0返回home 1返回到菜单
     "isAllowPos": is_allow_pos.value, //0不开启 1开启
@@ -728,6 +734,22 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     _updateSystemSetting("isAllowOneYen", checkedType);
 
+  }
+
+  checkIsAllow5000Yen(checkedType) async {
+
+    await Paycube.setAcceptCash(checkedType, 5000);
+    isAllow5000 = checkedType;
+
+    _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
+  }
+
+  checkIsAllow10000Yen(checkedType) async {
+
+    await Paycube.setAcceptCash(checkedType, 10000);
+    isAllow10000 = checkedType;
+
+    _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
   }
 
   checkIsAllowRejishime(checkedType) async {

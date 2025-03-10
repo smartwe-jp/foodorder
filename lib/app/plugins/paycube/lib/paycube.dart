@@ -391,6 +391,14 @@ class Paycube {
     return prohibitOneCashString;
   }
 
+  //禁止入金和出金
+  static Future<String> setAcceptCash(bool enable, int type) async {
+    int isEnable = enable ? 1:0;
+    Map<String, Object> map = {'operEvent': 'setAcceptCash', 'seqNo': getSeqNo(), 'enable': isEnable, 'type': type};
+    final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
+    return prohibitOneCashString;
+  }
+
   //允许一块入金和出金
   static Future<String> get allowOneCash async {
     Map<String, Object> map = {'operEvent': 'allowOneCash', 'seqNo': getSeqNo()};

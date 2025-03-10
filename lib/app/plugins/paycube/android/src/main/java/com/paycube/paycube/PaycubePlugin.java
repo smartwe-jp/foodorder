@@ -292,6 +292,39 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     e.printStackTrace();
                 }
 
+            } else if(operEvent.equals("setAcceptCash")) {
+                try {
+                    if (lib == null) {
+                        result.success("allowFail");
+                        return;
+                    }
+
+                    ByteBuffer buf = ByteBuffer.allocate(10);
+                    buf.put(new byte[]{(byte) 0x00, (byte) 0x06});    // Len2
+                    buf.put(new byte[]{(byte) 0x0C, (byte) 0x11});
+                    int seqNo = call.argument("seqNo");// Header
+                    buf.put(getSeqNo(seqNo));
+
+                    int cash = call.argument("type");
+                    int enable = call.argument("enable");
+
+                    if (enable == 1) {
+                        buf.put(new byte[]{getAllowCashValue(cash), (byte) 0x10});
+                        buf.put(new byte[]{getOutCashValue(cash), (byte) 0x20});
+                    } else {
+                        buf.put(new byte[]{getAllowCashValue(cash), (byte) 0x90});
+                        buf.put(new byte[]{getOutCashValue(cash), (byte) 0x40});
+                    }
+
+                    lib.write(buf.array());
+
+                    //putMoney = "0";
+                    result.success("allowSuccess");
+
+                    //lib.setReceiveEventEnable(false);
+                } catch (COMException e) {
+                    e.printStackTrace();
+                }
             } else if (operEvent.equals("sendPutCashDetail")) {
                 try {
                     if (lib == null) {
@@ -325,6 +358,75 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         } else {
             result.notImplemented();
         }
+    }
+
+    private byte getAllowCashValue(int type) {
+        byte value = 0x00;
+        switch (type) {
+            case 1:
+                value = (byte) 0x61;
+                break;
+            case 5:
+                value = (byte) 0x62;
+                break;
+            case 10:
+                value = (byte) 0x63;
+                break;
+            case 50:
+                value = (byte) 0x64;
+                break;
+            case 100:
+                value = (byte) 0x65;
+                break;
+            case 500:
+                value = (byte) 0x66;
+                break;
+            case 1000:
+                value = (byte) 0x87;
+                break;
+            case 2000:
+                value = (byte) 0x88;
+                break;
+            case 5000:
+                value = (byte) 0x89;
+                break;
+            case 10000:
+                value = (byte) 0x8A;
+                break;
+            default:
+                break;
+        }
+        return value;
+    }
+
+    private byte getOutCashValue(int type) {
+        byte value = 0x00;
+        switch (type) {
+            case 1:
+                value = (byte) 0xA1;
+                break;
+            case 5:
+                value = (byte) 0xA2;
+                break;
+            case 10:
+                value = (byte) 0xA3;
+                break;
+            case 50:
+                value = (byte) 0xA4;
+                break;
+            case 100:
+                value = (byte) 0xA5;
+                break;
+            case 500:
+                value = (byte) 0xA6;
+                break;
+            case 1000:
+                value = (byte) 0x97;
+                break;
+            default:
+                break;
+        }
+        return value;
     }
 
 
