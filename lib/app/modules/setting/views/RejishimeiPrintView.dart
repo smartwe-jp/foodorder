@@ -394,9 +394,16 @@ class RejishimePrintViewState extends State<PrintView> {
   }
 
   _cashInfoTables(cashInfo) {
+    int totalOrigin = 0;
+    int totalIncome = 0;
+    int totalRemain = 0;
     final displayInfo = cashInfo.entries.map((entry) {
       String key = entry.key;
       Map value = entry.value;
+      final cashValue = getCatVal(key);
+      totalOrigin += (int.tryParse(value['backup']) ?? 0)*cashValue;
+      totalIncome += (int.tryParse(value['income']) ?? 0)*cashValue;
+      totalRemain += (int.tryParse(value['remain']) ?? 0)*cashValue;
       return [
         key,
         value['backup'] ?? '',
@@ -420,6 +427,13 @@ class RejishimePrintViewState extends State<PrintView> {
         ...displayInfo
             .map((content) => _tableRow(content, alignment: Alignment.center))
             .toList(growable: false),
+        _tableRow([
+          '総額',
+          '${formatSum(totalOrigin)}',
+          '${formatSum(totalIncome)}',
+          '${formatSum(totalRemain)}'
+        ], alignment: Alignment.centerRight)
+
       ],
     );
   }
