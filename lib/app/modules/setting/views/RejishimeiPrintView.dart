@@ -284,10 +284,10 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
         ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
         _tableRow([
           '総額',
-          '¥ ${formatSum(totalOrigin)}',
-          '¥ ${formatSum(totalIncome)}',
-          '¥ ${formatSum(totalRemain)}'
-        ])
+          '${formatSum(totalOrigin)}',
+          '${formatSum(totalIncome)}',
+          '${formatSum(totalRemain)}'
+        ],alignment: Alignment.centerRight)
 
       ],
     );
