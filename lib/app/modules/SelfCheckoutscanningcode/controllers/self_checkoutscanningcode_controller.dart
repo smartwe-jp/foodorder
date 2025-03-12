@@ -28,8 +28,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
-  RxString machineCode = "".obs;
-  RxBool mealType = false.obs;//用于判断下单
+
 
   RxList showCartItems = [].obs;
   RxList showScanCartItems = [].obs;
@@ -58,7 +57,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   readyQueryData(){
     checkLanguage.value = Get.arguments['checkLanguage'];
-    mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
     getCartPriceTotal();
 
   }
@@ -133,7 +131,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     if(scanQrCodeController.text !=""){
       var formData = {
         "language": checkLanguage.value,
-        "machineCode": machineCode.value,
+        "machineCode": machineInfo.machineCode,
         "barCode":scanQrCodeController.text
       };
 
@@ -319,7 +317,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   //提交订单
   doSubmitOrder(){
-    if(machineCode.value !=""){
+    if(machineInfo.machineCode !=""){
       showOrderEasyLoading();
 
       //自定义声音
@@ -350,11 +348,11 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
       var orderTotlaPrice = getItemTotal(ordersqlcontroller.cartItems);
       var formData = {
         "language": checkLanguage.value,
-        "machineCode": machineCode.value,
+        "machineCode": machineInfo.machineCode,
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout": mealType.value,
+        "takeout": machineInfo.mealType,
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
@@ -432,7 +430,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
     var formData = {
       "orderId": doSubmitOrderId.value,
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
     };
     request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
@@ -464,7 +462,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
-          "machineCode":  machineCode.value,
+          "machineCode":  machineInfo.machineCode,
           "orderId" : doSubmitOrderId.value,
           "totalPrice" : shopCartTotalPrice.value,
           "machineMode":"1",
@@ -474,7 +472,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   CancelOrder() {
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "orderId": doSubmitOrderId.value,
       "model": "0",
     };

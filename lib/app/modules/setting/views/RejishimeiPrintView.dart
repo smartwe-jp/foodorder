@@ -224,12 +224,45 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
     );
   }
 
+  int getCatVal(String value) {
+    switch (value) {
+      case '一円':
+        return 1;
+      case '五円':
+        return 5;
+      case '十円':
+        return 10;
+      case '五十円':
+        return 50;
+      case '百円':
+        return 100;
+      case '五百円':
+        return 500;
+      case '千円':
+        return 1000;
+      case '二千円':
+        return 2000;
+      case '五千円':
+        return 5000;
+      case '一万円':
+        return 10000;
+      default:
+        return 0;
+    }
+  }
+
 
   _cashInfoTables(cashInfo) {
-
+    int totalOrigin = 0;
+    int totalIncome = 0;
+    int totalRemain = 0;
     final displayInfo = cashInfo.entries.map((entry) {
       String key = entry.key;
       Map value = entry.value;
+      final cashValue = getCatVal(key);
+      totalOrigin += (int.tryParse(value['backup']) ?? 0)*cashValue;
+      totalIncome += (int.tryParse(value['income']) ?? 0)*cashValue;
+      totalRemain += (int.tryParse(value['remain']) ?? 0)*cashValue;
       return [
         key,
         value['backup'] ?? '',
@@ -249,6 +282,12 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
       children: <TableRow>[
         _tableRow(['金種', '予備', '入金', '残り'], backgroundColor:  isPrint ? Colors.white : Colors.grey[200]),
         ...displayInfo.map((content) => _tableRow(content, alignment: Alignment.centerRight)).toList(growable: false),
+        _tableRow([
+          '総額',
+          '¥ ${formatSum(totalOrigin)}',
+          '¥ ${formatSum(totalIncome)}',
+          '¥ ${formatSum(totalRemain)}'
+        ])
 
       ],
     );
