@@ -23,6 +23,29 @@ extension ExchangeControllerExtension on SettingController {
     await beginDepositOutside();
   }
 
+  getCashInfo() async {
+    String? cash = await getMachineCashInfo();
+    debugPrint('cashInfo: $cashInfo'); //'1:12,5:5'
+
+    if (cash != null) {
+      Map result = await cash.split(',').asMap().map((key, value) {
+        final cash = value.split(':');
+        return MapEntry(getCashName(cash[0]), int.tryParse(cash[1]));
+      });
+
+      cashInfoList.value = result;
+      debugPrint('cashInfoList: $cashInfoList');
+      cashInfo.value = await _changeMapKey(result, getCatVal);
+      debugPrint('cashInfo: $cashInfo');
+      update();
+    } else {
+      //获取失败 是否重试
+      errorHandleDialogTwo('現金情報の取得に失敗しました。再試行しますか?', () {
+        getCashInfo();
+      });
+    }
+  }
+
   getServerCashInfo() async {
     debugPrint('---getServerCashInfo---');
     var formData = {
@@ -40,9 +63,9 @@ extension ExchangeControllerExtension on SettingController {
       // ignore: invalid_use_of_protected_member
       if (response["code"] == 200 && response['data'] != null) {
         cashInfoList.value = response['data'];
-        //debugPrint('cashInfoList: ${cashInfoList.value}');
+        debugPrint('cashInfoList: ${cashInfoList}');
         cashInfo.value = _changeMapKey(response['data'], getCatVal);
-        //debugPrint('cashInfo: $cashInfo');
+        debugPrint('cashInfo: $cashInfo');
         update();
       }
     }).catchError((error) {
@@ -50,9 +73,8 @@ extension ExchangeControllerExtension on SettingController {
     });
   }
 
-  _changeMapKey(Map<String, dynamic> map, Function(String) keyFunc) {
+  _changeMapKey(Map<dynamic, dynamic> map, Function(String) keyFunc) {
     Map<String, int> newCashInfoList = {};
-
     map.forEach((key, value) {
       String newKey = keyFunc(key);
       newCashInfoList[newKey] = value;
@@ -135,7 +157,8 @@ extension ExchangeControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("beginDepositOutside error: $error");
-          logger.info('-- beginDepositOutside error: ${GString.getToString(checkLanguage.value, error)} --');
+          logger.info(
+              '-- beginDepositOutside error: ${GString.getToString(checkLanguage.value, error)} --');
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
         });
   }
@@ -173,7 +196,6 @@ extension ExchangeControllerExtension on SettingController {
         String cashList = machineChangeInfo.findMaxCash();
 
         errorHandleDialog('フルの金種だか、もしくはニアフルの金種があります：$cashList', confirm: () {
-
           Get.back();
           cancelTimer(shouldBack: false);
         });
@@ -301,7 +323,7 @@ extension ExchangeControllerExtension on SettingController {
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
     debugPrint('exChangeFlow: $type, $count, $disconut');
-    
+
     showEasyLoading();
 
     debugPrint(

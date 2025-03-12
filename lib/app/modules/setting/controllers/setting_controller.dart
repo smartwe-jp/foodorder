@@ -457,13 +457,13 @@ class SettingController extends GetxController with StateMixin {
     //     debugPrint("SettingController _getPaycubeChangeState 获取失败");
     //   }
     // });
-
+    change(null, status: RxStatus.success());
     if (Platform.isAndroid) {
       await _getChangeState();
     } else {
-      await getServerCashInfo();
+      await getCashInfo();
     }
-    change(null, status: RxStatus.success());
+    
     //print(_menuOption);
   }
 

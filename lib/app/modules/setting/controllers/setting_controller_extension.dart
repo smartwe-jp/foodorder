@@ -413,7 +413,8 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
-          logger.info('-- dispenseCashOutside error: ${GString.getToString(checkLanguage.value, error)}');
+          logger.info(
+              '-- dispenseCashOutside error: ${GString.getToString(checkLanguage.value, error)}');
           errorHandleDialog(GString.getToString(checkLanguage.value, error));
           // errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
           //     confirmtitle: 'スキップ', () {
@@ -529,7 +530,7 @@ extension SettingControllerExtension on SettingController {
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         showToast('完了しました');
-        getServerCashInfo();
+        getCashInfo();
       } else {
         commonHandleDialog('同期失败!');
         errorHandleDialogTwo('同期失败', gloryConfirmSync());
