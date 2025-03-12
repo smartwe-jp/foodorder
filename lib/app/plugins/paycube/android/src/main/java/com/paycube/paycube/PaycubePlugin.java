@@ -295,7 +295,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             } else if(operEvent.equals("setAcceptCash")) {
                 try {
                     if (lib == null) {
-                        result.success("allowFail");
+                        result.success("SetFailure");
                         return;
                     }
 
@@ -319,11 +319,24 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     lib.write(buf.array());
 
                     //putMoney = "0";
-                    result.success("allowSuccess");
+                    //result.success("allowSuccess");
+                    CompletableFuture<String> future = new CompletableFuture<>();
+                    resultMap.put("setAcceptCash", future);
+
+                    future.thenAccept(result::success).exceptionally(ex -> {
+                        result.error("ERROR", ex.getMessage(), null);
+                        return null;
+                    });
 
                     //lib.setReceiveEventEnable(false);
                 } catch (COMException e) {
                     e.printStackTrace();
+                    CompletableFuture<String> future = resultMap.get("setAcceptCash");
+                    if (future != null) {
+                        future.complete("SetFailure");
+                        resultMap.remove("setAcceptCash");
+                    }
+
                 }
             } else if (operEvent.equals("sendPutCashDetail")) {
                 try {
@@ -618,7 +631,6 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
 
             }
-
             // 入金金額コマンド
             try {
                 ByteBuffer buf = ByteBuffer.allocate(6);
@@ -759,6 +771,23 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 // Do Nothing
                 Log.logger.error("出金終了Exception", e);
             }
+        } else if (event.getReceiveData()[2] == (byte) 0x0C && event.getReceiveData()[3] == (byte) 0x11) {
+            // 设置现金使用状况
+            Log.logger.info("-----------------设置现金禁用/使用------------------ "+receiveStr);
+            if (event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
+                CompletableFuture<String> future = resultMap.get("setAcceptCash");
+                if (future != null) {
+                    future.complete("SetSuccess");
+                    resultMap.remove("setAcceptCash");
+                }
+            } else {
+                CompletableFuture<String> future = resultMap.get("setAcceptCash");
+                if (future != null) {
+                    future.complete("SetFailure");
+                    resultMap.remove("setAcceptCash");
+                }
+            }
+
         }
 
         try {

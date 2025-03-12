@@ -546,7 +546,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   posTest(posIp, posPort) async {
-    _showEasyLoading("POS Test Start");
+    _showEasyLoading(text: "POS Test Start");
     debugPrint("--- posTest ---");
     request('webBootPosTest', method: 'POST')
         .then((val) {
@@ -737,19 +737,41 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkIsAllow5000Yen(checkedType) async {
-
-    await Paycube.setAcceptCash(checkedType, 5000);
-    isAllow5000 = checkedType;
-
-    _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
+    _showEasyLoading();
+    await Paycube.setAcceptCash(checkedType, 5000, onSuccess: (){
+      isAllow5000 = checkedType;
+      _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow5000Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
   }
 
   checkIsAllow10000Yen(checkedType) async {
+    _showEasyLoading();
+    await Paycube.setAcceptCash(checkedType, 10000, onSuccess: (){
+      isAllow10000 = checkedType;
+      _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow10000Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
+  }
 
-    await Paycube.setAcceptCash(checkedType, 10000);
-    isAllow10000 = checkedType;
 
-    _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
+  handleMassageAlert(String message, {GestureTapCallback? confirm}) {
+    Get.dialog(
+      DialogUtils.alert(message, confirm: confirm ?? (){Get.back();}, cancle: (){
+        Get.back();
+      }),
+      barrierDismissible: false,
+    );
   }
 
   checkIsAllowRejishime(checkedType) async {
@@ -797,7 +819,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //上传现金机log
   uploadErrorLog() async {
-    _showEasyLoading("Uploading...");
+    _showEasyLoading(text: "Uploading...");
     var logfile="/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
@@ -823,7 +845,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
-  _showEasyLoading(text){
+  _showEasyLoading({String text = ""}){
     var _showTag;
     _showTag = Text(text,
         style: TextStyle(

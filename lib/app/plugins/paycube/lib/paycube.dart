@@ -392,12 +392,45 @@ class Paycube {
   }
 
   //禁止入金和出金
-  static Future<String> setAcceptCash(bool enable, int type) async {
+  static Future<bool> setAcceptCash(bool enable, int type, {required Function onSuccess, required Function(String) catchError}) async {
     int isEnable = enable ? 1:0;
-    Map<String, Object> map = {'operEvent': 'setAcceptCash', 'seqNo': getSeqNo(), 'enable': isEnable, 'type': type};
-    final String prohibitOneCashString = await _channel.invokeMethod('startOpenPayCube',map);
-    return prohibitOneCashString;
+    var ret = false;
+    await setReceiveEvent;
+    int seqNo = getSeqNo();
+    final String openStatus = await setAcceptCashAction(isEnable, type, seqNo);
+    if (openStatus == "SetSuccess") {
+      onSuccess();
+      ret = true;
+    } else {
+      catchError(openStatus);
+      ret = false;
+    }
+    return ret;
   }
+
+  static Future<String> setAcceptCashAction(int enable, int type, int seqNo, {int retryCount = 0}) async {
+    debugPrint("setAcceptCash called with seqNo: $seqNo + retryCount: $retryCount");
+    Map<String, Object> map = {'operEvent': 'setAcceptCash', 'seqNo': getSeqNo(), 'enable': enable, 'type': type};
+
+    try {
+      final String openStatus = await _channel.invokeMethod('startOpenPayCube', map)
+          .timeout(Duration(milliseconds: 2000));
+
+      if (openStatus == "SetSuccess") {
+        return openStatus;
+      }
+    } catch (e) {
+      print("Attempt $retryCount failed: $e");
+    }
+
+    if (retryCount < 10) {
+      await Future.delayed(Duration(milliseconds: 550));
+      return setAcceptCashAction(enable, type, seqNo, retryCount: retryCount + 1);
+    } else {
+      return "setAcceptCash Failed after $retryCount retries";
+    }
+  }
+
 
   //允许一块入金和出金
   static Future<String> get allowOneCash async {
