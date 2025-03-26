@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 enum MachineType { new_panel, new_panel_max, old_panel }
 
 class MachineInfoController extends GetxController {
-  final Map systemSettingInfo;
+  Map systemSettingInfo;
   MachineInfoController(this.systemSettingInfo);
 
   late MachineType machineType;
@@ -71,6 +71,11 @@ class MachineInfoController extends GetxController {
     // TODO: implement dispose
     print('loadMachineSettingInfo dispose');
     super.dispose();
+  }
+
+  Future updateMachineSettingInfo(Map settingInfo) async {
+    systemSettingInfo = settingInfo;
+    await loadMachineSettingInfo();
   }
 
   Future loadMachineSettingInfo() async {

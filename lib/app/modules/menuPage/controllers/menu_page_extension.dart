@@ -146,7 +146,7 @@ extension MenuPageControllerExtension on MenuPageController {
     if (url == null || url.isEmpty) {
       return AssetImage('assets/images/public/food.png');
     }
-    return CachedNetworkImageProvider(url);
+    return CachedNetworkImageProvider(url, cacheManager: customCacheManager);
 
   }
 

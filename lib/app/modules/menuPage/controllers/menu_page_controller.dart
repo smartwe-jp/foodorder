@@ -1,7 +1,5 @@
 import 'dart:convert';
 import 'dart:io';
-import 'dart:math';
-import 'dart:ui';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -9,10 +7,13 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
+import 'package:flutter_cache_manager/flutter_cache_manager.dart';
+
 
 
 import '../../../config/color.dart';
@@ -41,6 +42,13 @@ class MenuPageController extends GetxController with StateMixin {
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
   MachineInfoController machineInfo = Get.find();
    FToast? fToast;
+  final customCacheManager = CacheManager(
+    Config(
+      'menu_page',
+      stalePeriod: const Duration(minutes: 3), // 较短的过期时间
+      maxNrOfCacheObjects: 6, // 限制缓存对象数量
+    ),
+  );
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
@@ -85,7 +93,7 @@ class MenuPageController extends GetxController with StateMixin {
   //MenuSidebarInfo? sidebarInfo;
   late List menuList;
   late List<String> menuCategory;
-  final PageController pageController = PageController();
+  final PageController pageController = PageController(viewportFraction: 1.0);
   bool forceUpdate = false;
 
 
@@ -265,7 +273,7 @@ class MenuPageController extends GetxController with StateMixin {
     };
     request('webBootIndexMenuv3', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
-
+      debugPrint('getBookingBootIndexMenu response:$response');
       if (response['code'] == 200) {
         //2、保存商品信息
         List myList = response['data'];
@@ -1031,7 +1039,7 @@ print("加1了");
   }
 
   //提交订单
-  doSubmitOrder(){
+  doSubmitOrder({int times= 0}){
     if(machineInfo.machineCode !=""){
       _showOrderEasyLoading();
 
@@ -1079,21 +1087,7 @@ print("加1了");
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
 
-          //只有现金，并且其余都为false的时候，直接跳转支付
-          // if(showCash.value == true &&
-          //     isAllowPos.value == "0" &&
-          //     showAlipay.value == false &&
-          //     showWechat.value == false &&
-          //     showPayPay.value == false
-          // ){
-          //   payment_method_num.value = "1";
-          //   //postNewOrderId();
-          //   gotoSettlement();
-          // }else{
-          //   showSelectMealTypeAndPaymentMethodDialog();
-          // }
           showSelectMealTypeAndPaymentMethodDialog();
-
 
         }else{
           //getBookingBootMenu();
@@ -1113,12 +1107,52 @@ print("加1了");
                   })
           );
         }
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        _handleOrderResultAlert(times: times);
+      }).catchError((e) {
+        _handleOrderResultAlert(times: times);
       });
     } else {
       FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
         "machineCode": machineInfo.machineCode,
       });
     }
+  }
+
+  _handleOrderResultAlert({int times= 0}) {
+    EasyLoading.dismiss();
+    if (times > 2) {
+      Get.dialog(
+          DialogUtils.alertOneButton("order_network_error".localized(),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              confirm: () {
+                Get.back();
+                FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                  "machineCode": machineInfo.machineCode,
+                });
+              })
+      );
+      return;
+    }
+
+    Get.dialog(
+        DialogUtils.alert("show_order_error".localized(),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+              doSubmitOrder(times: times + 1);
+            },
+            cancle: () {
+              Get.back();
+              clearCartList();
+              FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                "machineCode": machineInfo.machineCode,
+              });
+            }
+            )
+    );
   }
 
   //选择食用方式和支付方式

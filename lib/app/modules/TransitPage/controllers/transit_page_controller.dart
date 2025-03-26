@@ -20,9 +20,6 @@ import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../CheckoutPage/views/checkout_page_view.dart';
-import '../../OrderHome/views/order_home_view.dart';
-import '../../SelfservicePage/views/selfservice_page_view.dart';
 
 class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
@@ -355,9 +352,17 @@ class TransitPageController extends GetxController {
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
     //}
 
-    Get.put(MachineInfoController(systemSettingData));
-    debugPrint('put MachineInfoController');
+    if (!Get.isRegistered<MachineInfoController>()) {
+      Get.put(MachineInfoController(systemSettingData), permanent: true);
+      debugPrint('put MachineInfoController');
+    } else {
+      await Get.find<MachineInfoController>().updateMachineSettingInfo(systemSettingData);
+      debugPrint('update MachineInfoController');
+    }
+    // await Get.delete<MachineInfoController>();
+    // Get.put(MachineInfoController(systemSettingData));
 
+    debugPrint('update MachineInfoController done');
     var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
     if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
       Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
