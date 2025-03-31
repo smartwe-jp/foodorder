@@ -1,54 +1,60 @@
-group 'com.example.paycube_old'
+group 'com.paycube.paycube_old'
 version '1.0'
 
 buildscript {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
     }
 
     dependencies {
-        classpath 'com.android.tools.build:gradle:7.3.0'
+        //classpath 'com.android.tools.build:gradle:3.5.0'
+        classpath 'com.android.tools.build:gradle:7.0.4'
     }
 }
 
 rootProject.allprojects {
     repositories {
         google()
-        mavenCentral()
+        jcenter()
+
+        flatDir {
+            dirs project(':paycube').file('libs')
+        }
     }
 }
 
 apply plugin: 'com.android.library'
 
 android {
-    if (project.android.hasProperty("namespace")) {
-        namespace 'com.example.paycube_old'
-    }
-
-    compileSdkVersion 33
-
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
+    compileSdkVersion 28
 
     defaultConfig {
         minSdkVersion 19
     }
-
-    dependencies {
-        testImplementation 'junit:junit:4.13.2'
-        testImplementation 'org.mockito:mockito-core:5.0.0'
+    lintOptions {
+        disable 'InvalidPackage'
     }
+}
 
-    testOptions {
-        unitTests.all {
-            testLogging {
-               events "passed", "skipped", "failed", "standardOut", "standardError"
-               outputs.upToDateWhen {false}
-               showStandardStreams = true
-            }
-        }
+repositories {
+    flatDir {
+        dirs 'libs'
     }
+}
+
+dependencies {
+    //implementation(name: 'comlib', ext: 'aar')
+    //api fileTree(dir: 'libs', include: ['*.aar'])
+    implementation (name: 'comlib', ext: 'aar')
+    implementation (name: 'commons-lang3-3.9', ext: 'jar')
+    //implementation fileTree(dir: 'libs', include: ['*.aar'])
+    //implementation fileTree(dir: 'libs', include: ['*.jar'])
+    api 'com.android.support:appcompat-v7:28.0.0'
+    api 'com.android.support.constraint:constraint-layout:1.1.3'
+    api 'com.android.support:design:28.0.0'
+    api 'junit:junit:4.12'
+    api 'com.android.support.test:runner:1.0.2'
+    api 'com.android.support.test.espresso:espresso-core:3.0.2'
+
 }

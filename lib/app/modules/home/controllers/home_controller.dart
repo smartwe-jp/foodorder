@@ -14,6 +14,7 @@ import 'package:paycube/paycube.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../plugins/paycube_old/lib/paycube.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -66,7 +67,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
-    Paycube.stopListening();
+    PayCube.stopListening();
     super.onClose();
   }
 
@@ -160,14 +161,14 @@ class HomeController extends GetxController {
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
-    String checkStatus = await Paycube.CheckPayCubeStatus;
+    String checkStatus = await PayCube.CheckPayCubeStatus;
     debugPrint("checkStatus:$checkStatus");
 
     //如果检测现金机打开错误，则重新打开一下
     if(checkStatus == "openError"){
       int _openCount = 0;
       for (var i = 0; i < 3; i++) {
-        String openStatus = await Paycube.openPayCube;
+        String openStatus = await PayCube.openPayCube;
         debugPrint("openStatus:$openStatus");
         _openCount++;
         debugPrint("打开次数$_openCount");
@@ -218,7 +219,7 @@ class HomeController extends GetxController {
     // await Paycube.setReceiveEvent;
     debugPrint("--startToubi--");
     await Future.delayed(Duration(milliseconds: 500));
-    await Paycube.startPayCube(onSuccess: () {
+    await PayCube.startPayCube(onSuccess: () {
       debugPrint("---onSuccess---");
       seconds.value=60;
       _countDownTimer();
@@ -265,7 +266,7 @@ class HomeController extends GetxController {
     checkSteeps.value = 3;
     //await Paycube.setReceiveEvent;
     Future.delayed(Duration(milliseconds: 500));
-    bool endStatus = await Paycube.endPayCube(onSuccess: () {
+    bool endStatus = await PayCube.endPayCube(onSuccess: () {
       debugPrint("endPayCube");
     }, catchError: (error) {
       debugPrint("endPayCube catchError:$error");
@@ -312,7 +313,7 @@ class HomeController extends GetxController {
     //取引终了结束交易
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
-    bool endTrade = await Paycube.endTrade(onSuccess: () {
+    bool endTrade = await PayCube.endTrade(onSuccess: () {
       debugPrint("endTrade");
     }, catchError: (error) {
       debugPrint("endTrade catchError:$error");

@@ -629,6 +629,13 @@ packages:
       relative: true
     source: path
     version: "0.0.1"
+  paycube_old:
+    dependency: "direct main"
+    description:
+      path: "lib/app/plugins/paycube_old"
+      relative: true
+    source: path
+    version: "0.0.1"
   permission_handler:
     dependency: "direct main"
     description:

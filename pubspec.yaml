@@ -44,6 +44,8 @@ dependencies:
     sdk: flutter
   paycube: 
     path: ./lib/app/plugins/paycube
+  paycube_old:
+    path: ./lib/app/plugins/paycube_old
   flutter_plugin_msprinter: 
     path: ./lib/app/plugins/flutter_plugin_msprint
   appset: 
