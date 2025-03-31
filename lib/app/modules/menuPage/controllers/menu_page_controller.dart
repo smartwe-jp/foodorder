@@ -44,9 +44,9 @@ class MenuPageController extends GetxController with StateMixin {
    FToast? fToast;
   final customCacheManager = CacheManager(
     Config(
-      'menu_page',
-      stalePeriod: const Duration(minutes: 3), // 较短的过期时间
-      maxNrOfCacheObjects: 6, // 限制缓存对象数量
+      'menu_page', // 限制缓存对象数量
+      stalePeriod: Duration(minutes: 1), // 缓存过期时间
+      maxNrOfCacheObjects: 100, // 缓存对象数量
     ),
   );
 
@@ -112,7 +112,10 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   @override
-  void onClose() {
+  Future<void> onClose() async {
+    debugPrint('MenuPageController onClose');
+    await customCacheManager.emptyCache();
+    await Get.delete<MenuPageController>();
     super.onClose();
   }
 
