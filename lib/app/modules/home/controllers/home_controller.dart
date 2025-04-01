@@ -5,12 +5,13 @@ import 'dart:convert';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:appset/appset.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-import 'package:paycube/paycube.dart';
+//import 'package:paycube/paycube.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -24,6 +25,9 @@ import '../../TransitPage/views/transit_page_view.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
+
+  AppConfig appConfig = Get.find();
+  get payCube => appConfig.payCube;
 
    Timer? allowtimer;
    Timer? stoptimer;
@@ -67,7 +71,7 @@ class HomeController extends GetxController {
 
   @override
   void onClose() {
-    PayCube.stopListening();
+    payCube.stopListening();
     super.onClose();
   }
 
@@ -147,7 +151,7 @@ class HomeController extends GetxController {
         //如果60秒未接收返回正确通知，则进行下一步操作
           _isCashState.value = false;
           showCashTimer?.cancel();
-          await _sendFailureEmail();
+          //await _sendFailureEmail();
           await prohibitOneCash();
 
          //清除定时器
@@ -161,14 +165,14 @@ class HomeController extends GetxController {
     checkSteeps.value = 2;
     //倒计时，一定时间不开启现金机则继续执行下一步
     _countDownTimer();
-    String checkStatus = await PayCube.CheckPayCubeStatus;
+    String checkStatus = await payCube.CheckPayCubeStatus;
     debugPrint("checkStatus:$checkStatus");
 
     //如果检测现金机打开错误，则重新打开一下
     if(checkStatus == "openError"){
       int _openCount = 0;
       for (var i = 0; i < 3; i++) {
-        String openStatus = await PayCube.openPayCube;
+        String openStatus = await payCube.openPayCube;
         debugPrint("openStatus:$openStatus");
         _openCount++;
         debugPrint("打开次数$_openCount");
@@ -182,7 +186,7 @@ class HomeController extends GetxController {
       //send failure email
       showCashTimer?.cancel();
       _isCashState.value = false;
-      _sendFailureEmail();
+      //_sendFailureEmail();
       prohibitOneCash();
       //print("机器未打开lib未null，重新打开并连接了");
     }else{
@@ -219,7 +223,7 @@ class HomeController extends GetxController {
     // await Paycube.setReceiveEvent;
     debugPrint("--startToubi--");
     await Future.delayed(Duration(milliseconds: 500));
-    await PayCube.startPayCube(onSuccess: () {
+    await payCube.startPayCube(onSuccess: () {
       debugPrint("---onSuccess---");
       seconds.value=60;
       _countDownTimer();
@@ -227,7 +231,7 @@ class HomeController extends GetxController {
     }, catchError: (error) {
       showCashTimer?.cancel();
       _isCashState.value = false;
-      _sendFailureEmail();
+      //_sendFailureEmail();
       prohibitOneCash();
       debugPrint("startToubi catchError:$error");
     });
@@ -265,8 +269,8 @@ class HomeController extends GetxController {
     debugPrint("--stopPayCube--");
     checkSteeps.value = 3;
     //await Paycube.setReceiveEvent;
-    Future.delayed(Duration(milliseconds: 500));
-    bool endStatus = await PayCube.endPayCube(onSuccess: () {
+    await Future.delayed(Duration(milliseconds: 500));
+    bool endStatus = await payCube.endPayCube(onSuccess: () {
       debugPrint("endPayCube");
     }, catchError: (error) {
       debugPrint("endPayCube catchError:$error");
@@ -313,7 +317,7 @@ class HomeController extends GetxController {
     //取引终了结束交易
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
-    bool endTrade = await PayCube.endTrade(onSuccess: () {
+    bool endTrade = await payCube.endTrade(onSuccess: () {
       debugPrint("endTrade");
     }, catchError: (error) {
       debugPrint("endTrade catchError:$error");

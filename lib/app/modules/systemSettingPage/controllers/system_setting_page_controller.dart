@@ -17,7 +17,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
-import '../../../plugins/paycube/lib/paycube.dart';
+import '../../../controllers/app_config.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -33,6 +33,9 @@ import '../views/showSpeed.dart';
 
 class SystemSettingPageController extends GetxController with StateMixin {
   //TODO: Implement SystemSettingPageController
+
+  AppConfig appConfig = Get.find();
+  get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
   RxString machineCode = "".obs;
@@ -726,9 +729,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllowOneYen(checkedType) async {
 
     if(checkedType == "0"){
-      var prohibitOneCashStatus =  await Paycube.prohibitOneCash;
+      var prohibitOneCashStatus =  await payCube.prohibitOneCash;
     }else{
-      var allowOneCashStatus =  await Paycube.allowOneCash;
+      var allowOneCashStatus =  await payCube.allowOneCash;
     }
     is_allow_oneyen.value = checkedType;
 
@@ -738,7 +741,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllow5000Yen(checkedType) async {
     _showEasyLoading();
-    await Paycube.setAcceptCash(checkedType, 5000, onSuccess: (){
+    await payCube.setAcceptCash(checkedType, 5000, onSuccess: (){
       isAllow5000 = checkedType;
       _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
     }, catchError: (error){
@@ -752,7 +755,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllow10000Yen(checkedType) async {
     _showEasyLoading();
-    await Paycube.setAcceptCash(checkedType, 10000, onSuccess: (){
+    await payCube.setAcceptCash(checkedType, 10000, onSuccess: (){
       isAllow10000 = checkedType;
       _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
     }, catchError: (error){

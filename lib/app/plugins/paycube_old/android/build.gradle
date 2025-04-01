@@ -19,7 +19,7 @@ rootProject.allprojects {
         jcenter()
 
         flatDir {
-            dirs project(':paycube').file('libs')
+            dirs project(':paycube_old').file('libs')
         }
     }
 }

@@ -11,8 +11,10 @@ import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 import '../../../config/imageData.dart';
+import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
-import '../../../plugins/paycube/lib/paycube.dart';
+
+import '../../../plugins/paycube_old/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -23,6 +25,8 @@ import '../views/reimbruse_order_print_view.dart';
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
   TextEditingController orderIdController=TextEditingController();
+  AppConfig appConfig = Get.find();
+  get payCube => appConfig.payCube;
 
   RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
@@ -167,10 +171,10 @@ LogUtil.d(response);
       refundFailedAlert();
     } else if (refundInfo["payChannel"] =="Cash"){
       showPosEasyLoading();
-      String strartPayCube = await Paycube.strartRefundPayCube;
+      String strartPayCube = await payCube.strartRefundPayCube;
       debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
-      Paycube.getPayCubeListener();
+      payCube.getPayCubeListener();
       _setPayCubeListener();
       startOutPutMoney(refundInfo["amount"]);
 
@@ -445,9 +449,9 @@ LogUtil.d(response);
   }
 
   _setPayCubeListener() async {
-    await Paycube.setReceiveEvent;
-    Paycube.getPayCubeListener();
-    Paycube.onCashInfoChange = (CashInfo type, String value) {
+    await payCube.setReceiveEvent;
+    payCube.getPayCubeListener();
+    payCube.onCashInfoChange = (CashInfo type, String value) {
       switch (type) {
         case CashInfo.putMoney:
           debugPrint("putMoney==$value");
@@ -472,7 +476,7 @@ LogUtil.d(response);
     var outStringMoney = outMoney.toString();
     //await Paycube.setReceiveEvent;
 
-    bool outResult = await Paycube.outPayCubeMoney(outStringMoney, onSuccess: () {
+    bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
       debugPrint("出金成功");
     }, catchError: (error) {
       debugPrint("出金失败");
@@ -490,22 +494,11 @@ LogUtil.d(response);
         seconds.value = 180;
         //如果取消不汇报，则出金后直接关闭 ？？？？？？
         //_getPayCubeOutMoney();
-        await Paycube.setReceiveEvent;
+        await payCube.setReceiveEvent;
       } else {
         cashErrorHandle();
       }
-    //   else if (outStatus.value == "Error-A0--02" || outStatus.value == "Error") {
-    //     await Paycube.outPayCubeMoney(outStringMoney);
-    //   } else if (outStatus.value == "Error-F0--16") {
-    //       debugPrint("出金失败 Reason:error-F0--16, retry");
-    //       outmoneyt.cancel();
-    //       await Paycube.endTrade;
-    //       await startOutPutMoney(outStringMoney);
-    //   }
-    //   else {
-    //     await Paycube.outPayCubeMoney(outStringMoney);
-    //   }
-    // });
+
   }
 
   cashErrorHandle() {
@@ -623,7 +616,7 @@ LogUtil.d(response);
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
     _countDownTimer("5");
-    bool endTrade = await Paycube.endTrade(onSuccess: () {
+    bool endTrade = await payCube.endTrade(onSuccess: () {
       debugPrint("取引终了结束交易成功");
     }, catchError: (error) {
       debugPrint("取引终了结束交易失败");
@@ -637,24 +630,6 @@ LogUtil.d(response);
       debugPrint("取引终了结束交易失败");
     }
 
-    // debugPrint("取引终了结束交易${endTrade}");
-    // //开启倒计时
-    // _countDownTimer("5");
-    // await Paycube.setReceiveEvent;
-    // endtimer?.cancel();
-    // endtimer = Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-    //   endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-    //   // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
-    //   if (endStatus.value == "EndSuccess") {
-    //     showCashTimer?.cancel();
-    //     seconds.value = 180;
-    //     reportChange(cashOutString);
-    //     endtradet.cancel();
-    //   }else {
-    //     //sleep(Duration(milliseconds: 200));
-    //     await Paycube.endTrade;
-    //   }
-    // });
   }
 
   _printReimburseReceipt(Size size, Widget widget) async {

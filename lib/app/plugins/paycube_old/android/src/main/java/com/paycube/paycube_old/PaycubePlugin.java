@@ -47,9 +47,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     private ReceiveEventListener chargingStateChangeReceiver;
     private Handler handler;
     private int count = 0;
-    private Context appliactionContext;
-    private final ConcurrentHashMap<String, CompletableFuture<String>> resultMap = new ConcurrentHashMap<>();
 
+    private final ConcurrentHashMap<String, CompletableFuture<String>> resultMap = new ConcurrentHashMap<>();
 
     /***插件****/
     static COMLib lib = null;
@@ -93,7 +92,6 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-        appliactionContext = flutterPluginBinding.getApplicationContext();
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "paycube");
         channel.setMethodCallHandler(this);
     }
@@ -109,12 +107,12 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             if (operEvent.equals("openPayCube")) {
                 try {
                     if (lib == null) {
-                        lib = new COMLibImpl(appliactionContext);
+                        lib = new COMLibImpl();
                         System.out.println("现金机重新初始化开启");
-                        lib.open(appliactionContext);//"/dev/ttyS4"
+                        lib.open("/dev/ttyS4");//"/dev/ttyS4"
                         //result.success("openSuccess");
                     } else {
-                        lib.open(appliactionContext);//"/dev/ttyS4"
+                        lib.open("/dev/ttyS4");//"/dev/ttyS4"
                         System.out.println("现金机重新开启");
                         //result.success("openSuccess");
                     }
@@ -127,7 +125,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     e.printStackTrace();
                     Log.logger.error("现金机打开Exception", e);
                 }
-                
+
             } else if (operEvent.equals("CheckPayCubeStatus")) {
                 // -- body --
                 if (lib == null) {
@@ -176,7 +174,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 //出金额;
                 // -- body --
                 result.success(listenOutMoney);
-                
+
             } else if (operEvent.equals("getPayCubeMachineStatus")) {
                 //机器状态;
                 // -- body --
@@ -203,7 +201,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
 
                 result.success("success");
             }  else if (operEvent.equals("outPayCubeMoney")) {
-               //现金机 出金开始;
+                //现金机 出金开始;
                 // -- body --
                 currencyString = "";
                 String outMoney = call.argument("outMoney");
@@ -216,7 +214,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 endPayCube(getSeqNo(seqNo), result);
 
             } else if (operEvent.equals("endTradePayCube")) {
-               // 取引终了;
+                // 取引终了;
                 // -- body --
                 int seqNo = call.argument("seqNo");
                 endTradePayCube(getSeqNo(seqNo), result);
@@ -479,53 +477,53 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             if(event.getReceiveData()[3] == (byte) 0x01){
                 //入金许可监听状态
                 //if(_payCubeAllowCashStatus != "AllowSuccess"){
-                    if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
-                        _payCubeAllowCashStatus = "AllowSuccess";
-                        System.out.println("入金许可监听状态");
-                        CompletableFuture<String> future = resultMap.get("StartPayCubeMoney");
-                        if (future != null) {
-                            future.complete("AllowSuccess");
-                            _payCubeAllowCashStatus = "Error";
+                if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
+                    _payCubeAllowCashStatus = "AllowSuccess";
+                    System.out.println("入金许可监听状态");
+                    CompletableFuture<String> future = resultMap.get("StartPayCubeMoney");
+                    if (future != null) {
+                        future.complete("AllowSuccess");
+                        _payCubeAllowCashStatus = "Error";
 
-                        }
-                    }else{
-                        String[] AllowArray = receiveStr.split(" ");
-                        _payCubeAllowCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
-                        System.out.println("入金许可监听状态 = " + _payCubeAllowCashStatus);
-                        CompletableFuture<String> future = resultMap.get("StartPayCubeMoney");
-                        if (future != null) {
-                            future.complete("Error-"+AllowArray[6]+"--"+AllowArray[7]);
-                            resultMap.remove("StartPayCubeMoney");
-                            _payCubeAllowCashStatus = "Error";
-                            //future.completeExceptionally(new Exception(_payCubeAllowCashStatus));
-                        }
                     }
+                }else{
+                    String[] AllowArray = receiveStr.split(" ");
+                    _payCubeAllowCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
+                    System.out.println("入金许可监听状态 = " + _payCubeAllowCashStatus);
+                    CompletableFuture<String> future = resultMap.get("StartPayCubeMoney");
+                    if (future != null) {
+                        future.complete("Error-"+AllowArray[6]+"--"+AllowArray[7]);
+                        resultMap.remove("StartPayCubeMoney");
+                        _payCubeAllowCashStatus = "Error";
+                        //future.completeExceptionally(new Exception(_payCubeAllowCashStatus));
+                    }
+                }
                 //}
             }else if(event.getReceiveData()[3] == (byte) 0x02){
                 //入金禁止监听状态
                 //if(_payCubeStopCashStatus != "StopSuccess"){
-                    if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
-                        _payCubeStopCashStatus = "StopSuccess";
-                        System.out.println("入金禁止状态 = " + _payCubeStopCashStatus);
-                        CompletableFuture<String> future = resultMap.get("endPayCube");
-                        if (future != null) {
-                            future.complete("StopSuccess");
-                            resultMap.remove("endPayCube");
-                            _payCubeStopCashStatus = "Error";
-                        }
-
-                    }else{
-                        String[] AllowArray = receiveStr.split(" ");
-                        _payCubeStopCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
-                        System.out.println("入金禁止状态 = " + _payCubeStopCashStatus);
-                        CompletableFuture<String> future = resultMap.get("endPayCube");
-                        if (future != null) {
-                            future.complete(_payCubeStopCashStatus);
-                            resultMap.remove("endPayCube");
-                            _payCubeStopCashStatus = "Error";
-                            //future.completeExceptionally(new Exception(_payCubeStopCashStatus));
-                        }
+                if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
+                    _payCubeStopCashStatus = "StopSuccess";
+                    System.out.println("入金禁止状态 = " + _payCubeStopCashStatus);
+                    CompletableFuture<String> future = resultMap.get("endPayCube");
+                    if (future != null) {
+                        future.complete("StopSuccess");
+                        resultMap.remove("endPayCube");
+                        _payCubeStopCashStatus = "Error";
                     }
+
+                }else{
+                    String[] AllowArray = receiveStr.split(" ");
+                    _payCubeStopCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
+                    System.out.println("入金禁止状态 = " + _payCubeStopCashStatus);
+                    CompletableFuture<String> future = resultMap.get("endPayCube");
+                    if (future != null) {
+                        future.complete(_payCubeStopCashStatus);
+                        resultMap.remove("endPayCube");
+                        _payCubeStopCashStatus = "Error";
+                        //future.completeExceptionally(new Exception(_payCubeStopCashStatus));
+                    }
+                }
                 //}
                 //channel.invokeMethod("onEndServiceChange",_payCubeStopCashStatus);
                 // 当监听的服务发生变化时，调用_sendToFlutter向Flutter端发送通知
@@ -536,25 +534,25 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
             }else if(event.getReceiveData()[3] == (byte) 0x03){
                 //取引终了监听状态
                 //if(_payCubeEndTradeStatus != "EndSuccess"){
-                    if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
-                        _payCubeEndTradeStatus = "EndSuccess";
-                        CompletableFuture<String> future = resultMap.get("endTradePayCube");
-                        if (future != null) {
-                            future.complete("EndSuccess");
-                            resultMap.remove("endTradePayCube");
-                            _payCubeEndTradeStatus = "Error";
-                        }
-                    }else{
-                        String[] AllowArray = receiveStr.split(" ");
-                        _payCubeEndTradeStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
-                        CompletableFuture<String> future = resultMap.get("endTradePayCube");
-                        if (future != null) {
-                            future.complete(_payCubeEndTradeStatus);
-                            resultMap.remove("endTradePayCube");
-                            _payCubeEndTradeStatus = "Error";
-                            //future.completeExceptionally(new Exception(_payCubeEndTradeStatus));
-                        }
+                if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
+                    _payCubeEndTradeStatus = "EndSuccess";
+                    CompletableFuture<String> future = resultMap.get("endTradePayCube");
+                    if (future != null) {
+                        future.complete("EndSuccess");
+                        resultMap.remove("endTradePayCube");
+                        _payCubeEndTradeStatus = "Error";
                     }
+                }else{
+                    String[] AllowArray = receiveStr.split(" ");
+                    _payCubeEndTradeStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
+                    CompletableFuture<String> future = resultMap.get("endTradePayCube");
+                    if (future != null) {
+                        future.complete(_payCubeEndTradeStatus);
+                        resultMap.remove("endTradePayCube");
+                        _payCubeEndTradeStatus = "Error";
+                        //future.completeExceptionally(new Exception(_payCubeEndTradeStatus));
+                    }
+                }
                 //}
                 //_sendToFlutter("onEndTradeServiceChange",_payCubeEndTradeStatus);
             }
@@ -562,25 +560,25 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         } else if (event.getReceiveData()[1] == (byte) 0x06 && event.getReceiveData()[2] == (byte) 0x0B && event.getReceiveData()[3] == (byte) 0x01) {
             //出金金额监听状态
             //if(_payCubeOutMoneyStatus != "OutSuccess"){
-                if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
-                    _payCubeOutMoneyStatus = "OutSuccess";
-                    CompletableFuture<String> future = resultMap.get("outPayCubeMoney");
-                    if (future != null) {
-                        future.complete("OutSuccess");
-                        resultMap.remove("outPayCubeMoney");
-                        _payCubeOutMoneyStatus = "Error";
-                    }
-                }else{
-                    String[] AllowArray = receiveStr.split(" ");
-                    _payCubeOutMoneyStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
-                    CompletableFuture<String> future = resultMap.get("outPayCubeMoney");
-                    if (future != null) {
-                        future.complete(_payCubeOutMoneyStatus);
-                        resultMap.remove("outPayCubeMoney");
-                        _payCubeOutMoneyStatus = "Error";
-                        //future.completeExceptionally(new Exception(_payCubeOutMoneyStatus));
-                    }
+            if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
+                _payCubeOutMoneyStatus = "OutSuccess";
+                CompletableFuture<String> future = resultMap.get("outPayCubeMoney");
+                if (future != null) {
+                    future.complete("OutSuccess");
+                    resultMap.remove("outPayCubeMoney");
+                    _payCubeOutMoneyStatus = "Error";
                 }
+            }else{
+                String[] AllowArray = receiveStr.split(" ");
+                _payCubeOutMoneyStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
+                CompletableFuture<String> future = resultMap.get("outPayCubeMoney");
+                if (future != null) {
+                    future.complete(_payCubeOutMoneyStatus);
+                    resultMap.remove("outPayCubeMoney");
+                    _payCubeOutMoneyStatus = "Error";
+                    //future.completeExceptionally(new Exception(_payCubeOutMoneyStatus));
+                }
+            }
             //}
             //_sendToFlutter("onPayOutServiceChange",_payCubeOutMoneyStatus);
 
@@ -1039,7 +1037,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     }
                 } else {
                     try {
-                    Thread.sleep(3000);
+                        Thread.sleep(3000);
                         sendCommandWithRetry(command, seqNo, retryCount - 1, waitTimeMillis, result, resultFlag, successMessage, failureMessage);
                     } catch (InterruptedException ie) {
                         Thread.currentThread().interrupt();
@@ -1118,7 +1116,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
     private void _sendToFlutter(String channelMethod,String message) {
         Log.logger.info(channelMethod+"android通信到flutter=======sendToFlutter");
         //if (channel != null) {
-            channel.invokeMethod(channelMethod, message);
+        channel.invokeMethod(channelMethod, message);
         //}
     }
 
@@ -1173,5 +1171,8 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
         }
         return val;
     }
+
+
+
 
 }

@@ -16,6 +16,7 @@ import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
 
 
+import 'app/app_binding/app_bindings.dart';
 import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
@@ -91,6 +92,7 @@ void main() {
                     fallbackLocale: Locale('jp', 'JP'), // 备用语言
                     defaultTransition: Transition.fadeIn,
                     getPages: AppPages.routes,
+                    initialBinding: AppBindings(),
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE ||

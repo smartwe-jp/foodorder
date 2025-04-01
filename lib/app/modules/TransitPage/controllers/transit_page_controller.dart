@@ -12,8 +12,8 @@ import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 
 
+import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
-import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/logUtil.dart';
@@ -29,6 +29,8 @@ class TransitPageController extends GetxController {
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
   RxBool _loadActiveInfo = false.obs;
+  AppConfig appConfig = Get.find();
+  get payCube => appConfig.payCube;
 
   @override
   Future<void> onInit() async {
@@ -372,7 +374,7 @@ class TransitPageController extends GetxController {
     //这里判断是否禁用1元
     if(systemSettingData["isAllowOneYen"] == "0"){
       try {
-        await Paycube.prohibitOneCash.timeout(
+        await payCube.prohibitOneCash.timeout(
             Duration(seconds: 10));
       } on TimeoutException catch (e) {
         print('Timeout: $e');
