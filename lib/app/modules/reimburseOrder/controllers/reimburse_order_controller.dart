@@ -14,7 +14,6 @@ import '../../../config/imageData.dart';
 import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 
-import '../../../plugins/paycube_old/lib/paycube.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -451,17 +450,17 @@ LogUtil.d(response);
   _setPayCubeListener() async {
     await payCube.setReceiveEvent;
     payCube.getPayCubeListener();
-    payCube.onCashInfoChange = (CashInfo type, String value) {
+    payCube.onCashInfoChange = (int type, String value) {
       switch (type) {
-        case CashInfo.putMoney:
+        case 0:
           debugPrint("putMoney==$value");
           //_updatePutMoneyInfo(value);
           break;
-        case CashInfo.putCurrency:
+        case 1:
           debugPrint("putCurrency==$value");
           //_getPayCubePutMoneyCurrency(value);
           break;
-        case CashInfo.currencyString:
+        case 2:
           debugPrint("currencyString==$value");
           _getPayCubeOutMoney(value);
           break;

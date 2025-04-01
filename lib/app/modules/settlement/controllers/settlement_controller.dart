@@ -21,7 +21,7 @@ import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../controllers/pos_pay_comtroller.dart';
-import '../../../plugins/paycube_old/lib/paycube.dart';
+import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
@@ -1215,17 +1215,17 @@ class SettlementController extends GetxController with StateMixin {
   _setPayCubeListener() async {
     await payCube.setReceiveEvent;
     payCube.getPayCubeListener();
-    payCube.onCashInfoChange = (CashInfo type, String value) {
+    payCube.onCashInfoChange = (int type, String value) {
       switch (type) {
-        case CashInfo.putMoney:
+        case 0:
           debugPrint("putMoney==$value");
           _updatePutMoneyInfo(value);
           break;
-        case CashInfo.putCurrency:
+        case 1:
           debugPrint("putCurrency==$value");
           _getPayCubePutMoneyCurrency(value, canReportFromListen);
           break;
-        case CashInfo.currencyString:
+        case 2:
           debugPrint("currencyString==$value");
           _getPayCubeOutMoney(value, isRepayCash);
           break;

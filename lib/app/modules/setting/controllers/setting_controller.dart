@@ -5,6 +5,7 @@ import 'package:archive/archive_io.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
@@ -36,6 +37,7 @@ class SettingController extends GetxController with StateMixin {
   //MenuPageController menuPagecontroller = Get.put(MenuPageController());
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
+  AppConfig appConfig = Get.find<AppConfig>();
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
   RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
@@ -118,7 +120,7 @@ class SettingController extends GetxController with StateMixin {
   uploadErrorLog() async {
     _showEasyLoading();
     String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
-    if (isAndroid11)  {
+    if (appConfig.isAndroid11)  {
       logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
     }
 

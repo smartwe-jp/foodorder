@@ -5,12 +5,6 @@ import 'dart:ffi';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-enum CashInfo {
-  putMoney,
-  putCurrency,
-  currencyString,
-}
-
 class PayCube {
 
   static final PayCube _instance = PayCube._internal();
@@ -27,7 +21,7 @@ class PayCube {
   String putCurrency = "";
   String currencyString = ""; //币种 截取0B 81的43位开始
 
-  Function(CashInfo, String)? onCashInfoChange;
+  Function(int, String)? onCashInfoChange;
 
   //监听几种状态
   String payCubeStopCashStatus = "Error";
@@ -53,11 +47,11 @@ class PayCube {
     if (call.method == 'onGetPutMoneyStringChange') {
       //print(message);
       putMoney = call.arguments;
-      onCashInfoChange?.call(CashInfo.putMoney, call.arguments);
+      onCashInfoChange?.call(0, call.arguments);
       //message = {"PutMoney":call.arguments};print(message);
     }else if (call.method == 'onGetPutMoneyCurrencyStringChange') {
       putCurrency = call.arguments;
-      onCashInfoChange?.call(CashInfo.putCurrency, call.arguments);
+      onCashInfoChange?.call(1, call.arguments);
       //message = {"PutMoneyString":call.arguments};
     }else if (call.method == 'onEndServiceChange') {
       payCubeStopCashStatus = call.arguments;
@@ -68,7 +62,7 @@ class PayCube {
     }else if (call.method == 'getPayOutMoneyServiceChange') {
       //print("出金统计字符串${call.arguments}");
       currencyString = call.arguments;
-      onCashInfoChange?.call(CashInfo.currencyString, call.arguments);
+      onCashInfoChange?.call(2, call.arguments);
       //message = {"PayOutMoneyStringServiceString":call.arguments};
     }else if (call.method == 'onEndTradeServiceChange') {
       payCubeEndTradeStatus = call.arguments;
