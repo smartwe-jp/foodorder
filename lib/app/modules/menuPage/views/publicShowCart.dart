@@ -462,7 +462,7 @@ class publicShowCartView extends GetView {
                         InkWell(
                           enableFeedback: false,
                           onTap: () {
-                            if (int.parse(controller.shopCartTotalPrice.value) <=0) {
+                            if (int.parse(controller.shopCartTotalPrice.value) < 0) {
                               return;
                             }
 
@@ -488,7 +488,7 @@ class publicShowCartView extends GetView {
                             alignment: Alignment.center,
                             decoration: BoxDecoration(
 
-                              color: (int.parse(controller.shopCartTotalPrice.value) >0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
+                              color: (int.parse(controller.shopCartTotalPrice.value) >=0) ?ColorsUtil.hexToColor("#A61C1C") :ColorsUtil.hexToColor("#B1B0B0"),
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
