@@ -12,6 +12,15 @@ enum CashInfo {
 }
 
 class PayCube {
+
+  static final PayCube _instance = PayCube._internal();
+
+  factory PayCube() {
+    return _instance;
+  }
+
+  PayCube._internal();
+
   final MethodChannel _channel = const MethodChannel('paycube');
 
   String putMoney = "0";
@@ -113,10 +122,9 @@ class PayCube {
     payCubeStopCashStatus = "Error";
     payCubeOutMoneyStatus = "Error";
     payCubeEndTradeStatus = "Error";
-    int seqNo = getSeqNo();
-    debugPrint("seqNo: $seqNo");
+
     await setReceiveEvent;
-    final String openStatus = await startPayCubeAction(seqNo);
+    final String openStatus = await startPayCubeAction();
     if (openStatus == "AllowSuccess") {
       onSuccess();
       ret = true;
@@ -127,7 +135,8 @@ class PayCube {
     return ret;
   }
 
-  Future<String> startPayCubeAction(int seqNo, {int retryCount = 0}) async {
+  Future<String> startPayCubeAction({int retryCount = 0}) async {
+    int seqNo = getSeqNo();
     debugPrint("startPayCubeAction called with seqNo: $seqNo " + "retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'StartPayCubeMoney', 'seqNo': seqNo};
     String openStatus = "Error";
@@ -152,7 +161,7 @@ class PayCube {
 
       if (retryCount < 12) {
         await Future.delayed(Duration(milliseconds: 550));
-        return startPayCubeAction(seqNo, retryCount: retryCount + 1);
+        return startPayCubeAction(retryCount: retryCount + 1);
       } else {
         return "startPayCubeAction Failed after $retryCount retries";
       }
@@ -160,7 +169,7 @@ class PayCube {
     } else {
       if (retryCount < 10) {
         await Future.delayed(Duration(milliseconds: 550));
-        return startPayCubeAction(seqNo, retryCount: retryCount + 1);
+        return startPayCubeAction(retryCount: retryCount + 1);
       } else {
         return "startPayCubeAction Failed after $retryCount retries";
       }
@@ -179,8 +188,9 @@ class PayCube {
   Future<bool> endPayCube({required Function onSuccess, required Function(String) catchError}) async {
     var ret = false;
     await setReceiveEvent;
-    int seqNo = getSeqNo();
-    final String openStatus = await endPayCubeAction(seqNo);
+    // int seqNo = getSeqNo();
+    // debugPrint("seqNo: $seqNo");
+    final String openStatus = await endPayCubeAction();
     if (openStatus == "StopSuccess") {
       onSuccess();
       ret = true;
@@ -191,7 +201,8 @@ class PayCube {
     return ret;
   }
 
-  Future<String> endPayCubeAction(int seqNo, {int retryCount = 0}) async {
+  Future<String> endPayCubeAction({int retryCount = 0}) async {
+    int seqNo = getSeqNo();
     debugPrint("endPayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'endPayCube', 'seqNo': seqNo};
     try {
@@ -207,7 +218,7 @@ class PayCube {
 
     if (retryCount < 10) {
       await Future.delayed(Duration(milliseconds: 550));
-      return endPayCubeAction(seqNo, retryCount: retryCount + 1);
+      return endPayCubeAction(retryCount: retryCount + 1);
     } else {
       return "endPayCube Failed after $retryCount retries";
     }
@@ -232,8 +243,8 @@ class PayCube {
   Future<bool> endTrade({required Function onSuccess, required Function(String) catchError}) async {
     var ret = false;
     await setReceiveEvent;
-    int seqNo = getSeqNo();
-    final String openStatus = await endTradePayCubeAction(seqNo);
+
+    final String openStatus = await endTradePayCubeAction();
     if (openStatus == "EndSuccess") {
       onSuccess();
       ret = true;
@@ -244,7 +255,8 @@ class PayCube {
     return ret;
   }
 
-  Future<String> endTradePayCubeAction(int seqNo, {int retryCount = 0}) async {
+  Future<String> endTradePayCubeAction({int retryCount = 0}) async {
+    int seqNo = getSeqNo();
     debugPrint("endTradePayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'endTradePayCube', 'seqNo': seqNo};
 
@@ -261,7 +273,7 @@ class PayCube {
 
     //if (retryCount < 5) {
       await Future.delayed(Duration(milliseconds: 550));
-      return endTradePayCubeAction(seqNo, retryCount: retryCount + 1);
+      return endTradePayCubeAction(retryCount: retryCount + 1);
     //} else {
     //  return "endTradePayCube Failed after $retryCount retries";
     //}
@@ -314,7 +326,7 @@ class PayCube {
     var ret = false;
     await setReceiveEvent;
     int seqNo = getSeqNo();
-    final String openStatus = await outPayCubeAction(seqNo, param);
+    final String openStatus = await outPayCubeAction(param);
     if (openStatus == "OutSuccess") {
       onSuccess();
       ret = true;
@@ -325,7 +337,8 @@ class PayCube {
     return ret;
   }
 
-  Future<String> outPayCubeAction(int seqNo, param, {int retryCount = 0}) async {
+  Future<String> outPayCubeAction(param, {int retryCount = 0}) async {
+    int seqNo = getSeqNo();
     debugPrint("outPayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'outPayCubeMoney', 'seqNo': seqNo,'outMoney': param};
 
@@ -342,7 +355,7 @@ class PayCube {
 
     if (retryCount < 10) {
       await Future.delayed(Duration(milliseconds: 550));
-      return outPayCubeAction(seqNo, param, retryCount: retryCount + 1);
+      return outPayCubeAction(param, retryCount: retryCount + 1);
     } else {
       return "outPayCubeAction Failed after $retryCount retries";
     }
@@ -396,8 +409,7 @@ class PayCube {
     int isEnable = enable ? 1:0;
     var ret = false;
     await setReceiveEvent;
-    int seqNo = getSeqNo();
-    final String openStatus = await setAcceptCashAction(isEnable, type, seqNo);
+    final String openStatus = await setAcceptCashAction(isEnable, type);
     if (openStatus == "SetSuccess") {
       onSuccess();
       ret = true;
@@ -408,7 +420,8 @@ class PayCube {
     return ret;
   }
 
-  Future<String> setAcceptCashAction(int enable, int type, int seqNo, {int retryCount = 0}) async {
+  Future<String> setAcceptCashAction(int enable, int type, {int retryCount = 0}) async {
+    int seqNo = getSeqNo();
     debugPrint("setAcceptCash called with seqNo: $seqNo + retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'setAcceptCash', 'seqNo': getSeqNo(), 'enable': enable, 'type': type};
 
@@ -425,7 +438,7 @@ class PayCube {
 
     if (retryCount < 10) {
       await Future.delayed(Duration(milliseconds: 550));
-      return setAcceptCashAction(enable, type, seqNo, retryCount: retryCount + 1);
+      return setAcceptCashAction(enable, type, retryCount: retryCount + 1);
     } else {
       return "setAcceptCash Failed after $retryCount retries";
     }

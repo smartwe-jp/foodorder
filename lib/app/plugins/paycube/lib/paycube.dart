@@ -12,6 +12,15 @@ enum CashInfo {
 }
 
 class Paycube {
+
+  static final Paycube _instance = Paycube._internal();
+
+  factory Paycube() {
+    return _instance;
+  }
+
+  Paycube._internal();
+
   final MethodChannel _channel = const MethodChannel('paycube');
 
   String putMoney = "0";

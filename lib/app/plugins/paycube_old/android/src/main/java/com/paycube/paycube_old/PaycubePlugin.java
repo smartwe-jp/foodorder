@@ -500,6 +500,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                 }
                 //}
             }else if(event.getReceiveData()[3] == (byte) 0x02){
+                System.out.println("入金禁止监听状态");
                 //入金禁止监听状态
                 //if(_payCubeStopCashStatus != "StopSuccess"){
                 if(event.getReceiveData()[6] == (byte) 0x00 && event.getReceiveData()[7] == (byte) 0x00){
@@ -513,6 +514,7 @@ public class PaycubePlugin implements FlutterPlugin, MethodCallHandler {
                     }
 
                 }else{
+                    System.out.println("入金禁止监听状态2");
                     String[] AllowArray = receiveStr.split(" ");
                     _payCubeStopCashStatus = "Error-"+AllowArray[6]+"--"+AllowArray[7];
                     System.out.println("入金禁止状态 = " + _payCubeStopCashStatus);
