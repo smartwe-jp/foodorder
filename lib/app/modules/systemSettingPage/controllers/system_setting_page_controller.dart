@@ -88,6 +88,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   bool isAllow10000 = true;
   bool isAllow5000 = true;
 
+  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
+      : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
+
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -285,7 +288,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                     showSpeedView()
                                 );
                                 //https://app.gutingjun.com/kanran-release.apk
-                                downloadAndroid("https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk");
+                                downloadAndroid(downloadUrl);
                               },
                             ),
                           )

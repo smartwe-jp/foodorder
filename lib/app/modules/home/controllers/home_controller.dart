@@ -151,7 +151,7 @@ class HomeController extends GetxController {
         //如果60秒未接收返回正确通知，则进行下一步操作
           _isCashState.value = false;
           showCashTimer?.cancel();
-          //await _sendFailureEmail();
+          await _sendFailureEmail();
           await prohibitOneCash();
 
          //清除定时器
@@ -186,7 +186,7 @@ class HomeController extends GetxController {
       //send failure email
       showCashTimer?.cancel();
       _isCashState.value = false;
-      //_sendFailureEmail();
+      _sendFailureEmail();
       prohibitOneCash();
       //print("机器未打开lib未null，重新打开并连接了");
     }else{
@@ -231,7 +231,7 @@ class HomeController extends GetxController {
     }, catchError: (error) {
       showCashTimer?.cancel();
       _isCashState.value = false;
-      //_sendFailureEmail();
+      _sendFailureEmail();
       prohibitOneCash();
       debugPrint("startToubi catchError:$error");
     });

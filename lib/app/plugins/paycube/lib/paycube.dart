@@ -196,7 +196,7 @@ class Paycube {
   }
 
   Future<String> endPayCubeAction(int seqNo, {int retryCount = 0}) async {
-    debugPrint("endPayCubeAction called with seqNo: $seqNo + retryCount: $retryCount");
+    debugPrint("endPayCubeAction new called with seqNo: $seqNo + retryCount: $retryCount");
     Map<String, Object> map = {'operEvent': 'endPayCube', 'seqNo': seqNo};
     try {
       final String openStatus = await _channel.invokeMethod('startOpenPayCube', map)
