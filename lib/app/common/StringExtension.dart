@@ -1,10 +1,13 @@
 
+import 'package:cached_network_image/cached_network_image.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 extension CashString on String {
-    String findMaxCash() {
+  String findMaxCash() {
     final currencies = this.split(',');
     final reachedMax = <String>[];
+    
 
     bool getCashReachMax(String type, String count) {
       switch (type) {
@@ -69,6 +72,13 @@ extension CashString on String {
   String formatSum() {
     final formatter = NumberFormat('#,###');
     return formatter.format(int.parse(this));
+  }
+
+  urlImage() {
+    if (this.isEmpty) {
+      return AssetImage('assets/images/public/food.png');
+    }
+    return CachedNetworkImageProvider(this);
   }
 
 }

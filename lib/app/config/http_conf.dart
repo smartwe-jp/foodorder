@@ -123,4 +123,6 @@ const servicePath = {
   'webMachineNearFull': base_url + 'web/glory/full/notice',
 
   'webMachineFull': base_url + 'web/glory/stop/notice',
+
+  'localOrderPost': 'http://172.50.10.84:3000/api/add/order',
 };

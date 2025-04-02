@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
@@ -314,6 +315,19 @@ extension SettlementControllerPrinterExtension on SettlementController {
     int addRowHight = 0;
 
 
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(
+                  bottom: ScreenAdapter.height(50)),
+        child: BarcodeWidget(
+                height: ScreenAdapter.height(200),
+                barcode: Barcode.qrCode(),
+                data: orderId.value,
+              )
+      ),
+    );
+
+
 
     categoryMenus.add(
       Container(
@@ -583,33 +597,39 @@ extension SettlementControllerPrinterExtension on SettlementController {
       ),
     );
 
-    var totalHight = addRowHight+lineHight;
+    var totalHight = addRowHight+lineHight+ScreenAdapter.height(150);
     if(menuNum == 1){
       totalHight +=15;
     }
 
-    /*return Container(
-      width: 550,
-      height: totalHight.toDouble(),
-      padding: EdgeInsets.only(left: 0.5, right: 0.5),
-      color: Colors.white,
-      alignment: Alignment.topCenter,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: categoryMenus,
-      ),
-    );*/
+    // return Container(
+    //   width: 550,
+    //   height: totalHight.toDouble(),
+    //   padding: EdgeInsets.only(left: 0.5, right: 0.5),
+    //   color: Colors.white,
+    //   alignment: Alignment.topCenter,
+    //   child: Column(
+    //     mainAxisAlignment: MainAxisAlignment.start,
+    //     crossAxisAlignment: CrossAxisAlignment.center,
+    //     children: categoryMenus,
+    //   ),
+    // );
     final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
     return ReceiptConstrainedBox(
         Transform(
             transform: Matrix4.rotationZ(rotate),
             alignment: Alignment.center,
-            child:Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: categoryMenus,
-        ))
+            child:Container(
+                  width: 550,
+                  height: totalHight.toDouble(),
+                  padding: EdgeInsets.only(left: 0.5, right: 0.5),
+                  alignment: Alignment.topCenter,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: categoryMenus,
+                  ),
+          ))
     );
 
 

@@ -25,7 +25,7 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     }
 
 
-    var request_url = servicePath[url];
+    var request_url = servicePath[url] ?? url;
     if((link_parameters?.isNotEmpty ?? true)){
       request_url = "${request_url}${link_parameters}";
     }
@@ -33,22 +33,22 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     if (method == 'GET') {
       if(parameters != null){
         response = await dio.get(
-            request_url!,
+            request_url,
             queryParameters: parameters
         );
       }else{
         response = await dio.get(
-          request_url!,
+          request_url,
 
         );
       }
 
     } else if (method == 'POST') {
-      response = await dio.post(request_url!, data: parameters);
+      response = await dio.post(request_url, data: parameters);
     } else if (method == 'DELETE') {
-      response = await dio.delete(request_url!, data: parameters);
+      response = await dio.delete(request_url, data: parameters);
     } else if (method == 'PUT') {
-      response = await dio.put(request_url!, data: parameters);
+      response = await dio.put(request_url, data: parameters);
     }
     if (response?.statusCode == 200) {
 
@@ -64,7 +64,7 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     var newe = e.toString();
     //if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
 
-      showToast('異常が生じてます。お近くのスタッフにお声かけください〜。');
+      showToast('異常が生じてます。お近くのスタッフにお声かけください〜。$newe');
       //Future.delayed(Duration(milliseconds: 1000)).then((e) {
 
       //   Global.navigatorKey.currentState?.pushNamed("/transitPage");

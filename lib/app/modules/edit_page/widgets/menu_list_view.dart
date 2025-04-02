@@ -1,5 +1,4 @@
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -10,6 +9,7 @@ import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
+import 'package:foodorder/app/common/StringExtension.dart';
 
 class MenuListView extends StatelessWidget {
   final List menuItems;
@@ -25,7 +25,7 @@ class MenuListView extends StatelessWidget {
                 tag: item['menuCode'],
                 title: item['mainTitle'],
                 subtitle: _publicMenuSubtitle(item['subtitle'] ?? []),
-                image: CachedNetworkImageProvider(item['homeImage'] ?? ""),
+                image: item['homeImage'].toString().urlImage(),
                 price: "${item['currentPrice']}",
                 bounds: item['qtyBounds'],
                 cover: _publicShowMenuSellOut(item['qtyBounds']),
@@ -33,6 +33,7 @@ class MenuListView extends StatelessWidget {
           .toList(),
     );
   }
+
 
   _publicMenuSubtitle(subtitleList) {
     var subtitle = "";

@@ -56,8 +56,12 @@ class MachineInfoController extends GetxController {
 
   String paymentMethod = '0';
 
+  //settings
   late String pos_ip;
   late String pos_port;
+  
+  late String wlan_panel_print_ip;
+  late String wlan_panel_print_port;
 
   @override
   Future<void> onInit() async {
@@ -142,6 +146,10 @@ class MachineInfoController extends GetxController {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
+    Map wlanPrintPanelSettingInfo =
+          await HomeServices.getWlanPanelPrintSettingInfo();
+    wlan_panel_print_ip = wlanPrintPanelSettingInfo['wlanPrintIp'] ?? "";
+    wlan_panel_print_port = wlanPrintPanelSettingInfo['wlanPrintPort'] ?? "";
     print('loadMachineSettingInfo 6');
   }
 }

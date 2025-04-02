@@ -7,6 +7,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 
 import '../config/colorsUtil.dart';
 import '../services/HomeServices.dart';
@@ -363,7 +364,7 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text(printData["orderDate"],
                 style: TextStyle(
-                  fontSize: print_menu_txt_size*0.8,
+                  fontSize: print_menu_txt_size * 0.8,
                   fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w300,
                   color: ColorsUtil.hexToColor("#000000"),

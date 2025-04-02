@@ -101,7 +101,6 @@ class SettlementController extends GetxController with StateMixin {
 
   RxBool showPrintButton = false.obs; //如果投币金额不足，则不显示打印按钮
 
-
   RxString eventReportString = "".obs;
   RxMap posResultReportData = {}.obs;
   RxInt showPrintType = 0.obs; //0 receipt   1Lable
@@ -974,23 +973,11 @@ class SettlementController extends GetxController with StateMixin {
             ? "Label"
             : ""
       };
-      /*var formData = {
-        "orderId": "442800657845387264",
-        "payAmount": "1000",
-        "machineCode":"X3V9YPJABVZGAELIZ9",
-        "printType":(_showPrintType ==1 && _wlan_print_ip !="")?"Label":""
-      };print(formData);print(_wlan_print_ip);*/
       var queryUrl;
-      //queryUrl = "webBootToPrintV4";
-      //queryUrl = "webBootToPrintV5";
-      //queryUrl = "webBootToPrintV6"; //23新修改小票
       queryUrl = "webBootToPrintV7"; //230704新修改小票
       logger.info('-- doPrintOrderMenu request --');
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
-        debugPrint("doPrintOrderMenu==val");
-        logger.info('-- doPrintOrderMenu done --');
         var response = json.decode(val.toString());
-        debugPrint("doPrintOrderMenu==$response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
           //receipt
@@ -1033,6 +1020,7 @@ class SettlementController extends GetxController with StateMixin {
               machineInfo.paymentMethod != "1")) {
             printGoNext(orderId.value);
           }
+          _sendToDisplayPanel(json.encode(response['data']));
         } else {
           //错误后重新调用一次
           if (retry) {
@@ -1078,6 +1066,20 @@ class SettlementController extends GetxController with StateMixin {
           goToNewMyHome();
         }
       }));
+    }
+  }
+
+  _sendToDisplayPanel(data) async {
+    logger.info('_sendToDisplayPanel: $data');
+    final String panelAddress = 'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
+
+    try {
+      final response =
+          await request(panelAddress, method: 'POST', parameters: data);
+      final responseValue = json.decode(response.toString());
+      debugPrint('_sendToDisplayPanel:$responseValue');
+    } catch (error) {
+      debugPrint('_sendToDisplayPanel error: ${error.toString()}');
     }
   }
 
@@ -1654,7 +1656,6 @@ class SettlementController extends GetxController with StateMixin {
     if (printType == "10") {
       if (wlan_print_ip.value != null && wlan_print_ip.value != "") {
         final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
-
         printerIpInfo = {
           "printer_ip": wlan_print_ip.value,
           "printer_port": wlan_print_port.value,
