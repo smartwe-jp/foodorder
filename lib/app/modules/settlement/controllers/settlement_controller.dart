@@ -863,6 +863,9 @@ class SettlementController extends GetxController with StateMixin {
           posPayReport(eventString, retryCount: retryCount + 1);
         });
       } else {
+        FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
+          "machineCode": machineInfo.machineCode,
+        });
         _checkOutErrorHandle('pos_report_error_tips'.localized());
       }
     });
