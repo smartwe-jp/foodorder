@@ -1149,7 +1149,7 @@ print("加1了");
             },
             cancle: () {
               Get.back();
-              clearCartList();
+              //clearCartList();
               FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
                 "machineCode": machineInfo.machineCode,
               });

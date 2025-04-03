@@ -1,9 +1,11 @@
 import 'dart:convert';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 
@@ -316,7 +318,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   //提交订单
-  doSubmitOrder(){
+  doSubmitOrder({int times= 0}){
     if(machineInfo.machineCode !=""){
       showOrderEasyLoading();
 
@@ -360,30 +362,10 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
-
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
-
-          //只有现金，并且其余都为false的时候，直接跳转支付
-          // if(showCash.value == true &&
-          //     isAllowPos.value == "0" &&
-          //     showAlipay.value == false &&
-          //     showWechat.value == false &&
-          //     showPayPay.value == false
-          // ){
-          //   payment_method_num.value = "1";
-          //   //postNewOrderId();
-          //   gotoSettlement();
-          // }else{
-          //   showSelectMealTypeAndPaymentMethodDialog();
-          // }
           showSelectMealTypeAndPaymentMethodDialog();
-
-
         }else{
-          //getBookingBootMenu();
-          //menuLackMap.value = response['data']["menuLackMap"];
-          //showToast(response['data']["message"]);
           Get.dialog(
               DialogUtils.alertOneButton(response['data']["message"],
                   title: GString.getToString(checkLanguage.value, "tag_title"),
@@ -393,8 +375,48 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
                   })
           );
         }
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        _handleOrderResultAlert(times: times);
+      }).catchError((e) {
+        _handleOrderResultAlert(times: times);
       });
     }
+  }
+
+  _handleOrderResultAlert({int times= 0}) {
+    EasyLoading.dismiss();
+    if (times > 2) {
+      Get.dialog(
+          DialogUtils.alertOneButton("order_network_error".localized(),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              confirm: () {
+                Get.back();
+                FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                  "machineCode": machineInfo.machineCode,
+                });
+              })
+      );
+      return;
+    }
+
+    Get.dialog(
+        DialogUtils.alert("show_order_error".localized(),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+              doSubmitOrder(times: times + 1);
+            },
+            cancle: () {
+              Get.back();
+              //clearCartList();
+              FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                "machineCode": machineInfo.machineCode,
+              });
+            }
+        )
+    );
   }
 
   //选择食用方式和支付方式
