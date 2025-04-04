@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'dart:typed_data';
 
@@ -17,6 +18,8 @@ import '../services/formatMoney.dart';
 
 class CreatePrintImageController extends GetxController {
   MachineInfoController machineInfo = Get.find();
+  AppConfig appConfig = Get.find();
+  double get printWidth => appConfig.isAndroid11 ? 513:385;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -336,7 +339,7 @@ class CreatePrintImageController extends GetxController {
     }
     ByteData byteData = await WidgetToImage.widgetToImage(
         Container(
-          width: 513,
+          width: printWidth,
           height: totalHight.toDouble(),
           padding: EdgeInsets.only(left: 0.5, right: 0.5),
           color: Colors.white,
@@ -348,7 +351,7 @@ class CreatePrintImageController extends GetxController {
             children: categoryMenus,
           ),
         ),
-        size: Size(513, totalHight.toDouble()));
+        size: Size(printWidth, totalHight.toDouble()));
 
     List<int> imageBytes = byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
@@ -834,7 +837,7 @@ class CreatePrintImageController extends GetxController {
     var totalHight = lineZeng + lineHight + addRowHight + 150;
 
     final printWidget = Container(
-      width: 513,
+      width: printWidth,
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(2), right: ScreenAdapter.width(2)),
       height: totalHight.toDouble(),
@@ -849,7 +852,7 @@ class CreatePrintImageController extends GetxController {
     );
 
     ByteData byteData = await WidgetToImage.widgetToImage(printWidget,
-        size: Size(513, totalHight.toDouble()));
+        size: Size(printWidth, totalHight.toDouble()));
 
     List<int> imageBytes = byteData.buffer
         .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
