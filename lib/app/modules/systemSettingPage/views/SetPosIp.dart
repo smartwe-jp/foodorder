@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
+import 'CustomKeyboard.dart';
 
 
 
@@ -30,6 +29,11 @@ class SetPosIpPage extends StatefulWidget {
 class _SetPosIpPageState extends State<SetPosIpPage> {
    TextEditingController? _tcpposIpController;
    TextEditingController? _tcpposPortController;
+   final FocusNode focusNode1 = FocusNode();
+   final FocusNode focusNode2 = FocusNode();
+   TextEditingController? activeController;
+
+
 
   String _posIp = "192.168.11.188";
   String _posPort = "9100";
@@ -40,6 +44,21 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
+    focusNode1.addListener(() {
+      if (focusNode1.hasFocus) {
+        setState(() {
+          activeController = _tcpposIpController;
+        });
+      }
+    });
+
+    focusNode2.addListener(() {
+      if (focusNode2.hasFocus) {
+        setState(() {
+          activeController = _tcpposPortController;
+        });
+      }
+    });
     _posIp = widget.posIp!;
     _posPort = widget.posPort!;
     _showRadio = widget.showRadio!;
@@ -60,6 +79,20 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
 
   }
 
+   void handleKeyPress(String key) {
+     if (activeController == null) return;
+
+     if (key == '削除') {
+       if (activeController!.text.isNotEmpty) {
+         activeController!.text = activeController!.text.substring(
+             0, activeController!.text.length - 1
+         );
+       }
+     } else {
+       activeController!.text = activeController!.text + key;
+     }
+   }
+
   @override
   Widget build(BuildContext context) {
     return SimpleDialog(
@@ -71,7 +104,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
           alignment: Alignment.center,
           color: Colors.white,
           width: ScreenAdapter.width(550),
-          height: ScreenAdapter.height(450),
+          //height: ScreenAdapter.height(450),
           padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
           child: Center(
             child: Column(
@@ -94,6 +127,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                           height: 50,
                           padding: EdgeInsets.all(5),
                           child: TextField(
+                            focusNode: focusNode1,
                             keyboardType: TextInputType.number,
                             controller: _tcpposIpController,
                             onChanged: (value) {
@@ -112,6 +146,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                           padding: EdgeInsets.all(5),
                           child: TextField(
                             keyboardType: TextInputType.number,
+                            focusNode: focusNode2,
                             controller: _tcpposPortController,
                             onChanged: (value) {
                               setState(() {
@@ -177,6 +212,11 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                   ],
                 ),*/
                 SizedBox(height: ScreenAdapter.height(20),),
+
+                CustomKeyboard(onKeyPressed: handleKeyPress),
+
+                SizedBox(height: ScreenAdapter.height(20),),
+
                 Container(
                   alignment: Alignment.center,
                   width: ScreenAdapter.width(180),
@@ -198,6 +238,8 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                     ),
                     onPressed: () async {
                       try {
+                        _posIp = _tcpposIpController!.text;
+                        _posPort = _tcpposPortController!.text;
                         print(_posIp);
                         print(_posPort);
                         if(_posIp != "" && _posPort != ""){
