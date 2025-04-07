@@ -139,6 +139,11 @@ extension LocalizedString on String {
         "take_out":"持ち帰り",
 
         "pos_report_error_tips":"申し訳ございません、決済失敗ので、店員に対応を依頼してください。",
+
+        "tag_cash_error":"現金機に障害が発生しております、店員にお知らせください。",
+        "show_order_error":"注文に失敗しました、もう一度お試しください。",
+        "order_network_error":"ネットワークエラー、店員にお知らせください。",
+        "settlement_order_error":"決済失敗ので、もう一度お試しください。",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -269,6 +274,11 @@ extension LocalizedString on String {
         "take_out":"外带",
 
         "pos_report_error_tips":"非常抱歉，支付失败，请联系商家处理。",
+
+        "tag_cash_error":"现金机出错，请联系工作人员, 谢谢！",
+        "show_order_error":"下单失败，请重试。",
+        "order_network_error":"网络错误，请联系工作人员。",
+        "settlement_order_error":"支付失败，请重试。",
         
       },
       'EN': {
@@ -400,6 +410,11 @@ extension LocalizedString on String {
         "take_out":"Take Out",
 
         "pos_report_error_tips":"Payment failed. Please contact the staff!",
+
+        "tag_cash_error":"Cash machine error, please contact the staff, thank you!",
+        "show_order_error":"Order failed, please try again.",
+        "order_network_error":"Network error, please contact the staff.",
+        "settlement_order_error":"Payment failed, please try again.",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -531,6 +546,11 @@ extension LocalizedString on String {
         "take_out":"포장",
 
         "pos_report_error_tips":"결제 실패. 직원에게 문의하세요!",
+
+        "tag_cash_error":"현금 결제기 오류, 직원에게 문의하십시오, 감사합니다!",
+        "show_order_error":"주문 실패, 다시 시도하십시오.",
+        "order_network_error":"네트워크 오류, 직원에게 문의하십시오.",
+        "settlement_order_error":"결제 실패, 다시 시도하십시오.",
       }
       // 添加更多语言...한국말 =>  한국어
     };

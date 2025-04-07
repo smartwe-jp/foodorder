@@ -846,6 +846,18 @@ class SettlementController extends GetxController with StateMixin {
       } else {
         _checkOutErrorHandle('pos_report_error_tips'.localized());
       }
+    }).timeout(Duration(seconds: 30), onTimeout: () {
+      //TODO 默认重试3次
+      if (retryCount < 3) {
+        Future.delayed(Duration(milliseconds: 500), (){
+          posPayReport(eventString, retryCount: retryCount + 1);
+        });
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
+          "machineCode": machineInfo.machineCode,
+        });
+        _checkOutErrorHandle('pos_report_error_tips'.localized());
+      }
     });
   }
 
@@ -940,7 +952,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //去打印小票
-  doPrintOrderMenu(printType, {retry = true}) async {
+  doPrintOrderMenu(printType, {int times = 0}) async {
     logger.info('-- doPrintOrderMenu --');
     debugPrint("doPrintOrderMenu");
     //判断全局设置是否强制打印小票
@@ -956,13 +968,13 @@ class SettlementController extends GetxController with StateMixin {
       //printStatus = await FlutterPluginMsprinter.getPrintStatus();
     }
 
-    if (retry &&
-        (machineInfo.paymentMethod == "0" ||
-            machineInfo.paymentMethod == "1")) {
-      printGoNext(orderId.value);
-      if (Platform.isAndroid)
-        await Future.delayed(Duration(milliseconds: 2000));
-    }
+    // if (retry &&
+    //     (machineInfo.paymentMethod == "0" ||
+    //         machineInfo.paymentMethod == "1")) {
+    //   printGoNext(orderId.value);
+    //   if (Platform.isAndroid)
+    //     await Future.delayed(Duration(milliseconds: 2000));
+    // }
 
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
@@ -1016,26 +1028,28 @@ class SettlementController extends GetxController with StateMixin {
             }
           }
 
-          if ((machineInfo.paymentMethod != "0" &&
-              machineInfo.paymentMethod != "1")) {
+          //if ((machineInfo.paymentMethod != "0" &&
+          //    machineInfo.paymentMethod != "1")) {
             printGoNext(orderId.value);
-          }
+          //}
           _sendToDisplayPanel(json.encode(response['data']));
         } else {
           //错误后重新调用一次
-          if (retry) {
-            doPrintOrderMenu(printType, retry: false);
+          if (times < 3) {
+            doPrintOrderMenu(printType, times: times + 1);
+          } else {
+            _checkOutErrorHandle(GString.getToString(
+                checkLanguage.value, "tag_print_content_paper_error"));
           }
         }
       }).catchError((e) {
         //错误后重新调用一次
-        logger.info('-- doPrintOrderMenu request error:${e.toString()} --');
-        if (retry) {
-          doPrintOrderMenu(printType, retry: false);
-        } else {
-          _checkOutErrorHandle(GString.getToString(
-              checkLanguage.value, "tag_print_content_paper_error"));
-        }
+        _handleOrderResultAlert(printType, times: times);
+
+      })
+      .timeout(Duration(seconds: 30), onTimeout: () {
+        //错误后重新调用一次
+        _handleOrderResultAlert(printType, times: times);
       });
     } else {
       EasyLoading.dismiss();
@@ -1069,6 +1083,45 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
+  _handleOrderResultAlert(printType,{int times= 0}) {
+    EasyLoading.dismiss();
+    if (times > 2) {
+      Get.dialog(
+          DialogUtils.alertOneButton("order_network_error".localized(),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              confirm: () {
+                Get.back();
+                commonCancel();
+                FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+                  "machineCode": machineInfo.machineCode,
+                });
+              })
+      );
+      return;
+    }
+
+    Get.dialog(
+        DialogUtils.alert("settlement_order_error".localized(),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () async {
+              Get.back();
+              showEasyLoading();
+              _startPaymentTimer();
+              await Future.delayed(Duration(milliseconds: 1000));
+              doPrintOrderMenu(printType, times: times + 1);
+            },
+            cancle: () {
+              commonCancel();
+              FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+                "machineCode": machineInfo.machineCode,
+              });
+            }
+        )
+    );
+  }
+
   _sendToDisplayPanel(data) async {
     logger.info('_sendToDisplayPanel: $data');
     final String panelAddress = 'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
@@ -1091,14 +1144,14 @@ class SettlementController extends GetxController with StateMixin {
         confirmtitle:
             GString.getToString(checkLanguage.value, "show_del_cart_item_yes"),
         confirm: () {
-      // Get.back();
+       Get.back();
       // doPrintOrderMenu(printType);
       //发邮件和播放感谢语
-      _sendEmailAndPlayVoice();
+      //_sendEmailAndPlayVoice();
+      commonCancel();
     }, cancle: () {
       Get.back();
-      showEasyLoading();
-      CancelOrder();
+      commonCancel();
     }));
   }
 

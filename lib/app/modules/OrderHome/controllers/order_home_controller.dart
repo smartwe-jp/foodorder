@@ -192,7 +192,7 @@ class OrderHomeController extends GetxController with StateMixin {
     var locale = Locale('${language.toLowerCase()}', '$language');
     Get.updateLocale(locale);
     //reload catagory...
-    await getBookingBootIndexCagegory();
+    //await getBookingBootIndexCagegory();
   }
 
   get showCatagory {

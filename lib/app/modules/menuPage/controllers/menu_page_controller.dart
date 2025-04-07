@@ -7,6 +7,7 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
@@ -1325,7 +1326,7 @@ print("加1了");
   }
 
   //提交订单
-  doSubmitOrder() {
+  doSubmitOrder({int times= 0}) {
     if (machinInfo.machineCode != "") {
       _showOrderEasyLoading();
 
@@ -1410,6 +1411,10 @@ print("加1了");
             Get.back();
           }));
         }
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        _handleOrderResultAlert(times: times);
+      }).catchError((e) {
+        _handleOrderResultAlert(times: times);
       });
     } else {
       if (Platform.isAndroid) {
@@ -1419,6 +1424,42 @@ print("加1了");
         });
       }
     }
+  }
+
+  _handleOrderResultAlert({int times= 0}) {
+    EasyLoading.dismiss();
+    if (times > 2) {
+      Get.dialog(
+          DialogUtils.alertOneButton("order_network_error".localized(),
+              title: GString.getToString(checkLanguage.value, "tag_title"),
+              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              confirm: () {
+                Get.back();
+                FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                  "machineCode": machinInfo.machineCode,
+                });
+              })
+      );
+      return;
+    }
+
+    Get.dialog(
+        DialogUtils.alert("show_order_error".localized(),
+            title: GString.getToString(checkLanguage.value, "tag_title"),
+            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+              doSubmitOrder(times: times + 1);
+            },
+            cancle: () {
+              Get.back();
+              clearCartList();
+              FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                "machineCode": machinInfo.machineCode,
+              });
+            }
+            )
+    );
   }
 
   _resetToFirstCategory() {
