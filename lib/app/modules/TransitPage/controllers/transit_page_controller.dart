@@ -429,6 +429,7 @@ class TransitPageController extends GetxController {
               SystemSettingInfo["isAllowRejishime"] != null)
           ? SystemSettingInfo["isAllowRejishime"]
           : "0",
+      "isAllowWlanPanelPrint": SystemSettingInfo["isAllowWlanPanelPrint"] ?? '0'
     };
     Storage.setString('smartwe_systemSetting',
         json.encode(systemSettingData)); //1 默认58mm  2 宽纸80mm
