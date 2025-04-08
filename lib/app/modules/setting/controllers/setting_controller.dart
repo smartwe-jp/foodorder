@@ -230,7 +230,7 @@ class SettingController extends GetxController with StateMixin {
       height: printLength + 150,
       child: printView,
     );
-    debugPrint('directPrintRejishimei : $printLength, data: $data');
+
     await sendToUsePrinter(printWidget);
 
     commonHandleDialog('完了しました', confirm: () {

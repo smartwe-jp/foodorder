@@ -29,7 +29,7 @@ class PrintView extends StatefulWidget {
 class RejishimePrintViewState extends State<PrintView> {
   ScrollController _scrollController = ScrollController();
   double contentLength = 0.0;
-  Map printInfo = {};
+  late Map _printInfo;
   bool isPrint = false;
 
   @override
@@ -39,17 +39,18 @@ class RejishimePrintViewState extends State<PrintView> {
         return isPrint ? printView() : showView();
       case PrintType.SUPPLY:
         return isPrint
-            ? _supplyPrintView(widget.printInfo)
-            : _supplyShowView(widget.printInfo);
+            ? _supplyPrintView(_printInfo)
+            : _supplyShowView(_printInfo);
     }
   }
 
   @override
   void initState() {
-    printInfo = widget.printInfo;
-    isPrint = widget.isPrint;
+    
     super.initState();
     // 在布局完成后获取内容长度
+    isPrint = widget.isPrint;
+    _printInfo = widget.printInfo;
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (_scrollController.hasClients) {
         setState(() {
@@ -61,6 +62,17 @@ class RejishimePrintViewState extends State<PrintView> {
         widget.lengthUpdate!(contentLength);
       }
     });
+  }
+
+    @override
+  void didUpdateWidget(PrintView oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    // 当Widget更新时，更新内部状态
+    if (widget.printInfo != oldWidget.printInfo) {
+      _printInfo = widget.printInfo;
+      debugPrint('RejishimePrintViewState didUpdateWidget: $_printInfo, type: ${widget.printType}');
+    }
+    isPrint = widget.isPrint;
   }
 
   Widget _mainTitle(String title) {
@@ -81,7 +93,6 @@ class RejishimePrintViewState extends State<PrintView> {
   }
 
   Widget printView() {
-    debugPrint("printView　printInfo: $printInfo");
     return Container(
         padding: EdgeInsets.only(left: 10, right: 10, top: 20, bottom: 20),
         child: _miroWidget());
@@ -191,7 +202,7 @@ class RejishimePrintViewState extends State<PrintView> {
   }
 
   String formatSum(sum) {
-    if (sum == null) return "Unknown";
+    if (sum == null) return "0";
     List<String> parts = sum.toString().split('.');
     parts[0] = parts[0].replaceAllMapped(
         RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (Match m) => '${m[1]},');
@@ -201,16 +212,16 @@ class RejishimePrintViewState extends State<PrintView> {
   Widget _miroWidget() {
     return Column(
       children: [
-        _mainTitle(printInfo['shopName'] ?? "Unknown"),
-        _normalTitle("レジ番号 : ${printInfo['machineCode'] ?? "Unknown"}",
+        _mainTitle(_printInfo['shopName'] ?? "0"),
+        _normalTitle("レジ番号 : ${_printInfo['machineCode'] ?? "0"}",
             alignment: Alignment.centerLeft),
         _normalTitle("印字日時 : ", alignment: Alignment.centerLeft),
-        _normalTitle("${printInfo['printTime'] ?? "Unknown"}",
+        _normalTitle("${_printInfo['printTime'] ?? "0"}",
             alignment: Alignment.centerRight),
-        _normalTitle("スタッフ : ${printInfo['verifyUserName'] ?? "Unknown"}",
+        _normalTitle("スタッフ : ${_printInfo['verifyUserName'] ?? "0"}",
             alignment: Alignment.centerLeft),
         _normalTitle(
-            "${printInfo['startTime'] ?? "Unknown"}　から　\n ${printInfo['endTime'] ?? "Unknown"}　まで"),
+            "${_printInfo['startTime'] ?? "0"}　から　\n ${_printInfo['endTime'] ?? "0"}　まで"),
         //分割线
         Container(
           margin: EdgeInsets.only(top: 20, left: 40, right: 40),
@@ -226,25 +237,25 @@ class RejishimePrintViewState extends State<PrintView> {
                 children: [
                   _normalTitle("精算情報"),
 
-                  _twoContentRow("売上", "¥ ${formatSum(printInfo['total'])}"),
+                  _twoContentRow("売上", "¥ ${formatSum(_printInfo['total'])}"),
                   _twoContentRow(
-                      "税抜", "¥ ${formatSum(printInfo['noTaxTotal'])}"),
+                      "税抜", "¥ ${formatSum(_printInfo['noTaxTotal'])}"),
                   _twoContentRow(
-                      "消費税", "¥ ${formatSum(printInfo['taxTotal'])}"),
+                      "消費税", "¥ ${formatSum(_printInfo['taxTotal'])}"),
                   _twoContentRow(
-                      "8%対象", "¥ ${formatSum(printInfo['taxTotalA'])}",
+                      "8%対象", "¥ ${formatSum(_printInfo['taxTotalA'])}",
                       leading: 45.0),
                   _twoContentRow(
-                      "10%対象", "¥ ${formatSum(printInfo['taxTotalB'])}",
+                      "10%対象", "¥ ${formatSum(_printInfo['taxTotalB'])}",
                       leading: 45.0),
-                  _twoContentRow("注文件数", "${formatSum(printInfo['qty'])}"),
-                  _twoContentRow("8%対象", "${formatSum(printInfo['qtyA'])}",
+                  _twoContentRow("注文件数", "${formatSum(_printInfo['qty'])}"),
+                  _twoContentRow("8%対象", "${formatSum(_printInfo['qtyA'])}",
                       leading: 45.0),
-                  _twoContentRow("10%対象", "${formatSum(printInfo['qtyB'])}",
+                  _twoContentRow("10%対象", "${formatSum(_printInfo['qtyB'])}",
                       leading: 45.0),
                   //_twoContentRow("返金額", "¥ ${formatSum(printInfo['repaymentTotal'])}"),
                   _twoContentRow(
-                      "返金件数", "${formatSum(printInfo['repaymentQty'])}"),
+                      "返金件数", "${formatSum(_printInfo['repaymentQty'])}"),
 
                   Container(
                     margin: EdgeInsets.only(top: 20),
@@ -252,23 +263,23 @@ class RejishimePrintViewState extends State<PrintView> {
                     color: Colors.black,
                   ),
                   _twoContentRow(
-                      "現金", "¥ ${formatSum(printInfo['cashTotal'])}"),
+                      "現金", "¥ ${formatSum(_printInfo['cashTotal'])}"),
                   _twoContentRow(
-                      "クレジット", "¥ ${formatSum(printInfo['creditCardTotal'])}"),
+                      "クレジット", "¥ ${formatSum(_printInfo['creditCardTotal'])}"),
                   _twoContentRow(
-                      "PayPay", "¥ ${formatSum(printInfo['payPayTotal'])}"),
+                      "PayPay", "¥ ${formatSum(_printInfo['payPayTotal'])}"),
                   _twoContentRow(
-                      "AliPay", "¥ ${formatSum(printInfo['aliPayTotal'])}"),
+                      "AliPay", "¥ ${formatSum(_printInfo['aliPayTotal'])}"),
                   _twoContentRow(
-                      "WeChatPay", "¥ ${formatSum(printInfo['wechatTotal'])}"),
+                      "WeChatPay", "¥ ${formatSum(_printInfo['wechatTotal'])}"),
                   _twoContentRow(
-                      "r_Pay", "¥ ${formatSum(printInfo['r_PayTotal'])}"),
+                      "r_Pay", "¥ ${formatSum(_printInfo['r_PayTotal'])}"),
                   _twoContentRow(
-                      "au_Pay", "¥ ${formatSum(printInfo['au_PayTotal'])}"),
+                      "au_Pay", "¥ ${formatSum(_printInfo['au_PayTotal'])}"),
                   _twoContentRow(
-                      "d_Pay", "¥ ${formatSum(printInfo['d_PayTotal'])}"),
+                      "d_Pay", "¥ ${formatSum(_printInfo['d_PayTotal'])}"),
                   _twoContentRow(
-                      "m_Pay", "¥ ${formatSum(printInfo['m_PayTotal'])}"),
+                      "m_Pay", "¥ ${formatSum(_printInfo['m_PayTotal'])}"),
                   // _twoContentRow(
                   //     "交通系", "¥ ${formatSum(printInfo['trafficTotal'])}"),
                 ],
