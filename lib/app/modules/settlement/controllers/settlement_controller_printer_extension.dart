@@ -315,17 +315,17 @@ extension SettlementControllerPrinterExtension on SettlementController {
     int addRowHight = 0;
 
 
-    categoryMenus.add(
-      Container(
-        margin: EdgeInsets.only(
-                  bottom: ScreenAdapter.height(50)),
-        child: BarcodeWidget(
-                height: ScreenAdapter.height(200),
-                barcode: Barcode.qrCode(),
-                data: orderId.value,
-              )
-      ),
-    );
+    // categoryMenus.add(
+    //   Container(
+    //     margin: EdgeInsets.only(
+    //               bottom: ScreenAdapter.height(50)),
+    //     child: BarcodeWidget(
+    //             height: ScreenAdapter.height(200),
+    //             barcode: Barcode.qrCode(),
+    //             data: orderId.value,
+    //           )
+    //   ),
+    // );
 
 
 
@@ -597,7 +597,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
       ),
     );
 
-    var totalHight = addRowHight+lineHight+ScreenAdapter.height(150);
+    var totalHight = addRowHight+lineHight;
     if(menuNum == 1){
       totalHight +=15;
     }
