@@ -2894,35 +2894,35 @@ class SystemSettingPageView extends GetView {
                       ),
                     ],
                   ),
-                  Table(
-                      border: TableBorder.all(),
-                      columnWidths: const <int, TableColumnWidth>{
-                        //0: IntrinsicColumnWidth(),
-                        0: FlexColumnWidth(258),
-                        1: FlexColumnWidth(750),
-                      },
-                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                      children: <TableRow>[
+                  // Table(
+                  //     border: TableBorder.all(),
+                  //     columnWidths: const <int, TableColumnWidth>{
+                  //       //0: IntrinsicColumnWidth(),
+                  //       0: FlexColumnWidth(258),
+                  //       1: FlexColumnWidth(750),
+                  //     },
+                  //     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  //     children: <TableRow>[
 
-                        TableRow(
-                            children: <Widget>[
-                              Container(
-                                //height: ScreenAdapter.height(65),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  "番号パネルIP",
-                                  style: TextStyle(
-                                      fontFamily: 'NotoSansJP',
-                                      fontSize: ScreenAdapter.fontSize(22),
-                                      fontWeight: FontWeight.w500
-                                  ),
-                                ),
-                              ),
-                              setIsAllowPanelDisplay(),//是否开启pos机刷卡
-                            ]
-                        ),
-                      ]
-                  ),
+                  //       TableRow(
+                  //           children: <Widget>[
+                  //             Container(
+                  //               //height: ScreenAdapter.height(65),
+                  //               alignment: Alignment.center,
+                  //               child: Text(
+                  //                 "番号パネルIP",
+                  //                 style: TextStyle(
+                  //                     fontFamily: 'NotoSansJP',
+                  //                     fontSize: ScreenAdapter.fontSize(22),
+                  //                     fontWeight: FontWeight.w500
+                  //                 ),
+                  //               ),
+                  //             ),
+                  //             setIsAllowPanelDisplay(),//是否开启pos机刷卡
+                  //           ]
+                  //       ),
+                  //     ]
+                  // ),
                   Table(
                       border: TableBorder.all(),
                       columnWidths: const <int, TableColumnWidth>{

@@ -1032,7 +1032,7 @@ class SettlementController extends GetxController with StateMixin {
           //    machineInfo.paymentMethod != "1")) {
             printGoNext(orderId.value);
           //}
-          _sendToDisplayPanel(json.encode(response['data']));
+          //_sendToDisplayPanel(json.encode(response['data']));
         } else {
           //错误后重新调用一次
           if (times < 3) {

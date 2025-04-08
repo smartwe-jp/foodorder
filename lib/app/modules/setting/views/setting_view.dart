@@ -222,30 +222,30 @@ class SettingView extends GetView<SettingController> {
                   )),
             ),
           ),
-        InkWell(
-          onTap: () async {
-            Get.toNamed(Routes.SETTING_EDIT_PAGE);
-          },
-          child: Container(
-            margin: EdgeInsets.only(
-                left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
-            width: ScreenAdapter.width(180),
-            height: ScreenAdapter.height(65),
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: ColorsUtil.hexToColor("#A61C1C"),
-              //设置圆角
-              borderRadius: new BorderRadius.circular((16.0)),
-            ),
-            child: Text("メンユー管理",
-                style: TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: ScreenAdapter.fontSize(24),
-                  fontWeight: FontWeight.w600,
-                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                )),
-          ),
-        ),
+        // InkWell(
+        //   onTap: () async {
+        //     Get.toNamed(Routes.SETTING_EDIT_PAGE);
+        //   },
+        //   child: Container(
+        //     margin: EdgeInsets.only(
+        //         left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+        //     width: ScreenAdapter.width(180),
+        //     height: ScreenAdapter.height(65),
+        //     alignment: Alignment.center,
+        //     decoration: BoxDecoration(
+        //       color: ColorsUtil.hexToColor("#A61C1C"),
+        //       //设置圆角
+        //       borderRadius: new BorderRadius.circular((16.0)),
+        //     ),
+        //     child: Text("メンユー管理",
+        //         style: TextStyle(
+        //           fontFamily: GFont.getFontFamily(),
+        //           fontSize: ScreenAdapter.fontSize(24),
+        //           fontWeight: FontWeight.w600,
+        //           color: ColorsUtil.hexToColor("#FFFFFF"),
+        //         )),
+        //   ),
+        // ),
       ],
     ));
   }
@@ -853,7 +853,7 @@ class SettingView extends GetView<SettingController> {
                           padding:
                               EdgeInsets.only(right: ScreenAdapter.width(18)),
                           child: Text(
-                            "Version：1.0.5",
+                            "Version：1.0.7",
                             style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 color: Colors.grey[500],
