@@ -187,9 +187,10 @@ class RejishimeView extends StatelessWidget {
           SizedBox(
             height: 20.w,
           ),
+          Expanded(
+                  child: 
           state.mailInfo.length == 0 && !state.isRequesting
-              ? Expanded(
-                  child: Center(
+              ? Center(
                   child: ElevatedButton(
                     onPressed: () {
                       state.isRequesting = true;
@@ -202,7 +203,7 @@ class RejishimeView extends StatelessWidget {
                             fontFamily: GFont.getFontFamily(),
                             fontWeight: FontWeight.w400)),
                   ),
-                ))
+                )
               : ListView.separated(
                   shrinkWrap: true,
                   itemCount: state.mailInfo.length,
@@ -253,7 +254,7 @@ class RejishimeView extends StatelessWidget {
                       ),
                     );
                   },
-                ),
+                )),
         ],
       ),
     );
