@@ -868,6 +868,18 @@ class SettlementController extends GetxController with StateMixin {
         });
         _checkOutErrorHandle('pos_report_error_tips'.localized());
       }
+    }).timeout(Duration(seconds: 30), onTimeout: () {
+      //TODO 默认重试3次
+      if (retryCount < 3) {
+        Future.delayed(Duration(milliseconds: 500), (){
+          posPayReport(eventString, retryCount: retryCount + 1);
+        });
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
+          "machineCode": machineInfo.machineCode,
+        });
+        _checkOutErrorHandle('pos_report_error_tips'.localized());
+      }
     });
 
   }
