@@ -96,6 +96,7 @@ android {
             jniLibs.srcDirs = ["libs"]
         }
     }
+    namespace 'com.fanxing.foodorder'
 }
 
 flutter {

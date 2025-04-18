@@ -1,6 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="31" android:versionName="1.2.0"
-    package="com.fanxing.foodorder">
+    android:versionCode="31" android:versionName="1.2.0">
     <!-- 申请Android权限-->
     <!--网络访问-->
     <uses-permission android:name="android.permission.INTERNET" />

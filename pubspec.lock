@@ -52,10 +52,10 @@ packages:
     dependency: "direct main"
     description:
       name: assets_audio_player
-      sha256: dcea8cd9c11cd9c34586f2446bfcdf099362159c56f97517ba941ac151974ea9
+      sha256: "9a87062cf39be0730ba8bb31ed4d148ca4e892e0ae607113f346d3c9a8da5df0"
       url: "https://pub.dev"
     source: hosted
-    version: "3.0.6"
+    version: "3.1.1"
   assets_audio_player_web:
     dependency: transitive
     description:
@@ -410,10 +410,10 @@ packages:
     dependency: "direct main"
     description:
       name: fluttertoast
-      sha256: "474f7d506230897a3cd28c965ec21c5328ae5605fc9c400cd330e9e9d6ac175c"
+      sha256: "81b68579e23fcbcada2db3d50302813d2371664afe6165bc78148050ab94bf66"
       url: "https://pub.dev"
     source: hosted
-    version: "8.2.2"
+    version: "8.2.5"
   gbk_codec:
     dependency: transitive
     description:
@@ -622,10 +622,10 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  paycube_old:
+  paycube:
     dependency: "direct main"
     description:
-      path: "lib/app/plugins/paycube_old"
+      path: "lib/app/plugins/paycube"
       relative: true
     source: path
     version: "0.0.1"
