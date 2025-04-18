@@ -2720,7 +2720,7 @@ extension MenuPageCategory on MenuPageController {
           child:
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: new AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child:
             Column(mainAxisAlignment: MainAxisAlignment.start,
                 children: [
@@ -2787,7 +2787,7 @@ extension MenuPageCategory on MenuPageController {
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.8));
     }
-    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.6);
+    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.6, canScroll: false,);
 
     // return Padding(
     //   padding: EdgeInsets.only(
@@ -2914,7 +2914,7 @@ extension MenuPageCategory on MenuPageController {
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: new AlwaysScrollableScrollPhysics(),
+            physics: const BouncingScrollPhysics(),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3280,7 +3280,7 @@ extension MenuPageCategory on MenuPageController {
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.82));
     }
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.62);
+    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.62, canScroll: false,);
     // return Padding(
     //   padding: EdgeInsets.only(
     //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
