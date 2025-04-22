@@ -54,9 +54,16 @@ class RejishimeLogic extends GetxController {
       }
     }).catchError((e) {
       state.isRequesting = false;
-
+      update();
       showToast('取得に失敗しました');
-    });
+    }).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        state.isRequesting = false;
+        update();
+        showToast('取得に失敗しました');
+      },
+    );
   }
 
   requestVerifyCode() async {
@@ -85,8 +92,16 @@ class RejishimeLogic extends GetxController {
       }
     }).catchError((e) {
       state.isRequesting = false;
+      update();
       showToast('確認コードの送信に失敗しました');
-    });
+    }).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        state.isRequesting = false;
+        update();
+        showToast('確認コードの送信に失敗しました');
+      },
+    );
   }
 
   requestShimeInfo(
@@ -124,7 +139,13 @@ class RejishimeLogic extends GetxController {
     }).catchError((e) {
       EasyLoading.dismiss();
       showToast('レジ情報の取得に失敗しました');
-    });
+    }).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        EasyLoading.dismiss();
+        showToast('レジ情報の取得に失敗しました');
+      },
+    );
   }
 
   _comfirmShimeInfo(
@@ -155,7 +176,13 @@ class RejishimeLogic extends GetxController {
       debugPrint("Rejishimei confirm error: $e");
       EasyLoading.dismiss();
       showToast('印刷に失敗しました');
-    });
+    }).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        EasyLoading.dismiss();
+        showToast('印刷に失敗しました');
+      },
+    );
   }
 
   _comfirmGloryShimeInfo(code, printData, SettingController settingController,
@@ -248,7 +275,14 @@ class RejishimeLogic extends GetxController {
       EasyLoading.dismiss();
       success = false;
       showToast('印刷に失敗しました');
-    });
+    }).timeout(
+      const Duration(seconds: 30),
+      onTimeout: () {
+        EasyLoading.dismiss();
+        success = false;
+        showToast('印刷に失敗しました');
+      },
+    );
     return success;
   }
 

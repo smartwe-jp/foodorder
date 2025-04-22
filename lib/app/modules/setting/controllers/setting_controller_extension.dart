@@ -186,7 +186,6 @@ extension SettingControllerExtension on SettingController {
           //找钱失败一律退单和退回入金
           // CashChanger.fixDeposit;
           // CashChanger.depositRepay;
-          Get.back();
           cancelTimer();
           //Get.back();
         });
@@ -680,6 +679,7 @@ extension SettingControllerExtension on SettingController {
                 GString.getToString(checkLanguage.value, "tag_button_yes"),
             confirm: () {
           if (confirm != null) {
+            Get.back();
             confirm();
           } else {
             Get.back();
@@ -697,8 +697,8 @@ extension SettingControllerExtension on SettingController {
             confirmtitle: confirmtitle == ""
                 ? GString.getToString(checkLanguage.value, "tag_button_yes")
                 : confirmtitle, confirm: () {
-          confirm();
           Get.back();
+          confirm();
         }, cancle: () {
           Get.back();
         }));

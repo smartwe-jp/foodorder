@@ -2719,7 +2719,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
             child: 
             SingleChildScrollView(
               scrollDirection: Axis.vertical,
-                physics: new AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
                   child:
                     Column(mainAxisAlignment: MainAxisAlignment.start, 
                       children: [
@@ -2786,7 +2786,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.8));
     }
-    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.6);
+    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.6, canScroll:false);
     
     // return Padding(
     //   padding: EdgeInsets.only(
@@ -2913,7 +2913,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
           ),
           child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            physics: new AlwaysScrollableScrollPhysics(),
+            physics: const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
@@ -3279,7 +3279,7 @@ _getFirstOptionWidget(menuCode, setFirstState) {
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.82));
     }
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.62);
+    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.62, canScroll: false);
     // return Padding(
     //   padding: EdgeInsets.only(
     //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
