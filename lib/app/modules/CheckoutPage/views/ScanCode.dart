@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:foodorder/app/config/localString.dart';
 
 import 'package:get/get.dart';
 
@@ -12,10 +13,37 @@ import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/checkout_page_controller.dart';
 
-class ScanCodeView extends GetView {
+class ScanCodeView extends GetView  {
   final CheckoutPageController controller = Get.find();
   // ScanCodeView({Key? key}) : super(key: key);
   final localKey = Get.locale?.languageCode.toUpperCase() ?? "JP";
+
+
+  get backBotton => InkWell(
+                          onTap: () {
+                            controller.backCheckHome();
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: ScreenAdapter.width(120),
+                            height: ScreenAdapter.height(60),
+                            //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
+                            decoration: BoxDecoration(
+                              color: Colors.grey,
+                              //设置圆角
+                              borderRadius: new BorderRadius.circular((5.0)),
+                            ),
+                            child: Text(
+                              GString.getToString(
+                                  localKey, "settlement_back"),
+                              style: TextStyle(
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                  fontWeight: FontWeight.w500,
+                                  fontFamily: GFont.getFontFamily(),
+                                  fontSize: ScreenAdapter.fontSize(32.0)),
+                            ),
+                          ),
+                        );
 
   @override
   Widget build(BuildContext context) {
@@ -80,21 +108,17 @@ class ScanCodeView extends GetView {
                           bottom: BorderSide(
                               color: ColorsUtil.hexToColor("#e5e5e5"),
                               width: 5.0),
-                          //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
                         )
-                        /*gradient: LinearGradient(
-                    begin: Alignment.centerLeft,
-                    end: Alignment.centerRight,
-                    colors: [
-                      ColorsUtil.hexToColor("#C47829"),
-                      ColorsUtil.hexToColor("#854610"),
-                    ],
-                  ),*/
                         ),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
+                        SizedBox(
+                          width: ScreenAdapter.width(20),
+                        ),
+                        backBotton,
+                        Spacer(),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.center,
                           crossAxisAlignment: CrossAxisAlignment.center,
@@ -116,70 +140,102 @@ class ScanCodeView extends GetView {
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                                   fontWeight: FontWeight.w600,
                                   fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(34.0)),
+                                  fontSize: ScreenAdapter.fontSize(44.0)),
                             ),
                           ],
                         ),
+                        SizedBox(
+                          width: ScreenAdapter.width(180),
+                        ),
+                        Spacer(),
                       ],
                     ),
                   ),
-                  Expanded(
-                      child: Container(
+
+                  SizedBox(
+                    height: ScreenAdapter.height(40),
+                  ),
+
+
+                  Container(
                     //height: ScreenAdapter.height(940),
                     child: Image.asset(
                       GImage.getImageString("imgpublic", "jingsuantag"),
-                      width: ScreenAdapter.width(970),
+                      height: ScreenAdapter.height(970),
                       fit: BoxFit.fitWidth,
                     ),
-                  )),
+                  ),
+
+                  //Tips
+                  //checkoutScanTips 请把二维码放在扫描框内 日语：QRコードをスキャンボックスに置いてください
+                  Spacer(),
                   Container(
-                    //padding: EdgeInsets.only(right: ScreenAdapter.width(50)),
-                    height: ScreenAdapter.height(200),
-                    color: ColorsUtil.hexToColor("#DCDCDC"),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            //try {
-                            //showCancelConfirm();
-                            //Navigator.pop(context);
-                            //Get.back();
-                            controller.backCheckHome();
-                            //} catch (_) {}
-                          },
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: ScreenAdapter.width(270),
-                            height: ScreenAdapter.height(140),
-                            //margin: EdgeInsets.only(top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(25)),
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((5.0)),
-                            ),
-                            child: Text(
-                              GString.getToString(
-                                  localKey, "settlement_back"),
-                              style: TextStyle(
-                                  color: ColorsUtil.hexToColor("#000000"),
-                                  fontWeight: FontWeight.w500,
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontSize: ScreenAdapter.fontSize(34.0)),
-                            ),
-                          ),
-                        ),
-                        SizedBox(width: ScreenAdapter.width(180)),
-                        Container(
-                          margin:
-                              EdgeInsets.only(left: ScreenAdapter.width(20)),
-                          width: ScreenAdapter.width(270),
-                          height: ScreenAdapter.height(100),
-                        )
-                      ],
+                    padding: EdgeInsets.only(
+                        left: ScreenAdapter.width(20),
+                        right: ScreenAdapter.width(20)),
+                    child: Text(
+                      "checkoutScanTips".localized(),
+                      style: TextStyle(
+                          color: Colors.green[900],
+                          fontWeight: FontWeight.w600,
+                          fontFamily: GFont.getFontFamily(),
+                          fontSize: ScreenAdapter.fontSize(42.0)),
                     ),
                   ),
+
+                  SizedBox(
+                    height: ScreenAdapter.height(40),
+                  ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+
+                      AnimatedBuilder(
+                        animation: controller.animation,
+                        builder: (context, child) {
+                          return Transform.translate(
+                            offset: Offset(0, controller.animation.value), // 动态调整纵轴偏移
+                            child: Icon(
+                              Icons.keyboard_double_arrow_down,
+                              color: Colors.green[900],
+                              size: 120,
+                            ),
+                          );
+                        },
+                      ),
+                      SizedBox(
+                        width: ScreenAdapter.width(280),
+                      ),
+                    ],
+                  ),
+                  
+                  
+                  SizedBox(
+                    height: ScreenAdapter.height(40),
+                  ),
+
+                  
+
+                  Container(
+                    //height: ScreenAdapter.height(940),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    child: Image.asset(
+                      GImage.getImageString("imgpublic", "scan_camera"),
+                      width: ScreenAdapter.width(500),
+                      fit: BoxFit.fitWidth,
+                    ),
+                  ),
+                  
+                  
+                  Spacer(),
+                  SizedBox(
+                    height: ScreenAdapter.height(40),
+                  ),
+
                 ],
               ),
             ),

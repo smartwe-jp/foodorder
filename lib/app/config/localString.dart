@@ -144,6 +144,8 @@ extension LocalizedString on String {
         "show_order_error":"注文に失敗しました、もう一度お試しください。",
         "order_network_error":"ネットワークエラー、店員にお知らせください。",
         "settlement_order_error":"決済失敗ので、もう一度お試しください。",
+
+        "checkoutScanTips": "QRコードをスキャンボックスに置いてください",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -279,6 +281,8 @@ extension LocalizedString on String {
         "show_order_error":"下单失败，请重试。",
         "order_network_error":"网络错误，请联系工作人员。",
         "settlement_order_error":"支付失败，请重试。",
+
+        "checkoutScanTips": "请将二维码放入扫码框内",
         
       },
       'EN': {
@@ -415,6 +419,8 @@ extension LocalizedString on String {
         "show_order_error":"Order failed, please try again.",
         "order_network_error":"Network error, please contact the staff.",
         "settlement_order_error":"Payment failed, please try again.",
+
+        "checkoutScanTips": "Please place the QR code in the scanning box",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -551,6 +557,8 @@ extension LocalizedString on String {
         "show_order_error":"주문 실패, 다시 시도하십시오.",
         "order_network_error":"네트워크 오류, 직원에게 문의하십시오.",
         "settlement_order_error":"결제 실패, 다시 시도하십시오.",
+
+        "checkoutScanTips": "QR 코드를 스캔 상자에 놓으십시오",
       }
       // 添加更多语言...한국말 =>  한국어
     };

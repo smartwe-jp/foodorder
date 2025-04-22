@@ -16,7 +16,7 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 
-class CheckoutPageController extends GetxController with StateMixin {
+class CheckoutPageController extends GetxController with StateMixin, GetTickerProviderStateMixin {
   //TODO: Implement CheckoutPageController
   // TextEditingController scanQrCodeHomeController = new TextEditingController();
   // FocusNode scanQrCodeHomeFocusNode = FocusNode();
@@ -57,6 +57,9 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxString localkey = "JP".obs;
 
+  late AnimationController animationController;
+  late Animation<double> animation;
+
   @override
   void onInit() {
     print("CheckoutPageController new init");
@@ -73,11 +76,20 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onReady() {
     startRepeatingAnimation();
     super.onReady();
+        animationController = AnimationController(
+      vsync: this,
+      duration: const Duration(seconds: 1),
+    )..repeat(reverse: true); // 循环动画，反向重复
+
+    animation = Tween<double>(begin: 0, end: 20).animate(
+      CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
+    );
   }
 
   @override
   void onClose() {
     //stopRepeatingAnimation();
+    animationController.dispose();
     super.onClose();
   }
 

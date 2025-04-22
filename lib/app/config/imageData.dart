@@ -62,6 +62,7 @@ class GImage{
         "settlement_mpay":"assets/images/public/settlement_mpay.png",
         "settlement_wechat":"assets/images/public/settlement_wechat.png",
         "jingsuantag":Platform.isAndroid ? "assets/images/public/jingsuantag.png" : "assets/images/glory/self.checkout.png",
+        "scan_camera":"assets/images/public/scan_camera.jpg",
         "error_public":"assets/images/public/error_public.jpg",
         "payment_cash":"assets/images/public/payment_cash.png",
         "payment_qr":"assets/images/public/payment_qr.png",
