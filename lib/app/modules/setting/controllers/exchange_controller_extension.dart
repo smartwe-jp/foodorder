@@ -24,8 +24,8 @@ extension ExchangeControllerExtension on SettingController {
   }
 
   getCashInfo() async {
-    String? cash = await getMachineCashInfo();
-    debugPrint('cashInfo: $cashInfo'); //'1:12,5:5'
+    String? cash = await getMachineCashInfo(showAlert: false);
+    debugPrint('cashInfo: $cash'); //'1:12,5:5'
 
     if (cash != null) {
       Map result = await cash.split(',').asMap().map((key, value) {
@@ -83,7 +83,7 @@ extension ExchangeControllerExtension on SettingController {
     return newCashInfoList;
   }
 
-  Future<String?> getMachineCashInfo({Function? retry}) async {
+  Future<String?> getMachineCashInfo({Function? retry, bool showAlert = true}) async {
     debugPrint("getMachineCashInfo 0");
     var result = null;
     logger.info('-- getMachineCashInfo --');
@@ -96,11 +96,13 @@ extension ExchangeControllerExtension on SettingController {
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
         logger.info('-- getMachineCashInfo error: $error --');
-        if (retry == null) {
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
-        } else {
-          errorHandleDialogTwo(
-              GString.getToString(checkLanguage.value, error), retry);
+        if (showAlert) {
+          if (retry == null) {
+            errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          } else {
+            errorHandleDialogTwo(
+                GString.getToString(checkLanguage.value, error), retry);
+          }
         }
       },
     );

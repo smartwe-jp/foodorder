@@ -1435,9 +1435,9 @@ print("加1了");
               confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
               confirm: () {
                 Get.back();
-                FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                  "machineCode": machinInfo.machineCode,
-                });
+                // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+                //   "machineCode": machinInfo.machineCode,
+                // });
               })
       );
       return;
@@ -1454,9 +1454,9 @@ print("加1了");
             cancle: () {
               Get.back();
               clearCartList();
-              FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                "machineCode": machinInfo.machineCode,
-              });
+              // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+              //   "machineCode": machinInfo.machineCode,
+              // });
             }
             )
     );

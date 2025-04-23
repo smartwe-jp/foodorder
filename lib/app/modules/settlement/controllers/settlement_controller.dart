@@ -853,9 +853,9 @@ class SettlementController extends GetxController with StateMixin {
           posPayReport(eventString, retryCount: retryCount + 1);
         });
       } else {
-        FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
-          "machineCode": machineInfo.machineCode,
-        });
+        // FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
+        //   "machineCode": machineInfo.machineCode,
+        // });
         _checkOutErrorHandle('pos_report_error_tips'.localized());
       }
     });
@@ -1093,9 +1093,9 @@ class SettlementController extends GetxController with StateMixin {
               confirm: () {
                 Get.back();
                 commonCancel();
-                FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-                  "machineCode": machineInfo.machineCode,
-                });
+                // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+                //   "machineCode": machineInfo.machineCode,
+                // });
               })
       );
       return;
@@ -1114,9 +1114,9 @@ class SettlementController extends GetxController with StateMixin {
             },
             cancle: () {
               commonCancel();
-              FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-                "machineCode": machineInfo.machineCode,
-              });
+              // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+              //   "machineCode": machineInfo.machineCode,
+              // });
             }
         )
     );
