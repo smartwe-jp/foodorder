@@ -2,6 +2,8 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/Extension/StringExtension.dart';
+import 'package:badges/badges.dart' as badges;
+import 'package:foodorder/app/config/localString.dart';
 
 import '../../../../config/color.dart';
 import '../../../../config/colorsUtil.dart';
@@ -9,19 +11,19 @@ import '../../../../config/font.dart';
 import '../../../../services/ScreenAdapter.dart';
 
 class OptionWidget extends StatefulWidget {
+  final bool isLabelOption;
   final Map optionInfo;
   final ValueChanged<bool> onChanged;
   final ValueChanged<bool> onSelected;
-  final String outOfRangeMessage;
   final bool canSelect;
 
   const OptionWidget({
     Key? key,
+    required this.isLabelOption,
     required this.optionInfo,
     required this.onChanged,
     required this.onSelected,
     this.canSelect = true,
-    this.outOfRangeMessage = '超出范围',
   }) : super(key: key);
 
   @override
@@ -36,6 +38,8 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   late String _mainTitle;
   late bool _isChecked;
   late int _currentPrice;
+  late List _buttonColor;
+
 
   String get showPrice => _currentPrice.formatIntSum();
 
@@ -58,6 +62,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
     _mainTitle = optionInfo['mainTitle'];
     _isChecked = optionInfo['checked'] ?? false;
     _currentPrice = optionInfo['currentPrice'];
+    _buttonColor = (optionInfo['buttonColorValue'] != null) ? optionInfo['buttonColorValue'].split(',') : [];
   }
 
   void _increment() {
@@ -92,11 +97,11 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text("提示"),
-          content: Text(widget.outOfRangeMessage),
+          title: Text("tag_title".localized()),
+          content: Text('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle)),
           actions: <Widget>[
             TextButton(
-              child: Text("确定"),
+              child: Text("tag_button_yes".localized()),
               onPressed: () {
                 Navigator.of(context).pop();
               },
@@ -111,6 +116,13 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
 
   @override
   Widget build(BuildContext context) {
+    return widget.isLabelOption
+        ? _labelOptionWidget()
+        : _imageOptionWidget();
+  }
+
+
+  _imageOptionWidget(){
     return Container(
       width: ScreenAdapter.height(196),
       child: Column(
@@ -158,11 +170,11 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        if (imageUrl != null)
-                       CachedNetworkImage(imageUrl:widget.optionInfo['homeImage'],
-                            width: ScreenAdapter.width(160),
-                            height: ScreenAdapter.height(110),
-                            fit: BoxFit.fitHeight),
+                        if (imageUrl != null && imageUrl != "")
+                          CachedNetworkImage(imageUrl:widget.optionInfo['homeImage'],
+                              width: ScreenAdapter.width(160),
+                              height: ScreenAdapter.height(110),
+                              fit: BoxFit.fitHeight),
 
                         Container(
                             width: ScreenAdapter.width(185),
@@ -202,51 +214,51 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                   ),
 
                   if (_currentPrice != 0)
-                  Positioned(
-                    right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(0),
-                    child: Container(
-                      //width: ScreenAdapter.width(46),
-                        height: ScreenAdapter.height(32),
-                        alignment: Alignment.center,
-                        //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                        padding: EdgeInsets.only(
-                          //top:ScreenAdapter.height(2),
-                            left: ScreenAdapter.width(10),
-                            right: ScreenAdapter.width(10)
-                        ),
-                        // alignment: Alignment.topRight,
-                        decoration: BoxDecoration(
-                          color: (_currentPrice > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
-                          borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                        ),
-                        child: Text(
-                            (_currentPrice > 0) ?"¥$showPrice":"-¥$showPrice",
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(
-                                  Gcolor.optionBtnColor),
-                            ))),
-                  ),
+                    Positioned(
+                      right: ScreenAdapter.width(0),
+                      top: ScreenAdapter.height(0),
+                      child: Container(
+                        //width: ScreenAdapter.width(46),
+                          height: ScreenAdapter.height(32),
+                          alignment: Alignment.center,
+                          //padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                          padding: EdgeInsets.only(
+                            //top:ScreenAdapter.height(2),
+                              left: ScreenAdapter.width(10),
+                              right: ScreenAdapter.width(10)
+                          ),
+                          // alignment: Alignment.topRight,
+                          decoration: BoxDecoration(
+                            color: (_currentPrice > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+                            borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                          ),
+                          child: Text(
+                              (_currentPrice > 0) ?"¥$showPrice":"-¥$showPrice",
+                              style: TextStyle(
+                                fontSize: ScreenAdapter.fontSize(20),
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w600,
+                                color: ColorsUtil.hexToColor(
+                                    Gcolor.optionBtnColor),
+                              ))),
+                    ),
 
                   if (_isChecked)
-                  Positioned(
-                    right: ScreenAdapter.width(0),
-                    top: ScreenAdapter.height(30),
-                    child: Container(
-                        width: ScreenAdapter.width(180),
-                        height: ScreenAdapter.height(120),
-                        alignment: Alignment.center,
+                    Positioned(
+                      right: ScreenAdapter.width(0),
+                      top: ScreenAdapter.height(30),
+                      child: Container(
+                          width: ScreenAdapter.width(180),
+                          height: ScreenAdapter.height(120),
+                          alignment: Alignment.center,
 
-                        child: Icon(
-                          Icons.check,
-                          color: ColorsUtil.hexToColor("#2aa515"),
-                          size: 120,
-                        )
-                    ),
-                  )
+                          child: Icon(
+                            Icons.check,
+                            color: ColorsUtil.hexToColor("#2aa515"),
+                            size: 120,
+                          )
+                      ),
+                    )
                 ],
               ),
             ),
@@ -257,6 +269,142 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
       ),
     );
   }
+
+  _labelOptionWidget(){
+    return Container(
+      width: ScreenAdapter.width(255),
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.only(
+                left: ScreenAdapter.width(5),
+                top: ScreenAdapter.height(5),
+                right: ScreenAdapter.width(5),
+                bottom: ScreenAdapter.height(5)),
+            child: InkWell(
+              //enableFeedback: false,
+              onTap: () {
+                bool checked = !_isChecked;
+                if (widget.canSelect || _isChecked) {
+                  setState(() {
+                    _isChecked = checked;
+                    if (!checked) {
+                      _count = 1;
+                    }
+                  });
+                }
+                widget.onSelected(checked);
+              },
+              child: badges.Badge(
+                showBadge: (_currentPrice != 0) ? true : false,
+                badgeContent: Text(
+                    (_currentPrice > 0) ?"¥$showPrice":"-¥$showPrice",
+                    style: TextStyle(
+                      fontSize: ScreenAdapter.fontSize(20),
+                      fontFamily: GFont.getFontFamily(),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(
+                          Gcolor.optionBtnColor),
+                    )),
+                //padding: EdgeInsets.all(5),
+                position:badges.BadgePosition.topEnd(top: -18, end: -7),
+                badgeStyle: badges.BadgeStyle(
+                  shape: badges.BadgeShape.square,
+                  padding: EdgeInsets.only(left: 5,top: 3,right: 5,bottom: 3),
+                  borderRadius: BorderRadius.circular(5),
+                  badgeColor: (_currentPrice > 0) ? ColorsUtil.hexToColor("#ef4136"): ColorsUtil.hexToColor("#1d953f"),
+
+                ),
+                child: Container(
+                    width: ScreenAdapter.width(245),
+                    height: ScreenAdapter.height(70),
+                    alignment: Alignment.center,
+                    decoration: (_isChecked)
+                        ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#C47829"),
+                          ColorsUtil.hexToColor("#854610"),
+                        ],
+                      ),
+
+                    )
+                        : (_buttonColor.length>0) ? BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor(_buttonColor[0]),
+                          ColorsUtil.hexToColor(_buttonColor[1]),
+                        ],
+                      ),
+
+                    ): BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      gradient: LinearGradient(
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                        colors: [
+                          ColorsUtil.hexToColor("#E9CE9B"),
+                          ColorsUtil.hexToColor("#CEA062"),
+                        ],
+                      ),
+
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        if (imageUrl != null && imageUrl != "")
+                        CachedNetworkImage(imageUrl:imageUrl!,
+                            width: ScreenAdapter.width(18),
+                            height: ScreenAdapter.height(30),
+                            color: _isChecked ? ColorsUtil.hexToColor(Gcolor.optionBtnColor) :ColorsUtil.hexToColor("#914F14"),
+                            fit: BoxFit.fitHeight),
+                        SizedBox(
+                          width: ScreenAdapter.width(4),
+                        ),
+                        ConstrainedBox(
+                          constraints: BoxConstraints(
+                            minWidth: ScreenAdapter.width(20),
+                            maxWidth: ScreenAdapter.width(220),
+                            minHeight: ScreenAdapter.height(30),
+                            maxHeight: ScreenAdapter.height(62),
+                          ),
+                          child: AutoSizeText(
+                              _mainTitle,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                fontFamily: GFont.getFontFamily(),
+                                fontSize: ScreenAdapter.fontSize(24.0),
+                                color: _isChecked ? ColorsUtil.hexToColor(Gcolor.optionBtnColor) : ColorsUtil.hexToColor("#914F14"),
+                              ),
+                              softWrap: true,
+                              //minFontSize: 10,
+                              //maxFontSize: 12,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              textAlign: TextAlign.center
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+              ),
+            ),
+          ),
+          if (_currentPrice > 0 && _isChecked)
+            _plusMinusWidget(),
+        ],
+      ),
+    );
+  }
+
 
   _plusMinusWidget() {
     return Container(

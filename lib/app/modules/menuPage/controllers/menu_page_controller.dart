@@ -929,7 +929,19 @@ print("加1了");
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
           barrierDismissible:false,
-          showOneItemOptionWidgetView(item)
+          //showOneItemOptionWidgetView(item)
+          OptionView(
+            isLabel: true,
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+            },
+          )
       );
     });
   }
@@ -941,6 +953,7 @@ print("加1了");
           barrierDismissible:false,
           //showOneItemOptionWidgetVOneView(item)
           OptionView(
+            isLabel: false,
             languageKey: checkLanguage.value,
             itemPrice: item['currentPrice'],
             originalPrice: item['price'],
@@ -949,7 +962,6 @@ print("加1了");
             subtitle: item['subtitle'] ?? [],
             addToCartCallback: (price, options, optionTitle) {
               _addToCartCallback(item, price, options, optionTitle);
-
             },
           )
       );

@@ -19,6 +19,7 @@ class OptionView extends StatefulWidget {
   OptionView({
     Key? key,
     required this.languageKey,
+    required this.isLabel,
     required this.itemPrice,
     required this.originalPrice,
     required this.optionInfo,
@@ -27,6 +28,7 @@ class OptionView extends StatefulWidget {
     required this.addToCartCallback,
   }) : super(key: key);
 
+  final bool isLabel;
   final String languageKey;
   final int itemPrice;
   final int originalPrice;
@@ -320,6 +322,7 @@ class _OptionViewState extends State<OptionView> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           ...optionGroupInfo.map((optionItem) => OptionListWidget(
+            isLabel: widget.isLabel,
             languageKey: widget.languageKey,
             optionSelectMaxNum: optionItem['multipleState'] ?? '1',
             optionListInfo: optionItem['optionVoList'] ?? [],

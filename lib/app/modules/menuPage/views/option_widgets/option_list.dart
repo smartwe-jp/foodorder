@@ -15,6 +15,7 @@ import '../../../../widget/DialogUtils.dart';
 import 'option_item.dart';
 
 class OptionListWidget extends StatefulWidget {
+  final bool isLabel;
   final String languageKey;
   final List<dynamic> optionListInfo;
   final String optionSelectMaxNum;
@@ -25,6 +26,7 @@ class OptionListWidget extends StatefulWidget {
 
   const OptionListWidget({
     Key? key,
+    required this.isLabel,
     required this.optionListInfo,
     this.outOfRangeMessage = '超出范围',
     required this.title,
@@ -122,6 +124,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
           for (int i = 0; i < widget.optionListInfo.length; i++)
             if (i < _optionMaxNum)
               OptionWidget(
+                  isLabelOption: widget.isLabel,
                   canSelect: _canSelect,
                   optionInfo: widget.optionListInfo[i],
                   onChanged: (isAdd){
