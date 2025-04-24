@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 // }
 
 extension NumberFormatting on int {
-  String formatSum() {
+  String formatIntSum() {
     final formatter = NumberFormat('#,###');
     return formatter.format(this);
   }

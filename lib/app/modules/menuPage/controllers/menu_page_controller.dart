@@ -34,6 +34,7 @@ import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
+import '../views/option_widgets/option_view.dart';
 import '../views/showOneItemOptionWidget.dart';
 import '../views/showOneItemOptionWidgetV1.dart';
 
@@ -851,7 +852,7 @@ print("加1了");
         }
       }
     }
-    menuOption.value[menuCode] = attr;
+    menuOption[menuCode] = attr;
 
 
     _getSelectedAttrValuev1(menuCode, attr, setMenuState);
@@ -883,8 +884,8 @@ print("加1了");
       }
     }
 
-    selectedMenuOptionList.value[menuCode] = tempArr;
-    addselectedMenuOptionChangePrice.value[menuCode] = selectPrice;
+    selectedMenuOptionList[menuCode] = tempArr;
+    addselectedMenuOptionChangePrice[menuCode] = selectPrice;
     tempArr = [];
     update(['option_view']);
   }
@@ -932,20 +933,61 @@ print("加1了");
       );
     });
   }
+
   publicShowOneItemWidgetv1(item){
     changeInitialAllOption(item['menuCode']);
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
           barrierDismissible:false,
-          showOneItemOptionWidgetVOneView(item)
+          //showOneItemOptionWidgetVOneView(item)
+          OptionView(
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+
+            },
+          )
       );
     });
   }
 
+  _addToCartCallback(item, price, options, optionTitle) async {
+    debugPrint("price:$price");
+    debugPrint("options:$options");
+    debugPrint("optionTitle:$optionTitle");
+    //options 是一个字符串数组，把它转换成字符串逗号分隔
+    String optionsString = options.map((e) => e.toString()).toList().join(',');
+
+    var cartItem = {
+      "menuCode": item['menuCode'],
+      "mainTitle": item['mainTitle'],
+      "image": item['homeImage'],
+      "currentPrice": price,
+      "unitPrice": price,
+      "optionGroupVoList": optionsString,
+      "optionVoListMsg": optionTitle,
+      "goodsNum": 1,
+      "qtyBounds": item['qtyBounds']
+    };
+
+    await publicAddCartMenu(cartItem, true).then((val) {
+      final context = Get.context;
+      if(val != false && context != null){
+        publicShowAddCartNew(context);
+      }
+    });
+    Get.back();
+  }
+
   //初始化默认option选项
   changeInitialAllOption(menuCode) {
-    var attr = menuOption.value[menuCode];
-    var initMenuOption = noChangeinitialmenuOption.value[menuCode];
+    var attr = menuOption[menuCode];
+    var initMenuOption = noChangeinitialmenuOption[menuCode];
     num _addOptionPrice = 0;
 
     if(attr != null){
@@ -963,9 +1005,9 @@ print("加1了");
       }
     }
 
-    menuOption.value[menuCode] = attr;
-    selectedMenuOptionList.value[menuCode] = initialMenuOption.value[menuCode];
-    addselectedMenuOptionChangePrice.value[menuCode] = _addOptionPrice;
+    menuOption[menuCode] = attr;
+    selectedMenuOptionList[menuCode] = initialMenuOption[menuCode];
+    addselectedMenuOptionChangePrice[menuCode] = _addOptionPrice;
   }
 
   //获取选中的值
@@ -993,8 +1035,8 @@ print("加1了");
       }
     }
 
-    selectedMenuOptionList.value[menuCode] = tempArr;
-    addselectedMenuOptionChangePrice.value[menuCode] = selectPrice;
+    selectedMenuOptionList[menuCode] = tempArr;
+    addselectedMenuOptionChangePrice[menuCode] = selectPrice;
     tempArr = [];
   }
 

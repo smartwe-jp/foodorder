@@ -239,7 +239,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   ),
                   children: [
                     TextSpan(
-                      text: int.parse(checkoutLogic.totalPrice.value).formatSum(),
+                      text: int.parse(checkoutLogic.totalPrice.value).formatIntSum(),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
                             GFontSize.menusettlementBottomPrice),
