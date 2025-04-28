@@ -188,11 +188,18 @@ class RejishimeLogic extends GetxController {
   _comfirmGloryShimeInfo(code, printData, SettingController settingController,
       {skip = false}) async {
     final outResult = await _outCash(settingController, () {
-      _comfirmGloryShimeInfo(code, printData, settingController, skip: true);
-    }); 
+      //_comfirmGloryShimeInfo(code, printData, settingController, skip: true);
+      _directRejishime(code, printData, settingController, null);//
+      return;
+    });
 
     if (outResult == null && skip == false) return;
 
+    _directRejishime(code, printData, settingController, outResult);
+  }
+
+  _directRejishime(code, printData, SettingController settingController,
+      Map? outResult) async {
     final result =
         await _comfirmGloryShimeInfos(code, printData, outResult ?? {});
     if (!result) return;
@@ -228,7 +235,8 @@ class RejishimeLogic extends GetxController {
   }
 
   _outCash(SettingController settingController, Function skipAction) async {
-    Map? result = await settingController.recycleCashOut(state.recycleCash, skipAction);
+    Map? result =
+        await settingController.recycleCashOut(state.recycleCash, skipAction);
 
     debugPrint("recycleCash result: $result");
 

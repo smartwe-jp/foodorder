@@ -373,8 +373,12 @@ extension SettingControllerExtension on SettingController {
       String outMoneyString = await findChange(countCashInfo, count);
       debugPrint("outMoneyString: $outMoneyString");
       if (outMoneyString.isEmpty) {
-        errorHandleDialog(GString.getToString(
-            checkLanguage.value, 'cash_error_over_dispense'));
+        // errorHandleDialog(GString.getToString(
+        //     checkLanguage.value, 'cash_error_over_dispense'));
+        errorHandleDialogTwo(GString.getToString(checkLanguage.value, 'cash_error_over_dispense'),
+              confirmtitle: 'スキップ', () {
+            skipAction();
+          });
         return false;
       }
       final result = await dispenseCashOutside(
@@ -396,7 +400,7 @@ extension SettingControllerExtension on SettingController {
     var success = false;
     final depositAmount = await CashChanger.fixDeposit;
     debugPrint("fixDeposit: $depositAmount");
-    debugPrint("outInfo : $outInfo");
+    logger.info("outInfo : $outInfo");
     logger.info('-- dispenseCashOutside --');
     final resultCode = await CashChanger.dispenseCashOutside(outInfo);
     await CashChanger.changerResultNext(
@@ -414,11 +418,11 @@ extension SettingControllerExtension on SettingController {
           debugPrint("dispenseCashOutside error: $error");
           logger.info(
               '-- dispenseCashOutside error: ${GString.getToString(checkLanguage.value, error)}');
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          // errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
-          //     confirmtitle: 'スキップ', () {
-          //   skipAction();
-          // });
+          //errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
+              confirmtitle: 'スキップ', () {
+            skipAction();
+          });
         });
     return success;
   }
