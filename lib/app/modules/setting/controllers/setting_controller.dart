@@ -436,27 +436,27 @@ class SettingController extends GetxController with StateMixin {
 
   //获取现金机列表
   getPaycubeChangeState() async {
-    // var formData = {
-    //   "machineCode": machineCode.value,
-    // };
-    // request('webBootChangeState', method: 'POST', parameters: formData)
-    //     .then((val) async {
-    //   var response = json.decode(val.toString());
-    //   debugPrint(
-    //       "SettingController _getPaycubeChangeState response = ${response}");
-    //   if (response != null &&
-    //       response['code'] == 200 &&
-    //       null != response['data']) {
-    //     depositData.value = response['data'];
-    //     cashList.value = response['data']['changeStates'];
-    //     lastTotalList.value = response['data']['last7daysTotal'];
-    //     // final result = await getMachineCashInfo();
-    //     // debugPrint('MachineCashInfo: $result');
-    //     update();
-    //   } else {
-    //     debugPrint("SettingController _getPaycubeChangeState 获取失败");
-    //   }
-    // });
+    var formData = {
+      "machineCode": machineCode.value,
+    };
+    request('webBootChangeState', method: 'POST', parameters: formData)
+        .then((val) async {
+      var response = json.decode(val.toString());
+      debugPrint(
+          "SettingController _getPaycubeChangeState response = ${response}");
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+        depositData.value = response['data'];
+        cashList.value = response['data']['changeStates'];
+        lastTotalList.value = response['data']['last7daysTotal'];
+        // final result = await getMachineCashInfo();
+        // debugPrint('MachineCashInfo: $result');
+        update();
+      } else {
+        debugPrint("SettingController _getPaycubeChangeState 获取失败");
+      }
+    });
     change(null, status: RxStatus.success());
     if (Platform.isAndroid) {
       await _getChangeState();
