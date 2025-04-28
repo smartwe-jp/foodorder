@@ -1116,6 +1116,7 @@ class SettlementController extends GetxController with StateMixin {
               doPrintOrderMenu(printType, times: times + 1);
             },
             cancle: () {
+              Get.back();
               commonCancel();
               FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
                 "machineCode": machineInfo.machineCode,
