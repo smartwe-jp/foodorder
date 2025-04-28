@@ -620,8 +620,8 @@ extension SettlementControllerPrinterExtension on SettlementController {
             transform: Matrix4.rotationZ(rotate),
             alignment: Alignment.center,
             child:Container(
-                  width: 550,
-                  height: totalHight.toDouble(),
+                  //width: 550,
+                  //height: totalHight.toDouble(),
                   padding: EdgeInsets.only(left: 0.5, right: 0.5),
                   alignment: Alignment.topCenter,
                   child: Column(
