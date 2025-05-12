@@ -232,7 +232,7 @@ extension RecommendView on MenuPageController {
     showCartView = false;
     recommendBookList.clear();
     Navigator.pop(context);
-    if (!isBack) doSubmitOrder();
+    if (!isBack) submitOrderFlow();
   }
 
   Widget recommendView(BuildContext context) {

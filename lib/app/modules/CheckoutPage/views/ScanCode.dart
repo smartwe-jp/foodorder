@@ -89,7 +89,7 @@ class ScanCodeView extends GetView  {
                               if (Platform.isAndroid) {
                                 controller.doNextPay();
                               } else {
-                                controller.requestOrderList();
+                                controller.submitOrderFlow();
                               }
                             });
                           },

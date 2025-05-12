@@ -14,6 +14,9 @@ import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_contr
 import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
+import 'package:foodorder/app/plugins/appset/lib/appset.dart';
+import 'package:foodorder/app/services/CashChangerService.dart';
+import 'package:foodorder/app/services/showToast.dart';
 
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
@@ -362,7 +365,7 @@ class MenuPageController extends GetxController with StateMixin {
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
             "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
-            "index":menuIndex
+            "index": menuIndex
           });
           menuIndex++;
           colorIndex++;
@@ -372,8 +375,7 @@ class MenuPageController extends GetxController with StateMixin {
             classTag.value = categoryVoList['categoryCode'];
           }
         }
-        if (menuCategorys.length > 0)
-        topMenu.value = menuCategorys;
+        if (menuCategorys.length > 0) topMenu.value = menuCategorys;
         // if (isReset) {
         //   _resetToFirstCategory();
         // } else {
@@ -563,7 +565,7 @@ class MenuPageController extends GetxController with StateMixin {
     if (showCartTotalGoodsNum.value == 0) {
       showShopCart.value = false;
     }
-    update(['shopping_cart','shoppingCar']);
+    update(['shopping_cart', 'shoppingCar']);
   }
 
   backToNewHome() async {
@@ -922,7 +924,7 @@ class MenuPageController extends GetxController with StateMixin {
       }, cancle: () {
         Get.back();
       }));
-    } else {   
+    } else {
       final action = isAdd ? "add" : "reduce";
       if (isAdd) {
         playQRScannerSound();
@@ -1325,8 +1327,25 @@ print("加1了");
     return sum.toString();
   }
 
+  submitOrderFlow() async {
+    if (machinInfo.isAllowCash == true && machinInfo.cashOn == false) {
+      _showOrderEasyLoading();
+      bool result = await Cashchangerservice.checkMachineFlow();
+      logger.info(
+          '-- checkMachineFlow cash state = $result --');
+      EasyLoading.dismiss();
+      if (result) {
+        machinInfo.cashOn = true;
+        machinInfo.showCash = true;
+        update();
+      } 
+    }
+    _doSubmitOrder();
+  }
+
   //提交订单
-  doSubmitOrder({int times= 0}) {
+  _doSubmitOrder({int times = 0}) async {
+
     if (machinInfo.machineCode != "") {
       _showOrderEasyLoading();
 
@@ -1374,20 +1393,6 @@ print("加1了");
 
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
-
-          //只有现金，并且其余都为false的时候，直接跳转支付
-          // if(showCash.value == true &&
-          //     isAllowPos.value == "0" &&
-          //     showAlipay.value == false &&
-          //     showWechat.value == false &&
-          //     showPayPay.value == false
-          // ){
-          //   payment_method_num.value = "1";
-          //   //postNewOrderId();
-          //   gotoSettlement();
-          // }else{
-          //   showSelectMealTypeAndPaymentMethodDialog();
-          // }
           showSelectMealTypeAndPaymentMethodDialog();
         } else {
           //getBookingBootMenu();
@@ -1426,40 +1431,36 @@ print("加1了");
     }
   }
 
-  _handleOrderResultAlert({int times= 0}) {
+  _handleOrderResultAlert({int times = 0}) {
     EasyLoading.dismiss();
     if (times > 2) {
-      Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".localized(),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-              confirm: () {
-                Get.back();
-                // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                //   "machineCode": machinInfo.machineCode,
-                // });
-              })
-      );
+      Get.dialog(DialogUtils.alertOneButton("order_network_error".localized(),
+          title: GString.getToString(checkLanguage.value, "tag_title"),
+          confirmtitle:
+              GString.getToString(checkLanguage.value, "tag_button_yes"),
+          confirm: () {
+        Get.back();
+        // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+        //   "machineCode": machinInfo.machineCode,
+        // });
+      }));
       return;
     }
 
-    Get.dialog(
-        DialogUtils.alert("show_order_error".localized(),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-            confirm: () {
-              Get.back();
-              doSubmitOrder(times: times + 1);
-            },
-            cancle: () {
-              Get.back();
-              clearCartList();
-              // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-              //   "machineCode": machinInfo.machineCode,
-              // });
-            }
-            )
-    );
+    Get.dialog(DialogUtils.alert("show_order_error".localized(),
+        title: GString.getToString(checkLanguage.value, "tag_title"),
+        confirmtitle:
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        confirm: () {
+      Get.back();
+      _doSubmitOrder(times: times + 1);
+    }, cancle: () {
+      Get.back();
+      clearCartList();
+      // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+      //   "machineCode": machinInfo.machineCode,
+      // });
+    }));
   }
 
   _resetToFirstCategory() {

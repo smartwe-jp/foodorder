@@ -11,6 +11,7 @@ import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
 extension MenuPageControllerExtension on MenuPageController {
+
   void restoreNavigationStatus(String tag, int page) {
     selectIndex = page;
     classTag.value = tag;
@@ -90,7 +91,7 @@ extension MenuPageControllerExtension on MenuPageController {
 
   Future<Widget?> getCategoryMenu(queryCategoryCode,
       {firstLoad = false}) async {
-        debugPrint("getCategoryMenu:${queryCategoryCode}");
+    debugPrint("getCategoryMenu:${queryCategoryCode}");
     Widget? menuWidget = null;
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -144,7 +145,6 @@ extension MenuPageControllerExtension on MenuPageController {
       return AssetImage('assets/images/public/food.png');
     }
     return CachedNetworkImageProvider(url);
-
   }
 
   menuItemView(item, context, {popupType: "old", aspectRatio: 1.0}) {

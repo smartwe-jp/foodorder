@@ -478,7 +478,7 @@ class publicShowCartView extends GetView {
                             /*if(_isAllowPos == "0"){
                                   _doSubmitOrder();
                                 }else{*/
-                            controller.doSubmitOrder();
+                            controller.submitOrderFlow();
                             //_showSelectMealTypeAndPaymentMethodDialog();
                             //}
 
