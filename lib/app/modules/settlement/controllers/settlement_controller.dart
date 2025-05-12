@@ -412,30 +412,6 @@ class SettlementController extends GetxController with StateMixin {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
 
-    /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
-      _showScanCodeNoOpenDialog(1,"");
-      return;
-    }
-
-    var _regExpWechat = r"^1[0-5]\d{16}$";
-    var _regExpAlipay = r"^(?:2[5-9]|30)\d{14,22}$";
-    if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == true &&
-        _showWechat == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else if (RegExp(_regExpAlipay).hasMatch(_scanQrCode) == true &&
-        _showAlipay == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else {
-      if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == false &&
-          RegExp(_regExpAlipay).hasMatch(_scanQrCode) == false &&
-          _showPayPay == false) {
-        _showScanCodeNoOpenDialog(2,"");
-        return;
-      }
-    }*/
-    //print(scanQrCodeController.text);
     if (machineInfo.machineCode != "" &&
         scanQrCodeController.text != "" &&
         orderId.value != null) {
@@ -452,7 +428,7 @@ class SettlementController extends GetxController with StateMixin {
         var response = json.decode(val.toString());
         if (response['code'] == 200 && response['data'].isNotEmpty) {
           var resultData = response['data'];
-          LogUtil.d(resultData);
+          logger.info("扫码支付返回数据：$resultData");
           if (resultData["requestInfo"] != "") {
             EasyLoading.dismiss();
             if (resultData["exceptionMessage"] == "") {
@@ -467,6 +443,7 @@ class SettlementController extends GetxController with StateMixin {
             if (resultData["result"] == true) {
               doPrintOrderMenu(machineInfo.receiptPrintType);
             } else {
+              EasyLoading.dismiss();
               _showScanCodeNoOpenDialog(3, resultData["exceptionMessage"]);
             }
           }
@@ -474,6 +451,20 @@ class SettlementController extends GetxController with StateMixin {
           //扫码后超时，再继续请求后台，1秒一次 20次
           _doScanCodeTimeOut();
         }
+      }).catchError((error) {
+        logger.info("扫码支付异常");
+        _checkOutErrorHandle('settlement_order_error'.localized(),
+            confirm: () {
+              scanQrCodeController.text = "";
+              scanQrCodeFocusNode.requestFocus();
+            });
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        logger.info("扫码支付超时");
+        _checkOutErrorHandle('settlement_order_error'.localized(),
+            confirm: () {
+              scanQrCodeController.text = "";
+              scanQrCodeFocusNode.requestFocus();
+            });
       });
     }
   }
@@ -849,7 +840,7 @@ class SettlementController extends GetxController with StateMixin {
     }).timeout(Duration(seconds: 30), onTimeout: () {
       //TODO 默认重试3次
       if (retryCount < 3) {
-        Future.delayed(Duration(milliseconds: 500), (){
+        Future.delayed(Duration(milliseconds: 500), () {
           posPayReport(eventString, retryCount: retryCount + 1);
         });
       } else {
@@ -1030,7 +1021,7 @@ class SettlementController extends GetxController with StateMixin {
 
           //if ((machineInfo.paymentMethod != "0" &&
           //    machineInfo.paymentMethod != "1")) {
-            printGoNext(orderId.value);
+          printGoNext(orderId.value);
           //}
           //_sendToDisplayPanel(json.encode(response['data']));
         } else {
@@ -1045,9 +1036,7 @@ class SettlementController extends GetxController with StateMixin {
       }).catchError((e) {
         //错误后重新调用一次
         _handleOrderResultAlert(printType, times: times);
-
-      })
-      .timeout(Duration(seconds: 30), onTimeout: () {
+      }).timeout(Duration(seconds: 30), onTimeout: () {
         //错误后重新调用一次
         _handleOrderResultAlert(printType, times: times);
       });
@@ -1083,49 +1072,46 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  _handleOrderResultAlert(printType,{int times= 0}) {
+  _handleOrderResultAlert(printType, {int times = 0}) {
     EasyLoading.dismiss();
     if (times > 2) {
-      Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".localized(),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-              confirm: () {
-                Get.back();
-                commonCancel();
-                // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-                //   "machineCode": machineInfo.machineCode,
-                // });
-              })
-      );
+      Get.dialog(DialogUtils.alertOneButton("order_network_error".localized(),
+          title: GString.getToString(checkLanguage.value, "tag_title"),
+          confirmtitle:
+              GString.getToString(checkLanguage.value, "tag_button_yes"),
+          confirm: () {
+        Get.back();
+        commonCancel();
+        // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+        //   "machineCode": machineInfo.machineCode,
+        // });
+      }));
       return;
     }
 
-    Get.dialog(
-        DialogUtils.alert("settlement_order_error".localized(),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
-            confirm: () async {
-              Get.back();
-              showEasyLoading();
-              _startPaymentTimer();
-              await Future.delayed(Duration(milliseconds: 1000));
-              doPrintOrderMenu(printType, times: times + 1);
-            },
-            cancle: () {
-              Get.back();
-              commonCancel();
-              // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-              //   "machineCode": machineInfo.machineCode,
-              // });
-            }
-        )
-    );
+    Get.dialog(DialogUtils.alert("settlement_order_error".localized(),
+        title: GString.getToString(checkLanguage.value, "tag_title"),
+        confirmtitle:
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        confirm: () async {
+      Get.back();
+      showEasyLoading();
+      _startPaymentTimer();
+      await Future.delayed(Duration(milliseconds: 1000));
+      doPrintOrderMenu(printType, times: times + 1);
+    }, cancle: () {
+      Get.back();
+      commonCancel();
+      // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+      //   "machineCode": machineInfo.machineCode,
+      // });
+    }));
   }
 
   _sendToDisplayPanel(data) async {
     logger.info('_sendToDisplayPanel: $data');
-    final String panelAddress = 'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
+    final String panelAddress =
+        'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
 
     try {
       final response =
@@ -1137,23 +1123,28 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  _checkOutErrorHandle(showDialogContent) async {
+  _checkOutErrorHandle(showDialogContent, {Function? confirm}) async {
     EasyLoading.dismiss();
-    Get.dialog(DialogUtils.alert(showDialogContent,
+    Get.dialog(
+      barrierDismissible: false,
+      DialogUtils.alert(showDialogContent,
         title: GString.getToString(checkLanguage.value, "tag_title"),
         canceltitle: GString.getToString(checkLanguage.value, "cancel_order"),
         confirmtitle:
-            GString.getToString(checkLanguage.value, "show_del_cart_item_yes"),
+            GString.getToString(checkLanguage.value, "tag_button_yes"),
         confirm: () {
-       Get.back();
-      // doPrintOrderMenu(printType);
-      //发邮件和播放感谢语
-      //_sendEmailAndPlayVoice();
-      commonCancel();
+      Get.back();
+      if (confirm != null) {
+        confirm();
+      } else {
+        commonCancel();
+      }
     }, cancle: () {
       Get.back();
       commonCancel();
-    }));
+    })
+      
+    );
   }
 
   _sendEmailAndPlayVoice() async {

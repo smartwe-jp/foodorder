@@ -30,6 +30,12 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
       request_url = "${request_url}${link_parameters}";
     }
 
+    // Future.delayed(Duration(milliseconds: 1000)).then((e) {
+    //   throw Exception('異常が生じてます。お近くのスタッフにお声かけください。...');
+    // });
+
+    // return;
+
     if (method == 'GET') {
       if(parameters != null){
         response = await dio.get(
@@ -61,10 +67,10 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     }
 
   } catch (e) {
-    var newe = e.toString();
+    //var newe = e.toString();
     //if(newe.contains("502") || newe.contains("401") || newe.contains("403") || newe.contains("400") || newe.contains("404")){
 
-      showToast('異常が生じてます。お近くのスタッフにお声かけください〜。$newe');
+      //showToast('異常が生じてます。お近くのスタッフにお声かけください〜。$newe');
       //Future.delayed(Duration(milliseconds: 1000)).then((e) {
 
       //   Global.navigatorKey.currentState?.pushNamed("/transitPage");
