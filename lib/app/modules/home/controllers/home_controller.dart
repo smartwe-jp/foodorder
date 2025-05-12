@@ -198,6 +198,7 @@ class HomeController extends GetxController {
 
   _sendFailureEmail() async {
     debugPrint("发送通知邮件");
+    logger.info('-- sendFailureEmail --');
     var formData = {
       "machineCode": _machineCode.value,
     };

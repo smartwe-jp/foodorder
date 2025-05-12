@@ -31,6 +31,8 @@ class MachineInfoController extends GetxController {
 
   //payment info
   late bool showCash;
+  late bool isAllowCash;
+  late bool cashOn;
   late bool showAlipay;
   late bool showWechat;
   late bool showPayPay;
@@ -116,8 +118,11 @@ class MachineInfoController extends GetxController {
     printLogoImageData = await HomeServices.getSmartweLogoImagesData() ?? "";
 
     print('loadMachineSettingInfo 1');
+    Map cashInfo = await HomeServices.getIsShowCash();
+    cashOn = cashInfo['isCash'] ?? false;
     Map machineActivateData = await HomeServices.getMachineActivateData();
-    showCash = machineActivateData['showCash'];
+    isAllowCash = machineActivateData['showCash'];
+    showCash = isAllowCash && cashOn;
     showWechat = machineActivateData['showWechat'];
     showAlipay = machineActivateData['showAlipay'];
     showPayPay = machineActivateData['showPayPay'];

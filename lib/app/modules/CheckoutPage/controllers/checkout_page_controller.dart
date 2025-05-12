@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info_controller.dart';
+import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -418,6 +419,20 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
         //Get.back();
       }
     });
+  }
+
+  submitOrderFlow() async {
+    if (machineInfo.isAllowCash == true && machineInfo.cashOn == false) {
+      showOrderEasyLoading();
+      bool result = await Cashchangerservice.checkMachineFlow();
+      EasyLoading.dismiss();
+      if (result) {
+        machineInfo.cashOn = true;
+        machineInfo.showCash = true;
+        update();
+      } 
+    }
+    requestOrderList();
   }
 
   doNextPay() {
