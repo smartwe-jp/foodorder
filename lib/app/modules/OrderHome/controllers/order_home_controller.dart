@@ -183,13 +183,15 @@ class OrderHomeController extends GetxController with StateMixin {
     debugPrint("获取设置语言");
     var language = await HomeServices.getSettingLanguage();
     settingLanguage.value = language;
+    selectLanguage = language;
     debugPrint("获取设置语言done");
   }
 
   updateSettingLanguage(String language) async {
     await HomeServices.updateSettingLanguage(language);
     settingLanguage.value = language;
-    var locale = Locale('${language.toLowerCase()}', '$language');
+    selectLanguage = language;
+    final locale = Locale('${language.toLowerCase()}', '$language');
     Get.updateLocale(locale);
     //reload catagory...
     //await getBookingBootIndexCagegory();
