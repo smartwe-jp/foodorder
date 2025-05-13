@@ -987,7 +987,7 @@ print("加1了");
       "qtyBounds": item['qtyBounds']
     };
 
-    await publicAddCartMenu(cartItem, true).then((val) {
+    await publicAddCartMenu(cartItem, false).then((val) {
       final context = Get.context;
       if(val != false && context != null){
         publicShowAddCartNew(context);

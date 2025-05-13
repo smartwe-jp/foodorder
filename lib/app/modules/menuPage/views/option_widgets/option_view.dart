@@ -121,6 +121,8 @@ class _OptionViewState extends State<OptionView> {
         String optionCode = option['optionCode'];
         bool isSelected = option['checked'] ?? false;
         if (isSelected && optionCode.isNotEmpty) {
+          final int optionPrice = option['currentPrice'] ?? 0;
+          _currentPrice += optionPrice;
           selectedOptionCodes.add(optionCode);
           _selectOptionCodes.add(optionCode);
           selectedOptionNames.add(option['mainTitle'] ?? "");
