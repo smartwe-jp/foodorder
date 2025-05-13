@@ -432,7 +432,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
         update();
       } 
     }
-    requestOrderList();
+    showSelectMealTypeAndPaymentMethodDialog();
   }
 
   doNextPay() {

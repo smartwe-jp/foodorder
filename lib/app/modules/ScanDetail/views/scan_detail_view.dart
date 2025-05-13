@@ -272,7 +272,7 @@ class ScanDetailView extends GetView<CheckoutPageController> {
                         InkWell(
                           onTap: () {
                             //try {
-                            controller.showSelectMealTypeAndPaymentMethodDialog();
+                            controller.submitOrderFlow();
                             //} catch (_) {}
                           },
                           child: Container(
