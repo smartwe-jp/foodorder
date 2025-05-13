@@ -25,7 +25,7 @@ class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
   RxString _machineCode = "".obs;
   var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
-  RxBool _isCashState = true.obs;
+  //RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
   RxBool _loadActiveInfo = false.obs;
@@ -51,12 +51,10 @@ class TransitPageController extends GetxController {
 
   getIsShowCashInfo() async {
     debugPrint("getIsShowCashInfo");
-    Map systemSettingInfo = await HomeServices.getIsShowCash();
+
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
       _loadActiveInfo.value = Get.arguments['loadActive'];
     }
-    _isCashState.value = systemSettingInfo['isCash'];
-    debugPrint("isCashState: ${_isCashState.value}");
 
     await _getMachineInfo();
   }
@@ -133,7 +131,7 @@ class TransitPageController extends GetxController {
         var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null ? shopData["linePayChannelMap"]["Diners_Club"] :false;
         var _discover = shopData["linePayChannelMap"]["Discover"] != null ? shopData["linePayChannelMap"]["Discover"] :false;
         var machineActivateData = {
-          "showCash":(_isCashState.value == true) ? _showCash :false,
+          "showCash": _showCash,
           "showWechat":_showWechat,
           "showAlipay":_showAlipay,
           "showPayPay":_showPayPay,
