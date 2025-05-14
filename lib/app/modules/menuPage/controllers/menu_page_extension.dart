@@ -191,57 +191,57 @@ extension MenuPageControllerExtension on MenuPageController {
   showMiddleMenuList(BuildContext context) {
     for (var item in topMenu) {
       if (classTag.value == item['categoryCode']) {
-        if (item['showType'] == "featured") {
-          return showCategoryOne(showItem[classTag.value], context);
-        } else if (item['showType'] == "table") {
+        if (item['showType'] == "featured") {                        //保留
+          return showCategoryOne(showItem[classTag.value], context); 
+        } else if (item['showType'] == "table") {                    //保留
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context);
+          return showCategoryTwo(showItem[classTag.value], context); 
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "table_v1") {
+        } else if (item['showType'] == "table_v1") {                 //保留
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context,
+          return showCategoryTwo(showItem[classTag.value], context,  
               popupType: "v1");
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "block") {
+        } else if (item['showType'] == "block") {                    //保留
           //350.0, 350.0
-          return showCategoryThree(showItem[classTag.value]);
-        } else if (item['showType'] == "grid") {
+          return showCategoryThree(showItem[classTag.value]);           
+        } else if (item['showType'] == "grid") {                    //4列显示单个Item略小，不适合当前布局。所以替换成两列。
           //260.0, 400.0
           return showCategoryFour(showItem[classTag.value], context);
-        } else if (item['showType'] == "grid_v1") {
+        } else if (item['showType'] == "grid_v1") {                  //4列显示单个Item略小，不适合当前布局。所以替换成两列。
           //260.0, 400.0
           return showCategoryFour(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "waterfall") {
+        } else if (item['showType'] == "waterfall") {                //保留
           //400.0, 260.0
           return showCategoryFive(showItem[classTag.value]);
-        } else if (item['showType'] == "double_column") {
+        } else if (item['showType'] == "double_column") {            //已替换成两列普通
           //530.0, 530.0
           return showCategorySix(showItem[classTag.value], context);
-        } else if (item['showType'] == "double_column_v1") {
+        } else if (item['showType'] == "double_column_v1") {          //已替换成两列普通
           //530.0, 530.0
           return showCategorySix(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "three_column") {
+        } else if (item['showType'] == "three_column") {              //保留
           //350.0, 440.0
           return showCategorySeven(showItem[classTag.value], context);
-        } else if (item['showType'] == "three_column_v1") {
+        } else if (item['showType'] == "three_column_v1") {            //保留
           //350.0, 440.0
           return showCategorySeven(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "mixed_column") {
+        } else if (item['showType'] == "mixed_column") {               //保留
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
           return showCategoryEight(showItem[classTag.value], context);
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "mixed_column_v1") {
+        } else if (item['showType'] == "mixed_column_v1") {             //保留
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
           return showCategoryEight(showItem[classTag.value], context,
               popupType: "v1");
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "mixed_two_column") {
+        } else if (item['showType'] == "mixed_two_column") {           //保留
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
           return showCategoryNine(showItem[classTag.value], context);
-        } else if (item['showType'] == "mixed_two_column_v1") {
+        } else if (item['showType'] == "mixed_two_column_v1") {        //保留
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
           return showCategoryNine(showItem[classTag.value], context,
               popupType: "v1");

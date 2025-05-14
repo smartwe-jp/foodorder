@@ -8,6 +8,7 @@ import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:logging/logging.dart';
 
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
@@ -17,10 +18,8 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 
-class CheckoutPageController extends GetxController with StateMixin, GetTickerProviderStateMixin {
-  //TODO: Implement CheckoutPageController
-  // TextEditingController scanQrCodeHomeController = new TextEditingController();
-  // FocusNode scanQrCodeHomeFocusNode = FocusNode();
+class CheckoutPageController extends GetxController
+    with StateMixin, GetTickerProviderStateMixin {
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
@@ -30,54 +29,52 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
 
   MachineInfoController machineInfo = Get.find();
 
-  bool machineLanguages_JP = false;
-  bool machineLanguages_CH = false;
-  bool machineLanguages_EN = false;
-  bool machineLanguages_KO = false;
-
-  String selectLanguage = 'JP';
-  bool startShake = false;
-  bool isAnimating = false;
-
-  RxList categoryList = [].obs;
-
-  get takeOut => machineInfo.diningType == "2" || machineInfo.diningType == "3";
-
   RxString isReservation = "0".obs;
   RxBool showOpenPayment = false.obs;
 
+  String get selectLanguage {
+    return Get.locale?.languageCode.toUpperCase() ?? 'JP';
+  }
 
   RxString orderId = "".obs;
   RxString totlaPrice = "0".obs;
   RxString tableNum = "0".obs;
   RxMap orderInfoMap = {}.obs;
 
-  int mealTypeStatus = 0;
-  int resetTime = 30;
-  Timer? resetTimer;
-
-  RxString localkey = "JP".obs;
-
   late AnimationController animationController;
   late Animation<double> animation;
 
+  final logger = Logger('CheckoutPageController');
+
   @override
   void onInit() {
-    print("CheckoutPageController new init");
-    print("localkey = $localkey");
+    logger.info("CheckoutPageController new init");
+    //logger.info("localkey = $localkey");
+    super.onInit();
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
-    //Get.focusScope.unfocus();
-    //Get.focusScope.requestFocus(scanQrCodeFocusNode);
-    getMenchineLanguages();
-    super.onInit();
+
+    _createAnimation();
   }
 
   @override
   void onReady() {
-    startRepeatingAnimation();
+    logger.info("CheckoutPageController onReady");
     super.onReady();
-        animationController = AnimationController(
+  }
+
+  @override
+  void onClose() {
+    //stopRepeatingAnimation();
+    logger.info("CheckoutPageController onClose");
+    animationController.dispose();
+    super.onClose();
+  }
+
+  _createAnimation() {
+    logger.info("createAnimation");
+
+    animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 1),
     )..repeat(reverse: true); // 循环动画，反向重复
@@ -85,163 +82,9 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
     animation = Tween<double>(begin: 0, end: 20).animate(
       CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
     );
-  }
-
-  @override
-  void onClose() {
-    //stopRepeatingAnimation();
-    animationController.dispose();
-    super.onClose();
-  }
-
-//获取机器信息
-  getMachineInfo() async {
-    // var machineCodestr = await HomeServices.getMachineInfo();
-    // if (machineCodestr != "") {
-    //   machineCode.value = machineCodestr;
-    // }
-    //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode);     // 获取焦点
-
-    //getHomeImageList();
-  }
-
-  // getHomeImageList() async {
-  //   List homeimageList = await HomeServices.getSmartweHomeImagesData();
-  //   homeList.value = homeimageList;
-
-  //   getSmartweMachineSettingData();
-  //   update();
-  // }
-
-  getSmartweMachineSettingData() async {
-    // var smartweMachineSetting =
-    //     await HomeServices.getSmartweMachineSettingData();
-    // actuarial.value = smartweMachineSetting["machineActuarial"];
-    // lineup.value = smartweMachineSetting["machineLineup"];
-
-    getSystemSettingInfo();
-  }
-
-  getSystemSettingInfo() async {
-    // Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-
-    // menu_direction.value = (SystemSettingInfo["menuDirection"] != "" &&
-    //         SystemSettingInfo["menuDirection"] != null)
-    //     ? SystemSettingInfo["menuDirection"]
-    //     : "1";
-    // isReservation.value = SystemSettingInfo["isReservation"];
-    // // isAllowPos.value = SystemSettingInfo['isAllowPos'];
-    // // isAllowReceipt.value = SystemSettingInfo['isAllowReceipt'];
-    // takeOut.value = (SystemSettingInfo['diningType'] == "2" ||
-    //         SystemSettingInfo['diningType'] == "3")
-    //     ? true
-    //     : false;
-
-    getMenchineLanguages();
-  }
-
-  getMenchineLanguages() async {
-    debugPrint("获取机器语言");
-
-    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
-    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
-    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
-    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
-    debugPrint("获取机器语言结束");
-    update();
     change(null, status: RxStatus.success());
   }
 
-  //获取展示支付方式
-  getMachineActivateInfo() async {
-    await getBookingBootIndexCagegory();
-  }
-
-  updateSettingLanguage(String language) async {
-    print(" updateSetting Language = $language");
-    await HomeServices.updateSettingLanguage(language);
-    selectLanguage = language;
-    localkey.value = language;
-    var locale = Locale('${language.toLowerCase()}', '$language');
-    Get.updateLocale(locale);
-    //reload catagory...
-    //await getBookingBootIndexCagegory();
-  }
-
-  updateDingType(int type) async {
-    debugPrint("updateDingType $type");
-    startResetTimer(); // Restart the timer when updating the dining type
-    mealTypeStatus = type;
-    update();
-
-    await getBookingBootIndexCagegory(); // Uncommenting to fetch categories after updating the dining type
-  }
-
-  startResetTimer() async {
-    debugPrint("startResetTimer");
-    resetTimer?.cancel();
-    resetTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      resetTime--;
-      if (resetTime == 0) {
-        resetTimer?.cancel();
-        resetTime = 30;
-        mealTypeStatus = 0;
-        debugPrint("startResetTimer end");
-        update();
-      }
-    });
-  }
-
-  void startRepeatingAnimation() {
-    debugPrint('startRepeatingAnimation');
-    isAnimating = true;
-    Timer.periodic(Duration(milliseconds: 1200), (timer) {
-      if (!isAnimating) {
-        timer.cancel();
-        return;
-      }
-      startShake = !startShake;
-      update();
-    });
-  }
-
-  void stopRepeatingAnimation() {
-    debugPrint('stopRepeatingAnimation');
-    isAnimating = false;
-    startShake = false;
-    update();
-  }
-
-  get showCatagory {
-    if (categoryList.length == 0) {
-      debugPrint("homeList.length == 0");
-      return [];
-    }
-    debugPrint("homeList.length > 0");
-
-    int showItemCount = 6;
-
-    if (categoryList.length >= showItemCount - 1) {
-      // 获取前8个
-      var newList = List.from(categoryList.sublist(0, showItemCount - 1));
-      newList.add({
-        "categoryCode": categoryList.first["categoryCode"],
-        "image": null,
-        "categoryName": GString.getToString(selectLanguage, "more_title"),
-        "showType": "1"
-      });
-      return newList;
-    } else {
-      var newList = List.from(categoryList);
-      newList.add({
-        "categoryCode": categoryList.first["categoryCode"],
-        "image": null,
-        "categoryName": GString.getToString(selectLanguage, "more_title"),
-        "showType": "1"
-      });
-      return newList;
-    }
-  }
 
   showOrderEasyLoading() {
     EasyLoading.show(
@@ -277,8 +120,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
     debugPrint("showDialogError $msg & $selectLanguage");
     Get.dialog(DialogUtils.alertOneButton(msg,
         title: GString.getToString(selectLanguage, "tag_title"),
-        confirmtitle:
-            GString.getToString(selectLanguage, "tag_button_yes"),
+        confirmtitle: GString.getToString(selectLanguage, "tag_button_yes"),
         contentTagImg: "error_public", confirm: () {
       Get.back();
     }));
@@ -294,14 +136,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
     return formatter.format(sum);
   }
 
-  goMenu(String lan, bool mealType) {
-    machineInfo.mealType = mealType;
-    var jumpUrl =
-        (machineInfo.menu_direction == "1") ? '/menu-page' : '/menuzong-page';
-    startShake = false;
-    Get.toNamed(jumpUrl,
-        arguments: {"checkLanguage": lan, "mealType": mealType});
-  }
+  
 
   requestOrderList({goDetail = true}) async {
     debugPrint('qrCodeString: ${scanQrCode2Controller.text}');
@@ -374,52 +209,6 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
     });
   }
 
-  getBookingBootIndexCagegory() async {
-    debugPrint("获取页面分类");
-
-    var formData = {
-      "machineCode": machineInfo.machineCode,
-      "language": selectLanguage,
-      "takeout": "0",
-    };
-    request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
-        .then((val) {
-      var response = json.decode(val.toString());
-      //isLoading.value = false;
-      if (response['code'] == 200) {
-        List myList = response['data']['categoryVoList'];
-        categoryList.clear();
-        for (var i = 0; i < myList.length; i++) {
-          //if(menuIndex >=5) menuIndex = 0;
-          var categoryVoList = myList[i];
-          //配置顶部菜单
-          categoryList.add({
-            "categoryCode": categoryVoList['categoryCode'],
-            "categoryName": categoryVoList['categoryName'],
-            "showType": categoryVoList['showType'],
-            "image": categoryVoList['image'],
-            "color": categoryVoList['color'],
-          });
-        }
-        update();
-        change(null, status: RxStatus.success());
-      } else {
-        //showToast(response['msg']);
-        Get.dialog(DialogUtils.alertOneButton(response['msg'],
-            title: GString.getToString(selectLanguage, "tag_title"),
-            confirmtitle:
-                GString.getToString(selectLanguage, "tag_button_yes"),
-            confirm: () {
-          getBookingBootIndexCagegory();
-        }));
-        Future.delayed(Duration(milliseconds: 2000), () {
-          getBookingBootIndexCagegory();
-        });
-
-        //Get.back();
-      }
-    });
-  }
 
   submitOrderFlow() async {
     if (machineInfo.isAllowCash == true && machineInfo.cashOn == false) {
@@ -430,7 +219,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
         machineInfo.cashOn = true;
         machineInfo.showCash = true;
         update();
-      } 
+      }
     }
     showSelectMealTypeAndPaymentMethodDialog();
   }
@@ -523,13 +312,13 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
-    debugPrint('localkey = $localkey');
+    debugPrint('localkey = $selectLanguage');
     //scanQrCodeHomeFocusNode.requestFocus();
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     debugPrint('showReceiptPage = ${machineInfo.showReceiptPage}');
     Get.to(
       () => SelectPaymentPage(
-          checkLanguage: localkey.value, //padding and need improve
+          checkLanguage: selectLanguage, //padding and need improve
           menuCount: 0,
           //mealType:_mealType,
           shopCartTotalPrice: totlaPrice.value,
@@ -580,8 +369,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
         //showToast(response['data']["message"]);
         Get.dialog(DialogUtils.alertOneButton("${response['data']["message"]}",
             title: GString.getToString(selectLanguage, "tag_title"),
-            confirmtitle:
-                GString.getToString(selectLanguage, "tag_button_yes"),
+            confirmtitle: GString.getToString(selectLanguage, "tag_button_yes"),
             confirm: () {
           Get.back();
         }));
@@ -602,7 +390,7 @@ class CheckoutPageController extends GetxController with StateMixin, GetTickerPr
     //scanQrCodeHomeController.text = "";
     final result =
         await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": localkey.value, //padding and need improve,
+      "checkLanguage": selectLanguage, //padding and need improve,
       "orderId": orderId.value,
       "totalPrice": totlaPrice.value,
       "machineMode": "2",

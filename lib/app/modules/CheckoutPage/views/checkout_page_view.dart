@@ -8,6 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/localString.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_launch_controller.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/CatagoryButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.dart';
@@ -24,9 +25,8 @@ import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';
 import 'Appointment.dart';
 
-
 class CheckoutPageView extends GetView {
-  final CheckoutPageController controller = Get.find();
+  final CheckoutLaunchController controller = Get.find();
   CheckoutPageView({Key? key}) : super(key: key);
 
   languageSelectView() {
@@ -67,7 +67,7 @@ class CheckoutPageView extends GetView {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
-        selected: false,//e["language"] == controller.checkLanguage.value,
+        selected: false, //e["language"] == controller.checkLanguage.value,
         onTap: () {
           controller.updateSettingLanguage(e["language"] as String);
         },
@@ -169,8 +169,8 @@ class CheckoutPageView extends GetView {
           billMenus.add(InkWell(
             onTap: () {
               controller.selectLanguage = item["value"]!;
-              controller.scanQrCodeController.text = "";
-              controller.scanQrCodeFocusNode.requestFocus();
+              // controller.scanQrCodeController.text = "";
+              // controller.scanQrCodeFocusNode.requestFocus();
               final locale =
                   Locale('${item["value"]}'.toLowerCase(), '${item["value"]}');
               Get.updateLocale(locale);
@@ -233,7 +233,7 @@ class CheckoutPageView extends GetView {
           InkWell(
             onTap: () {
               //显示预约弹出框
-              controller.showOrderEasyLoading();
+              //controller.showOrderEasyLoading();
               _showMakeAnAppointmentDialog();
             },
             child: Container(
@@ -355,8 +355,7 @@ class CheckoutPageView extends GetView {
                   ),
                   Text(
                       GString.getToString(
-                          controller.selectLanguage,
-                          "dining_welcome"),
+                          controller.selectLanguage, "dining_welcome"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(80),
                         fontFamily: GFont.getFontFamily(),
@@ -369,7 +368,9 @@ class CheckoutPageView extends GetView {
                   Text(
                       GString.getToString(
                           controller.selectLanguage,
-                          controller.takeOut ? "checkout_type_tips" : "amount_tips"),
+                          controller.takeOut
+                              ? "checkout_type_tips"
+                              : "amount_tips"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(56),
                         fontFamily: GFont.getFontFamily(),
@@ -404,7 +405,6 @@ class CheckoutPageView extends GetView {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-
             SizedBox(
               width: ScreenAdapter.width(70),
             ),
@@ -423,24 +423,22 @@ class CheckoutPageView extends GetView {
             SizedBox(
               width: ScreenAdapter.height(70),
             ),
-
-            if (controller.takeOut) 
-            Expanded(
-              child: BookingTypeButtonOld(
-                icon: eatOutImage,
-                title: GString.getToString(
-                    controller.selectLanguage, "take_out"),
-                selected: controller.mealTypeStatus == 2,
-                onTap: () {
-                  controller.updateDingType(2);
-                },
+            if (controller.takeOut)
+              Expanded(
+                child: BookingTypeButtonOld(
+                  icon: eatOutImage,
+                  title: GString.getToString(
+                      controller.selectLanguage, "take_out"),
+                  selected: controller.mealTypeStatus == 2,
+                  onTap: () {
+                    controller.updateDingType(2);
+                  },
+                ),
               ),
-            ),
-            if (controller.takeOut) 
-            SizedBox(
-              width: ScreenAdapter.width(70),
-            ),
-            
+            if (controller.takeOut)
+              SizedBox(
+                width: ScreenAdapter.width(70),
+              ),
           ],
         ),
       ),
@@ -452,7 +450,7 @@ class CheckoutPageView extends GetView {
     Get.dialog(AppointmentPage());
   }
 
-    _diningSelectArea() {
+  _diningSelectArea() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -461,7 +459,7 @@ class CheckoutPageView extends GetView {
           duration: Duration(milliseconds: 500),
           scaleDisabled: 1.0,
           scaleEnabled: 0.9,
-          child:BookingTypeButton(
+          child: BookingTypeButton(
             icon: Icon(
               Icons.qr_code,
               color: Colors.blueGrey[100],
@@ -469,17 +467,20 @@ class CheckoutPageView extends GetView {
             ),
             title: 'settlement_button'.localized(),
             selected: false,
-            onTap: ()=>Get.toNamed("/scancode-page"),
+            onTap: () {
+              Get.toNamed("/scancode-page");
+            },
           ),
         ),
-
-        SizedBox(width: ScreenAdapter.width(50),),
+        SizedBox(
+          width: ScreenAdapter.width(50),
+        ),
         ScaleAnimatedWidget.tween(
           enabled: controller.startShake,
           duration: Duration(milliseconds: 500),
           scaleDisabled: 0.9,
           scaleEnabled: 1.0,
-          child:BookingTypeButton(
+          child: BookingTypeButton(
             icon: Icon(
               Icons.shopping_bag,
               color: Colors.blueGrey[100],
@@ -487,7 +488,7 @@ class CheckoutPageView extends GetView {
             ),
             title: 'menu_dingtype_takeout'.localized(),
             selected: false,
-            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
+            onTap: () => controller.goMenu(controller.selectLanguage, true),
           ),
         )
       ],
@@ -500,12 +501,13 @@ class CheckoutPageView extends GetView {
       duration: Duration(milliseconds: 500),
       scaleDisabled: 0.9,
       scaleEnabled: 1.0,
-      child:
-      InkWell(
-        onTap: ()=>Get.toNamed("/scancode-page"),
+      child: InkWell(
+        onTap: () {
+          Get.toNamed("/scancode-page");
+        },
         child: Container(
           padding: EdgeInsets.all(10),
-          height:ScreenAdapter.height(260),
+          height: ScreenAdapter.height(260),
           width: ScreenAdapter.width(600),
           alignment: Alignment.center,
           decoration: BoxDecoration(
@@ -518,7 +520,7 @@ class CheckoutPageView extends GetView {
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              color: Colors.white,//const Color.fromARGB(255, 53,59,80),
+              color: Colors.white, //const Color.fromARGB(255, 53,59,80),
               fontSize: 80,
               fontFamily: GFont.getFontFamily(),
               fontWeight: FontWeight.w600,
@@ -532,152 +534,155 @@ class CheckoutPageView extends GetView {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: GetBuilder<CheckoutPageController>(builder: (controller){
-        return controller.obx((state) => AnnotatedRegion(
-          value: SystemUiOverlayStyle.light,
-          child: Stack(
-            children: [
-              Container(
-                width: MediaQuery.of(context).size.width,
-                height: MediaQuery.of(context).size.height,
-                child: Swiper(
-                  //itemHeight: 200,
-                  itemBuilder: (BuildContext context,int index){
-                    // 配置图片地址
-                    return publicShowMenuImage(imgPath:controller.machineInfo.homeList[index],imgWidth: 1080.0,imgHeight: 1920.0);
-                  },
-                  // 配置图片数量
-                  itemCount: controller.machineInfo.homeList.length,
-                  // 底部分页器
-                  //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
-                  // 左右箭头
-                  //control: new SwiperControl(),
-                  // 无限循环
-                  loop: (controller.machineInfo.homeList.length >1) ?true :false,
-                  duration: 1000,
-                  autoplayDelay:12000,
-                  // 自动轮播
-                  autoplay: (controller.machineInfo.homeList.length >1) ?true :false,
+      body: GetBuilder<CheckoutLaunchController>(builder: (controller) {
+        return controller.obx(
+          (state) => AnnotatedRegion(
+            value: SystemUiOverlayStyle.light,
+            child: Stack(
+              children: [
+                Container(
+                  width: MediaQuery.of(context).size.width,
+                  height: MediaQuery.of(context).size.height,
+                  child: Swiper(
+                    //itemHeight: 200,
+                    itemBuilder: (BuildContext context, int index) {
+                      // 配置图片地址
+                      return publicShowMenuImage(
+                          imgPath: controller.machineInfo.homeList[index],
+                          imgWidth: 1080.0,
+                          imgHeight: 1920.0);
+                    },
+                    // 配置图片数量
+                    itemCount: controller.machineInfo.homeList.length,
+                    // 底部分页器
+                    //pagination: new SwiperPagination(margin: EdgeInsets.only(bottom: ScreenAdapter.height(55))),
+                    // 左右箭头
+                    //control: new SwiperControl(),
+                    // 无限循环
+                    loop: (controller.machineInfo.homeList.length > 1)
+                        ? true
+                        : false,
+                    duration: 1000,
+                    autoplayDelay: 12000,
+                    // 自动轮播
+                    autoplay: (controller.machineInfo.homeList.length > 1)
+                        ? true
+                        : false,
+                  ),
                 ),
-              ),
-              Positioned(
-                right: ScreenAdapter.width(0),
-                top: ScreenAdapter.height(20),
-                child: InkWell(
-                  onLongPress: (){
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
-                  },
-                  child: Container(
-                    height: ScreenAdapter.height(150),
-                    width: ScreenAdapter.width(200),
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.only(top:ScreenAdapter.height(20),left: ScreenAdapter.width(20),right: ScreenAdapter.width(20),bottom: ScreenAdapter.height(20)),
-                    child: Center(
-                      //加上Center让文字居中
-                      child: Text(
-                        "",
-                        style: TextStyle(
-                            fontSize: ScreenAdapter.fontSize(48.0),
-                            color: ColorsUtil.hexToColor("#F9F9F9"),
-                            fontWeight: FontWeight.w600),
+                Positioned(
+                  right: ScreenAdapter.width(0),
+                  top: ScreenAdapter.height(20),
+                  child: InkWell(
+                    onLongPress: () {
+                      Get.toNamed('/middlewaresettingpage', arguments: {
+                        "machineCode": controller.machineInfo.machineCode
+                      });
+                    },
+                    child: Container(
+                      height: ScreenAdapter.height(150),
+                      width: ScreenAdapter.width(200),
+                      alignment: Alignment.centerRight,
+                      padding: EdgeInsets.only(
+                          top: ScreenAdapter.height(20),
+                          left: ScreenAdapter.width(20),
+                          right: ScreenAdapter.width(20),
+                          bottom: ScreenAdapter.height(20)),
+                      child: Center(
+                        //加上Center让文字居中
+                        child: Text(
+                          "",
+                          style: TextStyle(
+                              fontSize: ScreenAdapter.fontSize(48.0),
+                              color: ColorsUtil.hexToColor("#F9F9F9"),
+                              fontWeight: FontWeight.w600),
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-
-              Positioned(
-                bottom: ScreenAdapter.height(720),
-                child: Container(
+                Positioned(
+                    bottom: ScreenAdapter.height(720),
+                    child: Container(
+                      width: ScreenAdapter.width(1080),
+                      child: Column(
+                        children: [
+                          Text(
+                            'menu_dingtype_title'.localized(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.green[
+                                  900], //const Color.fromARGB(255, 53,59,80),
+                              fontSize: 80,
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white,
+                                  offset: Offset(3.0, -4.0),
+                                  blurRadius: 1.0,
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (controller.machineInfo.diningType == "3")
+                            Text(
+                              'menu_ding_type_tips'.localized(),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                color: Colors.green[
+                                    900], //const Color.fromARGB(255, 53,59,80),
+                                fontSize: 40,
+                                fontFamily: GFont.getFontFamily(),
+                                fontWeight: FontWeight.w600,
+                                shadows: [
+                                  Shadow(
+                                    color: Colors.white,
+                                    offset: Offset(2.0, -2.0),
+                                    blurRadius: 2.0,
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ],
+                      ),
+                    )),
+                Positioned(
+                  bottom: ScreenAdapter.height(400),
                   width: ScreenAdapter.width(1080),
-                  child: Column(
-                    children: [
-                      Text(
-                        'menu_dingtype_title'.localized(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          fontSize: 80,
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.white,
-                              offset: Offset(3.0, -4.0),
-                              blurRadius: 1.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                      if (controller.machineInfo.diningType == "3")
-                      Text(
-                        'menu_ding_type_tips'.localized(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          fontSize: 40,
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.white,
-                              offset: Offset(2.0, -2.0),
-                              blurRadius: 2.0,
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: Center(
+                      child: controller.machineInfo.diningType == "3"
+                          ? _diningSelectArea()
+                          : _startButton()),
+                ),
+                Positioned(
+                  bottom: ScreenAdapter.height(150),
+                  child: Container(
+                      width: ScreenAdapter.width(1080),
+                      height: ScreenAdapter.height(200),
+                      child: languageSelectView()),
+                ),
+                Positioned(
+                  bottom: ScreenAdapter.height(120),
+                  child: Container(
+                      width: ScreenAdapter.width(1080),
+                      child: Divider(
+                        height: 1,
+                        color: Colors.grey[300],
+                        indent: 50,
+                        endIndent: 50,
+                      )),
                 )
-              ),
-
-
-              Positioned(
-                bottom: ScreenAdapter.height(400),
-                width: ScreenAdapter.width(1080),
-                child: Center(
-                  child:
-                    controller.machineInfo.diningType == "3" ?
-                      _diningSelectArea()
-                    : _startButton()
-
-                ),
-              ),
-
-
-              Positioned(
-                bottom: ScreenAdapter.height(150),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-                  height: ScreenAdapter.height(200),
-                  child: languageSelectView()
-                ),
-              ),
-
-              Positioned(
-                bottom: ScreenAdapter.height(120),
-                child: Container(
-                    width: ScreenAdapter.width(1080),
-                    child: Divider(
-                      height: 1,
-                      color: Colors.grey[300],
-                      indent: 50,
-                      endIndent: 50,
-                    )
-                ),
-              )
-
-
-            ],
+              ],
+            ),
           ),
-        ),
           onLoading: Center(
             child: CircularProgressIndicator(
-              strokeWidth:6,
-              valueColor:new AlwaysStoppedAnimation<Color>(ColorsUtil.hexToColor("#80B646")),
+              strokeWidth: 6,
+              valueColor: new AlwaysStoppedAnimation<Color>(
+                  ColorsUtil.hexToColor("#80B646")),
             ),
           ),
         );
@@ -688,7 +693,7 @@ class CheckoutPageView extends GetView {
   // @override
   // Widget build(BuildContext context) {
   //   return Scaffold(
-  //     body: GetBuilder<CheckoutPageController>(builder: (controller) {
+  //     body: GetBuilder<CheckoutLaunchController>(builder: (controller) {
   //       return controller.obx(
   //         (state) => AnnotatedRegion(
   //           value: SystemUiOverlayStyle.light,

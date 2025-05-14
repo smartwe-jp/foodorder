@@ -470,8 +470,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       if (Get.isRegistered<OrderHomeController>())
         Get.find<OrderHomeController>().getSystemSettingInfo();
     } else if (machine_mode == "2") {
-      if (Get.isRegistered<CheckoutPageController>())
-        Get.find<CheckoutPageController>().getSystemSettingInfo();
+      // if (Get.isRegistered<CheckoutPageController>())
+      //   Get.find<CheckoutPageController>().getSystemSettingInfo();
     }
   }
 

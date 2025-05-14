@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/CheckoutPage/bindings/checkout_launch_binding.dart';
 import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
 import 'package:get/get.dart';
@@ -98,7 +99,7 @@ class AppPages {
     GetPage(
       name: _Paths.CHECKOUT_PAGE,
       page: () => CheckoutPageView(),
-      binding: CheckoutPageBinding(),
+      binding: CheckoutLaunchBinding(),
     ),
     GetPage(
       name: _Paths.SCANCODE_PAGE,
