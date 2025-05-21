@@ -13,6 +13,7 @@ import 'package:widget_to_image/widget_to_image.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
+import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
@@ -39,6 +40,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectMail = "";
   String selectUser = "";
   double printLength = 2352;
+  AppConfig appConfig = Get.find();
+  double get printWidth => appConfig.isAndroid11 ? 513:385;
 
 
 
@@ -378,51 +381,53 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   )
               )
               :
-          ListView.separated(
-            shrinkWrap: true,
-            itemCount: mailInfo.length,
-            separatorBuilder: (BuildContext context, int index) {
-              return Divider();
-            },
-            itemBuilder: (BuildContext context, int index) {
-              return
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      selectMail = mailInfo[index]['verifyEmail'] ?? "";
-                      selectUser = mailInfo[index]['verifyUserName'] ?? "";
-                    });
-                    _sendVerifyCode();
-                  },
-                  child: Row(
-                    children: [
-                      Expanded(child: Text(mailInfo[index]['verifyEmail'] ?? "",style: TextStyle(fontSize: 20,
-                                                                                                  fontFamily: GFont.getFontFamily(),
-                                                                                                  fontWeight: FontWeight.w400))),
+          Expanded(
+            child: ListView.separated(
+              shrinkWrap: true,
+              itemCount: mailInfo.length,
+              separatorBuilder: (BuildContext context, int index) {
+                return Divider();
+              },
+              itemBuilder: (BuildContext context, int index) {
+                return
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        selectMail = mailInfo[index]['verifyEmail'] ?? "";
+                        selectUser = mailInfo[index]['verifyUserName'] ?? "";
+                      });
+                      _sendVerifyCode();
+                    },
+                    child: Row(
+                      children: [
+                        Expanded(child: Text(mailInfo[index]['verifyEmail'] ?? "",style: TextStyle(fontSize: 20,
+                                                                                                    fontFamily: GFont.getFontFamily(),
+                                                                                                    fontWeight: FontWeight.w400))),
 
-                      Container(
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.only(right: 10, left: 10, top: 5, bottom: 5),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(5),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.grey.withOpacity(0.2),
-                              offset: Offset(4, 3),
-                              blurRadius: 3,
-                            ),
-                          ],
+                        Container(
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.only(right: 10, left: 10, top: 5, bottom: 5),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(5),
+                            boxShadow: [
+                              BoxShadow(
+                                color: Colors.grey.withOpacity(0.2),
+                                offset: Offset(4, 3),
+                                blurRadius: 3,
+                              ),
+                            ],
+                          ),
+                          child: Text('選択', style: TextStyle(fontSize: 20,
+                                                            fontFamily: GFont.getFontFamily(),
+                                                            fontWeight: FontWeight.w400)),
                         ),
-                        child: Text('選択', style: TextStyle(fontSize: 20,
-                                                          fontFamily: GFont.getFontFamily(),
-                                                          fontWeight: FontWeight.w400)),
-                      ),
 
-                    ],
-                  ),
-                );
-            },
+                      ],
+                    ),
+                  );
+              },
+            ),
           ),
         ],
       ),
@@ -434,7 +439,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   _printRejishime(data, double length) async {
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: data),
-      size: Size(513, length + 150),
+      size: Size(printWidth, length + 150),
     );
 
     List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
