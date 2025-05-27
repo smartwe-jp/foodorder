@@ -43,7 +43,8 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
   late int _optionSelectMaxNum;
   final int _optionMaxNum = 100;
-  Set<String> _selectedOptions = Set<String>();
+  Set<String> _selectedOptions = <String>{};
+  List<String> _addedOptions = <String>[];
 
 
   @override
@@ -60,12 +61,17 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
   _onSelected(Map optionInfo, bool isAdd, bool isSelected) {
     Set<String> selectedOptions = Set<String>.from(_selectedOptions);
+    List<String> addedOptions = List<String>.from(_addedOptions);
 
 
     if (isAdd) {
       selectedOptions.add(optionInfo['optionCode']);
+      addedOptions.add(optionInfo['optionCode']);
     } else {
-      selectedOptions.remove(optionInfo['optionCode']);
+      addedOptions.remove(optionInfo['optionCode']);
+      if (!addedOptions.contains(optionInfo['optionCode'])) {
+        selectedOptions.remove(optionInfo['optionCode']);
+      }
     }
 
     if (selectedOptions.length > _optionSelectMaxNum && isAdd) {
@@ -107,6 +113,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
   void dispose() {
     super.dispose();
     _selectedOptions.clear();
+    _addedOptions.clear();
   }
 
 
