@@ -14,6 +14,7 @@ import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_contr
 import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
+import 'package:foodorder/app/modules/menuPage/views/components/option_widgets/option_view.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:foodorder/app/services/showToast.dart';
@@ -1190,23 +1191,79 @@ print("加1了");
   //展示某带option商品
   publicShowOneItemWidget(item) {
     changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 50), () async {
+    //Future.delayed(Duration(milliseconds: 50), () async {
       //debugPrint("changeInitialAllOption $item['menuCode']");
-      Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
-    });
+    //   Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
+    // });
+    Get.dialog(
+          barrierDismissible:false,
+          //showOneItemOptionWidgetVOneView(item)
+          OptionView(
+            isLabel: true,
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+            },
+          )
+      );
   }
 
   publicShowOneItemWidgetv1(item) {
     changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 50), () async {
+    //Future.delayed(Duration(milliseconds: 50), () async {
       //debugPrint("changeInitialAllOptionv1 $item['menuCode']");
-      debugPrint(
-          "selectedMenuOptionChangePrice: $selectedMenuOptionChangePrice");
-      debugPrint(
-          "addselectedMenuOptionChangePrice: $addselectedMenuOptionChangePrice");
+      // Get.dialog(
+      //     barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
       Get.dialog(
-          barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
+          barrierDismissible:false,
+          //showOneItemOptionWidgetVOneView(item)
+          OptionView(
+            isLabel: false,
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+            },
+          )
+      );
+    //});
+  }
+
+  _addToCartCallback(item, price, options, optionTitle) async {
+    debugPrint("price:$price");
+    debugPrint("options:$options");
+    debugPrint("optionTitle:$optionTitle");
+    //options 是一个字符串数组，把它转换成字符串逗号分隔
+    String optionsString = options.map((e) => e.toString()).toList().join(',');
+
+    var cartItem = {
+      "menuCode": item['menuCode'],
+      "mainTitle": item['mainTitle'],
+      "image": item['homeImage'],
+      "currentPrice": price,
+      "unitPrice": price,
+      "optionGroupVoList": optionsString,
+      "optionVoListMsg": optionTitle,
+      "goodsNum": 1,
+      "qtyBounds": item['qtyBounds']
+    };
+
+    await publicAddCartMenu(cartItem, false).then((val) {
+      final context = Get.context;
+      if(val != false && context != null){
+        publicShowAddCartNew(context);
+      }
     });
+    Get.back();
   }
 
   //初始化默认option选项

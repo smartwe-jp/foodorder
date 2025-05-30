@@ -5,4 +5,12 @@ extension NumberFormatting on int {
     final formatter = NumberFormat('#,###');
     return formatter.format(this);
   }
+
+
+
+  String formatIntSum() {
+    final formatter = NumberFormat('#,###');
+    return formatter.format(this);
+  }
 }
+
