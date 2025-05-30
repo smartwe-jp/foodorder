@@ -23,8 +23,8 @@ extension ExchangeControllerExtension on SettingController {
     await beginDepositOutside();
   }
 
-  getCashInfo() async {
-    String? cash = await getMachineCashInfo(showAlert: false);
+  getCashInfo({String? cashString}) async {
+    String? cash =  cashString ?? await getMachineCashInfo(showAlert: false);
     debugPrint('cashInfo: $cash'); //'1:12,5:5'
 
     if (cash != null) {
@@ -114,7 +114,7 @@ extension ExchangeControllerExtension on SettingController {
     await CashChanger.getCashBalance(
       onSuccess: (value) {
         debugPrint("getMachineCashInfo 1");
-
+        getCashInfo(cashString: value);
         resultMap = value.split(',').asMap().map((key, value) {
           final cash = value.split(':');
           return MapEntry(catValFromInt(cash[0]), cash[1]);

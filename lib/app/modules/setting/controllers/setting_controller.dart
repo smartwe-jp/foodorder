@@ -448,7 +448,7 @@ class SettingController extends GetxController with StateMixin {
           response['code'] == 200 &&
           null != response['data']) {
         depositData.value = response['data'];
-        cashList.value = response['data']['changeStates'];
+        //cashList.value = response['data']['changeStates'];
         lastTotalList.value = response['data']['last7daysTotal'];
         // final result = await getMachineCashInfo();
         // debugPrint('MachineCashInfo: $result');

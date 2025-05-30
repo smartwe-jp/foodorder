@@ -4,16 +4,12 @@ import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
-import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
-import 'package:foodorder/app/routes/app_pages.dart';
-import 'package:foodorder/app/services/Storage.dart';
 
 import 'package:get/get.dart';
-
+import 'package:foodorder/app/common/NumberFormat.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../TransitPage/views/transit_page_view.dart';
 import '../controllers/setting_controller.dart';
 import 'CashSettingView.dart';
 
@@ -23,19 +19,55 @@ class SettingView extends GetView<SettingController> {
 
   //支付金额展示
   getDepositListShow() {
-    final depositList = {
-      "預り金": controller.depositData.value['deposit_payment'],
-      "現金": controller.depositData.value['deposit_crash'],
-      "Alipay": controller.depositData.value['deposit_alipay'],
-      "PayPay": controller.depositData.value['deposit_paypay'],
-      "WechatPay": controller.depositData.value['deposit_wechat'],
-    };
+    Map<String, dynamic> depositList = Map();
+    Map depositData = controller.depositData;
+    if (depositData.isEmpty) {
+      return Text("今日売上データがありません");
+    }
+    Map<String, int> todatTotal = depositData['todayTotal'].cast<String, int>();
+    debugPrint("todatTotal: $todatTotal");
+
+    //depositList['預り金'] = depositData['deposit_payment'] ?? 0;
+
+    //if (todatTotal.containsKey('Cash')) {
+    depositList['現金'] =  todatTotal['Cash']?.formatIntSum();
+    //} else if (todatTotal.containsKey('PayPay')) {
+    depositList['PayPay'] = todatTotal['PayPay']?.formatIntSum();
+    //} else if (todatTotal.containsKey('Alipay')) {
+    depositList['Alipay'] = todatTotal['Alipay']?.formatIntSum();
+    //} else if (todatTotal.containsKey('Wechat')) {
+    depositList['Wechat'] = todatTotal['Wechat']?.formatIntSum();
+    //} else if (todatTotal.containsKey('CreditCard')) {
+    depositList['CreditCard'] = todatTotal['CreditCard']?.formatIntSum();
+    //} else if (todatTotal.containsKey('R_Pay')) {
+    depositList['R_Pay'] = todatTotal['R_Pay']?.formatIntSum();
+    //} else if (todatTotal.containsKey('au_Pay')) {
+    depositList['au_Pay'] = todatTotal['au_Pay']?.formatIntSum();
+    //} else if (todatTotal.containsKey('d_Pay')) {
+    depositList['d_Pay'] = todatTotal['d_Pay']?.formatIntSum();
+    //} else if (todatTotal.containsKey('m_Pay')) {
+    depositList['m_Pay'] = todatTotal['m_Pay']?.formatIntSum();
+    //}
+
+    //depositList 数据多了 一行无法显示齐全，想设计成 一行最多5个数据，超过换一行，最后一行不足5个 补齐空数据到5个。实现这个UI
+
+    List<List<MapEntry<String, dynamic>>> rows = [];
+    for (var i = 0; i < depositList.length; i += 5) {
+      var row = depositList.entries.skip(i).take(5).toList();
+
+      while (row.length < 5) {
+        row.add(MapEntry("", ""));
+      }
+      rows.add(row);
+    }
+
+    debugPrint("depositList: $rows");
     return Container(
       margin: EdgeInsets.only(
           top: ScreenAdapter.height(15), bottom: ScreenAdapter.height(15)),
       child: Column(
         children: [
-          Text("売上",
+          Text("今日売上",
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(22),
                 fontWeight: FontWeight.w600,
@@ -53,91 +85,63 @@ class SettingView extends GetView<SettingController> {
                   top: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   left: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   right: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  bottom: BorderSide(color: Colors.grey.shade400, width: 1.0),
                 )),
             child: Column(
-              children: [
-                Container(
-                  decoration: BoxDecoration(
-                      color: Colors.white12,
-                      border: Border(
-                        bottom:
-                            BorderSide(color: Colors.grey.shade400, width: 1.0),
-                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                      )),
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: depositList.keys.map((key) {
-                      return Expanded(
-                          child: Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: Text(key,
-                            style: TextStyle(
-                              fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(20),
-                              fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor("#000000"),
-                            )),
-                      ));
-                    }).toList(),
-                  ),
-                ),
-                Container(
-                  alignment: Alignment.center,
-                  padding: EdgeInsets.only(top: ScreenAdapter.height(5)),
-                  decoration: BoxDecoration(
-                      color: Colors.white12,
-                      border: Border(
-                        bottom:
-                            BorderSide(color: Colors.grey.shade400, width: 1.0),
-                        //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                      )),
-                  child: Row(
-                    //mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: depositList.values.map((value) {
-                      return Expanded(
-                          child: Container(
-                        //width: ScreenAdapter.width(200),
-                        height: ScreenAdapter.height(45),
-                        margin: EdgeInsets.only(
-                            left: ScreenAdapter.width(5),
-                            right: ScreenAdapter.width(5)),
-                        alignment: Alignment.center,
-                        child: RichText(
-                          text: TextSpan(
-                              text: value.toString(),
-                              style: TextStyle(
-                                fontFamily: 'NotoSansJP',
-                                fontSize: ScreenAdapter.fontSize(22),
-                                fontWeight: FontWeight.w500,
-                                color: ColorsUtil.hexToColor("#000000"),
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: "円",
-                                  style: TextStyle(
-                                    fontFamily: 'NotoSansJP',
-                                    fontSize: ScreenAdapter.fontSize(18),
-                                    fontWeight: FontWeight.w500,
-                                    color: ColorsUtil.hexToColor("#000000"),
-                                  ),
-                                ),
-                              ]),
-                        ),
-                      ));
-                    }).toList(),
-                  ),
-                ),
-              ],
+              children: rows.map((row) => buildDepositRow(row)).toList(),
             ),
           ),
         ],
       ),
+    );
+  }
+
+  Widget buildDepositRow(List<MapEntry<String, dynamic>> row) {
+    return Table(
+      columnWidths: const {
+        0: FlexColumnWidth(1),
+        1: FlexColumnWidth(1),
+        2: FlexColumnWidth(1),
+        3: FlexColumnWidth(1),
+        4: FlexColumnWidth(1),
+      },
+      border: TableBorder.all(color: Colors.grey.shade400, width: 1.0),
+      children: [
+        TableRow(
+          children: row.map((entry) {
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: ScreenAdapter.height(10)),
+              child: Text(
+                entry.key,
+                style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: ScreenAdapter.fontSize(20),
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor("#000000"),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+        TableRow(
+          children: row.map((entry) {
+            return Container(
+              alignment: Alignment.center,
+              padding: EdgeInsets.symmetric(vertical: ScreenAdapter.height(10)),
+              child: Text(
+                "${entry.value}",
+                style: TextStyle(
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: ScreenAdapter.fontSize(20),
+                  fontWeight: FontWeight.w500,
+                  color: ColorsUtil.hexToColor("#000000"),
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 
@@ -877,10 +881,10 @@ class SettingView extends GetView<SettingController> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // getDepositListShow(),
-                      // SizedBox(
-                      //   height: ScreenAdapter.height(20),
-                      // ),
+                      getDepositListShow(),
+                      SizedBox(
+                        height: ScreenAdapter.height(20),
+                      ),
                       getLastOrderTotalShow(),
                       SizedBox(
                         height: ScreenAdapter.height(20),
