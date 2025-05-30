@@ -242,23 +242,23 @@ class SettingController extends GetxController with StateMixin {
 
   //获取现金机列表
   _getPaycubeChangeState() {
-    // var formData = {
-    //   "machineCode": machineCode.value,
-    // };
-    // request('webBootChangeState', method: 'POST', parameters: formData)
-    //     .then((val) {
-    //   var response = json.decode(val.toString());
-    //
-    //   if (response != null &&
-    //       response['code'] == 200 &&
-    //       null != response['data']) {
-    //     depositData.value = response['data'];
-    //     cashList.value = response['data']['changeStates'];
-    //     lastTotalList.value = response['data']['last7daysTotal'];
-    //
-    //     update();
-    //   } else {}
-    // });
+    var formData = {
+      "machineCode": machineCode.value,
+    };
+    request('webBootChangeState', method: 'POST', parameters: formData)
+        .then((val) {
+      var response = json.decode(val.toString());
+
+      if (response != null &&
+          response['code'] == 200 &&
+          null != response['data']) {
+        depositData.value = response['data'];
+        //cashList.value = response['data']['changeStates'];
+        lastTotalList.value = response['data']['last7daysTotal'];
+
+        update();
+      } else {}
+    });
 
     _getChangeState();
 
