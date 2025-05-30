@@ -55,6 +55,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     for (final option in _optionListInfo) {
       if (option['checked'] ?? false) {
         _selectedOptions.add(option['optionCode']);
+        _addedOptions.add(option['optionCode']);
       }
     }
     super.initState();
@@ -109,6 +110,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
     setState(() {
       _selectedOptions = selectedOptions;
+      _addedOptions = addedOptions;
     });
 
     widget.onSelected(groupCode, optionCode, optionName, price, isAdd, isSelected);
@@ -132,6 +134,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     super.dispose();
     _selectedOptions.clear();
     _addedOptions.clear();
+    //_optionListInfo.clear();
   }
 
 
