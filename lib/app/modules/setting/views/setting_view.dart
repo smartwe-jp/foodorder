@@ -21,6 +21,9 @@ class SettingView extends GetView<SettingController> {
   getDepositListShow() {
     Map<String, dynamic> depositList = Map();
     Map depositData = controller.depositData;
+    if (depositData.isEmpty) {
+      return Text("今日売上データがありません");
+    }
     Map<String, int> todatTotal = depositData['todayTotal'].cast<String, int>();
     debugPrint("todatTotal: $todatTotal");
 

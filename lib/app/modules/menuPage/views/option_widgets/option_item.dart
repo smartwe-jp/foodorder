@@ -289,7 +289,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
               //enableFeedback: false,
               onTap: () {
                 bool checked = !_isChecked;
-                if (widget.canSelect || _isChecked) {
+                if (widget.canSelect) {
                   setState(() {
                     _isChecked = checked;
                     if (!checked) {
