@@ -925,50 +925,50 @@ print("加1了");
 
   //展示某带option商品
   publicShowOneItemWidget(item){
-    changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 50),() async {
-      Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
-      // Get.dialog(
-      //     barrierDismissible:false,
-      //     //showOneItemOptionWidgetView(item)
-      //     OptionView(
-      //       isLabel: true,
-      //       languageKey: checkLanguage.value,
-      //       itemPrice: item['currentPrice'],
-      //       originalPrice: item['price'],
-      //       optionInfo: item['optionGroupVoList'] ?? [],
-      //       mainTitle: item['mainTitle'],
-      //       subtitle: item['subtitle'] ?? [],
-      //       addToCartCallback: (price, options, optionTitle) {
-      //         _addToCartCallback(item, price, options, optionTitle);
-      //       },
-      //     )
-      // );
-    });
+    //changeInitialAllOption(item['menuCode']);
+    //Future.delayed(Duration(milliseconds: 50),() async {
+      // Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
+      Get.dialog(
+          barrierDismissible:false,
+          //showOneItemOptionWidgetView(item)
+          OptionView(
+            isLabel: true,
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+            },
+          )
+      );
+    //});
   }
 
   publicShowOneItemWidgetv1(item){
-    changeInitialAllOption(item['menuCode']);
-    Future.delayed(Duration(milliseconds: 50),() async {
-      Get.dialog(
-          barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
+    //changeInitialAllOption(item['menuCode']);
+    //Future.delayed(Duration(milliseconds: 50),() async {
       // Get.dialog(
-      //     barrierDismissible:false,
-      //     //showOneItemOptionWidgetVOneView(item)
-      //     OptionView(
-      //       isLabel: false,
-      //       languageKey: checkLanguage.value,
-      //       itemPrice: item['currentPrice'],
-      //       originalPrice: item['price'],
-      //       optionInfo: item['optionGroupVoList'] ?? [],
-      //       mainTitle: item['mainTitle'],
-      //       subtitle: item['subtitle'] ?? [],
-      //       addToCartCallback: (price, options, optionTitle) {
-      //         _addToCartCallback(item, price, options, optionTitle);
-      //       },
-      //     )
-      // );
-    });
+      //     barrierDismissible: false, showOneItemOptionWidgetVOneView(item));
+      Get.dialog(
+          barrierDismissible:false,
+          //showOneItemOptionWidgetVOneView(item)
+          OptionView(
+            isLabel: false,
+            languageKey: checkLanguage.value,
+            itemPrice: item['currentPrice'],
+            originalPrice: item['price'],
+            optionInfo: item['optionGroupVoList'] ?? [],
+            mainTitle: item['mainTitle'],
+            subtitle: item['subtitle'] ?? [],
+            addToCartCallback: (price, options, optionTitle) {
+              _addToCartCallback(item, price, options, optionTitle);
+            },
+          )
+      );
+    //});
   }
 
   _addToCartCallback(item, price, options, optionTitle) async {

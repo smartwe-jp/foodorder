@@ -154,50 +154,57 @@ class _OptionViewState extends State<OptionView> {
         setState(() {
           _currentPrice += optionPrice;
           _selectOptionCodes.add(optionCode);
-          _updateOptionList(groupCode, optionCode, title, isAdd);
         });
+        _updateOptionList(groupCode, optionCode, title, isAdd);
       } else {
+        //
+        int index = _selectOptionCodes.indexOf(optionCode);
+
         setState(() {
           _currentPrice -= optionPrice;
-          //取消即为从_selectOptionCodes移除一个optionCode
-          for (int i = _selectOptionCodes.length - 1; i >= 0; i--) {
-            if (_selectOptionCodes[i] == optionCode) {
-              _selectOptionCodes.removeAt(i);
-              break;
-            }
-          }
-          _updateOptionList(groupCode, optionCode, title, isAdd);
+          _selectOptionCodes.removeAt(index);
         });
+        _updateOptionList(groupCode, optionCode, title, isAdd);
       }
     } else {
-      //取消选中
-      //移除所有该项添加和价格
-      setState(() {
-        for (int i = _selectOptionCodes.length - 1; i >= 0; i--) {
-          if (_selectOptionCodes[i] == optionCode) {
-            _selectOptionCodes.removeAt(i);
-            _currentPrice -= optionPrice;
-          }
-        }
-        _updateOptionList(groupCode, optionCode, title, false);
-      });
 
+      int price = _currentPrice;
+      List<String> optionCodes = _selectOptionCodes;
+      for (int i = optionCodes.length - 1; i >= 0; i--) {
+        if (optionCodes[i] == optionCode) {
+          optionCodes.removeAt(i);
+          price -= optionPrice;
+        }
+      }
+      setState(() {
+        _currentPrice = price;
+        _selectOptionCodes = optionCodes;
+
+      });
+      _updateOptionList(groupCode, optionCode, title, false);
     }
 
   }
 
   _updateOptionList(groupCode, String optionCode, String optionName, bool isAdd) {
-    for (var optionGroup in _optionGroupList) {
+
+    List<OptionGroup> optionGroupMap = _optionGroupList;
+
+    for (var optionGroup in optionGroupMap) {
       if (optionGroup.groupCode == groupCode) {
         if (isAdd) {
-            optionGroup.selectedOptionCodes.add(optionCode);
-            optionGroup.selectedOptionNames.add(optionName);
+          optionGroup.selectedOptionCodes.add(optionCode);
+          optionGroup.selectedOptionNames.add(optionName);
         } else {
           optionGroup.selectedOptionCodes.remove(optionCode);
           optionGroup.selectedOptionNames.remove(optionName);
         }
       }
     }
+
+    setState(() {
+      _optionGroupList = optionGroupMap;
+    });
 
   }
 

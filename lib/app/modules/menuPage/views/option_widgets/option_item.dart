@@ -15,6 +15,7 @@ class OptionWidget extends StatefulWidget {
   final Map optionInfo;
   final ValueChanged<bool> onChanged;
   final ValueChanged<bool> onSelected;
+  final bool isSelected;
   final bool canSelect;
 
   const OptionWidget({
@@ -23,6 +24,7 @@ class OptionWidget extends StatefulWidget {
     required this.optionInfo,
     required this.onChanged,
     required this.onSelected,
+    required this.isSelected,
     this.canSelect = true,
   }) : super(key: key);
 
@@ -51,16 +53,18 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   }
 
   @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  void didUpdateWidget(covariant OptionWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    //if (oldWidget.optionInfo != widget.optionInfo) {
     _initOptionInfo(widget.optionInfo);
+    //}
   }
 
   _initOptionInfo(Map optionInfo) {
     _max = optionInfo['max'] ?? 10;
     imageUrl = optionInfo['homeImage'];
     _mainTitle = optionInfo['mainTitle'];
-    _isChecked = optionInfo['checked'] ?? false;
+    _isChecked = widget.isSelected;
     _currentPrice = optionInfo['currentPrice'];
     _buttonColor = (optionInfo['buttonColorValue'] != null) ? optionInfo['buttonColorValue'].split(',') : [];
   }
@@ -137,7 +141,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
               //enableFeedback: false,
               onTap: () {
                 bool checked = !_isChecked;
-                if (widget.canSelect || _isChecked) {
+                if (widget.canSelect) {
                   setState(() {
                     _isChecked = checked;
                     if (!checked) {

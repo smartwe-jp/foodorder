@@ -45,13 +45,15 @@ class _OptionListWidgetState extends State<OptionListWidget> {
   final int _optionMaxNum = 100;
   Set<String> _selectedOptions = <String>{};
   List<String> _addedOptions = <String>[];
+  late List<dynamic> _optionListInfo;
 
 
   @override
   void initState() {
     _optionSelectMaxNum = int.parse(widget.optionSelectMaxNum);
-    for (final option in widget.optionListInfo) {
-      if (option['checked']) {
+    _optionListInfo = widget.optionListInfo;
+    for (final option in _optionListInfo) {
+      if (option['checked'] ?? false) {
         _selectedOptions.add(option['optionCode']);
       }
     }
@@ -65,6 +67,19 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
 
     if (isAdd) {
+      if (_optionSelectMaxNum == 1 && selectedOptions.isNotEmpty && isSelected) {
+        // 如果是单选模式，且已经有选项被选中，则清除之前的选项
+        //找到已选项的Option
+        final selectedOption  = _optionListInfo.firstWhere(
+              (option) => option['optionCode'] == selectedOptions.first,
+          orElse: () => {},
+        );
+        if (selectedOption['optionCode'] != optionInfo['optionCode']) {
+          widget.onSelected(selectedOption['group'], selectedOption['optionCode'], selectedOption['mainTitle'], selectedOption['currentPrice'], false, false);
+          selectedOptions.clear();
+          addedOptions.clear();
+        }
+      }
       selectedOptions.add(optionInfo['optionCode']);
       addedOptions.add(optionInfo['optionCode']);
     } else {
@@ -100,13 +115,16 @@ class _OptionListWidgetState extends State<OptionListWidget> {
   }
 
   bool get _canSelect {
-    if (_selectedOptions.length == _optionSelectMaxNum) {
+    if (_selectedOptions.length == _optionSelectMaxNum && _optionSelectMaxNum > 1) {
       return false;
     } else {
       return true;
     }
   }
 
+  bool isOptionSelected(String optionCode) {
+    return _selectedOptions.contains(optionCode);
+  }
 
 
   @override
@@ -128,17 +146,18 @@ class _OptionListWidgetState extends State<OptionListWidget> {
           OptionTitle(title: widget.title, subTitle: widget.subTitle),
           //使用optionList创建option 需要考虑数量不大于optionMaxNum
 
-          for (int i = 0; i < widget.optionListInfo.length; i++)
+          for (int i = 0; i < _optionListInfo.length; i++)
             if (i < _optionMaxNum)
               OptionWidget(
                   isLabelOption: widget.isLabel,
                   canSelect: _canSelect,
-                  optionInfo: widget.optionListInfo[i],
+                  optionInfo: _optionListInfo[i],
+                  isSelected: isOptionSelected(_optionListInfo[i]['optionCode']),
                   onChanged: (isAdd){
-                    _onSelected(widget.optionListInfo[i], isAdd, true);
+                    _onSelected(_optionListInfo[i], isAdd, true);
                   },
                   onSelected: (isSelected){
-                    _onSelected(widget.optionListInfo[i], isSelected, isSelected);
+                    _onSelected(_optionListInfo[i], isSelected, isSelected);
                   }
               )
 
