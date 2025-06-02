@@ -84,10 +84,10 @@ class MenuView extends StatelessWidget {
           onNotification: (ScrollNotification notification) {
             if (notification is ScrollUpdateNotification) {
               if (notification.metrics.pixels >=
-                  notification.metrics.maxScrollExtent + 120) {
+                  notification.metrics.maxScrollExtent + 200) {
                 _executePageChange(true);
               }
-              if (notification.metrics.pixels <= -120) {
+              if (notification.metrics.pixels <= -200) {
                 _executePageChange(false);
               }
             }

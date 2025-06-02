@@ -713,14 +713,14 @@ extension SettlementControllerPrinterExtension on SettlementController {
                             textDirection: TextDirection.rtl,
                             child: Container(child:
                             Text(
-                              menuNumber,
-                              style: GoogleFonts.zenKakuGothicAntique(
-                                  fontSize: ScreenAdapter.fontSize(32),
-                                  fontWeight: FontWeight.w500),
-                              maxLines: 2,
-                              textAlign: TextAlign.right,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                                menuNumber,
+                                style: GoogleFonts.zenKakuGothicAntique(
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w500),
+                                maxLines: 2,
+                                textAlign: TextAlign.right,
+                                overflow: TextOverflow.ellipsis,
+                              ),
                             )
                         ),
                       ],
@@ -745,7 +745,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
                         child:
                             Container(
                               margin: EdgeInsets.only(top: 5),
-                              child: Text(
+                              child: AutoSizeText(
                                 optionText,
                                 style: GoogleFonts.zenKakuGothicAntique(
                                     fontSize: ScreenAdapter.fontSize(26),

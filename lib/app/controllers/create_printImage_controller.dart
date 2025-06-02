@@ -67,15 +67,15 @@ class CreatePrintImageController extends GetxController {
     if (print_paper_txt_size.value == "1") {
       print_menu_txt_size = 28.0;
       wrapNum = 12;
-      oneRowHeight = 38;
+      oneRowHeight = 48;
     } else if (print_paper_txt_size.value == "2") {
       print_menu_txt_size = 33.0;
       wrapNum = 10;
-      oneRowHeight = 44;
+      oneRowHeight = 54;
     } else if (print_paper_txt_size.value == "3") {
       print_menu_txt_size = 40.0;
       wrapNum = 8;
-      oneRowHeight = 55;
+      oneRowHeight = 65;
     }
 
     List<Widget> categoryMenus = [];
@@ -91,9 +91,9 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("$takeoutTag${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: print_menu_txt_size,
+                  fontSize: 34,
                   fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -105,9 +105,9 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
-                  fontSize: print_menu_txt_size,
+                  fontSize: 34,
                   fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w200,
+                  fontWeight: FontWeight.w600,
                   color: ColorsUtil.hexToColor("#000000"),
                 ))),
       ),
@@ -124,6 +124,10 @@ class CreatePrintImageController extends GetxController {
       var menuLine = menuLength / wrapNum;
       int menuRowNum = menuLine.ceil();
       optionNum = 0;
+
+      categoryMenus.add(
+          SizedBox(height: 20)
+      );
 
       categoryMenus.add(
         _publicGoodsTwoColumnsTxt(
@@ -309,7 +313,7 @@ class CreatePrintImageController extends GetxController {
 
       //分割线
       if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
-        addRowHight += 20;
+        addRowHight += 40;
         categoryMenus.add(
           _publicSplitLine(),
         );

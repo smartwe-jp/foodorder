@@ -34,7 +34,7 @@ const servicePath = {
   'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址
-  'webBootChangeState': base_url + 'pad/web/boot/change/state', //机器零钱状态
+  'webBootChangeState': base_url + 'pad/web/boot/change/state/v1', //机器零钱状态
   'webBootChangeInfo': base_url + 'pad/web/boot/information', //机器零钱状态
   'webBootChangeReset': base_url + 'pad/web/boot/reset', //重置机器零钱状态
   'webBootChangeSet': base_url + 'pad/web/boot/change/add', //设置机器零钱状态
