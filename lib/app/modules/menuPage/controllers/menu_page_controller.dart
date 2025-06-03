@@ -1190,7 +1190,7 @@ print("加1了");
 
   //展示某带option商品
   publicShowOneItemWidget(item) {
-    changeInitialAllOption(item['menuCode']);
+    //changeInitialAllOption(item['menuCode']);
     //Future.delayed(Duration(milliseconds: 50), () async {
       //debugPrint("changeInitialAllOption $item['menuCode']");
     //   Get.dialog(barrierDismissible: false, showOneItemOptionWidgetView(item));
@@ -1214,7 +1214,7 @@ print("加1了");
   }
 
   publicShowOneItemWidgetv1(item) {
-    changeInitialAllOption(item['menuCode']);
+    //changeInitialAllOption(item['menuCode']);
     //Future.delayed(Duration(milliseconds: 50), () async {
       //debugPrint("changeInitialAllOptionv1 $item['menuCode']");
       // Get.dialog(

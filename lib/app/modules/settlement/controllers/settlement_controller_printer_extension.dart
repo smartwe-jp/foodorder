@@ -749,7 +749,7 @@ extension SettlementControllerPrinterExtension on SettlementController {
                                 minHeight: ScreenAdapter.height(30),
                                 maxHeight: ScreenAdapter.height(210),
                               ),*/
-                                  child: Text(
+                                  child: AutoSizeText(
                                     orderprintData["printText"],
                                     style: GoogleFonts.zenKakuGothicAntique(
                                         fontSize: ScreenAdapter.fontSize(26),

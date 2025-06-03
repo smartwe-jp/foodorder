@@ -2723,45 +2723,53 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                   child:
                     Column(mainAxisAlignment: MainAxisAlignment.start, 
                       children: [
-                        IntrinsicHeight(
-                          child: 
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 2,
-                                     child: 
-                                      AspectRatio(
-                                        aspectRatio: 0.7,
-                                        child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.8),
-                                      ),
-
-                                  ),
-                                  SizedBox(width: 20),
-                                  Expanded(
-                                    flex: 1,
-                                    child: Column(
-                                          children: [
-                                            Expanded(
-                                              child: AspectRatio(
-                                                aspectRatio: 0.7,
-                                                child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.9),
-                                              ),
-                                              
-                                            ),
-                                            SizedBox(height: 20),
-                                            Expanded(
-                                              child: AspectRatio(
-                                                aspectRatio: 0.7,
-                                                child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.9),
-                                              ),
-                                            ),
-                                          ],
-                                        )
-                                  )
-                                ],
-                            )
+                      Container(
+                        padding: EdgeInsets.only(
+                            left:ScreenAdapter.width(30),
+                            right: ScreenAdapter.width(30),
+                            bottom: ScreenAdapter.height(30)
                         ),
+                        child: 
+                            IntrinsicHeight(
+                              child: 
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                    children: [
+                                      Expanded(
+                                        flex: 2,
+                                        child: 
+                                          AspectRatio(
+                                            aspectRatio: 0.7,
+                                            child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.8),
+                                          ),
+
+                                      ),
+                                      SizedBox(width: 20),
+                                      Expanded(
+                                        flex: 1,
+                                        child: Column(
+                                              children: [
+                                                Expanded(
+                                                  child: AspectRatio(
+                                                    aspectRatio: 0.7,
+                                                    child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.9),
+                                                  ),
+                                                  
+                                                ),
+                                                SizedBox(height: 20),
+                                                Expanded(
+                                                  child: AspectRatio(
+                                                    aspectRatio: 0.7,
+                                                    child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.9),
+                                                  ),
+                                                ),
+                                              ],
+                                            )
+                                      )
+                                    ],
+                                )
+                            )
+                          ),
                         SizedBox(height: 20),
                         if (_newItemList.length > 0)
                           showCategoryEightItemList(_newItemList, context, popupType: popupType),
@@ -2917,6 +2925,13 @@ _getFirstOptionWidget(menuCode, setFirstState) {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
+                Container(
+                  padding: EdgeInsets.only(
+                      left:ScreenAdapter.width(30),
+                      right: ScreenAdapter.width(30),
+                      bottom: ScreenAdapter.height(30)
+                  ),
+                  child: 
                         IntrinsicHeight(
                           child: 
                             Row(
@@ -2955,7 +2970,8 @@ _getFirstOptionWidget(menuCode, setFirstState) {
                                   )
                                 ],
                             )
-                        ),
+                        )
+                ),
                         SizedBox(height: 20),
                 // Row(
                 //   children: [

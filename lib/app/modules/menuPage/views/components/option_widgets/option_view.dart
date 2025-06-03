@@ -237,10 +237,11 @@ class _OptionViewState extends State<OptionView> {
 
   @override
   void dispose() {
-    super.dispose();
     _optionGroupList = [];
     _selectOptionCodes = [];
     _currentPrice = 0;
+    
+    super.dispose();
   }
 
 

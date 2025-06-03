@@ -52,6 +52,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     for (final option in _optionListInfo) {
       if (option['checked']) {
         _selectedOptions.add(option['optionCode']);
+        _addedOptions.add(option['optionCode']);
       }
     }
     super.initState();
@@ -69,7 +70,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
         // 如果是单选模式，且已经有选项被选中，则清除之前的选项
         //找到已选项的Option
         final selectedOption  = _optionListInfo.firstWhere(
-              (option) => option['optionCode'] == selectedOptions.first,
+          (option) => option['optionCode'] == selectedOptions.first,
           orElse: () => {},
         );
         if (selectedOption['optionCode'] != optionInfo['optionCode']) {
@@ -78,7 +79,6 @@ class _OptionListWidgetState extends State<OptionListWidget> {
           addedOptions.clear();
         }
       }
-
       selectedOptions.add(optionInfo['optionCode']);
       addedOptions.add(optionInfo['optionCode']);
     } else {
@@ -108,6 +108,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
     setState(() {
       _selectedOptions = selectedOptions;
+      _addedOptions = addedOptions;
     });
 
     widget.onSelected(groupCode, optionCode, optionName, price, isAdd, isSelected);
@@ -131,7 +132,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     super.dispose();
     _selectedOptions.clear();
     _addedOptions.clear();
-    _optionListInfo.clear();
+    //_optionListInfo.clear();
   }
 
 
