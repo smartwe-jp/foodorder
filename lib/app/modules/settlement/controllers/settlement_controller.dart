@@ -976,12 +976,6 @@ class SettlementController extends GetxController with StateMixin {
     if (is_allow_receipt.value == "1") {
         printType = "1";
     }
-
-    // if (retry && (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1")) {
-    //   printGoNext();
-    //   await Future.delayed(Duration(milliseconds: 2000));
-    // }
-
     var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
     if (printStatus == "0" || printStatus == "8") {
       var formData = {
@@ -990,16 +984,7 @@ class SettlementController extends GetxController with StateMixin {
         "machineCode": machineInfo.machineCode,
         "printType":(showPrintType.value ==1 && wlan_print_ip.value !="")?"Label":""
       };
-      /*var formData = {
-        "orderId": "442800657845387264",
-        "payAmount": "1000",
-        "machineCode":"X3V9YPJABVZGAELIZ9",
-        "printType":(_showPrintType ==1 && _wlan_print_ip !="")?"Label":""
-      };print(formData);print(_wlan_print_ip);*/
       var queryUrl;
-      //queryUrl = "webBootToPrintV4";
-      //queryUrl = "webBootToPrintV5";
-      //queryUrl = "webBootToPrintV6"; //23新修改小票
       queryUrl = "webBootToPrintV7"; //230704新修改小票
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
@@ -1021,17 +1006,15 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
+            await createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
+              await createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
 
-          //if (machineInfo.paymentMethod != "0" && machineInfo.paymentMethod != "1") {
-            printGoNext();
-          //}
+          printGoNext();
 
         } else {
           //错误后重新调用一次
@@ -1362,7 +1345,7 @@ class SettlementController extends GetxController with StateMixin {
         giveChangeMoney.value = int.parse(getPutMoney.value) - int.parse(totalPrice.value);
         //gotonewMenuPage();
         //找零
-        await startOutPutMoney(giveChangeMoney.value);
+        startOutPutMoney(giveChangeMoney.value);
         //Future.delayed(Duration(milliseconds: 500),()=>startOutPutMoney(giveChangeMoney.value));
       } else {
         //已经结束入金，处理取引终了

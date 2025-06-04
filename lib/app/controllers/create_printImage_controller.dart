@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -836,6 +837,9 @@ class CreatePrintImageController extends GetxController {
         .add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
     var totalHight = lineZeng + lineHight + addRowHight + 150;
+    final printLogo = CachedNetworkImageProvider(machineInfo.printLogoImageUrl);
+
+    await ensureImageLoaded(machineInfo.printLogoImageUrl);
 
     final printWidget = Container(
       width: printWidth,
@@ -851,7 +855,7 @@ class CreatePrintImageController extends GetxController {
         children: [
           Image(
               width: double.infinity,
-              image: CachedNetworkImageProvider(machineInfo.printLogoImageUrl),
+              image: printLogo,
               fit: BoxFit.fitWidth
           ),
           ...categoryMenus
@@ -875,6 +879,31 @@ class CreatePrintImageController extends GetxController {
     Future.delayed(Duration(milliseconds: 300), () async {
       await FlutterPluginMsprinter.sendPrintCut("1");
     });
+  }
+
+  Future<void> ensureImageLoaded(String imageUrl) async {
+    if (imageUrl.isEmpty) return;
+
+    final provider = CachedNetworkImageProvider(imageUrl);
+    final config = ImageConfiguration.empty;
+    final Completer<void> completer = Completer<void>();
+
+    provider.resolve(config).addListener(
+      ImageStreamListener(
+            (ImageInfo image, bool synchronousCall) {
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (Object error, StackTrace? stackTrace) {
+          if (!completer.isCompleted) {
+            completer.completeError(error);
+          }
+        },
+      ),
+    );
+
+    await completer.future;
   }
 
   _showAndPrint(String imageData, Widget widget) {
