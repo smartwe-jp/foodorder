@@ -27,6 +27,7 @@ class MachineInfoController extends GetxController {
   late List supportLanguages;
   bool isReceiptPageShow = false;
   late String printLogoImageData;
+  late String printLogoImageUrl;
   late String machineMode;
 
   late bool isAllowCash;
@@ -118,6 +119,8 @@ class MachineInfoController extends GetxController {
     supportLanguages = await HomeServices.getMachineLanguages();
 
     printLogoImageData = await HomeServices.getSmartweLogoImage() ?? "";
+
+    printLogoImageUrl = await HomeServices.getSmartweLogoImagesData() ?? "";
 
     Map cashInfo = await HomeServices.getIsShowCash();
     cashOn = cashInfo['isCash'] ?? false;

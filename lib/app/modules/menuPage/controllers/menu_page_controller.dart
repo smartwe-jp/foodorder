@@ -22,6 +22,7 @@ import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
+import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../models/ItemModel.dart';
@@ -124,6 +125,8 @@ class MenuPageController extends GetxController with StateMixin {
     if(Get.arguments != null){
       checkLanguage.value = (Get.arguments['checkLanguage']!= null)?Get.arguments['checkLanguage']:"JP";
     }
+
+    MyImageCacheManager.preloadImages();
 
     getBookingBootIndexCategory();
 

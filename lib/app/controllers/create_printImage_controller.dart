@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
@@ -379,25 +380,25 @@ class CreatePrintImageController extends GetxController {
   tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
 
-    if (machineInfo.printLogoImageData != "") {
-    // 检查图片文件是否存在
-      File imageFile = File(machineInfo.printLogoImageData);
-      if (await imageFile.exists()) {
-        debugPrint('Image file exists: ${machineInfo.printLogoImageData}');
-        categoryMenus.add(Container(
-          height: 150, // 设置容器宽度，根据需要调整
-          margin: EdgeInsets.all(20),
-          decoration: BoxDecoration(
-            image: DecorationImage(
-              image: FileImage(imageFile),
-              //fit: BoxFit.contain, // 可以根据需要调整fit属性
-            ),
-          ),
-        ));
-      } else {
-        debugPrint('Image file does not exist: ${machineInfo.printLogoImageData}');
-      }
-    }
+    // if (machineInfo.printLogoImageData != "") {
+    // // 检查图片文件是否存在
+    //   File imageFile = File(machineInfo.printLogoImageData);
+    //   if (await imageFile.exists()) {
+    //     debugPrint('Image file exists: ${machineInfo.printLogoImageData}');
+    //     categoryMenus.add(Container(
+    //       height: 150, // 设置容器宽度，根据需要调整
+    //       margin: EdgeInsets.all(20),
+    //       decoration: BoxDecoration(
+    //         image: DecorationImage(
+    //           image: FileImage(imageFile),
+    //           //fit: BoxFit.contain, // 可以根据需要调整fit属性
+    //         ),
+    //       ),
+    //     ));
+    //   } else {
+    //     debugPrint('Image file does not exist: ${machineInfo.printLogoImageData}');
+    //   }
+    // }
 
     var menuVos = printData["details"];
     var lineHight = 580;
@@ -847,7 +848,14 @@ class CreatePrintImageController extends GetxController {
         mainAxisAlignment: MainAxisAlignment.start,
         //crossAxisAlignment: CrossAxisAlignment.start,
         textDirection: TextDirection.rtl,
-        children: categoryMenus,
+        children: [
+          Image(
+              width: double.infinity,
+              image: CachedNetworkImageProvider(machineInfo.printLogoImageUrl),
+              fit: BoxFit.fitWidth
+          ),
+          ...categoryMenus
+        ],
       ),
     );
 
