@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
+import 'package:foodorder/app/routes/app_pages.dart';
 
 import 'package:get/get.dart';
 import 'package:foodorder/app/common/NumberFormat.dart';
@@ -226,31 +227,32 @@ class SettingView extends GetView<SettingController> {
                   )),
             ),
           ),
-        // InkWell(
-        //   onTap: () async {
-        //     Get.toNamed(Routes.SETTING_EDIT_PAGE);
-        //   },
-        //   child: Container(
-        //     margin: EdgeInsets.only(
-        //         left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
-        //     width: ScreenAdapter.width(180),
-        //     height: ScreenAdapter.height(65),
-        //     alignment: Alignment.center,
-        //     decoration: BoxDecoration(
-        //       color: ColorsUtil.hexToColor("#A61C1C"),
-        //       //设置圆角
-        //       borderRadius: new BorderRadius.circular((16.0)),
-        //     ),
-        //     child: Text("メンユー管理",
-        //         style: TextStyle(
-        //           fontFamily: GFont.getFontFamily(),
-        //           fontSize: ScreenAdapter.fontSize(24),
-        //           fontWeight: FontWeight.w600,
-        //           color: ColorsUtil.hexToColor("#FFFFFF"),
-        //         )),
-        //   ),
-        // ),
-      ],
+          InkWell(
+            onTap: () async {
+              Get.toNamed(Routes.SETTING_EDIT_PAGE);
+            },
+            child: Container(
+              margin: EdgeInsets.only(
+                  left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+              width: ScreenAdapter.width(180),
+              height: ScreenAdapter.height(65),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: ColorsUtil.hexToColor("#A61C1C"),
+                //设置圆角
+                borderRadius: new BorderRadius.circular((16.0)),
+              ),
+              child: Text("メンユー管理",
+                    style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(24),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#FFFFFF"),
+                    )
+                  ),
+            ),
+          ),
+        ],
     ));
   }
 

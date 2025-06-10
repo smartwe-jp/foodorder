@@ -1,12 +1,14 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
+import 'package:foodorder/app/widget/LoadingWidget.dart';
 import 'package:get/get.dart';
 
 class EditPageLogic extends GetxController with StateMixin {
@@ -26,10 +28,66 @@ class EditPageLogic extends GetxController with StateMixin {
 
   changeCategory(catetoryCode, int page) async {
     state.selectIndex = page;
+    state.currentCategoryCode = catetoryCode;
     await _getBookingBootIndexMenu(catetoryCode);
     update();
   }
 
+  _startSellingRequest(menuCode) async {
+    //Loading
+    LoadingUtil.showEasyLoading();
+
+    var formData = {
+      "machineCode": machineInfo.machineCode,
+      "menuCode": menuCode,
+    };
+
+    request('webBootStartSelling', method: 'PUT', parameters: formData)
+        .then((val) {
+          EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      if (response['code'] == 200) {
+        showToast('メニューを販売中に変更しました');
+        _getBookingBootIndexMenu(state.currentCategoryCode);
+      } else {
+        showToast('失敗' + response['msg']);
+      }
+    }).catchError((e) {
+      EasyLoading.dismiss();
+      showToast('エラー メニューの販売中の変更に失敗しました');
+    }).timeout(Duration(seconds: 60), onTimeout: () {
+      EasyLoading.dismiss();
+      showToast('エラー メニューの販売中の変更に失敗しました');
+    });
+  }
+
+  _stopSellingRequest(menuCode) async {
+    //Loading
+    LoadingUtil.showEasyLoading();
+
+    var formData = {
+      "machineCode": machineInfo.machineCode,
+      "menuCode": menuCode,
+    };
+
+    request('webBootStopSelling', method: 'PUT', parameters: formData)
+        .then((val) {
+          EasyLoading.dismiss();
+      var response = json.decode(val.toString());
+      if (response['code'] == 200) {
+        showToast('メニューを売り切れに変更しました');
+        _getBookingBootIndexMenu(state.currentCategoryCode);
+      } else {
+        showToast('失敗' + response['msg']);
+      }
+    }).catchError((e) {
+      EasyLoading.dismiss();
+      showToast('エラー メニューの売り切れの変更に失敗しました');
+    }).timeout(Duration(seconds: 60), onTimeout: () {
+      EasyLoading.dismiss();
+      showToast('エラー メニューの売り切れの変更に失敗しました');
+    });
+  }
 
   showSetSelloutAlert(menuId, name, bounds) {
     bool isSellOut = bounds == 0;
@@ -38,9 +96,132 @@ class EditPageLogic extends GetxController with StateMixin {
         : 'このメニュー($name)を本日売り切れに変更してもよろしいですか?';
     Get.dialog(DialogUtils.alert(tips, confirm: () {
       Get.back();
+      if (isSellOut) {
+        _startSellingRequest(menuId);
+      } else {
+        _stopSellingRequest(menuId);
+      }
     }, cancle: () {
       Get.back();
     }));
+  }
+
+  _showSetSelloutAlert(menuId, name, bounds, {String time = ""}) {
+    bool isSellOut = bounds == 0;
+    String tips = isSellOut
+        ? 'このメニュー($name)を販売中に変更してもよろしいですか?'
+        : 'このメニュー($name)を$timeに完売に変更してもよろしいですか?';
+    Get.dialog(DialogUtils.alert(tips, confirm: () {
+      Get.back();
+      Get.back();
+    }, cancle: () {
+      Get.back();
+    }));
+  }
+
+  // 弹出一个设置售罄的对话框，标题设置下架时间，下面有一个列表时间，分别为4小时 6小时 8小时 10小时 12小时 24小时 永久。
+  showSetSelloutTimeAlert(menuId, name, bounds) {
+    bool isSellOut = bounds == 0;
+
+    if (isSellOut) {
+      // 如果是售罄状态，弹出设置售罄时间的对话框
+      _showSetSelloutAlert(menuId, name, bounds);
+      return;
+    }
+
+    List<String> timeOptions = [
+      '4 時間',
+      '6 時間',
+      '8 時間',
+      '10 時間',
+      '24 時間',
+    ];
+    _alertWithList(timeOptions, confirm: (selectedTime) {
+      // 处理选中的时间
+      //Get.back();
+      _showSetSelloutAlert(menuId, name, bounds, time: selectedTime);
+    });
+  }
+
+  // 实现这个Dialog alertWithList
+  _alertWithList(List<String> options,
+      {Function(String)? confirm, Function()? cancel}) {
+    Get.dialog(
+      AlertDialog(
+        title: Text('完売に変更する時間を設定してください',
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 24,
+              fontWeight: FontWeight.bold,
+            )),
+        content: SizedBox(
+          width: 600,
+          height: 500,
+          child: Column(children: [
+            Expanded(
+              child: SingleChildScrollView(
+                child: ListBody(
+                  children: options.map((option) {
+                    return GestureDetector(
+                        onTap: () {
+                          if (confirm != null) {
+                            confirm(option);
+                          }
+                        },
+                        child: Container(
+                          width: double.infinity,
+                          margin: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: ElevatedButton(
+                            style: ElevatedButton.styleFrom(
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 26.0),
+                            ),
+                            onPressed: () {
+                              if (confirm != null) {
+                                confirm(option);
+                              }
+                            },
+                            child: Text(
+                              option,
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ));
+                  }).toList(),
+                ),
+              ),
+            ),
+
+            //cancel button
+            Container(
+              height: 60,
+              child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                ),
+                onPressed: () {
+                  if (cancel != null) {
+                    cancel();
+                  }
+                  Get.back();
+                },
+                child: Text('キャンセル',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    )),
+              ),
+            ),
+          ]),
+        ),
+        actions: null,
+      ),
+    );
   }
 
   _getBookingBootIndexCagegory() {
@@ -101,7 +282,7 @@ class EditPageLogic extends GetxController with StateMixin {
           });
           if (i == 0) firstCategory = categoryVoList['categoryCode'];
         }
-
+        state.currentCategoryCode = firstCategory;
         _getBookingBootIndexMenu(firstCategory);
       } else {
         //showToast(response['msg']);

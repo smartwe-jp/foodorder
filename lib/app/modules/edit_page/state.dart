@@ -3,6 +3,7 @@ import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 class EditPageState {
   late List topMenu;
   late List currentPageItems;
+  late String currentCategoryCode;
   late int selectIndex;
 
   EditPageState() {
