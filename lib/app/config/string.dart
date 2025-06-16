@@ -48,7 +48,7 @@ class GString{
         "settlement_confirmButton_yes":"領収書発行",
         "settlement_confirmButton_no2":"支払い確定",
         "settlement_confirmButton_no":"領収書不発行",
-        "settlement_receipt_title":"領収書",
+        "settlement_receipt_title":"レシート兼領収書",
         "settlement_receipt_yes":"発行する",
         "settlement_receipt_no":"発行しない",
         "settlement_orderPrice":"お支払い金額",

@@ -36,7 +36,23 @@ class SelectPaymentPage extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         SizedBox(
-          height: ScreenAdapter.height(80),
+          height: ScreenAdapter.height(30),
+        ),
+        Container(
+          padding: EdgeInsets.only(
+              left: ScreenAdapter.width(20),
+              top: ScreenAdapter.height(25),
+              right: ScreenAdapter.width(20),
+              bottom: ScreenAdapter.height(80)),
+          child: Text(
+            GString.getToString(
+                checkLanguage, "settlement_receipt_title"),
+            style: TextStyle(
+                fontFamily: GFont.getFontFamily(),
+                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                fontWeight: FontWeight.w600,
+                fontSize: ScreenAdapter.fontSize(50.0)),
+          ),
         ),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -53,7 +69,7 @@ class SelectPaymentPage extends StatelessWidget {
               },
               child: Container(
                 width: ScreenAdapter.width(320),
-                height: ScreenAdapter.height(225),
+                height: ScreenAdapter.height(185),
                 padding: EdgeInsets.only(top: ScreenAdapter.height(2)),
                 //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
                 decoration: BoxDecoration(
@@ -75,21 +91,12 @@ class SelectPaymentPage extends StatelessWidget {
                   children: [
                     Text(
                       GString.getToString(
-                          checkLanguage, "settlement_receipt_title"),
-                      style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
-                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                          fontWeight: FontWeight.w600,
-                          fontSize: ScreenAdapter.fontSize(34.0)),
-                    ),
-                    Text(
-                      GString.getToString(
                           checkLanguage, "settlement_receipt_yes"),
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
-                          fontSize: ScreenAdapter.fontSize(54.0)),
+                          fontSize: ScreenAdapter.fontSize(45.0)),
                     )
                   ],
                 ),
@@ -107,7 +114,7 @@ class SelectPaymentPage extends StatelessWidget {
               },
               child: Container(
                 width: ScreenAdapter.width(320),
-                height: ScreenAdapter.height(225),
+                height: ScreenAdapter.height(185),
                 padding: EdgeInsets.only(top: ScreenAdapter.height(2)),
                 //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
                 decoration: BoxDecoration(
@@ -127,15 +134,15 @@ class SelectPaymentPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      GString.getToString(
-                          checkLanguage, "settlement_receipt_title"),
-                      style: TextStyle(
-                          fontFamily: GFont.getFontFamily(),
-                          color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                          fontWeight: FontWeight.w600,
-                          fontSize: ScreenAdapter.fontSize(34.0)),
-                    ),
+                    // Text(
+                    //   GString.getToString(
+                    //       checkLanguage, "settlement_receipt_title"),
+                    //   style: TextStyle(
+                    //       fontFamily: GFont.getFontFamily(),
+                    //       color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                    //       fontWeight: FontWeight.w600,
+                    //       fontSize: ScreenAdapter.fontSize(34.0)),
+                    // ),
                     Text(
                       GString.getToString(
                           checkLanguage, "settlement_receipt_no"),
@@ -143,7 +150,7 @@ class SelectPaymentPage extends StatelessWidget {
                           fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                           fontWeight: FontWeight.w600,
-                          fontSize: ScreenAdapter.fontSize(54.0)),
+                          fontSize: ScreenAdapter.fontSize(45.0)),
                     )
                   ],
                 ),
