@@ -45,6 +45,7 @@ extension MenuPageSideBar on MenuPageView {
                               duration: const Duration(milliseconds: 30),
                               curve: Curves.easeInOut,
                             );
+                            controller.changeBackgroundColor(item['background']);
 
                           },
                           child: Container(

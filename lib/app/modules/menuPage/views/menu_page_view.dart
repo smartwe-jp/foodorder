@@ -87,81 +87,84 @@ class MenuPageView extends GetView<MenuPageController> {
         return controller.obx(
           (state) => AnnotatedRegion(
               value: SystemUiOverlayStyle.light,
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      //顶部导航
-                      topArea(),
-
-                      SizedBox(height: ScreenAdapter.height(30)),
-
-                      Expanded(
-                        child: Row(
-                          children: [
-                            //侧栏
-                            sideBarMenu(),
-                            Expanded(
-                                child: 
-                                Column(
-                                  children: [
-                                    //menuItemListView(context),
-                                    Expanded(child: MenuView(state: controller)),
-
-                                    GetBuilder<MenuPageController>(
-                                    id: 'shopping_cart',
-                                    builder: (logic) {
-                                      return
-                                        AnimatedContainer(
-                                          duration: const Duration(milliseconds: 300),
-                                          height:
-                                              controller.showCartTotalGoodsNum.value > 0
-                                                  ? ScreenAdapter.height(200)
-                                                  : 0,
-                                          decoration: BoxDecoration(
-                                            color: Colors.white,
-                                            boxShadow: [
-                                              BoxShadow(
-                                                color: Colors.grey.withOpacity(0.3),
-                                                spreadRadius: 3,
-                                                blurRadius: 3,
-                                                offset: Offset(
-                                                    0, 1), // changes position of shadow
-                                              ),
-                                            ],
-                                          ),
-                                        );
-                                    })
-                                  ],
-                                )
-                            ),
-                          ],
+              child: Container(
+                color: ColorsUtil.hexToColor(controller.background),
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        //顶部导航
+                        topArea(),
+                
+                        SizedBox(height: ScreenAdapter.height(30)),
+                
+                        Expanded(
+                          child: Row(
+                            children: [
+                              //侧栏
+                              sideBarMenu(),
+                              Expanded(
+                                  child: 
+                                  Column(
+                                    children: [
+                                      //menuItemListView(context),
+                                      Expanded(child: MenuView(state: controller)),
+                
+                                      GetBuilder<MenuPageController>(
+                                      id: 'shopping_cart',
+                                      builder: (logic) {
+                                        return
+                                          AnimatedContainer(
+                                            duration: const Duration(milliseconds: 300),
+                                            height:
+                                                controller.showCartTotalGoodsNum.value > 0
+                                                    ? ScreenAdapter.height(200)
+                                                    : 0,
+                                            decoration: BoxDecoration(
+                                              color: Colors.white,
+                                              boxShadow: [
+                                                BoxShadow(
+                                                  color: Colors.grey.withOpacity(0.3),
+                                                  spreadRadius: 3,
+                                                  blurRadius: 3,
+                                                  offset: Offset(
+                                                      0, 1), // changes position of shadow
+                                                ),
+                                              ],
+                                            ),
+                                          );
+                                      })
+                                    ],
+                                  )
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-
-                  //购物车
-                  shoppingCar(),
-
-                  //if (controller.showCartTotalGoodsNum.value > 0)
-                  GetBuilder<MenuPageController>(
-                      id: 'shopping_cart',
-                      builder: (logic) {
-                        return AnimatedPositioned(
-                          duration: const Duration(milliseconds: 300),
-                          height: controller.showCartTotalGoodsNum.value > 0
-                              ? ScreenAdapter.height(200)
-                              : 0,
-                          width: ScreenAdapter.getScreenWidth(),
-                          right: ScreenAdapter.width(0),
-                          bottom: controller.showCartTotalGoodsNum.value > 0
-                              ? ScreenAdapter.height(0)
-                              : -ScreenAdapter.height(200),
-                          child: checkOutButton(),
-                        );
-                      }),
-                ],
+                      ],
+                    ),
+                
+                    //购物车
+                    shoppingCar(),
+                
+                    //if (controller.showCartTotalGoodsNum.value > 0)
+                    GetBuilder<MenuPageController>(
+                        id: 'shopping_cart',
+                        builder: (logic) {
+                          return AnimatedPositioned(
+                            duration: const Duration(milliseconds: 300),
+                            height: controller.showCartTotalGoodsNum.value > 0
+                                ? ScreenAdapter.height(200)
+                                : 0,
+                            width: ScreenAdapter.getScreenWidth(),
+                            right: ScreenAdapter.width(0),
+                            bottom: controller.showCartTotalGoodsNum.value > 0
+                                ? ScreenAdapter.height(0)
+                                : -ScreenAdapter.height(200),
+                            child: checkOutButton(),
+                          );
+                        }),
+                  ],
+                ),
               )),
           onLoading: Center(
             child: CircularProgressIndicator(

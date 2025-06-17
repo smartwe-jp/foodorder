@@ -96,6 +96,9 @@ class MenuPageController extends GetxController with StateMixin {
   late List menuList;
   late List<String> menuCategory;
   final PageController pageController = PageController();
+  
+  String background = Gcolor.whiteColor;
+
 
   @override
   Future<void> onInit() async {
@@ -205,6 +208,7 @@ class MenuPageController extends GetxController with StateMixin {
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
+            "background":categoryVoList['background'] ?? "FFFFFF",
             "showColor": MenuColor[menuIndex]
           });
           menuIndex++;
@@ -293,6 +297,12 @@ class MenuPageController extends GetxController with StateMixin {
     debugPrint("获取首页图片");
     var homeimageList = await HomeServices.getSmartweHomeImagesData();
     homeImages.value = homeimageList;
+  }
+
+  changeBackgroundColor(String color) {
+    debugPrint("changeBackgroundColor: $color");
+    background = color;
+    update();
   }
 
   //获取页面分类
