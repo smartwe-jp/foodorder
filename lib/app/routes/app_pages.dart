@@ -15,6 +15,7 @@ import '../modules/SelfservicePage/bindings/selfservice_page_binding.dart';
 import '../modules/SelfservicePage/views/selfservice_page_view.dart';
 import '../modules/TransitPage/bindings/transit_page_binding.dart';
 import '../modules/TransitPage/views/transit_page_view.dart';
+import '../modules/edit_page/view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/menuPage/bindings/menu_page_binding.dart';
@@ -137,5 +138,10 @@ class AppPages {
       page: () => ReceiptQueryView(),
       binding: ReceiptQueryBinding(),
     ),
+    GetPage(
+      name: _Paths.SETTING_EDIT_PAGE,
+      page: () => EditPage(),
+    ),
+
   ];
 }

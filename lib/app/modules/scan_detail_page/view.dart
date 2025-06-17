@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/Extension/StringExtension.dart';
-import 'package:foodorder/app/config/localString.dart';
+import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:get/get.dart';
 

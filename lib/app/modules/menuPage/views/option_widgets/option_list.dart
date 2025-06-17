@@ -1,7 +1,6 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/widgets/OptionTitle.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';

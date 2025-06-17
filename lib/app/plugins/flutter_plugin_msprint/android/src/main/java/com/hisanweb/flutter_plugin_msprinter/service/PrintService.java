@@ -549,7 +549,7 @@ public class PrintService  {
 //            }catch (Exception e){
 //                System.out.println("http Exception");
 //            }
-            if (topImage != null) {
+//            if (topImage != null) {
 //                System.out.println("topImage:" + topImage);
 //                byte[] bytes = Base64.decode(topImage, Base64.DEFAULT);
 //                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
@@ -587,7 +587,7 @@ public class PrintService  {
 //                    //result.error("FILE_NOT_FOUND", "Image file not found", null);
 //                }
 
-            }
+//            }
         }
 
         byte[] bytes = Base64.decode(content, Base64.DEFAULT);

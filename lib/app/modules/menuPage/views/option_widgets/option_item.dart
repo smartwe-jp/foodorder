@@ -1,7 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/Extension/StringExtension.dart';
+import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:foodorder/app/config/localString.dart';
 

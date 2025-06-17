@@ -22,6 +22,7 @@ abstract class Routes {
   static const ERROR_PAGE = _Paths.ERROR_PAGE;
   static const RECEIPT_QUERY = _Paths.RECEIPT_QUERY;
   static const SELECT_PAYMENT_PAGE = _Paths.SELECT_PAYMENT_PAGE;
+  static const SETTING_EDIT_PAGE  = _Paths.SETTING_EDIT_PAGE;
 }
 
 abstract class _Paths {
@@ -45,4 +46,5 @@ abstract class _Paths {
   static const REIMBURSE_ORDER = '/reimburse-order';
   static const ERROR_PAGE = '/error_page';
   static const RECEIPT_QUERY = '/receipt_query';
+  static const SETTING_EDIT_PAGE = '/setting_edit_page';
 }

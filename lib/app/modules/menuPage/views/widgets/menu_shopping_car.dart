@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/Extension/StringExtension.dart';
+import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';

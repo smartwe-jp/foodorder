@@ -5,7 +5,6 @@ import 'package:dio/dio.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
 
-import '../config/http_conf.dart';
 import '../config/index.dart';
 
 
