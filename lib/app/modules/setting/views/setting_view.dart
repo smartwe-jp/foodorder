@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/ScreenAdapter.dart';
-import 'package:foodorder/app/Extension/StringExtension.dart';
+import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import '../controllers/setting_controller.dart';
 import 'CashSettingView.dart';
 

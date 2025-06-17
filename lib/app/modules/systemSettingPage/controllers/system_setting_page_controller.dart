@@ -73,6 +73,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxString wlan_print_ip_Two = "".obs;
   RxString wlan_print_port_Two = "9100".obs;
 
+  String? is_allow_wlanPanelPrint;
+  String? wlan_panel_print_ip;
+  String? wlan_panel_print_port;
+
   RxBool actuarial = false.obs; //是否开启精算
   RxBool  lineup = false.obs; //是否开启排队
 
@@ -123,6 +127,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
     Map wlanPrintSettingInfoTwo = await HomeServices.getWlanPrintSettingTwoInfo();
+    Map wlanPanelPrintSettingInfo = await HomeServices.getWlanPanelPrintSettingInfo();
     printDirection.value = await HomeServices.getPrintDirection() == "1" ? true : false;
     printTwoDirection.value = await HomeServices.getPrintTwoDirection() == "1" ? true : false;
     printThreeDirection.value = await HomeServices.getPrintThreeDirection() == "1" ? true : false;
@@ -162,6 +167,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       is_allow_wlanPrint_Two.value = systemSettingInfo['isAllowWlanPrintTwo'];
       is_allow_wlanPrint_Two_continuous.value = systemSettingInfo['isAllowWlanPrintTwoContinuous'];
       panelType = systemSettingInfo['panelType'] ?? 'Mini';
+      is_allow_wlanPanelPrint = systemSettingInfo['isAllowWlanPanelPrint'] ?? "0";
 
       if(posSettingInfo['posIp'] !=null && posSettingInfo['posIp'] !="" && posSettingInfo['posPort'] !=null && posSettingInfo['posPort'] !=""){
         pos_ip.value = posSettingInfo['posIp'];
@@ -179,6 +185,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
         actuarial.value = smartweMachineSetting["machineActuarial"];
         lineup.value = smartweMachineSetting["machineLineup"];
       }
+      wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
+      wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
     change(null, status: RxStatus.success());
   }
 
@@ -203,7 +211,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "showPrintType": showPrintType.value.toString(), //0receipt 1label
     "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
     "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
-    "panelType":panelType
+    "panelType":panelType,
+    "isAllowWlanPanelPrint": is_allow_wlanPanelPrint ?? "0",
   };
 
   showDownloadingAlert() {
@@ -635,6 +644,32 @@ class SystemSettingPageController extends GetxController with StateMixin {
     );
 
 
+  }
+
+  checkIsAllowWlanPanelPrint(checkedType) async {
+    var wlanPrintSettingData;
+    if (checkedType == "1") {
+      wlanPrintSettingData = {
+        "wlanPrintIp": wlan_panel_print_ip, //ip
+        "wlanPrintPort": wlan_panel_print_port, //port
+      };
+    } else {
+      wlanPrintSettingData = {
+        "wlanPrintIp": "", //ip
+        "wlanPrintPort": "", //port
+      };
+
+      wlan_panel_print_ip = "";
+      wlan_panel_print_port = "";
+    }
+    Storage.setString(
+        'smartwe_wlanPanelPrintSetting', json.encode(wlanPrintSettingData));
+    GetxStorage.setData(
+        'smartwe_wlanPanelPrintSetting', json.encode(wlanPrintSettingData));
+
+    is_allow_wlanPanelPrint = checkedType;
+
+    _updateSystemSetting("isAllowWlanPanelPrint", checkedType);
   }
 
   //printType=0 receipt 1label

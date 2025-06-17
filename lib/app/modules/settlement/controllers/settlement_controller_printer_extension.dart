@@ -3,6 +3,7 @@ import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
@@ -313,7 +314,17 @@ extension SettlementControllerPrinterExtension on SettlementController {
     var optionNum = 0;
     int addRowHight = 0;
 
-
+    categoryMenus.add(
+      Container(
+        margin: EdgeInsets.only(
+                  bottom: ScreenAdapter.height(50)),
+        child: BarcodeWidget(
+                height: ScreenAdapter.height(200),
+                barcode: Barcode.qrCode(),
+                data: orderId.value,
+              )
+      ),
+    );
 
     categoryMenus.add(
       Container(

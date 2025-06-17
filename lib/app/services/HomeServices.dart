@@ -193,6 +193,21 @@ class HomeServices{
     return printSettingInfo;
   }
 
+  static getWlanPanelPrintSettingInfo() async {
+    Map printSettingInfo;
+    try {
+      var printSettingDatatmp =
+      await Storage.getString('smartwe_wlanPanelPrintSetting');
+      Map printSettingData = json.decode(printSettingDatatmp!);
+      GetxStorage.setData(
+          'smartwe_wlanPanelPrintSetting', json.encode(printSettingData));
+      printSettingInfo = printSettingData;
+    } catch (e) {
+      printSettingInfo = {};
+    }
+    return printSettingInfo;
+  }
+
   //是否展示微信支付宝等
   static getMachineActivateData() async{
     Map machineActivateInfo;

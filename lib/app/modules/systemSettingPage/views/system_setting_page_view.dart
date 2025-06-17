@@ -745,7 +745,134 @@ class SystemSettingPageView extends GetView {
       ),
     );
   }
+  setIsAllowPanelDisplay() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllowWlanPrintTwo("0");
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPanelPrint == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("設置しない",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPanelPrint == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              _showPanelSettingDialog();
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (controller.is_allow_wlanPanelPrint == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("設置",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (controller.is_allow_wlanPanelPrint == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          if (controller.wlan_panel_print_ip != "" && controller.wlan_panel_print_port != "")
+            Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+              child:
+              InkWell(
+                highlightColor: Colors.transparent, // 透明色
+                splashColor: Colors.transparent, // 透明色
 
+                child: Container(
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  //设置 child 居中
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(60),
+                  width: ScreenAdapter.width(220),
+                  //边框设置
+                  decoration: new BoxDecoration(
+                    //背景
+                    color: ColorsUtil.hexToColor("#409eff"),
+                    //设置四周圆角 角度
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    //设置四周边框
+                    //border: new Border.all(width: 1, color: Colors.red),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              "${controller.wlan_panel_print_ip}:",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )
+                          ),
+                          Text(
+                              "${controller.wlan_panel_print_port}",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )
+                          )
+                        ],
+                      )
+
+                    ],
+                  ),
+                ),
+              ),
+            ),
+
+        ],
+      ),
+    );
+  }
   //设置是否开启pos刷卡
   setIsAllowPos() {
     return Container(
@@ -898,6 +1025,27 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
+    );
+  }
+
+  _showPanelSettingDialog() async {
+    Get.dialog(
+        SetPosIpPage(
+          posIp: controller.wlan_panel_print_ip,
+          posPort: controller.wlan_panel_print_port,
+          showRadio:0,
+          onConfrimClick: (String posIp, String posPort) {
+            if(posIp != ""){
+
+              controller.wlan_panel_print_ip = posIp;
+              controller.wlan_panel_print_port = posPort;
+
+
+              controller.checkIsAllowWlanPanelPrint("1");
+            }
+
+          },
+        )
     );
   }
 
@@ -2752,6 +2900,35 @@ class SystemSettingPageView extends GetView {
                         ],
                       ),
                     ],
+                  ),
+                  Table(
+                      border: TableBorder.all(),
+                      columnWidths: const <int, TableColumnWidth>{
+                        //0: IntrinsicColumnWidth(),
+                        0: FlexColumnWidth(258),
+                        1: FlexColumnWidth(750),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      children: <TableRow>[
+
+                        TableRow(
+                            children: <Widget>[
+                              Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  "番号パネルIP",
+                                  style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      fontSize: ScreenAdapter.fontSize(22),
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              ),
+                              setIsAllowPanelDisplay(),//是否开启pos机刷卡
+                            ]
+                        ),
+                      ]
                   ),
                   Table(
                       border: TableBorder.all(),
