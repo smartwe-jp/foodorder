@@ -12,6 +12,7 @@ import 'package:foodorder/app/services/ScreenAdapter.dart';
 class GridItemView extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String originalPrice;
   final String price;
   final ImageProvider image;
   final double imageRadius;
@@ -25,6 +26,7 @@ class GridItemView extends StatelessWidget {
       required this.title,
       required this.subtitle,
       required this.price,
+      required this.originalPrice,
       required this.image,
       required this.onTap,
       this.option = "",
@@ -83,6 +85,7 @@ class GridItemView extends StatelessWidget {
                     Expanded(
                       child: ItemInfoArea(
                           title: title,
+                          originalPrice: originalPrice,
                           subtitle: price,
                           option: option,
                           onTap: onTap),
@@ -133,6 +136,7 @@ class RectangleImageView extends StatelessWidget {
 
 class ItemInfoArea extends StatelessWidget {
   final String title;
+  final String originalPrice;
   final String subtitle;
   final String option;
   final Function onTap;
@@ -140,6 +144,7 @@ class ItemInfoArea extends StatelessWidget {
   ItemInfoArea(
       {Key? key,
       required this.title,
+      required this.originalPrice,
       required this.subtitle,
       this.option = "",
       required this.onTap});
@@ -153,7 +158,7 @@ class ItemInfoArea extends StatelessWidget {
         MainTitle(title: title),
         //价格
         Row(mainAxisAlignment: MainAxisAlignment.start, children: [
-          SubTitle(title: subtitle),
+          SubTitle(title: subtitle, originalPrice: originalPrice),
           //SizedBox(width: ScreenAdapter.width(20)),
           //option button
           // (option != "")
@@ -193,8 +198,9 @@ class MainTitle extends StatelessWidget {
 
 class SubTitle extends StatelessWidget {
   final String title;
+  final String originalPrice;
 
-  SubTitle({required this.title});
+  SubTitle({required this.title, required this.originalPrice});
 
   @override
   Widget build(BuildContext context) {
@@ -211,15 +217,41 @@ class SubTitle extends StatelessWidget {
         SizedBox(
           width: ScreenAdapter.width(5),
         ),
-        Text(
-          title.formatSum(),
-          style: TextStyle(
-            fontSize: ScreenAdapter.fontSize(28),
-            fontWeight: FontWeight.w500,
-            fontFamily: GFont.getFontFamily(),
-            color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
-          ),
-        )
+        if (originalPrice.isNotEmpty && originalPrice != title)
+          Row(
+            children: [
+              Text(
+                originalPrice.formatSum(),
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(20),
+                  fontWeight: FontWeight.w400,
+                  fontFamily: GFont.getFontFamily(),
+                  color: Colors.grey,
+                  decoration: TextDecoration.lineThrough,
+                ),
+              ),
+              SizedBox(width: ScreenAdapter.width(8)),
+              Text(
+                title.formatSum(),
+                style: TextStyle(
+                  fontSize: ScreenAdapter.fontSize(28),
+                  fontWeight: FontWeight.w500,
+                  fontFamily: GFont.getFontFamily(),
+                  color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+                ),
+              ),
+            ],
+          )
+        else
+          Text(
+            title.formatSum(),
+            style: TextStyle(
+              fontSize: ScreenAdapter.fontSize(28),
+              fontWeight: FontWeight.w600,
+              fontFamily: GFont.getFontFamily(),
+              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+            ),
+          )
       ]),
     );
   }

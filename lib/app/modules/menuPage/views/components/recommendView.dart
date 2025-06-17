@@ -18,6 +18,7 @@ extension RecommendView on MenuPageController {
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
+      originalPrice: "${item['currentPrice']}",
       price: "${item['currentPrice']}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
