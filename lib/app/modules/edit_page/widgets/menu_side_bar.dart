@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
@@ -46,19 +47,31 @@ class MenuSideBar extends StatelessWidget {
       ),
       Container(
           margin: EdgeInsets.only(left: 30.dp, right: 50.dp),
-          child: ElevatedButton(
+          child:
+          ElevatedButton(
               onPressed: () {
                 Get.back();
               },
-              child: Text(
-                '戻る',
-                style:
-                TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: 36,
-                  fontWeight: FontWeight.w500,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor), // 暗绿色背景
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // 圆角 10
                 ),
-              ))),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 10.dp, horizontal: 20.dp),
+                child: Text(
+                  '戻る',
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: 36,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+          )
+      ),
       SizedBox(
         height: 30.dp,
       )

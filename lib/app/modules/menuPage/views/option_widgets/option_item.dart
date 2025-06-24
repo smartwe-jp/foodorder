@@ -4,11 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:badges/badges.dart' as badges;
 import 'package:foodorder/app/config/localString.dart';
+import 'package:get/get.dart';
 
 import '../../../../config/color.dart';
 import '../../../../config/colorsUtil.dart';
 import '../../../../config/font.dart';
+import '../../../../config/string.dart';
 import '../../../../services/ScreenAdapter.dart';
+import '../../../../widget/DialogUtils.dart';
 
 class OptionWidget extends StatefulWidget {
   final bool isLabelOption;
@@ -17,6 +20,7 @@ class OptionWidget extends StatefulWidget {
   final ValueChanged<bool> onSelected;
   final bool isSelected;
   final bool canSelect;
+  final String languageKey;
 
   const OptionWidget({
     Key? key,
@@ -25,6 +29,7 @@ class OptionWidget extends StatefulWidget {
     required this.onChanged,
     required this.onSelected,
     required this.isSelected,
+    required this.languageKey,
     this.canSelect = true,
   }) : super(key: key);
 
@@ -97,6 +102,16 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   }
 
   void _showOutOfRangeDialog() {
+
+    Get.dialog(
+        DialogUtils.alertOneButton('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle),
+            title: GString.getToString(widget.languageKey, "tag_title"),
+            confirmtitle: GString.getToString(widget.languageKey,"tag_button_yes"),
+            confirm: () {
+              Get.back();
+            })
+    );
+
     showDialog(
       context: context,
       builder: (BuildContext context) {

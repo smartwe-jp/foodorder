@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:convert';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
@@ -198,6 +199,10 @@ class HomeController extends GetxController {
 
   _sendFailureEmail() async {
     debugPrint("发送通知邮件");
+
+    if (kDebugMode) {
+      return;
+    }
 
     var formData = {
       "machineCode": _machineCode.value,

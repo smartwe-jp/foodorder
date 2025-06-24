@@ -5,6 +5,9 @@ import 'dart:typed_data';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/http_conf.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
 import 'package:package_info/package_info.dart';
@@ -31,6 +34,9 @@ class TransitPageController extends GetxController {
   RxBool _loadActiveInfo = false.obs;
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
+  
+  late SseService _sseService;
+  late SseService _sseServiceMobile;
 
   @override
   Future<void> onInit() async {
@@ -347,6 +353,7 @@ class TransitPageController extends GetxController {
       "isAllowWlanPrintTwoContinuous":(SystemSettingInfo["isAllowWlanPrintTwoContinuous"] !="" && SystemSettingInfo["isAllowWlanPrintTwoContinuous"]!=null) ? SystemSettingInfo["isAllowWlanPrintTwoContinuous"] :"1",//0 单票 1连票
       "isAllowRejishime":(SystemSettingInfo["isAllowRejishime"] !="" && SystemSettingInfo["isAllowRejishime"]!=null) ? SystemSettingInfo["isAllowRejishime"] :"0",
       "panelType": SystemSettingInfo['panelType'] ?? 'Mini',
+      "isAllowWlanPanelPrint": SystemSettingInfo["isAllowWlanPanelPrint"] ?? '0'
     };
     Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));//1 默认58mm  2 宽纸80mm
     GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
@@ -369,6 +376,8 @@ class TransitPageController extends GetxController {
       GetxStorage.setData('machineSettingManagePassword', smartweMachineSettingPassword);
     }
 
+    Get.lazyPut(() => PrintService(Get.find<MachineInfoController>()));
+
     //这里判断是否禁用1元
     if(systemSettingData["isAllowOneYen"] == "0"){
       try {
@@ -382,7 +391,32 @@ class TransitPageController extends GetxController {
     }
     _goNext(checkmachineMode);
 
+    // _sseService = SseService(servicePath['sseSubscribe']??'', '358886760');
+    // _sseServiceMobile = SseService(servicePath['sseSubscribeMobile']??'', _machineCode.value);
+    //
+    // _sseService.connect();
+    // _sseServiceMobile.connect();
+    //
+    // ever(_sseService.lastData, (Map data) {
+    //   if (data.isNotEmpty) {
+    //     print('_sseService: New data received -> $data');
+    //     _senToPrint(data);
+    //   }
+    // });
+    //
+    // ever(_sseServiceMobile.lastData, (Map data) {
+    //   if (data.isNotEmpty) {
+    //     print('_sseServiceMobile: New data received -> $data');
+    //   }
+    // });
+
   }
+
+
+  _senToPrint(Map data) {
+    Get.find<PrintService>().printData(data);
+  }
+
 
   void _goNext(checkmachineMode) async {
     Get.updateLocale(Locale('jp', 'JP'));

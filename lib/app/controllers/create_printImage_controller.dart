@@ -283,7 +283,9 @@ class CreatePrintImageController extends GetxController {
                               fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
-                            ))),
+                            )
+                        )
+                    ),
                   ],
                 ),
               ));
@@ -367,16 +369,15 @@ class CreatePrintImageController extends GetxController {
     //LogUtil.d(base64Image);
     if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", " ");
-      Future.delayed(Duration(milliseconds: 800), () async {
-        await FlutterPluginMsprinter.sendPrintCut("1");
-        tpPrintReceipt(print_paper_txt_size, printData);
-      });
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", "");
+      //await Future.delayed(Duration(milliseconds: 500));
+      await FlutterPluginMsprinter.sendPrintCut("1");
+      //await Future.delayed(Duration(milliseconds: 300));
+      tpPrintReceipt(print_paper_txt_size, printData);
     } else {
-      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", " ");
-      Future.delayed(Duration(milliseconds: 800), () async {
-        await FlutterPluginMsprinter.sendPrintCut("0");
-      });
+      await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");
+      await Future.delayed(Duration(milliseconds: 800));
+      await FlutterPluginMsprinter.sendPrintCut("0");
     }
 
     //});
@@ -404,6 +405,8 @@ class CreatePrintImageController extends GetxController {
     //     debugPrint('Image file does not exist: ${machineInfo.printLogoImageData}');
     //   }
     // }
+
+    debugPrint('printData:$printData');
 
     var menuVos = printData["details"];
     var lineHight = 580;
@@ -495,15 +498,15 @@ class CreatePrintImageController extends GetxController {
       ),
     );
 
-    int categoryNum = menuVos.length;
+    //int categoryNum = menuVos.length;
     int linNum = 0;
     for (var i = 0; i < menuVos.length; i++) {
       var lineVosList = menuVos[i];
 
       // 计算菜品标题长度
       var groupNameLength = lineVosList["menuName"].length;
-      var menuLine = groupNameLength / 10;
-      var menuRowNum = menuLine.ceil();
+      //var menuLine = groupNameLength / 10;
+      //var menuRowNum = menuLine.ceil();
       //linNum+=menuRowNum;
       var takeoutTag = (printData["takeOut"] == true) ? "*" : "";
       if (groupNameLength > 10) {
@@ -877,12 +880,10 @@ class CreatePrintImageController extends GetxController {
 
     //_showAndPrint(base64Image, printWidget);
 
-    await Future.delayed(Duration(milliseconds: 800));
-    await FlutterPluginMsprinter.sendPrintImgNew(
-        base64Image, "1", "1", "");
-    Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("1");
-    });
+    //await Future.delayed(Duration(milliseconds: 800));
+    await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1", "");
+    //await Future.delayed(Duration(milliseconds: 300));
+    await FlutterPluginMsprinter.sendPrintCut("1");
   }
 
   Future<void> ensureImageLoaded(String imageUrl) async {

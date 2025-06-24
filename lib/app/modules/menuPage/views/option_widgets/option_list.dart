@@ -155,6 +155,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
                   canSelect: _canSelect,
                   optionInfo: _optionListInfo[i],
                   isSelected: isOptionSelected(_optionListInfo[i]['optionCode']),
+                  languageKey: widget.languageKey,
                   onChanged: (isAdd){
                     _onSelected(_optionListInfo[i], isAdd, true);
                   },

@@ -24,7 +24,7 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     }
 
 
-    var request_url = servicePath[url];
+    var request_url = servicePath[url] ?? url;
     if((link_parameters?.isNotEmpty ?? true)){
       request_url = "${request_url}${link_parameters}";
     }

@@ -45,6 +45,7 @@ class SettlementController extends GetxController with StateMixin {
   FocusNode scanQrCodeFocusNode = FocusNode();
 
   MachineInfoController machineInfo = Get.find();
+  PrintService printService = Get.find();
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
 
@@ -994,12 +995,12 @@ class SettlementController extends GetxController with StateMixin {
         if (response['code'] == 200) {
           //receipt
           if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
-            _wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
+            printService.wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
           }
 
           //label打印
           if(showPrintType.value ==1 && wlan_print_ip.value !="" && response['data']["printInfoListStruct"].length>0){
-            wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
+            printService.wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
           }
           //printType 1 打印菜+领収书 2 只打印菜
           //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
@@ -1015,6 +1016,7 @@ class SettlementController extends GetxController with StateMixin {
           }
 
           printGoNext();
+          _sendToDisplayPanel(json.encode(response['data']));
 
         } else {
           //错误后重新调用一次
@@ -1107,6 +1109,20 @@ class SettlementController extends GetxController with StateMixin {
             }
         )
     );
+  }
+
+  _sendToDisplayPanel(data) async {
+    debugPrint("_sendToDisplayPanel data: $data");
+    final String panelAddress =
+        'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
+    try {
+      final response =
+      await request(panelAddress, method: 'POST', parameters: data);
+      final responseValue = json.decode(response.toString());
+      debugPrint('_sendToDisplayPanel:$responseValue');
+    } catch (error) {
+      debugPrint('_sendToDisplayPanel error: ${error.toString()}');
+    }
   }
 
   _checkOutErrorHandle(showDialogContent, {Function? retryAction}) async {
@@ -1623,69 +1639,7 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  _wifiNetworkPrintData(serialNumber,extendPrintVo,takeOut,orderTime){
-    var printData = [];
-    extendPrintVo.forEach((k,v){
-      printData = [];
-      if(v.length>0){
-        for(var i=0; i<v.length; i++){
-          v[i]["checked"] = false;
-          //判断是否有需要打印的数据
-          if(v[i]["print"] == true){
-            printData.add(v[i]);
-          }
-        }
-        //QueueUtil.get("smartwe_taks_wifi_print")?.addTask(() {
-        return wifiNetPrintnew(serialNumber,k,printData,takeOut,orderTime);
-        //});
-      }
-    });
 
-  }
-
-  wifiNetPrintnew(serialNumber,printType,printData,takeOut,orderTime) async {
-    //如果整理的数据打印机不是10或11就返回
-    if(printType != "10" && printType != "12"){
-      return;
-    }
-
-    //判断是否有打印机ip
-    Map printerIpInfo = {"printer_ip":"","printer_port":"",};
-    if(printType == "10"){
-      if(wlan_print_ip.value != null && wlan_print_ip.value != ""){
-
-        final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
-
-        printerIpInfo = {"printer_ip":wlan_print_ip.value,"printer_port":wlan_print_port.value,};
-        if(is_allow_wlanPrint_continuous.value =="1"){
-          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value,rotate);
-        }else{
-          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip.value,rotate);
-        }
-
-      }else{
-        return;
-      }
-    }else if(printType == "12"){
-      if(wlan_print_ip_two.value != null && wlan_print_ip_two.value != ""){
-        final rotate = await HomeServices.getPrintTwoDirection() == "1" ? pi : 0.0;
-        printerIpInfo = {"printer_ip":wlan_print_ip_two.value,"printer_port":wlan_print_port_two.value,};
-        if(is_allow_wlanPrint_Two_continuous.value =="1"){
-          wifiNetworkReceiptPrintContinuousData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value,rotate);
-
-        }else{
-          wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,wlan_print_ip_two.value,rotate);
-        }
-      }else{
-        return;
-      }
-    }else{
-      return;
-    }
-    //print(printData);
-    //_wifiNetworkReceiptPrintData(serialNumber,printData,takeOut,orderTime,printerIpInfo["printer_ip"]);
-
-  }
 
   create491Message() {
     var _queryString =       "2104910001       00497                  000000010231130162425";

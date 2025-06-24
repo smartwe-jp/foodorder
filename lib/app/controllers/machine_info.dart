@@ -58,6 +58,20 @@ class MachineInfoController extends GetxController {
   late bool showDinersClub;
   late bool showDiscover;
 
+  late String wlan_panel_print_ip;
+  late String wlan_panel_print_port;
+
+  late String wlan_print_ip;
+  late String wlan_print_port;
+
+  late String wlan_print_ip_two;
+  late String wlan_print_port_two;
+
+  late String is_allow_wlanPrint_continuous;
+  late String is_allow_wlanPrint_continuous_two;
+
+  late int showPrintType;
+
   String paymentMethod = '0';
 
   late String pos_ip;
@@ -110,6 +124,11 @@ class MachineInfoController extends GetxController {
         : "1";
     machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
+    showPrintType = int.parse(systemSettingInfo['showPrintType']); // 0:普通 1:贴纸
+
+    is_allow_wlanPrint_continuous = systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
+    is_allow_wlanPrint_continuous_two = systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
+
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
     homeList = homeImageList ?? [];
@@ -156,6 +175,20 @@ class MachineInfoController extends GetxController {
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
+    Map wlanPrintPanelSettingInfo =
+    await HomeServices.getWlanPanelPrintSettingInfo();
+    wlan_panel_print_ip = wlanPrintPanelSettingInfo['wlanPrintIp'] ?? "";
+    wlan_panel_print_port = wlanPrintPanelSettingInfo['wlanPrintPort'] ?? "";
+
+    Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
+    wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
+    wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
+
+    Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
+    wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
+    wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
+
+
     print('loadMachineSettingInfo 6');
   }
 }

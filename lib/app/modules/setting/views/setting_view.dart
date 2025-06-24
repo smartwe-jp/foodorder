@@ -83,7 +83,7 @@ class SettingView extends GetView<SettingController> {
                 color: Colors.white12,
                 border: Border(
                   //bottom: BorderSide(color: Colors.grey, width: 1.0),
-                  top: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  //top: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   left: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   right: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   bottom: BorderSide(color: Colors.grey.shade400, width: 1.0),

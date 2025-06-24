@@ -92,4 +92,8 @@ const servicePath = {
 
   'localOrderPost': 'http://172.50.10.84:3000/api/add/order',
 
+  'sseSubscribe': base_url + 'web/webhook/sse/subscribe/', //SSE订阅地址
+
+  'sseSubscribeMobile': base_url + ' /sse/smartWe/subscribe/', //SSE
+
 };

@@ -230,7 +230,7 @@ class MenuCellView extends StatelessWidget {
                         },
                         child: Container(
                             alignment: Alignment.center,
-                            height: 40.dp,
+                            height: 52.dp,
                             decoration: BoxDecoration(
                               color: bounds == 0
                                   ? ColorsUtil.hexToColor("#67c23a")
@@ -241,7 +241,7 @@ class MenuCellView extends StatelessWidget {
                             child: Text(bounds == 0 ? '完売取消' : '完売',
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
-                                  fontSize: 18,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.w500,
                                   color: Colors.white,
                                 ))),

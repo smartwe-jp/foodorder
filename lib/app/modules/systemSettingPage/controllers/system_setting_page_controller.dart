@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
 import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
@@ -35,6 +36,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //TODO: Implement SystemSettingPageController
 
   AppConfig appConfig = Get.find();
+  PrintService printService = Get.find<PrintService>();
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
@@ -186,7 +188,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         lineup.value = smartweMachineSetting["machineLineup"];
       }
       wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
-      wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
+      wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "3000";
     change(null, status: RxStatus.success());
   }
 
@@ -676,23 +678,37 @@ class SystemSettingPageController extends GetxController with StateMixin {
   printTest(printIp,printPort,{printType=0}) async {
 
     if(printType == 0){
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-        PicGenerateTask<PrinterInfo>(
-          tempWidget: testReceipt(printIp) as ATempWidget,
-          printTypeEnum: PrintTypeEnum.receipt,
-          params: PrinterInfo(ip:printIp),
-        ),
-      );
+      // PictureGeneratorProvider.instance.addPicGeneratorTask(
+      //   PicGenerateTask<PrinterInfo>(
+      //     tempWidget: testReceipt(printIp) as ATempWidget,
+      //     printTypeEnum: PrintTypeEnum.receipt,
+      //     params: PrinterInfo(ip:printIp),
+      //   ),
+      // );
+
+      final printData = jsonDecode(printJsonString);
+      printService.printData(printData);
+
+
     }else{
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-        PicGenerateTask<PrinterInfo>(
-          tempWidget: testLabel(printIp) as ATempWidget,
-          printTypeEnum: PrintTypeEnum.label,
-          params: PrinterInfo(ip:printIp),
-        ),
-      );
+      // PictureGeneratorProvider.instance.addPicGeneratorTask(
+      //   PicGenerateTask<PrinterInfo>(
+      //     tempWidget: testLabel(printIp) as ATempWidget,
+      //     printTypeEnum: PrintTypeEnum.label,
+      //     params: PrinterInfo(ip:printIp),
+      //   ),
+      // );
+      final printData = jsonDecode(printJsonString);
+      printService.printData(printData);
     }
   }
+
+  final printJsonString = ''' 
+{ "from_plate":"panda", "orderLinesMap":{ "0":[ { "name":"芋泥啵啵", "options":{ "规格":[ { "name":"标准", "qty":1 } ] }, "qty":2 }, { "name":"蜜桃四季春", "options":{ "杯量1":[ { "name":"中杯（550ml）", "qty":1 } ], "温度1":[ { "name":"少冰", "qty":1 } ], "甜度1":[ { "name":"五分糖", "qty":1 } ], "小料1":[ { "name":"啵啵", "qty":2 }, { "name":"蜜桃果粒", "qty":1 } ] }, "qty":1 } ] }, "orderTime":"08:47", "order_sn_code":"1406", "order_type":"delivery", "pay_type":"on-line", "remark":"" }''';
+
+
+
+
   testReceipt(printIp) {
     return ReceiptConstrainedBox(Column(
       mainAxisAlignment: MainAxisAlignment.start,
