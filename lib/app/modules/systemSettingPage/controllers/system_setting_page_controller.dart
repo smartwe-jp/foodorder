@@ -30,6 +30,8 @@ import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../settlement/views/label_constrained_box.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
+import '../views/SetPosIp.dart';
+import '../views/set_subprinter.dart';
 import '../views/showSpeed.dart';
 
 class SystemSettingPageController extends GetxController with StateMixin {
@@ -88,6 +90,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printTwoDirection = false.obs;
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
+  RxList printerList = [].obs;
 
   List<String> panelTypes = ['Mini','Max'];
   String panelType = "Mini";
@@ -96,6 +99,44 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
       : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
+
+  final Map subPrinterInfos = {
+    'プリンター 1': 21,
+    'プリンター 2': 22,
+    'プリンター 3': 23,
+    'プリンター 4': 24,
+    'プリンター 5': 25,
+  };
+
+  List subPrinterList = [];
+
+  final Map defaultPrinterInfo = {
+    'キッチン': 10,
+    'センター': 11,
+    'カウンター': 12,
+  };
+
+  Map<String, dynamic> printerInfo = {
+    'name':'', //打印机名称
+    'type': 0,
+    'receipt':0, //0 小票 1 标签
+    'labelWidth':0, //标签宽度
+    'continuous':0, //0 单票 1 连票
+    'isOff': false, //是否开启
+    'isDefault': true, //是否默认打印机
+    'printIp':'',
+    'printPort':'',
+    'direction': 0, //打印方向 0 正 1 逆
+  };
+
+  Map get notSelectedPrinterMap {
+    return subPrinterInfos.map((key, value) {
+      // 检查 printerList 中是否包含该 type
+      bool isSelected = printerList.any((item) => item['type'] == value);
+      return MapEntry(key, isSelected ? null : value);
+    })..removeWhere((key, value) => value == null);
+  }
+
 
   @override
   void onInit() {
@@ -125,6 +166,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //获取系统设置信息
   _getSystemSettingInfo() async {
+    await _checkAndInitialPrinters();
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
@@ -216,6 +258,109 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "panelType":panelType,
     "isAllowWlanPanelPrint": is_allow_wlanPanelPrint ?? "0",
   };
+
+
+  _checkAndInitialPrinters() async {
+    printerList.value = await HomeServices.getPrinterListInfo();
+    if (printerList.isEmpty) {
+      //如果没有打印机信息，则添加默认打印机
+      printerList.add({
+        'name': 'キッチン',
+        'type': 10,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'キッチン (ラベル)',
+        'type': 10,
+        'receipt': 1,
+        'labelWidth': 384,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'センター',
+        'type': 11,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'カウンター',
+        'type': 12,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+    }
+    //save
+    await HomeServices.setPrinterListInfo(printerList);
+  }
+
+  addCustomPrinter() async {
+    Get.dialog(
+        SetPrinterView(isAdd: true, notSelectedPrinterMap: notSelectedPrinterMap)
+    );
+  }
+
+  addSubPrinter(int printerType, String name) {
+    if (!subPrinterList.contains(printerType)) {
+      subPrinterList.add(printerType);
+    }
+    printerList.add({
+      'name': name, //打印机名称
+      'type': printerType,
+      'receipt':0, //0 小票 1 标签
+      'labelWidth':0, //标签宽度
+      'continuous':0, //0 单票 1 连票
+      'isOff': true, //是否开启
+      'isDefault': false, //是否默认打印机
+      'printIp':'',
+      'printPort':'9100',
+      'direction': 0,
+    });
+    //存打印机列表
+    HomeServices.setPrinterListInfo(printerList);
+    update();
+    // Future.delayed(const Duration(milliseconds: 300), () {
+    //   _scrollToBottom();
+    // });
+  }
+
+  editPrinterInfo(int printerType, int continuousType, bool isOff, {String name = "", String printIp = ""}) {
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == printerType) {
+          printerList[i]['isOff'] = isOff;
+          printerList[i]['continuous'] = continuousType;
+          printerList[i]['printIp'] = printIp;
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+
+  }
 
   showDownloadingAlert() {
     //支付状态
@@ -507,6 +652,69 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   }
 
+  showPrintSettingDialog(int type, int receipt, int continueType, {String printerIp = '', String port = ''}) async {
+    Get.dialog(
+        SetPosIpPage(
+          posIp: printerIp,
+          posPort: port,
+          onConfrimClick: (String printIp, String printPort) {
+            if(printIp != ""){
+
+              updatePrinterInfo(type, receipt, isOff: false, continuous: continueType, printerIp: printIp, port: printPort);
+            }
+          },
+        )
+    );
+  }
+
+  updatePrinterState(int type, int receipt, bool isOff) async {
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+          printerList[i]['isOff'] = isOff;
+          if (!isOff && type == 10) {
+            //find the first printer of type 10 and receipt != receipt, set isOff = true
+            for (var j = 0; j < printerList.length; j++) {
+              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+                printerList[j]['isOff'] = true;
+              }
+            }
+          }
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+  }
+
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction}) async {
+
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+          if(isOff != null) printerList[i]['isOff'] = isOff;
+          if(continuous != null) printerList[i]['continuous'] = continuous;
+          if(printerIp != null) printerList[i]['printIp'] = printerIp;
+          if(port != null) printerList[i]['printPort'] = port;
+          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if(direction != null) printerList[i]['direction'] = direction;
+          if (type == 10 && !(isOff ?? true)) {
+            //find the first printer of type 10 and receipt != receipt, set isOff = true
+            for (var j = 0; j < printerList.length; j++) {
+              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+                printerList[j]['isOff'] = true;
+              }
+            }
+          }
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+  }
+
+
+
   checkIsAllowWlanPrint(checkedType) async {
 
     var wlanPrintSettingData;
@@ -678,35 +886,23 @@ class SystemSettingPageController extends GetxController with StateMixin {
   printTest(printIp,printPort,{printType=0}) async {
 
     if(printType == 0){
-      // PictureGeneratorProvider.instance.addPicGeneratorTask(
-      //   PicGenerateTask<PrinterInfo>(
-      //     tempWidget: testReceipt(printIp) as ATempWidget,
-      //     printTypeEnum: PrintTypeEnum.receipt,
-      //     params: PrinterInfo(ip:printIp),
-      //   ),
-      // );
-
-      final printData = jsonDecode(printJsonString);
-      printService.printData(printData);
-
-
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: testReceipt(printIp) as ATempWidget,
+          printTypeEnum: PrintTypeEnum.receipt,
+          params: PrinterInfo(ip:printIp),
+        ),
+      );
     }else{
-      // PictureGeneratorProvider.instance.addPicGeneratorTask(
-      //   PicGenerateTask<PrinterInfo>(
-      //     tempWidget: testLabel(printIp) as ATempWidget,
-      //     printTypeEnum: PrintTypeEnum.label,
-      //     params: PrinterInfo(ip:printIp),
-      //   ),
-      // );
-      final printData = jsonDecode(printJsonString);
-      printService.printData(printData);
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: testLabel(printIp) as ATempWidget,
+          printTypeEnum: PrintTypeEnum.label,
+          params: PrinterInfo(ip:printIp),
+        ),
+      );
     }
   }
-
-  final printJsonString = ''' 
-{ "from_plate":"panda", "orderLinesMap":{ "0":[ { "name":"芋泥啵啵", "options":{ "规格":[ { "name":"标准", "qty":1 } ] }, "qty":2 }, { "name":"蜜桃四季春", "options":{ "杯量1":[ { "name":"中杯（550ml）", "qty":1 } ], "温度1":[ { "name":"少冰", "qty":1 } ], "甜度1":[ { "name":"五分糖", "qty":1 } ], "小料1":[ { "name":"啵啵", "qty":2 }, { "name":"蜜桃果粒", "qty":1 } ] }, "qty":1 } ] }, "orderTime":"08:47", "order_sn_code":"1406", "order_type":"delivery", "pay_type":"on-line", "remark":"" }''';
-
-
 
 
   testReceipt(printIp) {

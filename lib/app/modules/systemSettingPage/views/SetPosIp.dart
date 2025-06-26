@@ -63,7 +63,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
     });
     _posIp = widget.posIp!;
     _posPort = widget.posPort!;
-    _showRadio = widget.showRadio!;
+    _showRadio = widget.showRadio ?? 0;
     if(_showRadio == 1){
       _showPrintType = widget.showPrintType!;
     }

@@ -180,6 +180,21 @@ class HomeServices{
     return printSettingInfo;
   }
 
+  static Future<List> getPrinterListInfo() async {
+    List? list = await Storage.getData("printerListInfo");
+    if (list != null) {
+      return list;
+    } else {
+      return [];
+    }
+  }
+
+  static Future<void> setPrinterListInfo(List printerListInfo) async {
+
+    final data = json.encode(printerListInfo);
+    await Storage.setData("printerListInfo", data);
+  }
+
   static getWlanPrintSettingTwoInfo() async{
     Map printSettingInfo;
     try {

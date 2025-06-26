@@ -1,7 +1,10 @@
+import 'dart:convert';
+
+import 'package:get_storage/get_storage.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class Storage{
-
+  static GetStorage getStorage = GetStorage();
   static Future<void> setString(key,value) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
        sp.setString(key, value);
@@ -14,6 +17,23 @@ class Storage{
   static Future<void> setInt(key,value) async{
     SharedPreferences sp=await SharedPreferences.getInstance();
     sp.setInt(key, value);
+  }
+
+  static setData(String key, dynamic value) async {
+    await getStorage.write(key, value);
+  }
+
+  static getData(String key) async {
+    try {
+      String? tempData =getStorage.read(key);
+      if (tempData != null) {
+        return json.decode(tempData);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      return null;
+    }
   }
 
   static Future<String?> getString(key) async{

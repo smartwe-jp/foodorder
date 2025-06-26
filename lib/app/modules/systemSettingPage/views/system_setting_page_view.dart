@@ -1,6 +1,7 @@
 import 'dart:ffi';
 
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
 
 import 'package:get/get.dart';
 
@@ -2791,54 +2792,6 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(200),
-                                      1: FlexColumnWidth(750),
-                                    },
-                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                    children: <TableRow>[
-
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "キッチン",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setIsAllowWlanPrint(),//是否开启网络打印机
-
-                                          ]
-                                      ),
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "キッチン（ラベル）",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setIsAllowWlanLablePrint(),//是否开启网络打印机
-
-                                          ]
-                                      ),
-                                    ]
-                                ),
-                                Table(
-                                    border: TableBorder.all(),
-                                    columnWidths: const <int, TableColumnWidth>{
-                                      //0: IntrinsicColumnWidth(),
                                       0:FlexColumnWidth(1050),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
@@ -2867,30 +2820,27 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0: FlexColumnWidth(200),
+                                      0:FlexColumnWidth(200),
                                       1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
-
+                                      ...controller.printerList.map((printer) => printerSettingWidget(printer)).toList(),
+                                      if (controller.printerList.length < 9)
                                       TableRow(
                                           children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "カウンター",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
+                                            Text(
+                                              "追加",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
                                               ),
                                             ),
-                                            setIsAllowWlanPrintTwo(),//第二台打印机
-
+                                            addButton()
                                           ]
-                                      ),
+                                      )
 
                                     ]
                                 ),

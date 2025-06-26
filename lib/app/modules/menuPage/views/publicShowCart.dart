@@ -354,8 +354,9 @@ class publicShowCartView extends GetView {
                             //_showEmptyTips();
                             return;
                           }
-                          controller.showShopCart = !controller.showShopCart;
-                          controller.update(['shopping_cart']);
+                          // controller.showShopCart = !controller.showShopCart;
+                          // controller.update(['shopping_cart']);
+                          controller.showCarPopView();
                           //controller.update();
                         },
                         child: Row(

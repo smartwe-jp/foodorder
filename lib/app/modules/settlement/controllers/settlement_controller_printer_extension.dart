@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'dart:collection';
 import 'dart:math';
 import 'dart:typed_data';
 
@@ -26,40 +28,87 @@ class PrintService extends GetxService {
 
   PrintService(this._machineInfo);
 
-  get wlan_print_ip => _machineInfo.wlan_print_ip;
-  get wlan_print_port => _machineInfo.wlan_print_port;
-  get wlan_print_ip_two => _machineInfo.wlan_print_ip_two;
-  get wlan_print_port_two => _machineInfo.wlan_print_port_two;
-  get is_allow_wlanPrint_continuous =>
-      _machineInfo.is_allow_wlanPrint_continuous;
-  get is_allow_wlanPrint_Two_continuous =>
-      _machineInfo.is_allow_wlanPrint_continuous_two;
-  get isLabelPrint => _machineInfo.showPrintType == 1;
+  get printerList => _machineInfo.printerList;
+
+  //Label打印先存在在一个队列中
+  final Queue<Widget> labelPrintQueue = Queue<Widget>();
+
+  //创建一个方法来处理打印队列
+  void processLabelPrintQueue(printerIp) {
+    Timer.periodic(Duration(milliseconds: 1000), (timer) {
+      if (labelPrintQueue.isEmpty) {
+        timer.cancel(); // 停止定时器
+        return;
+      }
+
+      final widget = labelPrintQueue.removeFirst();
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: widget as ATempWidget,
+          printTypeEnum: PrintTypeEnum.label,
+          params: PrinterInfo(ip: printerIp),
+        ),
+      );
+    });
+  }
 
   void printData(Map data) async {
     final fromPlate = data["from_plate"] ?? "";
-    final orderType = data["order_type"] == 'delivery' ? "☆︎" : "";
+    final orderType = data["order_type"] ?? "";
     final orderSnCode = data["order_sn_code"] ?? "";
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
+    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout';
+
+    final centerPrinter = printerList.firstWhere(
+      (p) => p["type"] == 11,
+      orElse: () => null,
+    );
+
+    bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
 
     for (var key in orderLinesMap.keys) {
-      final printerIp = key == "0" ? wlan_print_ip : wlan_print_ip_two;
-      final isContinuous = key == "0"
-          ? is_allow_wlanPrint_continuous == "1"
-          : is_allow_wlanPrint_Two_continuous == "1";
-      if (printerIp == null || printerIp.isEmpty) {
+
+      final printer = printerList.firstWhere(
+        (p) => p["type"].toString() == key && !p["isOff"],
+        orElse: () => null,
+      );
+      if (printer == null) {
         debugPrint("Printer IP not configured for key: $key");
         continue;
       }
+      final printerIp = printer["printIp"];
+      if (printerIp == null || printerIp.isEmpty) {
+        debugPrint("Printer IP is empty for key: $key");
+        continue;
+      }
 
-      final rotate = await HomeServices.getPrintDirection() == "1";
+      bool isLabelPrint = printer['receipt'] == 1; // Label printing
+      bool isContinuous = printer['continuous'] == 1; // Continuous printing
+
+
+      final rotate = printer["direction"] == 1; // Rotate if direction is 1
 
       final items = orderLinesMap[key];
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
+        // 先打印票号和基本信息
+        final printWidth = await HomeServices.getLabelPrintWidth() ?? 384.0;
+        // Add the head receipt widget to the print queue
+        final headReceipt = headReceiptWidget(
+          fromPlate,
+          orderSnCode,
+          orderTime,
+          data['order_type'] ?? '',
+          remark,
+          printWidth,
+          rotate,
+        );
+
+        labelPrintQueue.add(headReceipt);
+
         for (var item in items) {
           final qty = item["qty"] ?? 1;
           final name = item["name"] ?? "";
@@ -67,109 +116,25 @@ class PrintService extends GetxService {
 
           for (var i = 0; i < qty; i++) {
             // Generate the receipt widget
-            final receiptWidget = ReceiptConstrainedBox(
-              Transform(
-                transform: Matrix4.rotationZ(rotate ? pi : 0.0),
-                alignment: Alignment.center,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          fromPlate,
-                          style: TextStyle(
-                            fontSize: 40,
-                          ),
-                        ),
-                        Text(
-                          orderTime,
-                          style: TextStyle(
-                            fontSize: 40,
-                          ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Text(
-                          orderSnCode,
-                          style: TextStyle(
-                            fontSize: 50,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          orderType,
-                          style: TextStyle(
-                            fontSize: 40,
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          name,
-                          style: TextStyle(
-                            fontSize: 45,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        Text(
-                          "x$qty",
-                          style: TextStyle(
-                            fontSize: 45,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    ...options.entries.map((entry) {
-                      final optionName = entry.key;
-                      final optionValues = entry.value;
-                      return Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            "  $optionName:",
-                            style: TextStyle(
-                              fontSize: 40,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          ...optionValues.map((option) {
-                            final optionDetail = option["name"] ?? "";
-                            final optionQty = option["qty"] ?? 1;
-                            return Text(
-                              "    $optionDetail x$optionQty",
-                              style: TextStyle(
-                                fontSize: 40,
-                              ),
-                            );
-                          }).toList(),
-                        ],
-                      );
-                    }).toList(),
-                  ],
-                ),
-              ),
+            final receiptWidget = labelItem(
+              name,
+              orderSnCode,
+              options,
+              printWidth,
+              rotate,
             );
-
-            // Add the receipt widget to the print queue
-            PictureGeneratorProvider.instance.addPicGeneratorTask(
-              PicGenerateTask<PrinterInfo>(
-                tempWidget: receiptWidget as ATempWidget,
-                printTypeEnum: PrintTypeEnum.label,
-                params: PrinterInfo(ip: printerIp),
-              ),
-            );
+            labelPrintQueue.add(receiptWidget);
           }
+        }
+
+        processLabelPrintQueue(printerIp);
+        // If center printing is enabled, print the same data to the center printer
+        if (isCenterPrintOn) {
+          final printIp = centerPrinter["printIp"];
+          final rotate = centerPrinter["direction"] == 1;
+
+          printContinuousData(fromPlate, orderType, orderSnCode, orderTime,
+              printIp, true, rotate, items, remark);
         }
         continue;
       }
@@ -183,126 +148,173 @@ class PrintService extends GetxService {
         printSingleData(fromPlate, orderType, orderSnCode, orderTime, printerIp,
             isContinuous, rotate, items, remark);
       }
+      // If center printing is enabled, print the same data to the center printer
+      if (isTakeOut && isCenterPrintOn) {
+        final printIp = centerPrinter["printIp"];
+        final rotate = centerPrinter["direction"] == 1;
 
-      // continue;
-      //
-      // for (var item in items) {
-      //   final qty = item["qty"] ?? 1;
-      //   final name = item["name"] ?? "";
-      //   final options = item["options"] ?? {};
-      //
-      //   //for (var i = 0; i < qty; i++) {
-      //     // Generate the receipt widget
-      //     final receiptWidget = ReceiptConstrainedBox(
-      //       Transform(
-      //         transform: Matrix4.rotationZ(rotate),
-      //         alignment: Alignment.center,
-      //         child: Column(
-      //           crossAxisAlignment: CrossAxisAlignment.start,
-      //           children: [
-      //
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   fromPlate,
-      //                   style: TextStyle(
-      //                     fontSize: 40,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   orderTime,
-      //                   style: TextStyle(
-      //                     fontSize: 40,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.center,
-      //               crossAxisAlignment: CrossAxisAlignment.center,
-      //               children: [
-      //                 Text(
-      //                   orderSnCode,
-      //                   style: TextStyle(
-      //                     fontSize: 50,
-      //                     fontWeight: FontWeight.bold,
-      //                   ),
-      //                 ),
-      //
-      //                 Text(
-      //                   orderType,
-      //                   style: TextStyle(
-      //                     fontSize: 40,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //
-      //             SizedBox(height: 20),
-      //
-      //             Row(
-      //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //               children: [
-      //                 Text(
-      //                   name,
-      //                   style: TextStyle(
-      //                     fontSize: 45,
-      //                     fontWeight: FontWeight.bold,
-      //                   ),
-      //                 ),
-      //                 Text(
-      //                   "x$qty",
-      //                   style: TextStyle(
-      //                     fontSize: 45,
-      //                     fontWeight: FontWeight.bold,
-      //                   ),
-      //                 ),
-      //               ],
-      //             ),
-      //             ...options.entries.map((entry) {
-      //               final optionName = entry.key;
-      //               final optionValues = entry.value;
-      //               return Column(
-      //                 crossAxisAlignment: CrossAxisAlignment.start,
-      //                 children: [
-      //                   Text(
-      //                     "  $optionName:",
-      //                     style: TextStyle(
-      //                       fontSize: 40,
-      //                       fontWeight: FontWeight.bold,
-      //                     ),
-      //                   ),
-      //                   ...optionValues.map((option) {
-      //                     final optionDetail = option["name"] ?? "";
-      //                     final optionQty = option["qty"] ?? 1;
-      //                     return Text(
-      //                       "    $optionDetail x$optionQty",
-      //                       style: TextStyle(
-      //                         fontSize: 40,
-      //                       ),
-      //                     );
-      //                   }).toList(),
-      //                 ],
-      //               );
-      //             }).toList(),
-      //           ],
-      //         ),
-      //       ),
-      //     );
-      //
-      //     // Add the receipt widget to the print queue
-      //     PictureGeneratorProvider.instance.addPicGeneratorTask(
-      //       PicGenerateTask<PrinterInfo>(
-      //         tempWidget: receiptWidget as ATempWidget,
-      //         printTypeEnum: PrintTypeEnum.receipt,
-      //         params: PrinterInfo(ip: printerIp),
-      //       ),
-      //     );
-      //   //}
-      // }
+        printContinuousData(fromPlate, orderType, orderSnCode, orderTime,
+            printIp, true, rotate, items, remark);
+      }
+
+
     }
   }
+
+  Widget labelItem(String name, String number, Map options, double printWidth, bool rotate) {
+    return LabelConstrainedBox(
+      Transform(
+        transform: Matrix4.rotationZ(rotate ? pi : 0.0),
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+
+              AutoSizeText(
+                name + '-' + number,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 30,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+              ),
+              Container(
+                margin: EdgeInsets.only(top: 5, left: 10),
+                width: double.infinity,
+                child: optionList(options),
+              )
+            ],
+          ),
+        ),
+      ),
+      pagerWidth: printWidth,
+    );
+  }
+
+  Widget headReceiptWidget(
+      String fromPlate,
+      String orderSnCode,
+      String orderTime,
+      String orderType,
+      String remark,
+      double printWidth,
+      bool rotate) {
+  return LabelConstrainedBox(
+    Transform(
+        transform: Matrix4.rotationZ(rotate ? pi : 0.0),
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.symmetric(horizontal: 8),
+          child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AutoSizeText(
+                  fromPlate + ' # ' + orderSnCode,
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  style: TextStyle(
+                    fontSize: 54,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                ),
+                Divider(
+                  color: Colors.black,
+                  thickness: 4,
+                ),
+                SizedBox(height: 20,),
+                AutoSizeText(
+                  remark,
+                  maxLines: 4,
+                  style: TextStyle(
+                    fontSize: 26,
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                ),
+              ]
+          ),
+        )
+    ),
+    pagerWidth: printWidth,
+  );
+}
+
+  Widget optionItem1(String optionName, List optionValues) {
+    return Container(
+      child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  "$optionName：",
+                  style: TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black
+                  ),
+                ),
+                ...optionValues.map((option) {
+                  final optionDetail = option["name"] ?? "";
+                  final optionQty = option["qty"] ?? 1;
+                  final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
+                  return Text(
+                    " $optionDetail $optionQtyString ",
+                    style: TextStyle(
+                      fontSize: 20,
+                        color: Colors.black,
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
+    );
+  }
+
+  String optionItem(String optionName, List optionValues) {
+
+    //返回Option字符串组合 格式 optionName: optionDetail1, optionDetail2 x qty2;
+    return "$optionName: " +
+        optionValues.map((option) {
+          final optionDetail = option["name"] ?? "";
+          final optionQty = option["qty"] ?? 1;
+          final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
+          return "$optionDetail $optionQtyString";
+        }).join(", ");
+  }
+
+  Widget optionList(Map options) {
+
+    //合并所有Option为一个字符串格式为 optionName: optionDetail1 x qty1, optionDetail2 x qty2;
+    if (options.isEmpty) {
+      return Container(); // 如果没有选项，返回空容器
+    }
+
+    String optionStrings = options.entries.map((entry) {
+      final optionName = entry.key;
+      final optionValues = entry.value;
+      return optionItem(optionName, optionValues);
+    }).join("、");
+
+    //使用 AutoText来自动调整文本大小
+    return AutoSizeText(
+      optionStrings,
+      maxLines: 4, // 最多显示两行
+      style: TextStyle(
+        fontSize: 28,
+        color: Colors.black,
+      ),
+      overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+    );
+  }
+
 
   //打印逻辑为 连票打印时 只有一个标题receiptTitle 中间为菜品menuItem，最后右下角为下单时间
   //使用 printData 的同样参数实现这个需求
@@ -341,11 +353,10 @@ class PrintService extends GetxService {
                 orderTime,
                 style: TextStyle(
                   fontSize: 45,
-                  fontWeight: FontWeight.bold,
                 ),
               ),
             ),
-            remarkTitle(remark)
+            //remarkTitle(remark)
           ],
         ),
       ),
@@ -390,7 +401,7 @@ class PrintService extends GetxService {
               receiptTitle(orderSnCode, orderTime, fromPlate,
                   isTakeOut: orderType == 'delivery'),
               menuItem(name, qty, options),
-              remarkTitle(remark)
+              //remarkTitle(remark)
             ],
           ),
         ),
@@ -410,7 +421,7 @@ class PrintService extends GetxService {
   Widget remarkTitle(String content) {
     return Container(
       child: Text(
-        'remark: $content',
+        content,
         style: TextStyle(
           fontSize: 45,
           color: ColorsUtil.hexToColor("#000000"),
@@ -434,20 +445,27 @@ class PrintService extends GetxService {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
+                  if (isTakeOut)
+                  Icon(
+                    Icons.local_shipping,
+                    size: 50,
+                    color: Colors.black,
+                  ),
+                  if (isTakeOut)
                   Text(
-                    fromPlate + 'ー',
+                    fromPlate + ' # ',
                     style: TextStyle(
                       fontSize: 50,
-                      color: ColorsUtil.hexToColor("#000000"),
+                      color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   Text(
-                    isTakeOut ? "☆︎ $title" : title,
+                    title,
                     style: TextStyle(
                       fontSize: 50,
                       fontWeight: FontWeight.bold,
-                      color: ColorsUtil.hexToColor("#000000"),
+                      color: Colors.black,
                     ),
                   ),
                 ],
@@ -490,7 +508,7 @@ class PrintService extends GetxService {
                   style: TextStyle(
                     fontSize: 40,
                     color: ColorsUtil.hexToColor("#000000"),
-                    fontWeight: FontWeight.bold,
+                    //fontWeight: FontWeight.bold,
                   ),
                 ),
               ),
@@ -499,7 +517,7 @@ class PrintService extends GetxService {
                 style: TextStyle(
                   fontSize: 40,
                   color: ColorsUtil.hexToColor("#000000"),
-                  fontWeight: FontWeight.bold,
+                  //fontWeight: FontWeight.bold,
                 ),
               ),
             ],
@@ -519,10 +537,11 @@ class PrintService extends GetxService {
                         "  $optionName",
                         style: TextStyle(
                           fontSize: 36,
-                          fontWeight: FontWeight.bold,
+                          //fontWeight: FontWeight.bold,
                         ),
                       ),
                       Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
                         children: [
                           ...optionValues.map((option) {
                             final optionDetail = option["name"] ?? "";
@@ -582,6 +601,29 @@ class PrintService extends GetxService {
       return;
     }
 
+    final printer10 = _machineInfo.printerList.firstWhere(
+      (p) => p["type"] == 10,
+      orElse: () => null,
+    );
+    final printer12 = _machineInfo.printerList.firstWhere(
+      (p) => p["type"] == 12,
+      orElse: () => null,
+    );
+
+    final wlan_print_ip = printer10?["printIp"] ?? "";
+    final wlan_print_port = printer10?["printPort"] ?? "9100";
+    final rotate10 = printer10?["direction"] ?? 0;
+
+    final wlan_print_ip_two = printer12?["printIp"] ?? "";
+    final wlan_print_port_two = printer12?["printPort"] ?? "9100";
+    final rotate12 = printer12?["direction"] ?? 0;
+    final is_allow_wlanPrint_continuous =
+        printer10?["continuous"] ?? 0;
+    final is_allow_wlanPrint_Two_continuous =
+        printer12?["continuous"] ?? 0;
+
+
+
     //判断是否有打印机ip
     Map printerIpInfo = {
       "printer_ip": "",
@@ -589,13 +631,13 @@ class PrintService extends GetxService {
     };
     if (printType == "10") {
       if (wlan_print_ip != null && wlan_print_ip != "") {
-        final rotate = await HomeServices.getPrintDirection() == "1" ? pi : 0.0;
+        final rotate = rotate10 == 1 ? pi : 0.0;
 
         printerIpInfo = {
           "printer_ip": wlan_print_ip,
           "printer_port": wlan_print_port,
         };
-        if (is_allow_wlanPrint_continuous == "1") {
+        if (is_allow_wlanPrint_continuous == 1) {
           wifiNetworkReceiptPrintContinuousData(serialNumber, printData,
               takeOut, orderTime, wlan_print_ip, rotate);
         } else {
@@ -608,12 +650,12 @@ class PrintService extends GetxService {
     } else if (printType == "12") {
       if (wlan_print_ip_two != null && wlan_print_ip_two != "") {
         final rotate =
-            await HomeServices.getPrintTwoDirection() == "1" ? pi : 0.0;
+            rotate12 == 1 ? pi : 0.0;
         printerIpInfo = {
           "printer_ip": wlan_print_ip_two,
           "printer_port": wlan_print_port_two,
         };
-        if (is_allow_wlanPrint_Two_continuous == "1") {
+        if (is_allow_wlanPrint_Two_continuous == 1) {
           wifiNetworkReceiptPrintContinuousData(serialNumber, printData,
               takeOut, orderTime, wlan_print_ip_two, rotate);
         } else {
@@ -1213,6 +1255,11 @@ class PrintService extends GetxService {
 
   //打印label
   wifiNetworkLabelPrintData(extendPrintVo) async {
+    final printer10 = _machineInfo.printerList.firstWhere(
+          (p) => p["type"] == 10,
+      orElse: () => null,
+    );
+    final wlan_print_ip = printer10?["printIp"] ?? "";
     debugPrint("wifiNetworkLabelPrintData: $extendPrintVo");
     for (var i = 0; i < extendPrintVo.length; i++) {
       // 生成打印图层任务，指定任务类型为标签
@@ -1230,6 +1277,11 @@ class PrintService extends GetxService {
   }
 
   wifiNetPrintLabelnew(orderprintData) async {
+    final printer10 = _machineInfo.printerList.firstWhere(
+          (p) => p["type"] == 10,
+      orElse: () => null,
+    );
+    final wlan_print_ip = printer10?["printIp"] ?? "";
     Future.delayed(Duration(milliseconds: 1200), () async {
       ByteData byteData =
           await WidgetToImage.widgetToImage(await menuData(orderprintData));

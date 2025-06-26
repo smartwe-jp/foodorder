@@ -187,7 +187,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                       ],
                     ),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         if (imageUrl != null && imageUrl != "")
                           CachedNetworkImage(imageUrl:widget.optionInfo['homeImage'],

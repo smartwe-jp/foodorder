@@ -29,6 +29,7 @@ class MachineInfoController extends GetxController {
   late String printLogoImageData;
   late String printLogoImageUrl;
   late String machineMode;
+  late List printerList;
 
   late bool isAllowCash;
   late bool cashOn;
@@ -187,6 +188,8 @@ class MachineInfoController extends GetxController {
     Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
     wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
     wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
+
+    printerList = await HomeServices.getPrinterListInfo();
 
 
     print('loadMachineSettingInfo 6');

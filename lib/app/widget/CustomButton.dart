@@ -1,5 +1,6 @@
 
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../config/font.dart';
 import '../services/ScreenAdapter.dart';
 
@@ -29,8 +30,8 @@ class CustomButton extends StatelessWidget {
         child: Container(
           padding: EdgeInsets.only(left: 20, right: 20),
           alignment: Alignment.center,
-          height: ScreenAdapter.height(120),
-          constraints: BoxConstraints(minWidth: ScreenAdapter.width(260)),
+          //height: ScreenAdapter.height(80),
+          constraints: BoxConstraints(minWidth: ScreenAdapter.width(260), maxHeight: 60),
           decoration: BoxDecoration(
             color: bgColor,
             borderRadius: new BorderRadius.circular((radius)),
@@ -44,4 +45,53 @@ class CustomButton extends StatelessWidget {
               )),
         ));
   }
+}
+
+class CustomIconButton extends StatelessWidget {
+  const CustomIconButton({Key? key,
+    required this.icon,
+    required this.size,
+    this.iconColor = Colors.blue,
+    required this.onPressed,
+    this.bgColor = Colors.blue,
+  }) : super(key: key);
+
+  final IconData icon;
+  final int size;
+  final Color iconColor;
+  final VoidCallback onPressed;
+  final Color bgColor;
+
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      onPressed:() {
+        // Add touch feedback to buttons
+        HapticFeedback.mediumImpact();
+        onPressed();
+      },
+      style: ButtonStyle(
+        backgroundColor: MaterialStateProperty.all(bgColor),
+        foregroundColor: MaterialStateProperty.all(Colors.white),
+        padding: MaterialStateProperty.all(const EdgeInsets.symmetric(horizontal: 16, vertical: 8)),
+        // shape: MaterialStateProperty.all(RoundedRectangleBorder(
+        //     borderRadius:
+        //     BorderRadius.circular(ScreenAdapter.height(5)))),
+      ),
+
+      child: Row(
+        children: [
+          const Spacer(),
+          Icon(icon,
+            color: iconColor,
+            size: 50,
+          ),
+          const Spacer()
+        ],
+      ),
+    );
+  }
+
+
 }

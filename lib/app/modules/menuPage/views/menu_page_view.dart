@@ -306,7 +306,7 @@ class MenuPageView extends GetView {
                     ],
                   ),
 
-                  controller.shoppingCar(),
+                  //controller.shoppingCar(),
 
                   GetBuilder<MenuPageController>(
                       id: 'shopping_cart',

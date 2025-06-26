@@ -8,11 +8,6 @@ import 'package:flutter_http_sse/model/sse_response.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart';
 
-// final sseService = Get.find<SseService>();
-// final printService = Get.find<PrintService>();
-// sseService.addSseListen((servicePath['sseSubscribe'] ?? '') + '358886760', printService: printService);
-// sseService.addSseListen((servicePath['sseSubscribeMobile'] ?? '') + _machineCode.value, printService: printService);
-
 class SseService extends GetxService {
   final SSEClient _client = SSEClient();
   final Map<String, StreamSubscription> _subscriptions = {};
@@ -31,6 +26,10 @@ class SseService extends GetxService {
       return;
     }
 
+    if (kDebugMode) {
+      print('SSE Service: Attempting to connect to $url');
+    }
+
     final request = SSERequest(
       requestType: RequestMethodType.get,
       url: url,
@@ -41,6 +40,15 @@ class SseService extends GetxService {
       },
       retry: true,
       onData: (SSEResponse response) {},
+      onError: (error) {
+        if (kDebugMode) {
+          print('SSE Service: Error in request for $url: $error');
+        }
+        disconnect(url).then((_) {
+          addSseListen(url, printService: printService);
+        });
+
+      },
     );
 
     final stream = _client.connect(url, request, fromJson: (json) => json);
@@ -48,6 +56,9 @@ class SseService extends GetxService {
     final sub = stream.listen(
       (SSEResponse res) {
         // ...数据处理...
+        if (kDebugMode) {
+          print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
+        }
         Map? data;
         if (res.data is Map) {
           data = res.data as Map;
@@ -60,21 +71,31 @@ class SseService extends GetxService {
           _printService?.printData(data);
         }
 
-        // 每收到消息，重置25秒心跳定时器
+        // 每收到消息，重置35秒超时检测
         _heartbeatTimers[url]?.cancel();
-        _heartbeatTimers[url] = Timer(const Duration(seconds: 25), () {
+        _heartbeatTimers[url] = Timer(const Duration(seconds: 35), () {
+          if (kDebugMode) {
+            print('SSE Service: Heartbeat timeout for $url, reconnecting...');
+          }
           disconnect(url).then((_) {
             _startReconnect(url, request);
           });
         });
       },
       onError: (err) {
+        if (kDebugMode) {
+          print('SSE Service: Connection error for $url: $err');
+        }
         _heartbeatTimers[url]?.cancel();
-        _startReconnect(url, request);
+        disconnect(url).then((_) {
+          _startReconnect(url, request);
+        });
       },
       onDone: () {
         _heartbeatTimers[url]?.cancel();
-        _startReconnect(url, request);
+        disconnect(url).then((_) {
+          _startReconnect(url, request);
+        });
       },
       cancelOnError: true,
     );
@@ -82,16 +103,21 @@ class SseService extends GetxService {
     _subscriptions[url] = sub;
 
     // 启动首次心跳定时器（防止连接后迟迟没消息）
-    _heartbeatTimers[url]?.cancel();
-    _heartbeatTimers[url] = Timer(const Duration(seconds: 25), () {
-      disconnect(url).then((_) {
-        _startReconnect(url, request);
-      });
-    });
+    // _heartbeatTimers[url]?.cancel();
+    // _heartbeatTimers[url] = Timer(const Duration(seconds: 25), () {
+    //   disconnect(url).then((_) {
+    //     _startReconnect(url, request);
+    //   });
+    // });
   }
 
   /// 主动断开连接
   Future<void> disconnect(String url) async {
+
+    if (kDebugMode) {
+      print('SSE Service: No active disconnect for $url');
+    }
+
     _subscriptions[url]?.cancel();
     _subscriptions.remove(url);
     _client.close(connectionId: url);
@@ -109,6 +135,9 @@ class SseService extends GetxService {
 
   /// 断开所有连接
   Future<void> disconnectAll() async {
+    if (kDebugMode) {
+      print('SSE Service: Disconnecting all subscriptions');
+    }
     for (final url in _subscriptions.keys.toList()) {
       await disconnect(url);
     }
