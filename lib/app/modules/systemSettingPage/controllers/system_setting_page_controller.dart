@@ -101,11 +101,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
       : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
 
   final Map subPrinterInfos = {
-    'プリンター 1': 21,
-    'プリンター 2': 22,
-    'プリンター 3': 23,
-    'プリンター 4': 24,
-    'プリンター 5': 25,
+    '拡張プリンター(1)': 21,
+    '拡張プリンター(2)': 22,
+    '拡張プリンター(3)': 23,
+    '拡張プリンター(4)': 24,
+    '拡張プリンター(5)': 25,
   };
 
   List subPrinterList = [];
@@ -345,6 +345,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   _scrollToBottom();
     // });
+  }
+
+  removePrinter(Map printer) {
+    if (printerList.isNotEmpty) {
+      printerList.removeWhere((item) => item['type'] == printer['type']);
+      HomeServices.setPrinterListInfo(printerList);
+      update();
+    }
   }
 
   editPrinterInfo(int printerType, int continuousType, bool isOff, {String name = "", String printIp = ""}) {

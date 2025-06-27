@@ -59,7 +59,7 @@ class PrintService extends GetxService {
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
-    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout';
+    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout' || orderType == 'pickup';
 
     final centerPrinter = printerList.firstWhere(
       (p) => p["type"] == 11,
@@ -133,19 +133,19 @@ class PrintService extends GetxService {
           final printIp = centerPrinter["printIp"];
           final rotate = centerPrinter["direction"] == 1;
 
-          printContinuousData(fromPlate, orderType, orderSnCode, orderTime,
-              printIp, true, rotate, items, remark);
+          printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
+              printIp, true, rotate, items, remark, isCenterPrint: true);
         }
         continue;
       }
 
       if (isContinuous) {
         // If continuous printing is enabled, print all items in one go
-        printContinuousData(fromPlate, orderType, orderSnCode, orderTime,
+        printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
             printerIp, isContinuous, rotate, items, remark);
       } else {
         // If label printing is enabled, print each item separately
-        printSingleData(fromPlate, orderType, orderSnCode, orderTime, printerIp,
+        printSingleData(fromPlate, isTakeOut, orderSnCode, orderTime, printerIp,
             isContinuous, rotate, items, remark);
       }
       // If center printing is enabled, print the same data to the center printer
@@ -153,11 +153,9 @@ class PrintService extends GetxService {
         final printIp = centerPrinter["printIp"];
         final rotate = centerPrinter["direction"] == 1;
 
-        printContinuousData(fromPlate, orderType, orderSnCode, orderTime,
-            printIp, true, rotate, items, remark);
+        printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
+            printIp, true, rotate, items, remark, isCenterPrint: true);
       }
-
-
     }
   }
 
@@ -174,7 +172,7 @@ class PrintService extends GetxService {
             children: [
 
               AutoSizeText(
-                name + '-' + number,
+                name + ' # ' + number,
                 textAlign: TextAlign.center,
                 maxLines: 1,
                 style: TextStyle(
@@ -321,14 +319,16 @@ class PrintService extends GetxService {
 
   printContinuousData(
       String fromPlate,
-      String orderType,
+      bool isTakeOut,
       String orderSnCode,
       String orderTime,
       String printerIp,
       bool isContinuous,
       bool isRotate,
       List items,
-      String remark) async {
+      String remark,
+  {bool isCenterPrint = false}
+      ) async {
     final rotate = isRotate ? pi : 0.0;
 
     // Generate the receipt widget
@@ -340,7 +340,7 @@ class PrintService extends GetxService {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             receiptTitle(orderSnCode, orderTime, fromPlate,
-                isTakeOut: orderType == 'delivery', continuous: true),
+                isTakeOut: isTakeOut, continuous: true, isCenterPrint: isCenterPrint),
             ...items.map((item) {
               final qty = item["qty"] ?? 1;
               final name = item["name"] ?? "";
@@ -376,7 +376,7 @@ class PrintService extends GetxService {
 
   printSingleData(
       String fromPlate,
-      String orderType,
+      bool isTakeOut,
       String orderSnCode,
       String orderTime,
       String printerIp,
@@ -399,7 +399,7 @@ class PrintService extends GetxService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               receiptTitle(orderSnCode, orderTime, fromPlate,
-                  isTakeOut: orderType == 'delivery'),
+                  isTakeOut: isTakeOut),
               menuItem(name, qty, options),
               //remarkTitle(remark)
             ],
@@ -432,7 +432,7 @@ class PrintService extends GetxService {
 
   //标题
   Widget receiptTitle(String title, String orderTime, String fromPlate,
-      {bool isTakeOut = false, bool continuous = false}) {
+      {bool isTakeOut = false, bool continuous = false, bool isCenterPrint = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
@@ -445,17 +445,17 @@ class PrintService extends GetxService {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  if (isTakeOut)
+                  if (isTakeOut && !isCenterPrint)
                   Icon(
-                    Icons.local_shipping,
+                    Icons.shopping_bag_outlined,
                     size: 50,
                     color: Colors.black,
                   ),
-                  if (isTakeOut)
+                  if (isTakeOut && isCenterPrint)
                   Text(
                     fromPlate + ' # ',
                     style: TextStyle(
-                      fontSize: 50,
+                      fontSize: continuous ? 50:40,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -463,7 +463,7 @@ class PrintService extends GetxService {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: 50,
+                      fontSize: continuous ? 50:40,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),
@@ -474,7 +474,7 @@ class PrintService extends GetxService {
                 Text(
                   orderTime,
                   style: TextStyle(
-                    fontSize: 45,
+                    fontSize: 40,
                     color: ColorsUtil.hexToColor("#000000"),
                   ),
                 ),

@@ -36,19 +36,19 @@ extension SystemSettingPageExtension on SystemSettingPageView {
               context: Get.context!,
               builder: (BuildContext context) {
                 return AlertDialog(
-                  title: Text("Confirm Deletion"),
-                  content: Text("Are you sure you want to delete this item?"),
+                  title: Text("削除確認"),
+                  content: Text("このプリンター設定を削除しますか？"),
                   actions: [
                     TextButton(
                       onPressed: () => Navigator.of(context).pop(false),
-                      child: Text("Cancel"),
+                      child: Text("キャンセル"),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop(true);
-                        controller.update();
+                        controller.removePrinter(printerItem);
                       },
-                      child: Text("Delete"),
+                      child: Text("削除する"),
                     ),
                   ],
                 );
@@ -67,7 +67,6 @@ extension SystemSettingPageExtension on SystemSettingPageView {
           ),
           child: _printerSettingWidget(printerItem),
         )
-
       ]
     );
   }

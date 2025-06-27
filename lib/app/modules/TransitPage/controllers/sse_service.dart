@@ -44,10 +44,11 @@ class SseService extends GetxService {
         if (kDebugMode) {
           print('SSE Service: Error in request for $url: $error');
         }
-        disconnect(url).then((_) {
-          addSseListen(url, printService: printService);
+        Future.delayed(Duration(milliseconds: 500), (){
+          disconnect(url).then((_) {
+            addSseListen(url, printService: printService);
+          });
         });
-
       },
     );
 
@@ -87,14 +88,18 @@ class SseService extends GetxService {
           print('SSE Service: Connection error for $url: $err');
         }
         _heartbeatTimers[url]?.cancel();
-        disconnect(url).then((_) {
-          _startReconnect(url, request);
+        Future.delayed(Duration(milliseconds: 500), (){
+          disconnect(url).then((_) {
+            addSseListen(url, printService: printService);
+          });
         });
       },
       onDone: () {
         _heartbeatTimers[url]?.cancel();
-        disconnect(url).then((_) {
-          _startReconnect(url, request);
+        Future.delayed(Duration(milliseconds: 500), (){
+          disconnect(url).then((_) {
+            addSseListen(url, printService: printService);
+          });
         });
       },
       cancelOnError: true,
