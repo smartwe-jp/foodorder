@@ -389,13 +389,14 @@ class TransitPageController extends GetxController {
         print('error: $e');
       }
     }
-    _goNext(checkmachineMode);
+
 
     final sseService = Get.find<SseService>();
     final printService = Get.find<PrintService>();
     sseService.addSseListen((servicePath['sseSubscribe'] ?? '') + '358886760', printService: printService);
     sseService.addSseListen((servicePath['sseSubscribeMobile'] ?? '') + _machineCode.value, printService: printService);
 
+    _goNext(checkmachineMode);
     // _sseService = SseService(servicePath['sseSubscribe']??'', '358886760');
     // _sseServiceMobile = SseService(servicePath['sseSubscribeMobile']??'', _machineCode.value);
     //

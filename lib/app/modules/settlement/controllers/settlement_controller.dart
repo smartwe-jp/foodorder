@@ -986,24 +986,27 @@ class SettlementController extends GetxController with StateMixin {
         "printType":(showPrintType.value ==1 && wlan_print_ip.value !="")?"Label":""
       };
       var queryUrl;
-      queryUrl = "webBootToPrintV7"; //230704新修改小票
+      queryUrl = "webBootToPrintV8"; //230704新修改小票
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
         debugPrint("doPrintOrderMenu== $response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
+          if (response['data']["printInfo"] != null) {
+            printService.printData(response['data']["printInfo"]);
+          }
           //receipt
-          if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
-            printService.wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
-          }
-
-          //label打印
-          if(showPrintType.value ==1 && wlan_print_ip.value !="" && response['data']["printInfoListStruct"].length>0){
-            printService.wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
-          }
-          //printType 1 打印菜+领収书 2 只打印菜
-          //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
+          // if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
+          //   printService.wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
+          // }
+          //
+          // //label打印
+          // if(showPrintType.value ==1 && wlan_print_ip.value !="" && response['data']["printInfoListStruct"].length>0){
+          //   printService.wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
+          // }
+          // //printType 1 打印菜+领収书 2 只打印菜
+          // //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
@@ -1014,9 +1017,11 @@ class SettlementController extends GetxController with StateMixin {
               await createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
             }
           }
+          //打印小票
+
 
           printGoNext();
-          _sendToDisplayPanel(json.encode(response['data']));
+          _sendToDisplayPanel(json.encode(response['data']["printInfo"]));
 
         } else {
           //错误后重新调用一次

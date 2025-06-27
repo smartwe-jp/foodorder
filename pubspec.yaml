@@ -41,6 +41,7 @@ dependencies:
   transparent_image: ^2.0.1
   animated_widgets: ^1.1.0
   barcode_widget: ^2.0.4
+  qr_flutter: ^4.0.0
   flutter_http_sse:
     git:
       url: git@github.com:Aaron51FX/flutter_http_sse.git

@@ -1,23 +1,28 @@
 import 'dart:async';
 import 'dart:collection';
+import 'dart:convert';
 import 'dart:math';
 import 'dart:typed_data';
+import 'dart:ui' as ui;
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/printer_info.dart';
+import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/NumberCircle.dart';
 import '../views/label_constrained_box.dart';
@@ -52,7 +57,22 @@ class PrintService extends GetxService {
     });
   }
 
+  _sendToDisplayPanel(data) async {
+    debugPrint("_sendToDisplayPanel data: $data");
+    final String panelAddress =
+        'http://${_machineInfo.wlan_panel_print_ip}:${_machineInfo.wlan_panel_print_port}/api/add/order';
+    try {
+      final response =
+      await request(panelAddress, method: 'POST', parameters: data);
+      final responseValue = json.decode(response.toString());
+      debugPrint('_sendToDisplayPanel:$responseValue');
+    } catch (error) {
+      debugPrint('_sendToDisplayPanel error: ${error.toString()}');
+    }
+  }
+
   void printData(Map data) async {
+    _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
     final orderSnCode = data["order_sn_code"] ?? "";
@@ -157,6 +177,121 @@ class PrintService extends GetxService {
             printIp, true, rotate, items, remark, isCenterPrint: true);
       }
     }
+  }
+
+//{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
+  printTableSeatInfo(Map data) async {
+
+      debugPrint("printTableSeatInfo data: $data");
+
+      //find pinter with type 11
+      final printer = printerList.firstWhere(
+        (p) => p["type"] == 11 && !p["isOff"],
+        orElse: () => null,
+      );
+      if (printer == null) {
+        debugPrint("Printer IP not configured for type 11");
+        return;
+      }
+
+      double rotate = printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
+
+      final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
+      final description = data["description"] ?? "";
+      final seatNumber = data["line1"] ?? "";
+      final line2 = data["line2"] ?? "";
+
+      final imageWidget = await _tableSeat(seatNumber, line2, description, currentTime, rotate);
+
+      // 生成打印图层任务，指定任务类型为标签
+      //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+          PicGenerateTask<PrinterInfo>(
+            tempWidget: imageWidget as ATempWidget,
+            printTypeEnum: PrintTypeEnum.receipt,
+            params: PrinterInfo(ip: printer["printIp"]),
+          ),
+      );
+      //});
+
+
+  }
+
+  _tableSeat(String line1, String line2, String description, String qrCode, rotate) async {
+    List<Widget> printMenus = [];
+    printMenus.add(
+      Column(
+        children: [
+          Container(
+            margin: EdgeInsets.only(bottom: 8),
+            child: Directionality(
+                textDirection: ui.TextDirection.ltr,
+                child: Text(line1,
+                    style: TextStyle(
+                      fontSize: 45.sp,
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ))),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 8),
+            child: Directionality(
+                textDirection: ui.TextDirection.ltr,
+                child: Text(line2,
+                    style: TextStyle(
+                      fontSize: 40.sp,
+                      fontWeight: FontWeight.w500,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ))),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 4),
+            width: 270.w,
+            height: 280.h,
+            child: BarcodeWidget(
+              height: 280,
+              barcode: Barcode.qrCode(),
+              data: qrCode,
+            )
+
+            // QrImage(
+            //   size: 380,
+            //   data: orderKey,
+            // ),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 5),
+            child: Directionality(
+                textDirection: ui.TextDirection.ltr,
+                child: Text(
+                    description,
+                    style: TextStyle(
+                      fontSize: 32.sp,
+                      fontWeight: FontWeight.w400,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ))),
+          ),
+
+        ],
+      ),
+    );
+
+    return ReceiptConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate),
+            alignment: Alignment.center,
+            child:Container(
+              //width: 560,
+              //height: 720,
+              padding: EdgeInsets.only(left: 0.5, right: 0.5),
+              color: Colors.white,
+              alignment: Alignment.topCenter,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: printMenus,
+              ),
+            )));
   }
 
   Widget labelItem(String name, String number, Map options, double printWidth, bool rotate) {
@@ -356,7 +491,8 @@ class PrintService extends GetxService {
                 ),
               ),
             ),
-            //remarkTitle(remark)
+            if (isCenterPrint)
+            remarkTitle(remark)
           ],
         ),
       ),
@@ -455,7 +591,7 @@ class PrintService extends GetxService {
                   Text(
                     fromPlate + ' # ',
                     style: TextStyle(
-                      fontSize: continuous ? 50:40,
+                      fontSize: 50,
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
                     ),
@@ -463,7 +599,7 @@ class PrintService extends GetxService {
                   Text(
                     title,
                     style: TextStyle(
-                      fontSize: continuous ? 50:40,
+                      fontSize: 50,
                       fontWeight: FontWeight.bold,
                       color: Colors.black,
                     ),

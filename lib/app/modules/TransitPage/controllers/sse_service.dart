@@ -60,6 +60,7 @@ class SseService extends GetxService {
         if (kDebugMode) {
           print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
         }
+        final event = res.event ?? 'Unknown';
         Map? data;
         if (res.data is Map) {
           data = res.data as Map;
@@ -68,8 +69,25 @@ class SseService extends GetxService {
             data = jsonDecode(res.data);
           } catch (_) {}
         }
-        if (data != null) {
-          _printService?.printData(data);
+        if (event == 'heartbeat') {
+          if (kDebugMode) {
+            print('SSE Service: Received event: $event');
+          }
+        } else if (event == 'message') {
+          if (kDebugMode) {
+            print('SSE Service: Received heartbeat event');
+          }
+          if (data != null) {
+            _printService?.printData(data);
+          }
+        } else if (event == 'print') {
+          if (data != null) {
+            _printService?.printTableSeatInfo(data);
+          }
+        } else {
+          if (kDebugMode) {
+            print('SSE Service: Received event: $event');
+          }
         }
 
         // 每收到消息，重置35秒超时检测

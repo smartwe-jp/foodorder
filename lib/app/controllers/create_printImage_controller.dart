@@ -408,7 +408,7 @@ class CreatePrintImageController extends GetxController {
 
     debugPrint('printData:$printData');
 
-    var menuVos = printData["details"];
+    var menuVos = printData["details"] ?? [];
     var lineHight = 580;
     var lineZeng = 0;
     int addRowHight = 0;
