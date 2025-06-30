@@ -13,6 +13,7 @@ import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 import '../config/colorsUtil.dart';
+import '../modules/settlement/views/receipt_constrained_box.dart';
 import '../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
 import '../services/HomeServices.dart';
 import '../services/ScreenAdapter.dart';
@@ -55,10 +56,93 @@ class CreatePrintImageController extends GetxController {
     super.onInit();
   }
 
+  //    "orderLinesMap":{
+//       "10":[
+//          {
+//             "name":"芋泥啵啵",
+//             "price":0,
+//             "qty":2,
+//             "bizId":13387470,
+//             "options":{
+//                "规格":[
+//                   {
+//                      "name":"标准",
+//                      "qty":1
+//                   }
+//                ]
+//             },
+//             "extend2qr":null
+//          },
+//          {
+//             "name":"蜜桃四季春",
+//             "price":0,
+//             "qty":1,
+//             "bizId":13387471,
+//             "options":{
+//                "杯量1":[
+//                   {
+//                      "name":中杯（550ml）,
+//                      "qty":1
+//                   }
+//                ],
+//                "温度1":[
+//                   {
+//                      "name":"少冰",
+//                      "qty":1
+//                   }
+//                ],
+//                "甜度1":[
+//                   {
+//                      "name":"五分糖",
+//                      "qty":1
+//                   }
+//                ],
+//                "小料1":[
+//                   {
+//                      "name":"啵啵",
+//                      "qty":1
+//                   },
+//                   {
+//                      "name":"蜜桃果粒",
+//                      "qty":2
+//                   },
+//                   {
+//                      "name":"椰果",
+//                      "qty":1
+//                   }
+//                ]
+//             },
+//             "extend2qr":null
+//          }
+//       ]
+//    },
+
   tpPrintnew(print_paper_txt_size, printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
-    var categoryVos = printData["printInfoListStruct"];
+    List categoryVos = [];
+
+    // 现在printInfoListStruct没有提供值了，换成了 printInfo 内的 orderLinesMap
+    // 提取 orderLinesMap 中的菜品信息转换成原来的 categoryVos 格式
+    if (printData["printInfo"] != null) {
+      var orderLinesMap = printData["printInfo"]["orderLinesMap"];
+      if (orderLinesMap != null && orderLinesMap.isNotEmpty) {
+        categoryVos = [];
+        for (var key in orderLinesMap.keys) {
+          final items = orderLinesMap[key];
+          if (items != null && items.isNotEmpty) {
+            for (var item in items) {
+              categoryVos.add({
+                "mainTitle": item["name"],
+                "qty": item["qty"],
+                "optionVoListMsgMap": item["options"] ?? {},
+              });
+            }
+          }
+        }
+      }
+    }
+
     if (categoryVos == null || categoryVos.length == 0) {
       tpPrintReceipt(print_paper_txt_size, printData);
       return;
@@ -147,6 +231,9 @@ class CreatePrintImageController extends GetxController {
           var optionNameLength = value[0].length;
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0; //optionLine.ceil();
+          //value[0] 为Map{name: "optionName", qty: 1} 的形式
+          final qtyString = (value[0]["qty"] ?? 1) > 1 ? " ×${value[0]["qty"]}" : "";
+          final optionString = (value[0]["name"] ?? "") + qtyString;
 
           //处理option 开始-----------
           if ((key.length + value[0].length) > (wrapNum - 2)) {
@@ -190,7 +277,7 @@ class CreatePrintImageController extends GetxController {
                 Container(
                   padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                   child: Row(
-                    mainAxisAlignment: (value[0].length > (wrapNum - 2))
+                    mainAxisAlignment: (optionString.length > (wrapNum - 2))
                         ? MainAxisAlignment.start
                         : MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -199,9 +286,9 @@ class CreatePrintImageController extends GetxController {
                       Directionality(
                           textDirection: TextDirection.ltr,
                           child: Expanded(
-                            child: Text("${value[0]}",
+                            child: Text(optionString,
                                 softWrap: true,
-                                textAlign: (value[0].length > (wrapNum - 2))
+                                textAlign: (optionString.length > (wrapNum - 2))
                                     ? TextAlign.left
                                     : TextAlign.right,
                                 style: TextStyle(
@@ -239,7 +326,7 @@ class CreatePrintImageController extends GetxController {
                           ))),
                   Directionality(
                       textDirection: TextDirection.rtl,
-                      child: Text("${value[0]}",
+                      child: Text(optionString,
                           softWrap: true,
                           textAlign: TextAlign.right,
                           style: TextStyle(
@@ -258,23 +345,25 @@ class CreatePrintImageController extends GetxController {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
-              newOptionSonLine += value[j].length / (wrapNum - 2);
+              final qtyString = (value[j]["qty"] ?? 1) > 1 ? " ×${value[j]["qty"]}" : "";
+              final optionString = (value[j]["name"] ?? "") + qtyString;
+              newOptionSonLine += optionString.length / (wrapNum - 2);
               var oneOptionlength = 0.0;
-              oneOptionlength = value[j].length / (wrapNum - 2);
+              oneOptionlength = optionString.length / (wrapNum - 2);
               countLine += oneOptionlength.ceil();
 
               optionSons.add(Container(
                 padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                 child: Row(
-                  mainAxisAlignment: (value[j].length > (wrapNum - 2))
+                  mainAxisAlignment: (optionString.length > (wrapNum - 2))
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
                   textDirection: TextDirection.ltr,
                   children: [
                     Expanded(
-                        child: Text("${value[j]}",
+                        child: Text(optionString,
                             textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length > (wrapNum - 2))
+                            textAlign: (optionString.length > (wrapNum - 2))
                                 ? TextAlign.left
                                 : TextAlign.right,
                             style: TextStyle(
@@ -386,29 +475,32 @@ class CreatePrintImageController extends GetxController {
   tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
 
-    // if (machineInfo.printLogoImageData != "") {
-    // // 检查图片文件是否存在
-    //   File imageFile = File(machineInfo.printLogoImageData);
-    //   if (await imageFile.exists()) {
-    //     debugPrint('Image file exists: ${machineInfo.printLogoImageData}');
-    //     categoryMenus.add(Container(
-    //       height: 150, // 设置容器宽度，根据需要调整
-    //       margin: EdgeInsets.all(20),
-    //       decoration: BoxDecoration(
-    //         image: DecorationImage(
-    //           image: FileImage(imageFile),
-    //           //fit: BoxFit.contain, // 可以根据需要调整fit属性
-    //         ),
-    //       ),
-    //     ));
-    //   } else {
-    //     debugPrint('Image file does not exist: ${machineInfo.printLogoImageData}');
-    //   }
-    // }
-
     debugPrint('printData:$printData');
 
     var menuVos = printData["details"] ?? [];
+    // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
+    // 提取 orderLinesMap 中的菜品信息转换成原来的 menuVos 格式
+    if (printData["printInfo"] != null) {
+      var orderLinesMap = printData["printInfo"]["orderLinesMap"];
+      if (orderLinesMap != null && orderLinesMap.isNotEmpty) {
+        menuVos = [];
+        for (var key in orderLinesMap.keys) {
+          final items = orderLinesMap[key];
+          if (items != null && items.isNotEmpty) {
+            for (var item in items) {
+              menuVos.add({
+                "menuName": item["name"],
+                "menuQty": item["qty"],
+                "price": item["price"] ?? 0,
+              });
+            }
+          }
+        }
+      }
+    }
+
+
+
     var lineHight = 580;
     var lineZeng = 0;
     int addRowHight = 0;

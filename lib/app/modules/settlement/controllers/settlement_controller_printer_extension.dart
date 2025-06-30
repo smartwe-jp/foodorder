@@ -59,6 +59,12 @@ class PrintService extends GetxService {
 
   _sendToDisplayPanel(data) async {
     debugPrint("_sendToDisplayPanel data: $data");
+
+    if (_machineInfo.wlan_panel_print_ip.isEmpty||
+        _machineInfo.wlan_panel_print_port.isEmpty) {
+      debugPrint("_sendToDisplayPanel: Panel IP or Port is not set.");
+      return;
+    }
     final String panelAddress =
         'http://${_machineInfo.wlan_panel_print_ip}:${_machineInfo.wlan_panel_print_port}/api/add/order';
     try {

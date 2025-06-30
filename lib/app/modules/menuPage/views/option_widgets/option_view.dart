@@ -2,7 +2,7 @@
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/common/Extension/StringExtension.dart';
+import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/widgets/PriceLabel.dart';
 import 'package:get/get.dart';
 
@@ -455,7 +455,9 @@ class _OptionViewState extends State<OptionView> {
   }
 
 
-  Widget _titleArea(itemPrice, originalPrice, mainTitle, subtitle) {
+  Widget _titleArea(int itemPrice, originalPrice, mainTitle, subtitle) {
+    //深拷贝itemPrice
+    final int showPrice = this.widget.itemPrice;
     return Container(
       padding: EdgeInsets.only(bottom: ScreenAdapter.height(15)),
       child: Row(
@@ -496,28 +498,19 @@ class _OptionViewState extends State<OptionView> {
             padding: EdgeInsets.only(right: ScreenAdapter.width(20)),
             //width: ScreenAdapter.width(260),
             alignment: Alignment.bottomRight,
-            child: Text(
-              "¥${itemPrice.formatIntSum()}",
-              style: TextStyle(
-                fontSize: GFontSize.mainPrice,
-                fontFamily: GFont.getFontFamily(),
-                fontWeight: FontWeight.w600,
-                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                //textBaseline: TextBaseline.alphabetic,
-              ),
-            ),
+            child:
 
-            // PrinceLabel(
-            //       price: itemPrice.toString(),
-            //       originalPrice: originalPrice.toString(),
-            //       languageKey: widget.languageKey,
-            //       priceFrontFontSize: GFontSize.menuTwopriceLift,
-            //       priceFrontFontColor: Gcolor.mainTitleColor,
-            //       priceFontSize: GFontSize.mainPrice,
-            //       priceFontColor: Gcolor.mainTitleColor,
-            //       priceBackFontSize: GFontSize.menuTwopriceRight,
-            //       priceBackFontColor: Gcolor.mainTitleColor,
-            //     ),
+            PrinceLabel(
+                  price: showPrice.toString(),
+                  originalPrice: originalPrice.toString(),
+                  languageKey: widget.languageKey,
+                  priceFrontFontSize: GFontSize.menuTwopriceLift,
+                  priceFrontFontColor: Gcolor.mainTitleColor,
+                  priceFontSize: GFontSize.mainPrice,
+                  priceFontColor: Gcolor.mainTitleColor,
+                  priceBackFontSize: GFontSize.menuTwopriceRight,
+                  priceBackFontColor: Gcolor.mainTitleColor,
+                ),
           ),
         ],
       ),
