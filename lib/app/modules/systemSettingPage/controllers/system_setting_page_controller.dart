@@ -315,6 +315,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'server': servicePath['sseSubscribeSmartWe'] ?? '',
         'identify': machineCode.value,
         'isOn': false,
+        'needCenterPrint': true,
+        'centerOn': false,
         'needInput': false,
       });
       sseSettingList.add({
@@ -322,6 +324,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'server': servicePath['sseSubscribePanda'] ?? '',
         'identify': '',
         'isOn': false,
+        'needCenterPrint': false,
+        'centerOn': false,
         'needInput': true,
       });
       await HomeServices.setSSESettingList(sseSettingList);
@@ -355,7 +359,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
 
-  updateSSESetting(String name, {bool? isOn, String? identify}) async {
+  updateSSESetting(String name, {bool? isOn, String? identify, bool? centerOn}) async {
     if (sseSettingList.isNotEmpty) {
       for (var i = 0; i < sseSettingList.length; i++) {
         if (sseSettingList[i]['name'] == name) {
@@ -364,6 +368,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
           }
           if (identify != null) {
             sseSettingList[i]['identify'] = identify;
+          }
+
+          if (centerOn != null) {
+            sseSettingList[i]['centerOn'] = centerOn;
+            sseSettingList[i]['needCenterPrint'] = true;
           }
 
           if (identify != null && identify.isNotEmpty) {

@@ -34,9 +34,6 @@ class TransitPageController extends GetxController {
   RxBool _loadActiveInfo = false.obs;
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
-  
-  late SseService _sseService;
-  late SseService _sseServiceMobile;
 
   @override
   Future<void> onInit() async {

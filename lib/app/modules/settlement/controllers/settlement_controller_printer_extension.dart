@@ -34,13 +34,14 @@ class PrintService extends GetxService {
   PrintService(this._machineInfo);
 
   get printerList => _machineInfo.printerList;
+  get sseList => _machineInfo.sseSettingList;
 
   //Label打印先存在在一个队列中
-  final Queue<Widget> labelPrintQueue = Queue<Widget>();
+  //final Queue<Widget> labelPrintQueue = Queue<Widget>();
 
   //创建一个方法来处理打印队列
-  void processLabelPrintQueue(printerIp) {
-    Timer.periodic(Duration(milliseconds: 1000), (timer) {
+  void processLabelPrintQueue(String printerIp, Queue<Widget> labelPrintQueue) {
+    Timer.periodic(Duration(milliseconds: 500), (timer) {
       if (labelPrintQueue.isEmpty) {
         timer.cancel(); // 停止定时器
         return;
@@ -85,14 +86,19 @@ class PrintService extends GetxService {
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
-    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout' || orderType == 'pickup';
+    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
 
     final centerPrinter = printerList.firstWhere(
       (p) => p["type"] == 11,
       orElse: () => null,
     );
+    final smartWeSSE = sseList.firstWhere(
+      (sse) => sse["name"] == 'SmartWe SSE',
+      orElse: () => null,
+    );
 
     bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
+    bool smartWeCenterOn = smartWeSSE != null && smartWeSSE["centerOn"] && isCenterPrintOn;
 
     for (var key in orderLinesMap.keys) {
 
@@ -121,6 +127,7 @@ class PrintService extends GetxService {
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
+        final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printWidth = await HomeServices.getLabelPrintWidth() ?? 384.0;
         // Add the head receipt widget to the print queue
         final headReceipt = headReceiptWidget(
@@ -153,9 +160,9 @@ class PrintService extends GetxService {
           }
         }
 
-        processLabelPrintQueue(printerIp);
+        processLabelPrintQueue(printerIp, labelPrintQueue);
         // If center printing is enabled, print the same data to the center printer
-        if (isCenterPrintOn) {
+        if (isCenterPrintOn || smartWeCenterOn) {
           final printIp = centerPrinter["printIp"];
           final rotate = centerPrinter["direction"] == 1;
 
@@ -175,7 +182,7 @@ class PrintService extends GetxService {
             isContinuous, rotate, items, remark);
       }
       // If center printing is enabled, print the same data to the center printer
-      if (isTakeOut && isCenterPrintOn) {
+      if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
         final printIp = centerPrinter["printIp"];
         final rotate = centerPrinter["direction"] == 1;
 

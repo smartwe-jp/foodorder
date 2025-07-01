@@ -16,6 +16,8 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     final identify = sseItem['identify'] ?? "";
     final isOn = sseItem['isOn'] ?? false;
     final needInput = sseItem['needInput'] ?? false;
+    final needCenterPrint = sseItem['needCenterPrint'] ?? false;
+    final centerOn = sseItem['centerOn'] ?? false;
 
 
     return Table(
@@ -45,7 +47,9 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                 _setSSECell(
                     name,
                     address, identify, isOn,
-                    needInput: needInput
+                    needInput: needInput,
+                    needCenterPrint: needCenterPrint,
+                    centerOn: centerOn
                 ),
               ]
           ),
@@ -53,7 +57,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     );
   }
 
-  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true}) {
+  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true, bool needCenterPrint = false, bool centerOn = false}) {
     return Container(
         margin: EdgeInsets.only(
             top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -61,10 +65,9 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             top: ScreenAdapter.height(3),
             bottom: ScreenAdapter.height(3), right: ScreenAdapter.width(20)),
         child: Row(
-            mainAxisAlignment: needInput ?  MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              needInput ?
-
+              if (needInput)
               Container(
                 margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                 child:
@@ -110,8 +113,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     ),
                   ),
                 ),
-              )
-                  : const SizedBox.shrink(),
+              ),
 
               //switchButton ios type
               if (identify.isNotEmpty)
@@ -131,6 +133,28 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                       fontSize: ScreenAdapter.fontSize(22),
                       color: isOn ? ColorsUtil.hexToColor("#409eff") : Colors.grey,
                     ),
+                  ),
+                ],
+              ),
+
+              if (isOn && needCenterPrint)
+              Row(
+                children: [
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  Text(
+                    "転票",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(22),
+                      color: centerOn ? ColorsUtil.hexToColor("#409eff") : Colors.grey,
+                    ),
+                  ),
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  FlutterSwitch(
+                    value: centerOn,
+                    onToggle: (value) {
+                      controller.updateSSESetting(name, centerOn: value);
+                    },
                   ),
                 ],
               ),
