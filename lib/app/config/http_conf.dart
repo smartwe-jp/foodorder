@@ -93,8 +93,8 @@ const servicePath = {
 
   'localOrderPost': 'http://172.50.10.84:3000/api/add/order',
 
-  'sseSubscribe': 'http://172.20.10.56:38081/' + 'web/subscribe/panda/', //SSE订阅地址
+  'sseSubscribePanda': 'http://172.20.10.56:38081/' + 'web/subscribe/panda/', //SSE订阅地址
 
-  'sseSubscribeMobile': 'http://172.20.10.56:38081/' + 'web/subscribe/smartWe/', //SSE
+  'sseSubscribeSmartWe': 'http://172.20.10.56:38081/' + 'web/subscribe/smartWe/', //SSE
 
 };

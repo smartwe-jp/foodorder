@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../../../widget/customButton.dart';
 import 'package:get/get.dart';
@@ -7,6 +8,141 @@ import '../../../config/colorsUtil.dart';
 import '../../../services/ScreenAdapter.dart';
 
 extension SystemSettingPageExtension on SystemSettingPageView {
+
+  editSSETable(Map sseItem) {
+
+    final name = sseItem['name'] ?? "";
+    final address = sseItem['address'] ?? "";
+    final identify = sseItem['identify'] ?? "";
+    final isOn = sseItem['isOn'] ?? false;
+    final needInput = sseItem['needInput'] ?? false;
+
+
+    return Table(
+        border: TableBorder.all(),
+        columnWidths: const <int, TableColumnWidth>{
+          //0: IntrinsicColumnWidth(),
+          0: FlexColumnWidth(258),
+          1: FlexColumnWidth(750),
+        },
+        defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+        children: <TableRow>[
+
+          TableRow(
+              children: <Widget>[
+                Container(
+                  //height: ScreenAdapter.height(65),
+                  alignment: Alignment.center,
+                  child: Text(
+                    name,
+                    style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(22),
+                        fontWeight: FontWeight.w500
+                    ),
+                  ),
+                ),
+                _setSSECell(
+                    name,
+                    address, identify, isOn,
+                    needInput: needInput
+                ),
+              ]
+          ),
+        ]
+    );
+  }
+
+  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true}) {
+    return Container(
+        margin: EdgeInsets.only(
+            top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+        padding: EdgeInsets.only(left: ScreenAdapter.width(20),
+            top: ScreenAdapter.height(3),
+            bottom: ScreenAdapter.height(3), right: ScreenAdapter.width(20)),
+        child: Row(
+            mainAxisAlignment: needInput ?  MainAxisAlignment.spaceBetween : MainAxisAlignment.start,
+            children: [
+              needInput ?
+
+              Container(
+                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                child:
+                InkWell(
+                  highlightColor: Colors.transparent, // 透明色
+                  splashColor: Colors.transparent,
+                  onTap: (){
+                    controller.editSSESetting(name, address, identify, isOn);
+                  },
+                  child: Container(
+                    margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                    //设置 child 居中
+                    alignment: Alignment(0, 0),
+                    height: ScreenAdapter.height(60),
+                    width: ScreenAdapter.width(220),
+                    //边框设置
+                    decoration: new BoxDecoration(
+                      //背景
+                      color: ColorsUtil.hexToColor("#409eff"),
+                      //设置四周圆角 角度
+                      borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                      //设置四周边框
+                      //border: new Border.all(width: 1, color: Colors.red),
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                            identify.isEmpty ? "ターチして設置":identify,
+                                style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  color: ColorsUtil.hexToColor("#FFFFFF"),
+                                )
+                            ),
+                          ],
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+              )
+                  : const SizedBox.shrink(),
+
+              //switchButton ios type
+              if (identify.isNotEmpty)
+              Row(
+                children: [
+                  FlutterSwitch(
+                    value: isOn,
+                    onToggle: (value) {
+                      controller.updateSSESetting(name, identify: identify, isOn: value);
+                    },
+                  ),
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  Text(
+                    isOn ? "オン" : "オフ",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(22),
+                      color: isOn ? ColorsUtil.hexToColor("#409eff") : Colors.grey,
+                    ),
+                  ),
+                ],
+              ),
+            ]
+        )
+    );
+  }
+
+
+
+
+
 
   TableRow printerSettingWidget(Map printerItem) {
 

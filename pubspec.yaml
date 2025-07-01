@@ -42,6 +42,7 @@ dependencies:
   animated_widgets: ^1.1.0
   barcode_widget: ^2.0.4
   qr_flutter: ^4.0.0
+  flutter_switch: ^0.3.2
   flutter_http_sse:
     git:
       url: git@github.com:Aaron51FX/flutter_http_sse.git
@@ -53,10 +54,10 @@ dependencies:
   flutter:
     sdk: flutter
  #不同版本Android加载不同的插件
-  paycube_old: # Android 7
-    path: ./lib/app/plugins/paycube_old
-#  paycube: # Android 11
-#    path: ./lib/app/plugins/paycube
+#  paycube_old: # Android 7
+#    path: ./lib/app/plugins/paycube_old
+  paycube: # Android 11
+    path: ./lib/app/plugins/paycube
   flutter_plugin_msprinter:
     path: ./lib/app/plugins/flutter_plugin_msprint
   appset: 

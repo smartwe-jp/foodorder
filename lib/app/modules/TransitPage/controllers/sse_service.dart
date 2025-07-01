@@ -13,14 +13,11 @@ class SseService extends GetxService {
   final Map<String, StreamSubscription> _subscriptions = {};
   final Map<String, DateTime> _lastHeartbeat = {};
   final Map<String, Timer> _heartbeatTimers = {};
-  PrintService? _printService; // url -> PrintService
+  PrintService _printService = Get.find();
 
   /// 添加新的 SSE 监听
 
-  Future<void> addSseListen(String url, {dynamic printService}) async {
-    if (printService != null) {
-      _printService = printService;
-    }
+  Future<void> addSseListen(String url) async {
 
     if (_subscriptions.containsKey(url)) {
       return;
@@ -46,7 +43,7 @@ class SseService extends GetxService {
         }
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
-            addSseListen(url, printService: printService);
+            addSseListen(url);
           });
         });
       },
@@ -78,16 +75,16 @@ class SseService extends GetxService {
             print('SSE Service: Received heartbeat event');
           }
           if (data != null) {
-            _printService?.printData(data);
+            _printService.printData(data);
           }
         } else if (event == 'print') {
           if (data != null) {
-            _printService?.printTableSeatInfo(data);
+            _printService.printTableSeatInfo(data);
           }
         } else {
-          if (kDebugMode) {
-            print('SSE Service: Received event: $event');
-          }
+          // if (kDebugMode) {
+          //   print('SSE Service: Received event: $event');
+          // }
         }
 
         // 每收到消息，重置35秒超时检测
@@ -108,7 +105,7 @@ class SseService extends GetxService {
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
-            addSseListen(url, printService: printService);
+            addSseListen(url);
           });
         });
       },
@@ -116,7 +113,7 @@ class SseService extends GetxService {
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
-            addSseListen(url, printService: printService);
+            addSseListen(url);
           });
         });
       },
@@ -127,7 +124,7 @@ class SseService extends GetxService {
 
     // 启动首次心跳定时器（防止连接后迟迟没消息）
     // _heartbeatTimers[url]?.cancel();
-    // _heartbeatTimers[url] = Timer(const Duration(seconds: 25), () {
+    // _heartbeatTimers[url] = Timer(const Duration(seconds: 35), () {
     //   disconnect(url).then((_) {
     //     _startReconnect(url, request);
     //   });
@@ -137,8 +134,16 @@ class SseService extends GetxService {
   /// 主动断开连接
   Future<void> disconnect(String url) async {
 
+    //check if the subscription exists
+    if (!_subscriptions.containsKey(url)) {
+      if (kDebugMode) {
+        print('SSE Service: No found active subscription for $url');
+      }
+      return;
+    }
+
     if (kDebugMode) {
-      print('SSE Service: No active disconnect for $url');
+      print('SSE Service: disconnect for $url');
     }
 
     _subscriptions[url]?.cancel();

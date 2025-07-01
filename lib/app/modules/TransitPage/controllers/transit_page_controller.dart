@@ -390,31 +390,21 @@ class TransitPageController extends GetxController {
       }
     }
 
-
     final sseService = Get.find<SseService>();
-    final printService = Get.find<PrintService>();
-    sseService.addSseListen((servicePath['sseSubscribe'] ?? '') + '358886760', printService: printService);
-    sseService.addSseListen((servicePath['sseSubscribeMobile'] ?? '') + _machineCode.value, printService: printService);
+    final machineInfo = Get.find<MachineInfoController>();
+    final sseSettingList = machineInfo.sseSettingList;
+
+    for (final sseSetting in sseSettingList) {
+      if (sseSetting['isOn'] == true) {
+        final url = sseSetting['server'] + sseSetting['identify'];
+        if (url.isNotEmpty) {
+          sseService.addSseListen(url);
+        }
+      }
+    }
+
 
     _goNext(checkmachineMode);
-    // _sseService = SseService(servicePath['sseSubscribe']??'', '358886760');
-    // _sseServiceMobile = SseService(servicePath['sseSubscribeMobile']??'', _machineCode.value);
-    //
-    // _sseService.connect();
-    // _sseServiceMobile.connect();
-    //
-    // ever(_sseService.lastData, (Map data) {
-    //   if (data.isNotEmpty) {
-    //     print('_sseService: New data received -> $data');
-    //     _senToPrint(data);
-    //   }
-    // });
-    //
-    // ever(_sseServiceMobile.lastData, (Map data) {
-    //   if (data.isNotEmpty) {
-    //     print('_sseServiceMobile: New data received -> $data');
-    //   }
-    // });
 
   }
 

@@ -2910,8 +2910,9 @@ class SystemSettingPageView extends GetView {
                       ]
                   ),
 
-
-
+                  ...controller.sseSettingList.map((sseItem) =>
+                    editSSETable(sseItem)
+                  ).toList(),
 
                   /*setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向

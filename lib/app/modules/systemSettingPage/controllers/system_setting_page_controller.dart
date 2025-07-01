@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
 import 'package:open_file/open_file.dart';
@@ -16,6 +17,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
+import '../../../config/http_conf.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
@@ -39,6 +41,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   AppConfig appConfig = Get.find();
   PrintService printService = Get.find<PrintService>();
+  SseService sseService = Get.find<SseService>();
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
@@ -91,6 +94,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
   RxList printerList = [].obs;
+  RxList sseSettingList = [].obs;
 
   List<String> panelTypes = ['Mini','Max'];
   String panelType = "Mini";
@@ -114,19 +118,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
     'キッチン': 10,
     'センター': 11,
     'カウンター': 12,
-  };
-
-  Map<String, dynamic> printerInfo = {
-    'name':'', //打印机名称
-    'type': 0,
-    'receipt':0, //0 小票 1 标签
-    'labelWidth':0, //标签宽度
-    'continuous':0, //0 单票 1 连票
-    'isOff': false, //是否开启
-    'isDefault': true, //是否默认打印机
-    'printIp':'',
-    'printPort':'',
-    'direction': 0, //打印方向 0 正 1 逆
   };
 
   Map get notSelectedPrinterMap {
@@ -315,6 +306,80 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
     //save
     await HomeServices.setPrinterListInfo(printerList);
+    //获取SSE设置
+    sseSettingList.value = await HomeServices.getSSESettingList();
+    if (sseSettingList.isEmpty) {
+      //如果没有SSE设置，则添加默认设置
+      sseSettingList.add({
+        'name': 'SmartWe SSE',
+        'server': servicePath['sseSubscribeSmartWe'] ?? '',
+        'identify': machineCode.value,
+        'isOn': false,
+        'needInput': false,
+      });
+      sseSettingList.add({
+        'name': 'Panda SSE',
+        'server': servicePath['sseSubscribePanda'] ?? '',
+        'identify': '',
+        'isOn': false,
+        'needInput': true,
+      });
+      await HomeServices.setSSESettingList(sseSettingList);
+    }
+
+  }
+
+  editSSESetting(String name, String address, String identify, bool isOn) async {
+    Get.dialog(
+      SimpleInputAlert(
+        title: "$nameのIDを入力してください",
+        originValue: identify,
+        onConfirmClick: (value) async {
+          if (value.isEmpty) {
+            showToast("IDを入力してください");
+            return;
+          }
+          if (isOn) {
+              //先关闭现有连接
+            updateSSESetting(name, isOn: false);
+            await Future.delayed(const Duration(milliseconds: 3000));
+            //再开启新的连接
+            updateSSESetting(name, isOn: true, identify: value);
+          } else {
+            //如果是关闭状态，则直接更新设置
+            updateSSESetting(name, identify: value);
+          }
+        }
+      )
+    );
+  }
+
+
+  updateSSESetting(String name, {bool? isOn, String? identify}) async {
+    if (sseSettingList.isNotEmpty) {
+      for (var i = 0; i < sseSettingList.length; i++) {
+        if (sseSettingList[i]['name'] == name) {
+          if (isOn != null) {
+            sseSettingList[i]['isOn'] = isOn;
+          }
+          if (identify != null) {
+            sseSettingList[i]['identify'] = identify;
+          }
+
+          if (identify != null && identify.isNotEmpty) {
+
+            final sseAddress = sseSettingList[i]['server'] + identify;
+            if (isOn != null) {
+              //如果开启了SSE连接，则添加监听
+              isOn ? sseService.addSseListen(sseAddress) : sseService.disconnect(sseAddress);
+            }
+          }
+        }
+      }
+      await HomeServices.setSSESettingList(sseSettingList);
+    }
+
+    update();
   }
 
   addCustomPrinter() async {

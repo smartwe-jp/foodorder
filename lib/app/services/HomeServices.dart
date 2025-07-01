@@ -189,6 +189,20 @@ class HomeServices{
     }
   }
 
+  static Future<List> getSSESettingList() async {
+    List? list = await Storage.getData("SSESetting");
+    if (list != null) {
+      return list;
+    } else {
+      return [];
+    }
+  }
+
+  static Future<void> setSSESettingList(List sseSettingList) async {
+    final data = json.encode(sseSettingList);
+    await Storage.setData("SSESetting", data);
+  }
+
   static Future<void> setPrinterListInfo(List printerListInfo) async {
 
     final data = json.encode(printerListInfo);

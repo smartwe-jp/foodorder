@@ -565,7 +565,7 @@ class PrintService extends GetxService {
       child: Text(
         content,
         style: TextStyle(
-          fontSize: 45,
+          fontSize: 35,
           color: ColorsUtil.hexToColor("#000000"),
         ),
       ),
