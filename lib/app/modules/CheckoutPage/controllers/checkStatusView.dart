@@ -3,10 +3,12 @@ import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/OrderHome/controllers/order_home_controller.dart';
 import 'package:get/get.dart';
 
-class checkStatusView extends GetView<OrderHomeController> {
+import 'checkout_page_controller.dart';
+
+class checkStatusCopyView extends GetView<CheckoutPageController> {
 
 
-  const checkStatusView({
+  const checkStatusCopyView({
     Key? key,
   }) : super(key: key);
 

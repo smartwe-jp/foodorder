@@ -14,12 +14,14 @@ import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/PinterCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 import '../../scan_detail_page/logic.dart';
 import '../../scan_detail_page/view.dart';
+import 'checkStatusView.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
   //TODO: Implement CheckoutPageController
@@ -30,6 +32,11 @@ class CheckoutPageController extends GetxController with StateMixin {
   FocusNode scanQrCodeFocusNode = FocusNode();
 
   MachineInfoController machineInfo = Get.find();
+
+  PrinterCheckService printerCheckService = Get.find();
+
+  RxBool allAreReady = false.obs;
+  RxList checkList = [].obs;
 
   RxBool actuarial = false.obs;
   RxBool lineup = false.obs;
@@ -55,12 +62,18 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxMap orderInfoMap = {}.obs;
   String scanTextValue = '';
+  bool firstLoad = false;
+  get printerList => machineInfo.printerList;
+  get sseList => machineInfo.sseSettingList;
 
   @override
   void onInit() {
     debugPrint("CheckoutPageController init");
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     _getMachineLanguages();
+    if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
+      firstLoad = Get.arguments['initLaunch'] ?? false;
+    }
     super.onInit();
   }
 
@@ -68,12 +81,58 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onReady() {
     super.onReady();
     startRepeatingAnimation();
+    if (firstLoad) {
+      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      if (isSseEnabled) {
+        debugPrint('SSE is enabled, starting to check printer status');
+        Get.dialog(
+          checkStatusCopyView(),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
+      }
+    }
   }
 
   @override
   void onClose() {
     //stopRepeatingAnimation();
     super.onClose();
+  }
+
+  Future<void> checkPrinterStatus() async {
+    debugPrint('checkPrinterStatus');
+
+    checkList.clear();
+    checkList.value = printerList.map((item) {
+      return {
+        'name': item['name'],
+        'isOn': !(item['isOff'] ?? true),
+        'ip': item['printIp'] ?? '',
+        'port': item['printPort'] ?? '',
+        'isReady': false,
+        'isChecking': false,
+        'checked': false,
+      };
+    }).toList();
+
+    allAreReady.value = false;
+
+    await printerCheckService.checkPrinters(checkList, (printer) {
+      int index = checkList.indexWhere((item) => item['name'] == printer['name']);
+      debugPrint('Checking printer back: ${printer['name']}');
+      if (index != -1) {
+        checkList[index]['isReady'] = printer['isReady'];
+        checkList[index]['isChecking'] = printer['isChecking'];
+        checkList[index]['checked'] = true;
+      }
+      allAreReady.value = checkList.every((item) => item['checked']);
+      if (allAreReady.value) {
+        EasyLoading.showToast('All printers are ready');
+        Get.back(); // Close the dialog
+      }
+      //update();
+    });
   }
 
   _getMachineLanguages() async {

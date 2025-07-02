@@ -2,17 +2,20 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/HomeServices.dart';
+import '../views/widgets/checkStatusView.dart';
 
 class OrderHomeController extends GetxController with StateMixin {
   //TODO: Implement OrderHomeController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MachineInfoController machineInfo = Get.find();
+  PrinterCheckService printerCheckService = Get.find();
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
 
@@ -25,6 +28,8 @@ class OrderHomeController extends GetxController with StateMixin {
   bool startShake = false;
   bool isAnimating = false;
   bool firstLoad = false;
+  RxBool allAreReady = false.obs;
+  RxList checkList = [].obs;
 
 
   @override
@@ -45,7 +50,15 @@ class OrderHomeController extends GetxController with StateMixin {
     startRepeatingAnimation();
 
     if (firstLoad) {
-
+      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      if (isSseEnabled) {
+        debugPrint('SSE is enabled, starting to check printer status');
+        Get.dialog(
+          checkStatusView(),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
+      }
     }
 
   }
@@ -74,6 +87,41 @@ class OrderHomeController extends GetxController with StateMixin {
     isAnimating = false;
     startShake = false;
     update();
+  }
+
+  Future<void> checkPrinterStatus() async {
+    debugPrint('checkPrinterStatus');
+
+    checkList.clear();
+    checkList.value = printerList.map((item) {
+      return {
+        'name': item['name'],
+        'isOn': !(item['isOff'] ?? true),
+        'ip': item['printIp'] ?? '',
+        'port': item['printPort'] ?? '',
+        'isReady': false,
+        'isChecking': false,
+        'checked': false,
+      };
+    }).toList();
+
+    allAreReady.value = false;
+
+    await printerCheckService.checkPrinters(checkList, (printer) {
+      int index = checkList.indexWhere((item) => item['name'] == printer['name']);
+      debugPrint('Checking printer back: ${printer['name']}');
+      if (index != -1) {
+        checkList[index]['isReady'] = printer['isReady'];
+        checkList[index]['isChecking'] = printer['isChecking'];
+        checkList[index]['checked'] = true;
+      }
+      allAreReady.value = checkList.every((item) => item['checked']);
+      if (allAreReady.value) {
+        EasyLoading.showToast('All printers are ready');
+        Get.back(); // Close the dialog
+      }
+      //update();
+    });
   }
 
   goMenu(String lan, bool mealType) {

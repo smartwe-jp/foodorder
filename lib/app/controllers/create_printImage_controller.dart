@@ -56,67 +56,6 @@ class CreatePrintImageController extends GetxController {
     super.onInit();
   }
 
-  //    "orderLinesMap":{
-//       "10":[
-//          {
-//             "name":"芋泥啵啵",
-//             "price":0,
-//             "qty":2,
-//             "bizId":13387470,
-//             "options":{
-//                "规格":[
-//                   {
-//                      "name":"标准",
-//                      "qty":1
-//                   }
-//                ]
-//             },
-//             "extend2qr":null
-//          },
-//          {
-//             "name":"蜜桃四季春",
-//             "price":0,
-//             "qty":1,
-//             "bizId":13387471,
-//             "options":{
-//                "杯量1":[
-//                   {
-//                      "name":中杯（550ml）,
-//                      "qty":1
-//                   }
-//                ],
-//                "温度1":[
-//                   {
-//                      "name":"少冰",
-//                      "qty":1
-//                   }
-//                ],
-//                "甜度1":[
-//                   {
-//                      "name":"五分糖",
-//                      "qty":1
-//                   }
-//                ],
-//                "小料1":[
-//                   {
-//                      "name":"啵啵",
-//                      "qty":1
-//                   },
-//                   {
-//                      "name":"蜜桃果粒",
-//                      "qty":2
-//                   },
-//                   {
-//                      "name":"椰果",
-//                      "qty":1
-//                   }
-//                ]
-//             },
-//             "extend2qr":null
-//          }
-//       ]
-//    },
-
   tpPrintnew(print_paper_txt_size, printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
@@ -476,9 +415,9 @@ class CreatePrintImageController extends GetxController {
     List<Widget> categoryMenus = [];
 
     debugPrint('printData:$printData');
-    final discount = printData["discount"] ?? 0;
-    final originalPrice = printData["price"] ?? 0;
-    final finalPrice = originalPrice + discount;
+    int discount = printData["discount"] ?? 0;
+    int originalPrice = int.parse(printData["price"] ?? '0');
+    int finalPrice = originalPrice + discount;
 
     var menuVos = printData["details"] ?? [];
     // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
@@ -734,13 +673,18 @@ class CreatePrintImageController extends GetxController {
       height: 10,
     ));
     //原价
+
+    SizedBox(
+      height: 10,
+    );
+
     if (discount != 0)
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
             "定価",
             26.0,
             FontWeight.w200,
-            "￥${formatMoney(originalPrice)}",
+            "${formatMoney(originalPrice)}",
             26.0,
             FontWeight.w200,
             true),
@@ -753,7 +697,7 @@ class CreatePrintImageController extends GetxController {
             "割引",
             26.0,
             FontWeight.w200,
-            "￥${formatMoney(discount)}",
+            "${formatMoney(discount)}",
             26.0,
             FontWeight.w200,
             true),
@@ -774,7 +718,12 @@ class CreatePrintImageController extends GetxController {
                     child: Expanded(
                       child: Text(
                         "合計",
-                        style: printMenu2Font,
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          color: Colors.black,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     )),
                 Directionality(
@@ -784,7 +733,12 @@ class CreatePrintImageController extends GetxController {
                       alignment: Alignment.centerRight,
                       child: Text(
                         "￥${formatMoney(finalPrice)}",
-                        style: printMenuFont,
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          color: Colors.black,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     )),
               ],
@@ -964,7 +918,7 @@ class CreatePrintImageController extends GetxController {
     categoryMenus
         .add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight + addRowHight + 150;
+    var totalHight = lineZeng + lineHight + addRowHight + 180;
     final printLogo = CachedNetworkImageProvider(machineInfo.printLogoImageUrl);
 
     await ensureImageLoaded(machineInfo.printLogoImageUrl);

@@ -1,6 +1,7 @@
 
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:get/get.dart';
 
 class AppBindings extends Bindings {
@@ -8,5 +9,6 @@ class AppBindings extends Bindings {
   void dependencies() {
     Get.lazyPut(() => AppConfig());
     Get.lazyPut(() => SseService());
+    Get.lazyPut(() => PrinterCheckService());
   }
 }
