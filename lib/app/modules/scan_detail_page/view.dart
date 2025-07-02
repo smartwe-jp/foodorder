@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:get/get.dart';
 
@@ -93,7 +94,8 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _payCountTitle(int.parse(checkoutLogic.totalPrice.value)),
+                _payCountTitle(checkoutLogic.totalPrice.value,
+                    checkoutLogic.discount.value),
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
@@ -207,59 +209,120 @@ class ScanDetailPagePage extends StatelessWidget {
         ));
   }
 
-  Widget _payCountTitle(int count) {
+  Widget _payCountTitle(int count, int discount) {
     return Container(
         padding: EdgeInsets.only(
             left: ScreenAdapter.width(150), right: ScreenAdapter.width(150)),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.end,
+        child:
+        //原价
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.end,
           children: [
-            Text(
-                GString.getToString(
-                    checkoutLogic.selectLanguage, "settlement_total_price") + ' :',
-                style: TextStyle(
-                  //color: ColorsUtil.hexToColor("#FFFFFF"),
-                    fontWeight: FontWeight.w600,
-                    fontFamily: GFont.getFontFamily(),
-                    fontSize: ScreenAdapter.fontSize(40.0))),
-            SizedBox(
-              width: ScreenAdapter.width(20),
-            ),
-            RichText(
-              text: TextSpan(
-                  text: "¥",
-                  //GString.getToString(this._checkLanguage, "show_price_front"),
-                  style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(
-                        GFontSize.menusettlementBottomPriceLeft),
-                    fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                  ),
-                  children: [
-                    TextSpan(
-                      text: int.parse(checkoutLogic.totalPrice.value).formatIntSum(),
-                      style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(
-                            GFontSize.menusettlementBottomPrice),
-                        fontFamily: GFont.getFontFamily(),
+            //原价显示： 原价：2000
+            if(discount != 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("settlement_original_price".localized() + ' :',
+                    style: TextStyle(
+                      //color: ColorsUtil.hexToColor("#FFFFFF"),
                         fontWeight: FontWeight.w600,
-                        color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                      ),
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(35.0))),
+                SizedBox(
+                  width: ScreenAdapter.width(20),
+                ),
+                Text(
+                    "$count",
+                    style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(35.0),
+                      fontWeight: FontWeight.w600,
+                      color: Colors.black,
                     ),
-                    TextSpan(
-                      text:
-                      "（${GString.getToString(
-                          checkoutLogic.selectLanguage, "show_price_front")}）", //" 円",
+                )
+              ],
+            ),
+            //折扣显示： 折扣：1000
+            SizedBox(
+              height: ScreenAdapter.height(20),
+            ),
+            if(discount != 0)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text("settlement_discount".localized() + ' :',
+                    style: TextStyle(
+                      //color: ColorsUtil.hexToColor("#FFFFFF"),
+                        fontWeight: FontWeight.w600,
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(35.0))),
+                SizedBox(
+                  width: ScreenAdapter.width(20),
+                ),
+                Text(
+                    "$discount",
+                    style: TextStyle(
+                      fontFamily: GFont.getFontFamily(),
+                      fontSize: ScreenAdapter.fontSize(35.0),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                    )
+                ),
+              ],
+            ),
+            SizedBox(
+              height: ScreenAdapter.height(20),
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(
+                    "settlement_total_price".localized() + ' :',
+                    style: TextStyle(
+                      //color: ColorsUtil.hexToColor("#FFFFFF"),
+                        fontWeight: FontWeight.w600,
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(40.0))),
+                SizedBox(
+                  width: ScreenAdapter.width(20),
+                ),
+                RichText(
+                  text: TextSpan(
+                      text: "¥",
+                      //GString.getToString(this._checkLanguage, "show_price_front"),
                       style: TextStyle(
                         fontSize: ScreenAdapter.fontSize(
-                            GFontSize.menusettlementBottomPriceRight),
+                            GFontSize.menusettlementBottomPriceLeft),
                         fontFamily: GFont.getFontFamily(),
                         fontWeight: FontWeight.w600,
                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
                       ),
-                    ),
-                  ]),
+                      children: [
+                        TextSpan(
+                          text: (count + discount).formatIntSum(),
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.menusettlementBottomPrice),
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                          ),
+                        ),
+                        TextSpan(
+                          text:
+                          "（${"show_price_front".localized()}）", //" 円",
+                          style: TextStyle(
+                            fontSize: ScreenAdapter.fontSize(
+                                GFontSize.menusettlementBottomPriceRight),
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                          ),
+                        ),
+                      ]),
+                ),
+              ],
             ),
           ],
         ));

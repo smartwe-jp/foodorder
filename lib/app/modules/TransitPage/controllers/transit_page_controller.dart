@@ -427,21 +427,27 @@ class TransitPageController extends GetxController {
     debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => OrderHomeView());
-      Get.toNamed("/order-home");
+      Get.toNamed("/order-home", arguments: {
+        'initLaunch': _loadActiveInfo.value,
+      });
     });
   }
 
   void _goCheckOut() async {
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => CheckoutPageView());
-      Get.toNamed("/checkout-page");
+      Get.toNamed("/checkout-page", arguments: {
+        'initLaunch': _loadActiveInfo.value,
+      });
     });
   }
 
   void _goSelfService() async {
     Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => SelfservicePageView());
-      Get.toNamed("/selfservice-page");
+      Get.toNamed("/selfservice-page", arguments: {
+        'initLaunch': _loadActiveInfo.value,
+      });
     });
   }
 

@@ -13,6 +13,8 @@ class OrderHomeController extends GetxController with StateMixin {
   //TODO: Implement OrderHomeController
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
   MachineInfoController machineInfo = Get.find();
+  get printerList => machineInfo.printerList;
+  get sseList => machineInfo.sseSettingList;
 
   bool machineLanguages_JP = false;
   bool machineLanguages_CH = false;
@@ -22,10 +24,16 @@ class OrderHomeController extends GetxController with StateMixin {
   String selectLanguage = 'JP';
   bool startShake = false;
   bool isAnimating = false;
+  bool firstLoad = false;
 
 
   @override
   void onInit() async {
+    debugPrint('OrderHomeController onInit');
+    if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
+      firstLoad = Get.arguments['initLaunch'] ?? false;
+    }
+
     EasyLoading.dismiss();
     getmenchineLanguages();
     super.onInit();
@@ -35,6 +43,11 @@ class OrderHomeController extends GetxController with StateMixin {
   void onReady() {
     super.onReady();
     startRepeatingAnimation();
+
+    if (firstLoad) {
+
+    }
+
   }
 
   @override

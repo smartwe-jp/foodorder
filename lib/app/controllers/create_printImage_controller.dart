@@ -476,6 +476,9 @@ class CreatePrintImageController extends GetxController {
     List<Widget> categoryMenus = [];
 
     debugPrint('printData:$printData');
+    final discount = printData["discount"] ?? 0;
+    final originalPrice = printData["price"] ?? 0;
+    final finalPrice = originalPrice + discount;
 
     var menuVos = printData["details"] ?? [];
     // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
@@ -730,7 +733,33 @@ class CreatePrintImageController extends GetxController {
     categoryMenus.add(SizedBox(
       height: 10,
     ));
-//合计
+    //原价
+    if (discount != 0)
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "定価",
+            26.0,
+            FontWeight.w200,
+            "￥${formatMoney(originalPrice)}",
+            26.0,
+            FontWeight.w200,
+            true),
+      );
+
+
+    if (discount != 0)
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "割引",
+            26.0,
+            FontWeight.w200,
+            "￥${formatMoney(discount)}",
+            26.0,
+            FontWeight.w200,
+            true),
+      );
+
+
     categoryMenus.add(
       Directionality(
           textDirection: TextDirection.ltr,
@@ -754,7 +783,7 @@ class CreatePrintImageController extends GetxController {
                       width: ScreenAdapter.width(130),
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "￥${formatMoney(printData["price"])}",
+                        "￥${formatMoney(finalPrice)}",
                         style: printMenuFont,
                       ),
                     )),

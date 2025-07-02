@@ -54,9 +54,9 @@ class SseService extends GetxService {
     final sub = stream.listen(
       (SSEResponse res) {
         // ...数据处理...
-        if (kDebugMode) {
+        //if (kDebugMode) {
           print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
-        }
+        //}
         final event = res.event ?? 'Unknown';
         Map? data;
         if (res.data is Map) {
@@ -99,9 +99,9 @@ class SseService extends GetxService {
         });
       },
       onError: (err) {
-        if (kDebugMode) {
+        //if (kDebugMode) {
           print('SSE Service: Connection error for $url: $err');
-        }
+        //}
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
@@ -136,15 +136,15 @@ class SseService extends GetxService {
 
     //check if the subscription exists
     if (!_subscriptions.containsKey(url)) {
-      if (kDebugMode) {
+      //if (kDebugMode) {
         print('SSE Service: No found active subscription for $url');
-      }
+      //}
       return;
     }
 
-    if (kDebugMode) {
+    //if (kDebugMode) {
       print('SSE Service: disconnect for $url');
-    }
+    //}
 
     _subscriptions[url]?.cancel();
     _subscriptions.remove(url);

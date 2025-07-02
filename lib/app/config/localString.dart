@@ -34,6 +34,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"確  認",
         "settlement_total_price":"合計",
+        "settlement_original_price":"定価",
+        "settlement_discount":"割引",
         "settlement_small_ticket_tag":"領収書が必要ですのでこちらをご注文ください",
         //"settlement_payment_method":"以下のお支払い方法をご利用いただけます。",
         "settlement_payment_method":"現金を投入するか、QRコードをスキャンしてください。",
@@ -173,6 +175,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"确  认",
         "settlement_total_price":"合计",
+        "settlement_original_price":"原价",
+        "settlement_discount":"优惠",
         "settlement_small_ticket_tag":"确认领取小票",
         //"settlement_payment_method":"可以使用以下支付方法。",
         "settlement_payment_method":"请直接投入现金或扫码。",
@@ -308,6 +312,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"Confirm",
         "settlement_total_price":"Total",
+        "settlement_original_price":"Orig",
+        "settlement_discount":"Discount",
         "settlement_small_ticket_tag":"We need a receipt, so please order us",
         //"settlement_payment_method":"Please select a payment method for your order：",
         "settlement_payment_method":"Please insert money or scan QR code.",
@@ -443,6 +449,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"확인",
         "settlement_total_price":"총",
+        "settlement_original_price":"원가",
+        "settlement_discount":"할인",
         "settlement_small_ticket_tag":"영수증 확인",
         //"settlement_payment_method":"다음 지불 방법을 사용할 수 있습니다",
         "settlement_payment_method":"직접 현금을 넣거나 QR 코드를 스캔하세요.",

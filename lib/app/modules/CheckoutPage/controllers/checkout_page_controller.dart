@@ -39,8 +39,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxBool showOpenPayment = false.obs;
 
   RxString orderId = "".obs;
-  RxString totalPrice = "0".obs;
+  RxInt totalPrice = 0.obs;
   RxString tableNum = "0".obs;
+  RxInt discount = 0.obs;
 
 
   bool machineLanguages_JP = false;
@@ -139,6 +140,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
 
+  //{"msg":"success","code":200,"data":{"orderId":459105413798756352,"totalPrice":2250,"discount":0,"tableNum":"Ａ０２","machineCode":null,"orderQty":15,"orderKey":null,"language":null,"orderInfoMap":{"ミルクティー":3,"枝豆":2,"生ビール":1,"牛すじドテ焼大根日":7,"甘蘭牛肉麺":1,"コーラ":1,"アイス紅茶":1}}}
   requestOrderList(String scanText, {goDetail = true}) async {
     debugPrint('qrCodeString: $scanText');
     scanTextValue = scanText;
@@ -176,7 +178,8 @@ class CheckoutPageController extends GetxController with StateMixin {
         if (response["data"]["totalPrice"] >= 0) {
 
           orderId.value = response["data"]["orderId"].toString();
-          totalPrice.value = response["data"]["totalPrice"].toString();
+          totalPrice.value = response["data"]["totalPrice"];
+          discount.value = response["data"]["discount"];
           tableNum.value = response["data"]["tableNum"].toString();
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
 
@@ -229,7 +232,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         SelectPaymentPage(
             checkLanguage: selectLanguage,
             menuCount: 0,
-            shopCartTotalPrice:totalPrice.value,
+            shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
             tableNum: tableNum.value,
             onConfrimClick: () {
                 showOpenPayment.value = true;
@@ -294,7 +297,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           "checkLanguage": selectLanguage,
           "machineCode": machineInfo.machineCode,
           "orderId" : orderId.value,
-          "totalPrice" : totalPrice.value,
+          "totalPrice" : (totalPrice.value + discount.value).toString(),
           "machineMode":"2",
           "showOpenPayment": showOpenPayment.value
         });
