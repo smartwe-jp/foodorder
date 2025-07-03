@@ -19,11 +19,12 @@ class PrinterCheckService extends GetxService{
         printer['checked'] = true;
         printer['isChecking'] = false;
         printer['isReady'] = false; // Printer is off, skip checking
+        onPrinterChecked(printer);
         continue;
       }
       try {
         debugPrint('Checking printer at $ip:$port');
-        final socket = await Socket.connect(ip, 9100, timeout: Duration(seconds: 10));
+        final socket = await Socket.connect(ip, 9100, timeout: Duration(seconds: 6));
         socket.destroy();
         printer['isReady'] = true;
         printer['isChecking'] = false;

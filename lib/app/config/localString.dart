@@ -152,6 +152,7 @@ extension LocalizedString on String {
         "status_check_tips" : "プリンターのステータスを確認しています...",
         "status_on" : "オンです",
         "status_off" : "オフです",
+        "go_setting" : "設定へ",
 
       },
       'CH': {
@@ -297,6 +298,7 @@ extension LocalizedString on String {
         "status_check_tips" : "正在检查打印机状态...",
         "status_on" : "开启",
         "status_off" : "关闭",
+        "go_setting" : "去设置",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -441,6 +443,7 @@ extension LocalizedString on String {
         "status_check_tips" : "Checking printer status...",
         "status_on" : "On",
         "status_off" : "Off",
+        "go_setting" : "Go to Settings",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -586,6 +589,7 @@ extension LocalizedString on String {
         "status_check_tips" : "프린터 상태를 확인하는 중...",
         "status_on" : "켜짐",
         "status_off" : "꺼짐",
+        "go_setting" : "설정으로 이동",
 
       }
       // 添加更多语言...한국말 =>  한국어

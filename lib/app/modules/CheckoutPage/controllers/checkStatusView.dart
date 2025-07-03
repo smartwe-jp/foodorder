@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/modules/OrderHome/controllers/order_home_controller.dart';
 import 'package:get/get.dart';
 
 import 'checkout_page_controller.dart';
@@ -14,7 +13,7 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
 
   @override
   Widget build(BuildContext context) {
-    return GetBuilder<OrderHomeController>(builder: (controller) {
+    return GetBuilder<CheckoutPageController>(builder: (controller) {
       return SimpleDialog(
         //机器状态检查
         title: Text(
@@ -24,10 +23,10 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
         contentPadding: const EdgeInsets.all(20),
         children: [
           if (!controller.allAreReady.value)
-          Text(
-            'status_check_tips'.localized(),
-            style: TextStyle(fontSize: 16),
-          ),
+            Text(
+              'status_check_tips'.localized(),
+              style: TextStyle(fontSize: 16),
+            ),
           const SizedBox(height: 20),
           Obx(() {
             return Container(
@@ -35,7 +34,7 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
               child: Column(
                 children: controller.checkList.map((printer) {
                   return printerCheckItem(
-                    printerName: printer['name'] ,
+                    printerName: printer['name'],
                     isOpen: printer['isOn'],
                     isOnline: printer['isReady'],
                     isChecking: printer['isChecking'],
@@ -47,19 +46,19 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
           }),
           const SizedBox(height: 20),
           if (controller.allAreReady.value)
-            //显示重试和关闭按钮
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child:
-              ElevatedButton(
-                onPressed: () {
-                  controller.checkPrinterStatus();
-                },
-                child: Text('retry_button'.localized()),
-              )),
-              SizedBox(width: 20),
-              Expanded(
+          //显示重试和关闭按钮
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child:
+                ElevatedButton(
+                  onPressed: () {
+                    controller.checkPrinterStatus();
+                  },
+                  child: Text('retry_button'.localized()),
+                )),
+                SizedBox(width: 20),
+                Expanded(
                   child:
                   ElevatedButton(
                     onPressed: () {
@@ -67,9 +66,9 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
                     },
                     child: Text('cancel_button'.localized()),
                   ),
-              )
-            ],
-          )
+                )
+              ],
+            )
         ],
       );
     });
@@ -84,58 +83,62 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
     required bool isChecking,
     required bool isChecked,
   }) {
-    return Stack(
-      children: [
-        ListTile(
-          leading: Icon(
-            Icons.print,
-            color: Colors.grey,
-          ),
-          title: Text(
+    return GetBuilder<CheckoutPageController>(builder: (controller) {
+      return Stack(
+        children: [
+          ListTile(
+              leading: Icon(
+                Icons.print,
+                color: Colors.grey,
+              ),
+              title: Text(
                   printerName,
                   style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              )),
-          subtitle:
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
+              subtitle:
               Text(
-                '${isOpen ? "status_on".localized() : "status_off".localized()}',
+                '${isOpen ? "status_on".localized() : "status_off"
+                    .localized()}',
                 style: TextStyle(
                   color: isOpen ? Colors.black : Colors.grey,
                 ),
               ),
-          trailing: isChecking
-              ? const CircularProgressIndicator()
-              :
+              trailing: isChecking
+                  ? const CircularProgressIndicator()
+                  :
               isOpen ?
               Icon(
-                isOnline ? Icons.check : Icons.close,
-                color: isOnline ? Colors.green : Colors.red,
+                isOnline ? Icons.check : isChecked ? Icons.close : Icons
+                    .timelapse_rounded,
+                color: isOnline ? Colors.green : isChecked ? Colors.red : Colors
+                    .grey,
               ) :
-    controller.allAreReady.value ?
-              Expanded(
-                child:
-                ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
-
-                  },
-                  child: Text('去设置'.localized()),
-                ),
-              ):Icon(
-                  Icons.timelapse_rounded,
-                  color: Colors.black,
-                ) // 如果正在检查，则禁用点击
-        ),
-        if (!isChecking && !controller.allAreReady.value)
-          Positioned.fill(
-            child: Container(
-              color: Colors.grey.withOpacity(0.3), // 灰色遮罩
-            ),
+              controller.allAreReady.value ?
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed('/middlewaresettingpage', arguments: {
+                    "machineCode": controller.machineInfo.machineCode
+                  });
+                },
+                child: Text('go_setting'.localized()),
+              )
+                  : Icon(
+                Icons.timelapse_rounded,
+                color: Colors.black,
+              ) // 如果正在检查，则禁用点击
           ),
-      ],
-    );
+          if (!isChecking && !controller.allAreReady.value)
+            Positioned.fill(
+              child: Container(
+                color: Colors.grey.withOpacity(0.3), // 灰色遮罩
+              ),
+            ),
+        ],
+      );
+    });
   }
 
 }

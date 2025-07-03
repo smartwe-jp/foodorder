@@ -16,6 +16,23 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     Response? response;
     Dio dio = Dio();
 
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        print("Request: ${options.method} ${options.uri}");
+        print("Headers: ${options.headers}");
+        print("Data: ${options.data}");
+        handler.next(options);
+      },
+      onResponse: (response, handler) {
+        print("Response: ${response.statusCode} ${response.data}");
+        handler.next(response);
+      },
+      onError: (DioError e, handler) {
+        print("Error: ${e.message}");
+        handler.next(e);
+      },
+    ));
+
     //By default, Dio serializes request data(except String type) to JSON. To send data in the application/x-www-form-urlencoded format instead, you can
     if(url=="smsCode" || url=="oauthToken"){
       dio.options.contentType = Headers.formUrlEncodedContentType;
@@ -32,22 +49,22 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
     if (method == 'GET') {
       if(parameters != null){
         response = await dio.get(
-            request_url!,
+            request_url,
             queryParameters: parameters
         );
       }else{
         response = await dio.get(
-          request_url!,
+          request_url,
 
         );
       }
 
     } else if (method == 'POST') {
-      response = await dio.post(request_url!, data: parameters);
+      response = await dio.post(request_url, data: parameters);
     } else if (method == 'DELETE') {
-      response = await dio.delete(request_url!, data: parameters);
+      response = await dio.delete(request_url, data: parameters);
     } else if (method == 'PUT') {
-      response = await dio.put(request_url!, data: parameters);
+      response = await dio.put(request_url, data: parameters);
     }
     if (response?.statusCode == 200) {
 

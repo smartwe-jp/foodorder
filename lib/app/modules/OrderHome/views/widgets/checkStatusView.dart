@@ -22,10 +22,10 @@ class checkStatusView extends GetView<OrderHomeController> {
         contentPadding: const EdgeInsets.all(20),
         children: [
           if (!controller.allAreReady.value)
-          Text(
-            'status_check_tips'.localized(),
-            style: TextStyle(fontSize: 16),
-          ),
+            Text(
+              'status_check_tips'.localized(),
+              style: TextStyle(fontSize: 16),
+            ),
           const SizedBox(height: 20),
           Obx(() {
             return Container(
@@ -33,7 +33,7 @@ class checkStatusView extends GetView<OrderHomeController> {
               child: Column(
                 children: controller.checkList.map((printer) {
                   return printerCheckItem(
-                    printerName: printer['name'] ,
+                    printerName: printer['name'],
                     isOpen: printer['isOn'],
                     isOnline: printer['isReady'],
                     isChecking: printer['isChecking'],
@@ -45,19 +45,19 @@ class checkStatusView extends GetView<OrderHomeController> {
           }),
           const SizedBox(height: 20),
           if (controller.allAreReady.value)
-            //显示重试和关闭按钮
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Expanded(child:
-              ElevatedButton(
-                onPressed: () {
-                  controller.checkPrinterStatus();
-                },
-                child: Text('retry_button'.localized()),
-              )),
-              SizedBox(width: 20),
-              Expanded(
+          //显示重试和关闭按钮
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(child:
+                ElevatedButton(
+                  onPressed: () {
+                    controller.checkPrinterStatus();
+                  },
+                  child: Text('retry_button'.localized()),
+                )),
+                SizedBox(width: 20),
+                Expanded(
                   child:
                   ElevatedButton(
                     onPressed: () {
@@ -65,9 +65,9 @@ class checkStatusView extends GetView<OrderHomeController> {
                     },
                     child: Text('cancel_button'.localized()),
                   ),
-              )
-            ],
-          )
+                )
+              ],
+            )
         ],
       );
     });
@@ -82,58 +82,62 @@ class checkStatusView extends GetView<OrderHomeController> {
     required bool isChecking,
     required bool isChecked,
   }) {
-    return Stack(
-      children: [
-        ListTile(
-          leading: Icon(
-            Icons.print,
-            color: Colors.grey,
-          ),
-          title: Text(
+    return GetBuilder<OrderHomeController>(builder: (controller) {
+      return Stack(
+        children: [
+          ListTile(
+              leading: Icon(
+                Icons.print,
+                color: Colors.grey,
+              ),
+              title: Text(
                   printerName,
                   style: TextStyle(
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              )),
-          subtitle:
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  )),
+              subtitle:
               Text(
-                '${isOpen ? "status_on".localized() : "status_off".localized()}',
+                '${isOpen ? "status_on".localized() : "status_off"
+                    .localized()}',
                 style: TextStyle(
                   color: isOpen ? Colors.black : Colors.grey,
                 ),
               ),
-          trailing: isChecking
-              ? const CircularProgressIndicator()
-              :
+              trailing: isChecking
+                  ? const CircularProgressIndicator()
+                  :
               isOpen ?
               Icon(
-                isOnline ? Icons.check : Icons.close,
-                color: isOnline ? Colors.green : Colors.red,
+                isOnline ? Icons.check : isChecked ? Icons.close : Icons
+                    .timelapse_rounded,
+                color: isOnline ? Colors.green : isChecked ? Colors.red : Colors
+                    .grey,
               ) :
-    controller.allAreReady.value ?
-              Expanded(
-                child:
-                ElevatedButton(
-                  onPressed: () {
-                    Get.back();
-                    Get.toNamed('/middlewaresettingpage', arguments: {"machineCode": controller.machineInfo.machineCode});
+              controller.allAreReady.value ?
+              ElevatedButton(
+                onPressed: () {
+                  Get.back();
+                  Get.toNamed('/middlewaresettingpage', arguments: {
+                    "machineCode": controller.machineInfo.machineCode
+                  });
+                },
+                child: Text('go_setting'.localized()),
 
-                  },
-                  child: Text('去设置'.localized()),
-                ),
-              ):Icon(
-                  Icons.timelapse_rounded,
-                  color: Colors.black,
-                ) // 如果正在检查，则禁用点击
-        ),
-        if (!isChecking && !controller.allAreReady.value)
-          Positioned.fill(
-            child: Container(
-              color: Colors.grey.withOpacity(0.3), // 灰色遮罩
-            ),
+              ) : Icon(
+                Icons.timelapse_rounded,
+                color: Colors.black,
+              ) // 如果正在检查，则禁用点击
           ),
-      ],
-    );
+          if (!isChecking && !controller.allAreReady.value)
+            Positioned.fill(
+              child: Container(
+                color: Colors.grey.withOpacity(0.3), // 灰色遮罩
+              ),
+            ),
+        ],
+      );
+    });
   }
 
 }
