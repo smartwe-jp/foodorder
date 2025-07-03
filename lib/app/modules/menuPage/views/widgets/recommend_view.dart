@@ -97,18 +97,21 @@ extension RecommendView on MenuPageController {
                 SizedBox(
                   height: 30,
                 ),
-                CustomButton(
-                    bgColor: Colors.white,
-                    titleColor: Colors.black,
-                    radius: 20,
-                    title: GString.getToString(
-                      checkLanguage.value,
-                      "settlement_back",
-                    ),
-                    onTap: () {
-                      showCartView = false;
-                      Navigator.pop(context);
-                    }),
+                Container(
+                  height: 100,
+                  child: CustomButton(
+                      bgColor: Colors.white,
+                      titleColor: Colors.black,
+                      radius: 20,
+                      title: GString.getToString(
+                        checkLanguage.value,
+                        "settlement_back",
+                      ),
+                      onTap: () {
+                        showCartView = false;
+                        Navigator.pop(context);
+                      }),
+                ),
               ],
             )),
           );
@@ -350,22 +353,30 @@ extension RecommendView on MenuPageController {
                   ),
 
                   if (recommendBookList.isEmpty)
-                    CustomButton(
-                        title: GString.getToString(
-                            checkLanguage.value, "skip_button"),
-                        bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
-                        titleColor: Colors.white,
-                        onTap: () {
-                          dismissAction(context);
-                        }),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 30),
+                      height: double.infinity,
+                      child: CustomButton(
+                          title: GString.getToString(
+                              checkLanguage.value, "skip_button"),
+                          bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
+                          titleColor: Colors.white,
+                          onTap: () {
+                            dismissAction(context);
+                          }),
+                    ),
                   if (recommendBookList.isNotEmpty)
-                    CustomButton(
-                        title: GString.getToString(
-                            checkLanguage.value, "next_button"),
-                        bgColor: ColorsUtil.hexToColor(Gcolor.priceColor),
-                        onTap: () {
-                          dismissAction(context);
-                        }),
+                    Container(
+                      padding: EdgeInsets.symmetric(vertical: 30),
+                      height: double.infinity,
+                      child: CustomButton(
+                          title: GString.getToString(
+                              checkLanguage.value, "next_button"),
+                          bgColor: ColorsUtil.hexToColor(Gcolor.priceColor),
+                          onTap: () {
+                            dismissAction(context);
+                          }),
+                    ),
                   SizedBox(
                     width: 60,
                   )
