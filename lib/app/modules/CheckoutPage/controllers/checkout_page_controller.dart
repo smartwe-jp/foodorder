@@ -361,7 +361,8 @@ class CheckoutPageController extends GetxController with StateMixin {
           "orderId" : orderId.value,
           "totalPrice" : (totalPrice.value + discount.value).toString(),
           "machineMode":"2",
-          "showOpenPayment": showOpenPayment.value
+          "showOpenPayment": showOpenPayment.value,
+          "isScanCheckOut" : true,
         });
     // if (result == true) {
     //   debugPrint('---settlement back---');

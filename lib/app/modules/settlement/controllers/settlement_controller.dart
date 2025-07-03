@@ -139,6 +139,7 @@ class SettlementController extends GetxController with StateMixin {
   bool hasStartPayflow = false;
   bool isRepayCash = false; //是否退金
   bool canReportFromListen = false; //是否无找零
+  bool isScanCheckOut = false; //扫码支付是否精算模式
 
   @override
   void onInit() {
@@ -185,6 +186,7 @@ class SettlementController extends GetxController with StateMixin {
     //this._machineMode = widget.arguments['machineMode'];
     totalPrice.value = Get.arguments['totalPrice'];
     showOpenPayment.value = Get.arguments['showOpenPayment'];
+    isScanCheckOut = Get.arguments['isScanCheckOut'] ?? false;
 
     //0 1适用之前旧版本，可适用现金机，同时也可以扫码  2只可扫码，不在打开现金机 3、4只支持刷卡，不在打开现金机
     if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
@@ -993,20 +995,9 @@ class SettlementController extends GetxController with StateMixin {
         debugPrint("doPrintOrderMenu== $response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
-          if (response['data']["printInfo"] != null) {
+          if (response['data']["printInfo"] != null && !isScanCheckOut) {
             printService.printData(response['data']["printInfo"]);
           }
-          //receipt
-          // if(response['data']["printInfoMapStruct"] != null && response['data']["printInfoMapStruct"].isNotEmpty){
-          //   printService.wifiNetworkPrintData(response['data']["serialNumber"],response['data']["printInfoMapStruct"],response['data']["takeOut"],response['data']["orderTime"]);
-          // }
-          //
-          // //label打印
-          // if(showPrintType.value ==1 && wlan_print_ip.value !="" && response['data']["printInfoListStruct"].length>0){
-          //   printService.wifiNetworkLabelPrintData(response['data']["printInfoListStruct"]);
-          // }
-          // //printType 1 打印菜+领収书 2 只打印菜
-          // //orderType 1 打印菜并根据printtype来判断是否打印领収书。orderType 2不打印菜
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
