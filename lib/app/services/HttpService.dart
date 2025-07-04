@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';

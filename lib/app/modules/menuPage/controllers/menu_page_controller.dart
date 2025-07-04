@@ -138,7 +138,7 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   //获取页面分类
-  getBookingBootIndexCategory({isReset = false}){
+  getBookingBootIndexCategory({isReset = false, int retryCount = 0}){
     debugPrint('getBookingBootIndexCategory');
     if (isReset) {
       change(null, status: RxStatus.loading());
@@ -236,12 +236,25 @@ class MenuPageController extends GetxController with StateMixin {
       }
     })
     .catchError((e){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_failure', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data'));
+
+      if (retryCount < 3) {
+        retryCount++;
+        debugPrint('Retrying getBookingBootIndexCategory, attempt: $retryCount');
+        getBookingBootIndexCategory(isReset: isReset, retryCount: retryCount);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_failure', parameters: {'machineCode': machineInfo.machineCode});
+        change(null, status: RxStatus.error('Failed to load data'));
+      }
     })
-    .timeout(Duration(seconds: 60), onTimeout: (){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data Timeout'));
+    .timeout(Duration(seconds: 15), onTimeout: (){
+      if (retryCount < 3) {
+        retryCount++;
+        debugPrint('Retrying getBookingBootIndexCategory on timeout, attempt: $retryCount');
+        getBookingBootIndexCategory(isReset: isReset, retryCount: retryCount);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
+        change(null, status: RxStatus.error('Failed to load data Timeout'));
+      }
     });
   }
 
@@ -251,7 +264,7 @@ class MenuPageController extends GetxController with StateMixin {
     forceUpdate = false;
   }
 
-  getBookingBootIndexMenu(queryCategoryCode){
+  getBookingBootIndexMenu(queryCategoryCode, {int retryCount = 0}) {
     debugPrint('getBookingBootIndexMenu');
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
@@ -370,12 +383,24 @@ class MenuPageController extends GetxController with StateMixin {
 
     })
     .catchError((e){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_failure', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data'));
+      if (retryCount < 3) {
+        retryCount++;
+        debugPrint('Retrying getBookingBootIndexMenu, attempt: $retryCount');
+        getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'load_menu_failure', parameters: {'machineCode': machineInfo.machineCode});
+        change(null, status: RxStatus.error('Failed to load data'));
+      }
     })
-    .timeout(Duration(seconds: 60), onTimeout: (){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
-      change(null, status: RxStatus.error('Failed to load data Timeout'));
+    .timeout(Duration(seconds: 15), onTimeout: (){
+      if (retryCount < 3) {
+        retryCount++;
+        debugPrint('Retrying getBookingBootIndexMenu on timeout, attempt: $retryCount');
+        getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
+      } else {
+        FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
+        change(null, status: RxStatus.error('Failed to load data Timeout'));
+      }
     });
   }
 

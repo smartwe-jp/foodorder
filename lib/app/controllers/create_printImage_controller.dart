@@ -89,15 +89,15 @@ class CreatePrintImageController extends GetxController {
     var print_menu_txt_size = 28.0;
     var wrapNum = 10;
     int oneRowHeight = 48;
-    if (print_paper_txt_size.value == "1") {
+    if (print_paper_txt_size == "1") {
       print_menu_txt_size = 28.0;
       wrapNum = 12;
       oneRowHeight = 48;
-    } else if (print_paper_txt_size.value == "2") {
+    } else if (print_paper_txt_size == "2") {
       print_menu_txt_size = 33.0;
       wrapNum = 10;
       oneRowHeight = 54;
-    } else if (print_paper_txt_size.value == "3") {
+    } else if (print_paper_txt_size == "3") {
       print_menu_txt_size = 40.0;
       wrapNum = 8;
       oneRowHeight = 65;
@@ -369,7 +369,7 @@ class CreatePrintImageController extends GetxController {
     );
 
     //print("总行数${menuNum}");
-    var totalHight = addRowHight + lineHight + 25;
+    var totalHight = addRowHight + lineHight + 25 + 100;
     if (menuNum == 1) {
       totalHight += 15;
     }
@@ -398,9 +398,9 @@ class CreatePrintImageController extends GetxController {
     if (printType == "1") {
       // print("打印小菜来了-开始打印小菜lalala：${DateTime.now()}");
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0", "");
-      //await Future.delayed(Duration(milliseconds: 500));
+      await Future.delayed(Duration(milliseconds: 500));
       await FlutterPluginMsprinter.sendPrintCut("1");
-      //await Future.delayed(Duration(milliseconds: 300));
+      await Future.delayed(Duration(milliseconds: 300));
       tpPrintReceipt(print_paper_txt_size, printData);
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");
@@ -416,8 +416,8 @@ class CreatePrintImageController extends GetxController {
 
     debugPrint('printData:$printData');
     int discount = printData["discount"] ?? 0;
-    int originalPrice = int.parse(printData["price"] ?? '0');
-    int finalPrice = originalPrice + discount;
+    int finalPrice = int.parse(printData["price"] ?? '0');
+    int originalPrice = finalPrice + discount;
 
     var menuVos = printData["details"] ?? [];
     // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
@@ -677,6 +677,9 @@ class CreatePrintImageController extends GetxController {
     SizedBox(
       height: 10,
     );
+    categoryMenus.add(
+      _publicSplitLine(),
+    );
 
     if (discount != 0)
       categoryMenus.add(
@@ -760,7 +763,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == true)
-                ? "${formatMoney(printData["price"])}"
+                ? "${formatMoney(finalPrice)}"
                 : "0",
             24.0,
             FontWeight.w100,
@@ -787,7 +790,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == false)
-                ? "${formatMoney(printData["price"])}"
+                ? "${formatMoney(finalPrice)}"
                 : "0",
             24.0,
             FontWeight.w100,

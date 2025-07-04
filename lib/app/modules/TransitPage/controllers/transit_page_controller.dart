@@ -81,7 +81,7 @@ class TransitPageController extends GetxController {
     await _getMachineActivate();
   }
 
-  _getMachineActivate() async{
+  _getMachineActivate({int retryCount = 0}) async{
     // var shouldActive = await _checkShouldActive();
     // if (!shouldActive) {
     //   await _getSmartweSystemSettingInfo();
@@ -197,12 +197,30 @@ class TransitPageController extends GetxController {
     .catchError((e) {
       FirebaseAnalytics.instance.logEvent(name: 'machine_activate_error', parameters: {'machine_activate_error': '${_machineCode.value}'});
       //print("error: $e");
-      _showErrorDialog(error: e);
+
+      if (retryCount < 3) {
+        // 如果失败，重试
+        Future.delayed(Duration(seconds: 2), () {
+          _getMachineActivate(retryCount: retryCount + 1);
+        });
+      } else {
+        // 如果重试次数超过3次，显示错误对话框
+        _showErrorDialog(error: e);
+      }
     })
-    .timeout(Duration(seconds: 30), onTimeout: () {
+    .timeout(Duration(seconds: 10), onTimeout: () {
       FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
       //print('timeout');
-      _showErrorDialog();
+
+      if (retryCount < 3) {
+        // 如果超时，重试
+        Future.delayed(Duration(seconds: 2), () {
+          _getMachineActivate(retryCount: retryCount + 1);
+        });
+      } else {
+        // 如果重试次数超过3次，显示错误对话框
+        _showErrorDialog();
+      }
     });
   }
 

@@ -372,7 +372,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
           if (centerOn != null) {
             sseSettingList[i]['centerOn'] = centerOn;
-            sseSettingList[i]['needCenterPrint'] = true;
           }
 
           if (identify != null && identify.isNotEmpty) {

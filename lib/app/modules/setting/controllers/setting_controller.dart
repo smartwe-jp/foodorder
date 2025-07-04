@@ -241,7 +241,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   //获取现金机列表
-  _getPaycubeChangeState() {
+  _getPaycubeChangeState({retryCount = 0}) {
     var formData = {
       "machineCode": machineCode.value,
     };
@@ -258,6 +258,32 @@ class SettingController extends GetxController with StateMixin {
 
         update();
       } else {}
+    }).catchError((error) {
+      debugPrint("Error getting change state: $error");
+      //
+      if (retryCount < 3) {
+        Future.delayed(Duration(seconds: 2), () {
+          _getPaycubeChangeState(retryCount: retryCount + 1);
+        });
+      } else {
+        //日文显示
+        showToast('現金機の状態を取得できませんでした。');
+        //change(null, status: RxStatus.error('获取现金机状态失败'));
+        Get.back();
+      }
+
+    }).timeout(const Duration(seconds: 15), onTimeout: () {
+      debugPrint("Timeout getting change state");
+      //showToast('获取现金机状态超时');
+      if (retryCount < 3) {
+        Future.delayed(Duration(seconds: 2), () {
+          _getPaycubeChangeState(retryCount: retryCount + 1);
+        });
+      } else {
+        showToast('現金機の状態を取得できませんでした。');
+        //change(null, status: RxStatus.error('获取现金机状态超时'));
+        Get.back();
+      }
     });
 
     _getChangeState();

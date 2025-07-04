@@ -987,12 +987,12 @@ class SettlementController extends GetxController with StateMixin {
         "machineCode": machineInfo.machineCode,
         "printType":(showPrintType.value ==1 && wlan_print_ip.value !="")?"Label":""
       };
-      var queryUrl;
-      queryUrl = "webBootToPrintV8"; //230704新修改小票
+
+      final queryUrl = "webBootToPrintV8"; //230704新修改小票
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
-        debugPrint("doPrintOrderMenu== $response");
+        //debugPrint("doPrintOrderMenu== $response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
           if (response['data']["printInfo"] != null && !isScanCheckOut) {
@@ -1001,11 +1001,11 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            createPrintImageController.tpPrintnew(print_paper_txt_size, response['data'], printType);
+            createPrintImageController.tpPrintnew(print_paper_txt_size.value, response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(print_paper_txt_size, response['data']);
+              createPrintImageController.tpPrintReceipt(print_paper_txt_size.value, response['data']);
             }
           }
           //打印小票

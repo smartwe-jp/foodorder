@@ -122,7 +122,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                   FlutterSwitch(
                     value: isOn,
                     onToggle: (value) {
-                      controller.updateSSESetting(name, identify: identify, isOn: value);
+                      controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
                     },
                   ),
                   SizedBox(width: ScreenAdapter.width(10)),

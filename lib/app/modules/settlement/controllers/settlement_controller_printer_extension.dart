@@ -24,6 +24,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/printer_info.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/logUtil.dart';
 import '../../../widget/NumberCircle.dart';
 import '../views/label_constrained_box.dart';
 import '../views/receipt_constrained_box.dart';
@@ -41,7 +42,7 @@ class PrintService extends GetxService {
 
   //创建一个方法来处理打印队列
   void processLabelPrintQueue(String printerIp, Queue<Widget> labelPrintQueue) {
-    Timer.periodic(Duration(milliseconds: 500), (timer) {
+    Timer.periodic(Duration(milliseconds: 1000), (timer) {
       if (labelPrintQueue.isEmpty) {
         timer.cancel(); // 停止定时器
         return;
@@ -78,7 +79,126 @@ class PrintService extends GetxService {
     }
   }
 
+  // {
+//    "msg":"success",
+//    "code":200,
+//    "data":{
+//       "shopName":1甘蘭居酒屋2025,
+//       "orderDate":"2025年07月04日(金) 15":30,
+//       "address":大阪市北区天満2-1-12天満橋SEビル 6F%%甘蘭株式会社,
+//       "telNo":090-8888-9999,
+//       "ntaNo":T8120001223480,
+//       "orderType":1,
+//       "numberTip":"お客様番号":,
+//       "serialNo":,
+//       "serialNumber":"２６８８",
+//       "serialNumberText":"２６８８",
+//       "orderId":459174218385522688,
+//       "language":"JP",
+//       "takeOut":true,
+//       "price":40,
+//       "tax":2,
+//       "order":"＊＊＊５２２６８８",
+//       "payPrice":50,
+//       "change":10,
+//       "payDate":null,
+//       "memberNo":null,
+//       "payMethod":"現金支払",
+//       "details":null,
+//       "discount":0,
+//       "orderTime":"15":30,
+//       "printInfo":{
+//          "bizId":459174218385522688,
+//          "orderTime":"15":30,
+//          "remark":,
+//          "from_plate":"Shop",
+//          "order_sn_code":2688,
+//          "order_type":"takeout",
+//          "pay_type":"Paid",
+//          "orderLinesMap":{
+//             "22":[
+//                {
+//                   "name":"アサヒ　瓶ビール",
+//                   "price":10,
+//                   "qty":1,
+//                   "bizId":459174218385522692,
+//                   "options":{
+
+//                   },
+//                   "extend2qr":null
+//                }
+//             ],
+//             "21":[
+//                {
+//                   "name":"牛すじドテ焼大根日",
+//                   "price":10,
+//                   "qty":1,
+//                   "bizId":459174218385522689,
+//                   "options":{
+
+//                   },
+//                   "extend2qr":null
+//                },
+//                {
+//                   "name":"枝豆",
+//                   "price":20,
+//                   "qty":1,
+//                   "bizId":459174218385522690,
+//                   "options":{
+//                      "份量":[
+//                         {
+//                            "name":"中份",
+//                            "qty":1
+//                         }
+//                      ]
+//                   },
+//                   "extend2qr":null
+//                }
+//             ]
+//          },
+//          "orderLines":[
+//             {
+//                "name":"アサヒ　瓶ビール",
+//                "price":10,
+//                "qty":1,
+//                "bizId":459174218385522692,
+//                "options":{
+
+//                },
+//                "extend2qr":null
+//             },
+//             {
+//                "name":"牛すじドテ焼大根日",
+//                "price":10,
+//                "qty":1,
+//                "bizId":459174218385522689,
+//                "options":{
+
+//                },
+//                "extend2qr":null
+//             },
+//             {
+//                "name":"枝豆",
+//                "price":20,
+//                "qty":1,
+//                "bizId":459174218385522690,
+//                "options":{
+//                   "份量":[
+//                      {
+//                         "name":"中份",
+//                         "qty":1
+//                      }
+//                   ]
+//                },
+//                "extend2qr":null
+//             }
+//          ]
+//       }
+//    }
+// }
+
   void printData(Map data) async {
+    LogUtil.d("printData == $data");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
@@ -86,6 +206,7 @@ class PrintService extends GetxService {
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
+    bool isInShop = data["from_plate"] == "Shop";
     bool isTakeOut = orderType == 'delivery' || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
 
     final centerPrinter = printerList.firstWhere(
@@ -99,8 +220,12 @@ class PrintService extends GetxService {
 
     bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
     bool smartWeCenterOn = smartWeSSE != null && smartWeSSE["centerOn"] && isCenterPrintOn;
+    List orderLineItems = [];
 
     for (var key in orderLinesMap.keys) {
+
+      final items = orderLinesMap[key];
+      orderLineItems = orderLineItems + items;
 
       final printer = printerList.firstWhere(
         (p) => p["type"].toString() == key && !p["isOff"],
@@ -122,7 +247,7 @@ class PrintService extends GetxService {
 
       final rotate = printer["direction"] == 1; // Rotate if direction is 1
 
-      final items = orderLinesMap[key];
+
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
@@ -162,13 +287,13 @@ class PrintService extends GetxService {
 
         processLabelPrintQueue(printerIp, labelPrintQueue);
         // If center printing is enabled, print the same data to the center printer
-        if (isCenterPrintOn || smartWeCenterOn) {
-          final printIp = centerPrinter["printIp"];
-          final rotate = centerPrinter["direction"] == 1;
-
-          printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-              printIp, true, rotate, items, remark, isCenterPrint: true);
-        }
+        // if (isCenterPrintOn || smartWeCenterOn) {
+        //   final printIp = centerPrinter["printIp"];
+        //   final rotate = centerPrinter["direction"] == 1;
+        //
+        //   printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
+        //       printIp, true, rotate, items, remark, isCenterPrint: true);
+        // }
         continue;
       }
 
@@ -182,14 +307,24 @@ class PrintService extends GetxService {
             isContinuous, rotate, items, remark);
       }
       // If center printing is enabled, print the same data to the center printer
-      if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
-        final printIp = centerPrinter["printIp"];
-        final rotate = centerPrinter["direction"] == 1;
-
-        printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-            printIp, true, rotate, items, remark, isCenterPrint: true);
-      }
+      // if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
+      //   final printIp = centerPrinter["printIp"];
+      //   final rotate = centerPrinter["direction"] == 1;
+      //
+      //   printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
+      //       printIp, true, rotate, items, remark, isCenterPrint: true);
+      // }
     }
+
+    if ((isCenterPrintOn && isTakeOut) || (smartWeCenterOn && isInShop)) {
+      final printIp = centerPrinter["printIp"];
+      final rotate = centerPrinter["direction"] == 1;
+
+      printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
+          printIp, true, rotate, orderLineItems, remark, isCenterPrint: true);
+    }
+
+
   }
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
@@ -375,12 +510,12 @@ class PrintService extends GetxService {
                   color: Colors.black,
                   thickness: 4,
                 ),
-                SizedBox(height: 20,),
+                SizedBox(height: 5,),
                 AutoSizeText(
                   remark,
                   maxLines: 4,
                   style: TextStyle(
-                    fontSize: 26,
+                    fontSize: 24,
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
@@ -572,7 +707,7 @@ class PrintService extends GetxService {
       child: Text(
         content,
         style: TextStyle(
-          fontSize: 35,
+          fontSize: 32,
           color: ColorsUtil.hexToColor("#000000"),
         ),
       ),
