@@ -63,7 +63,7 @@ class checkStatusView extends GetView<OrderHomeController> {
                     onPressed: () {
                       Get.back();
                     },
-                    child: Text('cancel_button'.localized()),
+                    child: Text('tag_button_yes'.localized()),
                   ),
                 )
               ],

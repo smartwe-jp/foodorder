@@ -74,6 +74,7 @@ const servicePath = {
 
   //领收书相关
   'webBootReceiptQuery': base_url + 'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
+  'webBootReceiptQueryV2': base_url + 'pad/web/boot/retry/printByQuery/v2', //通过领収书注文番号开始查询/retry/printByQuery v2
   //レジ締め
   'webBootRejishimeiPrintInfo': base_url + 'pad/web/boot/query/printInfo', //レジ締め 获取打印信息
   'webBootEmailList': base_url + 'pad/web/boot/emails', //レジ締め 获取邮件列表

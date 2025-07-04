@@ -64,7 +64,7 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
                     onPressed: () {
                       Get.back();
                     },
-                    child: Text('cancel_button'.localized()),
+                    child: Text('tag_button_yes'.localized()),
                   ),
                 )
               ],
