@@ -89,30 +89,40 @@ class CheckoutPageView extends GetView {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ScaleAnimatedWidget.tween(
-          enabled: controller.startShake,
-          duration: Duration(milliseconds: 500),
-          scaleDisabled: 1.0,
-          scaleEnabled: 0.9,
-          child:BookingTypeButton(
+
+
+
+        // ScaleAnimatedWidget.tween(
+        //   enabled: controller.startShake,
+        //   duration: Duration(milliseconds: 500),
+        //   scaleDisabled: 1.0,
+        //   scaleEnabled: 0.9,
+        //   child:
+          BookingTypeButton(
+            width: 300,
             icon: Icon(
-              Icons.qr_code,
+              Icons.dining,
               color: Colors.blueGrey[100],
               size: 120,
             ),
-            title: 'settlement_button'.localized(),
+            title: 'menu_dingtype_eatin'.localized(),
             selected: false,
-            onTap: ()=>Get.toNamed("/scancode-page"),
+            onTap: ()=>controller.goMenu(controller.selectLanguage, false),
           ),
-        ),
+        //),
 
         SizedBox(width: ScreenAdapter.width(50),),
-        ScaleAnimatedWidget.tween(
-          enabled: controller.startShake,
-          duration: Duration(milliseconds: 500),
-          scaleDisabled: 0.9,
-          scaleEnabled: 1.0,
-          child:BookingTypeButton(
+
+
+
+        // ScaleAnimatedWidget.tween(
+        //   enabled: controller.startShake,
+        //   duration: Duration(milliseconds: 500),
+        //   scaleDisabled: 0.9,
+        //   scaleEnabled: 1.0,
+        //   child:
+          BookingTypeButton(
+            width: 300,
             icon: Icon(
               Icons.shopping_bag,
               color: Colors.blueGrey[100],
@@ -122,7 +132,30 @@ class CheckoutPageView extends GetView {
             selected: false,
             onTap: ()=>controller.goMenu(controller.selectLanguage, true),
           ),
-        )
+        //)
+
+        SizedBox(width: ScreenAdapter.width(50),),
+
+        // ScaleAnimatedWidget.tween(
+        //   enabled: controller.startShake,
+        //   duration: Duration(milliseconds: 500),
+        //   scaleDisabled: 1.0,
+        //   scaleEnabled: 0.9,
+        //   child:
+        BookingTypeButton(
+          width: 300,
+          icon: Icon(
+            Icons.qr_code,
+            color: Colors.blueGrey[100],
+            size: 120,
+          ),
+          title: 'settlement_button'.localized(),
+          selected: false,
+          onTap: ()=>Get.toNamed("/scancode-page"),
+        ),
+        //),
+
+
       ],
     );
   }

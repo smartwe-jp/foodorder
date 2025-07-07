@@ -101,7 +101,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   bool isAllow10000 = true;
   bool isAllow5000 = true;
 
-  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
+  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP927.apk"
       : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
 
   final Map subPrinterInfos = {
