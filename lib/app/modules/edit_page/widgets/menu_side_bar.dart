@@ -79,26 +79,28 @@ class MenuSideBar extends StatelessWidget {
   }
 
   Widget _buildItemDesc(MenuSidebarItemInfo subItem) {
-    return Container(
-      margin: EdgeInsets.only(left: 10.dp),
-      child: GetBuilder<EditPageLogic>(
-        builder: (logic) {
-          return Container(
-            alignment: Alignment.centerLeft,
-            child: AutoSizeText(
-              subItem.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: subItem.isSelected ? Colors.white : Colors.grey[700],
-                fontWeight: FontWeight.w600,
-                fontFamily: GFont.getFontFamily(),
-                fontSize: 30,
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(left: 10.dp),
+        child: GetBuilder<EditPageLogic>(
+          builder: (logic) {
+            return Container(
+              alignment: Alignment.centerLeft,
+              child: AutoSizeText(
+                subItem.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: subItem.isSelected ? Colors.white : Colors.grey[700],
+                  fontWeight: FontWeight.w600,
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: 30,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
