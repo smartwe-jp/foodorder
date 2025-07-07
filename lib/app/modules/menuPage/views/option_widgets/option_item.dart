@@ -351,15 +351,15 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
                       ),
 
                     )
-                        : (_buttonColor.length>0) ? BoxDecoration(
+                        : (_buttonColor.length>1) ? BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(5.0)),
                       //color: ColorsUtil.hexToColor(optionVolistSon['buttonColorValue']),
                       gradient: LinearGradient(
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                         colors: [
-                          ColorsUtil.hexToColor(_buttonColor[0]),
-                          ColorsUtil.hexToColor(_buttonColor[1]),
+                          ColorsUtil.hexToColor(_buttonColor[0] ?? "#E9CE9B"),
+                          ColorsUtil.hexToColor(_buttonColor[1] ?? "#CEA062"),
                         ],
                       ),
 

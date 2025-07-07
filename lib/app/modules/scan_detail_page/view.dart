@@ -334,7 +334,7 @@ class ScanDetailPagePage extends StatelessWidget {
                               ),
                               TextSpan(
                                 text:
-                                "${"show_price_front".localized()}", //" 円",
+                                "(${"show_price_front".localized()})", //" 円",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menusettlementBottomPriceRight),

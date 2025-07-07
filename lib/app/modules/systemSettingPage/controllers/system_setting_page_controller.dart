@@ -312,7 +312,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //如果没有SSE设置，则添加默认设置
       sseSettingList.add({
         'name': 'SmartWe SSE',
-        'server': servicePath['sseSubscribeSmartWe'] ?? '',
+        'server': 'sseSubscribeSmartWe',//servicePath[
         'identify': machineCode.value,
         'isOn': false,
         'needCenterPrint': true,
@@ -321,7 +321,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       });
       sseSettingList.add({
         'name': 'Panda SSE',
-        'server': servicePath['sseSubscribePanda'] ?? '',
+        'server': 'sseSubscribePanda',
         'identify': '',
         'isOn': false,
         'needCenterPrint': false,
@@ -376,9 +376,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
           if (identify != null && identify.isNotEmpty) {
 
-            final sseAddress = sseSettingList[i]['server'] + identify;
-            if (isOn != null) {
+            final domain = servicePath[sseSettingList[i]['server']];
+            if (isOn != null && domain != null) {
               //如果开启了SSE连接，则添加监听
+              final sseAddress = domain + identify;
               isOn ? sseService.addSseListen(sseAddress) : sseService.disconnect(sseAddress);
             }
           }

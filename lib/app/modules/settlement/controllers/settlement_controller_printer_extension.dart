@@ -197,7 +197,7 @@ class PrintService extends GetxService {
 //    }
 // }
 
-  void printData(Map data) async {
+  void printData(Map data, {bool fromSSE = true}) async {
     LogUtil.d("printData == $data");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
@@ -316,7 +316,7 @@ class PrintService extends GetxService {
       // }
     }
 
-    if ((isCenterPrintOn && isTakeOut) || (smartWeCenterOn && isInShop)) {
+    if ((isCenterPrintOn && isTakeOut) || (fromSSE && smartWeCenterOn && isInShop)) {
       final printIp = centerPrinter["printIp"];
       final rotate = centerPrinter["direction"] == 1;
 
@@ -344,12 +344,13 @@ class PrintService extends GetxService {
 
       double rotate = printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
 
-      final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
+      //final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
       final description = data["description"] ?? "";
+      final qrCode = data["qrCode"] ?? "";
       final seatNumber = data["line1"] ?? "";
       final line2 = data["line2"] ?? "";
 
-      final imageWidget = await _tableSeat(seatNumber, line2, description, currentTime, rotate);
+      final imageWidget = await _tableSeat(seatNumber, line2, description, qrCode, rotate);
 
       // 生成打印图层任务，指定任务类型为标签
       //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
