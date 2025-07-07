@@ -142,7 +142,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                 children: [
                   SizedBox(width: ScreenAdapter.width(10)),
                   Text(
-                    "転票",
+                    "注文伝票",
                     style: TextStyle(
                       fontFamily: 'NotoSansJP',
                       fontSize: ScreenAdapter.fontSize(22),

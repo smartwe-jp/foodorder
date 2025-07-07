@@ -45,8 +45,9 @@ extension CheckoutButton on MenuPageView {
                           _showEmptyTips();
                           return;
                         }
-                        controller.showShopCart = true;
-                        controller.update(['shopping_cart']);
+                        // controller.showShopCart = true;
+                        controller.showCarPopView();
+                        //controller.update(['shopping_cart']);
                       },
                       child: Row(
                         children: [
