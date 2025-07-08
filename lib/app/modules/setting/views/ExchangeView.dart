@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/grid_item_view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';

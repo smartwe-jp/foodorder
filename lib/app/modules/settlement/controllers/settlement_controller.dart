@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
-import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
@@ -11,11 +10,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 
-import 'package:fluttertoast/fluttertoast.dart';
 
 import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/controllers/pos_pay_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
@@ -176,7 +173,7 @@ class SettlementController extends GetxController with StateMixin {
   Future<void> onClose() async {
     await posManager.closePos();
     if (Platform.isAndroid) {
-      Paycube.stopListening();
+      payCube.stopListening();
     } else {
       CashChanger.removeEventsListener();
     }
@@ -349,7 +346,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         } else {
           //print("普通支付请求了new order id");
-          Get.find<MenuPageController>().getBookingBootIndexCagegory("");
+          Get.find<MenuPageController>().getBookingBootIndexCategory();
           Get.find<MenuPageController>().postNewOrderId();
         }
       }
@@ -406,18 +403,6 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-
-  showSuccessAlert(Function task) async {
-    debugPrint("showSuccessAlert");
-    EasyLoading.dismiss();
-
-    Get.dialog(PayResultView(
-      dismiss: () {
-        Get.back();
-        task();
-      },
-    ));
-  }
 
   gotonewBack() {
     debugPrint('---gotonewBack---');
@@ -940,7 +925,7 @@ class SettlementController extends GetxController with StateMixin {
                   GString.getToString(checkLanguage.value, "tag_button_yes"),
               confirm: () {
             Get.back();
-            socketPosCancel.value = true;
+            //socketPosCancel.value = true;
             getPaymentCancelPosData();
           }, cancle: () {
             Get.back();
@@ -1079,7 +1064,7 @@ class SettlementController extends GetxController with StateMixin {
         if (Platform.isWindows) {
           await endDeposit(repay: true);
         } else {
-          endtoubi();
+          endToubi();
         }
       } else {
         isPrint.value = false;
@@ -1089,7 +1074,7 @@ class SettlementController extends GetxController with StateMixin {
         if (Platform.isWindows) {
           await endDeposit();
         } else {
-          endtoubi();
+          endToubi();
         }
       }
     } else {
@@ -1273,7 +1258,7 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  _checkOutErrorHandle(showDialogContent, {Function? retryAction}) async {
+  _checkOutErrorHandle(showDialogContent, {Function? confirm}) async {
     EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alert(showDialogContent,
@@ -1282,13 +1267,19 @@ class SettlementController extends GetxController with StateMixin {
             confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
             confirm: () {
               Get.back();
-              commonCancel();
+              //commonCancel();
               //发邮件或者播放感谢语
               // if (retryAction != null) {
               //   retryAction();
               // } else {
               //   _sendEmailAndPlayVoice();
               // }
+
+              if (confirm != null) {
+                confirm();
+              } else {
+                commonCancel();
+          }
 
             },
             cancle: () {
@@ -1308,7 +1299,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //
-  printGoNext(orderId) async {
+  printGoNext() async {
     debugPrint("printGoNext");
     Future.delayed(Duration(milliseconds: 300), () async {
       debugPrint("machineMode.value = ${machineMode.value}");
@@ -1353,7 +1344,7 @@ class SettlementController extends GetxController with StateMixin {
 
       //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
       if (machineInfo.paymentMethod == "1") {
-        nextOper(orderId);
+        nextOper();
       } else {
         showSuccessAlert(() {
           //goToNewMyHome();

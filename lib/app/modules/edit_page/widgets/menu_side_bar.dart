@@ -8,8 +8,6 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
 import 'package:get/get.dart';
-import 'package:get/get_state_manager/src/simple/get_state.dart';
-import '../../../services/ScreenAdapter.dart';
 import '../logic.dart';
 
 typedef ParamSingleCallback<D> = dynamic Function(D data);
@@ -60,10 +58,11 @@ class MenuSideBar extends StatelessWidget {
               ),
               child: Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 10.dp, horizontal: 20.dp),
+                padding: EdgeInsets.symmetric(vertical: 20),
                 child: Text(
                   '戻る',
                   style: TextStyle(
+                    color: Colors.white,
                     fontFamily: GFont.getFontFamily(),
                     fontSize: 36,
                     fontWeight: FontWeight.w500,

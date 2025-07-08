@@ -5,6 +5,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/config/string.dart';
 //import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
@@ -40,9 +41,9 @@ class TransitPageController extends GetxController {
   final logger = Logger('TransitPageController');
 
   @override
-  Future<void> onInit() async {
-    languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
-    await getIsShowCashInfo();
+  void onInit() {
+    //languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
+    getIsShowCashInfo();
     super.onInit();
   }
 
@@ -76,9 +77,9 @@ class TransitPageController extends GetxController {
   firstActive() async {
     debugPrint('---firstActive---');
     if (Platform.isWindows) {
-      await _getMachineActivate(isFirst: true);
+     _getMachineActivate(isFirst: true);
     } else {
-      await _getPackageInfo();
+     _getPackageInfo();
     }
   }
 
@@ -91,10 +92,12 @@ class TransitPageController extends GetxController {
       //_getSystemSettingInfo();
 
       if (Platform.isWindows) {
-        await _getMachineActivate();
+         _getMachineActivate();
       } else {
-        await _getPackageInfo();
+         _getPackageInfo();
       }
+    } else {
+      LogUtil.d("transit getMachineInfo error: machineCode is empty");
     }
   }
 
@@ -105,7 +108,7 @@ class TransitPageController extends GetxController {
     local_version.value =
         "2.6.0"; //packageInfo.version; //+"+"+packageInfo.buildNumber
 
-    await _getMachineActivate();
+    _getMachineActivate();
   }
 
   _getMachineActivate({isFirst = false, int retryCount = 0}) async {
@@ -118,7 +121,7 @@ class TransitPageController extends GetxController {
     bool shouldActive = await _checkShouldActive();
     if (_loadActiveInfo.value == false && !shouldActive) {
       _actuarial.value = true;
-      await _getSmartweSystemSettingInfo();
+      _getSmartweSystemSettingInfo();
       return;
     }
     debugPrint("getMachineActivate with loadActive");
@@ -126,11 +129,11 @@ class TransitPageController extends GetxController {
       "machineCode": _machineCode.value,
       "version": local_version.value
     };
-    print(formData);
+    debugPrint("getMachineActivate formData: $formData");
     request('webBootActivatev3', method: 'POST', parameters: formData)
         .then((val) async {
       var response = json.decode(val.toString());
-      LogUtil.d(response);
+      LogUtil.d("getMachineActivate response: $response");
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
@@ -242,7 +245,6 @@ class TransitPageController extends GetxController {
         Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
         Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
         Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-        Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
         Storage.setString('smartwe_reimburse', reimburse);
         Storage.setString('smartwe_shopCode', _shopCode);
 
@@ -251,7 +253,6 @@ class TransitPageController extends GetxController {
         GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
         GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
         GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
-        GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
         GetxStorage.setData('smartwe_reimburse', reimburse);
 
         var machineSettingBool = {
@@ -272,11 +273,11 @@ class TransitPageController extends GetxController {
               parameters: {'machine_activate': '${_machineCode.value}'});
         }
         if (isFirst) {
-          await _saveActiveCode(_machineCode.value);
+           _saveActiveCode(_machineCode.value);
         } else {
-          FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-          await downloadAndSaveImage(shopData["logoImage"]);
-          await _getSmartweSystemSettingInfo();
+          //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+          //await downloadAndSaveImage(shopData["logoImage"]);
+           _getSmartweSystemSettingInfo();
         }
 
       } else {
@@ -288,6 +289,7 @@ class TransitPageController extends GetxController {
         _showErrorDialog(isActive: response['data'] == null);
       }
     }).catchError((e) {
+      LogUtil.d("getMachineActivate error: $e");
       if (Platform.isAndroid) {
         FirebaseAnalytics.instance.logEvent(
             name: 'machine_activate_error',
@@ -304,8 +306,9 @@ class TransitPageController extends GetxController {
       }
     })
     .timeout(Duration(seconds: 10), onTimeout: () {
-      FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
       //print('timeout');
+      LogUtil.d("getMachineActivate timeout");
 
       if (retryCount < 3) {
         // 如果超时，重试
@@ -320,15 +323,17 @@ class TransitPageController extends GetxController {
   }
 
   _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
-      GString.getToString(
-          languageCode, "launch_error_tips"), //launch_error_tips
+      isActive
+          ? 'activation_error_tips'.localized()
+          : GString.getToString(languageCode, "launch_error_tips"),
+
       title: GString.getToString(languageCode, "tag_title"), //tag_title
       confirmtitle:
       GString.getToString(languageCode, "reboot_app"), //reboot_app
       confirm: () {
         Future.delayed(Duration(milliseconds: 200), () async {
           if (isActive)
-            await Storage.clearAll();
+          Storage.clearAll();
           Get.back();
           //_getMachineActivate();
           Appset.restartApp;
@@ -336,81 +341,6 @@ class TransitPageController extends GetxController {
         });
       })
   );
-
-  Future<void> downloadAndStoreImage(String imageUrl) async {
-    try {
-      // 下载图片
-      final response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
-        // 将图片转换为字节数组
-        Uint8List imageBytes = response.bodyBytes;
-
-        // 将字节数组转换为base64字符串
-        String base64Image = base64Encode(imageBytes);
-        LogUtil.d("base64Image:$base64Image");
-        // 存储base64字符串到SharedPreferences
-        //SharedPreferences prefs = await SharedPreferences.getInstance();
-        await Storage.setString('smartwe_logoImageData', base64Image);
-        await GetxStorage.setData('smartwe_logoImageData', base64Image);
-
-        print('Image downloaded and stored successfully');
-      } else {
-        print('Failed to download image');
-      }
-    } catch (e) {
-      print('Error downloading image: $e');
-    }
-  }
-
-  Future<void> downloadAndSaveImage(String imageUrl) async {
-    try {
-      // 下载图片
-      final response = await http.get(Uri.parse(imageUrl));
-      if (response.statusCode == 200) {
-        // 获取应用文档目录
-        final directory = await getApplicationDocumentsDirectory();
-
-        // 从Content-Type头部获取实际的MIME类型
-        final mimeType = response.headers['content-type'];
-
-        // 根据MIME类型选择正确的文件扩展名
-        String extension = '.png'; // 默认为png
-        if (mimeType != null) {
-          if (mimeType.contains('jpeg') || mimeType.contains('jpg')) {
-            extension = '.jpg';
-          } else if (mimeType.contains('bmp')) {
-            extension = '.bmp';
-          } else if (mimeType.contains('gif')) {
-            extension = '.gif';
-          } else if (mimeType.contains('webp')) {
-            extension = '.webp';
-          }
-        }
-
-        final filePath = '${directory.path}/smartwe_logoImage$extension';
-
-        // 将图片保存到本地文件
-        File file = File(filePath);
-        debugPrint('filePath:$filePath');
-        await file.writeAsBytes(response.bodyBytes);
-
-      // 将文件路径存储到 SharedPreferences
-        //SharedPreferences prefs = await SharedPreferences.getInstance();
-        //await prefs.setString('smartwe_logoImageData', filePath);
-        await Storage.setString('smartwe_logoImageData', filePath);
-        await GetxStorage.setData('smartwe_logoImageData', filePath);
-
-        if (Get.context != null)
-          await precacheImage(FileImage(File(filePath)), Get.context!);
-
-        print('Image downloaded and path stored successfully');
-      } else {
-        print('Failed to download image');
-      }
-    } catch (e) {
-      print('Error downloading image: $e');
-    }
-  }
 
   Future<bool> _checkShouldActive() async {
     var now = DateTime.now();
@@ -494,18 +424,6 @@ class TransitPageController extends GetxController {
     //}
 
 
-
-    if (!Get.isRegistered<MachineInfoController>()) {
-      Get.put(MachineInfoController(systemSettingData), permanent: true);
-      debugPrint('put MachineInfoController');
-    } else {
-      await Get.find<MachineInfoController>().updateMachineSettingInfo(systemSettingData);
-      debugPrint('update MachineInfoController');
-    }
-    // await Get.delete<MachineInfoController>();
-    // Get.put(MachineInfoController(systemSettingData));
-
-    debugPrint('update MachineInfoController done');
     var smartweMachineSettingPassword = await HomeServices.getMachineSettingManagePasswordInfo();
     if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
       Storage.setString('machineSettingManagePassword', smartweMachineSettingPassword);
@@ -513,25 +431,46 @@ class TransitPageController extends GetxController {
 
     }
 
-    Get.lazyPut(() => PrintService(Get.find<MachineInfoController>()));
+    
 
     //这里判断是否禁用1元
 
-    if (systemSettingData["isAllowOneYen"] == "0") {
-      try {
-        if (Platform.isAndroid) {
-          await payCube.prohibitOneCash.timeout(
-              Duration(seconds: 10));
-        }
-      } on TimeoutException catch (e) {
-        print('Timeout: $e');
-      } catch (e) {
-        print('error: $e');
-      }
-    }
+    //_goNext(checkmachineMode);
 
-    final sseService = Get.find<SseService>();
-    final machineInfo = Get.find<MachineInfoController>();
+    //_goNext(checkmachineMode);
+     _injectControllers(checkmachineMode, systemSettingData);
+  }
+
+  Future _injectControllers(checkmachineMode, systemSettingData) async {
+    // if (Get.isRegistered<PosPayController>()) Get.delete<PosPayController>();
+    // Get.put(PosPayController());
+
+    //  if (Get.isRegistered<MachineInfoController>()){
+    //   Get.delete<MachineInfoController>();
+    //  } 
+
+    // Get.put(MachineInfoController(systemSettingData));
+
+    if (!Get.isRegistered<MachineInfoController>()) {
+      final controller = MachineInfoController(systemSettingData);
+      await Get.putAsync<MachineInfoController>(() async {
+        await controller.loadMachineSettingInfo(); // 确保初始化完成
+        return controller;
+      }, permanent: true);
+      debugPrint('put MachineInfoController done');
+    } else {
+      await Get.find<MachineInfoController>().updateMachineSettingInfo(systemSettingData);
+      debugPrint('update MachineInfoController done');
+    }
+    // await Get.delete<MachineInfoController>();
+    // Get.put(MachineInfoController(systemSettingData));
+  
+
+    MachineInfoController machineInfo = Get.find<MachineInfoController>();
+    Get.lazyPut(() => PrintService(machineInfo));
+
+     final sseService = Get.find<SseService>();
+  
     final sseSettingList = machineInfo.sseSettingList;
 
     for (final sseSetting in sseSettingList) {
@@ -544,24 +483,20 @@ class TransitPageController extends GetxController {
       }
     }
 
-
-    _goNext(checkmachineMode);
-
-    //_goNext(checkmachineMode);
-    await _injectControllers(checkmachineMode, systemSettingData);
-  }
-
-  Future _injectControllers(checkmachineMode, systemSettingData) async {
-    // if (Get.isRegistered<PosPayController>()) Get.delete<PosPayController>();
-    // Get.put(PosPayController());
-
-    //  if (Get.isRegistered<MachineInfoController>()){
-    //   Get.delete<MachineInfoController>();
-    //  } 
-
-     Get.put(MachineInfoController(systemSettingData));
+    if (systemSettingData["isAllowOneYen"] == "0") {
+      try {
+        if (Platform.isAndroid) {
+         payCube.prohibitOneCash.timeout(
+              Duration(seconds: 10));
+        }
+      } on TimeoutException catch (e) {
+        print('Timeout: $e');
+      } catch (e) {
+        print('error: $e');
+      }
+    }
      
-     await _goNext(checkmachineMode);
+     _goNext(checkmachineMode);
   }
 
   Future _goNext(checkmachineMode) async {

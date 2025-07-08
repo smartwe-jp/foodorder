@@ -59,18 +59,17 @@ class CreatePrintImageController extends GetxController {
   @override
   Future<void> onInit() async {
     super.onInit();
-    //_getPrintLogoImageData();
+    _getPrintLogoImageData();
   }
 
   _getPrintLogoImageData() async {
     String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
-    if (logoImageInfo != "" && logoImageInfo != null) {
+    if (logoImageInfo != "") {
       printLogoImage.value = logoImageInfo;
     }
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    if (systemSettingInfo != null) {
-      machineMode.value = systemSettingInfo["machineMode"];
-    }
+    machineMode.value = systemSettingInfo["machineMode"];
+    
     usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
     machineCode.value = await HomeServices.getMachineInfo();
 
@@ -86,8 +85,8 @@ class CreatePrintImageController extends GetxController {
 
       return null;
     }
-    print("usbDevice.value:${usbDevice.value}");
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
+    print("usbDevice.value:${usbDevice}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
   }
 
   _sendToUsePrinter(widget) {
@@ -105,9 +104,6 @@ class CreatePrintImageController extends GetxController {
   tpPrintnew(print_paper_txt_size, printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
-// <<<<<<< HEAD
-//     var categoryVos = printData["printInfoListStruct"];
-// =======
     List categoryVos = [];
 
     // 现在printInfoListStruct没有提供值了，换成了 printInfo 内的 orderLinesMap
@@ -131,22 +127,22 @@ class CreatePrintImageController extends GetxController {
       }
     }
 
-    if (categoryVos == null || categoryVos.length == 0) {
+    if (categoryVos.length == 0) {
       tpPrintReceipt(print_paper_txt_size, printData);
       return;
     }
     var print_menu_txt_size = 28.0;
     var wrapNum = 10;
     int oneRowHeight = 48;
-    if (print_paper_txt_size.value == "1") {
+    if (print_paper_txt_size == "1") {
       print_menu_txt_size = 34.0;
       wrapNum = 12;
       oneRowHeight = Platform.isAndroid ? 40 : 48;
-    } else if (print_paper_txt_size.value == "2") {
+    } else if (print_paper_txt_size == "2") {
       print_menu_txt_size = 37.0;
       wrapNum = 10;
       oneRowHeight = Platform.isAndroid ? 46 : 52;
-    } else if (print_paper_txt_size.value == "3") {
+    } else if (print_paper_txt_size == "3") {
       print_menu_txt_size = 44.0;
       wrapNum = 8;
       oneRowHeight = Platform.isAndroid ? 57 : 66;
@@ -165,7 +161,7 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("$takeoutTag${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: print_menu_txt_size,
                   fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -179,7 +175,7 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
-                  fontSize: 34,
+                  fontSize: print_menu_txt_size,
                   fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -215,7 +211,7 @@ class CreatePrintImageController extends GetxController {
           var optionNameLength = value[0].length;
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0; //optionLine.ceil();
-          //value[0] 为Map{name: "optionName", qty: 1} 的形式
+
           final qtyString = (value[0]["qty"] ?? 1) > 1 ? " ×${value[0]["qty"]}" : "";
           final optionString = (value[0]["name"] ?? "") + qtyString;
 
@@ -356,9 +352,7 @@ class CreatePrintImageController extends GetxController {
                               fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
-                            )
-                        )
-                    ),
+                            ))),
                   ],
                 ),
               ));
@@ -381,21 +375,24 @@ class CreatePrintImageController extends GetxController {
           optionNum++;
         });
 
-        addRowHight += oneRowHeight * menuRowNum + (menuRowNum - 1) * 10;
+        addRowHight += (oneRowHeight + 10) * menuRowNum + (menuRowNum - 1) * 10;
         menuNum += menuRowNum;
       } else {
-        addRowHight += oneRowHeight * menuRowNum + (menuRowNum - 1) * 10;
+        addRowHight += (oneRowHeight + 10) * menuRowNum + (menuRowNum - 1) * 10;
         menuNum += menuRowNum;
       }
 
       //分割线
-      if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
+      if (machineMode.value == "1" || machineMode.value == "3") {
         addRowHight += 40;
         categoryMenus.add(
           _publicSplitLine(),
         );
       }
     }
+    categoryMenus.add(
+          _publicSplitLine(),
+        );
 
     categoryMenus.add(
       Container(
@@ -440,7 +437,7 @@ class CreatePrintImageController extends GetxController {
     // String base64Image = base64Encode(imageBytes);
     //LogUtil.d(base64Image);
     final printWidget = Container(
-      width: 385,
+      width: 513,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
       color: Colors.white,
@@ -474,7 +471,6 @@ class CreatePrintImageController extends GetxController {
 
   tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
-
     debugPrint('printData:$printData');
     int discount = printData["discount"] ?? 0;
     int finalPrice = int.parse(printData["price"] ?? '0');
@@ -501,13 +497,10 @@ class CreatePrintImageController extends GetxController {
         }
       }
     }
-
-
-
     var lineHight = 580;
     var lineZeng = 0;
     int addRowHight = 0;
-    // 计算菜品标题长度
+    //计算菜品标题长度
     var newAddress = printData["address"].replaceAll("%%", "\n");
     var addressLength = printData["address"]
         .length; //print(printData["address"]);//print(newAddress);
@@ -551,7 +544,7 @@ class CreatePrintImageController extends GetxController {
             style: printMenuFont,
           )),
     ));
-    if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
+    if (machineMode.value == "1" || machineMode.value == "3") {
       addRowHight += 38;
       categoryMenus.add(_publicOneColumnTxtNew(
           "${printData["numberTip"]}${printData["serialNumber"]}",
@@ -600,8 +593,8 @@ class CreatePrintImageController extends GetxController {
 
       // 计算菜品标题长度
       var groupNameLength = lineVosList["menuName"].length;
-      //var menuLine = groupNameLength / 10;
-      //var menuRowNum = menuLine.ceil();
+      var menuLine = groupNameLength / 10;
+      var menuRowNum = menuLine.ceil();
       //linNum+=menuRowNum;
       var takeoutTag = (printData["takeOut"] == true) ? "*" : "";
       if (groupNameLength > 10) {
@@ -625,10 +618,7 @@ class CreatePrintImageController extends GetxController {
                             textDirection: TextDirection.ltr,
                             child: Expanded(
                               child: Text(
-                                "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
-// =======
-//                                 "${lineVosList["menuName"]}",
-// >>>>>>> 2.7.0-dev
+                                "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"].toString()}",
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: printMenuFont,
@@ -712,8 +702,7 @@ class CreatePrintImageController extends GetxController {
                         textDirection: TextDirection.ltr,
                         child: Expanded(
                           child: Text(
-//<<<<<<< HEAD
-                            "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
+                            "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"].toString()}",
                             style: printMenuFont,
                           ),
                         )),
@@ -730,39 +719,16 @@ class CreatePrintImageController extends GetxController {
                     SizedBox(
                       width: ScreenAdapter.width(30),
                     ),
-// =======
-//                             "${lineVosList["menuName"]}${takeoutTag}",
-//                             style: printMenuFont,
-//                           ),
-//                         )),
-// >>>>>>> 2.7.0-dev
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
                           //width: ScreenAdapter.width(105),
                           alignment: Alignment.centerRight,
                           child: Text(
-//<<<<<<< HEAD
                             "￥${formatMoney(lineVosList["price"])}",
                             style: printMenuFont,
                           ),
                         )),
-// =======
-//                             "${lineVosList["menuQty"]}",
-//                             style: printMenuFont,
-//                           ),
-//                         )),
-//                     Directionality(
-//                         textDirection: TextDirection.ltr,
-//                         child: Container(
-//                           width: ScreenAdapter.width(105),
-//                           alignment: Alignment.centerRight,
-//                           child: Text(
-//                             "￥${formatMoney(lineVosList["price"])}",
-//                             style: printMenuFont,
-//                           ),
-//                         )),
-// >>>>>>> 2.7.0-dev
                   ],
                 ),
               )),
@@ -770,17 +736,11 @@ class CreatePrintImageController extends GetxController {
       }
     }
     //print("总行数${menuNum}");
-
     addRowHight += 15;
     categoryMenus.add(SizedBox(
       height: 10,
     ));
-//合计
-    //原价
 
-    SizedBox(
-      height: 10,
-    );
     categoryMenus.add(
       _publicSplitLine(),
     );
@@ -809,8 +769,7 @@ class CreatePrintImageController extends GetxController {
             FontWeight.w200,
             true),
       );
-
-
+//合计
     categoryMenus.add(
       Directionality(
           textDirection: TextDirection.ltr,
@@ -826,12 +785,7 @@ class CreatePrintImageController extends GetxController {
                     child: Expanded(
                       child: Text(
                         "合計",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          color: Colors.black,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w300,
-                        ),
+                        style: printMenu2Font,
                       ),
                     )),
                 Directionality(
@@ -841,12 +795,7 @@ class CreatePrintImageController extends GetxController {
                       alignment: Alignment.centerRight,
                       child: Text(
                         "￥${formatMoney(finalPrice)}",
-                        style: TextStyle(
-                          fontFamily: 'NotoSansJP',
-                          color: Colors.black,
-                          fontSize: 26,
-                          fontWeight: FontWeight.w300,
-                        ),
+                        style: printMenuFont,
                       ),
                     )),
               ],
@@ -1026,29 +975,7 @@ class CreatePrintImageController extends GetxController {
     categoryMenus
         .add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight + addRowHight + 180;
-
-    // ByteData byteData = await WidgetToImage.widgetToImage(Container(
-    //   width: 385,
-    //   padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
-    //   height: totalHight.toDouble(),
-    //   color: Colors.white,
-    //   //alignment: Alignment.topCenter,
-    //   child: Column(
-    //     mainAxisAlignment: MainAxisAlignment.start,
-    //     //crossAxisAlignment: CrossAxisAlignment.start,
-    //     textDirection: TextDirection.rtl,
-    //     children: categoryMenus,
-    //   ),
-    // ),
-    //     size: Size(385, totalHight.toDouble())
-    // );
-
-    // List<int> imageBytes = byteData.buffer.asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
-    // //Future.delayed(Duration(milliseconds: 200), () async {
-    // String base64Image = base64Encode(imageBytes);
-    // await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "1",printLogoImage.value);
+    var totalHight = lineZeng + lineHight + addRowHight;
     final printWidget = Container(
       width: 385,
       padding: EdgeInsets.only(

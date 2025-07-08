@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 
 import 'package:get/get.dart';
@@ -14,7 +13,6 @@ import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
-import '../../../widget/DialogUtils.dart';
 import '../controllers/settlement_controller.dart';
 
 class SettlementView extends GetView {
@@ -187,7 +185,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },

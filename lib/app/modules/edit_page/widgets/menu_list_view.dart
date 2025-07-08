@@ -6,7 +6,7 @@ import 'package:foodorder/app/config/imageData.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/edit_page/logic.dart';
 import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/car_item_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/app/common/StringExtension.dart';

@@ -82,7 +82,7 @@ class MachineInfoController extends GetxController {
   @override
   Future<void> onInit() async {
     print('loadMachineSettingInfo onInit');
-    await loadMachineSettingInfo();
+    //await loadMachineSettingInfo();
     super.onInit();
   }
 

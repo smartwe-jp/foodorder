@@ -4,8 +4,6 @@ import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
-import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.dart';
 
 import 'package:get/get.dart';
 

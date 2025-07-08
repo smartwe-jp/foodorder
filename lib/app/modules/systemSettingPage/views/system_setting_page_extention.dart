@@ -1,5 +1,8 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../../../widget/customButton.dart';
 import 'package:get/get.dart';
@@ -445,7 +448,9 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: () {
-              controller.printTest(printIp,
+              controller.printTest(
+                  SearchType.net,
+                  printIp,
                   printPort,
                   printType: receipt);
             },
@@ -637,7 +642,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.printTest(printIp,printPort);
+              controller.printTest(SearchType.net,printIp,printPort);
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(20)),

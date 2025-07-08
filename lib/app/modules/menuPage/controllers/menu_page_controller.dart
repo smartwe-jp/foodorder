@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -10,21 +10,13 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/models/ItemModel.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/modules/edit_page/widgets/menu_side_bar.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/CarItemView.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/option_widgets/option_view.dart';
-import 'package:foodorder/app/plugins/appset/lib/appset.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/car_item_view.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
-import 'package:foodorder/app/services/showToast.dart';
 
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
-import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
-
-import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 import 'package:flutter_cache_manager/flutter_cache_manager.dart';
 
 import '../../../config/color.dart';
@@ -34,18 +26,13 @@ import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../controllers/ImageCacheManager.dart';
-import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
-import '../../../models/ItemModel.dart';
-import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../widget/DialogUtils.dart';
 import '../views/SelectPayment.dart';
 import '../views/option_widgets/option_view.dart';
-import '../views/showOneItemOptionWidget.dart';
-import '../views/showOneItemOptionWidgetV1.dart';
 
 class MenuPageController extends GetxController with StateMixin {
   //TODO: Implement MenuPageController
@@ -156,11 +143,11 @@ class MenuPageController extends GetxController with StateMixin {
 
   }
 
-  _getHomeImageList() async {
-    debugPrint("获取首页图片");
-    var homeimageList = await HomeServices.getSmartweHomeImagesData();
-    homeImages.value = homeimageList;
-  }
+  // _getHomeImageList() async {
+  //   debugPrint("获取首页图片");
+  //   var homeimageList = await HomeServices.getSmartweHomeImagesData();
+  //   homeImages.value = homeimageList;
+  // }
 
   changeBackgroundColor(String color) {
     debugPrint("changeBackgroundColor: $color");

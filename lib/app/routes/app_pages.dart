@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/modules/CheckoutPage/bindings/checkout_launch_binding.dart';
-import 'package:foodorder/app/modules/ScanDetail/views/scan_detail_view.dart';
 import 'package:foodorder/app/modules/WATextPage/bingdings/windows_test_bindings.dart';
+import 'package:foodorder/app/modules/scan_detail_page/view.dart';
 import 'package:get/get.dart';
 
 import '../modules/Activation/bindings/activation_binding.dart';
@@ -12,7 +11,6 @@ import '../modules/CheckoutPage/views/checkout_page_view.dart';
 import '../modules/ErrorPage/bindings/error_binding.dart';
 import '../modules/ErrorPage/views/error_view.dart';
 import '../modules/OrderHome/bindings/order_home_binding.dart';
-import '../modules/OrderHome/views/entry_home_view.dart';
 import '../modules/OrderHome/views/order_home_view.dart';
 import '../modules/SelfCheckoutscanningcode/bindings/self_checkoutscanningcode_binding.dart';
 import '../modules/SelfCheckoutscanningcode/views/self_checkoutscanningcode_view.dart';
@@ -20,7 +18,6 @@ import '../modules/SelfservicePage/bindings/selfservice_page_binding.dart';
 import '../modules/SelfservicePage/views/selfservice_page_view.dart';
 import '../modules/TransitPage/bindings/transit_page_binding.dart';
 import '../modules/TransitPage/views/transit_page_view.dart';
-import '../modules/edit_page/view.dart';
 import '../modules/home/bindings/home_binding.dart';
 import '../modules/home/views/home_view.dart';
 import '../modules/menuPage/bindings/menu_page_binding.dart';
@@ -72,14 +69,14 @@ class AppPages {
       page: () => OrderHomeView(),
       binding: OrderHomeBinding(),
     ),
-    GetPage(
-      name: _Paths.ENTRY_HOME,
-      page: () => EntryHomeView(),
-      binding: OrderHomeBinding(),
-    ),
+    // GetPage(
+    //   name: _Paths.ENTRY_HOME,
+    //   page: () => EntryHomeView(),
+    //   binding: OrderHomeBinding(),
+    // ),
     GetPage(
       name: _Paths.SCAN_DETAIL,
-      page: () => ScanDetailView(),
+      page: () => ScanDetailPagePage(),
       binding: CheckoutPageBinding(),
     ),
     GetPage(
@@ -100,7 +97,7 @@ class AppPages {
     GetPage(
       name: _Paths.CHECKOUT_PAGE,
       page: () => CheckoutPageView(),
-      binding: CheckoutLaunchBinding(),
+      binding: CheckoutPageBinding(),
     ),
     GetPage(
       name: _Paths.SCANCODE_PAGE,

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/TrianglePainter.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
+import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get_state_manager/src/simple/get_state.dart';
 

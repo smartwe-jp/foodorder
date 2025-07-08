@@ -27,8 +27,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   ScrollController itemscrollController = ScrollController();
 
-  MachineInfoController machineInfo = Get.find();
-
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
   RxBool mealType = false.obs;//用于判断下单

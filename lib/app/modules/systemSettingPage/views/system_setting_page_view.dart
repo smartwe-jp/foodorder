@@ -1075,27 +1075,6 @@ class SystemSettingPageView extends GetView {
     );
   }
 
-  _showPanelSettingDialog() async {
-    Get.dialog(
-        SetPosIpPage(
-          posIp: controller.wlan_panel_print_ip,
-          posPort: controller.wlan_panel_print_port,
-          showRadio:0,
-          onConfrimClick: (String posIp, String posPort) {
-            if(posIp != ""){
-
-                controller.wlan_panel_print_ip = posIp;
-                controller.wlan_panel_print_port = posPort;
-
-
-              controller.checkIsAllowWlanPanelPrint("1");
-            }
-
-          },
-        )
-    );
-  }
-
 
   //设置USB打印机
   
@@ -2798,7 +2777,7 @@ class SystemSettingPageView extends GetView {
                                         setDiningtype(),//食事のタイプ
                                       ]
                                   ),
-                                  if(Platform.isAndroid)
+                                  //if(Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -3043,23 +3022,7 @@ class SystemSettingPageView extends GetView {
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "USBプリンター",
-                                                style: TextStyle(
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setUSBPrint(),//usb打印机
-
-                                          ]
-                                      ),
+                  
 
                                       TableRow(
                                           children: <Widget>[
@@ -3089,6 +3052,23 @@ class SystemSettingPageView extends GetView {
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "USBプリンター",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                            ),
+                                            setUSBPrint(),//usb打印机
+
+                                          ]
+                                      ),
 
 
                                       ...controller.printerList.map((printer) => printerSettingWidget(printer)).toList(),

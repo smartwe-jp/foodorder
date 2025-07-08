@@ -8,9 +8,7 @@ import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
 
 import 'package:get/get.dart';
-import 'package:foodorder/app/common/NumberFormat.dart';
 import '../../../config/colorsUtil.dart';
-import '../../../routes/app_pages.dart';
 import '../../../services/ScreenAdapter.dart';
 import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import '../controllers/setting_controller.dart';
