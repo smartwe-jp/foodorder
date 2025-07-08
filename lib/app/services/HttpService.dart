@@ -1,11 +1,7 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'dart:async';
 
-import '../config/http_conf.dart';
 import '../config/index.dart';
 
 
@@ -16,6 +12,23 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
   try {
     Response? response;
     Dio dio = Dio();
+
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        print("Request: ${options.method} ${options.uri}");
+        print("Headers: ${options.headers}");
+        print("Data: ${options.data}");
+        handler.next(options);
+      },
+      onResponse: (response, handler) {
+        print("Response: ${response.statusCode} ${response.data}");
+        handler.next(response);
+      },
+      onError: (DioError e, handler) {
+        print("Error: ${e.message}");
+        handler.next(e);
+      },
+    ));
 
     //By default, Dio serializes request data(except String type) to JSON. To send data in the application/x-www-form-urlencoded format instead, you can
     if(url=="smsCode" || url=="oauthToken"){

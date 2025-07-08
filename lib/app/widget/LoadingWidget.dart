@@ -57,6 +57,4 @@ class LoadingUtil {
       maskType: EasyLoadingMaskType.black,
     );
   }
-
-
 }

@@ -17,7 +17,7 @@ dependencies:
   dio: ^4.0.6
   shared_preferences: ^2.0.15
   package_info: ^2.0.2
-  fluttertoast: ^8.2.2
+  fluttertoast: ^8.2.5
   sqflite: ^2.0.2
   cached_network_image: ^3.3.0
   event_bus: ^2.0.0
@@ -29,7 +29,7 @@ dependencies:
   open_file: ^3.2.1
   path_provider: ^2.0.11
   crypto: ^3.0.2
-  assets_audio_player: 3.0.6
+  assets_audio_player: 3.1.1
   widget_to_image: ^2.0.0
   auto_size_text: ^3.0.0
   esc_pos_printer: ^4.1.0
@@ -46,15 +46,27 @@ dependencies:
   adaptive_dialog: ^2.1.0
   get: 4.6.5
   intl: 0.18.1
-  transparent_image: ^2.0.1
   logging: ^1.3.0
-  flutter_switch: ^0.3.2
+  archive: ^3.3.0
+  transparent_image: ^2.0.1
   animated_widgets: ^1.1.0
   barcode_widget: ^2.0.4
-  #flutter_styled_toast: ^2.2.1
-  flutter: 
+  qr_flutter: ^4.0.0
+  flutter_switch: ^0.3.2
+  flutter_http_sse:
+    git:
+      url: git@github.com:Aaron51FX/flutter_http_sse.git
+      ref: master-adapter-3.1.5
+#  sse_service:
+#    git:
+#      url: git@github.com:Aaron51FX/SmartWePackages.git
+#      path: sse_service
+  flutter:
     sdk: flutter
-  paycube: 
+ #不同版本Android加载不同的插件
+#  paycube_old: # Android 7
+#    path: ./lib/app/plugins/paycube_old
+  paycube: # Android 11
     path: ./lib/app/plugins/paycube
   flutter_plugin_msprinter: 
     path: ./lib/app/plugins/flutter_plugin_msprinter

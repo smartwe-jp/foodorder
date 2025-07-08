@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:archive/archive_io.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -8,6 +9,7 @@ import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/string.dart';
+import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/rejishimei/view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
@@ -22,6 +24,9 @@ import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
 import 'package:package_info/package_info.dart';
+import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
+
 import '../../../config/imageData.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -42,6 +47,7 @@ class SettingController extends GetxController with StateMixin {
   //MenuPageController menuPagecontroller = Get.put(MenuPageController());
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
+  AppConfig appConfig = Get.find<AppConfig>();
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
   RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
@@ -166,6 +172,12 @@ class SettingController extends GetxController with StateMixin {
       //saveLogToD();
 
       //return;
+// =======
+//     _showEasyLoading();
+//     String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+//     if (appConfig.isAndroid11)  {
+//       logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
+// >>>>>>> 2.7.0-dev
     }
 
     FormData formData = FormData.fromMap({
@@ -183,6 +195,57 @@ class SettingController extends GetxController with StateMixin {
         showToast('上传失败!');
       }
     });
+  }
+  //20241128PT3_OperationLog.log.zip
+  //20241129PT3_OperationLog.log
+
+  Future<String?> compressFiles() async {
+    // 获取临时目录路径
+    final tempDir = await getTemporaryDirectory();
+    final logPathPrefix = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
+    final outputPath = '${tempDir.path}/${_getDate()}PT3Combined_logs.zip';
+
+    // 创建一个ZipFileEncoder对象
+    try {
+      final zipEncoder = ZipFileEncoder();
+      zipEncoder.create(outputPath);
+
+      // 添加第一个文件（zip文件）
+      final zipFile = File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
+      if (await zipFile.exists()) {
+        zipEncoder.addFile(zipFile);
+      }
+
+      // 添加第二个文件（普通日志文件）
+      final logFile = File(logPathPrefix + '${_getDate()}PT3_OperationLog.log');
+      if (await logFile.exists()) {
+        zipEncoder.addFile(logFile);
+      }
+
+      // 完成压缩
+      zipEncoder.close();
+
+      return outputPath;
+    } catch (e) {
+      showToast('上传失败! ${e.toString()}');
+      return null;
+    }
+
+
+
+    print('Files compressed successfully. Output: $outputPath');
+  }
+
+  _getDate() {
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('yyyyMMdd').format(now);
+    return formattedDate;
+  }
+
+  _getYestodayDate() {
+    DateTime yesterday = DateTime.now().subtract(Duration(days: 1));
+    String formattedDate = DateFormat('yyyyMMdd').format(yesterday);
+    return formattedDate;
   }
 
   // Future<void> saveLogToD() async {
@@ -369,7 +432,7 @@ class SettingController extends GetxController with StateMixin {
     usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
     debugPrint("usbPrinter = ${usbPrinter}");
     //查看机器零钱状态
-    await getPaycubeChangeState();
+    await _getPaycubeChangeState();
   }
 
   printPreviewReceipt() async {
@@ -435,7 +498,7 @@ class SettingController extends GetxController with StateMixin {
   }
 
   //获取现金机列表
-  getPaycubeChangeState() async {
+  _getPaycubeChangeState({retryCount = 0}) async {
     var formData = {
       "machineCode": machineCode.value,
     };
@@ -453,8 +516,32 @@ class SettingController extends GetxController with StateMixin {
         // final result = await getMachineCashInfo();
         // debugPrint('MachineCashInfo: $result');
         update();
+      } else {}
+    }).catchError((error) {
+      debugPrint("Error getting change state: $error");
+      //
+      if (retryCount < 3) {
+        Future.delayed(Duration(seconds: 2), () {
+          _getPaycubeChangeState(retryCount: retryCount + 1);
+        });
       } else {
-        debugPrint("SettingController _getPaycubeChangeState 获取失败");
+        //日文显示
+        showToast('現金機の状態を取得できませんでした。');
+        //change(null, status: RxStatus.error('获取现金机状态失败'));
+        Get.back();
+      }
+
+    }).timeout(const Duration(seconds: 15), onTimeout: () {
+      debugPrint("Timeout getting change state");
+      //showToast('获取现金机状态超时');
+      if (retryCount < 3) {
+        Future.delayed(Duration(seconds: 2), () {
+          _getPaycubeChangeState(retryCount: retryCount + 1);
+        });
+      } else {
+        showToast('現金機の状態を取得できませんでした。');
+        //change(null, status: RxStatus.error('获取现金机状态超时'));
+        Get.back();
       }
     });
     change(null, status: RxStatus.success());
@@ -616,7 +703,7 @@ class SettingController extends GetxController with StateMixin {
         var response = json.decode(val.toString());
 
         if (response != null && response['code'] == 200) {
-          await getPaycubeChangeState();
+          await _getPaycubeChangeState();
           commonHandleDialog('回收成功');
         } else {
           showToast('回收に失敗しました');
@@ -833,14 +920,14 @@ class SettingController extends GetxController with StateMixin {
       } // 手动删除控制器实例
     } else if (machine_mode.value == "2") {
       if (Get.isRegistered<CheckoutPageController>()) {
-        Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+        //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       }
     } else if (machine_mode.value == "3") {
-      if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-        Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+      //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
+      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
 
-      if (Get.isRegistered<SelfservicePageController>())
-        Get.delete<SelfservicePageController>();
+      //if (Get.isRegistered<SelfservicePageController>())
+      //Get.delete<SelfservicePageController>();
     }
     if (Get.isRegistered<SettingController>())
       Get.delete<SettingController>(); // 手动删除控制器实例
@@ -856,7 +943,6 @@ class SettingController extends GetxController with StateMixin {
     Get.updateLocale(Locale('jp', 'JP'));
     Get.offNamedUntil('/transit-page',
         (route) => route.isFirst); //, arguments: {'toView2': true}
-
     //});
   }
 }

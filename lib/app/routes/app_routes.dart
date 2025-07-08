@@ -54,5 +54,6 @@ abstract class _Paths {
   static const REIMBURSE_ORDER = '/reimburse-order';
   static const ERROR_PAGE = '/error_page';
   static const RECEIPT_QUERY = '/receipt_query';
-  static const SETTING_EDIT_PAGE = '/edit_page';
+  //static const SETTING_EDIT_PAGE = '/edit_page';
+  static const SETTING_EDIT_PAGE = '/setting_edit_page';
 }

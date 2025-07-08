@@ -3,6 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/font.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:get/get.dart';
@@ -21,7 +23,7 @@ class PayResultView extends StatefulWidget {
 class PayResultViewState extends State<PayResultView> {
   Timer? hideTimer;
 
-  String _localKey = "JP"; 
+  String _localKey = "JP";
 
   @override
   void initState() {
@@ -76,7 +78,7 @@ class PayResultViewState extends State<PayResultView> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      GString.getToString(_localKey, "pay_success_title"),
+                      'pay_success_title'.localized(),
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(28),

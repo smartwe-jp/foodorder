@@ -35,7 +35,7 @@ class MiddlewareSettingPageController extends GetxController {
       showSettingPassword();
     }else{
       //Get.toNamed('/setting', arguments: {"machineCode": machineCode.value});
-      Get.off(SettingView(), arguments: {"machineCode": machineCode.value});
+      Get.off(()=>SettingView(), arguments: {"machineCode": machineCode.value});
     }
   }
 

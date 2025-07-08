@@ -27,7 +27,7 @@ extension SettlementControllerUIExtension on SettlementController {
               confirm: () {
                 Get.back();
                 showBackEasyLoading();
-                CancelOrder();
+                cancelOrder();
               },
               cancle: () {
                 allowClick.value = true;
@@ -282,7 +282,7 @@ extension SettlementControllerUIExtension on SettlementController {
       _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
 
       if (resultString.contains("L10")) {
-        goToNewMyHome(); //返回首页
+        gotonewMenuPage(); //返回首页
         return;
       }
 
@@ -290,7 +290,7 @@ extension SettlementControllerUIExtension on SettlementController {
           ||resultPFSString.contains("110")
           ||resultPFSString.contains("118")
       ) {
-        CancelOrder(); //取消订单
+        cancelOrder(); //取消订单
         return;
       }
 
@@ -308,9 +308,10 @@ extension SettlementControllerUIExtension on SettlementController {
               Get.back();
               showEasyLoading();
               Future.delayed(Duration(milliseconds: 1500),() async {
-                CancelOrder();
+                cancelOrder();
               });
-            })
+            }),
+      barrierDismissible: false
     );
 
   }

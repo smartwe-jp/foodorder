@@ -13,6 +13,7 @@ import 'package:widget_to_image/widget_to_image.dart';
 import '../../../config/imageData.dart';
 import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
+import '../../../controllers/app_config.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -22,7 +23,9 @@ import '../views/reimbruse_order_print_view.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
-  TextEditingController orderIdController = TextEditingController();
+  TextEditingController orderIdController=TextEditingController();
+  AppConfig appConfig = Get.find();
+  get payCube => appConfig.payCube;
 
   RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
@@ -62,6 +65,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
+
+  double get printWidth => appConfig.isAndroid11 ? 513:385;
+
   @override
   void onInit() {
     machineCode.value = Get.arguments['machineCode'];
@@ -161,12 +167,14 @@ class ReimburseOrderController extends GetxController with StateMixin {
       refundFailedAlert();
     } else if (refundInfo.value["payChannel"] == "Cash") {
       showPosEasyLoading();
-      String strartPayCube = await Paycube.strartRefundPayCube;
+      String strartPayCube = await payCube.strartRefundPayCube;
       debugPrint("退款开始出金:${strartPayCube}");
       //调用插件的监听
-      Paycube.getPayCubeListener();
-      await startOutPutMoney(refundInfo.value["amount"]);
-    } else if (refundInfo.value["payChannel"] == "CreditCard") {
+      payCube.getPayCubeListener();
+      _setPayCubeListener();
+      startOutPutMoney(refundInfo["amount"]);
+
+    } else if (refundInfo["payChannel"] =="CreditCard") {
       showPosEasyLoading();
       refundCreditCard();
     } else {
@@ -439,6 +447,28 @@ class ReimburseOrderController extends GetxController with StateMixin {
     });
   }
 
+  _setPayCubeListener() async {
+    await payCube.setReceiveEvent;
+    payCube.getPayCubeListener();
+    payCube.onCashInfoChange = (int type, String value) {
+      switch (type) {
+        case 0:
+          debugPrint("putMoney==$value");
+          //_updatePutMoneyInfo(value);
+          break;
+        case 1:
+          debugPrint("putCurrency==$value");
+          //_getPayCubePutMoneyCurrency(value);
+          break;
+        case 2:
+          debugPrint("currencyString==$value");
+          _getPayCubeOutMoney(value);
+          break;
+        default:
+          break;
+      }
+    };
+  }
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     if (Platform.isWindows) {
@@ -447,76 +477,87 @@ class ReimburseOrderController extends GetxController with StateMixin {
     }
 
     var outStringMoney = outMoney.toString();
-    await Paycube.setReceiveEvent;
+    //await Paycube.setReceiveEvent;
 
-    String outResult = await Paycube.outPayCubeMoney(outStringMoney);
+    bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
+      debugPrint("出金成功");
+    }, catchError: (error) {
+      debugPrint("出金失败");
+    });
     debugPrint("出金结果 ${outResult}");
-    _countDownTimer("6");
+    //_countDownTimer("6");
 
-    outmoneytimer?.cancel();
-    outmoneytimer =
-        Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
-      outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
+    // outmoneytimer?.cancel();
+    // outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
+    //   outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
       // 循环一定要记得设置取消条件，手动取消
-      if (outStatus.value == "OutSuccess") {
+      if (outResult) {
         //如果打开了现金机，则去掉倒计时监听
         showCashTimer?.cancel();
         seconds.value = 180;
         //如果取消不汇报，则出金后直接关闭 ？？？？？？
-        _getPayCubeOutMoney();
-
-        outmoneyt.cancel();
-      } else if (outStatus.value == "Error-A0--02" ||
-          outStatus.value == "Error") {
-        await Paycube.outPayCubeMoney(outStringMoney);
-      } else if (outStatus.value == "Error-F0--16") {
-        debugPrint("出金失败 Reason:error-F0--16, retry");
-        outmoneyt.cancel();
-        await Paycube.endTrade;
-        await startOutPutMoney(outStringMoney);
+        //_getPayCubeOutMoney();
+        await payCube.setReceiveEvent;
       } else {
-        await Paycube.outPayCubeMoney(outStringMoney);
+        cashErrorHandle();
       }
-    });
+
   }
 
-  _getPayCubeOutMoney() async {
+  cashErrorHandle() {
+    //现金机出错处理
+    EasyLoading.dismiss();
+    Get.dialog(
+        DialogUtils.alertOneButton(
+            '返金に失敗しました。現金機の状態を確認してください。ありがとうございます。',
+            confirm: () {
+              orderIdController.text = "";
+              orderList.value = [];
+              refundInfo.value = {};
+              queryOrder();
+              Get.back();
+            }),
+        barrierDismissible: false
+    );
+  }
+
+  _getPayCubeOutMoney(currencyStringResult) async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
-    OutMoneytimer?.cancel();
-    await Paycube.setReceiveEvent;
-    _countDownTimer("7");
+    //OutMoneytimer?.cancel();
+    //await Paycube.setReceiveEvent;
+    //_countDownTimer("7");
 
     var queryTimes = 0;
     // 循环一定要记得设置取消条件，手动取消
     //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
 
-    OutMoneytimer =
-        Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
-      if (getOutMoneyString.value == true) {
+    //OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
+
+      if(getOutMoneyString.value == true){
         // 循环一定要记得设置取消条件，手动取消
-        String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-        if (currencyStringresult.trim().length > 50) {
-          var outtotalAmount =
-              MoneyParser.calculateTotalAmount(currencyStringresult.trim());
+        //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
+        debugPrint("currencyStringResult.trim().length : ${currencyStringResult.trim().length}");
+        if (currencyStringResult.trim().length > 50) {
+          var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringResult.trim());
           debugPrint("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
           //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
           if (outtotalAmount == refundInfo.value["amount"]) {
             //如果打开了现金机，则去掉倒计时监听
-            showCashTimer?.cancel();
-            seconds.value = 180;
-            currencyString.value = currencyStringresult;
+            // showCashTimer?.cancel();
+            // seconds.value = 180;
+            currencyString.value = currencyStringResult;
             getOutMoneyString.value == false;
 
-            OutMoneytimer?.cancel();
+            //OutMoneytimer?.cancel();
 
-            payCubeCloseTransaction(currencyStringresult);
+            payCubeCloseTransaction(currencyStringResult);
           }
         }
       }
       queryTimes++;
-    });
+    //});
   }
 
   //汇报出金币种,请求后台
@@ -569,26 +610,21 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   payCubeCloseTransaction(cashOutString) async {
     //取引终了结束交易
-    var endTrade = await Paycube.endTrade;
-    debugPrint("取引终了结束交易${endTrade}");
-    //开启倒计时
     _countDownTimer("5");
-    await Paycube.setReceiveEvent;
-    endtimer?.cancel();
-    endtimer =
-        Timer.periodic(Duration(milliseconds: 250), (Timer endtradet) async {
-      endStatus.value = await Paycube.getPayCubeEndTradeStatus;
-      // 循环一定要记得设置取消条件，手动取消 || _endStatus == "error-A0--02"
-      if (endStatus.value == "EndSuccess") {
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        reportChange(cashOutString);
-        endtradet.cancel();
-      } else {
-        //sleep(Duration(milliseconds: 200));
-        await Paycube.endTrade;
-      }
+    bool endTrade = await payCube.endTrade(onSuccess: () {
+      debugPrint("取引终了结束交易成功");
+    }, catchError: (error) {
+      debugPrint("取引终了结束交易失败");
     });
+
+    if (endTrade) {
+      showCashTimer?.cancel();
+      seconds.value = 180;
+      reportChange(cashOutString);
+    }else {
+      debugPrint("取引终了结束交易失败");
+    }
+
   }
 
   printReimburseReceipt(Size size, Widget widget) async {
@@ -607,6 +643,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
       List<int> imageBytes = byteData.buffer
           .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
+
 
       String base64Image = base64Encode(imageBytes);
       await FlutterPluginMsprinter.sendPrintImgNew(

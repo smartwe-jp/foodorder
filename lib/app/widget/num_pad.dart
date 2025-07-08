@@ -180,12 +180,12 @@ class NumberButton extends StatelessWidget {
           ),
         ),
         onPressed: () {
-          if(textLength! >0){
+          if(textLength > 0){
             if(controller.text.length >=textLength){
               return;
             }
           }
-          controller?.text += number.toString();
+          controller.text += number.toString();
         },
         child: Center(
           child: Text(

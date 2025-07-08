@@ -15,6 +15,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
+import '../../../controllers/app_config.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
@@ -46,6 +47,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   //Function _resetCash = () {};
   int _recycleCash = 0;
   //Function _updatePrintInfo = () {};
+  AppConfig appConfig = Get.find();
+  double get printWidth => appConfig.isAndroid11 ? 513:385;
 
   final TextEditingController _verifyCodeController = TextEditingController();
 

@@ -10,15 +10,19 @@ import '../controllers/reimburse_order_controller.dart';
 
 class ReimbursePrintView extends StatelessWidget {
   final Map<String, dynamic> reimburseInfo;
+  final double widgetWidth;
   final GlobalKey containerKey = GlobalKey();
-  ReimbursePrintView({Key? key, required this.reimburseInfo}) : super(key: key);
+  ReimbursePrintView({Key? key, required this.reimburseInfo, required this.widgetWidth})
+      : super(key: key);
+  final contentStyle = GoogleFonts.zenKakuGothicAntique(
+      fontSize: 26, fontWeight: FontWeight.w300, color: Colors.black87);
 
-  final contentStyle = TextStyle(
-    fontFamily: 'NotoSansJP',
-    color: Colors.black,
-    fontSize: 30,
-    fontWeight: FontWeight.w400,
-  );
+  // final contentStyle = TextStyle(
+  //   fontFamily: 'NotoSansJP',
+  //   color: Colors.black,
+  //   fontSize: 30,
+  //   fontWeight: FontWeight.w400,
+  // );
 
   @override
   Widget build(BuildContext context) {
@@ -57,22 +61,22 @@ class ReimbursePrintView extends StatelessWidget {
     categoryMenus.add(amountInfoArea());
 
     return
-        // Directionality(
-        //   textDirection: TextDirection.ltr,
-        //   child:Wrap(
-        //     children: [
-        Container(
-      alignment: Alignment.center,
-      margin: EdgeInsets.only(top: 10, bottom: 40),
-      width: 385,
-      color: Colors.white,
-      child: Column(
-        children: categoryMenus,
-      ),
-      //     ),
-      //   ],
-      // ),
-    );
+      Directionality(
+        textDirection: TextDirection.ltr,
+        child:Wrap(
+          children: [
+            Container(
+              margin: EdgeInsets.only(top: 10, bottom: 40),
+              width: widgetWidth,//385,
+              color: Colors.white,
+              child: Column(
+                children: categoryMenus,
+              ),
+            ),
+          ],
+        ),
+      );
+
   }
 
   //分割线
@@ -83,7 +87,6 @@ class ReimbursePrintView extends StatelessWidget {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 2,
           color: ColorsUtil.hexToColor("#000000"),
-          //width: 385,
         ));
   }
 

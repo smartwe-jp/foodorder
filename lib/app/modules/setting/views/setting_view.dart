@@ -10,7 +10,9 @@ import 'package:foodorder/app/routes/app_pages.dart';
 import 'package:get/get.dart';
 import 'package:foodorder/app/common/NumberFormat.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../routes/app_pages.dart';
 import '../../../services/ScreenAdapter.dart';
+import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import '../controllers/setting_controller.dart';
 import 'CashSettingView.dart';
 
@@ -18,6 +20,7 @@ class SettingView extends GetView<SettingController> {
   final SettingController controller = Get.put(SettingController());
   SettingView({Key? key}) : super(key: key);
 
+  //支付金额展示
   //支付金额展示
   getDepositListShow() {
     Map<String, dynamic> depositList = Map();
@@ -83,7 +86,7 @@ class SettingView extends GetView<SettingController> {
                 color: Colors.white12,
                 border: Border(
                   //bottom: BorderSide(color: Colors.grey, width: 1.0),
-                  top: BorderSide(color: Colors.grey.shade400, width: 1.0),
+                  //top: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   left: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   right: BorderSide(color: Colors.grey.shade400, width: 1.0),
                   bottom: BorderSide(color: Colors.grey.shade400, width: 1.0),
@@ -243,13 +246,13 @@ class SettingView extends GetView<SettingController> {
                 borderRadius: new BorderRadius.circular((16.0)),
               ),
               child: Text("メンユー管理",
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(24),
-                      fontWeight: FontWeight.w600,
-                      color: ColorsUtil.hexToColor("#FFFFFF"),
-                    )
-                  ),
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: ScreenAdapter.fontSize(24),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                  )
+              ),
             ),
           ),
         ],

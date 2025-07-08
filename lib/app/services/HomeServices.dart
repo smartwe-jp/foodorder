@@ -229,7 +229,36 @@ class HomeServices {
     return printSettingInfo;
   }
 
-  static getWlanPrintSettingTwoInfo() async {
+  static Future<List> getPrinterListInfo() async {
+    List? list = await Storage.getData("printerListInfo");
+    if (list != null) {
+      return list;
+    } else {
+      return [];
+    }
+  }
+
+  static Future<List> getSSESettingList() async {
+    List? list = await Storage.getData("SSESetting");
+    if (list != null) {
+      return list;
+    } else {
+      return [];
+    }
+  }
+
+  static Future<void> setSSESettingList(List sseSettingList) async {
+    final data = json.encode(sseSettingList);
+    await Storage.setData("SSESetting", data);
+  }
+
+  static Future<void> setPrinterListInfo(List printerListInfo) async {
+
+    final data = json.encode(printerListInfo);
+    await Storage.setData("printerListInfo", data);
+  }
+
+  static getWlanPrintSettingTwoInfo() async{
     Map printSettingInfo;
     try {
       var printSettingDatatmp =
@@ -304,8 +333,8 @@ class HomeServices {
   }
 
   //多语言
-  static getMachineLanguages() async {
-    var machineLanguages;
+  static getMachineLanguages() async{
+    var machineLanguages = [];
     try {
       var machineLanguagesDatatmp =
           await Storage.getString('smartwe_machineLanguages');
@@ -371,6 +400,18 @@ class HomeServices {
     var smartweLogoImagesInfo;
     try {
       var logoImageData = await Storage.getString('smartwe_logoImage');
+      //GetxStorage.setData('smartwe_logoImage', logoImageData);
+      smartweLogoImagesInfo = logoImageData;
+    } catch (e) {
+      smartweLogoImagesInfo = "";
+    }
+    return smartweLogoImagesInfo;
+  }
+
+  static getSmartweLogoImage() async{
+    var smartweLogoImagesInfo;
+    try {
+      var logoImageData = await Storage.getString('smartwe_logoImageData');
       //GetxStorage.setData('smartwe_logoImage', logoImageData);
       smartweLogoImagesInfo = logoImageData;
     } catch (e) {

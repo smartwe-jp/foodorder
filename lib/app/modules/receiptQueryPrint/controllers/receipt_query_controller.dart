@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
@@ -73,12 +74,12 @@ class ReceiptQueryController extends GetxController with StateMixin {
       "orderId": orderId,
     };
 
-    request('webBootReceiptQuery', method: 'POST', parameters: formData).then((val) {
+    request('webBootReceiptQueryV2', method: 'POST', parameters: formData).then((val) {
       EasyLoading.dismiss();
       var response = json.decode(val.toString());
       LogUtil.d(response);
       if (response !=null && response['data'] !=null) {
-        createPrintImageController.tpPrintnew(RxInt(1),response['data'], 1);
+        createPrintImageController.tpPrintnew('1',response['data'], '1');
         receiptList.value = [];
         orderIdController.text = "";
         update();
@@ -101,19 +102,24 @@ class ReceiptQueryController extends GetxController with StateMixin {
         width: ScreenAdapter.width(550),
         height: ScreenAdapter.height(480),
         padding: EdgeInsets.only(top: ScreenAdapter.height(15)),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            //_showTag,
-            Container(
-              //width: ScreenAdapter.width(400),
-              margin: EdgeInsets.only(top: 60),
-              height: ScreenAdapter.height(200),
-              child: Image.asset(
-                  GImage.getImageString("imgpublic", "printticketloading"),
-                  fit: BoxFit.fitHeight),
-            ),
-          ],
+        child: InkWell(
+          onLongPress: () {
+            EasyLoading.dismiss();
+          },
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              //_showTag,
+              Container(
+                //width: ScreenAdapter.width(400),
+                margin: EdgeInsets.only(top: 60),
+                height: ScreenAdapter.height(200),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
+              ),
+            ],
+          ),
         ),
       ),
       maskType: EasyLoadingMaskType.black,

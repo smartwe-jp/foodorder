@@ -9,6 +9,8 @@ import 'package:foodorder/app/config/http_conf.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
+import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:open_file/open_file.dart';
 import 'package:package_info/package_info.dart';
 import 'package:path_provider/path_provider.dart';
@@ -19,9 +21,10 @@ import 'package:android_usb_printer/android_usb_printer.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
+import '../../../config/http_conf.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
-import '../../../plugins/paycube/lib/paycube.dart';
+import '../../../controllers/app_config.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -33,10 +36,17 @@ import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../OrderHome/controllers/order_home_controller.dart';
 import '../../settlement/views/label_constrained_box.dart';
 import '../../settlement/views/receipt_constrained_box.dart';
+import '../views/SetPosIp.dart';
+import '../views/set_subprinter.dart';
 import '../views/showSpeed.dart';
 
 class SystemSettingPageController extends GetxController with StateMixin {
   //TODO: Implement SystemSettingPageController
+
+  AppConfig appConfig = Get.find();
+  PrintService printService = Get.find<PrintService>();
+  SseService sseService = Get.find<SseService>();
+  get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
   RxString machineCode = "".obs;
@@ -92,6 +102,41 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printTwoDirection = false.obs;
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
+  RxList printerList = [].obs;
+  RxList sseSettingList = [].obs;
+
+  List<String> panelTypes = ['Mini','Max'];
+  String panelType = "Mini";
+  bool isAllow10000 = true;
+  bool isAllow5000 = true;
+
+  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
+      : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
+
+  final Map subPrinterInfos = {
+    '拡張プリンター(1)': 21,
+    '拡張プリンター(2)': 22,
+    '拡張プリンター(3)': 23,
+    '拡張プリンター(4)': 24,
+    '拡張プリンター(5)': 25,
+  };
+
+  List subPrinterList = [];
+
+  final Map defaultPrinterInfo = {
+    'キッチン': 10,
+    'センター': 11,
+    'カウンター': 12,
+  };
+
+  Map get notSelectedPrinterMap {
+    return subPrinterInfos.map((key, value) {
+      // 检查 printerList 中是否包含该 type
+      bool isSelected = printerList.any((item) => item['type'] == value);
+      return MapEntry(key, isSelected ? null : value);
+    })..removeWhere((key, value) => value == null);
+  }
+
 
   @override
   void onInit() {
@@ -123,18 +168,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //获取系统设置信息
   _getSystemSettingInfo() async {
+    await _checkAndInitialPrinters();
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    Map wlanPrintSettingInfoTwo =
-        await HomeServices.getWlanPrintSettingTwoInfo();
+    Map wlanPrintSettingInfoTwo = await HomeServices.getWlanPrintSettingTwoInfo();
     Map wlanPanelPrintSettingInfo = await HomeServices.getWlanPanelPrintSettingInfo();
-    printDirection.value =
-        await HomeServices.getPrintDirection() == "1" ? true : false;
-    printTwoDirection.value =
-        await HomeServices.getPrintTwoDirection() == "1" ? true : false;
-    printThreeDirection.value =
-        await HomeServices.getPrintThreeDirection() == "1" ? true : false;
+    printDirection.value = await HomeServices.getPrintDirection() == "1" ? true : false;
+    printTwoDirection.value = await HomeServices.getPrintTwoDirection() == "1" ? true : false;
+    printThreeDirection.value = await HomeServices.getPrintThreeDirection() == "1" ? true : false;
     printLabelWidth.value = await HomeServices.getLabelPrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
@@ -204,7 +246,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     wlan_panel_print_ip = wlanPanelPrintSettingInfo['wlanPrintIp'] ?? "";
     wlan_panel_print_port = wlanPanelPrintSettingInfo['wlanPrintPort'] ?? "";
-
     change(null, status: RxStatus.success());
   }
 
@@ -219,6 +260,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isReservation": isReservation.value, //是否开启预约服务
     "isAllowAttendance": is_allow_attendance.value, //0不开启 1开启
     "isAllowOneYen": is_allow_oneyen.value, //0禁用1元 1不禁用
+    "isAllow5000": isAllow5000 ? "1":"0",
+    "isAllow10000": isAllow10000 ? "1":"0",
     "isAllowRejishime": is_allow_rejishime.value, //0不开启 1开启
     "isAllowBackHome": is_allow_backhome.value, //0返回home 1返回到菜单
     "isAllowPos": is_allow_pos.value, //0不开启 1开启
@@ -227,8 +270,203 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "showPrintType": showPrintType.value.toString(), //0receipt 1label
     "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
     "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
+    "panelType":panelType,
     "isAllowWlanPanelPrint": is_allow_wlanPanelPrint ?? "0",
   };
+
+
+  _checkAndInitialPrinters() async {
+    printerList.value = await HomeServices.getPrinterListInfo();
+    if (printerList.isEmpty) {
+      //如果没有打印机信息，则添加默认打印机
+      printerList.add({
+        'name': 'キッチン',
+        'type': 10,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'キッチン (ラベル)',
+        'type': 10,
+        'receipt': 1,
+        'labelWidth': 384,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'センター',
+        'type': 11,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+      printerList.add({
+        'name': 'カウンター',
+        'type': 12,
+        'receipt': 0,
+        'labelWidth': 0,
+        'continuous': 0,
+        'isOff': true,
+        'isDefault': true,
+        'printIp': '',
+        'printPort': '9100',
+        'direction': 0,
+      });
+    }
+    //save
+    await HomeServices.setPrinterListInfo(printerList);
+    //获取SSE设置
+    sseSettingList.value = await HomeServices.getSSESettingList();
+    if (sseSettingList.isEmpty) {
+      //如果没有SSE设置，则添加默认设置
+      sseSettingList.add({
+        'name': 'SmartWe SSE',
+        'server': 'sseSubscribeSmartWe',//servicePath[
+        'identify': machineCode.value,
+        'isOn': false,
+        'needCenterPrint': true,
+        'centerOn': false,
+        'needInput': false,
+      });
+      sseSettingList.add({
+        'name': 'Panda SSE',
+        'server': 'sseSubscribePanda',
+        'identify': '',
+        'isOn': false,
+        'needCenterPrint': false,
+        'centerOn': false,
+        'needInput': true,
+      });
+      await HomeServices.setSSESettingList(sseSettingList);
+    }
+
+  }
+
+  editSSESetting(String name, String address, String identify, bool isOn) async {
+    Get.dialog(
+      SimpleInputAlert(
+        title: "$nameのIDを入力してください",
+        originValue: identify,
+        onConfirmClick: (value) async {
+          if (value.isEmpty) {
+            showToast("IDを入力してください");
+            return;
+          }
+          if (isOn) {
+              //先关闭现有连接
+            updateSSESetting(name, isOn: false);
+            await Future.delayed(const Duration(milliseconds: 3000));
+            //再开启新的连接
+            updateSSESetting(name, isOn: true, identify: value);
+          } else {
+            //如果是关闭状态，则直接更新设置
+            updateSSESetting(name, identify: value);
+          }
+        }
+      )
+    );
+  }
+
+
+  updateSSESetting(String name, {bool? isOn, String? identify, bool? centerOn}) async {
+    if (sseSettingList.isNotEmpty) {
+      for (var i = 0; i < sseSettingList.length; i++) {
+        if (sseSettingList[i]['name'] == name) {
+          if (isOn != null) {
+            sseSettingList[i]['isOn'] = isOn;
+          }
+          if (identify != null) {
+            sseSettingList[i]['identify'] = identify;
+          }
+
+          if (centerOn != null) {
+            sseSettingList[i]['centerOn'] = centerOn;
+          }
+
+          if (identify != null && identify.isNotEmpty) {
+
+            final domain = servicePath[sseSettingList[i]['server']];
+            if (isOn != null && domain != null) {
+              //如果开启了SSE连接，则添加监听
+              final sseAddress = domain + identify;
+              isOn ? sseService.addSseListen(sseAddress) : sseService.disconnect(sseAddress);
+            }
+          }
+        }
+      }
+      await HomeServices.setSSESettingList(sseSettingList);
+    }
+
+    update();
+  }
+
+  addCustomPrinter() async {
+    Get.dialog(
+        SetPrinterView(isAdd: true, notSelectedPrinterMap: notSelectedPrinterMap)
+    );
+  }
+
+  addSubPrinter(int printerType, String name) {
+    if (!subPrinterList.contains(printerType)) {
+      subPrinterList.add(printerType);
+    }
+    printerList.add({
+      'name': name, //打印机名称
+      'type': printerType,
+      'receipt':0, //0 小票 1 标签
+      'labelWidth':0, //标签宽度
+      'continuous':0, //0 单票 1 连票
+      'isOff': true, //是否开启
+      'isDefault': false, //是否默认打印机
+      'printIp':'',
+      'printPort':'9100',
+      'direction': 0,
+    });
+    //存打印机列表
+    HomeServices.setPrinterListInfo(printerList);
+    update();
+    // Future.delayed(const Duration(milliseconds: 300), () {
+    //   _scrollToBottom();
+    // });
+  }
+
+  removePrinter(Map printer) {
+    if (printerList.isNotEmpty) {
+      printerList.removeWhere((item) => item['type'] == printer['type']);
+      HomeServices.setPrinterListInfo(printerList);
+      update();
+    }
+  }
+
+  editPrinterInfo(int printerType, int continuousType, bool isOff, {String name = "", String printIp = ""}) {
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == printerType) {
+          printerList[i]['isOff'] = isOff;
+          printerList[i]['continuous'] = continuousType;
+          printerList[i]['printIp'] = printIp;
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+
+  }
 
   showDownloadingAlert() {
     //支付状态
@@ -302,11 +540,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 Get.back();
                                 Get.dialog(showSpeedView());
                                 //https://app.gutingjun.com/kanran-release.apk
-                                String fileName = Platform.isAndroid
-                                    ? 'smartwe_ticket_machine.apk'
-                                    : 'smartwe_ticket_machine.exe';
-                                downloadAndroid(file_url + fileName);
-                                //testReadAndInstall();
+// <<<<<<< HEAD
+//                                 String fileName = Platform.isAndroid
+//                                     ? 'smartwe_ticket_machine.apk'
+//                                     : 'smartwe_ticket_machine.exe';
+//                                 downloadAndroid(file_url + fileName);
+//                                 //testReadAndInstall();
+// =======
+//                                 downloadAndroid(downloadUrl);
+// >>>>>>> 2.7.0-dev
                               },
                             ),
                           ),
@@ -466,20 +708,25 @@ class SystemSettingPageController extends GetxController with StateMixin {
     dining_type.value = dining_type_tmp;
     _updateSystemSetting("diningType", dining_type_tmp);
     //该处逻辑需要修改，如果切换模式会有获取不到Controller的问题。
-    if (machine_mode == "1") {
-      if (Get.isRegistered<OrderHomeController>())
-        Get.find<OrderHomeController>().getSystemSettingInfo();
-    } else if (machine_mode == "2") {
+    if(machine_mode == "1"){
+      //if (Get.isRegistered<OrderHomeController>())
+      //Get.find<OrderHomeController>().getSystemSettingInfo();
+    }else if(machine_mode == "2"){
       // if (Get.isRegistered<CheckoutPageController>())
-      //   Get.find<CheckoutPageController>().getSystemSettingInfo();
+      // Get.find<CheckoutPageController>().getSystemSettingInfo();
     }
   }
 
   checkMenuDirection(checkedType) {
     menu_direction.value = checkedType;
     _updateSystemSetting("menuDirection", checkedType);
-    if (Get.isRegistered<OrderHomeController>())
-      Get.find<OrderHomeController>().getSystemSettingInfo();
+    //if(Get.isRegistered<OrderHomeController>())
+    //Get.find<OrderHomeController>().getSystemSettingInfo();
+  }
+
+  checkPanelType(String type){
+    panelType = type;
+    _updateSystemSetting("panelType", type);
   }
 
   checkPrintPaperTxtSize(checkedType) async {
@@ -562,6 +809,69 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
+  showPrintSettingDialog(int type, int receipt, int continueType, {String printerIp = '', String port = ''}) async {
+    Get.dialog(
+        SetPosIpPage(
+          posIp: printerIp,
+          posPort: port,
+          onConfrimClick: (String printIp, String printPort) {
+            if(printIp != ""){
+
+              updatePrinterInfo(type, receipt, isOff: false, continuous: continueType, printerIp: printIp, port: printPort);
+            }
+          },
+        )
+    );
+  }
+
+  updatePrinterState(int type, int receipt, bool isOff) async {
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+          printerList[i]['isOff'] = isOff;
+          if (!isOff && type == 10) {
+            //find the first printer of type 10 and receipt != receipt, set isOff = true
+            for (var j = 0; j < printerList.length; j++) {
+              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+                printerList[j]['isOff'] = true;
+              }
+            }
+          }
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+  }
+
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction}) async {
+
+    if (printerList.isNotEmpty) {
+      for (var i = 0; i < printerList.length; i++) {
+        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+          if(isOff != null) printerList[i]['isOff'] = isOff;
+          if(continuous != null) printerList[i]['continuous'] = continuous;
+          if(printerIp != null) printerList[i]['printIp'] = printerIp;
+          if(port != null) printerList[i]['printPort'] = port;
+          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if(direction != null) printerList[i]['direction'] = direction;
+          if (type == 10 && !(isOff ?? true)) {
+            //find the first printer of type 10 and receipt != receipt, set isOff = true
+            for (var j = 0; j < printerList.length; j++) {
+              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+                printerList[j]['isOff'] = true;
+              }
+            }
+          }
+        }
+      }
+      HomeServices.setPrinterListInfo(printerList);
+    }
+    update();
+  }
+
+
+
   checkIsAllowWlanPrint(checkedType) async {
     var wlanPrintSettingData;
     if (checkedType == "1") {
@@ -642,7 +952,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   posTest(posIp, posPort) async {
-    _showEasyLoading("POS Test Start");
+    _showEasyLoading(text: "POS Test Start");
     debugPrint("--- posTest ---");
     request('webBootPosTest', method: 'POST').then((val) {
       var response = json.decode(val.toString());
@@ -817,14 +1127,54 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkIsAllowOneYen(checkedType) async {
-    if (checkedType == "0") {
-      var prohibitOneCashStatus = await Paycube.prohibitOneCash;
-    } else {
-      var allowOneCashStatus = await Paycube.allowOneCash;
+
+
+    if(checkedType == "0"){
+      var prohibitOneCashStatus =  await payCube.prohibitOneCash;
+    }else{
+      var allowOneCashStatus =  await payCube.allowOneCash;
     }
     is_allow_oneyen.value = checkedType;
 
     _updateSystemSetting("isAllowOneYen", checkedType);
+  }
+
+  checkIsAllow5000Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 5000, onSuccess: (){
+      isAllow5000 = checkedType;
+      _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow5000Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
+  }
+
+  checkIsAllow10000Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 10000, onSuccess: (){
+      isAllow10000 = checkedType;
+      _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow10000Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
+  }
+
+
+  handleMassageAlert(String message, {GestureTapCallback? confirm}) {
+    Get.dialog(
+      DialogUtils.alert(message, confirm: confirm ?? (){Get.back();}, cancle: (){
+        Get.back();
+      }),
+      barrierDismissible: false,
+    );
   }
 
   checkIsAllowRejishime(checkedType) async {
@@ -878,7 +1228,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //上传现金机log
   uploadErrorLog() async {
-    _showEasyLoading("Uploading...");
+    _showEasyLoading(text: "Uploading...");
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
@@ -898,7 +1248,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     });
   }
 
-  _showEasyLoading(text) {
+
+  _showEasyLoading({String text = ""}){
     var _showTag;
     _showTag = Text(text,
         style: TextStyle(

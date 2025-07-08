@@ -1,10 +1,14 @@
+import 'dart:ui';
 
+import 'package:animated_widgets/widgets/rotation_animated.dart';
 import 'package:animated_widgets/widgets/scale_animated.dart';
+import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/modules/OrderHome/views/components/BookingTypeButton.dart';
-import 'package:foodorder/app/modules/OrderHome/views/components/LanguageButton.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/BookingTypeButton.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/ShakeWidget.dart';
+import 'package:foodorder/app/modules/OrderHome/views/widgets/languageButton.dart';
 
 import 'package:get/get.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
@@ -15,6 +19,7 @@ import '../../../config/font.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../controllers/order_home_controller.dart';
+import 'SelectDiningMethod.dart';
 
 class OrderHomeView extends GetView<OrderHomeController> {
   final OrderHomeController controller = Get.find();
@@ -220,51 +225,51 @@ class OrderHomeView extends GetView<OrderHomeController> {
               ),
 
               Positioned(
-                bottom: ScreenAdapter.height(720),
-                child: Container(
-                  width: ScreenAdapter.width(1080),
-                  child: Column(
-                    children: [
-                      Text(
-                        'menu_dingtype_title'.localized(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          fontSize: 80,
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.white,
-                              offset: Offset(3.0, -4.0),
-                              blurRadius: 1.0,
-                            ),
-                          ],
+                  bottom: ScreenAdapter.height(720),
+                  child: Container(
+                    width: ScreenAdapter.width(1080),
+                    child: Column(
+                      children: [
+                        Text(
+                          'menu_dingtype_title'.localized(),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: TextStyle(
+                            color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                            fontSize: 80,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w600,
+                            shadows: [
+                              Shadow(
+                                color: Colors.white,
+                                offset: Offset(3.0, -4.0),
+                                blurRadius: 1.0,
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
-                      if (controller.machineInfo.diningType == "3")
-                      Text(
-                        'menu_ding_type_tips'.localized(),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                          color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          fontSize: 40,
-                          fontFamily: GFont.getFontFamily(),
-                          fontWeight: FontWeight.w600,
-                          shadows: [
-                            Shadow(
-                              color: Colors.white,
-                              offset: Offset(2.0, -2.0),
-                              blurRadius: 2.0,
+                        if (controller.machineInfo.diningType == "3")
+                          Text(
+                            'menu_ding_type_tips'.localized(),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                              fontSize: 40,
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  color: Colors.white,
+                                  offset: Offset(2.0, -2.0),
+                                  blurRadius: 2.0,
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                )
+                          ),
+                      ],
+                    ),
+                  )
               ),
 
 
@@ -272,10 +277,10 @@ class OrderHomeView extends GetView<OrderHomeController> {
                 bottom: ScreenAdapter.height(400),
                 width: ScreenAdapter.width(1080),
                 child: Center(
-                  child:
+                    child:
                     controller.machineInfo.diningType == "3" ?
-                      _diningSelectArea()
-                    : _startButton()
+                    _diningSelectArea()
+                        : _startButton()
 
                 ),
               ),
@@ -284,9 +289,9 @@ class OrderHomeView extends GetView<OrderHomeController> {
               Positioned(
                 bottom: ScreenAdapter.height(150),
                 child: Container(
-                  width: ScreenAdapter.width(1080),
-                  height: ScreenAdapter.height(200),
-                  child: languageSelectView()
+                    width: ScreenAdapter.width(1080),
+                    height: ScreenAdapter.height(200),
+                    child: languageSelectView()
                 ),
               ),
 

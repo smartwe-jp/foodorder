@@ -48,7 +48,7 @@ class GString{
         "settlement_confirmButton_yes":"領収書発行",
         "settlement_confirmButton_no2":"支払い確定",
         "settlement_confirmButton_no":"領収書不発行",
-        "settlement_receipt_title":"領収書",
+        "settlement_receipt_title":"レシート兼領収書",
         "settlement_receipt_yes":"発行する",
         "settlement_receipt_no":"発行しない",
         "settlement_orderPrice":"お支払い金額",
@@ -171,6 +171,8 @@ class GString{
         "load_menu_failure_title" : "メニューの読み込みに異常が発生しました。",
         "load_menu_failure_content" : "@seconds秒後にホーム画面に戻りますので、\n再度お試しください。",
         "load_menu_failure_back" : "ホームに戻る",
+        'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
+        "scan_order_detail_title":"ご注文",
 
         "in_shop":"店内",
         "take_out":"持ち帰り",
@@ -178,19 +180,21 @@ class GString{
         "main_page":"ホーム",
 
         "pay_success_title":"お支払いが成功しました\nご利用いただきありがとうございます",
-        "scan_order_detail_title":"ご注文",
+        //"scan_order_detail_title":"ご注文",
         "dining_welcome":"いらっしゃいませ",
         "dining_type_tips":"店内かお持ち帰りかを選択してください",
         "checkout_type_tips":"お会計かお持ち帰りかを選択してください",
         "amount_tips":"'お会計'をターチしてください",
-        'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
+        //'cash_pay_checkout_tips':'お支払い金額の変更あり、改めて金額のご確認し、お支払いください。',
         'cash_full_confirm':'確定',
         'cash_full_tips':'金種@cash が上限に達しました。「確定」をクリックすると入金が返金されます。他の金種や支払い方法をご利用いただくか、店舗にお問い合わせください。ご不便をおかけして申し訳ございません。',
         "skip_button":"スキップ",
         "next_button":"進む",
         "suggest_title":"ご一緒にいかがですか",
 
-        "repay_cash_error": "エラーが発生しました, スタッフに連絡してください。", 
+        "repay_cash_error": "エラーが発生しました, スタッフに連絡してください。",
+        "network_error_tips":"申し訳ございません。ネットワークの異常により、一時的にご利用いただけません。店員にお問い合わせいただくか、取引をキャンセルしてください。",
+        "pos_notwork_tips":"申し訳ございません。POS端末が応答しません。店員に対応を依頼してください。ありがとうございます。",
 
       };
     }else if(languageCode == 'CH'){
@@ -375,12 +379,17 @@ class GString{
         'cash_pay_checkout_tips':'支付金额更新，请继续投币。',
         'cash_full_confirm':'确定',
         'cash_full_tips':'现金币种@cash 满了，点击\'确定\'将退还入金，请使用其他币种或者其他支付方式，也可以联系店家处理该问题，谢谢。非常抱歉给你带来不便',
+        // 'cash_pay_checkout_tips':'支付金额更新，请确认并支付。',
+        // "scan_order_detail_title":"订单",
+
         "skip_button":"跳过",
         "next_button":"下一步",
         "suggest_title":"您可能还喜欢",
 
         "repay_cash_error": "发生错误, 请联系工作人员。", 
 
+        "network_error_tips":"非常抱歉，网络异常，暂时无法使用，请联系店员或者取消交易。",
+        "pos_notwork_tips":"非常抱歉，POS机无响应，请联系店员处理，谢谢。",
       };
     }else if(languageCode == 'EN'){
       languagePack = {
@@ -563,12 +572,18 @@ class GString{
         'cash_pay_checkout_tips':'Payment amount updated, please continue inserting cash.',
         'cash_full_tips':'The cash denomination of @cash has reached its limit. Click \'Confirm\' to refund the deposit. Please use other currencies or payment methods, or contact the store to address this issue. We apologize for any inconvenience caused.',
         'cash_full_confirm':'Confirm',
+        // 'cash_pay_checkout_tips':'Payment amount updated, Please confirm and pay.',
+        // "scan_order_detail_title":"Order",
+
         "skip_button":"Skip",
         "next_button":"Next",
         "suggest_title":"You may also like",
 
         "repay_cash_error": "Error occurred. Please contact our staff.", 
-        
+
+        "network_error_tips":"We are very sorry, there is a network issue, and the service is temporarily unavailable. Please contact the staff or cancel the transaction.",
+        "pos_notwork_tips":"We are very sorry, the POS machine is not responding. Please contact the staff for assistance. Thank you.",
+
       };
     }else if(languageCode == 'KO'){
       languagePack = {
@@ -752,11 +767,15 @@ class GString{
         'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 계속 현금을 넣어주세요.',
         'cash_full_tips':'현금 단위 @cash원이 한도에 도달했습니다. \'확인\'을 클릭하면 입금이 환불됩니다. 다른 통화나 결제 방법을 사용하시거나 매장에 문의하여 이 문제를 해결해 주시기 바랍니다. 불편을 드려 대단히 죄송합니다',
         'cash_full_confirm':'확인',
+        // 'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 확인 후 결제해 주세요.',
+        // 'scan_order_detail_title':'주문',
         "skip_button":"건너뛰기",
         "next_button":"다음",
         "suggest_title":"함께 보면 좋을 것들",
 
-        "repay_cash_error": "오류가 발생했습니다, 직원에게 문의하십시오.", 
+        "repay_cash_error": "오류가 발생했습니다, 직원에게 문의하십시오.",
+        "network_error_tips":"죄송합니다. 네트워크 문제로 인해 서비스를 일시적으로 사용할 수 없습니다. 직원에게 문의하거나 거래를 취소해 주십시오.",
+        "pos_notwork_tips":"죄송합니다. POS 기기가 응답하지 않습니다. 직원에게 도움을 요청해 주십시오. 감사합니다.",
       };
     }
 

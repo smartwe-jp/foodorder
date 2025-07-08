@@ -95,7 +95,7 @@ class MenuView extends StatelessWidget {
             return false;
           },
           child: FutureBuilder<Widget?>(
-            future: state.getCategoryMenu(state.classTag.value),
+            future: state.getCategoryMenu(),//state.classTag.value
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());

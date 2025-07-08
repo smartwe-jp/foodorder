@@ -151,7 +151,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -223,7 +223,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -255,7 +255,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();;
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -290,7 +290,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -325,7 +325,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -360,7 +360,7 @@ class SettlementView extends GetView {
                           onLongPress: () {
                             try {
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -396,7 +396,7 @@ class SettlementView extends GetView {
                             try {
                               //_getPaymentCancelPosData();
                               //Navigator.pop(context);
-                              controller.CancelOrder();
+                              controller.cancelOrder();
                               //showCancelConfirm();
                             } catch (_) {}
                           },
@@ -1346,7 +1346,11 @@ class SettlementView extends GetView {
 
                                 controller.showPosCancelAlert();
                               }else{
-                                Get.back(result: true);
+// <<<<<<< HEAD
+//                                 Get.back(result: true);
+// =======
+                                controller.checkOutModeBack();
+                                Get.back();
                               }
                               /*if (controller.machineInfo.paymentMethod == "3" ||
                                   controller.machineInfo.paymentMethod == "4") {

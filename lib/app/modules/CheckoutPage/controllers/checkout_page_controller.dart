@@ -1,92 +1,178 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
-import 'package:foodorder/app/services/CashChangerService.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart';
-import 'package:logging/logging.dart';
+import 'package:get_storage/get_storage.dart';
 
+import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
 import '../../../config/string.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/PinterCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
+import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
+import '../../scan_detail_page/logic.dart';
+import '../../scan_detail_page/view.dart';
+import 'checkStatusView.dart';
 
-class CheckoutPageController extends GetxController
-    with StateMixin, GetTickerProviderStateMixin {
+class CheckoutPageController extends GetxController with StateMixin {
+  //TODO: Implement CheckoutPageController
+  TextEditingController scanQrCodeHomeController = new TextEditingController();
+  FocusNode scanQrCodeHomeFocusNode = FocusNode();
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
 
-  TextEditingController scanQrCode2Controller = new TextEditingController();
-  FocusNode scanQrCode2FocusNode = FocusNode();
-
   MachineInfoController machineInfo = Get.find();
+
+  PrinterCheckService printerCheckService = Get.find();
+
+  RxBool allAreReady = false.obs;
+  RxList checkList = [].obs;
+
+  RxBool actuarial = false.obs;
+  RxBool lineup = false.obs;
+  RxBool takeOut = false.obs; //是否允许外带
 
   RxString isReservation = "0".obs;
   RxBool showOpenPayment = false.obs;
 
-  String get selectLanguage {
-    return Get.locale?.languageCode.toUpperCase() ?? 'JP';
-  }
-
   RxString orderId = "".obs;
-  RxString totlaPrice = "0".obs;
+  RxInt totalPrice = 0.obs;
   RxString tableNum = "0".obs;
+  RxInt discount = 0.obs;
+
+
+  bool machineLanguages_JP = false;
+  bool machineLanguages_CH = false;
+  bool machineLanguages_EN = false;
+  bool machineLanguages_KO = false;
+  String selectLanguage = 'JP';
+  bool startShake = false;
+  bool isAnimating = false;
+
+
   RxMap orderInfoMap = {}.obs;
-
-  late AnimationController animationController;
-  late Animation<double> animation;
-
-  final logger = Logger('CheckoutPageController');
+  String scanTextValue = '';
+  bool firstLoad = false;
+  get printerList => machineInfo.printerList;
+  get sseList => machineInfo.sseSettingList;
 
   @override
   void onInit() {
-    logger.info("CheckoutPageController new init");
-    //logger.info("localkey = $localkey");
+    debugPrint("CheckoutPageController init");
+    Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+    _getMachineLanguages();
+    if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
+      firstLoad = Get.arguments['initLaunch'] ?? false;
+    }
     super.onInit();
-    Future.delayed(const Duration(),
-        () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
-
-    _createAnimation();
   }
 
   @override
   void onReady() {
-    logger.info("CheckoutPageController onReady");
     super.onReady();
+    startRepeatingAnimation();
+    if (firstLoad) {
+      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      if (isSseEnabled) {
+        debugPrint('SSE is enabled, starting to check printer status');
+        //Future.delayed(const Duration(milliseconds: 300), () {
+        Get.dialog(
+          checkStatusCopyView(),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
+        //});
+
+      }
+    }
   }
 
   @override
   void onClose() {
     //stopRepeatingAnimation();
-    logger.info("CheckoutPageController onClose");
-    animationController.dispose();
     super.onClose();
   }
 
-  _createAnimation() {
-    logger.info("createAnimation");
+  Future<void> checkPrinterStatus() async {
+    debugPrint('checkPrinterStatus');
 
-    animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    )..repeat(reverse: true); // 循环动画，反向重复
+    checkList.clear();
+    checkList.value = printerList.map((item) {
+      return {
+        'name': item['name'],
+        'isOn': !(item['isOff'] ?? true),
+        'ip': item['printIp'] ?? '',
+        'port': item['printPort'] ?? '',
+        'isReady': false,
+        'isChecking': false,
+        'checked': false,
+      };
+    }).toList();
 
-    animation = Tween<double>(begin: 0, end: 20).animate(
-      CurvedAnimation(parent: animationController, curve: Curves.easeInOut),
-    );
+    allAreReady.value = false;
+    await Future.delayed(const Duration(milliseconds: 3000));
+    await printerCheckService.checkPrinters(checkList, (printer) {
+      int index = checkList.indexWhere((item) => item['name'] == printer['name']);
+      debugPrint('Checking printer back: ${printer['name']} isReady: ${printer['isReady']} isChecking: ${printer['isChecking']} checked: ${printer['checked']}');
+      if (index != -1) {
+        checkList[index]['isReady'] = printer['isReady'];
+        checkList[index]['isChecking'] = printer['isChecking'];
+        checkList[index]['checked'] = printer['checked'];
+      }
+      allAreReady.value = checkList.every((item) => item['checked']);
+      //if (allAreReady.value) {
+      //EasyLoading.showToast('All printers are ready');
+      //Get.back(); // Close the dialog
+      //}
+      //update();
+    });
+  }
+
+  _getMachineLanguages() async {
+    debugPrint("获取机器语言");
+    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
+    machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
+    machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
+    machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
+    machineLanguages_KO = machineInfo.supportLanguages.contains('KO');
+    debugPrint("获取机器语言结束");
+    update();
     change(null, status: RxStatus.success());
   }
 
+  void startRepeatingAnimation() {
+    debugPrint('startRepeatingAnimation');
+    isAnimating = true;
+    Timer.periodic(Duration(milliseconds: 1200), (timer) {
+      if (!isAnimating) {
+        timer.cancel();
+        return;
+      }
+      startShake = !startShake;
+      update();
+    });
+  }
 
-  showOrderEasyLoading() {
+  void stopRepeatingAnimation() {
+    debugPrint('stopRepeatingAnimation');
+    isAnimating = false;
+    startShake = false;
+    update();
+  }
+
+
+
+  showOrderEasyLoading(){
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
@@ -97,16 +183,14 @@ class CheckoutPageController extends GetxController
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             InkWell(
-              onLongPress: () {
+              onLongPress: (){
                 EasyLoading.dismiss();
               },
               child: Container(
                 //width: ScreenAdapter.width(400),
                 margin: EdgeInsets.only(top: 60),
                 height: ScreenAdapter.height(200),
-                child: Image.asset(
-                    GImage.getImageString("imgpublic", "printticketloading"),
-                    fit: BoxFit.fitHeight),
+                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
               ),
             ),
           ],
@@ -114,50 +198,25 @@ class CheckoutPageController extends GetxController
       ),
       maskType: EasyLoadingMaskType.black,
     );
+
   }
 
-  _showDialogError(msg) {
-    debugPrint("showDialogError $msg & $selectLanguage");
-    Get.dialog(DialogUtils.alertOneButton(msg,
-        title: GString.getToString(selectLanguage, "tag_title"),
-        confirmtitle: GString.getToString(selectLanguage, "tag_button_yes"),
-        contentTagImg: "error_public", confirm: () {
-      Get.back();
-    }));
-  }
 
-  _getOrderKey(qrCodeString) {
-    RegExp regExp = new RegExp(r"\?p=(.*)");
-    return regExp.stringMatch(qrCodeString).toString().substring(3);
-  }
-
-  String formatSum(int sum) {
-    final formatter = NumberFormat('#,###');
-    return formatter.format(sum);
-  }
-
-  
-
-  requestOrderList({goDetail = true}) async {
-    debugPrint('qrCodeString: ${scanQrCode2Controller.text}');
-
-    String orderKey = scanQrCode2Controller.text;
-    if (orderKey.isEmpty) return;
+  //{"msg":"success","code":200,"data":{"orderId":459105413798756352,"totalPrice":2250,"discount":0,"tableNum":"Ａ０２","machineCode":null,"orderQty":15,"orderKey":null,"language":null,"orderInfoMap":{"ミルクティー":3,"枝豆":2,"生ビール":1,"牛すじドテ焼大根日":7,"甘蘭牛肉麺":1,"コーラ":1,"アイス紅茶":1}}}
+  requestOrderList(String scanText, {goDetail = true}) async {
+    debugPrint('qrCodeString: $scanText');
+    scanTextValue = scanText;
+    String orderKey = scanText;
+    if (orderKey.isEmpty) {
+      EasyLoading.dismiss();
+      return;
+    }
 
     if (orderKey.contains('?p=') == true) {
       //正则实现截取'?p='之后的字符串
-      orderKey = _getOrderKey(scanQrCode2Controller.text);
+      orderKey = _getOrderKey(scanText);
     }
-
     debugPrint('orderKey : $orderKey');
-    // textController.text = "";
-    // focus.requestFocus();
-
-    // debugPrint('/scan-detail');
-    // Get.toNamed('/scan-detail',
-    //     arguments: {'machineCode': machineCode.value, 'orderKey': orderKey});
-
-    // return;
     var formData = {
       "orderKey": orderKey,
       "language": selectLanguage,
@@ -176,33 +235,30 @@ class CheckoutPageController extends GetxController
       if (response['code'] == 200 &&
           response["data"] != null &&
           response["data"].isNotEmpty &&
-          response["data"]["orderId"] != null) {
+          response["data"]["orderId"] != null
+      ) {
         if (response["data"]["totalPrice"] >= 0) {
-          // scanQrCodeController.text = "";
-          // scanQrCodeFocusNode.requestFocus();
+
           orderId.value = response["data"]["orderId"].toString();
-          totlaPrice.value = response["data"]["totalPrice"].toString();
+          totalPrice.value = response["data"]["totalPrice"];
+          discount.value = response["data"]["discount"];
           tableNum.value = response["data"]["tableNum"].toString();
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
 
           if (goDetail) {
             debugPrint('/scan-detail');
-            Get.toNamed('/scan-detail');
+            Get.to(()=>ScanDetailPagePage());
           } else {
+            if (Get.isRegistered<ScanDetailPageLogic>())
+              Get.find<ScanDetailPageLogic>().update();
             update();
           }
-
-          // scanQrCode2Controller.text = "";
-          // scanQrCode2FocusNode.requestFocus();
         } else {
-          scanQrCode2Controller.text = "";
-          scanQrCode2FocusNode.requestFocus();
+          _resetScanState(false);
         }
       } else {
-        scanQrCode2Controller.text = "";
-
+        _resetScanState(false);
         _showDialogError(response['msg']);
-        scanQrCode2FocusNode.requestFocus(); // 获取焦点
       }
     }).catchError((error) {
       print('webBootCalculateV2 error:${error.toString()}');
@@ -210,135 +266,50 @@ class CheckoutPageController extends GetxController
   }
 
 
-  submitOrderFlow() async {
-    if (machineInfo.isAllowCash == true && machineInfo.cashOn == false) {
-      showOrderEasyLoading();
-      bool result = await Cashchangerservice.checkMachineFlow();
-      EasyLoading.dismiss();
-      if (result) {
-        machineInfo.cashOn = true;
-        machineInfo.showCash = true;
-        update();
-      }
-    }
-    showSelectMealTypeAndPaymentMethodDialog();
+
+  _getOrderKey(qrCodeString) {
+    RegExp regExp = new RegExp(r"\?p=(.*)");
+    return regExp.stringMatch(qrCodeString).toString().substring(3);
   }
 
-  doNextPay() {
-    var _orderkey = scanQrCodeController.text; //print(_orderkey);
-    if (scanQrCodeController.text != "") {
-      //_showOrderEasyLoading();
-      if (scanQrCodeController.text.contains('?p=') == true) {
-        //正则实现截取'?p='之后的字符串
-        _orderkey = _getOrderKey(scanQrCodeController.text);
-      }
-      //自定义声音
-      //playQRScannerSound();
 
-      var formData = {"orderKey": _orderkey};
-      request('webBootCalculate', method: 'POST', parameters: formData)
-          .then((val) {
-        var response = json.decode(val.toString());
-        EasyLoading.dismiss();
-        //print(response);
-        if (response['code'] == 200 &&
-            response["data"] != null &&
-            response["data"].isNotEmpty) {
-          if (response["data"]["totalPrice"] > 0) {
-            orderId.value = response["data"]["orderId"].toString();
-            totlaPrice.value = response["data"]["totalPrice"].toString();
-            tableNum.value = response["data"]["tableNum"].toString();
-            showSelectMealTypeAndPaymentMethodDialog();
-          } else {
-            scanQrCodeController.text = "";
-            scanQrCodeFocusNode.requestFocus();
-          }
-        } else {
-          scanQrCodeController.text = "";
 
-          _showDialogError(response['msg']);
-          scanQrCodeFocusNode.requestFocus(); // 获取焦点
-        }
-      });
-    }
-  }
-
-  doNextHomePay() {
-    var _orderkey = scanQrCodeController.text; //print(_orderkey);
-    if (scanQrCodeController.text != "") {
-      //_showOrderEasyLoading();
-      if (_orderkey.contains('?p=') == true) {
-        //正则实现截取'?p='之后的字符串
-        _orderkey = _getOrderKey(scanQrCodeController.text);
-      }
-      //自定义声音
-      //playQRScannerSound();
-
-      var formData = {"orderKey": _orderkey};
-      request('webBootCalculate', method: 'POST', parameters: formData)
-          .then((val) {
-        var response = json.decode(val.toString());
-        EasyLoading.dismiss();
-        //print(response);
-        if (response['code'] == 200 &&
-            response["data"] != null &&
-            response["data"].isNotEmpty) {
-          if (response["data"]["totalPrice"] > 0) {
-            orderId.value = response["data"]["orderId"].toString();
-            totlaPrice.value = response["data"]["totalPrice"].toString();
-            tableNum.value = response["data"]["tableNum"].toString();
-            showSelectMealTypeAndPaymentMethodDialog();
-          } else {
-            scanQrCodeController.text = "";
-            scanQrCodeFocusNode.requestFocus();
-          }
-        } else {
-          scanQrCodeController.text = "";
-
-          _showDialogError(response['msg']);
-          scanQrCodeFocusNode.requestFocus(); // 获取焦点
-        }
-      });
-    }
-  }
-
-  detaiCheckPayment(iOrderId, iTotlaPrice, iTableNum) {
-    orderId.value = iOrderId;
-    totlaPrice.value = iTotlaPrice;
-    tableNum.value = iTableNum;
-    showSelectMealTypeAndPaymentMethodDialog();
+  _showDialogError(msg){
+    Get.dialog(DialogUtils.alertOneButton(msg,
+        title: GString.getToString(selectLanguage, "tag_title"),
+        confirmtitle:
+        GString.getToString(selectLanguage, "tag_button_yes"),
+        contentTagImg: "error_public", confirm: () {
+          Get.back();
+        }));
   }
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
-    debugPrint('localkey = $selectLanguage');
-    //scanQrCodeHomeFocusNode.requestFocus();
+    scanQrCodeHomeFocusNode.requestFocus();
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
-    debugPrint('showReceiptPage = ${machineInfo.showReceiptPage}');
     Get.to(
-      () => SelectPaymentPage(
-          checkLanguage: selectLanguage, //padding and need improve
-          menuCount: 0,
-          //mealType:_mealType,
-          shopCartTotalPrice: totlaPrice.value,
-          tableNum: tableNum.value,
-          onConfrimClick: () async {
-            //checkLanguage.value = "JP";
-            scanQrCodeController.text = "";
-            //scanQrCodeHomeController.text = "";
-            showOpenPayment.value = true;
-
-            goToSettlement();
-          },
-          onCancelClick: (String isBack) {
-            if (isBack == "back") {
-              scanQrCodeController.text = "";
-              //scanQrCodeHomeController.text = "";
-            }
-            scanQrCodeFocusNode.requestFocus(); // 获取焦点
-            //scanQrCodeHomeFocusNode.requestFocus(); // 获取焦点
-          }),
+          () =>
+          SelectPaymentPage(
+              checkLanguage: selectLanguage,
+              menuCount: 0,
+              shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
+              tableNum: tableNum.value,
+              onConfrimClick: () {
+                showOpenPayment.value = true;
+                machineInfo.showReceiptPage = true;
+                goToSettlement();
+              },
+              onCancelClick: (String isBack){
+                if(isBack == "back"){
+                  scanQrCodeController.text = "";
+                  scanQrCodeHomeController.text = "";
+                }
+                scanQrCodeFocusNode.requestFocus();// 获取焦点
+                scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+              }
+          ),
       transition: Transition.fadeIn,
       fullscreenDialog: true,
       opaque: false,
@@ -346,6 +317,7 @@ class CheckoutPageController extends GetxController
   }
 
   postNewOrderId({orderIdIfTakeOut = ""}) {
+
     if (orderId.value == "") {
       orderId.value = orderIdIfTakeOut;
     }
@@ -354,61 +326,107 @@ class CheckoutPageController extends GetxController
       "orderId": orderId.value,
       "machineCode": machineInfo.machineCode,
     };
-    request('webBootToPayConfirm', method: 'POST', parameters: formData)
-        .then((val) {
+    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 
-      if (response['code'] == 200 &&
-          response['data'] != null &&
-          response['data']['orderId'] != null) {
+      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
+
         orderId.value = response['data']["orderId"];
         print(orderId.value);
         //goToSettlement();
-      } else {
+      }else{
+
         //showToast(response['data']["message"]);
-        Get.dialog(DialogUtils.alertOneButton("${response['data']["message"]}",
-            title: GString.getToString(selectLanguage, "tag_title"),
-            confirmtitle: GString.getToString(selectLanguage, "tag_button_yes"),
-            confirm: () {
-          Get.back();
-        }));
+        Get.dialog(
+            DialogUtils.alertOneButton("${response['data']["message"]}",
+                title: GString.getToString(selectLanguage, "tag_title"),
+                confirmtitle: GString.getToString(selectLanguage,"tag_button_yes"),
+                confirm: () {
+                  Get.back();
+                })
+        );
       }
     });
-  }
 
-  getPosSettingInfo() async {
-    // Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    // pos_ip.value = posSettingInfo['posIp'];
-    // pos_port.value = posSettingInfo['posPort'];
-    //postNewOrderId();
-    goToSettlement();
   }
 
   goToSettlement() async {
-    scanQrCodeController.text = "";
-    //scanQrCodeHomeController.text = "";
-    final result =
-        await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": selectLanguage, //padding and need improve,
-      "orderId": orderId.value,
-      "totalPrice": totlaPrice.value,
-      "machineMode": "2",
-      "showOpenPayment": showOpenPayment.value
-    });
-    if (result == true) {
-      debugPrint('settlement back');
-      Get.back();
-      requestOrderList(goDetail: false);
-    }
+    // scanQrCodeController.text = "";
+    // scanQrCodeHomeController.text = "";
+    Get.toNamed('/settlement',preventDuplicates: false,
+        arguments: {
+          "checkLanguage": selectLanguage,
+          "machineCode": machineInfo.machineCode,
+          "orderId" : orderId.value,
+          "totalPrice" : (totalPrice.value + discount.value).toString(),
+          "machineMode":"2",
+          "showOpenPayment": showOpenPayment.value,
+          "isScanCheckOut" : true,
+        });
+    // if (result == true) {
+    //   debugPrint('---settlement back---');
+    //   if (result == true) {
+    //     debugPrint('settlement back');
+    //     Get.back();
+    //     showOrderEasyLoading();
+    //     requestOrderList(scanTextValue, goDetail: false);
+    //   }
+    // }
   }
 
-  backCheckHome() {
-    debugPrint("---backCheckHome---");
+  resetStateBack() {
+    debugPrint('settlement back');
     Get.back();
-    scanQrCodeController.text = "";
-    scanQrCodeFocusNode.requestFocus();
-    scanQrCode2Controller.text = "";
-    scanQrCode2FocusNode.requestFocus();
+    showOrderEasyLoading();
+    requestOrderList(scanTextValue, goDetail: false);
   }
+
+  backCheckHome({resetLanguage = false}) {
+
+    final reset = resetLanguage;
+    debugPrint('backCheckHome, reset:$resetLanguage');
+    if (reset)
+      selectLanguage = 'JP';
+
+    _resetScanState(resetLanguage);
+    Get.back();
+  }
+
+  _resetScanState(resetLanguage) {
+    // if (isFirstPage) {
+    //   debugPrint('isFirstPage = true');
+    //   scanQrCodeHomeController.text = "";
+    //   scanQrCodeHomeFocusNode.requestFocus();
+    //   scanQrCodeFocusNode.unfocus();
+    // } else {
+    debugPrint('isFirstPage = false');
+    scanQrCodeController.text = "";
+    scanQrCodeFocusNode.requestFocus();// 获取焦点
+    if (resetLanguage) {//返回到首页需要重置首页扫码
+      scanQrCodeHomeFocusNode.requestFocus();
+    } else {
+      scanQrCodeHomeFocusNode.unfocus();
+    }
+
+    //}
+  }
+
+  goMenu(String lan, bool mealType) {
+    machineInfo.mealType = mealType;
+    var jumpUrl = '/menu-page';
+    startShake = false;
+    Get.toNamed(jumpUrl,
+        arguments: {"checkLanguage": lan, "mealType": mealType});
+  }
+
+  updateSettingLanguage(String language) async {
+
+    selectLanguage = language;
+    var locale = Locale('${language.toLowerCase()}', '$language');
+    Get.updateLocale(locale);
+
+  }
+
+
 }

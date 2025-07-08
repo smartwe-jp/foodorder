@@ -34,6 +34,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"確  認",
         "settlement_total_price":"合計",
+        "settlement_original_price":"定価",
+        "settlement_discount":"割引",
         "settlement_small_ticket_tag":"領収書が必要ですのでこちらをご注文ください",
         //"settlement_payment_method":"以下のお支払い方法をご利用いただけます。",
         "settlement_payment_method":"現金を投入するか、QRコードをスキャンしてください。",
@@ -137,8 +139,8 @@ extension LocalizedString on String {
         "tag_checkout":"お会計",
         "order_start":"注文",
         "take_out":"持ち帰り",
-
         "pos_report_error_tips":"申し訳ございません、決済失敗ので、店員に対応を依頼してください。",
+        "pay_success_title":"お支払いが成功しました\nご利用いただきありがとうございます",
 
         "tag_cash_error":"現金機に障害が発生しております、店員にお知らせください。",
         "show_order_error":"注文に失敗しました、もう一度お試しください。",
@@ -146,6 +148,13 @@ extension LocalizedString on String {
         "settlement_order_error":"決済失敗ので、もう一度お試しください。",
 
         "checkoutScanTips": "QRコードをスキャンボックスに置いてください",
+        "cancel_button" : "キャンセル",
+        "retry_button" : "再試行",
+        "status_check" : "ステータスチェック",
+        "status_check_tips" : "プリンターのステータスを確認しています...",
+        "status_on" : "オンです",
+        "status_off" : "オフです",
+        "go_setting" : "設定へ",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -174,6 +183,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"确  认",
         "settlement_total_price":"合计",
+        "settlement_original_price":"原价",
+        "settlement_discount":"优惠",
         "settlement_small_ticket_tag":"确认领取小票",
         //"settlement_payment_method":"可以使用以下支付方法。",
         "settlement_payment_method":"请直接投入现金或扫码。",
@@ -276,14 +287,20 @@ extension LocalizedString on String {
         "take_out":"外带",
 
         "pos_report_error_tips":"非常抱歉，支付失败，请联系商家处理。",
+        "pay_success_title":"支付成功\n感谢您的使用",
 
         "tag_cash_error":"现金机出错，请联系工作人员, 谢谢！",
         "show_order_error":"下单失败，请重试。",
         "order_network_error":"网络错误，请联系工作人员。",
         "settlement_order_error":"支付失败，请重试。",
-
         "checkoutScanTips": "请将二维码放入扫码框内",
-        
+        "cancel_button" : "取消",
+        "retry_button" : "重试",
+        "status_check" : "状态检查",
+        "status_check_tips" : "正在检查打印机状态...",
+        "status_on" : "开启",
+        "status_off" : "关闭",
+        "go_setting" : "去设置",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -312,6 +329,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"Confirm",
         "settlement_total_price":"Total",
+        "settlement_original_price":"Orig",
+        "settlement_discount":"Discount",
         "settlement_small_ticket_tag":"We need a receipt, so please order us",
         //"settlement_payment_method":"Please select a payment method for your order：",
         "settlement_payment_method":"Please insert money or scan QR code.",
@@ -414,6 +433,7 @@ extension LocalizedString on String {
         "take_out":"Take Out",
 
         "pos_report_error_tips":"Payment failed. Please contact the staff!",
+        "pay_success_title":"Payment Successful\nThank you for your use",
 
         "tag_cash_error":"Cash machine error, please contact the staff, thank you!",
         "show_order_error":"Order failed, please try again.",
@@ -421,6 +441,13 @@ extension LocalizedString on String {
         "settlement_order_error":"Payment failed, please try again.",
 
         "checkoutScanTips": "Please place the QR code in the scanning box",
+        "cancel_button" : "Cancel",
+        "retry_button" : "Retry",
+        "status_check" : "Status Check",
+        "status_check_tips" : "Checking printer status...",
+        "status_on" : "On",
+        "status_off" : "Off",
+        "go_setting" : "Go to Settings",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -449,6 +476,8 @@ extension LocalizedString on String {
 
         "add_option_cart":"확인",
         "settlement_total_price":"총",
+        "settlement_original_price":"원가",
+        "settlement_discount":"할인",
         "settlement_small_ticket_tag":"영수증 확인",
         //"settlement_payment_method":"다음 지불 방법을 사용할 수 있습니다",
         "settlement_payment_method":"직접 현금을 넣거나 QR 코드를 스캔하세요.",
@@ -552,6 +581,7 @@ extension LocalizedString on String {
         "take_out":"포장",
 
         "pos_report_error_tips":"결제 실패. 직원에게 문의하세요!",
+        "pay_success_title":"결제가 성공했습니다\n이용해 주셔서 감사합니다",
 
         "tag_cash_error":"현금 결제기 오류, 직원에게 문의하십시오, 감사합니다!",
         "show_order_error":"주문 실패, 다시 시도하십시오.",
@@ -559,6 +589,13 @@ extension LocalizedString on String {
         "settlement_order_error":"결제 실패, 다시 시도하십시오.",
 
         "checkoutScanTips": "QR 코드를 스캔 상자에 놓으십시오",
+        "cancel_button" : "취소",
+        "retry_button" : "재시도",
+        "status_check" : "상태 확인",
+        "status_check_tips" : "프린터 상태를 확인하는 중...",
+        "status_on" : "켜짐",
+        "status_off" : "꺼짐",
+        "go_setting" : "설정으로 이동",
       }
       // 添加更多语言...한국말 =>  한국어
     };

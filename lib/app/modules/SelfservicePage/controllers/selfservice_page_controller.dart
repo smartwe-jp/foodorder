@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 
 import '../../../controllers/order_sql_controller.dart';

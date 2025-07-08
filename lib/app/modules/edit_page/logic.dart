@@ -3,13 +3,14 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/string.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
 import 'package:foodorder/app/widget/LoadingWidget.dart';
 import 'package:get/get.dart';
+
+import '../../controllers/machine_info.dart';
 
 class EditPageLogic extends GetxController with StateMixin {
   MachineInfoController machineInfo = Get.find();
@@ -44,7 +45,7 @@ class EditPageLogic extends GetxController with StateMixin {
 
     request('webBootStartSelling', method: 'PUT', parameters: formData)
         .then((val) {
-          EasyLoading.dismiss();
+      EasyLoading.dismiss();
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
         showToast('メニューを販売中に変更しました');
@@ -72,7 +73,7 @@ class EditPageLogic extends GetxController with StateMixin {
 
     request('webBootStopSelling', method: 'PUT', parameters: formData)
         .then((val) {
-          EasyLoading.dismiss();
+      EasyLoading.dismiss();
       var response = json.decode(val.toString());
       if (response['code'] == 200) {
         showToast('メニューを売り切れに変更しました');
@@ -174,7 +175,7 @@ class EditPageLogic extends GetxController with StateMixin {
                           child: ElevatedButton(
                             style: ElevatedButton.styleFrom(
                               padding:
-                                  const EdgeInsets.symmetric(vertical: 26.0),
+                              const EdgeInsets.symmetric(vertical: 26.0),
                             ),
                             onPressed: () {
                               if (confirm != null) {
@@ -266,8 +267,8 @@ class EditPageLogic extends GetxController with StateMixin {
               title: GString.getToString("JP", "tag_title"),
               confirmtitle: GString.getToString("JP", "tag_button_yes"),
               confirm: () {
-            Get.back();
-          }));
+                Get.back();
+              }));
           return;
         }
         var firstCategory = '';
@@ -290,8 +291,8 @@ class EditPageLogic extends GetxController with StateMixin {
             title: GString.getToString("JP", "tag_title"),
             confirmtitle: GString.getToString("JP", "tag_button_yes"),
             confirm: () {
-          Get.back();
-        }));
+              Get.back();
+            }));
         return;
       }
     }).catchError((e) {
@@ -342,8 +343,8 @@ class EditPageLogic extends GetxController with StateMixin {
               title: GString.getToString('JP', "tag_title"),
               confirmtitle: GString.getToString('JP', "tag_button_yes"),
               confirm: () {
-            Get.back();
-          }));
+                Get.back();
+              }));
           return;
         }
 
@@ -356,8 +357,8 @@ class EditPageLogic extends GetxController with StateMixin {
             title: GString.getToString('JP', "tag_title"),
             confirmtitle: GString.getToString('JP', "tag_button_yes"),
             confirm: () {
-          Get.back();
-        }));
+              Get.back();
+            }));
         return;
       }
     }).catchError((e) {

@@ -61,7 +61,7 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
     });
     _posIp = widget.posIp!;
     _posPort = widget.posPort!;
-    _showRadio = widget.showRadio!;
+    _showRadio = widget.showRadio ?? 0;
     if(_showRadio == 1){
       _showPrintType = widget.showPrintType!;
     }
@@ -161,56 +161,6 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
 
                   ],
                 ),
-                /*SizedBox(height: ScreenAdapter.height(15),),
-                if(_showRadio == 1)// 简易选择项
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Container(
-                      //height: ScreenAdapter.height(90),
-                      child: Text("Receipt",style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(30),
-                        fontWeight: FontWeight.w600,
-                      )),
-                    ),
-                    Transform.scale(
-                      scale: 1.5,
-                      child: Radio(
-                        // 按钮的值
-                        value: 0,
-                        // 改变事件
-                        onChanged: (value){
-                          setState(() {
-                            this._showPrintType = value;
-                          });
-                        },
-                        // 按钮组的值
-                        groupValue:this._showPrintType ,
-                      ),
-                    ),
-
-                    SizedBox(width: 40,),
-                    Container(
-                      //height: ScreenAdapter.height(90),
-                      child: Text("Label",style: TextStyle(
-                        fontSize: ScreenAdapter.fontSize(30),
-                        fontWeight: FontWeight.w600,
-                      )),
-                    ),
-                    Transform.scale(
-                      scale: 1.5,
-                      child: Radio(
-                        value:1,
-                        onChanged: (value){
-                          setState(() {
-                            this._showPrintType = value;
-                          });
-                        },
-                        groupValue: this._showPrintType,
-                      ),
-                    ),
-                  ],
-                ),*/
                 SizedBox(height: ScreenAdapter.height(20),),
 
                 CustomKeyboard(onKeyPressed: handleKeyPress),
@@ -238,8 +188,8 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                     ),
                     onPressed: () async {
                       try {
-                        _posIp = _tcpposIpController!.text;
-                        _posPort = _tcpposPortController!.text;
+                        _posIp = _tcpposIpController?.text ?? "";
+                        _posPort = _tcpposPortController?.text ?? "";
                         print(_posIp);
                         print(_posPort);
                         if(_posIp != "" && _posPort != ""){
@@ -249,6 +199,147 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
 
                       } catch (_) {}
 
+                    },
+                  ),
+                ),
+
+              ],
+            ),
+          ),
+        )
+      ],
+    );
+  }
+}
+
+class SimpleInputAlert extends StatefulWidget {
+
+  SimpleInputAlert(
+      {Key? key,
+        this.originValue = "",
+        this.title = "IPアドレスの設定",
+        this.onConfirmClick
+      }) : super(key: key);
+  final String originValue;
+  final String title;
+  final Function(String)? onConfirmClick;
+
+  @override
+  _SimpleInputAlertState createState() => _SimpleInputAlertState();
+}
+
+class _SimpleInputAlertState extends State<SimpleInputAlert> {
+  TextEditingController _textController = TextEditingController();
+
+  final FocusNode focusNode1 = FocusNode();
+
+  late String _inputValue;
+
+  @override
+  void initState() {
+    _inputValue = widget.originValue;
+    _textController.text = widget.originValue;
+    super.initState();
+  }
+
+  void handleKeyPress(String key) {
+
+    if (key == '削除') {
+      if (_textController.text.isNotEmpty) {
+        _textController.text = _textController.text.substring(
+            0, _textController.text.length - 1
+        );
+        setState(() {
+          _inputValue = _textController.text;
+        });
+      }
+    } else {
+      _textController.text = _textController.text + key;
+      setState(() {
+        _inputValue = _textController.text;
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SimpleDialog(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(10),
+      ),
+      children: [
+        Container(
+          alignment: Alignment.center,
+          color: Colors.white,
+          width: ScreenAdapter.width(550),
+          //height: ScreenAdapter.height(450),
+          padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(20)),
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Container(
+                  //height: ScreenAdapter.height(90),
+                  child: Text(widget.title,style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(30),
+                    fontFamily: GFont.getFontFamily(),
+                    fontWeight: FontWeight.w600,
+                  )),
+                ),
+                SizedBox(height: ScreenAdapter.height(40),),
+                Row(
+                  children: [
+                    Expanded(
+                        child: Container(
+                          height: 50,
+                          padding: EdgeInsets.all(5),
+                          child: TextField(
+                            focusNode: focusNode1,
+                            keyboardType: TextInputType.number,
+                            controller: _textController,
+                            onChanged: (value) {
+                              setState(() {
+                                _inputValue = value;
+                              });
+                            },
+                            //decoration: InputDecoration(hintText: "IPアドレス"),
+                            style: TextStyle(fontSize: ScreenAdapter.fontSize(30.0),fontFamily: GFont.getFontFamily(),),
+                          ),
+                        )),
+
+                  ],
+                ),
+                SizedBox(height: ScreenAdapter.height(20),),
+
+                CustomKeyboard(onKeyPressed: handleKeyPress),
+
+                SizedBox(height: ScreenAdapter.height(20),),
+
+                Container(
+                  alignment: Alignment.center,
+                  width: ScreenAdapter.width(180),
+                  height: ScreenAdapter.height(85),
+                  margin: EdgeInsets.only(top: ScreenAdapter.height(35)),
+                  decoration: BoxDecoration(
+
+                    color: ColorsUtil.hexToColor("#409eff"),
+                    //设置圆角
+                    borderRadius: new BorderRadius.circular((16.0)),
+                  ),
+                  child: TextButton(
+                    child: Text(
+                      "はい",
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontFamily: GFont.getFontFamily(),
+                          fontSize: ScreenAdapter.fontSize(32.0)),
+                    ),
+                    onPressed: () async {
+                        if(_inputValue.isNotEmpty){
+                          widget.onConfirmClick!(_inputValue);
+                          Navigator.pop(context);
+                        }
                     },
                   ),
                 ),

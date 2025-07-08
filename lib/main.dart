@@ -18,39 +18,46 @@ import 'package:logging/logging.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
+
+
+import 'app/app_binding/app_bindings.dart';
 import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
+
+import 'package:firebase_core/firebase_core.dart';
+import 'app/services/ResetToHomeTimer.dart';
+
 import 'firebase_options.dart';
 
 //打印图层生成成功
-Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
+Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
   //final imageBytes = imgdata.data;
-  final printTask = imgdata.taskItem;
+    final printTask = imgData.taskItem;
 
   //指定的打印机
-  final printerInfo = printTask.params as PrinterInfo;
-  print('printerInfo: $printerInfo');
-  //打印票据类型（标签、小票）
-  final printTypeEnum = printTask.printTypeEnum;
+    final printerInfo = printTask.params as PrinterInfo;
+    print('printerInfo: $printerInfo');
+    //打印票据类型（标签、小票）
+    final printTypeEnum = printTask.printTypeEnum;
 
-  final imageBytes =
-      await imgdata.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
-  //也可以使用 ImageByteFormat.png
-  final argbWidth = imgdata.imageWidth;
-  final argbHeight = imgdata.imageHeight;
-  if (imageBytes == null) {
-    return;
-  }
-  if (imageBytes != null) {
+    final imageBytes =
+        await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
+    //也可以使用 ImageByteFormat.png
+    final argbWidth = imgData.imageWidth;
+    final argbHeight = imgData.imageHeight;
+    if (imageBytes == null) {
+      return;
+    }
+
     var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
-      printType: printTypeEnum,
-      argbWidthPx: argbWidth,
-      argbHeightPx: argbHeight,
-    );
+    imgData: imageBytes,
+    printType: printTypeEnum,
+    argbWidthPx: argbWidth,
+    argbHeightPx: argbHeight,
+  );
 
     if (printerInfo.isUsbPrinter) {
       // usb 打印
@@ -67,7 +74,6 @@ Future<void> _onPictureGenerated(PicGenerateResult imgdata) async {
     // final conn = printerPlus.NetConn(printerInfo.ip!);
     // conn.writeMultiBytes(printData);
   }
-}
 
 void main() {
   runZonedGuarded(() async {
@@ -110,6 +116,7 @@ void main() {
                     fallbackLocale: Locale('jp', 'JP'), // 备用语言
                     defaultTransition: Transition.fadeIn,
                     getPages: AppPages.routes,
+                    initialBinding: AppBindings(),
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE ||
@@ -117,6 +124,7 @@ void main() {
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||
                           value?.current == Routes.SCAN_DETAIL
                           ) {
+
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ORDER_HOME ||
                           value?.current == Routes.SETTLEMENT ||
@@ -133,12 +141,14 @@ void main() {
                       );
                     },
                   ));
+
         },
         child: Scaffold(
           body: PrintImageGenerateWidget(
             contentBuilder: (context) {
               return HomeView();
               //return WindewsTestView();
+
             },
             onPictureGenerated: _onPictureGenerated,
           ),

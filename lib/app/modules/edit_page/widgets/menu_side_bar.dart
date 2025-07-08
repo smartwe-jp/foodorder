@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
@@ -46,19 +47,31 @@ class MenuSideBar extends StatelessWidget {
       ),
       Container(
           margin: EdgeInsets.only(left: 30.dp, right: 50.dp),
-          child: ElevatedButton(
+          child:
+          ElevatedButton(
               onPressed: () {
                 Get.back();
               },
-              child: Text(
-                '戻る',
-                style: 
-                TextStyle(
-                  fontFamily: GFont.getFontFamily(),
-                  fontSize: 36,
-                  fontWeight: FontWeight.w500,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor), // 暗绿色背景
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10), // 圆角 10
                 ),
-              ))),
+              ),
+              child: Container(
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(vertical: 10.dp, horizontal: 20.dp),
+                child: Text(
+                  '戻る',
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: 36,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              )
+          )
+      ),
       SizedBox(
         height: 30.dp,
       )
@@ -66,26 +79,28 @@ class MenuSideBar extends StatelessWidget {
   }
 
   Widget _buildItemDesc(MenuSidebarItemInfo subItem) {
-    return Container(
-      margin: EdgeInsets.only(left: 10.dp),
-      child: GetBuilder<EditPageLogic>(
-        builder: (logic) {
-          return Container(
-            alignment: Alignment.centerLeft,
-            child: AutoSizeText(
-              subItem.title,
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: subItem.isSelected ? Colors.white : Colors.grey[700],
-                fontWeight: FontWeight.w600,
-                fontFamily: GFont.getFontFamily(),
-                fontSize: 30,
+    return Expanded(
+      child: Container(
+        margin: EdgeInsets.only(left: 10.dp),
+        child: GetBuilder<EditPageLogic>(
+          builder: (logic) {
+            return Container(
+              alignment: Alignment.centerLeft,
+              child: AutoSizeText(
+                subItem.title,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: subItem.isSelected ? Colors.white : Colors.grey[700],
+                  fontWeight: FontWeight.w600,
+                  fontFamily: GFont.getFontFamily(),
+                  fontSize: 30,
+                ),
               ),
-            ),
-          );
-        },
+            );
+          },
+        ),
       ),
     );
   }
@@ -145,7 +160,7 @@ class MenuSideBar extends StatelessWidget {
 
   Widget _buildSideBar(MenuSidebarInfo? info,
       {required List<Widget> Function(MenuSidebarItemInfo itemInfo)
-          subBuilder}) {
+      subBuilder}) {
     return Column(
       children: List.generate(info?.sidebarItemList.length ?? 0, (index) {
         return InkWell(
@@ -384,11 +399,11 @@ class UiUtil {
   double setSp(num fontSize, {bool? allowFontScalingSelf}) =>
       allowFontScalingSelf == null
           ? (_allowFontScaling
-              ? (fontSize * scaleText) * _textScaleFactor
-              : (fontSize * scaleText))
+          ? (fontSize * scaleText) * _textScaleFactor
+          : (fontSize * scaleText))
           : (allowFontScalingSelf
-              ? (fontSize * scaleText) * _textScaleFactor
-              : (fontSize * scaleText));
+          ? (fontSize * scaleText) * _textScaleFactor
+          : (fontSize * scaleText));
 }
 
 class CustomSingleChildScrollView extends StatelessWidget {
@@ -412,7 +427,7 @@ class CustomSingleChildScrollView extends StatelessWidget {
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
   Set<PointerDeviceKind> get dragDevices => {
-        PointerDeviceKind.touch,
-        PointerDeviceKind.mouse,
-      };
+    PointerDeviceKind.touch,
+    PointerDeviceKind.mouse,
+  };
 }

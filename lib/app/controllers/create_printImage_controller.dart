@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:foodorder/app/config/printer_info.dart';
@@ -7,18 +8,26 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
-import 'package:barcode_widget/barcode_widget.dart';
+//import 'package:barcode_widget/barcode_widget.dart';
 
 import '../config/colorsUtil.dart';
+import '../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import '../services/HomeServices.dart';
 import '../services/ScreenAdapter.dart';
 import '../services/formatMoney.dart';
+import 'app_config.dart';
+import 'machine_info.dart';
 
 class CreatePrintImageController extends GetxController {
+
   RxString machineCode = "".obs;
   RxString machineMode = "1".obs;
   RxString printLogoImage = "".obs;
   RxMap usbDevice = {}.obs;
+
+  MachineInfoController machineInfo = Get.find();
+  AppConfig appConfig = Get.find();
+  double get printWidth => appConfig.isAndroid11 ? 513:385;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -48,9 +57,9 @@ class CreatePrintImageController extends GetxController {
   );
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
-    _getPrintLogoImageData();
+    //_getPrintLogoImageData();
   }
 
   _getPrintLogoImageData() async {
@@ -96,7 +105,32 @@ class CreatePrintImageController extends GetxController {
   tpPrintnew(print_paper_txt_size, printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
-    var categoryVos = printData["printInfoListStruct"];
+// <<<<<<< HEAD
+//     var categoryVos = printData["printInfoListStruct"];
+// =======
+    List categoryVos = [];
+
+    // 现在printInfoListStruct没有提供值了，换成了 printInfo 内的 orderLinesMap
+    // 提取 orderLinesMap 中的菜品信息转换成原来的 categoryVos 格式
+    if (printData["printInfo"] != null) {
+      var orderLinesMap = printData["printInfo"]["orderLinesMap"];
+      if (orderLinesMap != null && orderLinesMap.isNotEmpty) {
+        categoryVos = [];
+        for (var key in orderLinesMap.keys) {
+          final items = orderLinesMap[key];
+          if (items != null && items.isNotEmpty) {
+            for (var item in items) {
+              categoryVos.add({
+                "mainTitle": item["name"],
+                "qty": item["qty"],
+                "optionVoListMsgMap": item["options"] ?? {},
+              });
+            }
+          }
+        }
+      }
+    }
+
     if (categoryVos == null || categoryVos.length == 0) {
       tpPrintReceipt(print_paper_txt_size, printData);
       return;
@@ -131,7 +165,7 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("$takeoutTag${printData["numberTip"]}",
                 style: TextStyle(
-                  fontSize: print_menu_txt_size,
+                  fontSize: 34,
                   fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -145,7 +179,7 @@ class CreatePrintImageController extends GetxController {
             textDirection: TextDirection.ltr,
             child: Text("${printData["serialNumber"]}",
                 style: TextStyle(
-                  fontSize: print_menu_txt_size,
+                  fontSize: 34,
                   fontFamily: 'NotoSansJP',
                   fontWeight: FontWeight.w500,
                   color: ColorsUtil.hexToColor("#000000"),
@@ -181,6 +215,9 @@ class CreatePrintImageController extends GetxController {
           var optionNameLength = value[0].length;
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0; //optionLine.ceil();
+          //value[0] 为Map{name: "optionName", qty: 1} 的形式
+          final qtyString = (value[0]["qty"] ?? 1) > 1 ? " ×${value[0]["qty"]}" : "";
+          final optionString = (value[0]["name"] ?? "") + qtyString;
 
           //处理option 开始-----------
           if ((key.length + value[0].length) > (wrapNum - 2)) {
@@ -224,7 +261,7 @@ class CreatePrintImageController extends GetxController {
                 Container(
                   padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                   child: Row(
-                    mainAxisAlignment: (value[0].length > (wrapNum - 2))
+                    mainAxisAlignment: (optionString.length > (wrapNum - 2))
                         ? MainAxisAlignment.start
                         : MainAxisAlignment.end,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -233,9 +270,9 @@ class CreatePrintImageController extends GetxController {
                       Directionality(
                           textDirection: TextDirection.ltr,
                           child: Expanded(
-                            child: Text("${value[0]}",
+                            child: Text(optionString,
                                 softWrap: true,
-                                textAlign: (value[0].length > (wrapNum - 2))
+                                textAlign: (optionString.length > (wrapNum - 2))
                                     ? TextAlign.left
                                     : TextAlign.right,
                                 style: TextStyle(
@@ -273,7 +310,7 @@ class CreatePrintImageController extends GetxController {
                           ))),
                   Directionality(
                       textDirection: TextDirection.rtl,
-                      child: Text("${value[0]}",
+                      child: Text(optionString,
                           softWrap: true,
                           textAlign: TextAlign.right,
                           style: TextStyle(
@@ -292,23 +329,25 @@ class CreatePrintImageController extends GetxController {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
-              newOptionSonLine += value[j].length / (wrapNum - 2);
+              final qtyString = (value[j]["qty"] ?? 1) > 1 ? " ×${value[j]["qty"]}" : "";
+              final optionString = (value[j]["name"] ?? "") + qtyString;
+              newOptionSonLine += optionString.length / (wrapNum - 2);
               var oneOptionlength = 0.0;
-              oneOptionlength = value[j].length / (wrapNum - 2);
+              oneOptionlength = optionString.length / (wrapNum - 2);
               countLine += oneOptionlength.ceil();
 
               optionSons.add(Container(
                 padding: EdgeInsets.only(left: ScreenAdapter.width(50)),
                 child: Row(
-                  mainAxisAlignment: (value[j].length > (wrapNum - 2))
+                  mainAxisAlignment: (optionString.length > (wrapNum - 2))
                       ? MainAxisAlignment.start
                       : MainAxisAlignment.end,
                   textDirection: TextDirection.ltr,
                   children: [
                     Expanded(
-                        child: Text("${value[j]}",
+                        child: Text(optionString,
                             textDirection: TextDirection.ltr,
-                            textAlign: (value[j].length > (wrapNum - 2))
+                            textAlign: (optionString.length > (wrapNum - 2))
                                 ? TextAlign.left
                                 : TextAlign.right,
                             style: TextStyle(
@@ -317,7 +356,9 @@ class CreatePrintImageController extends GetxController {
                               fontFamily: 'NotoSansJP',
                               color: ColorsUtil.hexToColor("#000000"),
                               //fontWeight: FontWeight.w600
-                            ))),
+                            )
+                        )
+                    ),
                   ],
                 ),
               ));
@@ -348,8 +389,8 @@ class CreatePrintImageController extends GetxController {
       }
 
       //分割线
-      if (machineMode.value == "1" || machineMode.value == "3") {
-        addRowHight += 20;
+      if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
+        addRowHight += 40;
         categoryMenus.add(
           _publicSplitLine(),
         );
@@ -433,7 +474,36 @@ class CreatePrintImageController extends GetxController {
 
   tpPrintReceipt(print_paper_txt_size, printData) async {
     List<Widget> categoryMenus = [];
-    var menuVos = printData["details"];
+
+    debugPrint('printData:$printData');
+    int discount = printData["discount"] ?? 0;
+    int finalPrice = int.parse(printData["price"] ?? '0');
+    int originalPrice = finalPrice + discount;
+
+    var menuVos = printData["details"] ?? [];
+    // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
+    // 提取 orderLinesMap 中的菜品信息转换成原来的 menuVos 格式
+    if (printData["printInfo"] != null) {
+      var orderLinesMap = printData["printInfo"]["orderLinesMap"];
+      if (orderLinesMap != null && orderLinesMap.isNotEmpty) {
+        menuVos = [];
+        for (var key in orderLinesMap.keys) {
+          final items = orderLinesMap[key];
+          if (items != null && items.isNotEmpty) {
+            for (var item in items) {
+              menuVos.add({
+                "menuName": item["name"],
+                "menuQty": item["qty"],
+                "price": item["price"] ?? 0,
+              });
+            }
+          }
+        }
+      }
+    }
+
+
+
     var lineHight = 580;
     var lineZeng = 0;
     int addRowHight = 0;
@@ -481,7 +551,7 @@ class CreatePrintImageController extends GetxController {
             style: printMenuFont,
           )),
     ));
-    if (machineMode.value == "1" || machineMode.value == "3") {
+    if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
       addRowHight += 38;
       categoryMenus.add(_publicOneColumnTxtNew(
           "${printData["numberTip"]}${printData["serialNumber"]}",
@@ -530,8 +600,8 @@ class CreatePrintImageController extends GetxController {
 
       // 计算菜品标题长度
       var groupNameLength = lineVosList["menuName"].length;
-      var menuLine = groupNameLength / 10;
-      var menuRowNum = menuLine.ceil();
+      //var menuLine = groupNameLength / 10;
+      //var menuRowNum = menuLine.ceil();
       //linNum+=menuRowNum;
       var takeoutTag = (printData["takeOut"] == true) ? "*" : "";
       if (groupNameLength > 10) {
@@ -556,6 +626,9 @@ class CreatePrintImageController extends GetxController {
                             child: Expanded(
                               child: Text(
                                 "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
+// =======
+//                                 "${lineVosList["menuName"]}",
+// >>>>>>> 2.7.0-dev
                                 overflow: TextOverflow.ellipsis,
                                 maxLines: 2,
                                 style: printMenuFont,
@@ -639,6 +712,7 @@ class CreatePrintImageController extends GetxController {
                         textDirection: TextDirection.ltr,
                         child: Expanded(
                           child: Text(
+//<<<<<<< HEAD
                             "${lineVosList["menuName"] + takeoutTag + ' x' + lineVosList["menuQty"]}",
                             style: printMenuFont,
                           ),
@@ -656,16 +730,39 @@ class CreatePrintImageController extends GetxController {
                     SizedBox(
                       width: ScreenAdapter.width(30),
                     ),
+// =======
+//                             "${lineVosList["menuName"]}${takeoutTag}",
+//                             style: printMenuFont,
+//                           ),
+//                         )),
+// >>>>>>> 2.7.0-dev
                     Directionality(
                         textDirection: TextDirection.ltr,
                         child: Container(
                           //width: ScreenAdapter.width(105),
                           alignment: Alignment.centerRight,
                           child: Text(
+//<<<<<<< HEAD
                             "￥${formatMoney(lineVosList["price"])}",
                             style: printMenuFont,
                           ),
                         )),
+// =======
+//                             "${lineVosList["menuQty"]}",
+//                             style: printMenuFont,
+//                           ),
+//                         )),
+//                     Directionality(
+//                         textDirection: TextDirection.ltr,
+//                         child: Container(
+//                           width: ScreenAdapter.width(105),
+//                           alignment: Alignment.centerRight,
+//                           child: Text(
+//                             "￥${formatMoney(lineVosList["price"])}",
+//                             style: printMenuFont,
+//                           ),
+//                         )),
+// >>>>>>> 2.7.0-dev
                   ],
                 ),
               )),
@@ -673,11 +770,47 @@ class CreatePrintImageController extends GetxController {
       }
     }
     //print("总行数${menuNum}");
+
     addRowHight += 15;
     categoryMenus.add(SizedBox(
       height: 10,
     ));
 //合计
+    //原价
+
+    SizedBox(
+      height: 10,
+    );
+    categoryMenus.add(
+      _publicSplitLine(),
+    );
+
+    if (discount != 0)
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "定価",
+            26.0,
+            FontWeight.w200,
+            "${formatMoney(originalPrice)}",
+            26.0,
+            FontWeight.w200,
+            true),
+      );
+
+
+    if (discount != 0)
+      categoryMenus.add(
+        _publicTwoColumnsTxtNew(
+            "割引",
+            26.0,
+            FontWeight.w200,
+            "${formatMoney(discount)}",
+            26.0,
+            FontWeight.w200,
+            true),
+      );
+
+
     categoryMenus.add(
       Directionality(
           textDirection: TextDirection.ltr,
@@ -693,7 +826,12 @@ class CreatePrintImageController extends GetxController {
                     child: Expanded(
                       child: Text(
                         "合計",
-                        style: printMenu2Font,
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          color: Colors.black,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     )),
                 Directionality(
@@ -702,8 +840,13 @@ class CreatePrintImageController extends GetxController {
                       //width: ScreenAdapter.width(130),
                       alignment: Alignment.centerRight,
                       child: Text(
-                        "￥${formatMoney(printData["price"])}",
-                        style: printMenuFont,
+                        "￥${formatMoney(finalPrice)}",
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          color: Colors.black,
+                          fontSize: 26,
+                          fontWeight: FontWeight.w300,
+                        ),
                       ),
                     )),
               ],
@@ -725,7 +868,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == true)
-                ? "${formatMoney(printData["price"])}"
+                ? "${formatMoney(finalPrice)}"
                 : "0",
             24.0,
             FontWeight.w100,
@@ -752,7 +895,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == false)
-                ? "${formatMoney(printData["price"])}"
+                ? "${formatMoney(finalPrice)}"
                 : "0",
             24.0,
             FontWeight.w100,
@@ -883,7 +1026,7 @@ class CreatePrintImageController extends GetxController {
     categoryMenus
         .add(_publicOneColumnTxtNew("お明細は上記のとおりです。", 26.0, FontWeight.w100));
 
-    var totalHight = lineZeng + lineHight + addRowHight;
+    var totalHight = lineZeng + lineHight + addRowHight + 180;
 
     // ByteData byteData = await WidgetToImage.widgetToImage(Container(
     //   width: 385,
@@ -945,9 +1088,58 @@ class CreatePrintImageController extends GetxController {
     //});
   }
 
+  Future<void> ensureImageLoaded(String imageUrl) async {
+    if (imageUrl.isEmpty) return;
+
+    final provider = CachedNetworkImageProvider(imageUrl);
+    final config = ImageConfiguration.empty;
+    final Completer<void> completer = Completer<void>();
+
+    provider.resolve(config).addListener(
+      ImageStreamListener(
+            (ImageInfo image, bool synchronousCall) {
+          if (!completer.isCompleted) {
+            completer.complete();
+          }
+        },
+        onError: (Object error, StackTrace? stackTrace) {
+          if (!completer.isCompleted) {
+            completer.completeError(error);
+          }
+        },
+      ),
+    );
+
+    await completer.future;
+  }
+
+  _showAndPrint(String imageData, Widget widget) {
+    Get.dialog(Container(
+      child: Column(
+        children: [
+          widget,
+          SizedBox(
+            height: 20,
+          ),
+          ElevatedButton(
+              onPressed: () async {
+                await FlutterPluginMsprinter.sendPrintImgNew(
+                    imageData, "1", "1", "");
+                Future.delayed(Duration(milliseconds: 300), () async {
+                  await FlutterPluginMsprinter.sendPrintCut("1");
+                });
+                Get.back();
+                Get.back();
+              },
+              child: Text('Print')),
+        ],
+      ),
+    ));
+  }
+
   //后续会移除该判断 直接返回true即可
   bool hidePrintTax() {
-    if (machineCode.value == "Gtf2AnqKxZJUH6jP93") {
+    if (machineInfo.machineCode == "Gtf2AnqKxZJUH6jP93") {
       return true;
     }
     return false;
@@ -1112,7 +1304,6 @@ class CreatePrintImageController extends GetxController {
           margin: EdgeInsets.only(top: 5, bottom: 5),
           height: 2,
           color: ColorsUtil.hexToColor("#000000"),
-          //width: 375,
         ));
   }
 }

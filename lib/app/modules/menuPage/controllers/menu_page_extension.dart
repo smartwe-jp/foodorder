@@ -5,13 +5,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
-import 'package:foodorder/app/modules/menuPage/views/components/GridItemView.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
-extension MenuPageControllerExtension on MenuPageController {
+import '../views/widgets/grid_item_view.dart';
 
+extension MenuPageControllerExtension on MenuPageController {
   void restoreNavigationStatus(String tag, int page) {
     selectIndex = page;
     classTag.value = tag;
@@ -24,7 +24,7 @@ extension MenuPageControllerExtension on MenuPageController {
     //   }
     // }
 
-    update();
+    update(['side_bar']);
   }
 
   _updateOptionsInfo(List menuList) {
@@ -64,19 +64,19 @@ extension MenuPageControllerExtension on MenuPageController {
             }
           }
           //需要创建的小组件
-          menuOption[menuVoList['menuCode']] = attr;
-          noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
-          initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
-          selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
-          selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
+          // menuOption[menuVoList['menuCode']] = attr;
+          // noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
+          // initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
+          // selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+          // selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
           attr = [];
           tempArr = [];
           checkNum = 0;
         }
-        selectedMenuOptionChangePrice[menuVoList['menuCode']] =
-            menuVoList['currentPrice'];
-        addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
-            _addOptionPrice;
+        // selectedMenuOptionChangePrice[menuVoList['menuCode']] =
+        // menuVoList['currentPrice'];
+        // addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
+        //     _addOptionPrice;
       }
     }
   }
@@ -89,13 +89,14 @@ extension MenuPageControllerExtension on MenuPageController {
     return children;
   }
 
-  Future<Widget?> getCategoryMenu(queryCategoryCode,
+  Future<Widget?> getCategoryMenu(
       {firstLoad = false}) async {
-    debugPrint("getCategoryMenu:${queryCategoryCode}");
+
+    debugPrint("getCategoryMenu:${classTag.value}");
     Widget? menuWidget = null;
     var queryTakeout = "2";
     //queryTakeout 0外卖 1都可 2店内
-    switch (machinInfo.diningType) {
+    switch (machineInfo.diningType) {
       case "1":
         queryTakeout = "2";
         break;
@@ -103,7 +104,7 @@ extension MenuPageControllerExtension on MenuPageController {
         queryTakeout = "0";
         break;
       case "3":
-        if (machinInfo.mealType == true) {
+        if (machineInfo.mealType == true) {
           queryTakeout = "0";
         } else {
           queryTakeout = "2";
@@ -113,25 +114,26 @@ extension MenuPageControllerExtension on MenuPageController {
         queryTakeout = "2";
     }
     var formData = {
-      "machineCode": machinInfo.machineCode,
+      "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
       "takeout": queryTakeout,
-      "categoryCode": queryCategoryCode
+      "categoryCode": classTag.value
     };
     debugPrint("formData:${formData}");
 
     try {
       final val = await request('webBootIndexMenuv3',
-              method: 'POST', parameters: formData)
+          method: 'POST', parameters: formData)
           .timeout(const Duration(seconds: 15));
       var response = json.decode(val.toString());
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        showItem[queryCategoryCode] = response['data'];
+        showItem[classTag.value] = response['data'];
         _updateOptionsInfo(response['data']);
         menuWidget = showMiddleMenuList(Get.context!);
       }
+
     } on TimeoutException catch (e) {
       debugPrint('TimeoutException:${e.toString()}');
     } catch (e) {
@@ -144,7 +146,8 @@ extension MenuPageControllerExtension on MenuPageController {
     if (url == null || url.isEmpty) {
       return AssetImage('assets/images/public/food.png');
     }
-    return CachedNetworkImageProvider(url);
+    return CachedNetworkImageProvider(url, cacheManager: customCacheManager);
+
   }
 
   menuItemView(item, context, {popupType: "old", aspectRatio: 1.0}) {
@@ -152,7 +155,6 @@ extension MenuPageControllerExtension on MenuPageController {
     return GridItemView(
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
-      originalPrice: "${item['price'] ?? item['currentPrice']}",
       price: "${item['currentPrice']}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
@@ -192,59 +194,59 @@ extension MenuPageControllerExtension on MenuPageController {
   showMiddleMenuList(BuildContext context) {
     for (var item in topMenu) {
       if (classTag.value == item['categoryCode']) {
-        if (item['showType'] == "featured") {                        //保留
-          return showCategoryOne(showItem[classTag.value], context); 
-        } else if (item['showType'] == "table") {                    //保留
+        if (item['showType'] == "featured") {
+          return showCategoryOne(showItem[classTag.value], context);
+        } else if (item['showType'] == "table") {
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context); 
+          return showCategoryTwo(showItem[classTag.value], context);
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "table_v1") {                 //保留
+        } else if (item['showType'] == "table_v1") {
           //350.0, 350.0
-          return showCategoryTwo(showItem[classTag.value], context,  
+          return showCategoryTwo(showItem[classTag.value], context,
               popupType: "v1");
           //return _showCategoryEight(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "block") {                    //保留
+        } else if (item['showType'] == "block") {
           //350.0, 350.0
-          return showCategoryThree(showItem[classTag.value]);           
-        } else if (item['showType'] == "grid") {                    //4列显示单个Item略小，不适合当前布局。所以替换成两列。
+          return showCategoryThree(showItem[classTag.value]);
+        } else if (item['showType'] == "grid") {
           //260.0, 400.0
           return showCategoryFour(showItem[classTag.value], context);
-        } else if (item['showType'] == "grid_v1") {                  //4列显示单个Item略小，不适合当前布局。所以替换成两列。
+        } else if (item['showType'] == "grid_v1") {
           //260.0, 400.0
           return showCategoryFour(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "waterfall") {                //保留
+        } else if (item['showType'] == "waterfall") {
           //400.0, 260.0
           return showCategoryFive(showItem[classTag.value]);
-        } else if (item['showType'] == "double_column") {            //已替换成两列普通
+        } else if (item['showType'] == "double_column") {
           //530.0, 530.0
           return showCategorySix(showItem[classTag.value], context);
-        } else if (item['showType'] == "double_column_v1") {          //已替换成两列普通
+        } else if (item['showType'] == "double_column_v1") {
           //530.0, 530.0
           return showCategorySix(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "three_column") {              //保留
+        } else if (item['showType'] == "three_column") {
           //350.0, 440.0
           return showCategorySeven(showItem[classTag.value], context);
-        } else if (item['showType'] == "three_column_v1") {            //保留
+        } else if (item['showType'] == "three_column_v1") {
           //350.0, 440.0
           return showCategorySeven(showItem[classTag.value], context,
               popupType: "v1");
-        } else if (item['showType'] == "mixed_column") {               //保留
+        } else if (item['showType'] == "mixed_column") {
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
           return showCategoryEight(showItem[classTag.value], context);
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "mixed_column_v1") {             //保留
+        } else if (item['showType'] == "mixed_column_v1") {
           //混合模式 底部一行3列710.0, 710.0 350.0, 310.0 350.0, 350.0
           return showCategoryEight(showItem[classTag.value], context,
               popupType: "v1");
           //return _showCategoryNine(controller.showItem.value[controller.classTag.value]);
-        } else if (item['showType'] == "mixed_two_column") {           //保留
+        } else if (item['showType'] == "mixed_two_column") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context);
-        } else if (item['showType'] == "mixed_two_column_v1") {        //保留
+          return showCategorySix(showItem[classTag.value], context);
+        } else if (item['showType'] == "mixed_two_column_v1") {
           //混合模式 底部一行2列 710.0, 710.0 350.0, 310.0 530.0, 530.0
-          return showCategoryNine(showItem[classTag.value], context,
+          return showCategorySix(showItem[classTag.value], context,
               popupType: "v1");
         } else {
           return showCategoryTwo(showItem[classTag.value], context);

@@ -5,7 +5,8 @@ import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/controllers/machine_info_controller.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
+
 import 'package:get/get.dart';
 
 import '../../../config/imageData.dart';
@@ -19,6 +20,7 @@ import '../../menuPage/views/SelectPayment.dart';
 class SelfCheckoutscanningcodeController extends GetxController with StateMixin {
   //TODO: Implement SelfCheckoutscanningcodeController
   OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
+  MachineInfoController machineInfo = Get.find();
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode(debugLabel: 'TextField');
@@ -62,8 +64,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   readyQueryData(){
     checkLanguage.value = Get.arguments['checkLanguage'];
-    mealType.value = (Get.arguments["mealType"]!=null)?Get.arguments["mealType"]:false;
-  _getMachineInfo();
+    getCartPriceTotal();
 
   }
 
@@ -409,7 +410,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout": mealType.value,
+        "takeout": machineInfo.mealType,
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
@@ -417,7 +418,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
-
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
 
@@ -440,7 +440,6 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
       });
     }
   }
-
 
   _handleOrderResultAlert({int times= 0}) {
     EasyLoading.dismiss();
@@ -490,6 +489,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
             tableNum: "",
             onConfrimClick: () {
               showOpenPayment.value = true;
+              machineInfo.showReceiptPage = true;
               gotoSettlement();
 
             },
@@ -549,6 +549,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
+          "machineCode":  machineInfo.machineCode,
           "orderId" : doSubmitOrderId.value,
           "totalPrice" : shopCartTotalPrice.value,
           "machineMode":"1",

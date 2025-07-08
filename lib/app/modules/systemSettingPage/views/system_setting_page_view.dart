@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_extention.dart';
 
 import 'package:get/get.dart';
 import 'package:get/get_connect/http/src/utils/utils.dart';
@@ -198,6 +199,59 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
+    );
+  }
+
+  setMachineType() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      child:
+          Container(
+            alignment: Alignment.centerLeft,
+            child: Container(
+              width: 200,
+              child: DropdownButtonFormField<String>(
+                value: controller.panelType,
+                onChanged: (String? newValue) {
+
+                  controller.checkPanelType(newValue ?? 'Mini');
+
+                },
+                items: controller.panelTypes.map<DropdownMenuItem<String>>((String key) {
+                  return DropdownMenuItem<String>(
+                    value: key,
+                    child: Text(key, style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w400,
+                      fontSize: ScreenAdapter.fontSize(18.0),
+                    ),),
+                  );
+                }).toList(),
+                decoration: InputDecoration(
+                  contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.grey, width: 1),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                    borderSide: BorderSide(color: Colors.blue, width: 2),
+                  ),
+                ),
+                icon: Icon(Icons.arrow_drop_down),
+                iconSize: 24,
+                isExpanded: true,
+              ),
+            ),
+          )
+
+
+
+
     );
   }
 
@@ -695,8 +749,6 @@ class SystemSettingPageView extends GetView {
       ),
     );
   }
-
-    //设置是否开启pos刷卡
   setIsAllowPanelDisplay() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -767,59 +819,58 @@ class SystemSettingPageView extends GetView {
             ),
           ),
           if (controller.wlan_panel_print_ip != "" && controller.wlan_panel_print_port != "")
-          Container(
-            margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-            child:
-            InkWell(
-              highlightColor: Colors.transparent, // 透明色
-              splashColor: Colors.transparent, // 透明色
-  
-              child: Container(
-                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                //设置 child 居中
-                alignment: Alignment(0, 0),
-                height: ScreenAdapter.height(60),
-                width: ScreenAdapter.width(220),
-                //边框设置
-                decoration: new BoxDecoration(
-                  //背景
-                  color: ColorsUtil.hexToColor("#409eff"),
-                  //设置四周圆角 角度
-                  borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                  //设置四周边框
-                  //border: new Border.all(width: 1, color: Colors.red),
-                ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(
-                            "${controller.wlan_panel_print_ip}:",
-                            style: TextStyle(
-                              fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(22),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        ),
-                        Text(
-                            "${controller.wlan_panel_print_port}",
-                            style: TextStyle(
-                              fontFamily: 'NotoSansJP',
-                              fontSize: ScreenAdapter.fontSize(22),
-                              color: ColorsUtil.hexToColor("#FFFFFF"),
-                            )
-                        )
-                      ],
-                    )
-     
-                  ],
+            Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+              child:
+              InkWell(
+                highlightColor: Colors.transparent, // 透明色
+                splashColor: Colors.transparent, // 透明色
+                child: Container(
+                  margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                  //设置 child 居中
+                  alignment: Alignment(0, 0),
+                  height: ScreenAdapter.height(60),
+                  width: ScreenAdapter.width(220),
+                  //边框设置
+                  decoration: new BoxDecoration(
+                    //背景
+                    color: ColorsUtil.hexToColor("#409eff"),
+                    //设置四周圆角 角度
+                    borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                    //设置四周边框
+                    //border: new Border.all(width: 1, color: Colors.red),
+                  ),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                              "${controller.wlan_panel_print_ip}:",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )
+                          ),
+                          Text(
+                              "${controller.wlan_panel_print_port}",
+                              style: TextStyle(
+                                fontFamily: 'NotoSansJP',
+                                fontSize: ScreenAdapter.fontSize(22),
+                                color: ColorsUtil.hexToColor("#FFFFFF"),
+                              )
+                          )
+                        ],
+                      )
+
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
 
         ],
       ),
@@ -978,6 +1029,27 @@ class SystemSettingPageView extends GetView {
 
         ],
       ),
+    );
+  }
+
+  _showPanelSettingDialog() async {
+    Get.dialog(
+        SetPosIpPage(
+          posIp: controller.wlan_panel_print_ip,
+          posPort: controller.wlan_panel_print_port,
+          showRadio:0,
+          onConfrimClick: (String posIp, String posPort) {
+            if(posIp != ""){
+
+              controller.wlan_panel_print_ip = posIp;
+              controller.wlan_panel_print_port = posPort;
+
+
+              controller.checkIsAllowWlanPanelPrint("1");
+            }
+
+          },
+        )
     );
   }
 
@@ -1945,6 +2017,156 @@ class SystemSettingPageView extends GetView {
     );
   }
 
+  setIsAllow5000Yen() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllow5000Yen(false);
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: controller.isAllow5000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使えない",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: controller.isAllow5000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllow5000Yen(true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: controller.isAllow5000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使える",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: controller.isAllow5000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
+  setIsAllow10000Yen() {
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllow10000Yen(false);
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: controller.isAllow10000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使えない",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: controller.isAllow10000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.checkIsAllow10000Yen(true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: controller.isAllow10000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("使える",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: controller.isAllow10000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+
+        ],
+      ),
+    );
+  }
+
   setOpenRejishime() {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
@@ -2600,6 +2822,23 @@ class SystemSettingPageView extends GetView {
                                           //height: ScreenAdapter.height(65),
                                           alignment: Alignment.center,
                                           child: Text(
+                                            "マシンタイプ",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setMachineType(),//菜单方向
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
                                             "領収書",
                                             style: TextStyle(
                                                 fontFamily: 'NotoSansJP',
@@ -2674,6 +2913,40 @@ class SystemSettingPageView extends GetView {
                                           ),
                                         ),
                                         setIsAllowOneYen(),//是否允许一元
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "五千円",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllow5000Yen(),//是否允许一元
+                                      ]
+                                  ),
+                                  TableRow(
+                                      children: <Widget>[
+                                        Container(
+                                          //height: ScreenAdapter.height(65),
+                                          alignment: Alignment.center,
+                                          child: Text(
+                                            "一万円",
+                                            style: TextStyle(
+                                                fontFamily: 'NotoSansJP',
+                                                fontSize: ScreenAdapter.fontSize(22),
+                                                fontWeight: FontWeight.w500
+                                            ),
+                                          ),
+                                        ),
+                                        setIsAllow10000Yen(),//是否允许一元
                                       ]
                                   ),
                                   TableRow(
@@ -2766,12 +3039,10 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0:FlexColumnWidth(200),
-                                      1: FlexColumnWidth(750),
+                                      0:FlexColumnWidth(1050),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
-
                                       TableRow(
                                           children: <Widget>[
                                             Container(
@@ -2789,53 +3060,6 @@ class SystemSettingPageView extends GetView {
 
                                           ]
                                       ),
-
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "キッチン",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setIsAllowWlanPrint(),//是否开启网络打印机
-
-                                          ]
-                                      ),
-                                      TableRow(
-                                          children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "キッチン（ラベル）",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                            ),
-                                            setIsAllowWlanLablePrint(),//是否开启网络打印机
-
-                                          ]
-                                      ),
-                                    ]
-                                ),
-                                Table(
-                                    border: TableBorder.all(),
-                                    columnWidths: const <int, TableColumnWidth>{
-                                      //0: IntrinsicColumnWidth(),
-                                      0: FlexColumnWidth(1),
-                                    },
-                                    defaultVerticalAlignment: TableCellVerticalAlignment.middle,
-                                    children: <TableRow>[
 
                                       TableRow(
                                           children: <Widget>[
@@ -2860,30 +3084,29 @@ class SystemSettingPageView extends GetView {
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
                                       //0: IntrinsicColumnWidth(),
-                                      0: FlexColumnWidth(200),
+                                      0:FlexColumnWidth(200),
                                       1: FlexColumnWidth(750),
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
 
+
+                                      ...controller.printerList.map((printer) => printerSettingWidget(printer)).toList(),
+                                      if (controller.printerList.length < 9)
                                       TableRow(
                                           children: <Widget>[
-                                            Container(
-                                              height: ScreenAdapter.height(90),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                "カウンター",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
+                                            Text(
+                                              "追加",
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                  fontFamily: 'NotoSansJP',
+                                                  fontSize: ScreenAdapter.fontSize(22),
+                                                  fontWeight: FontWeight.w500
                                               ),
                                             ),
-                                            setIsAllowWlanPrintTwo(),//第二台打印机
-
+                                            addButton()
                                           ]
-                                      ),
+                                      )
 
                                     ]
                                 ),
@@ -2939,6 +3162,35 @@ class SystemSettingPageView extends GetView {
                                 //height: ScreenAdapter.height(65),
                                 alignment: Alignment.center,
                                 child: Text(
+                                  "番号パネルIP",
+                                  style: TextStyle(
+                                      fontFamily: 'NotoSansJP',
+                                      fontSize: ScreenAdapter.fontSize(22),
+                                      fontWeight: FontWeight.w500
+                                  ),
+                                ),
+                              ),
+                              setIsAllowPanelDisplay(),//是否开启pos机刷卡
+                            ]
+                        ),
+                      ]
+                  ),
+                  Table(
+                      border: TableBorder.all(),
+                      columnWidths: const <int, TableColumnWidth>{
+                        //0: IntrinsicColumnWidth(),
+                        0: FlexColumnWidth(258),
+                        1: FlexColumnWidth(750),
+                      },
+                      defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                      children: <TableRow>[
+
+                        TableRow(
+                            children: <Widget>[
+                              Container(
+                                //height: ScreenAdapter.height(65),
+                                alignment: Alignment.center,
+                                child: Text(
                                   "キャッシュレス端末",
                                   style: TextStyle(
                                       fontFamily: 'NotoSansJP',
@@ -2953,8 +3205,9 @@ class SystemSettingPageView extends GetView {
                       ]
                   ),
 
-
-
+                  ...controller.sseSettingList.map((sseItem) =>
+                    editSSETable(sseItem)
+                  ).toList(),
 
                   /*setDiningtype(),//食事のタイプ
                   setMenuDirection(),//菜单方向

@@ -47,7 +47,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                     child: Container(
                       key: containerKey,
                       alignment: Alignment.centerRight,
-                      child: ReimbursePrintView(reimburseInfo: itemDetail),
+                      child: ReimbursePrintView(reimburseInfo: itemDetail, widgetWidth: controller.printWidth),
                     ),
                   ),
                 ),
@@ -256,7 +256,7 @@ class ReimburseOrderView extends GetView<ReimburseOrderController> {
                         //     );
                         //   },
                         // );
-                        controller.refoundOrderAlert(itemDetail, ReimbursePrintView(reimburseInfo: itemDetail), size );
+                        controller.refoundOrderAlert(itemDetail, ReimbursePrintView(reimburseInfo: itemDetail, widgetWidth: controller.printWidth), size );
 
                       },
                       child: Container(

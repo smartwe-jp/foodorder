@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = "1.6.10"
+    ext.kotlin_version = '1.6.21'
     repositories {
         google()
         jcenter()
@@ -7,7 +7,7 @@ buildscript {
 
     dependencies {
         //classpath 'com.android.tools.build:gradle:3.5.0'
-        classpath 'com.android.tools.build:gradle:7.4.1'
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath 'com.google.gms:google-services:4.4.0'
         classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.9'
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -24,6 +24,21 @@ allprojects {
 rootProject.buildDir = '../build'
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
+}
+subprojects {
+    afterEvaluate { project ->
+        if (project.hasProperty('android')) {
+            // 确保 android extension 存在才尝试访问
+            project.android {
+                // 检查 namespace 是否已定义
+                if (namespace == null) {
+                    // 使用 project.group 作为默认值，确保 group 已定义
+                    // 或者提供一个固定的默认命名空间字符串
+                    namespace = project.group ?: "com.example.${project.name.toLowerCase().replaceAll("[^a-z0-9_]", "")}"
+                }
+            }
+        }
+    }
 }
 subprojects {
     project.evaluationDependsOn(':app')

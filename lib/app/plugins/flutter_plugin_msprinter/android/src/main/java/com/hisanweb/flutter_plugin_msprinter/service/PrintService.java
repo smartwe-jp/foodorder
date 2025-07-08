@@ -46,6 +46,12 @@ import io.flutter.plugin.common.MethodChannel;
 import static com.hisanweb.flutter_plugin_msprinter.msprintsdk.UtilsTools.data;
 import static com.hisanweb.flutter_plugin_msprinter.msprintsdk.UtilsTools.hexStringToBytes;
 
+import java.io.File;
+import java.nio.file.Files;
+import java.io.IOException;
+import java.nio.file.Path;
+
+
 public class PrintService  {
 
     public void execute_printRreceipt(UsbDriver mUsbDriver,OrderMenuList oh,Drawable sed){
@@ -528,21 +534,60 @@ public class PrintService  {
 
     }
 
-    public void execute_reserve_printImgNew(UsbDriver mUsbDriver,String content,String cutMode,String isTop,String topImage){
+    public void execute_reserve_printImgNew(UsbDriver mUsbDriver,String content,String cutMode,String isTop, String topImage){
         int width,heigh;
 
         if(isTop.equals("1")){
             mUsbDriver.write(PrintCmd.SetAlignment(1));
             //printbmp(mUsbDriver,sed);
             //String imgUrl = "https://images.gutingjun.com/upload/sed.bmp";
-            ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
-            try{
-                Future<byte[]> future = newCachedThreadPool.submit(new HttpCallable(topImage));
-                byte[] result = future.get();
-                mUsbDriver.write(result);
-            }catch (Exception e){
-                System.out.println("http Exception");
-            }
+//            ExecutorService newCachedThreadPool = Executors.newCachedThreadPool();
+//            try{
+//                Future<byte[]> future = newCachedThreadPool.submit(new HttpCallable(topImage));
+//                byte[] result = future.get();
+//                mUsbDriver.write(result);
+//            }catch (Exception e){
+//                System.out.println("http Exception");
+//            }
+//            if (topImage != null) {
+//                System.out.println("topImage:" + topImage);
+//                byte[] bytes = Base64.decode(topImage, Base64.DEFAULT);
+//                Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
+//
+//                width = bitmap.getWidth();
+//                heigh = bitmap.getHeight();
+//                System.out.println("topImageSize:" + width + ":" + heigh);
+//                int iDataLen = width * heigh;
+//                int[] pixels = new int[iDataLen];
+//                bitmap.getPixels(pixels, 0, width, 0, 0, width, heigh);
+//                int[] data1 = pixels;
+//                mUsbDriver.write(PrintDiskImagefile(data1, width, heigh));
+
+//                File file = new File(topImage);
+//                if (file.exists()) {
+//                    try {
+//                        byte[] imageData = Files.readAllBytes(file.toPath());
+//                        // 处理图像数据
+//                        //processImage(imageData);
+//                        Bitmap bitmap = BitmapFactory.decodeByteArray(imageData, 0, imageData.length);
+//
+//                        width = bitmap.getWidth();
+//                        heigh = bitmap.getHeight();
+//                        int iDataLen = width * heigh;
+//                        int[] pixels = new int[iDataLen];
+//                        bitmap.getPixels(pixels, 0, width, 0, 0, width, heigh);
+//                        int[] data1 = pixels;
+//                        mUsbDriver.write(PrintDiskImagefile(data1, width, heigh));
+//                        //mUsbDriver.write(imageData);
+//                        //result.success("Image processed successfully");
+//                    } catch (IOException e) {
+//                        //result.error("IO_ERROR", "Error reading file", e.getMessage());
+//                    }
+//                } else {
+//                    //result.error("FILE_NOT_FOUND", "Image file not found", null);
+//                }
+
+//            }
         }
 
         byte[] bytes = Base64.decode(content, Base64.DEFAULT);
