@@ -64,7 +64,7 @@ class GridItemView extends StatelessWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(20),
+                                  fontSize: ScreenAdapter.fontSize(24),
                                   fontWeight: FontWeight.w500,
                                   fontFamily: GFont.getFontFamily(),
                                   color: ColorsUtil.hexToColor(Gcolor.itemSubTitleColor),
@@ -174,8 +174,8 @@ class MainTitle extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(22),
-              fontWeight: FontWeight.w500,
+              fontSize: ScreenAdapter.fontSize(24),
+              fontWeight: FontWeight.w600,
               fontFamily: GFont.getFontFamily(),
               color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
             ),
@@ -280,8 +280,8 @@ class GridMenuView extends StatelessWidget {
     return Center(
       child: GridView.builder(
         padding: EdgeInsets.only(
-            left:ScreenAdapter.width(30),
-          right: ScreenAdapter.width(30),
+          left:ScreenAdapter.width(15),
+          right: ScreenAdapter.width(15),
           bottom: ScreenAdapter.height(30)
         ),
         physics: canScroll ? const AlwaysScrollableScrollPhysics(parent: BouncingScrollPhysics()) : NeverScrollableScrollPhysics(),

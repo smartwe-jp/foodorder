@@ -444,7 +444,10 @@ extension ExchangeControllerExtension on SettingController {
           success = false;
           errorHandleDialog(GString.getToString(checkLanguage.value, error),
               confirm: () {
-            Get.back();
+            
+            cancelReplanish(shouldBack: false);
+
+            //Get.back();
             // gloryOutputMoney(outMoney,
             //     successTask: successTask, fromeError: true);
           });

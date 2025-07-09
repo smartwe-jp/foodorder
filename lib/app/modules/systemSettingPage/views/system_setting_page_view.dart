@@ -2894,6 +2894,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowOneYen(),//是否允许一元
                                       ]
                                   ),
+                                  if (Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2911,6 +2912,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllow5000Yen(),//是否允许一元
                                       ]
                                   ),
+                                  if (Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
                                         Container(

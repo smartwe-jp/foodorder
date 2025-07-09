@@ -155,6 +155,8 @@ extension LocalizedString on String {
         "status_on" : "オンです",
         "status_off" : "オフです",
         "go_setting" : "設定へ",
+
+        "payment_cash_unavailable" : "現金はご利用いただけません、他の支払い方法を選択してください。",
       },
       'CH': {
         //"top_back_button":"言語",
@@ -301,6 +303,8 @@ extension LocalizedString on String {
         "status_on" : "开启",
         "status_off" : "关闭",
         "go_setting" : "去设置",
+
+        "payment_cash_unavailable" : "现金不可用，请选择其他支付方式。",
       },
       'EN': {
         //"top_back_button":"言語",
@@ -448,6 +452,8 @@ extension LocalizedString on String {
         "status_on" : "On",
         "status_off" : "Off",
         "go_setting" : "Go to Settings",
+
+        "payment_cash_unavailable" : "Cash is unavailable, please choose another payment method.",
       },
       'KO': {
         //"top_back_button":"言語",언어
@@ -596,6 +602,8 @@ extension LocalizedString on String {
         "status_on" : "켜짐",
         "status_off" : "꺼짐",
         "go_setting" : "설정으로 이동",
+
+        "payment_cash_unavailable" : "현금은 사용할 수 없습니다. 다른 결제 수단을 선택해주세요.",
       }
       // 添加更多语言...한국말 =>  한국어
     };

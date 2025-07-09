@@ -161,7 +161,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   _getPackageInfo() async {
     //PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value =
-        "1.0.12"; //packageInfo.version;//+"+"+packageInfo.buildNumber
+        "1.1.0"; //packageInfo.version;//+"+"+packageInfo.buildNumber
 
     _getSystemSettingInfo();
   }
@@ -217,6 +217,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     is_allow_wlanPrint_Two_continuous.value =
         systemSettingInfo['isAllowWlanPrintTwoContinuous'];
     is_allow_wlanPanelPrint = systemSettingInfo['isAllowWlanPanelPrint'] ?? "0";
+    panelType = systemSettingInfo['panelType'] ?? 'Mini';
 
     if (posSettingInfo['posIp'] != null &&
         posSettingInfo['posIp'] != "" &&

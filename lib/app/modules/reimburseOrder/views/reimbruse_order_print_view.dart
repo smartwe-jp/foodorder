@@ -14,15 +14,13 @@ class ReimbursePrintView extends StatelessWidget {
   final GlobalKey containerKey = GlobalKey();
   ReimbursePrintView({Key? key, required this.reimburseInfo, required this.widgetWidth})
       : super(key: key);
-  final contentStyle = GoogleFonts.zenKakuGothicAntique(
-      fontSize: 26, fontWeight: FontWeight.w300, color: Colors.black87);
 
-  // final contentStyle = TextStyle(
-  //   fontFamily: 'NotoSansJP',
-  //   color: Colors.black,
-  //   fontSize: 30,
-  //   fontWeight: FontWeight.w400,
-  // );
+  final contentStyle = TextStyle(
+    fontFamily: 'NotoSansJP',
+    color: Colors.black,
+    fontSize: 30,
+    fontWeight: FontWeight.w400,
+  );
 
   @override
   Widget build(BuildContext context) {

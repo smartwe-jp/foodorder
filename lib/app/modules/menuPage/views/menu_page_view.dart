@@ -275,7 +275,7 @@ class MenuPageView extends GetView {
                         );
                       }),
 
-                      SizedBox(height: ScreenAdapter.height(30)),
+                      SizedBox(height: ScreenAdapter.height(15)),
 
                       Expanded(
                         child: Row(

@@ -12,6 +12,7 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
+  bool isChecking = false;
   //base info
   late String machineCode;
   late String shopCode;
@@ -128,8 +129,10 @@ class MachineInfoController extends GetxController {
 
     showPrintType = int.parse(systemSettingInfo['showPrintType']); // 0:普通 1:贴纸
 
-    is_allow_wlanPrint_continuous = systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
-    is_allow_wlanPrint_continuous_two = systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
+    is_allow_wlanPrint_continuous =
+        systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
+    is_allow_wlanPrint_continuous_two =
+        systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
@@ -178,7 +181,7 @@ class MachineInfoController extends GetxController {
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
     Map wlanPrintPanelSettingInfo =
-    await HomeServices.getWlanPanelPrintSettingInfo();
+        await HomeServices.getWlanPanelPrintSettingInfo();
     wlan_panel_print_ip = wlanPrintPanelSettingInfo['wlanPrintIp'] ?? "";
     wlan_panel_print_port = wlanPrintPanelSettingInfo['wlanPrintPort'] ?? "";
 
@@ -186,13 +189,13 @@ class MachineInfoController extends GetxController {
     wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
     wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
 
-    Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
+    Map wlanPrintSettingTwoInfo =
+        await HomeServices.getWlanPrintSettingTwoInfo();
     wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
     wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
 
     printerList = await HomeServices.getPrinterListInfo();
     sseSettingList = await HomeServices.getSSESettingList();
-
 
     print('loadMachineSettingInfo 6');
   }

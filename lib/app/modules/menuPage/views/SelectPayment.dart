@@ -1,3 +1,4 @@
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -14,6 +15,7 @@ import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
   MachineInfoController machineInfo = Get.find();
+  final MenuPageController menuPageController = Get.find<MenuPageController>();
 
   SelectPaymentPage(
       {Key? key,
@@ -214,105 +216,160 @@ class SelectPaymentPage extends StatelessWidget {
                               mainAxisAlignment:
                               MainAxisAlignment.spaceAround,
                               children: <Widget>[
-                                if (machineInfo.showCash == true)
-                                  InkWell(
-                                    onTap: () {
-                                      //payment_method_num = "1";
-                                      machineInfo.paymentMethod = '1';
-                                      //Navigator.pop(pcontext);
-                                      onConfrimClick();
-                                    },
-                                    child: Container(
-                                      width: ScreenAdapter.width(320),
-                                      height: ScreenAdapter.height(225),
-                                      padding: EdgeInsets.only(
-                                          top: ScreenAdapter.height(2)),
-                                      //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
-                                      decoration: BoxDecoration(
-                                        //设置边框
-                                        border: new Border.all(
-                                            color: ColorsUtil.hexToColor(
-                                                "#9e9e9e"),
-                                            width: 2.0),
-                                        //背景颜色
-                                        color:
-                                        ColorsUtil.hexToColor("#F3F3F3"),
-                                        //设置圆角
-                                        //borderRadius: new BorderRadius.circular((5.0)),
-                                        borderRadius:
-                                        new BorderRadius.circular((16.0)),
-                                        //设置阴影
-                                        //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#9e9e9e"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Stack(
-                                        children: [
-                                          Column(
-                                            mainAxisAlignment:
-                                            MainAxisAlignment.start,
-                                            crossAxisAlignment:
-                                            CrossAxisAlignment.center,
+                                
+                                  Stack(
+                                    children: [
+                                      InkWell(
+                                        onTap: () {
+                                          //payment_method_num = "1";
+                                          machineInfo.paymentMethod = '1';
+                                          //Navigator.pop(pcontext);
+                                          onConfrimClick();
+                                        },
+                                        child: Container(
+                                          width: ScreenAdapter.width(320),
+                                          height: ScreenAdapter.height(225),
+                                          padding: EdgeInsets.only(
+                                              top: ScreenAdapter.height(2)),
+                                          //margin: EdgeInsets.only(left: ScreenAdapter.width(30)),
+                                          decoration: BoxDecoration(
+                                            //设置边框
+                                            border: new Border.all(
+                                                color: ColorsUtil.hexToColor(
+                                                    "#9e9e9e"),
+                                                width: 2.0),
+                                            //背景颜色
+                                            color:
+                                            ColorsUtil.hexToColor("#F3F3F3"),
+                                            //设置圆角
+                                            //borderRadius: new BorderRadius.circular((5.0)),
+                                            borderRadius:
+                                            new BorderRadius.circular((16.0)),
+                                            //设置阴影
+                                            //boxShadow: [BoxShadow(color: ColorsUtil.hexToColor("#9e9e9e"), offset: Offset(1.0, 1.0), blurRadius: 2.0, spreadRadius: 2.0), ],
+                                          ),
+                                          alignment: Alignment.center,
+                                          child: Stack(
                                             children: [
-                                              SizedBox(
-                                                height:
-                                                ScreenAdapter.height(65),
+                                              Column(
+                                                mainAxisAlignment:
+                                                MainAxisAlignment.start,
+                                                crossAxisAlignment:
+                                                CrossAxisAlignment.center,
+                                                children: [
+                                                  SizedBox(
+                                                    height:
+                                                    ScreenAdapter.height(65),
+                                                  ),
+                                                  Container(
+                                                    height:
+                                                    ScreenAdapter.height(150),
+                                                    padding: EdgeInsets.only(
+                                                        left: ScreenAdapter.width(
+                                                            10),
+                                                        top: ScreenAdapter.height(
+                                                            10),
+                                                        right:
+                                                        ScreenAdapter.width(
+                                                            10),
+                                                        bottom:
+                                                        ScreenAdapter.height(
+                                                            10)),
+                                                    child: Image.asset(
+                                                      GImage.getImageString(
+                                                          "imgpublic",
+                                                          "payment_cash"),
+                                                      //width: ScreenAdapter.width(150),
+                                                      height:
+                                                      ScreenAdapter.height(
+                                                          120),
+                                                      //color:  ColorsUtil.hexToColor(Gcolor.mainBackground),
+                                                      fit: BoxFit.fitHeight,
+                                                    ),
+                                                  ),
+                                                  //SizedBox(height: ScreenAdapter.height(20),),
+                                                ],
                                               ),
-                                              Container(
-                                                height:
-                                                ScreenAdapter.height(150),
-                                                padding: EdgeInsets.only(
-                                                    left: ScreenAdapter.width(
-                                                        10),
-                                                    top: ScreenAdapter.height(
-                                                        10),
-                                                    right:
-                                                    ScreenAdapter.width(
-                                                        10),
-                                                    bottom:
-                                                    ScreenAdapter.height(
-                                                        10)),
-                                                child: Image.asset(
-                                                  GImage.getImageString(
-                                                      "imgpublic",
-                                                      "payment_cash"),
-                                                  //width: ScreenAdapter.width(150),
-                                                  height:
-                                                  ScreenAdapter.height(
-                                                      120),
-                                                  //color:  ColorsUtil.hexToColor(Gcolor.mainBackground),
-                                                  fit: BoxFit.fitHeight,
+                                              Positioned(
+                                                //right: ScreenAdapter.width(120),
+                                                top: ScreenAdapter.height(2),
+                                                child: Container(
+                                                  width: ScreenAdapter.width(160),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    //"现金",
+                                                    GString.getToString(
+                                                        checkLanguage,
+                                                        "settlement_top_title_cash"),
+                                                    style: TextStyle(
+                                                        fontFamily:
+                                                        GFont.getFontFamily(),
+                                                        color: ColorsUtil
+                                                            .hexToColor(Gcolor
+                                                            .mainTitleColor),
+                                                        fontWeight:
+                                                        FontWeight.w600,
+                                                        fontSize: ScreenAdapter
+                                                            .fontSize(34.0)),
+                                                  ),
                                                 ),
-                                              ),
-                                              //SizedBox(height: ScreenAdapter.height(20),),
+                                              )
                                             ],
                                           ),
-                                          Positioned(
-                                            //right: ScreenAdapter.width(120),
-                                            top: ScreenAdapter.height(2),
-                                            child: Container(
-                                              width: ScreenAdapter.width(160),
-                                              alignment: Alignment.center,
-                                              child: Text(
-                                                //"现金",
-                                                GString.getToString(
-                                                    checkLanguage,
-                                                    "settlement_top_title_cash"),
-                                                style: TextStyle(
-                                                    fontFamily:
-                                                    GFont.getFontFamily(),
-                                                    color: ColorsUtil
-                                                        .hexToColor(Gcolor
-                                                        .mainTitleColor),
-                                                    fontWeight:
-                                                    FontWeight.w600,
-                                                    fontSize: ScreenAdapter
-                                                        .fontSize(34.0)),
-                                              ),
-                                            ),
-                                          )
-                                        ],
+                                        ),
                                       ),
-                                    ),
+                                      if (machineInfo.isChecking)
+                                        //Loading 动画 大小和现金图标一样 背景透明灰 中间显示Loading 动画
+                                        Container(
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.8),
+                                            borderRadius:
+                                            new BorderRadius.circular((16.0)),
+                                          ),
+                                          width: ScreenAdapter.width(320),
+                                          height: ScreenAdapter.height(225),
+                                          
+                                          alignment: Alignment.center,
+                                          child: CircularProgressIndicator(
+                                            valueColor:
+                                            AlwaysStoppedAnimation<Color>(
+                                                Colors.black54),
+                                          ),
+                                        )
+                                      else
+                                      if (machineInfo.showCash == false)
+                                        //灰色蒙皮背景 剧中上面写 "未开启"，下面重试按钮
+                                        Container(
+                                          padding: EdgeInsets.all(10),
+                                          
+                                          decoration: BoxDecoration(
+                                            color: Colors.white.withOpacity(0.8),
+                                            borderRadius:
+                                            new BorderRadius.circular((16.0)),
+                                          ),
+                                          width: ScreenAdapter.width(320),
+                                          height: ScreenAdapter.height(225),
+                                          child: Column(
+                                            mainAxisAlignment: MainAxisAlignment.center,
+                                            children: [
+                                              Text(
+                                                "payment_cash_unavailable".localized(),
+                                                style: TextStyle(
+                                                  fontFamily: GFont.getFontFamily(),
+                                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
+                                                  fontWeight: FontWeight.w400,
+                                                  fontSize: ScreenAdapter.fontSize(20.0),
+                                                ),
+                                              ),
+                                              SizedBox(height: ScreenAdapter.height(10)),
+                                              IconButton(onPressed: () async {
+                                                await menuPageController.checkMachineState();
+                                              }, icon: Icon(Icons.running_with_errors))
+                                            ],
+                                          ),
+                                        )
+
+                                    ],
                                   ),
                                 if(machineInfo.showAlipay || machineInfo.showWechat || machineInfo.showPayPay||
                                     machineInfo.showAuPay || machineInfo.showDPay || machineInfo.showRPay || machineInfo.showMPay)

@@ -306,9 +306,8 @@ class ScanDetailPagePage extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               fontFamily: GFont.getFontFamily(),
                               fontSize: ScreenAdapter.fontSize(40.0))),
-                      SizedBox(
-                        width: ScreenAdapter.width(20),
-                      ),
+
+
 
                       RichText(
                         text: TextSpan(
