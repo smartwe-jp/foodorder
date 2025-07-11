@@ -174,7 +174,7 @@ extension CheckoutButton on MenuPageView {
                       if (controller.recommendFoods.isNotEmpty) {
                         controller.showRecommendView();
                       } else {
-                        controller.doSubmitOrder();
+                        controller.submitOrderFlow();
                       }
                     },
                     child: Container(

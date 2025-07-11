@@ -13,6 +13,7 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
+  bool isChecking = false;
   //base info
   late String machineCode;
   late String shopCode;
