@@ -79,7 +79,7 @@ class ReceiptQueryController extends GetxController with StateMixin {
       var response = json.decode(val.toString());
       LogUtil.d(response);
       if (response !=null && response['data'] !=null) {
-        createPrintImageController.tpPrintnew('1',response['data'], '1');
+        createPrintImageController.tpPrintReceipt('1',response['data']);
         receiptList.value = [];
         orderIdController.text = "";
         update();

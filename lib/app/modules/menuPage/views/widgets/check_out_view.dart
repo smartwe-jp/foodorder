@@ -46,8 +46,8 @@ extension CheckoutButton on MenuPageView {
                           return;
                         }
                         // controller.showShopCart = true;
-                        // controller.update(['shopping_cart']);
                         controller.showCarPopView();
+                        //controller.update(['shopping_cart']);
                       },
                       child: Row(
                         children: [
@@ -174,7 +174,7 @@ extension CheckoutButton on MenuPageView {
                       if (controller.recommendFoods.isNotEmpty) {
                         controller.showRecommendView();
                       } else {
-                        controller.submitOrderFlow();
+                        controller.doSubmitOrder();
                       }
                     },
                     child: Container(

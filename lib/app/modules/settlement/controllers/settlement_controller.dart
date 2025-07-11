@@ -337,11 +337,11 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint('---gotonewMenuPage---');
     if(isPayConfirmOrderId.value == true){
       if(machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1"){
-        if(machineMode.value == "2") {//精算时候请求
+        if(machineInfo.currentMode == MachineMode.checkout) {//精算时候请求
           //print("精算请求了new order id");
           Get.find<CheckoutPageController>().postNewOrderId(orderIdIfTakeOut: orderId.value);
           Get.find<CheckoutPageController>().resetStateBack();
-        }else if(machineMode.value == "3"){
+        }else if(machineInfo.currentMode == MachineMode.scan){
           //print("自助精算请求了new order id");
           Get.find<SelfCheckoutscanningcodeController>().postNewOrderId();
         } else {
@@ -379,7 +379,7 @@ class SettlementController extends GetxController with StateMixin {
 
     EasyLoading.dismiss();
     Get.back();
-    if(machineMode.value == "2") {
+    if(machineInfo.currentMode == MachineMode.checkout) {
       //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
       if (Get.isRegistered<CheckoutPageController>()) {
         Get.find<CheckoutPageController>().selectLanguage = 'JP';
@@ -390,12 +390,13 @@ class SettlementController extends GetxController with StateMixin {
         Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       });
       //Navigator.pushNamed(context, '/checkOutPage');
-    }else if(machineMode.value == "3") {
+    }else if(machineInfo.currentMode == MachineMode.scan) {
       //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.toNamed("/selfservice-page");
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
       //Navigator.pushNamed(context, '/selfServiceHomePage');
-    } else {print("过来删除menu了");
+    } else {
+      print("过来删除menu了");
     //Get.delete<MenuPageController>(); // 手动删除控制器实例
     //Get.toNamed("/order-home");
     Get.offNamedUntil('/transit-page', (route) => route.isFirst);
@@ -409,7 +410,7 @@ class SettlementController extends GetxController with StateMixin {
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
-    if (machineMode.value == "1") {
+    if (machineInfo.currentMode == MachineMode.sell || machineInfo.currentMode == MachineMode.takeout) {
       if(is_back_home.value == "0"){
         //Get.delete<MenuPageController>(); // 手动删除控制器实例
         //Get.toNamed("/order-home");
@@ -430,7 +431,7 @@ class SettlementController extends GetxController with StateMixin {
           Get.back();
         }
       }
-    } else if (machineMode.value == "3") {
+    }else if (machineInfo.currentMode == MachineMode.scan) {
       //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.offAllNamed("/selfservice-page");
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
@@ -1301,44 +1302,34 @@ class SettlementController extends GetxController with StateMixin {
   //
   printGoNext() async {
     debugPrint("printGoNext");
-    Future.delayed(Duration(milliseconds: 300), () async {
-      debugPrint("machineMode.value = ${machineMode.value}");
-      if (machineMode.value == "1") {
+    Future.delayed(Duration(milliseconds: 300),() async {
+      if (machineInfo.currentMode == MachineMode.checkout) {
         //eventBus.fire(new clearCartEvent('支付成功...'));
-        if (Get.isRegistered<OrderHomeController>())
-// <<<<<<< HEAD
-//           Get.find<OrderHomeController>().clearCartList();
-//         //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
-//         //Get.find<MenuPageController>().getBookingBootMenu();
-//       } else if (machineMode.value == "3") {
-//         Get.find<SelfCheckoutscanningcodeController>()
-//             .clearCartList(hideLoading: false);
-//       } else if (machineMode.value == "2") {
-//         if (Get.isRegistered<MenuPageController>()) {
-//           MenuPageController controller = Get.find<MenuPageController>();
-//           if (controller.machinInfo.mealType) {
-// =======
-        Get.find<OrderHomeController>().clearCartList();
+
         //Get.find<MenuPageController>().clearCartList();print("再次开启了meu");
         //Get.find<MenuPageController>().getBookingBootMenu();
-      } else if (machineMode.value == "3"){
+      } else
+      if (machineInfo.currentMode == MachineMode.scan){
         if (Get.isRegistered<SelfCheckoutscanningcodeController>())
           Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
 
-        if (Get.isRegistered<MenuPageController>()) {
-          MenuPageController controller = Get.find<MenuPageController>();
-          //if (controller.machineInfo.mealType) {
-            controller.clearCartList();
-          //}
-        }
+        // if (Get.isRegistered<MenuPageController>()) {
+        //   MenuPageController controller = Get.find<MenuPageController>();
+        //   //if (controller.machineInfo.mealType) {
+        //     controller.clearCartList();
+        //   //}
+        // }
 
-      } else if (machineMode.value == "2") {
+      } else if (machineInfo.currentMode == MachineMode.takeout || machineInfo.currentMode == MachineMode.sell) {
+        // if (Get.isRegistered<OrderHomeController>())
+        //   Get.find<OrderHomeController>().clearCartList();
+
         if (Get.isRegistered<MenuPageController>()) {
           MenuPageController controller = Get.find<MenuPageController>();
-          if (controller.machineInfo.mealType) {
-//>>>>>>> 2.7.0-dev
-            controller.clearCartList();
-          }
+          controller.clearCartList();
+          //if (controller.machineInfo.mealType) {
+          //controller.clearCartList();
+          //}
         }
       }
 

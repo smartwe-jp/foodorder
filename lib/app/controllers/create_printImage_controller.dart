@@ -395,6 +395,10 @@ class CreatePrintImageController extends GetxController {
         );
 
     categoryMenus.add(
+      _publicSplitLine(),
+    );
+
+    categoryMenus.add(
       Container(
         alignment: Alignment.bottomRight,
         margin: EdgeInsets.only(top: 10),

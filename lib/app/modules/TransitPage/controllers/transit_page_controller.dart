@@ -501,14 +501,14 @@ class TransitPageController extends GetxController {
 
   Future _goNext(checkmachineMode) async {
     Get.updateLocale(Locale('jp', 'JP'));
-    if (checkmachineMode == "2") {
-
-      _goCheckOut();
-    } else if (checkmachineMode == "3") {
-      _goSelfService();
-    } else {
-      _goMain();
-    }
+    _goCheckOut();
+    // if(checkmachineMode == "2"){
+    //  _goCheckOut();
+    // }else if(checkmachineMode == "3"){
+    //   _goSelfService();
+    // }else{
+    //   _goMain();
+    // }
   }
 
   void _goMain() async {

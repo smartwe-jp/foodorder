@@ -19,7 +19,7 @@ import '../../menuPage/views/SelectPayment.dart';
 
 class SelfCheckoutscanningcodeController extends GetxController with StateMixin {
   //TODO: Implement SelfCheckoutscanningcodeController
-  OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
+  OrderSqlController ordersqlcontroller = Get.find();
   MachineInfoController machineInfo = Get.find();
 
   TextEditingController scanQrCodeController = new TextEditingController();

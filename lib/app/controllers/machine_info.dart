@@ -2,6 +2,7 @@ import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
 enum MachineType { new_panel, new_panel_max, old_panel }
+enum MachineMode { sell, takeout, checkout, scan}
 
 class MachineInfoController extends GetxController {
   Map systemSettingInfo;
@@ -12,7 +13,6 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
-  bool isChecking = false;
   //base info
   late String machineCode;
   late String shopCode;
@@ -35,6 +35,8 @@ class MachineInfoController extends GetxController {
 
   late bool isAllowCash;
   late bool cashOn;
+
+  late Map machineModeInfo;
 
   //payment info
   late bool showCash;
@@ -76,14 +78,20 @@ class MachineInfoController extends GetxController {
   late int showPrintType;
 
   String paymentMethod = '0';
+  MachineMode currentMode = MachineMode.sell;
 
   late String pos_ip;
   late String pos_port;
 
+  bool get isSellOn => machineModeInfo['sell'] ?? false;
+  bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
+  bool get isCheckOn => machineModeInfo['checkout'] ?? false;
+  bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+
   @override
   Future<void> onInit() async {
     print('loadMachineSettingInfo onInit');
-    //await loadMachineSettingInfo();
+    await loadMachineSettingInfo();
     super.onInit();
   }
 
@@ -129,10 +137,8 @@ class MachineInfoController extends GetxController {
 
     showPrintType = int.parse(systemSettingInfo['showPrintType']); // 0:普通 1:贴纸
 
-    is_allow_wlanPrint_continuous =
-        systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
-    is_allow_wlanPrint_continuous_two =
-        systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
+    is_allow_wlanPrint_continuous = systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
+    is_allow_wlanPrint_continuous_two = systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
@@ -181,7 +187,7 @@ class MachineInfoController extends GetxController {
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
     Map wlanPrintPanelSettingInfo =
-        await HomeServices.getWlanPanelPrintSettingInfo();
+    await HomeServices.getWlanPanelPrintSettingInfo();
     wlan_panel_print_ip = wlanPrintPanelSettingInfo['wlanPrintIp'] ?? "";
     wlan_panel_print_port = wlanPrintPanelSettingInfo['wlanPrintPort'] ?? "";
 
@@ -189,13 +195,15 @@ class MachineInfoController extends GetxController {
     wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
     wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
 
-    Map wlanPrintSettingTwoInfo =
-        await HomeServices.getWlanPrintSettingTwoInfo();
+    Map wlanPrintSettingTwoInfo = await HomeServices.getWlanPrintSettingTwoInfo();
     wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
     wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
 
     printerList = await HomeServices.getPrinterListInfo();
     sseSettingList = await HomeServices.getSSESettingList();
+
+    machineModeInfo = await HomeServices.getMachineModeInfo();
+
 
     print('loadMachineSettingInfo 6');
   }

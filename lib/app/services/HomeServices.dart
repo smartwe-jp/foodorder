@@ -238,6 +238,21 @@ class HomeServices {
     }
   }
 
+  static Future<Map> getMachineModeInfo() async {
+    Map? map = await Storage.getData("machineModeInfo");
+    if (map != null) {
+      return map;
+    } else {
+      return {};
+    }
+  }
+
+  static Future<void> setMachineModeInfo(Map machineModeInfo) async {
+    final data = json.encode(machineModeInfo);
+    await Storage.setData("machineModeInfo", data);
+  }
+
+
   static Future<List> getSSESettingList() async {
     List? list = await Storage.getData("SSESetting");
     if (list != null) {

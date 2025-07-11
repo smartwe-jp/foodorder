@@ -80,7 +80,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   @override
   void onReady() {
     super.onReady();
-    startRepeatingAnimation();
+    //startRepeatingAnimation();
     if (firstLoad) {
       bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
       if (isSseEnabled) {
@@ -414,10 +414,29 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   goMenu(String lan, bool mealType) {
     machineInfo.mealType = mealType;
-    var jumpUrl = '/menu-page';
-    startShake = false;
+    machineInfo.currentMode = MachineMode.sell;
+    String jumpUrl = '/menu-page';
+
+    if (mealType) {
+      machineInfo.currentMode = MachineMode.takeout;
+      jumpUrl = '/menu-page';
+    } else {
+      if (machineInfo.isScanbuyOn) {
+        jumpUrl = '/self-checkoutscanningcode';
+        machineInfo.currentMode = MachineMode.scan;
+      }
+    }
+
     Get.toNamed(jumpUrl,
         arguments: {"checkLanguage": lan, "mealType": mealType});
+
+  }
+
+  goSelfCheckout() {
+    Get.toNamed('/self-checkoutscanningcode',arguments: {
+      "checkLanguage": selectLanguage,
+      "mealType": machineInfo.mealType
+    });
   }
 
   updateSettingLanguage(String language) async {

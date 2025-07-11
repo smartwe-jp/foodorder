@@ -121,6 +121,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     '拡張プリンター(5)': 25,
   };
 
+  Map machineModeInfo = {};
+
   List subPrinterList = [];
 
   final Map defaultPrinterInfo = {
@@ -354,6 +356,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needInput': true,
       });
       await HomeServices.setSSESettingList(sseSettingList);
+    }
+
+    machineModeInfo = await HomeServices.getMachineModeInfo();
+    if (machineModeInfo.isEmpty) {
+      await HomeServices.setMachineModeInfo({
+        'sell': true,
+        'takeout': false,
+        'checkout': false,
+        'scanbuy': false,
+      });
     }
 
   }
@@ -694,14 +706,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
 
     var dining_type_tmp = "1";
-    if (dining_type_one.value == true && dining_type_two.value == false) {
-      dining_type_tmp = "1";
-    } else if (dining_type_one.value == false &&
-        dining_type_two.value == true) {
-      dining_type_tmp = "2";
-    } else if (dining_type_one.value == true && dining_type_two.value == true) {
-      dining_type_tmp = "3";
-    } else {
+    if(dining_type_one.value == true && dining_type_two.value == false){
+      dining_type_tmp = "1"; //店内
+    }else if(dining_type_one.value == false && dining_type_two.value == true){
+      dining_type_tmp = "2"; //外带
+    }else if(dining_type_one.value == true && dining_type_two.value == true){
+      dining_type_tmp = "3"; //店内外带都有
+    }else{
       dining_type_one.value = true;
       dining_type_tmp = "1";
     }
@@ -718,7 +729,32 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
   }
 
-  checkMenuDirection(checkedType) {
+  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
+    if (sell != null) {
+      machineModeInfo['sell'] = sell;
+      if (sell) machineModeInfo['scanbuy'] = false;
+    }
+
+      if (takeout != null) machineModeInfo['takeout'] = takeout;
+
+      if (checkout != null) {
+        machineModeInfo['checkout'] = checkout;
+        //if (checkout) machineModeInfo['scanbuy'] = false;
+      }
+
+      if (scanbuy != null) {
+        machineModeInfo['scanbuy'] = scanbuy;
+        if (scanbuy) machineModeInfo['sell'] = false;
+      }
+
+      HomeServices.setMachineModeInfo(machineModeInfo);
+      update();
+
+
+  }
+
+  checkMenuDirection(checkedType){
+
     menu_direction.value = checkedType;
     _updateSystemSetting("menuDirection", checkedType);
     //if(Get.isRegistered<OrderHomeController>())
