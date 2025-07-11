@@ -4,6 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/localString.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -85,57 +86,116 @@ class CheckoutPageView extends GetView {
   }
 
 
+  int get buttonCount => controller.machineInfo.machineModeInfo.values.where((value) => value == true).length;
+
+  double _getItemWidth() {
+    int trueCount = buttonCount;
+    if (trueCount == 1) return 600.0;
+    if (trueCount == 2) return 400.0;
+    if (trueCount == 3) return 280.0;
+    return 400.0;
+  }
+
+
+
   _diningSelectArea() {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        ScaleAnimatedWidget.tween(
-          enabled: controller.startShake,
-          duration: Duration(milliseconds: 500),
-          scaleDisabled: 1.0,
-          scaleEnabled: 0.9,
-          child:BookingTypeButton(
-            icon: Icon(
-              Icons.qr_code,
-              color: Colors.blueGrey[100],
-              size: 120,
-            ),
-            title: 'settlement_button'.localized(),
-            selected: false,
-            onTap: ()=>Get.toNamed("/scancode-page"),
-          ),
-        ),
-
         SizedBox(width: ScreenAdapter.width(50),),
-        ScaleAnimatedWidget.tween(
-          enabled: controller.startShake,
-          duration: Duration(milliseconds: 500),
-          scaleDisabled: 0.9,
-          scaleEnabled: 1.0,
-          child:BookingTypeButton(
+
+        if (controller.machineInfo.isSellOn || controller.machineInfo.isScanbuyOn)
+        // Expanded(
+        //   child:
+          if (buttonCount > 1)
+          BookingTypeButton(
+            width: _getItemWidth(),
             icon: Icon(
-              Icons.shopping_bag,
+              Icons.dining,
               color: Colors.blueGrey[100],
               size: 120,
             ),
-            title: 'menu_dingtype_takeout'.localized(),
+            title: 'menu_dingtype_eatin'.localized(),
             selected: false,
-            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
-          ),
-        )
+            onTap: () {
+                controller.goMenu(controller.selectLanguage, false);
+              },
+          )
+          else
+          _startButton(),
+
+        //),
+
+        if (controller.machineInfo.isCheckOn)
+          SizedBox(width: ScreenAdapter.width(50)),
+        if (controller.machineInfo.isCheckOn)
+          // Expanded(
+          //   child:
+            BookingTypeButton(
+              width: _getItemWidth(),
+              icon: Icon(
+                Icons.qr_code,
+                color: Colors.blueGrey[100],
+                size: 120,
+              ),
+              title: 'settlement_button'.localized(),
+              selected: false,
+              onTap: () {
+                controller.machineInfo.currentMode = MachineMode.scan;
+                Get.toNamed("/scancode-page");
+              },
+            ),
+          //),
+
+        if (controller.machineInfo.isTakeoutOn)
+          SizedBox(width: ScreenAdapter.width(50)),
+        if (controller.machineInfo.isTakeoutOn)
+          // Expanded(
+          //   child:
+            BookingTypeButton(
+              width: _getItemWidth(),
+              icon: Icon(
+                Icons.shopping_bag,
+                color: Colors.blueGrey[100],
+                size: 120,
+              ),
+              title: 'menu_dingtype_takeout'.localized(),
+              selected: false,
+              onTap: () {
+                controller.goMenu(controller.selectLanguage, true);
+              },
+            ),
+          //),
+
+        // if (controller.machineInfo.isScanbuyOn)
+        // Expanded(
+        //   child: BookingTypeButton(
+        //     icon: Icon(
+        //       Icons.qr_code,
+        //       color: Colors.blueGrey[100],
+        //       size: 120,
+        //     ),
+        //     title: 'settlement_button'.localized(),
+        //     selected: false,
+        //     onTap: ()=>controller.goSelfCheckout(),
+        //   ),
+        // ),
+        SizedBox(width: ScreenAdapter.width(50)),
+
       ],
     );
   }
 
   _startButton() {
-    return ScaleAnimatedWidget.tween(
-      enabled: controller.startShake,
-      duration: Duration(milliseconds: 500),
-      scaleDisabled: 0.9,
-      scaleEnabled: 1.0,
-      child:
+    return
+      // ScaleAnimatedWidget.tween(
+      // enabled: controller.startShake,
+      // duration: Duration(milliseconds: 500),
+      // scaleDisabled: 0.9,
+      // scaleEnabled: 1.0,
+      // child:
       InkWell(
-        onTap: ()=>Get.toNamed("/scancode-page"),
+        onTap: ()=>controller.goMenu(controller.selectLanguage, false),
         child: Container(
           padding: EdgeInsets.all(10),
           height:ScreenAdapter.height(260),
@@ -158,7 +218,7 @@ class CheckoutPageView extends GetView {
             ),
           ),
         ),
-      ),
+      //),
     );
   }
 
@@ -273,9 +333,9 @@ class CheckoutPageView extends GetView {
                 width: ScreenAdapter.width(1080),
                 child: Center(
                     child:
-                    controller.machineInfo.diningType == "3" ?
+                    //controller.machineInfo.diningType == "3" ?
                     _diningSelectArea()
-                        : _startButton()
+                        //: _startButton()
 
                 ),
               ),

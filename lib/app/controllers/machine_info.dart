@@ -2,6 +2,7 @@ import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
 enum MachineType { new_panel, new_panel_max, old_panel }
+enum MachineMode { sell, takeout, checkout, scan}
 
 class MachineInfoController extends GetxController {
   Map systemSettingInfo;
@@ -34,6 +35,8 @@ class MachineInfoController extends GetxController {
 
   late bool isAllowCash;
   late bool cashOn;
+
+  late Map machineModeInfo;
 
   //payment info
   late bool showCash;
@@ -75,9 +78,15 @@ class MachineInfoController extends GetxController {
   late int showPrintType;
 
   String paymentMethod = '0';
+  MachineMode currentMode = MachineMode.sell;
 
   late String pos_ip;
   late String pos_port;
+
+  bool get isSellOn => machineModeInfo['sell'] ?? false;
+  bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
+  bool get isCheckOn => machineModeInfo['checkout'] ?? false;
+  bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
 
   @override
   Future<void> onInit() async {
@@ -192,6 +201,8 @@ class MachineInfoController extends GetxController {
 
     printerList = await HomeServices.getPrinterListInfo();
     sseSettingList = await HomeServices.getSSESettingList();
+
+    machineModeInfo = await HomeServices.getMachineModeInfo();
 
 
     print('loadMachineSettingInfo 6');

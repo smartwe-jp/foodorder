@@ -540,40 +540,75 @@ class SystemSettingPageView extends GetView {
   }
 
   //设置机器类型
-  setMachineMode() {
+  setMachineMode(Map machineInfos) {
+    bool isSellOn = machineInfos['sell'] ?? false;
+    bool isTakeoutOn = machineInfos['takeout'] ?? false;
+    bool isCheckoutOn = machineInfos['checkout'] ?? false;
+    bool isScanbuyOn = machineInfos['scanbuy'] ?? false;
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3), bottom: ScreenAdapter.height(3), right:ScreenAdapter.width(20)),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // InkWell(
+          //   highlightColor: Colors.transparent, // 透明色
+          //   splashColor: Colors.transparent, // 透明色
+          //   onTap: (){
+          //     controller.checkMachineMode("1");
+          //   },
+          //   child: Container(
+          //     //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+          //     //设置 child 居中
+          //     alignment: Alignment(0, 0),
+          //     height: ScreenAdapter.height(60),
+          //     width: ScreenAdapter.width(220),
+          //     //边框设置
+          //     decoration: new BoxDecoration(
+          //       //背景
+          //       color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+          //       //设置四周圆角 角度
+          //       borderRadius: BorderRadius.all(Radius.circular(5.0)),
+          //       //设置四周边框
+          //       //border: new Border.all(width: 1, color: Colors.red),
+          //     ),
+          //     child: Text("券売機",
+          //         style: TextStyle(
+          //           fontFamily: 'NotoSansJP',
+          //           fontWeight: FontWeight.w400,
+          //           fontSize: ScreenAdapter.fontSize(22.0),
+          //           color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+          //         )
+          //     ),
+          //   ),
+          // ),
           InkWell(
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkMachineMode("1");
+              controller.updateMachineMode(sell: !isSellOn);
             },
             child: Container(
-              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              padding: EdgeInsets.symmetric(horizontal: 30),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              //width: ScreenAdapter.width(220),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: isSellOn ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
                 //border: new Border.all(width: 1, color: Colors.red),
               ),
-              child: Text("券売機",
+              child: Text("店　内",
                   style: TextStyle(
-                    fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
+                    fontFamily: 'NotoSansJP',
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machine_mode.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: isSellOn ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -582,18 +617,51 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkMachineMode("2");
+              controller.updateMachineMode(takeout:!isTakeoutOn);
             },
             child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              //width: ScreenAdapter.width(220),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machine_mode.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: isTakeoutOn ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("テイクアウト",
+                  style: TextStyle(
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'NotoSansJP',
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: isTakeoutOn ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.updateMachineMode(checkout: !isCheckoutOn);
+            },
+            child: Container(
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              padding: EdgeInsets.symmetric(horizontal: 10),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              //width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: isCheckoutOn ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -606,7 +674,7 @@ class SystemSettingPageView extends GetView {
                       fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.machine_mode.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                      color: isCheckoutOn ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                     ),
                     children: [
                       TextSpan(
@@ -626,18 +694,19 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkMachineMode("3");
+              controller.updateMachineMode(scanbuy: !isScanbuyOn);
             },
             child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              padding: EdgeInsets.symmetric(horizontal: 10),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              //width: ScreenAdapter.width(220),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machine_mode.value == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: isScanbuyOn ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -650,7 +719,7 @@ class SystemSettingPageView extends GetView {
                       fontFamily: 'NotoSansJP',
                       fontWeight: FontWeight.w400,
                       fontSize: ScreenAdapter.fontSize(22.0),
-                      color: (controller.machine_mode.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                      color: isScanbuyOn ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                     ),
                     children: [
                       TextSpan(
@@ -2533,7 +2602,7 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                         ),
-                                        setMachineMode(),//设置机器类型
+                                        setMachineMode(controller.machineModeInfo),//设置机器类型
                                       ]
                                   ), //设置机器类型
                                   if(controller.lineup.value == true)

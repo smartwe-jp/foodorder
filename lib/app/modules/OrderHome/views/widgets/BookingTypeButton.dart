@@ -1,4 +1,5 @@
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
@@ -12,11 +13,13 @@ class BookingTypeButton extends StatelessWidget {
   final String title;
   final bool selected;
   final Function? onTap;
+  final double width;
 
   BookingTypeButton(
       {Key? key,
         required this.icon,
         required this.title,
+        this.width = 400,
         this.onTap, required this.selected,});
 
   @override
@@ -29,7 +32,7 @@ class BookingTypeButton extends StatelessWidget {
         Container(
           padding: EdgeInsets.all(10),
           height:ScreenAdapter.height(280),
-          width: ScreenAdapter.width(400),
+          width: ScreenAdapter.width(width),
           decoration: BoxDecoration(
             color: selected ? ColorsUtil.hexToColor(Gcolor.greenThemeColor) : Colors.green[900],
             borderRadius: BorderRadius.circular(10),
@@ -42,7 +45,7 @@ class BookingTypeButton extends StatelessWidget {
             // ],
           ),
 
-          child: Stack(
+          child: Column(
             //mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
@@ -51,11 +54,11 @@ class BookingTypeButton extends StatelessWidget {
                 child: icon,
               ),
 
-              //Expanded(child:
+              Expanded(child:
               Container(
                 padding: EdgeInsets.only(bottom: 40),
                 alignment: Alignment.bottomCenter,
-                child: Text(
+                child: AutoSizeText(
                   title,
                   maxLines: 2,
                   textAlign: TextAlign.center,
@@ -69,7 +72,7 @@ class BookingTypeButton extends StatelessWidget {
                 ),
               )
 
-              //)
+              )
             ],
           ),
         )

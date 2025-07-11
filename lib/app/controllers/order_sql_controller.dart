@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../models/ItemModel.dart';
 import '../services/itemService.dart';
 
-class OrderSqlController extends GetxController {
+class OrderSqlController extends GetxService {
   ItemServices itemServices = ItemServices();
   List cartItems = [];
   List getcartItems = [];
@@ -38,7 +38,7 @@ class OrderSqlController extends GetxController {
         cartItems.add(ShopItemModel.fromJson(element));
       });
 
-      update();
+      //update();
 
     } catch (e) {
       print(e);
@@ -53,7 +53,7 @@ class OrderSqlController extends GetxController {
         cartItems.add(ShopItemModel.fromJson(element));
       });
 
-      update();
+      //update();
 
     } catch (e) {
       print(e);
@@ -102,7 +102,7 @@ class OrderSqlController extends GetxController {
 
   Future addToCart(item, {bool checkItem = false}) async {
     isLoading = true;
-    update();
+    //update();
     var result;
     if(checkItem == true){
       var checkResult= await itemServices.checkToCartItem(item['menuCode']);
@@ -116,25 +116,25 @@ class OrderSqlController extends GetxController {
     }
 
     isLoading = false;
-    update();
+    //update();
     return result;
   }
 
   Future addToCartNum(item) async {
     isLoading = true;
-    update();
+    //update();
     var result;
     result = await itemServices.addToCartNum(item);
 
 
     isLoading = false;
-    update();
+    //update();
     return result;
   }
 
   Future reduceToCart(item) async {
     isLoading = true;
-    update();
+    //update();
     var result;
     var checkResult = await itemServices.getCartItemNumberByID(item['cartId']);
     if(checkResult[0]["goodsNum"]>1){
@@ -142,7 +142,7 @@ class OrderSqlController extends GetxController {
     }
 
     isLoading = false;
-    update();
+    //update();
     return result;
   }
 
@@ -150,12 +150,12 @@ class OrderSqlController extends GetxController {
     itemServices.removeFromCart(Id);
     int index = cartItems.indexWhere((element) => element.id == Id);
     cartItems.removeAt(index);
-    update();
+    //update();
   }
 
   removeAllFromCart() async {
     itemServices.removeAllFromCart();
 
-    update();
+    //update();
   }
 }

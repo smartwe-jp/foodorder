@@ -82,7 +82,7 @@ class CreatePrintImageController extends GetxController {
       }
     }
 
-    if (categoryVos == null || categoryVos.length == 0) {
+    if (categoryVos.length == 0) {
       tpPrintReceipt(print_paper_txt_size, printData);
       return;
     }
@@ -351,6 +351,10 @@ class CreatePrintImageController extends GetxController {
         );
       }
     }
+
+    categoryMenus.add(
+      _publicSplitLine(),
+    );
 
     categoryMenus.add(
       Container(
