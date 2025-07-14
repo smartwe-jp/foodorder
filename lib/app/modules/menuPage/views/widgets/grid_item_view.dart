@@ -138,12 +138,14 @@ class ItemInfoArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
         //标题
+        SizedBox(height: 20,),
         MainTitle(title: title),
         //价格
-        Row(mainAxisAlignment: MainAxisAlignment.start,
+        Row(mainAxisAlignment: MainAxisAlignment.end,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SubTitle(title: subtitle),
               //SizedBox(width: ScreenAdapter.width(20)),
@@ -164,8 +166,7 @@ class MainTitle extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-        child:
+    return
         Container(
           alignment: Alignment.centerLeft,
           child: AutoSizeText(
@@ -174,13 +175,13 @@ class MainTitle extends StatelessWidget {
             overflow: TextOverflow.ellipsis,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(24),
+              fontSize: ScreenAdapter.fontSize(28),
               fontWeight: FontWeight.w600,
               fontFamily: GFont.getFontFamily(),
               color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
             ),
           ),
-        ));
+        );
   }
 }
 

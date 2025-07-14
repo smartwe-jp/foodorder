@@ -134,7 +134,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         //EasyLoading.showToast('All printers are ready');
         //Get.back(); // Close the dialog
       //}
-      //update();
+      update();
     });
   }
 
