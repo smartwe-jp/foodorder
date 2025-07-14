@@ -163,7 +163,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   _getPackageInfo() async {
     //PackageInfo packageInfo = await PackageInfo.fromPlatform();
     local_version.value =
-        "1.1.0"; //packageInfo.version;//+"+"+packageInfo.buildNumber
+        "1.1.1"; //packageInfo.version;//+"+"+packageInfo.buildNumber
 
     _getSystemSettingInfo();
   }
@@ -553,13 +553,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
                                 Get.back();
                                 Get.dialog(showSpeedView());
                                 //https://app.gutingjun.com/kanran-release.apk
-// <<<<<<< HEAD
-//                                 String fileName = Platform.isAndroid
-//                                     ? 'smartwe_ticket_machine.apk'
-//                                     : 'smartwe_ticket_machine.exe';
-//                                 downloadAndroid(file_url + fileName);
-//                                 //testReadAndInstall();
-// =======
+
+                                String fileName = Platform.isAndroid
+                                    ? 'smartwe_ticket_machine.apk'
+                                    : 'smartwe_ticket_machine.exe';
+                                downloadAndroid(file_url + fileName);
+                                //testReadAndInstall();
+
 //                                 downloadAndroid(downloadUrl);
 // >>>>>>> 2.7.0-dev
                               },

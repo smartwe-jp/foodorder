@@ -2829,23 +2829,23 @@ class SystemSettingPageView extends GetView {
                                         setIsReservation(),//设置机器类型
                                       ]
                                   ), //设置机器类型
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "店内・テイクアウト",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setDiningtype(),//食事のタイプ
-                                      ]
-                                  ),
+                                  // TableRow(
+                                  //     children: <Widget>[
+                                  //       Container(
+                                  //         //height: ScreenAdapter.height(65),
+                                  //         alignment: Alignment.center,
+                                  //         child: Text(
+                                  //           "店内・テイクアウト",
+                                  //           style: TextStyle(
+                                  //               fontFamily: 'NotoSansJP',
+                                  //               fontSize: ScreenAdapter.fontSize(22),
+                                  //               fontWeight: FontWeight.w500
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       setDiningtype(),//食事のタイプ
+                                  //     ]
+                                  // ),
                                   //if(Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[

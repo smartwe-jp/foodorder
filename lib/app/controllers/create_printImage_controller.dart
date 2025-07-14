@@ -383,17 +383,14 @@ class CreatePrintImageController extends GetxController {
       }
 
       //分割线
-      if (machineMode.value == "1" || machineMode.value == "3") {
-        addRowHight += 40;
+      if (machineInfo.currentMode != MachineMode.takeout) {
+        addRowHight += 8;
         categoryMenus.add(
           _publicSplitLine(),
         );
       }
     }
-    categoryMenus.add(
-          _publicSplitLine(),
-        );
-
+    if(machineInfo.currentMode == MachineMode.takeout)
     categoryMenus.add(
       _publicSplitLine(),
     );

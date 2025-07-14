@@ -206,7 +206,7 @@ class CheckoutPageView extends GetView {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            'settlement_button'.localized(),
+            'order_start'.localized(),
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,

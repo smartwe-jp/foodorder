@@ -86,13 +86,12 @@ class CheckoutPageController extends GetxController with StateMixin {
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
-        Get.dialog(
-          checkStatusCopyView(),
-          barrierDismissible: false,
-        );
-        checkPrinterStatus();
+          Get.dialog(
+            checkStatusCopyView(),
+            barrierDismissible: false,
+          );
+          checkPrinterStatus();
         //});
-
       }
     }
   }
@@ -120,10 +119,13 @@ class CheckoutPageController extends GetxController with StateMixin {
     }).toList();
 
     allAreReady.value = false;
+    update();
+    
     await Future.delayed(const Duration(milliseconds: 3000));
+
     await printerCheckService.checkPrinters(checkList, (printer) {
       int index = checkList.indexWhere((item) => item['name'] == printer['name']);
-      debugPrint('Checking printer back: ${printer['name']} isReady: ${printer['isReady']} isChecking: ${printer['isChecking']} checked: ${printer['checked']}');
+      debugPrint('Checking printer back: ${printer['name']} isOn:${printer['isOn']} isReady: ${printer['isReady']} isChecking: ${printer['isChecking']} checked: ${printer['checked']}');
       if (index != -1) {
         checkList[index]['isReady'] = printer['isReady'];
         checkList[index]['isChecking'] = printer['isChecking'];
@@ -131,10 +133,10 @@ class CheckoutPageController extends GetxController with StateMixin {
       }
       allAreReady.value = checkList.every((item) => item['checked']);
       //if (allAreReady.value) {
-      //EasyLoading.showToast('All printers are ready');
-      //Get.back(); // Close the dialog
+        //EasyLoading.showToast('All printers are ready');
+        //Get.back(); // Close the dialog
       //}
-      //update();
+      update();
     });
   }
 
