@@ -1,7 +1,7 @@
-const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
-const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
-const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = true;
+const base_url_profile = "https://api.smartwe.jp/"; //new生产环境地址
+const base_url_test = "https://sit-api.smartwe.jp/"; //测试环境地址//是否生产环境
+const base_url = isProduction ? base_url_profile : base_url_test; //根据环境选择地址
+const isProduction = false;
 
 const file_url = "https://app.smartwe.co.jp/";
 
@@ -36,7 +36,8 @@ const servicePath = {
   'webBootToPrintV5':
       base_url + 'pad/web/boot/v5/print', //打印小票请求地址 新转成图片去掉空格，格式有变化
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
-  'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
+  'webBootToPrintV7':
+      base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootToPrintV8': base_url + 'pad/web/boot/v8/print',
   'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
@@ -69,7 +70,8 @@ const servicePath = {
   'shopOrderTableNum': base_url + 'pad/web/table/shopOrderTableNum', //扫桌号二维码下单
   'webBootCalculate': base_url + 'pad/web/boot/calculate', //扫桌号二维码下单
   'webBootCalculateV2': base_url + 'web/boot/calculate/v2', //扫桌号二维码下单
-  'checkOutOrderDetails': base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
+  'checkOutOrderDetails':
+      base_url + 'pad/web/table/checkOutOrderDetails', //精算机结算页面订单列表
 
   'webBootReserve': base_url + 'pad/web/boot/v1/reserve', //提交预约排队
   'webBootToPayConfirm': base_url + 'pad/web/boot/toPay/confirm', //订单id确认
@@ -84,8 +86,10 @@ const servicePath = {
   'webBootReimburseNotify': base_url + 'pad/web/boot/reimburse/notify', //退款执行通知
 
   //领收书相关
-  'webBootReceiptQuery': base_url + 'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
-  'webBootReceiptQueryV2': base_url + 'pad/web/boot/retry/printByQuery/v2', //通过领収书注文番号开始查询/retry/printByQuery v2
+  'webBootReceiptQuery': base_url +
+      'pad/web/boot/retry/printByQuery', //通过领収书注文番号开始查询/retry/printByQuery
+  'webBootReceiptQueryV2': base_url +
+      'pad/web/boot/retry/printByQuery/v2', //通过领収书注文番号开始查询/retry/printByQuery v2
   //レジ締め
   'webBootRejishimeiPrintInfo':
       base_url + 'pad/web/boot/query/printInfo', //レジ締め 获取打印信息
@@ -130,8 +134,13 @@ const servicePath = {
 
   'localOrderPost': 'http://172.50.10.84:3000/api/add/order',
 
-  'sseSubscribePanda': (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') + 'web/subscribe/panda/', //SSE订阅地址
+  'sseSubscribePanda':
+      (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') +
+          'web/subscribe/panda/', //SSE订阅地址
 
-  'sseSubscribeSmartWe': (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') + 'web/subscribe/smartWe/', //SSE
+  'sseSubscribeSmartWe':
+      (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') +
+          'web/subscribe/smartWe/', //SSE
 
+  'sseCallback': base_url + 'web/sse/received/callback'
 };

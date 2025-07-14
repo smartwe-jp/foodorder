@@ -477,7 +477,9 @@ class TransitPageController extends GetxController {
       if (sseSetting['isOn'] == true) {
         final url = servicePath[sseSetting['server']];// + sseSetting['identify'];
         if (url != null && url.isNotEmpty) {
-          final address = url + sseSetting['identify'];
+          //final address = url + sseSetting['identify'];
+          final needInput = sseSetting['needInput'] ?? false;
+          final address = url + (needInput ? sseSetting['identify']:machineInfo.machineCode);
           sseService.addSseListen(address);
         }
       }

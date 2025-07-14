@@ -62,7 +62,7 @@ class PrintService extends GetxService {
   _sendToDisplayPanel(data) async {
     debugPrint("_sendToDisplayPanel data: $data");
 
-    if (_machineInfo.wlan_panel_print_ip.isEmpty||
+    if (_machineInfo.wlan_panel_print_ip.isEmpty ||
         _machineInfo.wlan_panel_print_port.isEmpty) {
       debugPrint("_sendToDisplayPanel: Panel IP or Port is not set.");
       return;
@@ -71,7 +71,7 @@ class PrintService extends GetxService {
         'http://${_machineInfo.wlan_panel_print_ip}:${_machineInfo.wlan_panel_print_port}/api/add/order';
     try {
       final response =
-      await request(panelAddress, method: 'POST', parameters: data);
+          await request(panelAddress, method: 'POST', parameters: data);
       final responseValue = json.decode(response.toString());
       debugPrint('_sendToDisplayPanel:$responseValue');
     } catch (error) {
@@ -197,6 +197,34 @@ class PrintService extends GetxService {
 //    }
 // }
 
+  callbackBeforePrint(String event, Map data) async {
+    String uuid = data['uuid'] ?? '';
+    if (uuid.isEmpty) return;
+
+    try {
+      LogUtil.d("callbackBeforePrint uuid: $uuid send");
+      final val = await request('sseCallback',
+          method: 'POST',
+          parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
+      var response = json.decode(val.toString());
+      if (response != null &&
+          response['code'] == 200 &&
+          response['data'] != null) {
+            LogUtil.d("callbackBeforePrint uuid: $uuid send success");
+        if (event == 'message') {
+          printData(data);
+        }
+        if (event == 'print') {
+          printTableSeatInfo(data);
+        }
+      }
+    } on TimeoutException catch (e) {
+      debugPrint('TimeoutException:${e.toString()}');
+    } catch (e) {
+      debugPrint('error Exception:${e.toString()}');
+    }
+  }
+
   void printData(Map data, {bool fromSSE = true}) async {
     LogUtil.d("printData == $data");
     _sendToDisplayPanel(data);
@@ -207,7 +235,10 @@ class PrintService extends GetxService {
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
     bool isInShop = data["from_plate"] == "Shop";
-    bool isTakeOut = orderType == 'delivery' || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
+    bool isTakeOut = orderType == 'delivery' ||
+        orderType == 'takeout' ||
+        orderType == 'pickup' ||
+        orderType == 'Takeout';
 
     final centerPrinter = printerList.firstWhere(
       (p) => p["type"] == 11,
@@ -218,12 +249,15 @@ class PrintService extends GetxService {
       orElse: () => null,
     );
 
-    bool isCenterPrintOn = centerPrinter != null && !centerPrinter["isOff"] && centerPrinter["printIp"] != null && centerPrinter["printIp"].isNotEmpty;
-    bool smartWeCenterOn = smartWeSSE != null && smartWeSSE["centerOn"] && isCenterPrintOn;
+    bool isCenterPrintOn = centerPrinter != null &&
+        !centerPrinter["isOff"] &&
+        centerPrinter["printIp"] != null &&
+        centerPrinter["printIp"].isNotEmpty;
+    bool smartWeCenterOn =
+        smartWeSSE != null && smartWeSSE["centerOn"] && isCenterPrintOn;
     List orderLineItems = [];
 
     for (var key in orderLinesMap.keys) {
-
       final items = orderLinesMap[key];
       orderLineItems = orderLineItems + items;
 
@@ -244,10 +278,7 @@ class PrintService extends GetxService {
       bool isLabelPrint = printer['receipt'] == 1; // Label printing
       bool isContinuous = printer['continuous'] == 1; // Continuous printing
 
-
       final rotate = printer["direction"] == 1; // Rotate if direction is 1
-
-
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
@@ -316,57 +347,57 @@ class PrintService extends GetxService {
       // }
     }
 
-    if ((isCenterPrintOn && isTakeOut) || (fromSSE && smartWeCenterOn && isInShop)) {
+    if ((isCenterPrintOn && isTakeOut) ||
+        (fromSSE && smartWeCenterOn && isInShop)) {
       final printIp = centerPrinter["printIp"];
       final rotate = centerPrinter["direction"] == 1;
 
-      printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-          printIp, true, rotate, orderLineItems, remark, isCenterPrint: true);
+      printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime, printIp,
+          true, rotate, orderLineItems, remark,
+          isCenterPrint: true);
     }
-
-
   }
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
   printTableSeatInfo(Map data) async {
+    debugPrint("printTableSeatInfo data: $data");
 
-      debugPrint("printTableSeatInfo data: $data");
+    //find pinter with type 11
+    final printer = printerList.firstWhere(
+      (p) => p["type"] == 11 && !p["isOff"],
+      orElse: () => null,
+    );
+    if (printer == null) {
+      debugPrint("Printer IP not configured for type 11");
+      return;
+    }
 
-      //find pinter with type 11
-      final printer = printerList.firstWhere(
-        (p) => p["type"] == 11 && !p["isOff"],
-        orElse: () => null,
-      );
-      if (printer == null) {
-        debugPrint("Printer IP not configured for type 11");
-        return;
-      }
+    double rotate =
+        printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
 
-      double rotate = printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
+    //final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
+    final description = data["description"] ?? "";
+    final qrCode = data["qrCode"] ?? "";
+    final seatNumber = data["line1"] ?? "";
+    final line2 = data["line2"] ?? "";
 
-      //final currentTime = DateTime.now().toString().substring(0, 19).replaceAll(" ", "\n");
-      final description = data["description"] ?? "";
-      final qrCode = data["qrCode"] ?? "";
-      final seatNumber = data["line1"] ?? "";
-      final line2 = data["line2"] ?? "";
+    final imageWidget =
+        await _tableSeat(seatNumber, line2, description, qrCode, rotate);
 
-      final imageWidget = await _tableSeat(seatNumber, line2, description, qrCode, rotate);
-
-      // 生成打印图层任务，指定任务类型为标签
-      //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
-      PictureGeneratorProvider.instance.addPicGeneratorTask(
-          PicGenerateTask<PrinterInfo>(
-            tempWidget: imageWidget as ATempWidget,
-            printTypeEnum: PrintTypeEnum.receipt,
-            params: PrinterInfo(ip: printer["printIp"]),
-          ),
-      );
-      //});
-
-
+    // 生成打印图层任务，指定任务类型为标签
+    //TaskQueueUtils().addTask(task_smartwe_print)?.then((result) {
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: imageWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.receipt,
+        params: PrinterInfo(ip: printer["printIp"]),
+      ),
+    );
+    //});
   }
 
-  _tableSeat(String line1, String line2, String description, String qrCode, rotate) async {
+  _tableSeat(String line1, String line2, String description, String qrCode,
+      rotate) async {
     List<Widget> printMenus = [];
     printMenus.add(
       Column(
@@ -394,56 +425,54 @@ class PrintService extends GetxService {
                     ))),
           ),
           Container(
-            margin: EdgeInsets.only(bottom: 4),
-            width: 270.w,
-            height: 280.h,
-            child: BarcodeWidget(
-              height: 280,
-              barcode: Barcode.qrCode(),
-              data: qrCode,
-            )
+              margin: EdgeInsets.only(bottom: 4),
+              width: 270.w,
+              height: 280.h,
+              child: BarcodeWidget(
+                height: 280,
+                barcode: Barcode.qrCode(),
+                data: qrCode,
+              )
 
-            // QrImage(
-            //   size: 380,
-            //   data: orderKey,
-            // ),
-          ),
+              // QrImage(
+              //   size: 380,
+              //   data: orderKey,
+              // ),
+              ),
           Container(
             margin: EdgeInsets.only(bottom: 5),
             child: Directionality(
                 textDirection: ui.TextDirection.ltr,
-                child: Text(
-                    description,
+                child: Text(description,
                     style: TextStyle(
                       fontSize: 32.sp,
                       fontWeight: FontWeight.w400,
                       color: ColorsUtil.hexToColor("#000000"),
                     ))),
           ),
-
         ],
       ),
     );
 
-    return ReceiptConstrainedBox(
-        Transform(
-            transform: Matrix4.rotationZ(rotate),
-            alignment: Alignment.center,
-            child:Container(
-              //width: 560,
-              //height: 720,
-              padding: EdgeInsets.only(left: 0.5, right: 0.5),
-              color: Colors.white,
-              alignment: Alignment.topCenter,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: printMenus,
-              ),
-            )));
+    return ReceiptConstrainedBox(Transform(
+        transform: Matrix4.rotationZ(rotate),
+        alignment: Alignment.center,
+        child: Container(
+          //width: 560,
+          //height: 720,
+          padding: EdgeInsets.only(left: 0.5, right: 0.5),
+          color: Colors.white,
+          alignment: Alignment.topCenter,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: printMenus,
+          ),
+        )));
   }
 
-  Widget labelItem(String name, String number, Map options, double printWidth, bool rotate) {
+  Widget labelItem(
+      String name, String number, Map options, double printWidth, bool rotate) {
     return LabelConstrainedBox(
       Transform(
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
@@ -454,7 +483,6 @@ class PrintService extends GetxService {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               AutoSizeText(
                 name + ' # ' + number,
                 textAlign: TextAlign.center,
@@ -487,81 +515,76 @@ class PrintService extends GetxService {
       String remark,
       double printWidth,
       bool rotate) {
-  return LabelConstrainedBox(
-    Transform(
-        transform: Matrix4.rotationZ(rotate ? pi : 0.0),
-        alignment: Alignment.center,
-        child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                AutoSizeText(
-                  fromPlate + ' # ' + orderSnCode,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: 54,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                ),
-                Divider(
+    return LabelConstrainedBox(
+      Transform(
+          transform: Matrix4.rotationZ(rotate ? pi : 0.0),
+          alignment: Alignment.center,
+          child: Container(
+            padding: EdgeInsets.symmetric(horizontal: 8),
+            child:
+                Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
+              AutoSizeText(
+                fromPlate + ' # ' + orderSnCode,
+                textAlign: TextAlign.center,
+                maxLines: 1,
+                style: TextStyle(
+                  fontSize: 54,
                   color: Colors.black,
-                  thickness: 4,
+                  fontWeight: FontWeight.bold,
                 ),
-                SizedBox(height: 5,),
-                AutoSizeText(
-                  remark,
-                  maxLines: 4,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+              ),
+              Divider(
+                color: Colors.black,
+                thickness: 4,
+              ),
+              SizedBox(
+                height: 5,
+              ),
+              AutoSizeText(
+                remark,
+                maxLines: 4,
+                style: TextStyle(
+                  fontSize: 24,
+                  color: Colors.black,
+                  fontWeight: FontWeight.bold,
                 ),
-              ]
-          ),
-        )
-    ),
-    pagerWidth: printWidth,
-  );
-}
+                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+              ),
+            ]),
+          )),
+      pagerWidth: printWidth,
+    );
+  }
 
   Widget optionItem1(String optionName, List optionValues) {
     return Container(
       child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  "$optionName：",
-                  style: TextStyle(
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black
-                  ),
-                ),
-                ...optionValues.map((option) {
-                  final optionDetail = option["name"] ?? "";
-                  final optionQty = option["qty"] ?? 1;
-                  final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
-                  return Text(
-                    " $optionDetail $optionQtyString ",
-                    style: TextStyle(
-                      fontSize: 20,
-                        color: Colors.black,
-                    ),
-                  );
-                }).toList(),
-              ],
-            ),
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            "$optionName：",
+            style: TextStyle(
+                fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black),
+          ),
+          ...optionValues.map((option) {
+            final optionDetail = option["name"] ?? "";
+            final optionQty = option["qty"] ?? 1;
+            final optionQtyString = optionQty == 1 ? "" : "x $optionQty";
+            return Text(
+              " $optionDetail $optionQtyString ",
+              style: TextStyle(
+                fontSize: 20,
+                color: Colors.black,
+              ),
+            );
+          }).toList(),
+        ],
+      ),
     );
   }
 
   String optionItem(String optionName, List optionValues) {
-
     //返回Option字符串组合 格式 optionName: optionDetail1, optionDetail2 x qty2;
     return "$optionName: " +
         optionValues.map((option) {
@@ -573,7 +596,6 @@ class PrintService extends GetxService {
   }
 
   Widget optionList(Map options) {
-
     //合并所有Option为一个字符串格式为 optionName: optionDetail1 x qty1, optionDetail2 x qty2;
     if (options.isEmpty) {
       return Container(); // 如果没有选项，返回空容器
@@ -597,7 +619,6 @@ class PrintService extends GetxService {
     );
   }
 
-
   //打印逻辑为 连票打印时 只有一个标题receiptTitle 中间为菜品menuItem，最后右下角为下单时间
   //使用 printData 的同样参数实现这个需求
 
@@ -611,8 +632,7 @@ class PrintService extends GetxService {
       bool isRotate,
       List items,
       String remark,
-  {bool isCenterPrint = false}
-      ) async {
+      {bool isCenterPrint = false}) async {
     final rotate = isRotate ? pi : 0.0;
 
     // Generate the receipt widget
@@ -624,7 +644,9 @@ class PrintService extends GetxService {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             receiptTitle(orderSnCode, orderTime, fromPlate,
-                isTakeOut: isTakeOut, continuous: true, isCenterPrint: isCenterPrint),
+                isTakeOut: isTakeOut,
+                continuous: true,
+                isCenterPrint: isCenterPrint),
             ...items.map((item) {
               final qty = item["qty"] ?? 1;
               final name = item["name"] ?? "";
@@ -640,8 +662,7 @@ class PrintService extends GetxService {
                 ),
               ),
             ),
-            if (isCenterPrint)
-            remarkTitle(remark)
+            if (isCenterPrint) remarkTitle(remark)
           ],
         ),
       ),
@@ -717,7 +738,9 @@ class PrintService extends GetxService {
 
   //标题
   Widget receiptTitle(String title, String orderTime, String fromPlate,
-      {bool isTakeOut = false, bool continuous = false, bool isCenterPrint = false}) {
+      {bool isTakeOut = false,
+      bool continuous = false,
+      bool isCenterPrint = false}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
@@ -731,20 +754,20 @@ class PrintService extends GetxService {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   if (isTakeOut && !isCenterPrint)
-                  Icon(
-                    Icons.shopping_bag_outlined,
-                    size: 50,
-                    color: Colors.black,
-                  ),
-                  if (isTakeOut && isCenterPrint)
-                  Text(
-                    fromPlate + ' # ',
-                    style: TextStyle(
-                      fontSize: 50,
+                    Icon(
+                      Icons.shopping_bag_outlined,
+                      size: 50,
                       color: Colors.black,
-                      fontWeight: FontWeight.bold,
                     ),
-                  ),
+                  if (isTakeOut && isCenterPrint)
+                    Text(
+                      fromPlate + ' # ',
+                      style: TextStyle(
+                        fontSize: 50,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                   Text(
                     title,
                     style: TextStyle(
@@ -902,12 +925,8 @@ class PrintService extends GetxService {
     final wlan_print_ip_two = printer12?["printIp"] ?? "";
     final wlan_print_port_two = printer12?["printPort"] ?? "9100";
     final rotate12 = printer12?["direction"] ?? 0;
-    final is_allow_wlanPrint_continuous =
-        printer10?["continuous"] ?? 0;
-    final is_allow_wlanPrint_Two_continuous =
-        printer12?["continuous"] ?? 0;
-
-
+    final is_allow_wlanPrint_continuous = printer10?["continuous"] ?? 0;
+    final is_allow_wlanPrint_Two_continuous = printer12?["continuous"] ?? 0;
 
     //判断是否有打印机ip
     Map printerIpInfo = {
@@ -934,8 +953,7 @@ class PrintService extends GetxService {
       }
     } else if (printType == "12") {
       if (wlan_print_ip_two != null && wlan_print_ip_two != "") {
-        final rotate =
-            rotate12 == 1 ? pi : 0.0;
+        final rotate = rotate12 == 1 ? pi : 0.0;
         printerIpInfo = {
           "printer_ip": wlan_print_ip_two,
           "printer_port": wlan_print_port_two,
@@ -1548,13 +1566,12 @@ class PrintService extends GetxService {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: categoryMenus,
         )));
-
   }
 
   //打印label
   wifiNetworkLabelPrintData(extendPrintVo) async {
     final printer10 = _machineInfo.printerList.firstWhere(
-          (p) => p["type"] == 10,
+      (p) => p["type"] == 10,
       orElse: () => null,
     );
     final wlan_print_ip = printer10?["printIp"] ?? "";
@@ -1576,7 +1593,7 @@ class PrintService extends GetxService {
 
   wifiNetPrintLabelnew(orderprintData) async {
     final printer10 = _machineInfo.printerList.firstWhere(
-          (p) => p["type"] == 10,
+      (p) => p["type"] == 10,
       orElse: () => null,
     );
     final wlan_print_ip = printer10?["printIp"] ?? "";

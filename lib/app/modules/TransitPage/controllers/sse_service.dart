@@ -75,11 +75,11 @@ class SseService extends GetxService {
             print('SSE Service: Received heartbeat event');
           }
           if (data != null) {
-            _printService.printData(data);
+            _printService.callbackBeforePrint(event, data);
           }
         } else if (event == 'print') {
           if (data != null) {
-            _printService.printTableSeatInfo(data);
+            _printService.callbackBeforePrint(event, data);
           }
         } else {
           // if (kDebugMode) {

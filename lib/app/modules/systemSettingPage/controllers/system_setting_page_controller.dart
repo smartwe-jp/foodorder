@@ -105,12 +105,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxList printerList = [].obs;
   RxList sseSettingList = [].obs;
 
-  List<String> panelTypes = ['Mini','Max'];
+  List<String> panelTypes = ['Mini', 'Max'];
   String panelType = "Mini";
   bool isAllow10000 = true;
   bool isAllow5000 = true;
 
-  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
+  String get downloadUrl => appConfig.isAndroid11
+      ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
       : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
 
   final Map subPrinterInfos = {
@@ -136,9 +137,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
       // 检查 printerList 中是否包含该 type
       bool isSelected = printerList.any((item) => item['type'] == value);
       return MapEntry(key, isSelected ? null : value);
-    })..removeWhere((key, value) => value == null);
+    })
+      ..removeWhere((key, value) => value == null);
   }
-
 
   @override
   void onInit() {
@@ -174,11 +175,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
     Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    Map wlanPrintSettingInfoTwo = await HomeServices.getWlanPrintSettingTwoInfo();
-    Map wlanPanelPrintSettingInfo = await HomeServices.getWlanPanelPrintSettingInfo();
-    printDirection.value = await HomeServices.getPrintDirection() == "1" ? true : false;
-    printTwoDirection.value = await HomeServices.getPrintTwoDirection() == "1" ? true : false;
-    printThreeDirection.value = await HomeServices.getPrintThreeDirection() == "1" ? true : false;
+    Map wlanPrintSettingInfoTwo =
+        await HomeServices.getWlanPrintSettingTwoInfo();
+    Map wlanPanelPrintSettingInfo =
+        await HomeServices.getWlanPanelPrintSettingInfo();
+    printDirection.value =
+        await HomeServices.getPrintDirection() == "1" ? true : false;
+    printTwoDirection.value =
+        await HomeServices.getPrintTwoDirection() == "1" ? true : false;
+    printThreeDirection.value =
+        await HomeServices.getPrintThreeDirection() == "1" ? true : false;
     printLabelWidth.value = await HomeServices.getLabelPrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
@@ -263,8 +269,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isReservation": isReservation.value, //是否开启预约服务
     "isAllowAttendance": is_allow_attendance.value, //0不开启 1开启
     "isAllowOneYen": is_allow_oneyen.value, //0禁用1元 1不禁用
-    "isAllow5000": isAllow5000 ? "1":"0",
-    "isAllow10000": isAllow10000 ? "1":"0",
+    "isAllow5000": isAllow5000 ? "1" : "0",
+    "isAllow10000": isAllow10000 ? "1" : "0",
     "isAllowRejishime": is_allow_rejishime.value, //0不开启 1开启
     "isAllowBackHome": is_allow_backhome.value, //0返回home 1返回到菜单
     "isAllowPos": is_allow_pos.value, //0不开启 1开启
@@ -273,10 +279,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "showPrintType": showPrintType.value.toString(), //0receipt 1label
     "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
     "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
-    "panelType":panelType,
+    "panelType": panelType,
     "isAllowWlanPanelPrint": is_allow_wlanPanelPrint ?? "0",
   };
-
 
   _checkAndInitialPrinters() async {
     printerList.value = await HomeServices.getPrinterListInfo();
@@ -339,8 +344,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //如果没有SSE设置，则添加默认设置
       sseSettingList.add({
         'name': 'SmartWe SSE',
-        'server': 'sseSubscribeSmartWe',//servicePath[
-        'identify': machineCode.value,
+        'server': 'sseSubscribeSmartWe', //servicePath[
+        'identify': '',
         'isOn': false,
         'needCenterPrint': true,
         'centerOn': false,
@@ -367,12 +372,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'scanbuy': false,
       });
     }
-
   }
 
-  editSSESetting(String name, String address, String identify, bool isOn) async {
-    Get.dialog(
-      SimpleInputAlert(
+  editSSESetting(
+      String name, String address, String identify, bool isOn) async {
+    Get.dialog(SimpleInputAlert(
         title: "$nameのIDを入力してください",
         originValue: identify,
         onConfirmClick: (value) async {
@@ -381,7 +385,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
             return;
           }
           if (isOn) {
-              //先关闭现有连接
+            //先关闭现有连接
             updateSSESetting(name, isOn: false);
             await Future.delayed(const Duration(milliseconds: 3000));
             //再开启新的连接
@@ -390,13 +394,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
             //如果是关闭状态，则直接更新设置
             updateSSESetting(name, identify: value);
           }
-        }
-      )
-    );
+        }));
   }
 
-
-  updateSSESetting(String name, {bool? isOn, String? identify, bool? centerOn}) async {
+  updateSSESetting(String name,
+      {bool? isOn, String? identify, bool? centerOn}) async {
     if (sseSettingList.isNotEmpty) {
       for (var i = 0; i < sseSettingList.length; i++) {
         if (sseSettingList[i]['name'] == name) {
@@ -412,12 +414,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
           }
 
           if (identify != null && identify.isNotEmpty) {
-
             final domain = servicePath[sseSettingList[i]['server']];
             if (isOn != null && domain != null) {
               //如果开启了SSE连接，则添加监听
-              final sseAddress = domain + identify;
-              isOn ? sseService.addSseListen(sseAddress) : sseService.disconnect(sseAddress);
+              final needInput = sseSettingList[i]['needInput'] ?? false;
+              final sseAddress = domain + (needInput ? identify:machineCode.value);
+              isOn
+                  ? sseService.addSseListen(sseAddress)
+                  : sseService.disconnect(sseAddress);
             }
           }
         }
@@ -429,9 +433,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   addCustomPrinter() async {
-    Get.dialog(
-        SetPrinterView(isAdd: true, notSelectedPrinterMap: notSelectedPrinterMap)
-    );
+    Get.dialog(SetPrinterView(
+        isAdd: true, notSelectedPrinterMap: notSelectedPrinterMap));
   }
 
   addSubPrinter(int printerType, String name) {
@@ -441,13 +444,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
     printerList.add({
       'name': name, //打印机名称
       'type': printerType,
-      'receipt':0, //0 小票 1 标签
-      'labelWidth':0, //标签宽度
-      'continuous':0, //0 单票 1 连票
+      'receipt': 0, //0 小票 1 标签
+      'labelWidth': 0, //标签宽度
+      'continuous': 0, //0 单票 1 连票
       'isOff': true, //是否开启
       'isDefault': false, //是否默认打印机
-      'printIp':'',
-      'printPort':'9100',
+      'printIp': '',
+      'printPort': '9100',
       'direction': 0,
     });
     //存打印机列表
@@ -466,7 +469,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
   }
 
-  editPrinterInfo(int printerType, int continuousType, bool isOff, {String name = "", String printIp = ""}) {
+  editPrinterInfo(int printerType, int continuousType, bool isOff,
+      {String name = "", String printIp = ""}) {
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
         if (printerList[i]['type'] == printerType) {
@@ -478,7 +482,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
       HomeServices.setPrinterListInfo(printerList);
     }
     update();
-
   }
 
   showDownloadingAlert() {
@@ -706,13 +709,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
 
     var dining_type_tmp = "1";
-    if(dining_type_one.value == true && dining_type_two.value == false){
+    if (dining_type_one.value == true && dining_type_two.value == false) {
       dining_type_tmp = "1"; //店内
-    }else if(dining_type_one.value == false && dining_type_two.value == true){
+    } else if (dining_type_one.value == false &&
+        dining_type_two.value == true) {
       dining_type_tmp = "2"; //外带
-    }else if(dining_type_one.value == true && dining_type_two.value == true){
+    } else if (dining_type_one.value == true && dining_type_two.value == true) {
       dining_type_tmp = "3"; //店内外带都有
-    }else{
+    } else {
       dining_type_one.value = true;
       dining_type_tmp = "1";
     }
@@ -720,48 +724,46 @@ class SystemSettingPageController extends GetxController with StateMixin {
     dining_type.value = dining_type_tmp;
     _updateSystemSetting("diningType", dining_type_tmp);
     //该处逻辑需要修改，如果切换模式会有获取不到Controller的问题。
-    if(machine_mode == "1"){
+    if (machine_mode == "1") {
       //if (Get.isRegistered<OrderHomeController>())
       //Get.find<OrderHomeController>().getSystemSettingInfo();
-    }else if(machine_mode == "2"){
+    } else if (machine_mode == "2") {
       // if (Get.isRegistered<CheckoutPageController>())
       // Get.find<CheckoutPageController>().getSystemSettingInfo();
     }
   }
 
-  updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
+  updateMachineMode(
+      {bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
     if (sell != null) {
       machineModeInfo['sell'] = sell;
       if (sell) machineModeInfo['scanbuy'] = false;
     }
 
-      if (takeout != null) machineModeInfo['takeout'] = takeout;
+    if (takeout != null) machineModeInfo['takeout'] = takeout;
 
-      if (checkout != null) {
-        machineModeInfo['checkout'] = checkout;
-        //if (checkout) machineModeInfo['scanbuy'] = false;
-      }
+    if (checkout != null) {
+      machineModeInfo['checkout'] = checkout;
+      //if (checkout) machineModeInfo['scanbuy'] = false;
+    }
 
-      if (scanbuy != null) {
-        machineModeInfo['scanbuy'] = scanbuy;
-        if (scanbuy) machineModeInfo['sell'] = false;
-      }
+    if (scanbuy != null) {
+      machineModeInfo['scanbuy'] = scanbuy;
+      if (scanbuy) machineModeInfo['sell'] = false;
+    }
 
-      HomeServices.setMachineModeInfo(machineModeInfo);
-      update();
-
-
+    HomeServices.setMachineModeInfo(machineModeInfo);
+    update();
   }
 
-  checkMenuDirection(checkedType){
-
+  checkMenuDirection(checkedType) {
     menu_direction.value = checkedType;
     _updateSystemSetting("menuDirection", checkedType);
     //if(Get.isRegistered<OrderHomeController>())
     //Get.find<OrderHomeController>().getSystemSettingInfo();
   }
 
-  checkPanelType(String type){
+  checkPanelType(String type) {
     panelType = type;
     _updateSystemSetting("panelType", type);
   }
@@ -846,30 +848,34 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  showPrintSettingDialog(int type, int receipt, int continueType, {String printerIp = '', String port = ''}) async {
-    Get.dialog(
-        SetPosIpPage(
-          posIp: printerIp,
-          posPort: port,
-          onConfrimClick: (String printIp, String printPort) {
-            if(printIp != ""){
-
-              updatePrinterInfo(type, receipt, isOff: false, continuous: continueType, printerIp: printIp, port: printPort);
-            }
-          },
-        )
-    );
+  showPrintSettingDialog(int type, int receipt, int continueType,
+      {String printerIp = '', String port = ''}) async {
+    Get.dialog(SetPosIpPage(
+      posIp: printerIp,
+      posPort: port,
+      onConfrimClick: (String printIp, String printPort) {
+        if (printIp != "") {
+          updatePrinterInfo(type, receipt,
+              isOff: false,
+              continuous: continueType,
+              printerIp: printIp,
+              port: printPort);
+        }
+      },
+    ));
   }
 
   updatePrinterState(int type, int receipt, bool isOff) async {
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+        if (printerList[i]['type'] == type &&
+            printerList[i]['receipt'] == receipt) {
           printerList[i]['isOff'] = isOff;
           if (!isOff && type == 10) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
             for (var j = 0; j < printerList.length; j++) {
-              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+              if (printerList[j]['type'] == 10 &&
+                  printerList[j]['receipt'] != receipt) {
                 printerList[j]['isOff'] = true;
               }
             }
@@ -881,21 +887,28 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction}) async {
-
+  updatePrinterInfo(int type, int receipt,
+      {bool? isOff,
+      int? continuous,
+      String? printerIp,
+      String? port,
+      int? printWidth,
+      int? direction}) async {
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
-          if(isOff != null) printerList[i]['isOff'] = isOff;
-          if(continuous != null) printerList[i]['continuous'] = continuous;
-          if(printerIp != null) printerList[i]['printIp'] = printerIp;
-          if(port != null) printerList[i]['printPort'] = port;
-          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
-          if(direction != null) printerList[i]['direction'] = direction;
+        if (printerList[i]['type'] == type &&
+            printerList[i]['receipt'] == receipt) {
+          if (isOff != null) printerList[i]['isOff'] = isOff;
+          if (continuous != null) printerList[i]['continuous'] = continuous;
+          if (printerIp != null) printerList[i]['printIp'] = printerIp;
+          if (port != null) printerList[i]['printPort'] = port;
+          if (printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if (direction != null) printerList[i]['direction'] = direction;
           if (type == 10 && !(isOff ?? true)) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
             for (var j = 0; j < printerList.length; j++) {
-              if (printerList[j]['type'] == 10 && printerList[j]['receipt'] != receipt) {
+              if (printerList[j]['type'] == 10 &&
+                  printerList[j]['receipt'] != receipt) {
                 printerList[j]['isOff'] = true;
               }
             }
@@ -906,8 +919,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
     update();
   }
-
-
 
   checkIsAllowWlanPrint(checkedType) async {
     var wlanPrintSettingData;
@@ -1164,12 +1175,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkIsAllowOneYen(checkedType) async {
-
-
-    if(checkedType == "0"){
-      var prohibitOneCashStatus =  await payCube.prohibitOneCash;
-    }else{
-      var allowOneCashStatus =  await payCube.allowOneCash;
+    if (checkedType == "0") {
+      var prohibitOneCashStatus = await payCube.prohibitOneCash;
+    } else {
+      var allowOneCashStatus = await payCube.allowOneCash;
     }
     is_allow_oneyen.value = checkedType;
 
@@ -1178,11 +1187,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllow5000Yen(checkedType) async {
     _showEasyLoading();
-    await payCube.setAcceptCash(checkedType, 5000, onSuccess: (){
+    await payCube.setAcceptCash(checkedType, 5000, onSuccess: () {
       isAllow5000 = checkedType;
-      _updateSystemSetting("isAllow5000", checkedType ? "1":"0");
-    }, catchError: (error){
-      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+      _updateSystemSetting("isAllow5000", checkedType ? "1" : "0");
+    }, catchError: (error) {
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: () {
         Get.back();
         checkIsAllow5000Yen(checkedType);
       });
@@ -1192,11 +1201,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   checkIsAllow10000Yen(checkedType) async {
     _showEasyLoading();
-    await payCube.setAcceptCash(checkedType, 10000, onSuccess: (){
+    await payCube.setAcceptCash(checkedType, 10000, onSuccess: () {
       isAllow10000 = checkedType;
-      _updateSystemSetting("isAllow10000", checkedType ? "1":"0");
-    }, catchError: (error){
-      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+      _updateSystemSetting("isAllow10000", checkedType ? "1" : "0");
+    }, catchError: (error) {
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: () {
         Get.back();
         checkIsAllow10000Yen(checkedType);
       });
@@ -1204,10 +1213,13 @@ class SystemSettingPageController extends GetxController with StateMixin {
     EasyLoading.dismiss();
   }
 
-
   handleMassageAlert(String message, {GestureTapCallback? confirm}) {
     Get.dialog(
-      DialogUtils.alert(message, confirm: confirm ?? (){Get.back();}, cancle: (){
+      DialogUtils.alert(message,
+          confirm: confirm ??
+              () {
+                Get.back();
+              }, cancle: () {
         Get.back();
       }),
       barrierDismissible: false,
@@ -1285,8 +1297,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     });
   }
 
-
-  _showEasyLoading({String text = ""}){
+  _showEasyLoading({String text = ""}) {
     var _showTag;
     _showTag = Text(text,
         style: TextStyle(
