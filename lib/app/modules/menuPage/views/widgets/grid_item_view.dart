@@ -138,10 +138,9 @@ class ItemInfoArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
       children: [
         //标题
-        SizedBox(height: 20,),
         MainTitle(title: title),
         //价格
         Row(mainAxisAlignment: MainAxisAlignment.end,
@@ -153,7 +152,8 @@ class ItemInfoArea extends StatelessWidget {
               // (option != "")
               //     ? OptionButton(title: option, onTap: onTap)
               //     : Container(),
-            ])
+            ]),
+        SizedBox(height: 20,)
       ],
     );
   }
@@ -167,18 +167,21 @@ class MainTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return
-        Container(
-          alignment: Alignment.centerLeft,
-          child: AutoSizeText(
-            title,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            textAlign: TextAlign.left,
-            style: TextStyle(
-              fontSize: ScreenAdapter.fontSize(28),
-              fontWeight: FontWeight.w600,
-              fontFamily: GFont.getFontFamily(),
-              color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+        Expanded(
+          child: Container(
+            margin: EdgeInsets.only(top: 20),
+            alignment: Alignment.topLeft,
+            child: AutoSizeText(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: ScreenAdapter.fontSize(28),
+                fontWeight: FontWeight.w600,
+                fontFamily: GFont.getFontFamily(),
+                color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
+              ),
             ),
           ),
         );
