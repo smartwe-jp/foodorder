@@ -29,6 +29,8 @@ apply plugin: 'com.android.library'
 android {
     compileSdkVersion 28
 
+    namespace 'com.paycube.paycube'
+
     defaultConfig {
         minSdkVersion 19
     }

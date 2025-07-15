@@ -8,7 +8,7 @@ import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
 import 'package:open_file/open_file.dart';
-import 'package:package_info/package_info.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;

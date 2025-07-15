@@ -1,0 +1,2 @@
+/Users/aaronhou/MWFoodorder/Foodorder_WP/android/app/.cxx/Debug/2d4i1v5s/armeabi-v7a/CMakeFiles/edit_cache.dir
+/Users/aaronhou/MWFoodorder/Foodorder_WP/android/app/.cxx/Debug/2d4i1v5s/armeabi-v7a/CMakeFiles/rebuild_cache.dir

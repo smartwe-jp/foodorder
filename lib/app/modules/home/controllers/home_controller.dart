@@ -115,12 +115,13 @@ class HomeController extends GetxController {
   // 先に、インターネットの接続のご確認をお願いします。 （）提示的提示语
   checkInterNetStatus() async {
     checkSteeps.value = 1;
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile
-    || connectivityResult == ConnectivityResult.wifi
-    || connectivityResult == ConnectivityResult.ethernet) {
+    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+        connectivityResult.contains(ConnectivityResult.wifi) ||
+        connectivityResult.contains(ConnectivityResult.ethernet)) {
       openPayCube();
-    } else {print("没有网络");
+    } else {
+      print("没有网络");
       // I am not connected to any network.
       Get.dialog(
           DialogUtils.alertOneButton("セルフレジはインターネットに接続されてません。\r\n先に、インターネットの接続のご確認をお願いします。",
