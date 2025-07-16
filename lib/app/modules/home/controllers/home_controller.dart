@@ -14,17 +14,10 @@ import 'package:appset/appset.dart';
 import 'package:logging/logging.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
-//import 'package:paycube/paycube.dart';
-
-import '../../../config/color.dart';
-import '../../../config/colorsUtil.dart';
-import '../../../plugins/paycube_old/lib/paycube.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/HomeServices.dart';
-import '../../../services/ScreenAdapter.dart';
 import '../../../services/Storage.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../TransitPage/views/transit_page_view.dart';
 
 class HomeController extends GetxController {
   //TODO: Implement HomeController
@@ -119,10 +112,10 @@ class HomeController extends GetxController {
   // 先に、インターネットの接続のご確認をお願いします。 （）提示的提示语
   checkInterNetStatus() async {
     checkSteeps.value = 1;
-    final connectivityResult = await (Connectivity().checkConnectivity());
-    if (connectivityResult == ConnectivityResult.mobile ||
-        connectivityResult == ConnectivityResult.wifi ||
-        connectivityResult == ConnectivityResult.ethernet) {
+    List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
+    if (connectivityResult.contains(ConnectivityResult.mobile) ||
+    connectivityResult.contains(ConnectivityResult.wifi) ||
+    connectivityResult.contains(ConnectivityResult.ethernet)) {
       debugPrint("checkInterNetStatus有网络");
       if (Platform.isAndroid) {
         openPayCube();

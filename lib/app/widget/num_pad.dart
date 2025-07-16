@@ -173,7 +173,7 @@ class NumberButton extends StatelessWidget {
       height: size,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
-          foregroundColor: color,
+          backgroundColor: color,
           shape: RoundedRectangleBorder(
             //borderRadius: BorderRadius.circular(size / 2),
             borderRadius: BorderRadius.circular(5),

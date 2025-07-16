@@ -14,8 +14,7 @@ import 'package:logging/logging.dart';
 import 'package:foodorder/app/config/http_conf.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
-import 'package:http/http.dart' as http;
-import 'package:path_provider/path_provider.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';

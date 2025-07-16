@@ -1,5 +1,6 @@
 
 
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
@@ -56,15 +57,17 @@ class LanguageButton extends StatelessWidget {
             ),
 
             SizedBox(width: 20,),
-            Container(
-              alignment: Alignment.center,
-              child:
-              Text(
-                title,
-                style: TextStyle(
-                  color: selected ? Colors.black : Colors.white,
-                  fontSize: 32,
-                  fontWeight: FontWeight.w600,
+            Expanded(
+              child: Container(
+                alignment: Alignment.center,
+                child:
+                AutoSizeText(
+                  title,
+                  style: TextStyle(
+                    color: selected ? Colors.black : Colors.white,
+                    fontSize: 32,
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
               ),
             )

@@ -15,7 +15,6 @@ import 'package:foodorder/app/modules/rejishimei/view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
-import 'package:foodorder/app/modules/setting/views/RejishimeRequestView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/services/Storage.dart';
@@ -23,8 +22,8 @@ import 'package:foodorder/app/services/customLogger.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
-import 'package:package_info/package_info.dart';
 import 'package:intl/intl.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
 import '../../../config/imageData.dart';
@@ -36,8 +35,6 @@ import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
-import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
-import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/ReplanishView.dart';
 

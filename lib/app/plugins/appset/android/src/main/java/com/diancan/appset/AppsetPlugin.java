@@ -14,14 +14,9 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 /** AppsetPlugin */
 public class AppsetPlugin implements FlutterPlugin, MethodCallHandler {
-  /// The MethodChannel that will the communication between Flutter and native Android
-  ///
-  /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-  /// when the Flutter Engine is detached from the Activity
   private MethodChannel channel;
   private Context mContext;
 
@@ -36,14 +31,14 @@ public class AppsetPlugin implements FlutterPlugin, MethodCallHandler {
   public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
     if (call.method.equals("getPlatformVersion")) {
       result.success("Android " + android.os.Build.VERSION.RELEASE);
-    }else if(call.method.equals("showBullyScreen")){
+    } else if (call.method.equals("showBullyScreen")) {
       Intent statusbarIntent = new Intent("com.android.SHOW_STATUSBAR");
       mContext.sendBroadcast(statusbarIntent);
 
       Intent navabarIntent = new Intent("com.android.SHOW_NAVBAR");
       mContext.sendBroadcast(navabarIntent);
       result.success("success");
-    }else if(call.method.equals("hideBullyScreen")){
+    } else if (call.method.equals("hideBullyScreen")) {
       Intent statusbarIntent = new Intent("com.android.HIDE_STATUSBAR");
       mContext.sendBroadcast(statusbarIntent);
 
@@ -53,9 +48,7 @@ public class AppsetPlugin implements FlutterPlugin, MethodCallHandler {
     } else if (call.method.equals("restartApp")) {
       restartApp();
       result.success("success");
-    }
-
-    else {
+    } else {
       result.notImplemented();
     }
   }
@@ -65,10 +58,9 @@ public class AppsetPlugin implements FlutterPlugin, MethodCallHandler {
             .getLaunchIntentForPackage(mContext.getPackageName());
     PendingIntent restartIntent = PendingIntent.getActivity(mContext, 0, intent, PendingIntent.FLAG_ONE_SHOT);
     AlarmManager mgr = (AlarmManager) mContext.getSystemService(Context.ALARM_SERVICE);
-    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent); // 1秒钟后重启应用
+    mgr.set(AlarmManager.RTC, System.currentTimeMillis() + 1000, restartIntent);
     System.exit(0);
   }
-
 
   @Override
   public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
