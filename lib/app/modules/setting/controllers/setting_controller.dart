@@ -397,13 +397,13 @@ class SettingController extends GetxController with StateMixin {
   _getPackageInfo() async {
     debugPrint("SettingController _getPackageInfo");
 
-    if (Platform.isWindows) {
+    //if (Platform.isWindows) {
       //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
-      local_version.value = "2.6.0"; //当前每次打包需要手动修改版本号
-    } else {
+    //  local_version.value = "2.6.0"; //当前每次打包需要手动修改版本号
+    //} else {
       PackageInfo packageInfo = await PackageInfo.fromPlatform();
       local_version.value = packageInfo.version;
-    }
+    //}
     //+"+"+packageInfo.buildNumber
 
     getSystemSettingInfo();

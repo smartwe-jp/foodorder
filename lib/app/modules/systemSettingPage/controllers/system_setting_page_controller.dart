@@ -162,9 +162,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   //获取版本号
   _getPackageInfo() async {
-    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value =
-        "1.1.1"; //packageInfo.version;//+"+"+packageInfo.buildNumber
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version;//+"+"+packageInfo.buildNumber
 
     _getSystemSettingInfo();
   }
