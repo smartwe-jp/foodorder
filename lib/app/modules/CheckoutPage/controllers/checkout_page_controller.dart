@@ -386,8 +386,8 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     final reset = resetLanguage;
     debugPrint('backCheckHome, reset:$resetLanguage');
-    if (reset)
-    selectLanguage = 'JP';
+    // if (reset)
+    // selectLanguage = 'JP';
 
     _resetScanState(resetLanguage);
     Get.back();
