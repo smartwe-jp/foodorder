@@ -1,5 +1,5 @@
 name: foodorder
-version: 2.7.1+135
+version: 2.7.2+136
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 

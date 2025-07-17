@@ -113,6 +113,7 @@ extension LocalizedString on String {
         "checkoutScanTitle":"お会計",
 
         "menu_option_more_multipleState":"最大%%つまで",
+        "menu_option_plus_multipleState":"最大選択数に達しました",
         "menu_option_less_smallest":"%%をお選びください",
         "show_selectPay_point":"点",
 
@@ -258,6 +259,7 @@ extension LocalizedString on String {
         "checkoutScanTitle":"结账",
 
         "menu_option_more_multipleState":"最多%%个",
+        "menu_option_plus_multipleState":"达到最多选择数量",
         "menu_option_less_smallest":"请选择%%",
         "show_selectPay_point":"份",
 
@@ -549,6 +551,7 @@ extension LocalizedString on String {
         "checkoutScanTitle":"계산하다",
 
         "menu_option_more_multipleState":"최대 %%개까지",
+        "menu_option_plus_multipleState":"최대 선택 수에 도달했습니다",
         "menu_option_less_smallest":"%% 선택해주세요",
         "show_selectPay_point":"점",
 

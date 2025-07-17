@@ -104,7 +104,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   void _showOutOfRangeDialog() {
 
     Get.dialog(
-        DialogUtils.alertOneButton('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle),
+        DialogUtils.alertOneButton('menu_option_plus_multipleState'.localized().replaceAll("%%", _mainTitle),
             title: GString.getToString(widget.languageKey, "tag_title"),
             confirmtitle: GString.getToString(widget.languageKey,"tag_button_yes"),
             confirm: () {
@@ -112,23 +112,23 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
             })
     );
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("tag_title".localized()),
-          content: Text('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle)),
-          actions: <Widget>[
-            TextButton(
-              child: Text("tag_button_yes".localized()),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: Text("tag_title".localized()),
+    //       content: Text('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle)),
+    //       actions: <Widget>[
+    //         TextButton(
+    //           child: Text("tag_button_yes".localized()),
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
 

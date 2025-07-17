@@ -370,6 +370,7 @@ class GString{
         "checkoutScanTitle":"Bill",
 
         "menu_option_more_multipleState":"Up to %% maximum",
+        "menu_option_plus_multipleState":"Maximum selection reached",
         "menu_option_less_smallest":"Please select %%",
         "show_selectPay_point":"",
 
