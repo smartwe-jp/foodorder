@@ -246,7 +246,7 @@ class MenuPageController extends GetxController with StateMixin {
         change(null, status: RxStatus.error('Failed to load data'));
       }
     })
-    .timeout(Duration(seconds: 15), onTimeout: (){
+    .timeout(Duration(seconds: 10), onTimeout: (){
       if (retryCount < 3) {
         retryCount++;
         debugPrint('Retrying getBookingBootIndexCategory on timeout, attempt: $retryCount');

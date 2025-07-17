@@ -52,15 +52,15 @@ class MenuSideBar extends StatelessWidget {
               onPressed: () {
                 Get.back();
               },
-              style: ElevatedButton.styleFrom(
-                backgroundColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor), // 暗绿色背景
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10), // 圆角 10
-                ),
-              ),
+              // style: ElevatedButton.styleFrom(
+              //   backgroundColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor), // 暗绿色背景
+              //   shape: RoundedRectangleBorder(
+              //     borderRadius: BorderRadius.circular(10), // 圆角 10
+              //   ),
+              // ),
               child: Container(
                 alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(vertical: 10.dp, horizontal: 20.dp),
+                padding: EdgeInsets.symmetric(vertical: 10),
                 child: Text(
                   '戻る',
                   style: TextStyle(
