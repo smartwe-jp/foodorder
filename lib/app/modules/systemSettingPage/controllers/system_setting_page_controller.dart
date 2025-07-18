@@ -13,6 +13,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
+import 'package:flutter_app_installer/flutter_app_installer.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -35,6 +36,7 @@ import '../../settlement/views/receipt_constrained_box.dart';
 import '../views/SetPosIp.dart';
 import '../views/set_subprinter.dart';
 import '../views/showSpeed.dart';
+
 
 class SystemSettingPageController extends GetxController with StateMixin {
   //TODO: Implement SystemSettingPageController
@@ -620,17 +622,24 @@ class SystemSettingPageController extends GetxController with StateMixin {
 //打开apk 开始安装
   openApk(String path) async {
     EasyLoading.dismiss();
-
-    final openResult = await OpenFile.open(path);
-    //print('openResult:${openResult.type}');
-    if (openResult.type == ResultType.error) {
-    } else if (openResult.type == ResultType.permissionDenied) {
-    } else if (openResult.type == ResultType.fileNotFound) {
-    } else if (openResult.type == ResultType.noAppToOpen) {
-    } else {
-      //if (widget.forceUpdate) Navigator.pop(context);
-      //print('open result done');
+    final FlutterAppInstaller flutterAppInstaller = FlutterAppInstaller();
+    try {
+      await flutterAppInstaller.installApk(filePath: path);
+    } catch (e) {
+      print('安装失败: $e');
     }
+
+
+    // final openResult = await OpenFile.open(path);
+    // //print('openResult:${openResult.type}');
+    // if (openResult.type == ResultType.error) {
+    // } else if (openResult.type == ResultType.permissionDenied) {
+    // } else if (openResult.type == ResultType.fileNotFound) {
+    // } else if (openResult.type == ResultType.noAppToOpen) {
+    // } else {
+    //   //if (widget.forceUpdate) Navigator.pop(context);
+    //   //print('open result done');
+    // }
   }
 
   checkDiningtype(checkedType){

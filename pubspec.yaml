@@ -1,5 +1,5 @@
 name: foodorder
-version: 2.7.2+136
+version: 2.7.3+137
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 
@@ -43,6 +43,7 @@ dependencies:
   barcode_widget: ^2.0.4
   qr_flutter: ^4.0.0
   flutter_switch: ^0.3.2
+  flutter_app_installer: 1.0.0
   flutter_http_sse:
     git:
       url: git@github.com:Aaron51FX/flutter_http_sse.git
