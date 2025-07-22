@@ -25,8 +25,8 @@ import 'checkStatusView.dart';
 
 class CheckoutPageController extends GetxController with StateMixin {
   //TODO: Implement CheckoutPageController
-  TextEditingController scanQrCodeHomeController = new TextEditingController();
-  FocusNode scanQrCodeHomeFocusNode = FocusNode();
+  // TextEditingController scanQrCodeHomeController = new TextEditingController();
+  // FocusNode scanQrCodeHomeFocusNode = FocusNode();
 
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
@@ -287,7 +287,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
     scanQrCodeFocusNode.requestFocus();
-    scanQrCodeHomeFocusNode.requestFocus();
+    //scanQrCodeHomeFocusNode.requestFocus();
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
           () =>
@@ -304,10 +304,10 @@ class CheckoutPageController extends GetxController with StateMixin {
             onCancelClick: (String isBack){
               if(isBack == "back"){
                 scanQrCodeController.text = "";
-                scanQrCodeHomeController.text = "";
+                //scanQrCodeHomeController.text = "";
               }
               scanQrCodeFocusNode.requestFocus();// 获取焦点
-              scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+              //scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
             }
         ),
       transition: Transition.fadeIn,
@@ -384,10 +384,10 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   backCheckHome({resetLanguage = false}) {
 
-    final reset = resetLanguage;
+    //final reset = resetLanguage;
     debugPrint('backCheckHome, reset:$resetLanguage');
-    if (reset)
-    selectLanguage = 'JP';
+    // if (reset)
+    // selectLanguage = 'JP';
 
     _resetScanState(resetLanguage);
     Get.back();
@@ -403,11 +403,11 @@ class CheckoutPageController extends GetxController with StateMixin {
       debugPrint('isFirstPage = false');
       scanQrCodeController.text = "";
       scanQrCodeFocusNode.requestFocus();// 获取焦点
-      if (resetLanguage) {//返回到首页需要重置首页扫码
-        scanQrCodeHomeFocusNode.requestFocus();
-      } else {
-        scanQrCodeHomeFocusNode.unfocus();
-      }
+      //if (resetLanguage) {//返回到首页需要重置首页扫码
+        //scanQrCodeHomeFocusNode.requestFocus();
+      //} else {
+        //scanQrCodeHomeFocusNode.unfocus();
+      //}
 
     //}
   }
