@@ -1,5 +1,6 @@
 import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
+import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -15,7 +16,7 @@ import '../../../services/formatMoney.dart';
 
 class SelectPaymentPage extends StatelessWidget {
   MachineInfoController machineInfo = Get.find();
-  final MenuPageController menuPageController = Get.find<MenuPageController>();
+  //final MenuPageController menuPageController = Get.find<MenuPageController>();
 
   SelectPaymentPage(
       {Key? key,
@@ -369,7 +370,8 @@ class SelectPaymentPage extends StatelessWidget {
                                               ),
                                               SizedBox(height: ScreenAdapter.height(10)),
                                               IconButton(onPressed: () async {
-                                                await menuPageController.checkMachineState();
+                                                await Cashchangerservice.checkMachineState();
+
                                               }, icon: Icon(Icons.running_with_errors))
                                             ],
                                           ),
@@ -1702,9 +1704,9 @@ class SelectPaymentPage extends StatelessWidget {
                                 ),
                                 if(!controller.taxSystem)
                                 Container(
-                                  padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
+                                  //padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
                                   child: Text(
-                                    "( + " + formatMoney(taxCount.toString()) + "tax".localized() + " )",
+                                    "（+ " + formatMoney(taxCount.toString()) + "tax".localized() + "）",
                                     style: TextStyle(
                                         color: ColorsUtil.hexToColor(
                                             Gcolor.mainTitleColor),

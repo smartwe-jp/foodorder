@@ -1281,24 +1281,24 @@ print("加1了");
     
   }
 
-  checkMachineState() async {
-    if (machineInfo.isAllowCash == true) { // && machineInfo.cashOn == false
-      machineInfo.isChecking = true;
-      machineInfo.update(['selectPayment']);
-      var result = await Cashchangerservice.checkMachineFlow();
-      logger.info('-- checkMachineState result = $result --');
-      machineInfo.isChecking = false;
-      if (result) {
-        machineInfo.showCash = true;
-        machineInfo.cashOn = true;
-      } else {
-        machineInfo.showCash = false;
-        machineInfo.cashOn = false;
-      } 
-      machineInfo.update(['selectPayment']);
-    }
+  // checkMachineState() async {
+  //   if (machineInfo.isAllowCash == true) { // && machineInfo.cashOn == false
+  //     machineInfo.isChecking = true;
+  //     machineInfo.update(['selectPayment']);
+  //     var result = await Cashchangerservice.checkMachineFlow();
+  //     logger.info('-- checkMachineState result = $result --');
+  //     machineInfo.isChecking = false;
+  //     if (result) {
+  //       machineInfo.showCash = true;
+  //       machineInfo.cashOn = true;
+  //     } else {
+  //       machineInfo.showCash = false;
+  //       machineInfo.cashOn = false;
+  //     } 
+  //     machineInfo.update(['selectPayment']);
+  //   }
     
-  }
+  // }
 
   //提交订单
   _doSubmitOrder({int times = 0}) {
@@ -1418,7 +1418,7 @@ print("加1了");
   //选择食用方式和支付方式
 
   showSelectMealTypeAndPaymentMethodDialog({int tax = 0}) async {
-    checkMachineState();
+    Cashchangerservice.checkMachineState(); 
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(

@@ -1,15 +1,39 @@
 
 import 'dart:convert';
 
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/GetxStorage.dart';
 import 'package:foodorder/app/services/Storage.dart';
+import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 
 class Cashchangerservice {
 
+  static final MachineInfoController machineInfo = Get.find<MachineInfoController>();
+
   static final logger = Logger('Cashchangerservice');
+
+
+  static checkMachineState() async {
+    if (machineInfo.isAllowCash == true) { // && machineInfo.cashOn == false
+      machineInfo.isChecking = true;
+      machineInfo.update(['selectPayment']);
+      var result = await Cashchangerservice.checkMachineFlow();
+      logger.info('-- checkMachineState result = $result --');
+      machineInfo.isChecking = false;
+      if (result) {
+        machineInfo.showCash = true;
+        machineInfo.cashOn = true;
+      } else {
+        machineInfo.showCash = false;
+        machineInfo.cashOn = false;
+      } 
+      machineInfo.update(['selectPayment']);
+    }
+    
+  }
 
   static checkMachineFlow() async {
     bool canUse = false;
