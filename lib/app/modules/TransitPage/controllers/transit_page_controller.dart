@@ -210,6 +210,7 @@ class TransitPageController extends GetxController {
         var _discover = shopData["linePayChannelMap"]["Discover"] != null
             ? shopData["linePayChannelMap"]["Discover"]
             : false;
+        bool taxSystem = shopData["taxSystem"] ?? false;
         logger.info('-- server cash state = $_showCash --');
         var machineActivateData = {
           "showCash": _showCash,
@@ -234,6 +235,7 @@ class TransitPageController extends GetxController {
           "show_americanExpress": _americanExpress,
           "show_dinersClub": _dinersClub,
           "show_discover": _discover,
+          "taxSystem": taxSystem,
         };
         //是否允许退款 1展示退款按钮 0 不展示
         var reimburse = (shopData["reimburse"] == true) ? "1" : "0";

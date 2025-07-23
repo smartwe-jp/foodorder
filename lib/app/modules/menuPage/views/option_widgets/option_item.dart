@@ -21,6 +21,7 @@ class OptionWidget extends StatefulWidget {
   final bool isSelected;
   final bool canSelect;
   final String languageKey;
+  final int maxNum;
 
   const OptionWidget({
     Key? key,
@@ -31,6 +32,7 @@ class OptionWidget extends StatefulWidget {
     required this.isSelected,
     required this.languageKey,
     this.canSelect = true,
+    this.maxNum = 1,
   }) : super(key: key);
 
   @override
@@ -66,7 +68,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   }
 
   _initOptionInfo(Map optionInfo) {
-    _max = optionInfo['max'] ?? 10;
+    _max = widget.maxNum;
     imageUrl = optionInfo['homeImage'];
     _mainTitle = optionInfo['mainTitle'];
     _isChecked = widget.isSelected;
@@ -75,7 +77,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   }
 
   void _increment() {
-    if (_count < _max) {
+    if (_count < _max + _count) {
       setState(() {
         _count++;
       });
@@ -83,6 +85,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
     } else {
       _showOutOfRangeDialog();
     }
+    //widget.onChanged(true);
   }
 
   void _decrement() {
@@ -98,6 +101,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
       });
       widget.onSelected(false);
     }
+    //widget.onChanged(false);
 
   }
 
@@ -112,23 +116,23 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
             })
     );
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text("tag_title".localized()),
-          content: Text('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle)),
-          actions: <Widget>[
-            TextButton(
-              child: Text("tag_button_yes".localized()),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
-        );
-      },
-    );
+    // showDialog(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return AlertDialog(
+    //       title: Text("tag_title".localized()),
+    //       content: Text('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle)),
+    //       actions: <Widget>[
+    //         TextButton(
+    //           child: Text("tag_button_yes".localized()),
+    //           onPressed: () {
+    //             Navigator.of(context).pop();
+    //           },
+    //         ),
+    //       ],
+    //     );
+    //   },
+    // );
   }
 
 

@@ -266,7 +266,8 @@ class MenuPageController extends GetxController with StateMixin {
             parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
-    }).timeout(Duration(seconds: 15), onTimeout: () {
+    })
+    .timeout(Duration(seconds: 10), onTimeout: (){
       if (retryCount < 3) {
         retryCount++;
         debugPrint(
@@ -1346,9 +1347,11 @@ print("加1了");
 
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
+          int totalTax = response['data']["tax1"] ?? 0 + response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog();
-        } else {
+          showSelectMealTypeAndPaymentMethodDialog(tax: totalTax);
+
+        }else{
           //getBookingBootMenu();
           FirebaseAnalytics.instance
               .logEvent(name: "submit_order_fail", parameters: {
@@ -1413,7 +1416,8 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog() async {
+
+  showSelectMealTypeAndPaymentMethodDialog({int tax = 0}) async {
     checkMachineState();
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
@@ -1421,6 +1425,7 @@ print("加1了");
       () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,
           menuCount: showCartTotalGoodsNum.value,
+          taxCount: tax,
           shopCartTotalPrice: shopCartTotalPrice.value,
           tableNum: "",
           onConfrimClick: () {

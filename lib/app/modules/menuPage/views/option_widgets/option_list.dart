@@ -42,7 +42,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
   late int _optionSelectMaxNum;
   final int _optionMaxNum = 100;
-  Set<String> _selectedOptions = <String>{};
+  //List<String> _selectedOptions = <String>[];
   List<String> _addedOptions = <String>[];
   late List<dynamic> _optionListInfo;
 
@@ -53,7 +53,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     _optionListInfo = widget.optionListInfo;
     for (final option in _optionListInfo) {
       if (option['checked'] ?? false) {
-        _selectedOptions.add(option['optionCode']);
+        //_selectedOptions.add(option['optionCode']);
         _addedOptions.add(option['optionCode']);
       }
     }
@@ -62,34 +62,34 @@ class _OptionListWidgetState extends State<OptionListWidget> {
 
 
   _onSelected(Map optionInfo, bool isAdd, bool isSelected) {
-    Set<String> selectedOptions = Set<String>.from(_selectedOptions);
+    //List<String> selectedOptions = List<String>.from(_selectedOptions);
     List<String> addedOptions = List<String>.from(_addedOptions);
 
 
     if (isAdd) {
-      if (_optionSelectMaxNum == 1 && selectedOptions.isNotEmpty && isSelected) {
+      if (_optionSelectMaxNum == 1 && addedOptions.isNotEmpty && isSelected) {
         // 如果是单选模式，且已经有选项被选中，则清除之前的选项
         //找到已选项的Option
         final selectedOption  = _optionListInfo.firstWhere(
-              (option) => option['optionCode'] == selectedOptions.first,
+              (option) => option['optionCode'] == addedOptions.first,
           orElse: () => {},
         );
         if (selectedOption['optionCode'] != optionInfo['optionCode']) {
           widget.onSelected(selectedOption['group'], selectedOption['optionCode'], selectedOption['mainTitle'], selectedOption['currentPrice'], false, false);
-          selectedOptions.clear();
+          //selectedOptions.clear();
           addedOptions.clear();
         }
       }
-      selectedOptions.add(optionInfo['optionCode']);
+      //selectedOptions.add(optionInfo['optionCode']);
       addedOptions.add(optionInfo['optionCode']);
     } else {
       addedOptions.remove(optionInfo['optionCode']);
-      if (!addedOptions.contains(optionInfo['optionCode'])) {
-        selectedOptions.remove(optionInfo['optionCode']);
-      }
+      // if (!addedOptions.contains(optionInfo['optionCode'])) {
+      //   selectedOptions.remove(optionInfo['optionCode']);
+      // }
     }
 
-    if (selectedOptions.length > _optionSelectMaxNum && isAdd) {
+    if (addedOptions.length > _optionSelectMaxNum && isAdd) {
       final showTag = GString.getToString(widget.languageKey, "menu_option_more_multipleState");
       Get.dialog(
           DialogUtils.alertOneButton("${showTag.replaceAll("%%", widget.title)}",
@@ -108,7 +108,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     final String optionName = optionInfo['mainTitle'] ?? '';
 
     setState(() {
-      _selectedOptions = selectedOptions;
+      //_selectedOptions = selectedOptions;
       _addedOptions = addedOptions;
     });
 
@@ -116,7 +116,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
   }
 
   bool get _canSelect {
-    if (_selectedOptions.length == _optionSelectMaxNum && _optionSelectMaxNum > 1) {
+    if (_addedOptions.length == _optionSelectMaxNum && _optionSelectMaxNum > 1) {
       return false;
     } else {
       return true;
@@ -124,14 +124,14 @@ class _OptionListWidgetState extends State<OptionListWidget> {
   }
 
   bool isOptionSelected(String optionCode) {
-    return _selectedOptions.contains(optionCode);
+    return _addedOptions.contains(optionCode);
   }
 
 
   @override
   void dispose() {
     super.dispose();
-    _selectedOptions.clear();
+    //_selectedOptions.clear();
     _addedOptions.clear();
     //_optionListInfo.clear();
   }
@@ -154,6 +154,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
                   isLabelOption: widget.isLabel,
                   canSelect: _canSelect,
                   optionInfo: _optionListInfo[i],
+                  maxNum: _optionSelectMaxNum - _addedOptions.length,
                   isSelected: isOptionSelected(_optionListInfo[i]['optionCode']),
                   languageKey: widget.languageKey,
                   onChanged: (isAdd){
