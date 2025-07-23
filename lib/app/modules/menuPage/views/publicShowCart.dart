@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -444,6 +445,16 @@ class publicShowCartView extends GetView {
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
+                                        // TextSpan(
+                                        //   text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                                        //   style: TextStyle(
+                                        //     fontSize: 24,
+                                        //     fontFamily: GFont.getFontFamily(),
+                                        //     fontWeight: FontWeight.w600,
+                                        //     color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                        //     textBaseline: TextBaseline.alphabetic,
+                                        //   ),
+                                        // ),
                                       ],
                                     ),
                                   )

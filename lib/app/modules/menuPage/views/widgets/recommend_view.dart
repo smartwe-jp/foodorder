@@ -1,5 +1,6 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/menu_shopping_car.dart';
 import 'package:foodorder/app/widget/CustomButton.dart';
@@ -225,6 +226,16 @@ extension RecommendView on MenuPageController {
                     color: Colors.black,
                   ),
                 ),
+                // TextSpan(
+                //   text: "（${machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                //   style: TextStyle(
+                //     fontSize: 24,
+                //     fontFamily: GFont.getFontFamily(),
+                //     fontWeight: FontWeight.w600,
+                //     color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                //     textBaseline: TextBaseline.alphabetic,
+                //   ),
+                // ),
               ],
             ),
           )),
@@ -340,9 +351,6 @@ extension RecommendView on MenuPageController {
                             color: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                             size: 40,
                           ),
-                              SizedBox(
-                                width: 30,
-                              ),
                             ]),
                       ),
                     ),

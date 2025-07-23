@@ -1174,8 +1174,9 @@ print("加1了");
 
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
+          int totalTax = response['data']["tax1"] ?? 0 + response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog();
+          showSelectMealTypeAndPaymentMethodDialog(tax: totalTax);
 
         }else{
           //getBookingBootMenu();
@@ -1244,13 +1245,14 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog() async {
+  showSelectMealTypeAndPaymentMethodDialog({int tax = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
           () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,
           menuCount: showCartTotalGoodsNum.value,
+          taxCount: tax,
 
           shopCartTotalPrice: shopCartTotalPrice.value,
           tableNum: "",

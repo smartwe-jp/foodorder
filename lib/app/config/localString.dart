@@ -13,6 +13,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"税込",
+        "tax_out":"税别",
+        "tax":"税",
+        "original_price":"原価",
         "show_original_price_front":"定価",
         "settlement_button":"お会計",
         "cancle_button":"すべてキャンセル",
@@ -161,6 +164,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"含税",
+        "tax_out":"不含税",
+        "tax":"税",
+        "original_price":"原价",
         "show_original_price_front":"原价",
         "settlement_button":"结算",
         "cancle_button":"全部取消",
@@ -306,6 +312,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"Tax-In",
+        "tax_out":"Tax-Out",
+        "tax":"Tax",
+        "original_price":"Original Price",
         "show_original_price_front":"Orig",
         "settlement_button":"Check Out",
         "cancle_button":"Cancel all",
@@ -451,6 +460,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"세금 포함",//含税
+        "tax_out":"세금 제외",//不含税
+        "tax":"세금",//税
+        "original_price":"원가",//原价
         "show_original_price_front":"원가",
         "settlement_button":"합의",
         "cancle_button":"모두 취소",

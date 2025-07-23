@@ -35,6 +35,7 @@ class MachineInfoController extends GetxController {
 
   late bool isAllowCash;
   late bool cashOn;
+  late bool taxSystem;
 
   late Map machineModeInfo;
 
@@ -156,6 +157,7 @@ class MachineInfoController extends GetxController {
     cashOn = cashInfo['isCash'] ?? false;
     print('loadMachineSettingInfo 1');
     Map machineActivateData = await HomeServices.getMachineActivateData();
+    taxSystem = machineActivateData['taxSystem'];
     isAllowCash = machineActivateData['showCash'];
     showCash = isAllowCash && cashOn;
     showWechat = machineActivateData['showWechat'];

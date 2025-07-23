@@ -2,7 +2,7 @@
 const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
 const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
 const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = true;
+const isProduction = false;
 
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
@@ -18,7 +18,8 @@ const servicePath = {
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
   //'webBootOrder': base_url + 'pad/web/boot/v2/order', //提交订单请求地址
-  'webBootOrder': base_url + 'pad/web/boot/v3/order', //提交订单请求地址
+  //'webBootOrder': base_url + 'pad/web/boot/v3/order', //提交订单请求地址
+  'webBootOrder': base_url + 'pad/web/boot/v4/order', //提交订单请求地址
   'webBootCalculateOrder': base_url + 'pad/web/boot/v3/calculate/order', //自助收银提交订单请求地址
   'webBootToPay': base_url + 'pad/web/boot/toPay', //支付提交请求地址
   'webBootToPayv2': base_url + 'pad/web/boot/toPay/v2', //支付提交请求地址

@@ -133,6 +133,16 @@ extension CheckoutButton on MenuPageView {
                                         fontWeight: FontWeight.w500,
                                         color: Colors.white,
                                       ),),
+                                      // TextSpan(
+                                      //   text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                                      //   style: TextStyle(
+                                      //     fontSize: 24,
+                                      //     fontFamily: GFont.getFontFamily(),
+                                      //     fontWeight: FontWeight.w600,
+                                      //     color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                      //     textBaseline: TextBaseline.alphabetic,
+                                      //   ),
+                                      // ),
                                     ],
                                   ),
                                 )
@@ -144,9 +154,7 @@ extension CheckoutButton on MenuPageView {
                             size: 50,
 
                           ),
-                          SizedBox(
-                            width: ScreenAdapter.width(40),
-                          ),
+
                         ],
                       )),
                 ),

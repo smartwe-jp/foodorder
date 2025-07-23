@@ -438,16 +438,16 @@ class _OptionViewState extends State<OptionView> {
                     textBaseline: TextBaseline.alphabetic,
                   ),
                 ),
-                TextSpan(
-                  text: "（${GString.getToString(widget.languageKey, "show_price_front")}）",
-                  style: TextStyle(
-                    fontSize: ScreenAdapter.fontSize(70)/2.5,
-                    fontFamily: GFont.getFontFamily(),
-                    fontWeight: FontWeight.w600,
-                    color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                    textBaseline: TextBaseline.alphabetic,
-                  ),
-                ),
+                // TextSpan(
+                //   text: "（${GString.getToString(widget.languageKey, "show_price_front")}）",
+                //   style: TextStyle(
+                //     fontSize: ScreenAdapter.fontSize(70)/2.5,
+                //     fontFamily: GFont.getFontFamily(),
+                //     fontWeight: FontWeight.w600,
+                //     color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                //     textBaseline: TextBaseline.alphabetic,
+                //   ),
+                // ),
               ]),
         ),
       ),
