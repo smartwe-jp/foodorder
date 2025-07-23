@@ -141,7 +141,7 @@ class CheckoutPageView extends GetView {
               title: 'settlement_button'.localized(),
               selected: false,
               onTap: () {
-                controller.machineInfo.currentMode = MachineMode.scan;
+                controller.machineInfo.currentMode = MachineMode.checkout;
                 Get.toNamed("/scancode-page");
               },
             ),

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -288,6 +289,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
+    Cashchangerservice.checkMachineState(); 
     scanQrCodeFocusNode.requestFocus();
     //scanQrCodeHomeFocusNode.requestFocus();
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
