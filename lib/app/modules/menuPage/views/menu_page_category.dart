@@ -2726,8 +2726,8 @@ extension MenuPageCategory on MenuPageController {
                 children: [
                   Container(
                     padding: EdgeInsets.only(
-                        left:ScreenAdapter.width(30),
-                        right: ScreenAdapter.width(30),
+                        left:ScreenAdapter.width(15),
+                        right: ScreenAdapter.width(15),
                         bottom: ScreenAdapter.height(30)
                     ),
                     child: IntrinsicHeight(
@@ -2739,8 +2739,8 @@ extension MenuPageCategory on MenuPageController {
                               flex: 2,
                               child:
                               AspectRatio(
-                                aspectRatio: 0.7,
-                                child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.8),
+                                aspectRatio: 0.71,
+                                child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.9),
                               ),
 
                             ),
@@ -2751,16 +2751,16 @@ extension MenuPageCategory on MenuPageController {
                                   children: [
                                     Expanded(
                                       child: AspectRatio(
-                                        aspectRatio: 0.7,
-                                        child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.9),
+                                        aspectRatio: 0.76,
+                                        child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.95),
                                       ),
 
                                     ),
                                     SizedBox(height: 20),
                                     Expanded(
                                       child: AspectRatio(
-                                        aspectRatio: 0.7,
-                                        child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.9),
+                                        aspectRatio: 0.76,
+                                        child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.95),
                                       ),
                                     ),
                                   ],
@@ -2792,30 +2792,9 @@ extension MenuPageCategory on MenuPageController {
   showCategoryEightItemList(items, context, {popupType: "old"}) {
     List<Widget> children = [];
     for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.8));
+      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
     }
-    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.6, canScroll: false,);
-
-    // return Padding(
-    //   padding: EdgeInsets.only(
-    //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-    //   child: GridView.builder(
-    //     padding: EdgeInsets.zero,
-    //     physics: new NeverScrollableScrollPhysics(),
-    //     shrinkWrap: true,
-    //     addAutomaticKeepAlives: true,
-    //     //addRepaintBoundaries:false,
-    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //         mainAxisSpacing: ScreenAdapter.height(10),
-    //         crossAxisCount: 3,
-    //         childAspectRatio: 0.74),
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return showCategoryEightItemOne(items[index], context,
-    //           popupType: popupType);
-    //     },
-    //     itemCount: items.length,
-    //   ),
-    // );
+    return GridMenuView(children: children, crossAxisCount: 3, childAspectRatio: 0.76, canScroll: false,);
   }
 
   showCategoryEightItemOne(item, context, {popupType: "old"}) {
@@ -2927,8 +2906,8 @@ extension MenuPageCategory on MenuPageController {
               children: [
                 Container(
                   padding: EdgeInsets.only(
-                      left:ScreenAdapter.width(30),
-                      right: ScreenAdapter.width(30),
+                      left:ScreenAdapter.width(15),
+                      right: ScreenAdapter.width(15),
                       bottom: ScreenAdapter.height(30)
                   ),
                   child: IntrinsicHeight(
@@ -2940,8 +2919,8 @@ extension MenuPageCategory on MenuPageController {
                             flex: 2,
                             child:
                             AspectRatio(
-                              aspectRatio: 0.7,
-                              child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.8),
+                              aspectRatio: 0.71,
+                              child: menuItemView(_leftItem, context, popupType: popupType, aspectRatio: 0.9),
                             ),
 
                           ),
@@ -2952,16 +2931,16 @@ extension MenuPageCategory on MenuPageController {
                                 children: [
                                   Expanded(
                                     child: AspectRatio(
-                                      aspectRatio: 0.7,
-                                      child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.9),
+                                      aspectRatio: 0.76,
+                                      child: menuItemView(_rightTop, context, popupType: popupType, aspectRatio: 0.95),
                                     ),
 
                                   ),
                                   SizedBox(height: 20),
                                   Expanded(
                                     child: AspectRatio(
-                                      aspectRatio: 0.7,
-                                      child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.9),
+                                      aspectRatio: 0.76,
+                                      child: menuItemView(_rightBottom, context, popupType: popupType, aspectRatio: 0.95),
                                     ),
                                   ),
                                 ],
@@ -2972,305 +2951,6 @@ extension MenuPageCategory on MenuPageController {
                   ),
                 ),
                 SizedBox(height: 20),
-                // Row(
-                //   children: [
-                //     Stack(
-                //       children: [
-                //         Container(
-                //           height: ScreenAdapter.height(835),
-                //           color: ColorsUtil.hexToColor("#FFFFFF"),
-                //           margin: EdgeInsets.only(
-                //               left: ScreenAdapter.width(5),
-                //               right: ScreenAdapter.width(5)),
-                //           child: InkWell(
-                //               enableFeedback: false,
-                //               onTap: () async {
-                //                 if (_leftItem['qtyBounds'] == 0) {
-                //                   return;
-                //                 } else if (_leftItem['qtyBounds'] > 0) {
-                //                   //请求限定接口
-                //                   checkQtyBoundsCount(
-                //                       _leftItem, "", popupType, context);
-                //                 } else {
-                //                   //如果option 存在，则弹出option
-                //                   if (_leftItem['optionGroupVoList']?.length >
-                //                       0) {
-                //                     //publicShowOneItemWidget(_leftItem);
-                //                     if (popupType == "v1") {
-                //                       controller
-                //                           .publicShowOneItemWidgetv1(_leftItem);
-                //                     } else {
-                //                       controller
-                //                           .publicShowOneItemWidget(_leftItem);
-                //                     }
-                //                   } else {
-                //                     publicAddCart(
-                //                         context, _leftItem);
-                //                   }
-                //                 }
-                //               },
-                //               child: Column(
-                //                 crossAxisAlignment: CrossAxisAlignment.start,
-                //                 children: <Widget>[
-                //                   Container(
-                //                     decoration: BoxDecoration(
-                //                       border: Border(
-                //                         bottom: BorderSide(
-                //                           width: 1,
-                //                           color:
-                //                               ColorsUtil.hexToColor("#DDDDDD"),
-                //                         ),
-                //                       ),
-                //                     ),
-                //                     child: publicShowMenuImage(
-                //                         imgPath: _leftItem['homeImage'],
-                //                         imgWidth: 710.0,
-                //                         imgHeight: 710.0,
-                //                         subTitle: _leftItem["subtitle"]),
-                //                   ),
-                //                   Container(
-                //                     width: ScreenAdapter.width(710),
-                //                     height: ScreenAdapter.height(68),
-                //                     margin: EdgeInsets.only(
-                //                         top: ScreenAdapter.height(3)),
-                //                     padding: EdgeInsets.only(
-                //                         left: ScreenAdapter.width(10),
-                //                         right: ScreenAdapter.width(10)),
-                //                     child: publicShowMenuTitle(
-                //                         _leftItem['mainTitle'],
-                //                         GFontSize.menuTwoListTitle,
-                //                         Gcolor.mainTitleColor),
-                //                   ),
-                //                   Container(
-                //                     width: ScreenAdapter.width(710),
-                //                     //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                //                     padding: EdgeInsets.only(
-                //                         left: ScreenAdapter.width(10),
-                //                         right: ScreenAdapter.width(10)),
-                //                     child: Container(
-                //                       //width: ScreenAdapter.width(125),
-                //                       //height: ScreenAdapter.height(315),
-                //                       alignment: Alignment.centerRight,
-                //                       padding: EdgeInsets.only(
-                //                           left: ScreenAdapter.width(15),
-                //                           right: ScreenAdapter.width(10)),
-                //                       child: publicShowMenuPrice(
-                //                           _leftItem['currentPrice'],
-                //                           _leftItem['price'],
-                //                           GFontSize.menuTwopriceLift,
-                //                           Gcolor.mainTitleColor,
-                //                           GFontSize.menuTwoprice,
-                //                           Gcolor.priceColor,
-                //                           GFontSize.menuTwopriceRight,
-                //                           Gcolor.mainTitleColor),
-                //                     ),
-                //                   ),
-                //                 ],
-                //               )),
-                //         ),
-                //         //绝对定位 盖章
-                //         controller
-                //             .publicShowMenuSellOut(_leftItem['qtyBounds']),
-                //       ],
-                //     ),
-                //     Expanded(
-                //         child: Column(
-                //       children: [
-                //         Container(
-                //           //height: ScreenAdapter.height(412),
-                //           color: ColorsUtil.hexToColor("#FFFFFF"),
-                //           margin: EdgeInsets.only(
-                //               left: ScreenAdapter.width(5),
-                //               right: ScreenAdapter.width(5)),
-                //           child: InkWell(
-                //               enableFeedback: false,
-                //               onTap: () async {
-                //                 if (_rightTop['qtyBounds'] == 0) {
-                //                   return;
-                //                 } else if (_rightTop['qtyBounds'] > 0) {
-                //                   //请求限定接口
-                //                   checkQtyBoundsCount(
-                //                       _rightTop, "", popupType, context);
-                //                 } else {
-                //                   if (_rightTop['optionGroupVoList']?.length >
-                //                       0) {
-                //                     //publicShowOneItemWidget(_rightTop);
-                //                     if (popupType == "v1") {
-                //                       controller
-                //                           .publicShowOneItemWidgetv1(_rightTop);
-                //                     } else {
-                //                       controller
-                //                           .publicShowOneItemWidget(_rightTop);
-                //                     }
-                //                   } else {
-                //                     publicAddCart(
-                //                         context, _rightTop);
-                //                   }
-                //                 }
-                //               },
-                //               child: Stack(
-                //                 children: [
-                //                   Container(
-                //                       child: Column(
-                //                     crossAxisAlignment:
-                //                         CrossAxisAlignment.start,
-                //                     children: <Widget>[
-                //                       Container(
-                //                         alignment: Alignment.center,
-                //                         width: ScreenAdapter.width(350),
-                //                         decoration: BoxDecoration(
-                //                           border: Border(
-                //                             bottom: BorderSide(
-                //                               width: 1,
-                //                               color: ColorsUtil.hexToColor(
-                //                                   "#DDDDDD"),
-                //                             ),
-                //                           ),
-                //                         ),
-                //                         child: publicShowMenuImage(
-                //                             imgPath: _rightTop['homeImage'],
-                //                             imgWidth: 350.0,
-                //                             imgHeight: 300.0,
-                //                             subTitle: _rightTop["subtitle"]),
-                //                       ),
-                //                       Container(
-                //                         width: ScreenAdapter.width(350),
-                //                         height: ScreenAdapter.height(68),
-                //                         //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                //                         padding: EdgeInsets.only(
-                //                             left: ScreenAdapter.width(10),
-                //                             right: ScreenAdapter.width(10)),
-                //                         child: publicShowMenuTitle(
-                //                             _rightTop['mainTitle'],
-                //                             GFontSize.menuTwoListTitle,
-                //                             Gcolor.mainTitleColor),
-                //                       ),
-                //                       Container(
-                //                         //width: ScreenAdapter.width(125),
-                //                         //height: ScreenAdapter.height(315),
-                //                         alignment: Alignment.centerRight,
-                //                         padding: EdgeInsets.only(
-                //                             left: ScreenAdapter.width(15),
-                //                             right: ScreenAdapter.width(10)),
-                //                         child: publicShowMenuPrice(
-                //                             _rightTop['currentPrice'],
-                //                             _rightTop['price'],
-                //                             GFontSize.menuTwopriceLift,
-                //                             Gcolor.mainTitleColor,
-                //                             GFontSize.menuTwoprice,
-                //                             Gcolor.priceColor,
-                //                             GFontSize.menuTwopriceRight,
-                //                             Gcolor.mainTitleColor),
-                //                       ),
-                //                     ],
-                //                   )),
-                //                   //绝对定位 盖章
-                //                   publicShowMenuSellOut(
-                //                       _rightTop['qtyBounds']),
-                //                 ],
-                //               )),
-                //         ),
-                //         Container(
-                //           //height: ScreenAdapter.height(412),
-                //           color: ColorsUtil.hexToColor("#FFFFFF"),
-                //           margin: EdgeInsets.only(
-                //               left: ScreenAdapter.width(5),
-                //               top: ScreenAdapter.height(10),
-                //               right: ScreenAdapter.width(5)),
-                //           child: InkWell(
-                //               enableFeedback: false,
-                //               onTap: () async {
-                //                 if (_rightBottom['qtyBounds'] == 0) {
-                //                   return;
-                //                 } else if (_rightBottom['qtyBounds'] > 0) {
-                //                   //请求限定接口
-                //                   checkQtyBoundsCount(
-                //                       _rightBottom, "", popupType, context);
-                //                 } else {
-                //                   if (_rightBottom['optionGroupVoList']
-                //                           ?.length >
-                //                       0) {
-                //                     //publicShowOneItemWidget(_rightBottom);
-                //                     if (popupType == "v1") {
-                //                       publicShowOneItemWidgetv1(
-                //                           _rightBottom);
-                //                     } else {
-                //                       publicShowOneItemWidget(
-                //                           _rightBottom);
-                //                     }
-                //                   } else {
-                //                     publicAddCart(
-                //                         context, _rightBottom);
-                //                   }
-                //                 }
-                //               },
-                //               child: Stack(
-                //                 children: [
-                //                   Container(
-                //                       child: Column(
-                //                     crossAxisAlignment:
-                //                         CrossAxisAlignment.start,
-                //                     children: <Widget>[
-                //                       Container(
-                //                           alignment: Alignment.center,
-                //                           width: ScreenAdapter.width(350),
-                //                           decoration: BoxDecoration(
-                //                             border: Border(
-                //                               bottom: BorderSide(
-                //                                 width: 1,
-                //                                 color: ColorsUtil.hexToColor(
-                //                                     "#DDDDDD"),
-                //                               ),
-                //                             ),
-                //                           ),
-                //                           child: publicShowMenuImage(
-                //                               imgPath:
-                //                                   _rightBottom['homeImage'],
-                //                               imgWidth: 350.0,
-                //                               imgHeight: 300.0,
-                //                               subTitle:
-                //                                   _rightBottom["subtitle"])),
-                //                       Container(
-                //                         width: ScreenAdapter.width(350),
-                //                         height: ScreenAdapter.height(68),
-                //                         //margin: EdgeInsets.only(top: ScreenAdapter.height(3)),
-                //                         padding: EdgeInsets.only(
-                //                             left: ScreenAdapter.width(10),
-                //                             right: ScreenAdapter.width(10)),
-                //                         child: publicShowMenuTitle(
-                //                             _rightBottom['mainTitle'],
-                //                             GFontSize.menuTwoListTitle,
-                //                             Gcolor.mainTitleColor),
-                //                       ),
-                //                       Container(
-                //                         //width: ScreenAdapter.width(125),
-                //                         //height: ScreenAdapter.height(315),
-                //                         alignment: Alignment.centerRight,
-                //                         padding: EdgeInsets.only(
-                //                             left: ScreenAdapter.width(15),
-                //                             right: ScreenAdapter.width(10)),
-                //                         child: publicShowMenuPrice(
-                //                             _rightBottom['currentPrice'],
-                //                             _rightBottom['price'],
-                //                             GFontSize.menuTwopriceLift,
-                //                             Gcolor.mainTitleColor,
-                //                             GFontSize.menuTwoprice,
-                //                             Gcolor.priceColor,
-                //                             GFontSize.menuTwopriceRight,
-                //                             Gcolor.mainTitleColor),
-                //                       ),
-                //                     ],
-                //                   )),
-                //                   //绝对定位 盖章
-                //                   publicShowMenuSellOut(
-                //                       _rightBottom['qtyBounds']),
-                //                 ],
-                //               )),
-                //         ),
-                //       ],
-                //     ))
-                //   ],
-                // ),
                 if (_newItemList.length > 0)
                   showCategoryNineItemList(_newItemList, context, popupType: popupType)
               ],
@@ -3292,29 +2972,9 @@ extension MenuPageCategory on MenuPageController {
   showCategoryNineItemList(items, context ,{popupType: "old"}) {
     List<Widget> children = [];
     for (var item in items) {
-      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 0.82));
+      children.add(menuItemView(item, context, popupType: popupType, aspectRatio: 1.0));
     }
-    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.62, canScroll: false,);
-    // return Padding(
-    //   padding: EdgeInsets.only(
-    //       top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-    //   child: GridView.builder(
-    //     padding: EdgeInsets.zero,
-    //     physics: new NeverScrollableScrollPhysics(),
-    //     shrinkWrap: true,
-    //     addAutomaticKeepAlives: true,
-    //     //addRepaintBoundaries:false,
-    //     gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-    //         mainAxisSpacing: ScreenAdapter.height(5),
-    //         crossAxisCount: 2,
-    //         childAspectRatio: 0.82),
-    //     itemBuilder: (BuildContext context, int index) {
-    //       return showCategoryNineItemOne(items[index], context,
-    //           popupType: popupType);
-    //     },
-    //     itemCount: items.length,
-    //   ),
-    // );
+    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.76, canScroll: false,);
   }
 
   showCategoryNineItemOne(item, context, {popupType: "old"}) {

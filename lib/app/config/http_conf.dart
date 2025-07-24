@@ -2,7 +2,7 @@
 const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
 const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
 const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = false;
+const isProduction = true; //是否生产环境
 
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
@@ -101,4 +101,5 @@ const servicePath = {
 
   'sseSubscribeSmartWe': (isProduction ? base_url_profile : 'http://172.20.10.56:38081/') + 'web/subscribe/smartWe/', //SSE
 
+  'sseCallback': base_url + 'web/sse/received/callback'
 };

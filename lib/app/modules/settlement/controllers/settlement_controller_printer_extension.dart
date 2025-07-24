@@ -197,6 +197,34 @@ class PrintService extends GetxService {
 //    }
 // }
 
+  callbackBeforePrint(String event, Map data) async {
+    String uuid = data['uuid'] ?? '';
+    if (uuid.isEmpty) return;
+
+    try {
+      LogUtil.d("callbackBeforePrint uuid: $uuid send");
+      final val = await request('sseCallback',
+          method: 'POST',
+          parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
+      var response = json.decode(val.toString());
+      if (response != null &&
+          response['code'] == 200 &&
+          response['data'] != null) {
+        LogUtil.d("callbackBeforePrint uuid: $uuid send success");
+        if (event == 'message') {
+          printData(data);
+        }
+        if (event == 'print') {
+          printTableSeatInfo(data);
+        }
+      }
+    } on TimeoutException catch (e) {
+      debugPrint('TimeoutException:${e.toString()}');
+    } catch (e) {
+      debugPrint('error Exception:${e.toString()}');
+    }
+  }
+
   void printData(Map data, {bool fromSSE = true}) async {
     LogUtil.d("printData == $data");
     _sendToDisplayPanel(data);
