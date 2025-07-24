@@ -928,7 +928,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
       this._socket?.write(questData);
       EasyLoading.dismiss();
-      showTestResultDialog("POS Test Success");
+      showTestResultDialog("POS Test Connected");
 
       this._socket?.listen((List<int> event) {
         showTestResultDialog("POS Test All Success");
@@ -959,6 +959,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   showTestResultDialog(content) {
+    //只有是当前View才显示对话框
+    if(!Get.isRegistered<SystemSettingPageController>()) {
+      return;
+    }
     Get.dialog(
         DialogUtils.alertOneButton(content,
             title: "POS Test Result",
