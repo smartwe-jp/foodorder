@@ -286,7 +286,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
               ),
             ),
           ),
-          if (_currentPrice > 0 && _isChecked)
+          if (_currentPrice > 0 && _isChecked && (_max + _count > 1))
             _plusMinusWidget(),
         ],
       ),
@@ -421,7 +421,7 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
               ),
             ),
           ),
-          if (_currentPrice > 0 && _isChecked)
+          if (_currentPrice > 0 && _isChecked && (_max + _count > 1))
             _plusMinusWidget(),
         ],
       ),
