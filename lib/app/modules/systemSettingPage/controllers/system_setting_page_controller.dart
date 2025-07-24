@@ -970,6 +970,93 @@ class SystemSettingPageController extends GetxController with StateMixin {
     is_allow_wlanPrint_Two.value = checkedType;
 
     _updateSystemSetting("isAllowWlanPrintTwo", checkedType);
+
+  }
+
+  posTest(posIp, posPort) async {
+    _showEasyLoading(text: "POS Test Start");
+    debugPrint("--- posTest ---");
+    request('webBootPosTest', method: 'POST')
+        .then((val) {
+      var response = json.decode(val.toString());
+      debugPrint("webBootPosTest: " + response.toString());
+      if (response['code'] == 200) {
+        payconnectSocker(response['data'], posIp, posPort);
+      } else {
+        EasyLoading.dismiss();
+        showTestResultDialog("Server error");
+      }
+    });
+  }
+  RxInt socketNumberTimes = 0.obs;
+  Socket? _socket; //socket对象
+
+  payconnectSocker(questData, pos_ip, pos_port) async {
+
+    //判断socket请求次数
+    socketNumberTimes.value++;
+    if(socketNumberTimes.value>20){
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Connection Failed");
+      return;
+    }
+    debugPrint("POS机连接${socketNumberTimes.value}");
+    Socket.connect(
+      pos_ip,
+      int.parse(pos_port),
+      //timeout: Duration(seconds: 5),
+    ).then((Socket socket) {
+      debugPrint("POS机连接成功");
+      this._socket = socket;
+
+      this._socket?.write(questData);
+      EasyLoading.dismiss();
+      showTestResultDialog("POS Test Connected");
+
+      this._socket?.listen((List<int> event) {
+        showTestResultDialog("POS Test All Success");
+        EasyLoading.dismiss();
+      },
+        onDone: () {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Done");
+          print("pos机done了");
+        },
+        onError: (e) {
+          EasyLoading.dismiss();
+          showTestResultDialog("POS Test Failed");
+          print("pos机错误了");
+          //_close();
+        },
+      );
+
+    }).catchError((e) {
+      EasyLoading.dismiss();
+      print("Unable to connect: $e");
+      print("POS机连接${socketNumberTimes.value}");
+      Future.delayed(Duration(seconds: 1), () {
+        payconnectSocker(questData, pos_ip, pos_port);
+      });
+    });
+
+  }
+
+  showTestResultDialog(content) {
+    //只有是当前View才显示对话框
+    if(!Get.isRegistered<SystemSettingPageController>()) {
+      return;
+    }
+    Get.dialog(
+        DialogUtils.alertOneButton(content,
+            title: "POS Test Result",
+            confirmtitle: "はい",
+            confirm: () {
+
+              Get.back();
+              update();
+            }),
+        barrierDismissible: false
+    );
   }
 
   checkIsAllowWlanPanelPrint(checkedType) async {
@@ -996,82 +1083,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
     is_allow_wlanPanelPrint = checkedType;
 
     _updateSystemSetting("isAllowWlanPanelPrint", checkedType);
-  }
-
-  posTest(posIp, posPort) async {
-    _showEasyLoading(text: "POS Test Start");
-    debugPrint("--- posTest ---");
-    request('webBootPosTest', method: 'POST').then((val) {
-      var response = json.decode(val.toString());
-      debugPrint("webBootPosTest: " + response.toString());
-      if (response['code'] == 200) {
-        payconnectSocker(response['data'], posIp, posPort);
-      } else {
-        EasyLoading.dismiss();
-        showTestResultDialog("Server error");
-      }
-    });
-  }
-
-  RxInt socketNumberTimes = 0.obs;
-  Socket? _socket; //socket对象
-
-  payconnectSocker(questData, pos_ip, pos_port) async {
-    //判断socket请求次数
-    socketNumberTimes.value++;
-    if (socketNumberTimes.value > 20) {
-      EasyLoading.dismiss();
-      showTestResultDialog("POS Connection Failed");
-      return;
-    }
-    debugPrint("POS机连接${socketNumberTimes.value}");
-    Socket.connect(
-      pos_ip,
-      int.parse(pos_port),
-      //timeout: Duration(seconds: 5),
-    ).then((Socket socket) {
-      debugPrint("POS机连接成功");
-      this._socket = socket;
-
-      this._socket?.write(questData);
-      EasyLoading.dismiss();
-      showTestResultDialog("POS Connectd");
-
-      this._socket?.listen(
-        (List<int> event) {
-          showTestResultDialog("POS Test All Success");
-          EasyLoading.dismiss();
-        },
-        onDone: () {
-          EasyLoading.dismiss();
-          showTestResultDialog("POS Test Done");
-          print("pos机done了");
-        },
-        onError: (e) {
-          EasyLoading.dismiss();
-          showTestResultDialog("POS Test Failed");
-          print("pos机错误了");
-          //_close();
-        },
-      );
-    }).catchError((e) {
-      EasyLoading.dismiss();
-      print("Unable to connect: $e");
-      print("POS机连接${socketNumberTimes.value}");
-      Future.delayed(Duration(seconds: 1), () {
-        payconnectSocker(questData, pos_ip, pos_port);
-      });
-    });
-  }
-
-  showTestResultDialog(content) {
-    Get.dialog(
-        DialogUtils.alertOneButton(content,
-            title: "POS Test Result", confirmtitle: "はい", confirm: () {
-          Get.back();
-          update();
-        }),
-        barrierDismissible: false);
   }
 
   //printType=0 receipt 1label
