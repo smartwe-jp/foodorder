@@ -445,16 +445,16 @@ class publicShowCartView extends GetView {
                                           fontWeight: FontWeight.w600,
                                           color: Colors.black,
                                         ),),
-                                        // TextSpan(
-                                        //   text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
-                                        //   style: TextStyle(
-                                        //     fontSize: 24,
-                                        //     fontFamily: GFont.getFontFamily(),
-                                        //     fontWeight: FontWeight.w600,
-                                        //     color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                                        //     textBaseline: TextBaseline.alphabetic,
-                                        //   ),
-                                        // ),
+                                        TextSpan(
+                                          text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                                          style: TextStyle(
+                                            fontSize: 24,
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w600,
+                                            color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                            textBaseline: TextBaseline.alphabetic,
+                                          ),
+                                        ),
                                       ],
                                     ),
                                   )

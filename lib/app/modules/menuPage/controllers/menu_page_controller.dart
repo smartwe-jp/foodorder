@@ -1262,7 +1262,7 @@ print("加1了");
           tableNum: "",
           onConfrimClick: () {
               showOpenPayment.value = true;
-              gotoSettlement();
+              gotoSettlement(tax);
 
           },
           onCancelClick: (String isBack) async {
@@ -1331,12 +1331,12 @@ print("加1了");
   }
 
 
-  gotoSettlement() async {
+  gotoSettlement(int tax) async {
   await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : shopCartTotalPrice.value,
+          "totalPrice" : (int.parse(shopCartTotalPrice.value) + tax).toString(),
           "machineMode":"1",
           "showOpenPayment": showOpenPayment.value
         });

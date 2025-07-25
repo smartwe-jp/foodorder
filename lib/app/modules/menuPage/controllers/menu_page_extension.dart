@@ -260,7 +260,7 @@ extension MenuPageControllerExtension on MenuPageController {
     for (var item in items) {
       children.add(menuItemView(item, context, popupType: popupType));
     }
-    return GridMenuView(children: children);
+    return GridMenuView(children: children, childAspectRatio: 0.71,);
   }
 
   showCategoryFourItemList(items, context, {popupType: "old"}) {
@@ -269,6 +269,6 @@ extension MenuPageControllerExtension on MenuPageController {
       children.add(menuItemView(item, context, popupType: popupType));
     }
 
-    return GridMenuView(children: children, crossAxisCount: 2);
+    return GridMenuView(children: children, crossAxisCount: 2, childAspectRatio: 0.71,);
   }
 }

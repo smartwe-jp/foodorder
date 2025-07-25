@@ -34,8 +34,8 @@ class SelectPaymentPage extends StatelessWidget {
   final int taxCount; //税率
   final Function(String) onCancelClick;
 
-  String get originPrice {
-    return (int.parse(shopCartTotalPrice) - taxCount).toString();
+  String get showPrice {
+    return (int.parse(shopCartTotalPrice) + taxCount).toString();
   }
 
   Widget selectPrintType() {
@@ -1680,7 +1680,7 @@ class SelectPaymentPage extends StatelessWidget {
                                         ),
                                         children: [
                                           TextSpan(
-                                            text: formatMoney(shopCartTotalPrice),
+                                            text: formatMoney(showPrice),
                                             style: TextStyle(
                                               fontSize: ScreenAdapter.fontSize(
                                                   GFontSize.menusettlementBottomPrice),
@@ -1691,7 +1691,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: "（${"show_price_front".localized()}）",
+                                            text: "    ",//（${"show_price_front".localized()}）
                                             style: TextStyle(
                                               fontSize: 24,
                                               fontFamily: GFont.getFontFamily(),
