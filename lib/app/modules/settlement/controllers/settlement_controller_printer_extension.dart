@@ -210,7 +210,7 @@ class PrintService extends GetxService {
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-            LogUtil.d("callbackBeforePrint uuid: $uuid send success");
+        LogUtil.d("callbackBeforePrint uuid: $uuid send success");
         if (event == 'message') {
           printData(data);
         }

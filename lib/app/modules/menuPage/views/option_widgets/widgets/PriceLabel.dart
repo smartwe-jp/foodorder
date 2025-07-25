@@ -141,7 +141,7 @@ class PrinceLabel extends StatelessWidget {
                     ),
                   ),
                   TextSpan(
-                    text: "（${GString.getToString(languageKey, "show_price_front")}）",
+                    text: "   ",
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,

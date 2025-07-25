@@ -1428,8 +1428,8 @@ print("加1了");
           shopCartTotalPrice: shopCartTotalPrice.value,
           tableNum: "",
           onConfrimClick: () {
-            showOpenPayment.value = true;
-            gotoSettlement();
+              showOpenPayment.value = true;
+              gotoSettlement(tax);
           },
           onCancelClick: (String isBack) async {
             // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
@@ -1491,14 +1491,15 @@ print("加1了");
     //await _resetToFirstCategory();
   }
 
-  gotoSettlement() async {
-    await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
-      "checkLanguage": checkLanguage.value,
-      "orderId": doSubmitOrderId.value,
-      "totalPrice": shopCartTotalPrice.value,
-      "machineMode": "1",
-      "showOpenPayment": showOpenPayment.value
-    });
+  gotoSettlement(int tax) async {
+  await Get.toNamed('/settlement',preventDuplicates: false,
+        arguments: {
+          "checkLanguage":  checkLanguage.value,
+          "orderId" : doSubmitOrderId.value,
+          "totalPrice" : (int.parse(shopCartTotalPrice.value) + tax).toString(),
+          "machineMode":"1",
+          "showOpenPayment": showOpenPayment.value
+        });
   }
 
   CancelOrder() {
