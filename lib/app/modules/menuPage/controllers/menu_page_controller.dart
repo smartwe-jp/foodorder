@@ -3,7 +3,7 @@ import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:auto_size_text/auto_size_text.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -261,14 +261,14 @@ class MenuPageController extends GetxController with StateMixin {
             'Retrying getBookingBootIndexCategory, attempt: $retryCount');
         getBookingBootIndexCategory(isReset: isReset, retryCount: retryCount);
       } else {
-        FirebaseAnalytics.instance.logEvent(
-            name: 'load_menu_category_failure',
-            parameters: {'machineCode': machineInfo.machineCode});
+        // FirebaseAnalytics.instance.logEvent(
+        //     name: 'load_menu_category_failure',
+        //     parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
     })
     .timeout(Duration(seconds: 8), onTimeout: (){
-      FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
+      //FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
       change(null, status: RxStatus.error('Failed to load data Timeout'));
       // if (retryCount < 3) {
       //   retryCount++;
@@ -414,9 +414,9 @@ class MenuPageController extends GetxController with StateMixin {
         debugPrint('Retrying getBookingBootIndexMenu, attempt: $retryCount');
         getBookingBootIndexMenu(queryCategoryCode, retryCount: retryCount);
       } else {
-        FirebaseAnalytics.instance.logEvent(
-            name: 'load_menu_failure',
-            parameters: {'machineCode': machineInfo.machineCode});
+        // FirebaseAnalytics.instance.logEvent(
+        //     name: 'load_menu_failure',
+        //     parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
     })
@@ -1352,10 +1352,10 @@ print("加1了");
 
         }else{
           //getBookingBootMenu();
-          FirebaseAnalytics.instance
-              .logEvent(name: "submit_order_fail", parameters: {
-            "machineCode": machineInfo.machineCode,
-          });
+          // FirebaseAnalytics.instance
+          //     .logEvent(name: "submit_order_fail", parameters: {
+          //   "machineCode": machineInfo.machineCode,
+          // });
           if (response != null &&
               response['data'] != null &&
               response['data']["menuLackMap"] != null) {

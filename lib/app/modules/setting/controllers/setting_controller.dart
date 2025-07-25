@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/color.dart';
@@ -929,9 +929,9 @@ class SettingController extends GetxController with StateMixin {
     if (Get.isRegistered<SettingController>())
       Get.delete<SettingController>(); // 手动删除控制器实例
     if (Platform.isAndroid) {
-      FirebaseAnalytics.instance.logEvent(name: "setting_back", parameters: {
-        "machineCode": machineCode.value,
-      });
+      // FirebaseAnalytics.instance.logEvent(name: "setting_back", parameters: {
+      //   "machineCode": machineCode.value,
+      // });
     }
     //Future.delayed(Duration(milliseconds: 100), () {
     //Get.offAllNamed('/transit-page');

@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/config/string.dart';
@@ -269,9 +269,9 @@ class TransitPageController extends GetxController {
         _actuarial.value = shopData["actuarial"];
 
         if (Platform.isAndroid) {
-          FirebaseAnalytics.instance.logEvent(
-              name: 'machine_activate_launch',
-              parameters: {'machine_activate': '${_machineCode.value}'});
+          // FirebaseAnalytics.instance.logEvent(
+          //     name: 'machine_activate_launch',
+          //     parameters: {'machine_activate': '${_machineCode.value}'});
         }
         if (isFirst) {
            _saveActiveCode(_machineCode.value);
@@ -283,18 +283,18 @@ class TransitPageController extends GetxController {
 
       } else {
         if (Platform.isAndroid) {
-          FirebaseAnalytics.instance.logEvent(
-              name: 'machine_activate_failure',
-              parameters: {'machine_activate_error': '${_machineCode.value}'});
+          // FirebaseAnalytics.instance.logEvent(
+          //     name: 'machine_activate_failure',
+          //     parameters: {'machine_activate_error': '${_machineCode.value}'});
         }
         _showErrorDialog(isActive: response['data'] == null);
       }
     }).catchError((e) {
       LogUtil.d("getMachineActivate error: $e");
       if (Platform.isAndroid) {
-        FirebaseAnalytics.instance.logEvent(
-            name: 'machine_activate_error',
-            parameters: {'machine_activate_error': '${_machineCode.value}'});
+        // FirebaseAnalytics.instance.logEvent(
+        //     name: 'machine_activate_error',
+        //     parameters: {'machine_activate_error': '${_machineCode.value}'});
       }
       if (retryCount < 3) {
         // 如果失败，重试

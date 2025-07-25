@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:firebase_core/firebase_core.dart';
-import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+// import 'package:firebase_core/firebase_core.dart';
+// import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -25,10 +25,6 @@ import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
-
-
-import 'package:firebase_core/firebase_core.dart';
-import 'app/services/ResetToHomeTimer.dart';
 
 import 'firebase_options.dart';
 
@@ -81,13 +77,13 @@ void main() {
 
     await GetStorage.init();
 
-    if (Platform.isAndroid) {
-      //Firebase is not full supported on windows
-      await Firebase.initializeApp(
-        options: DefaultFirebaseOptions.currentPlatform,
-      );
-      FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
-    }
+    // if (Platform.isAndroid) {
+    //   //Firebase is not full supported on windows
+    //   await Firebase.initializeApp(
+    //     options: DefaultFirebaseOptions.currentPlatform,
+    //   );
+    //   FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
+    // }
 
     SystemUiOverlayStyle systemUiOverlayStyle =
         SystemUiOverlayStyle(statusBarColor: Colors.transparent);
@@ -163,9 +159,9 @@ void main() {
     //debugPrint('runZonedGuarded: Caught error in my root zone.:: $error');
     //final logger = Logger('main');
     Logger('main').info('-- Caught error in my root zone.:: $error --');
-    if (Platform.isAndroid) {
-      FirebaseCrashlytics.instance.recordError(error, stackTrace);
-    }
+    // if (Platform.isAndroid) {
+    //   FirebaseCrashlytics.instance.recordError(error, stackTrace);
+    // }
   });
 }
 

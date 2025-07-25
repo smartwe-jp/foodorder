@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:assets_audio_player/assets_audio_player.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 
 import 'package:flutter/material.dart';
@@ -1211,9 +1211,9 @@ class SettlementController extends GetxController with StateMixin {
               confirm: () {
                 Get.back();
                 commonCancel();
-                FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-                  "machineCode": machineInfo.machineCode,
-                });
+                // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+                //   "machineCode": machineInfo.machineCode,
+                // });
               })
       );
       return;
@@ -1233,9 +1233,9 @@ class SettlementController extends GetxController with StateMixin {
             cancle: () {
               Get.back();
               commonCancel();
-              FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
-                "machineCode": machineInfo.machineCode,
-              });
+              // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+              //   "machineCode": machineInfo.machineCode,
+              // });
             }
         )
     );
@@ -1365,10 +1365,10 @@ class SettlementController extends GetxController with StateMixin {
       seconds.value = 120;
     } else {
       //打开失败
-      FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
-        "machineCode": machineInfo.machineCode,
-        "orderId":orderId.value,
-      });
+      // FirebaseAnalytics.instance.logEvent(name: "cash_start_error",parameters: {
+      //   "machineCode": machineInfo.machineCode,
+      //   "orderId":orderId.value,
+      // });
       showCashTimer?.cancel();
       Get.toNamed(Routes.ERROR_PAGE);
     }
@@ -1758,11 +1758,11 @@ class SettlementController extends GetxController with StateMixin {
       logger.info('reportPutMoneyCurrency error:${e.toString()}');
       debugPrint("----上报订单失败----");
       if (!retry && Platform.isAndroid) {
-        FirebaseAnalytics.instance
-            .logEvent(name: "cash_report_error", parameters: {
-          "machineCode": machineInfo.machineCode,
-          "orderId": orderId.value,
-        });
+        // FirebaseAnalytics.instance
+        //     .logEvent(name: "cash_report_error", parameters: {
+        //   "machineCode": machineInfo.machineCode,
+        //   "orderId": orderId.value,
+        // });
         //发送邮件计划
       }
       if (retry) {

@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -208,15 +208,15 @@ class HomeController extends GetxController {
       debugPrint("发送通知邮件 response:$response");
       if (response != null && response['code'] == 200) {
         if (Platform.isAndroid) {
-          FirebaseAnalytics.instance.logEvent(
-              name: 'send_trouble_email',
-              parameters: {'sendTroubleEmail': 'true'});
+          // FirebaseAnalytics.instance.logEvent(
+          //     name: 'send_trouble_email',
+          //     parameters: {'sendTroubleEmail': 'true'});
         }
       } else {
         if (Platform.isAndroid) {
-          FirebaseAnalytics.instance.logEvent(
-              name: 'send_trouble_email',
-              parameters: {'sendTroubleEmail': 'false'});
+          // FirebaseAnalytics.instance.logEvent(
+          //     name: 'send_trouble_email',
+          //     parameters: {'sendTroubleEmail': 'false'});
         }
       }
     });

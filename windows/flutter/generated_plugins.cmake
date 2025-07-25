@@ -9,7 +9,6 @@ list(APPEND FLUTTER_PLUGIN_LIST
   charset_converter
   connectivity_plus
   dynamic_color
-  firebase_core
   flutter_plugin_msprinter
   permission_handler_windows
   r_get_ip
