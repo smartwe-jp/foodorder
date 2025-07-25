@@ -15,11 +15,17 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import android.net.wifi.WifiManager;
+import android.os.PowerManager; // 导入 PowerManager
+import io.flutter.embedding.android.FlutterActivity;
+
 import io.flutter.embedding.android.FlutterActivity;
 import io.flutter.embedding.engine.FlutterEngine;
 
 public class MainActivity extends FlutterActivity {
     private Context mContext;
+    private PowerManager.WakeLock wakeLock; // CPU 唤醒锁
+    private WifiManager.WifiLock wifiLock;
 
     //private ScheduledExecutorService threadPool = null;
     //private int betweenTime = 59;//间隔59秒执行一次
@@ -42,6 +48,29 @@ public class MainActivity extends FlutterActivity {
 
        //threadPool = Executors.newScheduledThreadPool(3);
        //executeShutDown();
+       // 获取 PowerManager 实例
+       PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+       // 创建 CPU 唤醒锁：PARTIAL_WAKE_LOCK 确保 CPU 运行，即使屏幕关闭
+       // 鉴于你的应用始终在前台，也可以考虑 SCREEN_BRIGHT_WAKE_LOCK 或 FULL_WAKE_LOCK 来保持屏幕常亮
+       // 但 PARTIAL_WAKE_LOCK 已经足以保持网络连接和CPU活跃。
+       wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "YourApp::MainCpuWakeLockTag");
+
+       // 获取 WifiManager 实例
+       WifiManager wifiManager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+       // 创建 Wi-Fi 唤醒锁：WIFI_MODE_FULL_HIGH_PERF 确保 Wi-Fi 处于高性能模式
+       // 如果你的目标 API 级别低于 29，可以使用 WIFI_MODE_FULL
+       wifiLock = wifiManager.createWifiLock(WifiManager.WIFI_MODE_FULL_HIGH_PERF, "YourApp::MainWifiLockTag");
+
+       // 在应用启动时获取唤醒锁
+       if (wakeLock != null && !wakeLock.isHeld()) {
+           wakeLock.acquire();
+           System.out.println("CPU Wake Lock acquired in MainActivity");
+       }
+       if (wifiLock != null && !wifiLock.isHeld()) {
+           wifiLock.acquire();
+           System.out.println("Wi-Fi Lock acquired in MainActivity");
+       }
+
     }
 
     @Override
@@ -73,5 +102,18 @@ public class MainActivity extends FlutterActivity {
             }
         }, delayTime, betweenTime, TimeUnit.SECONDS);
     }*/
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 在应用销毁时释放唤醒锁
+        if (wakeLock != null && wakeLock.isHeld()) {
+            wakeLock.release();
+            System.out.println("CPU Wake Lock released in MainActivity");
+        }
+        if (wifiLock != null && wifiLock.isHeld()) {
+            wifiLock.release();
+            System.out.println("Wi-Fi Lock released in MainActivity");
+        }
+    }
 
 }
