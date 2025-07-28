@@ -1691,12 +1691,12 @@ class SelectPaymentPage extends StatelessWidget {
                                             ),
                                           ),
                                           TextSpan(
-                                            text: "    ",//（${"show_price_front".localized()}）
+                                            text: machineInfo.taxSystem ? "（${ "show_price_front".localized()}）" : "    ",
                                             style: TextStyle(
                                               fontSize: 24,
                                               fontFamily: GFont.getFontFamily(),
                                               fontWeight: FontWeight.w600,
-                                              color: Colors.black,
+                                              color: ColorsUtil.hexToColor(Gcolor.priceColor),
                                               textBaseline: TextBaseline.alphabetic,
                                             ),
                                           ),
