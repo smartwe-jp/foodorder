@@ -107,8 +107,8 @@ class _LoadingFailedWidgetState extends State<LoadingFailedWidget> {
             ),
             style: ButtonStyle(
               //backgroundColor: MaterialStateProperty.all(ColorsUtil.hexToColor("0xEE0000")),
-              padding: MaterialStateProperty.all(EdgeInsets.fromLTRB(30, 10, 30, 10)),
-              shape: MaterialStateProperty.all(RoundedRectangleBorder(
+              padding: WidgetStateProperty.all(EdgeInsets.fromLTRB(30, 10, 30, 10)),
+              shape: WidgetStateProperty.all(RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0)
               )),
             ),

@@ -471,8 +471,8 @@ class MenuPageController extends GetxController with StateMixin {
   }
 
   backToNewHome() async {
-    Get.delete<MenuPageController>(); // 手动删除控制器实例
-    Get.toNamed("/order-home");
+    //Get.delete<MenuPageController>(); // 手动删除控制器实例
+    Get.back();
   }
 
   //公共设置菜单Title
