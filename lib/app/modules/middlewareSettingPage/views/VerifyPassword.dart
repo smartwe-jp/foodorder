@@ -95,6 +95,7 @@ class _VerifyPasswordPageState extends State<VerifyPasswordPage> {
                                   controller: _myPassWordController,
                                   textAlign: TextAlign.center,
                                   showCursor: false,
+                                  obscureText: true,
                                   style:  TextStyle(fontFamily: GFont.getFontFamily(),fontSize: 40),
                                   // Disable the default soft keybaord
                                   keyboardType: TextInputType.none,

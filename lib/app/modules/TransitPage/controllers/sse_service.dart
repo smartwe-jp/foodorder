@@ -20,12 +20,13 @@ class SseService extends GetxService {
   Future<void> addSseListen(String url) async {
 
     if (_subscriptions.containsKey(url)) {
+      print('SSE Service: Already subscribed to $url');
       return;
     }
 
-    if (kDebugMode) {
+    //if (kDebugMode) {
       print('SSE Service: Attempting to connect to $url');
-    }
+    //}
 
     final request = SSERequest(
       requestType: RequestMethodType.get,
@@ -89,10 +90,10 @@ class SseService extends GetxService {
 
         // 每收到消息，重置35秒超时检测
         _heartbeatTimers[url]?.cancel();
-        _heartbeatTimers[url] = Timer(const Duration(seconds: 35), () {
-          if (kDebugMode) {
+        _heartbeatTimers[url] = Timer(const Duration(seconds: 46), () {
+          //if (kDebugMode) {
             print('SSE Service: Heartbeat timeout for $url, reconnecting...');
-          }
+          //}
           disconnect(url).then((_) {
             _startReconnect(url, request);
           });
