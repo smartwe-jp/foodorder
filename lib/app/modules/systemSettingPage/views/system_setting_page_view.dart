@@ -829,7 +829,7 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkIsAllowWlanPrintTwo("0");
+              controller.checkIsAllowWlanPanelPrint("0");
             },
             child: Container(
               //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
