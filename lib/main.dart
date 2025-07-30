@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -53,6 +54,7 @@ Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
 
   // 网络 打印
   final conn = printerPlus.NetConn(printerInfo.ip!);
+  print("打印机连接地址：${printerInfo.ip}");
   conn.writeMultiBytes(printData);
 
 }
@@ -97,7 +99,8 @@ void main() {
                       debugPrint("routingCallback : ${value?.current}");
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
-                          value?.current == Routes.SELECT_PAYMENT_PAGE
+                          value?.current == Routes.SELECT_PAYMENT_PAGE ||
+                          (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
                       ) {
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ORDER_HOME ||

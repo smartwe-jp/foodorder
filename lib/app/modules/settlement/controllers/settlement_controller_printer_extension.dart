@@ -197,12 +197,12 @@ class PrintService extends GetxService {
 //    }
 // }
 
-  callbackBeforePrint(String event, Map data) async {
+  callbackBeforePrint(String event, Map data, {int retryCount = 0}) async {
     String uuid = data['uuid'] ?? '';
     if (uuid.isEmpty) return;
 
     try {
-      LogUtil.d("callbackBeforePrint uuid: $uuid send");
+      LogUtil.d("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
@@ -220,8 +220,24 @@ class PrintService extends GetxService {
       }
     } on TimeoutException catch (e) {
       debugPrint('TimeoutException:${e.toString()}');
+      if (retryCount < 3) {
+        // 如果超时，重试最多3次
+        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        await Future.delayed(Duration(seconds: 2));
+        callbackBeforePrint(event, data, retryCount: retryCount + 1);
+      } else {
+        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+      }
     } catch (e) {
       debugPrint('error Exception:${e.toString()}');
+      if (retryCount < 3) {
+        // 如果发生错误，重试最多3次
+        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        await Future.delayed(Duration(seconds: 2));
+        callbackBeforePrint(event, data, retryCount: retryCount + 1);
+      } else {
+        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+      }
     }
   }
 
@@ -358,7 +374,7 @@ class PrintService extends GetxService {
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
   printTableSeatInfo(Map data) async {
 
-      debugPrint("printTableSeatInfo data: $data");
+      print("printTableSeatInfo data: $data");
 
       //find pinter with type 11
       final printer = printerList.firstWhere(
@@ -366,7 +382,7 @@ class PrintService extends GetxService {
         orElse: () => null,
       );
       if (printer == null) {
-        debugPrint("Printer IP not configured for type 11");
+        print("Printer IP not configured for type 11");
         return;
       }
 
