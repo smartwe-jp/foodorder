@@ -107,7 +107,7 @@ class GString{
         "select_checkOut_tip_selected":"                店内      \r\n（お食事後のお会計）",
         "checkoutScanTitle":"お会計",
 
-        "menu_option_more_multipleState":"最大%%つまで",
+        "menu_option_more_multipleState":"最大%%にまで",
         "menu_option_less_smallest":"%%をお選びください",
         "show_selectPay_point":"点",
 

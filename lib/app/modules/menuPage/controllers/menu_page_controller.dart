@@ -1337,16 +1337,19 @@ print("加1了");
         //"takeout": (_dining_type == "2") ? true: false,
         "takeout": machineInfo.mealType,
       };
+      debugPrint("formData: $formData");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
-        var response = json.decode(val.toString());
+
         EasyLoading.dismiss();
+        var response = json.decode(val.toString());
+        debugPrint("webBootOrder response: $response");
 
         if (response['code'] == 200 && response != null) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
           shopCartTotalPrice.value = response['data']["total"].toString();
-          int totalTax = response['data']["tax1"] ?? 0 + response['data']["tax2"] ?? 0;
+          int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
 
           showSelectMealTypeAndPaymentMethodDialog(tax: totalTax);
 

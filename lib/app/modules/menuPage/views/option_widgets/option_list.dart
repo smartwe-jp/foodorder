@@ -1,6 +1,7 @@
 import 'package:auto_size_text/auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/widgets/OptionTitle.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
@@ -90,7 +91,7 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     }
 
     if (addedOptions.length > _optionSelectMaxNum && isAdd) {
-      final showTag = GString.getToString(widget.languageKey, "menu_option_more_multipleState");
+      final showTag = "menu_option_more_multipleState".localized();
       Get.dialog(
           DialogUtils.alertOneButton("${showTag.replaceAll("%%", widget.title)}",
               title: GString.getToString(widget.languageKey, "tag_title"),
