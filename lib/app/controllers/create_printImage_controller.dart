@@ -851,7 +851,6 @@ class CreatePrintImageController extends GetxController {
             FontWeight.w100,
             true),
       );
-      lineZeng += 5;
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
@@ -865,7 +864,6 @@ class CreatePrintImageController extends GetxController {
             FontWeight.w100,
             true),
       );
-      lineZeng += 5;
 
       categoryMenus.add(
         _publicSplitLine(),
@@ -914,7 +912,7 @@ class CreatePrintImageController extends GetxController {
     //轻减税率对象
     categoryMenus.add(
       Container(
-        margin: EdgeInsets.only(bottom: 3),
+        //margin: EdgeInsets.only(bottom: 3),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.end,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -983,7 +981,7 @@ class CreatePrintImageController extends GetxController {
       width: 385,
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(20), right: ScreenAdapter.width(15)),
-      height: totalHight.toDouble() + 100 + 240,
+      height: totalHight.toDouble() + 100 + 180,
       color: Colors.white,
       //alignment: Alignment.topCenter,
       child: Column(
