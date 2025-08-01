@@ -3016,23 +3016,23 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
                                   ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Text(
-                                            "編集モデ",
-                                            style: TextStyle(
-                                                fontFamily: 'NotoSansJP',
-                                                fontSize: ScreenAdapter.fontSize(22),
-                                                fontWeight: FontWeight.w500
-                                            ),
-                                          ),
-                                        ),
-                                        setIsEditMode(),//是否结算完后回到首页
-                                      ]
-                                  ),
+                                  // TableRow(
+                                  //     children: <Widget>[
+                                  //       Container(
+                                  //         //height: ScreenAdapter.height(65),
+                                  //         alignment: Alignment.center,
+                                  //         child: Text(
+                                  //           "編集モデ",
+                                  //           style: TextStyle(
+                                  //               fontFamily: 'NotoSansJP',
+                                  //               fontSize: ScreenAdapter.fontSize(22),
+                                  //               fontWeight: FontWeight.w500
+                                  //           ),
+                                  //         ),
+                                  //       ),
+                                  //       setIsEditMode(),//是否结算完后回到首页
+                                  //     ]
+                                  // ),
                                   if (Platform.isAndroid)
                                   TableRow(
                                       children: <Widget>[
