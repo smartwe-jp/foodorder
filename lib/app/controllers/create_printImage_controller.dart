@@ -767,7 +767,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == true)
-                ? "${formatMoney(finalPrice)}"
+                ? "${formatMoney(finalPrice - int.parse(printData["tax"]))}"
                 : "0",
             24.0,
             FontWeight.w100,
@@ -794,12 +794,13 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             (printData["takeOut"] == false)
-                ? "${formatMoney(finalPrice)}"
+                ? "${formatMoney(finalPrice - int.parse(printData["tax"]))}"
                 : "0",
             24.0,
             FontWeight.w100,
             true),
       );
+      lineZeng += 5;
       //内消费税
       categoryMenus.add(
         _publicTwoColumnsTxtNew(
@@ -813,6 +814,7 @@ class CreatePrintImageController extends GetxController {
             FontWeight.w100,
             true),
       );
+      lineZeng += 5;
 
       categoryMenus.add(
         _publicSplitLine(),
@@ -1069,7 +1071,7 @@ class CreatePrintImageController extends GetxController {
                   ? Directionality(
                       textDirection: TextDirection.ltr,
                       child: Container(
-                        width: ScreenAdapter.width(120),
+                        //width: ScreenAdapter.width(120),
                         alignment: Alignment.centerRight,
                         child: RichText(
                           text: TextSpan(

@@ -115,7 +115,7 @@ extension LocalizedString on String {
         "select_checkOut_tip_selected":"                店内      \r\n（お食事後のお会計）",
         "checkoutScanTitle":"お会計",
 
-        "menu_option_more_multipleState":"最大%%つまで",
+        "menu_option_more_multipleState":"最大%%にまで",
         "menu_option_less_smallest":"%%をお選びください",
         "show_selectPay_point":"点",
 
@@ -263,7 +263,7 @@ extension LocalizedString on String {
         "select_checkOut_tip_selected":"结账",
         "checkoutScanTitle":"结账",
 
-        "menu_option_more_multipleState":"最多%%个",
+        "menu_option_more_multipleState":"达到最多%%个数",
         "menu_option_less_smallest":"请选择%%",
         "show_selectPay_point":"份",
 
