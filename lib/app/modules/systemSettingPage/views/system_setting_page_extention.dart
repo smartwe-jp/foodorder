@@ -275,7 +275,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     top: ScreenAdapter.height(3),
                     bottom: ScreenAdapter.height(3)),
                 child: isSingleMode ?
-                _singleModePrinter(type, receipt, isOff, continuous == 1, printIp, printPort) :
+                _singleModePrinter(type, receipt, isOff, continuous == 1, printIp, printPort, labelWidth) :
                 _hasContinuosPrinter(type, receipt, isOff, continuous == 1, printIp, printPort),
               ),
               Table(
@@ -346,7 +346,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
         );
   }
 
-  _singleModePrinter(int type, int receipt, bool isOff, bool isContinuous, String printIp, String printPort) {
+  _singleModePrinter(int type, int receipt, bool isOff, bool isContinuous, String printIp, String printPort, int labelWidth) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,7 +447,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             onTap: () {
               controller.printTest(printIp,
                   printPort,
-                  printType: receipt);
+                  printType: receipt, labelWidth: labelWidth.toDouble());
             },
             child: Container(
               margin: EdgeInsets.only(

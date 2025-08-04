@@ -1005,7 +1005,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   //printType=0 receipt 1label
-  printTest(printIp,printPort,{printType=0}) async {
+  printTest(printIp,printPor,{printType=0, double labelWidth = 384}) async {
 
     if(printType == 0){
       PictureGeneratorProvider.instance.addPicGeneratorTask(
@@ -1018,7 +1018,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }else{
       PictureGeneratorProvider.instance.addPicGeneratorTask(
         PicGenerateTask<PrinterInfo>(
-          tempWidget: testLabel(printIp) as ATempWidget,
+          tempWidget: testLabel(printIp, labelWidth) as ATempWidget,
           printTypeEnum: PrintTypeEnum.label,
           params: PrinterInfo(ip:printIp),
         ),
@@ -1062,8 +1062,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
       ],
     ));
   }
-  testLabel(printIp) {
-    return LabelConstrainedBox(Column(
+  testLabel(printIp, double labelWidth) {
+    return LabelConstrainedBox(
+      pagerWidth: labelWidth,
+        Column(
       mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [

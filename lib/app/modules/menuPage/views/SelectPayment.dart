@@ -1708,56 +1708,6 @@ class SelectPaymentPage extends StatelessWidget {
                                       color: ColorsUtil.hexToColor("#000000"),
                                     ),
 
-                                  // Container(
-                                  //   child: RichText(
-                                  //     text: TextSpan(
-                                  //         text: "",
-                                  //         //GString.getToString(this._checkLanguage, "show_price_front"),
-                                  //         style: TextStyle(
-                                  //           fontSize: ScreenAdapter.fontSize(
-                                  //               GFontSize.menusettlementBottomPriceLeft),
-                                  //           fontFamily: GFont.getFontFamily(),
-                                  //           fontWeight: FontWeight.w500,
-                                  //           color: Colors.black,
-                                  //         ),
-                                  //         children: [
-                                  //           TextSpan(
-                                  //             text: formatMoney(shopCartTotalPrice),
-                                  //             style: TextStyle(
-                                  //               fontSize: 35,
-                                  //               fontFamily: GFont.getFontFamily(),
-                                  //               fontWeight: FontWeight.w500,
-                                  //               color: Colors.black,
-                                  //             ),
-                                  //           ),
-                                  //           TextSpan(
-                                  //             text: "（${"tax_out".localized()}）",
-                                  //             style: TextStyle(
-                                  //               fontSize: 24,
-                                  //               fontFamily: GFont.getFontFamily(),
-                                  //               fontWeight: FontWeight.w500,
-                                  //               color: Colors.black,
-                                  //               textBaseline: TextBaseline.alphabetic,
-                                  //             ),
-                                  //           ),
-                                  //         ]),
-                                  //   ),
-                                  // ),
-
-
-
-                                  // Container(
-                                  //   //padding: EdgeInsets.only(right: ScreenAdapter.width(10)),
-                                  //   child: Text(
-                                  //     "（+ " + formatMoney(taxCount.toString()) + "tax".localized() + "）",
-                                  //     style: TextStyle(
-                                  //         color: ColorsUtil.hexToColor(
-                                  //             Gcolor.mainTitleColor),
-                                  //         fontFamily: GFont.getFontFamily(),
-                                  //         fontWeight: FontWeight.w500,
-                                  //         fontSize: 24),
-                                  //   ),
-                                  // ),
                                   if (!controller.taxSystem)
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
