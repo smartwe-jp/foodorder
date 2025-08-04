@@ -1054,7 +1054,7 @@ class CreatePrintImageController extends GetxController {
     return Directionality(
         textDirection: TextDirection.ltr,
         child: Container(
-          margin: EdgeInsets.only(bottom: 3),
+          //margin: EdgeInsets.only(bottom: 3),
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             crossAxisAlignment: CrossAxisAlignment.end,
