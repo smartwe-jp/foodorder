@@ -1672,9 +1672,55 @@ class SelectPaymentPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
 
+                                  
+                                   if(!controller.taxSystem)
+                                  Row(
+                                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      //taxout
+                                      Text(
+                                        "taxout_price".localized(),
+                                        style: TextStyle(
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 32),
+                                      ),
+                                      Spacer(),
+                                      //shopCartTotalPrice
+                                      Text(
+                                          "¥ ",
+                                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                          ),
+                                      ),
+                                      Text(
+                                        formatMoney(shopCartTotalPrice),
+                                        style: TextStyle(
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: 32),
+                                      ),
+                                    ],
+                                  ),
+                                  
+                                  if(!controller.taxSystem)
+                                  Divider(
+                                    height: 1.5,
+                                    color: ColorsUtil.hexToColor("#000000"),
+                                  ),
+
                                   if(!controller.taxSystem)
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       //taxin
                                       Text(
@@ -1687,6 +1733,19 @@ class SelectPaymentPage extends StatelessWidget {
                                             fontSize: 32),
                                       ),
                                       //showPrice
+                                      Spacer(),
+                                      //shopCartTotalPrice
+                                      Text(
+                                          "¥ ",
+                                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                                          style: TextStyle(
+                                            fontSize: 30,
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                          ),
+                                      ),
                                       Text(
                                         formatMoney(taxCount.toString()),
                                         style: TextStyle(
@@ -1698,38 +1757,8 @@ class SelectPaymentPage extends StatelessWidget {
                                       ),
                                     ],
                                   ),
-                                  if(!controller.taxSystem)
-                                  Divider(
-                                    height: 1.5,
-                                    color: ColorsUtil.hexToColor("#000000"),
-                                  ),
                               
-                                  if(!controller.taxSystem)
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //taxout
-                                      Text(
-                                        "taxout_price".localized(),
-                                        style: TextStyle(
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor),
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 32),
-                                      ),
-                                      //shopCartTotalPrice
-                                      Text(
-                                        formatMoney(shopCartTotalPrice),
-                                        style: TextStyle(
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor),
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 32),
-                                      ),
-                                    ],
-                                  ),
+                                 
 
                                   if(!controller.taxSystem)
                                   Divider(

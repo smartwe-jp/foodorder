@@ -13,9 +13,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"税込",
-        "tax_out":"税别",
+        "tax_out":"小計",
         "tax":"消費税",
-        "taxout_price":"金額",
+        "taxout_price":"小計",
         "original_price":"原価",
         "show_original_price_front":"定価",
         "settlement_button":"お会計",
@@ -169,9 +169,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"含税",
-        "tax_out":"不含税",
+        "tax_out":"小计",
         "tax":"消费税",
-        "taxout_price":"金额",
+        "taxout_price":"小计",
         "original_price":"原价",
         "show_original_price_front":"原价",
         "settlement_button":"结算",
@@ -322,9 +322,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"Tax-In",
-        "tax_out":"Tax-Out",
+        "tax_out":"Subtotal",
         "tax":"Tax",
-        "taxout_price":"Price",
+        "taxout_price":"Subtotal",
         "original_price":"Original Price",
         "show_original_price_front":"Orig",
         "settlement_button":"Check Out",
@@ -476,9 +476,9 @@ extension LocalizedString on String {
         "top_back_button":"Language",
 
         "show_price_front":"세금 포함",//含税
-        "tax_out":"세금 제외",//不含税
-        "tax":"세금",//税
-        "taxout_price":"가격",//金额
+        "tax_out":"상품 금액",//不含税
+        "tax":"부가세",//税
+        "taxout_price":"상품 금액",//金额
         "original_price":"원가",//原价
         "show_original_price_front":"원가",
         "settlement_button":"합의",
