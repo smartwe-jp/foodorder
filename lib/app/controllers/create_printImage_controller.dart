@@ -776,7 +776,6 @@ class CreatePrintImageController extends GetxController {
           textDirection: TextDirection.ltr,
           child: Container(
             height: 42,
-            margin: EdgeInsets.only(bottom: 3),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.end,
@@ -931,42 +930,42 @@ class CreatePrintImageController extends GetxController {
                 )),
             Expanded(
                 child: Column(
-              children: [
-                if (printData["payMethod"] == "現金支払")
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "お預り",
-                            style: printMenuFont,
-                          ),
-                          Text(
-                            "￥${formatMoney(printData["payPrice"])}",
-                            style: printMenuFont,
-                          ),
-                        ],
-                      )),
-                if (printData["payMethod"] == "現金支払" &&
-                    printData["change"] != null)
-                  Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            "お釣",
-                            style: printMenuFont,
-                          ),
-                          Text(
-                            "￥${formatMoney(printData["change"])}",
-                            style: printMenuFont,
-                          ),
-                        ],
-                      )),
-              ],
-            )),
+                  children: [
+                    if (printData["payMethod"] == "現金支払")
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "お預り",
+                                style: printMenuFont,
+                              ),
+                              Text(
+                                "￥${formatMoney(printData["payPrice"])}",
+                                style: printMenuFont,
+                              ),
+                            ],
+                          )),
+                    if (printData["payMethod"] == "現金支払" &&
+                        printData["change"] != null)
+                      Directionality(
+                          textDirection: TextDirection.ltr,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                "お釣",
+                                style: printMenuFont,
+                              ),
+                              Text(
+                                "￥${formatMoney(printData["change"])}",
+                                style: printMenuFont,
+                              ),
+                            ],
+                          )),
+                  ],
+                )),
           ],
         ),
       ),
@@ -1086,9 +1085,9 @@ class CreatePrintImageController extends GetxController {
             children: [
               Expanded(
                   child: Text(
-                "${txtContext}",
-                style: printMenuFont,
-              )),
+                    "${txtContext}",
+                    style: printMenuFont,
+                  )),
             ],
           )),
     );
@@ -1115,32 +1114,32 @@ class CreatePrintImageController extends GetxController {
                   )),
               (isMoney == true)
                   ? Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        //width: ScreenAdapter.width(120),
-                        alignment: Alignment.centerRight,
-                        child: RichText(
-                          text: TextSpan(
-                              text: "￥",
-                              style: printMenuFont,
-                              children: [
-                                TextSpan(
-                                  text: "${rightTxtContext}",
-                                  style: printMenuFont,
-                                ),
-                              ]),
-                        ),
-                      ))
-                  : Directionality(
-                      textDirection: TextDirection.ltr,
-                      child: Container(
-                        width: ScreenAdapter.width(120),
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          "${rightTxtContext}",
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    //width: ScreenAdapter.width(120),
+                    alignment: Alignment.centerRight,
+                    child: RichText(
+                      text: TextSpan(
+                          text: "￥",
                           style: printMenuFont,
-                        ),
-                      )),
+                          children: [
+                            TextSpan(
+                              text: "${rightTxtContext}",
+                              style: printMenuFont,
+                            ),
+                          ]),
+                    ),
+                  ))
+                  : Directionality(
+                  textDirection: TextDirection.ltr,
+                  child: Container(
+                    width: ScreenAdapter.width(120),
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      "${rightTxtContext}",
+                      style: printMenuFont,
+                    ),
+                  )),
             ],
           ),
         ));

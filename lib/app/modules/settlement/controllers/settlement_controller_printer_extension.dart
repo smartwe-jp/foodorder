@@ -79,124 +79,6 @@ class PrintService extends GetxService {
     }
   }
 
-  // {
-//    "msg":"success",
-//    "code":200,
-//    "data":{
-//       "shopName":1甘蘭居酒屋2025,
-//       "orderDate":"2025年07月04日(金) 15":30,
-//       "address":大阪市北区天満2-1-12天満橋SEビル 6F%%甘蘭株式会社,
-//       "telNo":090-8888-9999,
-//       "ntaNo":T8120001223480,
-//       "orderType":1,
-//       "numberTip":"お客様番号":,
-//       "serialNo":,
-//       "serialNumber":"２６８８",
-//       "serialNumberText":"２６８８",
-//       "orderId":459174218385522688,
-//       "language":"JP",
-//       "takeOut":true,
-//       "price":40,
-//       "tax":2,
-//       "order":"＊＊＊５２２６８８",
-//       "payPrice":50,
-//       "change":10,
-//       "payDate":null,
-//       "memberNo":null,
-//       "payMethod":"現金支払",
-//       "details":null,
-//       "discount":0,
-//       "orderTime":"15":30,
-//       "printInfo":{
-//          "bizId":459174218385522688,
-//          "orderTime":"15":30,
-//          "remark":,
-//          "from_plate":"Shop",
-//          "order_sn_code":2688,
-//          "order_type":"takeout",
-//          "pay_type":"Paid",
-//          "orderLinesMap":{
-//             "22":[
-//                {
-//                   "name":"アサヒ　瓶ビール",
-//                   "price":10,
-//                   "qty":1,
-//                   "bizId":459174218385522692,
-//                   "options":{
-
-//                   },
-//                   "extend2qr":null
-//                }
-//             ],
-//             "21":[
-//                {
-//                   "name":"牛すじドテ焼大根日",
-//                   "price":10,
-//                   "qty":1,
-//                   "bizId":459174218385522689,
-//                   "options":{
-
-//                   },
-//                   "extend2qr":null
-//                },
-//                {
-//                   "name":"枝豆",
-//                   "price":20,
-//                   "qty":1,
-//                   "bizId":459174218385522690,
-//                   "options":{
-//                      "份量":[
-//                         {
-//                            "name":"中份",
-//                            "qty":1
-//                         }
-//                      ]
-//                   },
-//                   "extend2qr":null
-//                }
-//             ]
-//          },
-//          "orderLines":[
-//             {
-//                "name":"アサヒ　瓶ビール",
-//                "price":10,
-//                "qty":1,
-//                "bizId":459174218385522692,
-//                "options":{
-
-//                },
-//                "extend2qr":null
-//             },
-//             {
-//                "name":"牛すじドテ焼大根日",
-//                "price":10,
-//                "qty":1,
-//                "bizId":459174218385522689,
-//                "options":{
-
-//                },
-//                "extend2qr":null
-//             },
-//             {
-//                "name":"枝豆",
-//                "price":20,
-//                "qty":1,
-//                "bizId":459174218385522690,
-//                "options":{
-//                   "份量":[
-//                      {
-//                         "name":"中份",
-//                         "qty":1
-//                      }
-//                   ]
-//                },
-//                "extend2qr":null
-//             }
-//          ]
-//       }
-//    }
-// }
-
   callbackBeforePrint(String event, Map data, {int retryCount = 0}) async {
     String uuid = data['uuid'] ?? '';
     if (uuid.isEmpty) return;
@@ -251,10 +133,7 @@ class PrintService extends GetxService {
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
     bool isInShop = data["from_plate"] == "Shop";
-    bool isTakeOut = orderType == 'delivery' ||
-        orderType == 'takeout' ||
-        orderType == 'pickup' ||
-        orderType == 'Takeout';
+    bool isTakeOut = orderType != 'Shop_In';// || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
 
     final centerPrinter = printerList.firstWhere(
       (p) => p["type"] == 11,
@@ -300,19 +179,21 @@ class PrintService extends GetxService {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
-        final printWidth = await HomeServices.getLabelPrintWidth() ?? 384.0;
+        final printWidth = printer['labelWidth'] ?? 384.0;
         // Add the head receipt widget to the print queue
-        final headReceipt = headReceiptWidget(
-          fromPlate,
-          orderSnCode,
-          orderTime,
-          data['order_type'] ?? '',
-          remark,
-          printWidth,
-          rotate,
-        );
+        if (isTakeOut) {
+          final headReceipt = headReceiptWidget(
+            fromPlate,
+            orderSnCode,
+            orderTime,
+            //orderType,
+            remark,
+            printWidth.toDouble(),
+            rotate,
+          );
 
-        labelPrintQueue.add(headReceipt);
+          labelPrintQueue.add(headReceipt);
+        }
 
         for (var item in items) {
           final qty = item["qty"] ?? 1;
@@ -325,7 +206,7 @@ class PrintService extends GetxService {
               name,
               orderSnCode,
               options,
-              printWidth,
+              printWidth.toDouble(),
               rotate,
             );
             labelPrintQueue.add(receiptWidget);
@@ -494,7 +375,7 @@ class PrintService extends GetxService {
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
         alignment: Alignment.center,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+          //padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -527,7 +408,7 @@ class PrintService extends GetxService {
       String fromPlate,
       String orderSnCode,
       String orderTime,
-      String orderType,
+      //String orderType,
       String remark,
       double printWidth,
       bool rotate) {
