@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:audioplayers/audioplayers.dart';
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';

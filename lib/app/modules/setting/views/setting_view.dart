@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';

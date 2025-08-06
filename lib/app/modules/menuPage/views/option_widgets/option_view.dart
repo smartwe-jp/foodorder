@@ -1,6 +1,6 @@
 
 
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common//Extension/StringExtension.dart';
 import 'package:foodorder/app/modules/menuPage/views/option_widgets/widgets/PriceLabel.dart';

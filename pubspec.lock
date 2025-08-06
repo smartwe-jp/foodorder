@@ -138,14 +138,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.1.0"
-  auto_size_text:
-    dependency: "direct main"
-    description:
-      name: auto_size_text
-      sha256: "3f5261cd3fb5f2a9ab4e2fc3fba84fd9fcaac8821f20a1d4e71f557521b22599"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.0"
   badges:
     dependency: "direct main"
     description:
@@ -382,6 +374,14 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_auto_size_text:
+    dependency: "direct main"
+    description:
+      name: flutter_auto_size_text
+      sha256: eba9a0053ab13703eca8468754940f1567cfd364b5aa7225420ea5ec3c02b83e
+      url: "https://pub.dev"
+    source: hosted
+    version: "4.1.0"
   flutter_cache_manager:
     dependency: transitive
     description:
@@ -419,10 +419,10 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "451e5213150f822f55a4c3049759e4f130a411a1"
+      resolved-ref: "04bb4fa9012d8822421ceaf635f7125c1a4371f3"
       url: "git@github.com:Aaron51FX/flutter_printer_plus.git"
     source: git
-    version: "1.0.0+9"
+    version: "1.0.1"
   flutter_screenutil:
     dependency: "direct main"
     description:

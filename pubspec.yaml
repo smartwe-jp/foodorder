@@ -1,5 +1,5 @@
 name: foodorder
-version: 1.1.0+1
+version: 1.1.2+1
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
 environment: 
@@ -35,7 +35,7 @@ dependencies:
   widget_to_image:
     git:
       url: git@github.com:Aaron51FX/widget_to_image.git
-  auto_size_text: ^3.0.0
+  flutter_auto_size_text: ^4.1.0
   esc_pos_printer: ^4.1.0
   esc_pos_utils: ^1.1.0
   image: ^3.0.2

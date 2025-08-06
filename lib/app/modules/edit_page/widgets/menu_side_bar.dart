@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'dart:ui';
-
-import 'package:auto_size_text/auto_size_text.dart';
+import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
