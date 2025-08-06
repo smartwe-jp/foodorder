@@ -494,16 +494,16 @@ class CreatePrintImageController extends GetxController {
             style: printMenuFont,
           )),
     ));
-    if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
-      addRowHight += 38;
-      categoryMenus.add(_publicOneColumnTxtNew(
-          "${printData["numberTip"]}${printData["serialNumber"]}",
-          26.0,
-          FontWeight.w100));
-    }
     //注文番号
     categoryMenus.add(_publicOneColumnTxtNew(
         "注文番号:${printData["order"]}", 26.0, FontWeight.w300));
+    if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
+      addRowHight += 48;
+      categoryMenus.add(_publicOneColumnText(
+          "${printData["numberTip"]}${printData["serialNumber"]}",
+          32.0,
+          FontWeight.w600));
+    }
     //领収书标题
     categoryMenus.add(
       Container(
@@ -1040,6 +1040,31 @@ class CreatePrintImageController extends GetxController {
                   child: Text(
                     "${txtContext}",
                     style: printMenuFont,
+                  )),
+            ],
+          )),
+    );
+  }
+
+  _publicOneColumnText(txtContext, txtFontSize, txtFontWeight) {
+    return Container(
+      alignment: Alignment.centerLeft,
+      margin: EdgeInsets.only(bottom: 3),
+      child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.start,
+            textDirection: TextDirection.ltr,
+            children: [
+              Expanded(
+                  child: Text(
+                    "${txtContext}",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      color: Colors.black,
+                      fontSize: txtFontSize,
+                      fontWeight: txtFontWeight,
+                    ),
                   )),
             ],
           )),
