@@ -89,8 +89,8 @@ void main() {
                     theme: ThemeData(
                       primaryColor: Gcolor.primaryColor, // 设置主体颜色
                     ),
-                    //home: child,
-                    initialRoute: Routes.HOME,
+                    home: child,
+                    //initialRoute: Routes.HOME,
                     //initialRoute: AppPages.INITIAL,
                     //配置ios动画
                     locale: Locale('ja', 'JP'), // 默认语言
@@ -134,14 +134,14 @@ void main() {
                     },
                   ));
             },
-              // child: Scaffold(
-              //   body: PrintImageGenerateWidget(
-              //     contentBuilder: (context) {
-              //       return HomeView();
-              //     },
-              //     onPictureGenerated: _onPictureGenerated,
-              //   ),
-              // ),
+              child: Scaffold(
+                body: PrintImageGenerateWidget(
+                  contentBuilder: (context) {
+                    return HomeView();
+                  },
+                  onPictureGenerated: _onPictureGenerated,
+                ),
+              ),
             )
       );
     });
