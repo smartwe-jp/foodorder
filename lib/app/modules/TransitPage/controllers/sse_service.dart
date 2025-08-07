@@ -94,9 +94,9 @@ class SseService extends GetxService {
           //if (kDebugMode) {
             print('SSE Service: Heartbeat timeout for $url, reconnecting...');
           //}
-          // disconnect(url).then((_) {
-          //   _startReconnect(url, request);
-          // });
+          disconnect(url).then((_) {
+            _startReconnect(url, request);
+          });
         });
       },
       onError: (err) {
