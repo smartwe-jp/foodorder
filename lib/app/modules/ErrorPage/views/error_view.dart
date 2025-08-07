@@ -78,8 +78,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
 
           SizedBox(width: 30),
 
-          Text(GString.getToString(
-              controller.language.value, "cash_change_error_title"),
+          Text("cash_change_error_title".tr,
               style: TextStyle(
                 fontSize: 40,
                 fontFamily: GFont.getFontFamily(),
@@ -116,8 +115,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
             ),
             SizedBox(width: 10),
             Flexible(  // 使用 Flexible 包裹 Text
-              child: Text(
-                GString.getToString(controller.language.value, "cash_change_error_tips_up"),
+              child: Text("cash_change_error_tips_up".tr,
                 style: TextStyle(
                   fontFamily: GFont.getFontFamily(),
                   fontSize: 35,
@@ -136,8 +134,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
           Container(
             margin: EdgeInsets.only(left: 50),
             child:
-            Text(GString.getToString(
-                controller.language.value, "cash_change_error_tips_down"),
+            Text("cash_change_error_tips_down".tr,
               style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: 35,
@@ -171,8 +168,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
                   onPressed: () {
                     controller.reStartApp();
                   },
-                  child: Text(GString.getToString(
-                      controller.language.value, "reboot_app"),
+                  child: Text("reboot_app".tr,
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: 35,
@@ -201,8 +197,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
                 Get.back();
                 //Get.until(ModalRoute.withName('/menu-page'));
               },
-              child: Text(GString.getToString(
-                  controller.language.value, "change_payment"),
+              child: Text("change_payment".tr,
                   style: TextStyle(
                     fontFamily: GFont.getFontFamily(),
                     fontSize: 35,

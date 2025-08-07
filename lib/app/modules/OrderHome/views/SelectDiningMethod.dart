@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
@@ -72,9 +73,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(
-                          //"堂食",
-                          GString.getToString(this._checkLanguage, "select_payment_dining_title"),
+                        Text("select_payment_dining_title".tr,
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -130,9 +129,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                       ),
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),
-                                    Text(
-                                      //"堂食",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_eatin"),
+                                    Text("menu_dingtype_eatin".tr,
                                       style: TextStyle(
                                         fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -192,9 +189,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                                       ),
                                     ),
                                     //SizedBox(height: ScreenAdapter.height(20),),
-                                    Text(
-                                      //"外卖",
-                                      GString.getToString(this._checkLanguage, "menu_dingtype_takeout"),
+                                    Text("menu_dingtype_takeout".tr,
                                       style: TextStyle(
                                         fontFamily: GFont.getFontFamily(),
                                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -237,8 +232,7 @@ class _SelectDiningMethodPageState extends State<SelectDiningMethodPage> {
                             //设置圆角
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
-                          child: Text(
-                            GString.getToString(this._checkLanguage, "settlement_back"),
+                          child: Text("settlement_back".tr,
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,

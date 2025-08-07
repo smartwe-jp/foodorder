@@ -53,9 +53,7 @@ class SelectPaymentPage extends StatelessWidget {
               top: ScreenAdapter.height(25),
               right: ScreenAdapter.width(20),
               bottom: ScreenAdapter.height(80)),
-          child: Text(
-            GString.getToString(
-                checkLanguage, "settlement_receipt_title"),
+          child: Text("settlement_receipt_title".tr,
             style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -98,9 +96,7 @@ class SelectPaymentPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    Text(
-                      GString.getToString(
-                          checkLanguage, "settlement_receipt_yes"),
+                    Text("settlement_receipt_yes".tr,
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -152,9 +148,7 @@ class SelectPaymentPage extends StatelessWidget {
                     //       fontWeight: FontWeight.w600,
                     //       fontSize: ScreenAdapter.fontSize(34.0)),
                     // ),
-                    Text(
-                      GString.getToString(
-                          checkLanguage, "settlement_receipt_no"),
+                    Text("settlement_receipt_no".tr,
                       style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -205,10 +199,7 @@ class SelectPaymentPage extends StatelessWidget {
                             : Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
-                            Text(
-                              //GString.getToString(this._checkLanguage, "menu_dingtype_title"),
-                              GString.getToString(
-                                  checkLanguage, "select_payment_type_title"),
+                            Text("select_payment_type_title".tr,
                               style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   color: ColorsUtil.hexToColor(
@@ -304,10 +295,7 @@ class SelectPaymentPage extends StatelessWidget {
                                                   width: ScreenAdapter.width(160),
                                                   alignment: Alignment.center,
                                                   child: Text(
-                                                    //"现金",
-                                                    GString.getToString(
-                                                        checkLanguage,
-                                                        "settlement_top_title_cash"),
+                                                        "settlement_top_title_cash".tr,
                                                     style: TextStyle(
                                                         fontFamily:
                                                         GFont.getFontFamily(),
@@ -360,7 +348,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
                                               Text(
-                                                "payment_cash_unavailable".localized(),
+                                                "payment_cash_unavailable".tr,
                                                 style: TextStyle(
                                                   fontFamily: GFont.getFontFamily(),
                                                   color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -736,11 +724,7 @@ class SelectPaymentPage extends StatelessWidget {
                                             child: Container(
                                               width: ScreenAdapter.width(420),
                                               alignment: Alignment.center,
-                                              child: Text(
-                                                //"扫码",
-                                                GString.getToString(
-                                                    checkLanguage,
-                                                    "settlement_top_title_qr"),
+                                              child: Text("settlement_top_title_qr".tr,
                                                 style: TextStyle(
                                                     fontFamily:
                                                     GFont.getFontFamily(),
@@ -812,10 +796,7 @@ class SelectPaymentPage extends StatelessWidget {
                                         crossAxisAlignment:
                                         CrossAxisAlignment.center,
                                         children: [
-                                          Text(
-                                            //"信用卡",
-                                            GString.getToString(checkLanguage,
-                                                "settlement_top_title_card"),
+                                          Text("settlement_top_title_card".tr,
                                             style: TextStyle(
                                                 color: ColorsUtil.hexToColor(
                                                     Gcolor.mainTitleColor),
@@ -1143,10 +1124,7 @@ class SelectPaymentPage extends StatelessWidget {
                                   crossAxisAlignment:
                                   CrossAxisAlignment.center,
                                   children: [
-                                    Text(
-                                      //"电子钱包",
-                                      GString.getToString(checkLanguage,
-                                          "settlement_top_title_wallet"),
+                                    Text("settlement_top_title_wallet".tr,
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
@@ -1634,7 +1612,7 @@ class SelectPaymentPage extends StatelessWidget {
                                 children: [
                                   if (tableNum != "")
                                     Text(
-                                      "${GString.getToString(checkLanguage, "show_check_tableno")}${tableNum}    ",
+                                      "${"show_check_tableno".tr}${tableNum}    ",
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
@@ -1642,9 +1620,7 @@ class SelectPaymentPage extends StatelessWidget {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(40.0)),
                                     ),
-                                  Text(
-                                    GString.getToString(
-                                        checkLanguage, "settlement_total_price"),
+                                  Text("settlement_total_price".tr,
                                     style: TextStyle(
                                         color: ColorsUtil.hexToColor(
                                             Gcolor.mainTitleColor),
@@ -1654,7 +1630,7 @@ class SelectPaymentPage extends StatelessWidget {
                                   ),
                                   if (menuCount > 0)
                                     Text(
-                                      "  ${menuCount.toString()}  ${GString.getToString(checkLanguage, "show_selectPay_point")}",
+                                      "  ${menuCount.toString()}  ${"show_selectPay_point".tr}",
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
@@ -1672,24 +1648,23 @@ class SelectPaymentPage extends StatelessWidget {
                                 crossAxisAlignment: CrossAxisAlignment.end,
                                 children: [
 
-                                  
-                                   if(!controller.taxSystem)
-                                  Row(
-                                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //taxout
-                                      Text(
-                                        "taxout_price".localized(),
-                                        style: TextStyle(
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor),
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 32),
-                                      ),
-                                      Spacer(),
-                                      //shopCartTotalPrice
-                                      Text(
+                                  if(!controller.taxSystem)
+                                    Row(
+                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        //taxout
+                                        Text(
+                                          "taxout_price".tr,
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 32),
+                                        ),
+                                        Spacer(),
+                                        //shopCartTotalPrice
+                                        Text(
                                           "¥ ",
                                           //GString.getToString(this._checkLanguage, "show_price_front"),
                                           style: TextStyle(
@@ -1719,23 +1694,29 @@ class SelectPaymentPage extends StatelessWidget {
                                   ),
 
                                   if(!controller.taxSystem)
-                                  Row(
-                                    //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                    children: [
-                                      //taxin
-                                      Text(
-                                        "tax".localized(),
-                                        style: TextStyle(
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.mainTitleColor),
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontWeight: FontWeight.w600,
-                                            fontSize: 32),
-                                      ),
-                                      //showPrice
-                                      Spacer(),
-                                      //shopCartTotalPrice
-                                      Text(
+                                    Divider(
+                                      height: 1.5,
+                                      color: ColorsUtil.hexToColor("#000000"),
+                                    ),
+
+                                  if(!controller.taxSystem)
+                                    Row(
+                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        //taxin
+                                        Text(
+                                          "tax".tr,
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 32),
+                                        ),
+                                        //showPrice
+                                        Spacer(),
+                                        //shopCartTotalPrice
+                                        Text(
                                           "¥ ",
                                           //GString.getToString(this._checkLanguage, "show_price_front"),
                                           style: TextStyle(
@@ -1823,7 +1804,7 @@ class SelectPaymentPage extends StatelessWidget {
                                     children: [
                                       //taxin
                                       Text(
-                                        "tag_amount".localized(),
+                                        "tag_amount".tr,
                                         style: TextStyle(
                                             color: ColorsUtil.hexToColor(
                                                 Gcolor.mainTitleColor),
@@ -1833,7 +1814,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       ),
                                       //showPrice
                                   Container(
-                                
+
                                     child: RichText(
                                       text: TextSpan(
                                           text: "¥ ",
@@ -1906,7 +1887,7 @@ class SelectPaymentPage extends StatelessWidget {
                                               ),
                                             ),
                                             TextSpan(
-                                              text: "（${ "show_price_front".localized()}）",
+                                              text: "（${ "show_price_front".tr}）",
                                               style: TextStyle(
                                                 fontSize: 24,
                                                 fontFamily: GFont.getFontFamily(),
@@ -1955,9 +1936,7 @@ class SelectPaymentPage extends StatelessWidget {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                 ),
-                                child: Text(
-                                  GString.getToString(
-                                      checkLanguage, "settlement_back"),
+                                child: Text("settlement_back".tr,
                                   style: TextStyle(
                                       color: ColorsUtil.hexToColor("#000000"),
                                       fontFamily: GFont.getFontFamily(),

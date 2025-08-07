@@ -294,12 +294,12 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         if(cartItem['qtyBounds'] >0){
           var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
           if(checkresult>=cartItem['qtyBounds']){
-            var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
+            var showString = "show_storage_num_error".tr;
             //showToast("${showString}");
             Get.dialog(
                 DialogUtils.alertOneButton(showString,
-                    title: GString.getToString(checkLanguage.value, "tag_title"),
-                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    title: "tag_title".tr,
+                    confirmtitle: "tag_button_yes".tr,
                     confirm: () {
                       Get.back();
                     })
@@ -425,8 +425,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         }else{
           Get.dialog(
               DialogUtils.alertOneButton(response['data']["message"],
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  title: "tag_title".tr,
+                  confirmtitle: "tag_button_yes".tr,
                   confirm: () {
                     Get.back();
                   })
@@ -444,9 +444,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     EasyLoading.dismiss();
     if (times > 2) {
       Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".localized(),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+          DialogUtils.alertOneButton("order_network_error".tr,
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
                 // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
@@ -458,9 +458,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
     }
 
     Get.dialog(
-        DialogUtils.alert("show_order_error".localized(),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+        DialogUtils.alert("show_order_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
               doSubmitOrder(times: times + 1);
@@ -523,8 +523,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         //showToast(response['data']["message"]);
         Get.dialog(
             DialogUtils.alertOneButton(response['data']["message"],
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })

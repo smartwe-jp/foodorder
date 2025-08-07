@@ -293,12 +293,12 @@ class MenuzongPageView extends GetView {
                                     }
                                     if(current_option_checked <int.parse(attr[i]["smallest"])){
                                       nexOrder = false;
-                                      var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                      var showTag = "menu_option_less_smallest".tr;
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(
                                           DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              title: "tag_title".tr,
+                                              confirmtitle: "tag_button_yes".tr,
                                               confirm: () {
                                                 Get.back();
                                               })
@@ -372,9 +372,7 @@ class MenuzongPageView extends GetView {
                                   color: ColorsUtil.hexToColor("#078E42"),
                                   borderRadius: BorderRadius.all(Radius.circular(10.0)),
                                 ),
-                                child: Text(
-                                    GString.getToString(
-                                        controller.checkLanguage.value, "add_option_cart"),
+                                child: Text("add_option_cart".tr,
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(34),
@@ -902,12 +900,12 @@ class MenuzongPageView extends GetView {
                                 //请求限定接口
                                 var cartItemNum = await controller.ordersqlcontroller.getCartItemNum(item['menuCode']);print(cartItemNum);
                                 if(cartItemNum>=item['qtyBounds']){
-                                  var showString = GString.getToString(controller.checkLanguage.value,"show_storage_num_error");
+                                  var showString = "show_storage_num_error".tr;
                                   //showToast("${showString}");
                                   Get.dialog(
                                       DialogUtils.alertOneButton(showString,
-                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          title: "tag_title".tr,
+                                          confirmtitle: "tag_button_yes".tr,
                                           confirm: () {
                                             Get.back();
                                           })
@@ -953,12 +951,12 @@ class MenuzongPageView extends GetView {
                                     }
                                     if(current_option_checked <int.parse(attr[i]["smallest"])){
                                       nexOrder = false;
-                                      var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                      var showTag = "menu_option_less_smallest".tr;
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(
                                           DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              title: "tag_title".tr,
+                                              confirmtitle: "tag_button_yes".tr,
                                               confirm: () {
                                                 Get.back();
                                               })
@@ -1025,9 +1023,7 @@ class MenuzongPageView extends GetView {
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
 
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      controller.checkLanguage.value, "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
@@ -1565,12 +1561,12 @@ class MenuzongPageView extends GetView {
                                 //请求限定接口
                                 var cartItemNum = await controller.ordersqlcontroller.getCartItemNum(item['menuCode']);print(cartItemNum);
                                 if(cartItemNum>=item['qtyBounds']){
-                                  var showString = GString.getToString(controller.checkLanguage.value,"show_storage_num_error");
+                                  var showString = "show_storage_num_error".tr;
                                   //showToast("${showString}");
                                   Get.dialog(
                                       DialogUtils.alertOneButton(showString,
-                                          title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                          confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                          title: "tag_title".tr,
+                                          confirmtitle: "tag_button_yes".tr,
                                           confirm: () {
                                             Get.back();
                                           })
@@ -1610,12 +1606,12 @@ class MenuzongPageView extends GetView {
                                     }
                                     if(current_option_checked <int.parse(attr[i]["smallest"])){
                                       nexOrder = false;
-                                      var showTag = GString.getToString(controller.checkLanguage.value, "menu_option_less_smallest");
+                                      var showTag = "menu_option_less_smallest".tr;
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(
                                           DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                              title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-                                              confirmtitle: GString.getToString(controller.checkLanguage.value,"tag_button_yes"),
+                                              title: "tag_title".tr,
+                                              confirmtitle: "tag_button_yes".tr,
                                               confirm: () {
                                                 Get.back();
                                               })
@@ -1686,9 +1682,7 @@ class MenuzongPageView extends GetView {
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
 
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      controller.checkLanguage.value, "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
@@ -2945,7 +2939,7 @@ class MenuzongPageView extends GetView {
                         Container(
                           width: ScreenAdapter.width(30),
                           child: RotatedBox(quarterTurns: 1,child: Text(
-                            GString.getToString(controller.checkLanguage.value, "top_back_button"),
+                            "top_back_button".tr,
                             style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 fontSize: ScreenAdapter.fontSize(26),

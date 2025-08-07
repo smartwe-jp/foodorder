@@ -24,8 +24,7 @@ class publicShowCartView extends GetView {
   showCartListMenu(BuildContext context){
     if (controller.showCartItems.length == 0) {
       return Center(
-        child: Text(GString.getToString(
-            controller.checkLanguage.value, "cart_tag"),
+        child: Text("cart_tag".tr,
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(18),
@@ -237,10 +236,10 @@ class publicShowCartView extends GetView {
   //清空购物车弹出提示、
   showDialogTag(menuId) {
     Get.dialog(
-        DialogUtils.alert(GString.getToString(controller.checkLanguage.value, "show_del_cart_item_tag"),
-            title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-            canceltitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_no"),
-            confirmtitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_yes"),
+        DialogUtils.alert("show_del_cart_item_tag".tr,
+            title: "tag_title".tr,
+            canceltitle: "show_del_cart_item_no".tr,
+            confirmtitle: "show_del_cart_item_yes".tr,
             confirm: () {
               //widget.confirmCallback('确定');
               controller.ordersqlcontroller.removeFromCart(menuId ?? 0);
@@ -301,7 +300,7 @@ class publicShowCartView extends GetView {
                   ),
                   TextSpan(
                     text:
-                    "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
+                    "(${"show_price_front".tr})", //" 円",
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(
@@ -418,7 +417,7 @@ class publicShowCartView extends GetView {
                               width: ScreenAdapter.width(60),
                             ),
                             if (controller.showCartTotalGoodsNum.value > 0)
-                              Text(GString.getToString(controller.checkLanguage.value, "settlement_total_price"),
+                              Text("settlement_total_price".tr,
                                   style: TextStyle(
                                     fontSize: 36,
                                     fontWeight: FontWeight.w600,
@@ -446,7 +445,7 @@ class publicShowCartView extends GetView {
                                           color: Colors.black,
                                         ),),
                                         TextSpan(
-                                          text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                                          text: "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
                                           style: TextStyle(
                                             fontSize: 24,
                                             fontFamily: GFont.getFontFamily(),
@@ -502,9 +501,7 @@ class publicShowCartView extends GetView {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
-                            child: Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_button"),
+                            child: Text("settlement_button".tr,
                                 style:
 
                                 TextStyle(

@@ -20,10 +20,10 @@ extension SettlementControllerUIExtension on SettlementController {
     print("现金取消");
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
-          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
-              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
+          DialogUtils.alert("settlement_back_alertcontent".tr,
+              title: "tag_title".tr,
+              canceltitle: "tag_button_no".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
                 showBackEasyLoading();
@@ -106,9 +106,7 @@ extension SettlementControllerUIExtension on SettlementController {
                 ),
                 Expanded(
                   //padding: EdgeInsets.only(left: ScreenAdapter.width(15), right: ScreenAdapter.width(15)),
-                  child: Text(
-                      GString.getToString(checkLanguage.value,
-                          "settlement_posPay_loadint_title"),
+                  child: Text("settlement_posPay_loadint_title".tr,
                       maxLines: 2,
                       //softWrap: true,
                       style: TextStyle(
@@ -159,9 +157,7 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
+      _showTag = Text("settlement_print_loading_tag".tr,
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
@@ -169,9 +165,7 @@ extension SettlementControllerUIExtension on SettlementController {
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
     } else {
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
+      _showTag = Text("settlement_print_loading_tag".tr,
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
@@ -212,7 +206,7 @@ extension SettlementControllerUIExtension on SettlementController {
 
   showBackEasyLoading() {
     var _showTag =
-    Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
+    Text("settlement_noprint_tag".tr,
         style: TextStyle(
           fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(25),
@@ -255,31 +249,31 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTagContent = "";
     if(resultString =="M10"){//需要从端末点击返回
       _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
+        child: Text("settlement_posPay_error_connect_worker".tr,
             style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
+      _showTagContent = "settlement_posPay_error_connect_worker".tr;
     }else if(resultString =="L06"){//需要从端末点击返回
       _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker"),
+        child: Text("settlement_posPay_error_connect_worker".tr,
             style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error_connect_worker");
+      _showTagContent = "settlement_posPay_error_connect_worker".tr;
     }else{
       _showTag = Align(
-        child: Text(GString.getToString(checkLanguage.value, "settlement_posPay_error"),
+        child: Text("settlement_posPay_error".tr,
             style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28))),
         alignment: Alignment(0, 0),
       );
-      _showTagContent = GString.getToString(checkLanguage.value, "settlement_posPay_error");
+      _showTagContent = "settlement_posPay_error".tr;
 
       if (resultString.contains("L10")) {
         gotonewMenuPage(); //返回首页
@@ -297,8 +291,8 @@ extension SettlementControllerUIExtension on SettlementController {
     }
     Get.dialog(
         DialogUtils.alertOneButton(_showTagContent+"[${resultString}-${resultPFSString}]",
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               if(resultString !="M10" && resultString !="L06" && resultString !="L05"
                   && resultString !="L81" && resultString !="M40"){
@@ -320,9 +314,7 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
+      _showTag = Text("settlement_print_loading_tag".tr,
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
             fontFamily: GFont.getFontFamily(),
@@ -330,9 +322,7 @@ extension SettlementControllerUIExtension on SettlementController {
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
     } else {
-      _showTag = Text(
-          GString.getToString(
-              checkLanguage.value, "settlement_print_loading_tag"),
+      _showTag = Text("settlement_print_loading_tag".tr,
           style: TextStyle(
             fontSize: ScreenAdapter.fontSize(25),
             fontFamily: GFont.getFontFamily(),
@@ -377,7 +367,7 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTag;
 
     _showTag =
-        Text(GString.getToString(checkLanguage.value, "payment_success_title"),
+        Text("payment_success_title".tr,
             style: TextStyle(
               fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(25),

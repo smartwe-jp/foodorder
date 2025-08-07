@@ -62,8 +62,7 @@ class MenuListView extends StatelessWidget {
         ),
       );
     } else if (bounds > 0) {
-      var showString =
-      GString.getToString('JP', "show_product_restrictions")
+      var showString = "show_product_restrictions".tr
           .replaceAll('%%', bounds.toString());
       return Positioned(
         left: ScreenAdapter.width(5),

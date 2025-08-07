@@ -158,7 +158,7 @@ extension MenuPageControllerExtension on MenuPageController {
       price: "${item['currentPrice']}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
-          ? GString.getToString(checkLanguage.value, "select_option")
+          ? "select_option".tr
           : "",
       aspectRatio: aspectRatio,
       onTap: () async {

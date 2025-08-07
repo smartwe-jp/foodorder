@@ -214,11 +214,11 @@ class _OptionViewState extends State<OptionView> {
     for (var optionGroup in _optionGroupList) {
       if (!optionGroup.canAdd) {
         canAdd = false;
-        final showTag = GString.getToString(widget.languageKey, "menu_option_less_smallest");
+        final showTag = "menu_option_less_smallest".tr;
         Get.dialog(
             DialogUtils.alertOneButton("${showTag.replaceAll("%%", optionGroup.groupName)}",
-                title: GString.getToString(widget.languageKey, "tag_title"),
-                confirmtitle: GString.getToString(widget.languageKey,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })
@@ -365,8 +365,7 @@ class _OptionViewState extends State<OptionView> {
           borderRadius: BorderRadius.all(Radius.circular(5.0)),
         ),
         child: Text(
-            GString.getToString(
-                widget.languageKey, "add_option_cart"),
+            "add_option_cart".tr,
             style: TextStyle(
               fontFamily: GFont.getFontFamily(),
               fontSize: ScreenAdapter.fontSize(40),
@@ -396,8 +395,7 @@ class _OptionViewState extends State<OptionView> {
           //设置圆角
           borderRadius: new BorderRadius.circular((5.0)),
         ),
-        child: Text(
-          GString.getToString(widget.languageKey, "settlement_back"),
+        child: Text("settlement_back".tr,
           style: TextStyle(
               color: ColorsUtil.hexToColor("#000000"),
               fontFamily: GFont.getFontFamily(),

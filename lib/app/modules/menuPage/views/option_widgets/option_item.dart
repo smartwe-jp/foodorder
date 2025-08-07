@@ -108,9 +108,9 @@ class _PlusMinusWidgetState extends State<OptionWidget> {
   void _showOutOfRangeDialog() {
 
     Get.dialog(
-        DialogUtils.alertOneButton('menu_option_more_multipleState'.localized().replaceAll("%%", _mainTitle),
-            title: GString.getToString(widget.languageKey, "tag_title"),
-            confirmtitle: GString.getToString(widget.languageKey,"tag_button_yes"),
+        DialogUtils.alertOneButton('menu_option_more_multipleState'.tr.replaceAll("%%", _mainTitle),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
             })

@@ -11,7 +11,7 @@ import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/customLogger.dart';
-
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logging/logging.dart';
@@ -21,6 +21,7 @@ import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
 
 import 'app/app_binding/app_bindings.dart';
+import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
@@ -106,10 +107,23 @@ void main() {
                       primaryColor: Gcolor.primaryColor, // 设置主体颜色
                     ),
                     home: child,
+                    //initialRoute: Routes.HOME,
                     //initialRoute: AppPages.INITIAL,
                     //配置ios动画
-                    locale: Locale('jp', 'JP'), // 默认语言
-                    fallbackLocale: Locale('jp', 'JP'), // 备用语言
+                    locale: Locale('ja', 'JP'), // 默认语言
+                    fallbackLocale: Locale('ja', 'JP'), // 备用语言
+                    localizationsDelegates: const [
+                      GlobalMaterialLocalizations.delegate,
+                      GlobalWidgetsLocalizations.delegate,
+                      GlobalCupertinoLocalizations.delegate,
+                    ],
+                    supportedLocales: const [
+                      Locale('zh', 'CH'),
+                      Locale('en', 'US'),
+                      Locale('ko', 'KR'),
+                      Locale('ja', 'JP'),
+                    ],
+                    translations: TranslationService(),
                     defaultTransition: Transition.fadeIn,
                     getPages: AppPages.routes,
                     initialBinding: AppBindings(),

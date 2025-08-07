@@ -278,13 +278,12 @@ class CheckoutPageController extends GetxController with StateMixin {
 
 
   _showDialogError(msg){
-    Get.dialog(DialogUtils.alertOneButton(msg,
-        title: GString.getToString(selectLanguage, "tag_title"),
-        confirmtitle:
-        GString.getToString(selectLanguage, "tag_button_yes"),
-        contentTagImg: "error_public", confirm: () {
-          Get.back();
-        }));
+      Get.dialog(DialogUtils.alertOneButton(msg,
+      title: "tag_title".tr,
+      confirmtitle:"tag_button_yes".tr,
+      contentTagImg: "error_public", confirm: () {
+        Get.back();
+      }));
   }
 
   //选择食用方式和支付方式
@@ -344,8 +343,8 @@ class CheckoutPageController extends GetxController with StateMixin {
         //showToast(response['data']["message"]);
         Get.dialog(
             DialogUtils.alertOneButton("${response['data']["message"]}",
-                title: GString.getToString(selectLanguage, "tag_title"),
-                confirmtitle: GString.getToString(selectLanguage,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })
@@ -446,8 +445,19 @@ class CheckoutPageController extends GetxController with StateMixin {
   updateSettingLanguage(String language) async {
 
     selectLanguage = language;
-    var locale = Locale('${language.toLowerCase()}', '$language');
+
+    var locale = const Locale('ja', 'JP');
+    if (language == "CH") {
+      locale = const Locale('zh', 'CN');
+    } else if (language == "EN") {
+      locale = const Locale('en', 'US');
+    } else if (language == "KO") {
+      locale = const Locale('ko', 'KR');
+    }
     Get.updateLocale(locale);
+
+    //var locale = Locale('${language.toLowerCase()}', '$language');
+    //Get.updateLocale(locale);
 
   }
 

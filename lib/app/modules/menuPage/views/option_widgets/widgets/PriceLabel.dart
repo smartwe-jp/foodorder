@@ -60,7 +60,7 @@ class PrinceLabel extends StatelessWidget {
             //color: Colors.red,
             child: RichText(
               text: TextSpan(
-                  text: "${GString.getToString(languageKey, "show_original_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                  text: "show_original_price_front".tr,//¥GString.getToString(this._checkLanguage, "show_price_front"),
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                     fontWeight: FontWeight.w500,

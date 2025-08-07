@@ -23,7 +23,7 @@ extension RecommendView on MenuPageController {
       price: "${item['currentPrice']}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
-          ? GString.getToString(checkLanguage.value, "select_option")
+          ? "select_option".tr
           : "",
       aspectRatio: aspectRatio,
       imageRadius: 15,
@@ -104,10 +104,7 @@ extension RecommendView on MenuPageController {
                       bgColor: Colors.white,
                       titleColor: Colors.black,
                       radius: 20,
-                      title: GString.getToString(
-                        checkLanguage.value,
-                        "settlement_back",
-                      ),
+                      title: "settlement_back".tr,
                       onTap: () {
                         showCartView = false;
                         Navigator.pop(context);
@@ -195,7 +192,7 @@ extension RecommendView on MenuPageController {
 
   Widget priceText() {
     return Row(children: [
-      Text(GString.getToString(checkLanguage.value, "settlement_total_price"),
+      Text("settlement_total_price".tr,
           style: TextStyle(
             fontSize: 36,
             fontWeight: FontWeight.w600,
@@ -227,7 +224,7 @@ extension RecommendView on MenuPageController {
                   ),
                 ),
                 TextSpan(
-                  text: "（${machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                  text: "（${machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
                   style: TextStyle(
                     fontSize: 24,
                     fontFamily: GFont.getFontFamily(),
@@ -268,9 +265,7 @@ extension RecommendView on MenuPageController {
                   alignment: AlignmentDirectional.center,
                   children: [
                     Container(
-                      child: Text(
-                          GString.getToString(
-                              checkLanguage.value, 'suggest_title'),
+                      child: Text('suggest_title'.tr,
                           style: TextStyle(
                             fontSize: 36,
                             fontWeight: FontWeight.w600,
@@ -291,8 +286,7 @@ extension RecommendView on MenuPageController {
                                   size: 35,
                                   color: ColorsUtil.hexToColor(Gcolor.greenThemeColor)),
                               Text(
-                                GString.getToString(
-                                    checkLanguage.value, 'settlement_back'),
+                                'settlement_back'.tr,
                                 style: TextStyle(
                                   fontSize: 30,
                                   fontWeight: FontWeight.w400,
@@ -365,8 +359,7 @@ extension RecommendView on MenuPageController {
                       padding: EdgeInsets.symmetric(vertical: 30),
                       height: double.infinity,
                       child: CustomButton(
-                          title: GString.getToString(
-                              checkLanguage.value, "skip_button"),
+                          title: "skip_button".tr,
                           bgColor: ColorsUtil.hexToColor(Gcolor.greenThemeColor),
                           titleColor: Colors.white,
                           onTap: () {
@@ -378,8 +371,7 @@ extension RecommendView on MenuPageController {
                       padding: EdgeInsets.symmetric(vertical: 30),
                       height: double.infinity,
                       child: CustomButton(
-                          title: GString.getToString(
-                              checkLanguage.value, "next_button"),
+                          title: "next_button".tr,
                           bgColor: ColorsUtil.hexToColor(Gcolor.priceColor),
                           onTap: () {
                             dismissAction(context);

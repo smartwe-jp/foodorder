@@ -78,7 +78,7 @@ class PayResultViewState extends State<PayResultView> {
                     ),
                     alignment: Alignment.center,
                     child: Text(
-                      'pay_success_title'.localized(),
+                      'pay_success_title'.tr,
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                         fontSize: ScreenAdapter.fontSize(28),
@@ -124,8 +124,7 @@ class PayResultViewState extends State<PayResultView> {
                           //   width: 2,
                           // ),
                         ),
-                        child: Text(
-                          GString.getToString(_localKey, "settlement_back"),
+                        child: Text("settlement_back".tr,
                           style: TextStyle(
                             color: Colors.white,
                             fontFamily: GFont.getFontFamily(),

@@ -67,6 +67,8 @@ dependencies:
 #    git:
 #      url: git@github.com:Aaron51FX/SmartWePackages.git
 #      path: sse_service
+  flutter_localizations:
+    sdk: flutter
   flutter:
     sdk: flutter
  #不同版本Android加载不同的插件
