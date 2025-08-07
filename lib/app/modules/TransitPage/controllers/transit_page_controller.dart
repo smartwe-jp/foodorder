@@ -325,12 +325,11 @@ class TransitPageController extends GetxController {
 
   _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
       isActive
-          ? 'activation_error_tips'.localized()
-          : GString.getToString(languageCode, "launch_error_tips"),
+          ? 'activation_error_tips'.tr
+          : 'launch_error_tips'.tr,
 
-      title: GString.getToString(languageCode, "tag_title"), //tag_title
-      confirmtitle:
-      GString.getToString(languageCode, "reboot_app"), //reboot_app
+      title: "tag_title".tr,
+      confirmtitle: "reboot_app".tr,
       confirm: () {
         Future.delayed(Duration(milliseconds: 200), () async {
           if (isActive)

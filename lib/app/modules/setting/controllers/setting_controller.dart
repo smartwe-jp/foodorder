@@ -716,8 +716,8 @@ class SettingController extends GetxController with StateMixin {
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
-            title: GString.getToString("JP", "tag_title"),
-            confirmtitle: GString.getToString("JP", "tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
           if (confirm != null) {
             confirm();
@@ -735,8 +735,8 @@ class SettingController extends GetxController with StateMixin {
         barrierDismissible: false,
         DialogUtils.alert(
           messgae,
-          title: GString.getToString("JP", "tag_title"),
-          confirmtitle: GString.getToString("JP", "tag_button_yes"),
+          title: "tag_title".tr,
+          confirmtitle: "tag_button_yes".tr,
           confirm: () async {
             //Get.back();
             showEasyLoading();

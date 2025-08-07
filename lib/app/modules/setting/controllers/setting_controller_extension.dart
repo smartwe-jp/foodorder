@@ -49,7 +49,7 @@ extension SettingControllerExtension on SettingController {
         showError: (String error) {
           debugPrint("startSupply error: $error");
           logger.info('-- startSupply error: $error --');
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(error.tr);
         });
   }
 
@@ -76,8 +76,8 @@ extension SettingControllerExtension on SettingController {
       },
       catchError: (error) {
         logger.info(
-            '-- supplyCounts error: ${GString.getToString(checkLanguage.value, error)} --');
-        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+            '-- supplyCounts error: ${error.tr} --');
+        errorHandleDialog(error.tr);
       },
     );
   }
@@ -92,7 +92,7 @@ extension SettingControllerExtension on SettingController {
       },
       catchError: (error) {
         logger.info('-- supplyCountsClear error: $error --');
-        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        errorHandleDialog(error.tr);
       },
     );
   }
@@ -285,7 +285,7 @@ extension SettingControllerExtension on SettingController {
           debugPrint("closeDeposit error: $error");
           logger.info('-- end Deposit error: $error --');
           success = false;
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(error.tr);
         });
     return success;
   }
@@ -375,7 +375,7 @@ extension SettingControllerExtension on SettingController {
       if (outMoneyString.isEmpty) {
         // errorHandleDialog(GString.getToString(
         //     checkLanguage.value, 'cash_error_over_dispense'));
-        errorHandleDialogTwo(GString.getToString(checkLanguage.value, 'cash_error_over_dispense'),
+        errorHandleDialogTwo('cash_error_over_dispense'.tr,
               confirmtitle: 'スキップ', () {
             skipAction();
           });
@@ -417,9 +417,9 @@ extension SettingControllerExtension on SettingController {
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
           logger.info(
-              '-- dispenseCashOutside error: ${GString.getToString(checkLanguage.value, error)}');
+              '-- dispenseCashOutside error: ${error.tr} --');
           //errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          errorHandleDialogTwo(GString.getToString(checkLanguage.value, error),
+          errorHandleDialogTwo(error.tr,
               confirmtitle: 'スキップ', () {
             skipAction();
           });
@@ -678,9 +678,8 @@ extension SettingControllerExtension on SettingController {
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
           if (confirm != null) {
             Get.back();
@@ -697,9 +696,9 @@ extension SettingControllerExtension on SettingController {
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alert(message,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
+            title: "tag_title".tr,
             confirmtitle: confirmtitle == ""
-                ? GString.getToString(checkLanguage.value, "tag_button_yes")
+                ? "tag_button_yes".tr
                 : confirmtitle, confirm: () {
           Get.back();
           confirm();

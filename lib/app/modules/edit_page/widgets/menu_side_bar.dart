@@ -61,7 +61,6 @@ class MenuSideBar extends StatelessWidget {
                 child: Text(
                   '戻る',
                   style: TextStyle(
-                    color: Colors.white,
                     fontFamily: GFont.getFontFamily(),
                     fontSize: 36,
                     fontWeight: FontWeight.w500,

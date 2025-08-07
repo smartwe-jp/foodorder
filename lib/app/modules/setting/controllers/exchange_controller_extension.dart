@@ -98,10 +98,9 @@ extension ExchangeControllerExtension on SettingController {
         logger.info('-- getMachineCashInfo error: $error --');
         if (showAlert) {
           if (retry == null) {
-            errorHandleDialog(GString.getToString(checkLanguage.value, error));
+            errorHandleDialog(error.tr);
           } else {
-            errorHandleDialogTwo(
-                GString.getToString(checkLanguage.value, error), retry);
+            errorHandleDialogTwo(error.tr, retry);
           }
         }
       },
@@ -122,7 +121,7 @@ extension ExchangeControllerExtension on SettingController {
       },
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
-        errorHandleDialog(GString.getToString(checkLanguage.value, error));
+        errorHandleDialog(error.tr);
       },
     );
 
@@ -160,8 +159,8 @@ extension ExchangeControllerExtension on SettingController {
         showError: (String error) {
           debugPrint("beginDepositOutside error: $error");
           logger.info(
-              '-- beginDepositOutside error: ${GString.getToString(checkLanguage.value, error)} --');
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+              '-- beginDepositOutside error: ${error.tr} --');
+          errorHandleDialog(error.tr);
         });
   }
 
@@ -442,7 +441,7 @@ extension ExchangeControllerExtension on SettingController {
           debugPrint("startOutPutMoney error: $error");
           logger.info('-- gloryOutputMoney error: $error --');
           success = false;
-          errorHandleDialog(GString.getToString(checkLanguage.value, error),
+          errorHandleDialog(error.tr,
               confirm: () {
             
             cancelReplanish(shouldBack: false);

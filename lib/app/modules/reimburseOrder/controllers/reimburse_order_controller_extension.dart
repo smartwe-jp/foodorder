@@ -45,7 +45,7 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
         String outMoneyString = await findChange(machineCash, outMoney);
         debugPrint('outMoneyString: $outMoneyString');
         if (outMoneyString.isEmpty) {
-          _errorHandleDialog(GString.getToString(checkLanguage.value, 'cash_error_over'));
+          _errorHandleDialog('cash_error_over'.tr);
           return false;
         }
         final result = await dispenseCashOutside(getNoneZeroInfo(outMoneyString));
@@ -60,7 +60,7 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
     await CashChanger.getCashBalance(onSuccess: (value) {
       cashInfo = value;
     }, catchError: (error) {
-      _errorHandleDialog(GString.getToString(checkLanguage.value, error));
+      _errorHandleDialog(error.tr);
     });
     debugPrint('machine cashInfo: $cashInfo');
     return cashInfo;
@@ -119,7 +119,7 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
         },
         showError: (String error) {
           debugPrint("cancelReplanish error: $error");
-          _errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          _errorHandleDialog(error.tr);
           success = false;
         });
     return success;
@@ -222,9 +222,8 @@ extension ReimburseOrderControllerExtension on ReimburseOrderController {
     EasyLoading.dismiss();
     debugPrint("errorHandleDialog: $error");
     Get.dialog(DialogUtils.alertOneButton(error,
-        title: GString.getToString(checkLanguage.value, "tag_title"),
-        confirmtitle:
-            GString.getToString(checkLanguage.value, "tag_button_yes"),
+        title: "tag_title".tr,
+        confirmtitle:"tag_button_yes".tr,
         confirm: () {
       //allowClick.value == true;
       if (confirm != null) {

@@ -29,7 +29,7 @@ extension SettlementControllerExtension on SettlementController {
       },
       catchError: (error) {
         debugPrint("startDeposit error: $error");
-        ret = GString.getToString(checkLanguage.value, error);
+        ret = error.tr;
         logger.info('--start Deposit error: $ret--');
         //"サービスは利用できません。スタッフに連絡してください。";
         //errorHandleDialog(GString.getToString(checkLanguage.value, error));
@@ -145,8 +145,7 @@ extension SettlementControllerExtension on SettlementController {
 
         String cashList = machineChangeInfo.findMaxCash();
 
-        errorHandleDialog(
-            GString.getToString(checkLanguage.value, 'cash_full_tips')
+        errorHandleDialog('cash_full_tips'.tr
                 .trParams({'cash': '$cashList'}), confirm: () {
           CashChanger.fixDeposit;
           CashChanger.depositRepay;
@@ -227,8 +226,7 @@ extension SettlementControllerExtension on SettlementController {
           CashChanger.depositRepay;
           debugPrint("endDeposit error: $error");
           logger.info('-- end Deposit error: $error --');
-          errorHandleDialog(GString.getToString(checkLanguage.value, error),
-              confirm: () {
+          errorHandleDialog(error.tr, confirm: () {
             _repayFlow();
           });
         });
@@ -289,10 +287,9 @@ extension SettlementControllerExtension on SettlementController {
       catchError: (error) {
         debugPrint("getMachineCashInfo error: $error");
         if (retry == null) {
-          errorHandleDialog(GString.getToString(checkLanguage.value, error));
+          errorHandleDialog(error.tr);
         } else {
-          errorHandleDialogTwo(
-              GString.getToString(checkLanguage.value, error), retry);
+          errorHandleDialogTwo(error.tr, retry);
         }
       },
     );
@@ -326,8 +323,7 @@ extension SettlementControllerExtension on SettlementController {
           success = false;
           debugPrint("startOutPutMoney error: $error");
           logger.info('-- startOutPutMoney error: $error --');
-          errorHandleDialog(GString.getToString(checkLanguage.value, error),
-              confirm: () {
+          errorHandleDialog(error.tr, confirm: () {
             //找钱失败一律退单和退回入金
 
             //Get.back();
@@ -393,7 +389,7 @@ extension SettlementControllerExtension on SettlementController {
     if (!result) {
       EasyLoading.dismiss();
       errorHandleDialog(
-          GString.getToString(checkLanguage.value, 'repay_cash_error'),
+          'repay_cash_error'.tr,
           confirm: () {
         Get.back();
         Get.back();
@@ -633,9 +629,8 @@ extension SettlementControllerExtension on SettlementController {
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle:
-                GString.getToString(checkLanguage.value, "cash_full_confirm"),
+            title: "tag_title".tr,
+            confirmtitle: "cash_full_confirm".tr,
             confirm: () {
           allowClick.value == true;
           if (confirm != null) {
@@ -652,9 +647,8 @@ extension SettlementControllerExtension on SettlementController {
     Get.dialog(
         barrierDismissible: false,
         DialogUtils.alert(message,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle:
-                GString.getToString(checkLanguage.value, "tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
           confirm();
           Get.back();

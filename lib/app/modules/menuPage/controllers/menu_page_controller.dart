@@ -1211,7 +1211,7 @@ print("加1了");
     }));
   }
 
-  _showOrderEasyLoading(){
+  _showOrderEasyLoading({bool tag = true}) {
     var _showTag =Text("settlement_noprint_tag".tr,
         style: TextStyle(
           fontFamily: GFont.getFontFamily(),
@@ -1405,7 +1405,7 @@ print("加1了");
             confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
-              doSubmitOrder(times: times + 1);
+              _doSubmitOrder(times: times + 1);
             },
             cancle: () {
               Get.back();
