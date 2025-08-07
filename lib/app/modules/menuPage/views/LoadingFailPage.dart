@@ -57,8 +57,7 @@ class _LoadingFailedWidgetState extends State<LoadingFailedWidget> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          Text(
-            GString.getToString(language, 'load_menu_failure_title'),
+          Text('load_menu_failure_title'.tr,
             style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(30),
                 fontFamily: GFont.getFontFamily(),
@@ -67,8 +66,7 @@ class _LoadingFailedWidgetState extends State<LoadingFailedWidget> {
             ),
           ),
           SizedBox(height: 20),
-          Text(
-            GString.getToString(language, 'load_menu_failure_content').trParams({'seconds': '$_countdown'}),
+          Text('load_menu_failure_content'.tr.trParams({'seconds': '$_countdown'}),
             style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(30),
                 fontFamily: GFont.getFontFamily(),
@@ -96,8 +94,7 @@ class _LoadingFailedWidgetState extends State<LoadingFailedWidget> {
               _timer.cancel();
               widget.onBack();
             },
-            child: Text(
-              GString.getToString(language, 'load_menu_failure_back'),
+            child: Text('load_menu_failure_back'.tr,
               style: TextStyle(
                   fontSize: ScreenAdapter.fontSize(30),
                   fontFamily: GFont.getFontFamily(),

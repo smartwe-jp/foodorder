@@ -120,12 +120,12 @@ extension MenuPageCategory on MenuPageController {
                                   }
                                   if(current_option_checked <int.parse(attr[i]["smallest"])){
                                     nexOrder = false;
-                                    var showTag = GString.getToString(checkLanguage.value, "menu_option_less_smallest");
+                                    var showTag = "menu_option_less_smallest".tr;
                                     //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                     Get.dialog(
                                         DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                            title: GString.getToString(checkLanguage.value, "tag_title"),
-                                            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                                            title: "tag_title".tr,
+                                            confirmtitle: "tag_button_yes".tr,
                                             confirm: () {
                                               Get.back();
                                             })
@@ -193,9 +193,7 @@ extension MenuPageCategory on MenuPageController {
                                 color: ColorsUtil.hexToColor("#078E42"),
                                 borderRadius: BorderRadius.all(Radius.circular(10.0)),
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      checkLanguage.value, "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
@@ -711,18 +709,13 @@ extension MenuPageCategory on MenuPageController {
                                   if (current_option_checked <
                                       int.parse(attr[i]["smallest"])) {
                                     nexOrder = false;
-                                    var showTag = GString.getToString(
-                                        checkLanguage.value,
-                                        "menu_option_less_smallest");
+                                    var showTag = "menu_option_less_smallest".tr;
                                     //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                     Get.dialog(DialogUtils.alertOneButton(
                                         "${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                        title: GString.getToString(
-                                            checkLanguage.value,
-                                            "tag_title"),
-                                        confirmtitle: GString.getToString(
-                                            checkLanguage.value,
-                                            "tag_button_yes"), confirm: () {
+                                        title: "tag_title".tr,
+                                        confirmtitle: "tag_button_yes".tr,
+                                        confirm: () {
                                       Get.back();
                                     }));
                                     break;
@@ -799,10 +792,7 @@ extension MenuPageCategory on MenuPageController {
                                 borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      checkLanguage.value,
-                                      "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     color: ColorsUtil.hexToColor(
@@ -1247,18 +1237,12 @@ extension MenuPageCategory on MenuPageController {
                                     .getCartItemNum(item['menuCode']);
                                 print(cartItemNum);
                                 if (cartItemNum >= item['qtyBounds']) {
-                                  var showString = GString.getToString(
-                                      checkLanguage.value,
-                                      "show_storage_num_error");
+                                  var showString = "show_storage_num_error".tr;
                                   //showToast("${showString}");
                                   Get.dialog(DialogUtils.alertOneButton(
                                       showString,
-                                      title: GString.getToString(
-                                          checkLanguage.value,
-                                          "tag_title"),
-                                      confirmtitle: GString.getToString(
-                                          checkLanguage.value,
-                                          "tag_button_yes"), confirm: () {
+                                      title: "tag_title".tr,
+                                      confirmtitle: "tag_button_yes".tr, confirm: () {
                                     Get.back();
                                   }));
                                   return;
@@ -1291,18 +1275,12 @@ extension MenuPageCategory on MenuPageController {
                                     if (current_option_checked <
                                         int.parse(attr[i]["smallest"])) {
                                       nexOrder = false;
-                                      var showTag = GString.getToString(
-                                          checkLanguage.value,
-                                          "menu_option_less_smallest");
+                                      var showTag = "menu_option_less_smallest".tr;
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(DialogUtils.alertOneButton(
                                           "${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                          title: GString.getToString(
-                                              checkLanguage.value,
-                                              "tag_title"),
-                                          confirmtitle: GString.getToString(
-                                              checkLanguage.value,
-                                              "tag_button_yes"), confirm: () {
+                                          title: "tag_title".tr,
+                                          confirmtitle: "tag_button_yes".tr, confirm: () {
                                         Get.back();
                                       }));
                                       break;
@@ -1379,10 +1357,7 @@ extension MenuPageCategory on MenuPageController {
                                 borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      checkLanguage.value,
-                                      "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
@@ -2061,18 +2036,12 @@ extension MenuPageCategory on MenuPageController {
                                     .getCartItemNum(item['menuCode']);
                                 print(cartItemNum);
                                 if (cartItemNum >= item['qtyBounds']) {
-                                  var showString = GString.getToString(
-                                      checkLanguage.value,
-                                      "show_storage_num_error");
+                                  var showString = "show_storage_num_error".tr;
                                   //showToast("${showString}");
                                   Get.dialog(DialogUtils.alertOneButton(
                                       showString,
-                                      title: GString.getToString(
-                                          checkLanguage.value,
-                                          "tag_title"),
-                                      confirmtitle: GString.getToString(
-                                          checkLanguage.value,
-                                          "tag_button_yes"), confirm: () {
+                                      title: "tag_title".tr,
+                                      confirmtitle: "tag_button_yes".tr, confirm: () {
                                     Get.back();
                                   }));
                                   return;
@@ -2105,18 +2074,12 @@ extension MenuPageCategory on MenuPageController {
                                     if (current_option_checked <
                                         int.parse(attr[i]["smallest"])) {
                                       nexOrder = false;
-                                      var showTag = GString.getToString(
-                                          checkLanguage.value,
-                                          "menu_option_less_smallest");
+                                      var showTag = "menu_option_less_smallest".tr;
                                       //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
                                       Get.dialog(DialogUtils.alertOneButton(
                                           "${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                          title: GString.getToString(
-                                              checkLanguage.value,
-                                              "tag_title"),
-                                          confirmtitle: GString.getToString(
-                                              checkLanguage.value,
-                                              "tag_button_yes"), confirm: () {
+                                          title: "tag_title".tr,
+                                          confirmtitle: "tag_button_yes".tr, confirm: () {
                                         Get.back();
                                       }));
                                       break;
@@ -2196,10 +2159,7 @@ extension MenuPageCategory on MenuPageController {
                                 borderRadius:
                                 BorderRadius.all(Radius.circular(10.0)),
                               ),
-                              child: Text(
-                                  GString.getToString(
-                                      checkLanguage.value,
-                                      "add_option_cart"),
+                              child: Text("add_option_cart".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),

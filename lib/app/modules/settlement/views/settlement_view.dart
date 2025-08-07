@@ -105,9 +105,7 @@ class SettlementView extends GetView {
                             SizedBox(
                               width: ScreenAdapter.width(5),
                             ),
-                            Text(
-                              GString.getToString(
-                                  controller.checkLanguage.value, "settlement_top_title_cash"),
+                            Text("settlement_top_title_cash".tr,
                               style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -131,9 +129,7 @@ class SettlementView extends GetView {
                             SizedBox(
                               width: ScreenAdapter.width(15),
                             ),
-                            Text(
-                              GString.getToString(
-                                  controller.checkLanguage.value, "settlement_top_title_qr"),
+                            Text("settlement_top_title_qr".tr,
                               style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                 //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -166,9 +162,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_card"),
+                              Text("settlement_top_title_card".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -202,9 +196,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(5),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_nfc"),
+                              Text("settlement_top_title_nfc".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -234,9 +226,7 @@ class SettlementView extends GetView {
                                 width: ScreenAdapter.width(50),
                                 fit: BoxFit.fitWidth,
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_edy"),
+                              Text("settlement_top_title_edy".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -269,9 +259,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_iD"),
+                              Text("settlement_top_title_iD".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -304,9 +292,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_nanaco"),
+                              Text("settlement_top_title_nanaco".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -339,9 +325,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_WAON"),
+                              Text("settlement_top_title_WAON".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -374,9 +358,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_QUICPay"),
+                              Text("settlement_top_title_QUICPay".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -410,9 +392,7 @@ class SettlementView extends GetView {
                               SizedBox(
                                 width: ScreenAdapter.width(15),
                               ),
-                              Text(
-                                GString.getToString(controller.checkLanguage.value,
-                                    "settlement_top_title_IC"),
+                              Text("settlement_top_title_IC".tr,
                                 style: TextStyle(
                                   fontFamily: GFont.getFontFamily(),
                                   //color: ColorsUtil.hexToColor("#FFFFFF"),
@@ -973,9 +953,7 @@ class SettlementView extends GetView {
                     ),
                     //width: ScreenAdapter.width(820),
 
-                    child: Text(
-                      GString.getToString(controller.checkLanguage.value,
-                          "settlement_posPay_tips_title"),
+                    child: Text("settlement_posPay_tips_title".tr,
                       style: TextStyle(
                         fontFamily: GFont.getFontFamily(),
                           color: ColorsUtil.hexToColor("#FF0000"),
@@ -1022,9 +1000,7 @@ class SettlementView extends GetView {
                             crossAxisAlignment: CrossAxisAlignment.end,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Text(
-                                  GString.getToString(
-                                      controller.checkLanguage.value, "settlement_orderPrice"),
+                              Text("settlement_orderPrice".tr,
                                   style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: ScreenAdapter.fontSize(32),
@@ -1080,9 +1056,7 @@ class SettlementView extends GetView {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                    GString.getToString(
-                                        controller.checkLanguage.value, "settlement_putMoney"),
+                                Text("settlement_putMoney".tr,
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(32),
@@ -1145,9 +1119,7 @@ class SettlementView extends GetView {
                               crossAxisAlignment: CrossAxisAlignment.end,
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(
-                                    GString.getToString(
-                                        controller.checkLanguage.value, "settlement_outMoney"),
+                                Text("settlement_outMoney".tr,
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                       fontSize: ScreenAdapter.fontSize(32),
@@ -1244,8 +1216,7 @@ class SettlementView extends GetView {
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                 ),
-                                child: Text(
-                                  GString.getToString(controller.checkLanguage.value, "settlement_back"),
+                                child: Text("settlement_back".tr,
                                   style: TextStyle(
                                       color: ColorsUtil.hexToColor("#2D2D2D"),
                                       fontFamily: GFont.getFontFamily(),
@@ -1294,10 +1265,7 @@ class SettlementView extends GetView {
                                     mainAxisAlignment:
                                     MainAxisAlignment.center,
                                     children: [
-                                      Text(
-                                          GString.getToString(
-                                              controller.checkLanguage.value,
-                                              "settlement_confirmButton"),
+                                      Text("settlement_confirmButton".tr,
                                           style: TextStyle(
                                             fontFamily: GFont.getFontFamily(),
                                             fontSize:ScreenAdapter.fontSize(32),
@@ -1369,8 +1337,7 @@ class SettlementView extends GetView {
                               //设置圆角
                               borderRadius: new BorderRadius.circular((5.0)),
                             ),
-                            child: Text(
-                              GString.getToString(controller.checkLanguage.value, "settlement_back"),
+                            child: Text("settlement_back".tr,
                               style: TextStyle(
                                   color: ColorsUtil.hexToColor("#2D2D2D"),
                                   fontFamily: GFont.getFontFamily(),
