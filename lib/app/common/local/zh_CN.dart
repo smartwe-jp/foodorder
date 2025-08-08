@@ -151,5 +151,69 @@ const Map<String, String> zh_CN = {
         "payment_cash_unavailable" : "现金不可用，请选择其他支付方式。",
         "activation_error_tips" : "激活码不正确，请重新输入。",
 
+                //Error handle message
+        "cash_error_no_hardware": "现金机未连接，请联系工作人员。",
+        "cash_error_busy": "处理中，请稍后再试。",
+        "cash_error_no_service": "服务不可用，请联系工作人员。",
+        "cash_error_illegal": "已经打开，请勿重复打开。",
+        "cash_error_no_claimed": "服务不可用，请联系工作人员。",
+        "cash_error_disabled": "设备已禁用，请联系工作人员。",
+        "cash_error_claimed": "服务不可用，请联系工作人员。",
+        "cash_error_closed": "服务不可用，请联系工作人员。",
+        "cash_error_common": "发生错误，请联系工作人员。",
+
+        "cash_error_over_dispense": "找零金额超过最大限额，请取消订单并联系商家。",
+        "cash_error_over": "找零金额超过设定金额，请取消订单并联系商家。",
+        "cash_error_if_error": "通信异常，请重试。",
+        "cash_error_set_error": "脱机状态，请联系商家处理。",
+        "cash_error_charging": "正在找零中，请稍后。",
+        "cash_error_full": "找零箱已满，请联系商家。",
+        "cash_error_cassette_wait": "请取出找零。",
+        "cash_error_impossible": "当前状态无法执行操作，请联系商家。",
+        "cash_error_deposit": "计数中，请稍后再试。",
+        "cash_error_pause_deposit": "暂停计数，请联系商家处理。",
+
+        "cash_error_open": "打开错误，请联系工作人员。",
+        "cash_error_reg_bad_name": "设备名错误，请检查设备设置。",
+        "cash_error_reg_prog_id": "程序ID错误，请检查设备设置。",
+        "cash_error_create": "设备创建失败，请检查设备设置。",
+        "cash_error_bad_if": "接口错误，请检查设备设置。",
+        "cash_error_no_port": "端口未找到，请检查设备设置。",
+        "cash_error_sense_thread": "传感器线程未找到，请检查设备设置。",
+        "cash_error_config": "配置错误，请检查设备设置。",
+        "cash_error_event_thread": "事件线程未找到，请检查设备设置。",
+        "cash_error_failed_open": "打开失败，请检查设备设置。",
+        "cash_error_event_class": "事件类未找到，请检查设备设置。",
+        "cash_error_bad_version": "版本错误，请检查设备设置。",
+        "cash_error_open_so": "SO文件未找到，请检查设备设置。",
+        "cash_error_no_ported": "端口未找到，请检查设备设置。",
+        "cash_error_specific": "特定错误，请检查设备设置。",
+        "cash_error_unknown": "未知错误，请检查设备设置。",
+
+
+
+        "in_shop":"堂食",
+        "more_title":"更多",
+        "main_page":"首页",
+
+        "dining_welcome":"    欢 迎 光 临",
+        "dining_type_tips":"     请选择堂食还是外带",
+        "checkout_type_tips": "     请选择结算还是外带",
+        "amount_tips":"     请点击'结算'",
+        'cash_full_confirm':'确定',
+        'cash_full_tips':'现金币种@cash 满了，点击\'确定\'将退还入金，请使用其他币种或者其他支付方式，也可以联系店家处理该问题，谢谢。非常抱歉给你带来不便',
+        // 'cash_pay_checkout_tips':'支付金额更新，请确认并支付。',
+        // "scan_order_detail_title":"订单",
+
+        "skip_button":"跳过",
+        "next_button":"下一步",
+        "suggest_title":"您可能还喜欢",
+
+        "repay_cash_error": "发生错误, 请联系工作人员。", 
+
+        "network_error_tips":"非常抱歉，网络异常，暂时无法使用，请联系店员或者取消交易。",
+        "pos_notwork_tips":"非常抱歉，POS机无响应，请联系店员处理，谢谢。",
+
+
 
 };

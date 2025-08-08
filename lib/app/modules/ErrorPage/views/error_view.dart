@@ -19,7 +19,8 @@ class ErrorPageView extends GetView<ErrorPageController> {
     // TODO: implement build
     return Scaffold(
       body: Center(
-        child: Obx(() => Container(
+        child: 
+        Container(
           //padding: EdgeInsets.only(top: 15),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -49,13 +50,13 @@ class ErrorPageView extends GetView<ErrorPageController> {
             ],
           ),
         )
-      ),
+      
     ),
     );
   }
 
   Widget headView() {
-    return Obx(() => Container(
+    return Container(
       alignment: Alignment.center,
       padding: EdgeInsets.only(top: 30, bottom: 30),
       decoration: BoxDecoration(
@@ -89,11 +90,12 @@ class ErrorPageView extends GetView<ErrorPageController> {
       )
 
 
-    ));
+    )
+    ;
   }
 
   Widget tipsView() {
-    return Obx(() => Container(
+    return Container(
       padding: EdgeInsets.only(top: 120, left: 50, right: 50),
       child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -147,11 +149,11 @@ class ErrorPageView extends GetView<ErrorPageController> {
 
         ],
       ),
-    ));
+    );
   }
 
   Widget buttonView() {
-    return Obx(() => Container(
+    return Container(
       alignment: Alignment.center,
       decoration: BoxDecoration(
         color: ColorsUtil.hexToColor("#f3f3f3"),
@@ -214,7 +216,7 @@ class ErrorPageView extends GetView<ErrorPageController> {
           )),
         ],
       ),
-    ));
+    );
   }
 
 }

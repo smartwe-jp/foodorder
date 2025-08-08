@@ -153,4 +153,66 @@ const Map<String, String> ko_KR = {
         "payment_cash_unavailable" : "현금은 사용할 수 없습니다. 다른 결제 수단을 선택해주세요.",
         "activation_error_tips" : "활성화 코드가 올바르지 않습니다. 다시 입력하세요.",
 
+
+                //Error handle message
+        "cash_error_no_hardware": "현금 결제기가 연결되어 있지 않습니다. 직원에게 문의하십시오.",
+        "cash_error_busy": "처리 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_no_service": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_illegal": "이미 열려 있습니다. 다시 열 필요가 없습니다. 직원에게 문의하십시오.",
+        "cash_error_no_claimed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_disabled": "장치가 비활성화되었습니다. 직원에게 문의하십시오.",
+        "cash_error_claimed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_closed": "서비스를 사용할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_common": "오류가 발생했습니다. 직원에게 문의하십시오.",
+
+        "cash_error_over_dispense": "거스름돈이 최대 한도를 초과했습니다. 주문을 취소하고 가게에 문의하십시오.",
+        "cash_error_over": "지정된 금액을 초과하는 거스름돈이 발생했습니다. 주문을 취소하고 가게에 문의하십시오.",
+        "cash_error_if_error": "통신 오류가 발생했습니다. 다시 시도하십시오.",
+        "cash_error_set_error": "오프라인 상태입니다. 직원에게 문의하십시오.",
+        "cash_error_charging": "거스름돈 계산 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_full": "거스름돈이 가득 찼습니다. 가게에 문의하십시오.",
+        "cash_error_cassette_wait": "거스름돈을 꺼내 주십시오.",
+        "cash_error_impossible": "현재 작업을 수행할 수 없습니다. 직원에게 문의하십시오.",
+        "cash_error_deposit": "계산 중입니다. 잠시 기다려 주십시오.",
+        "cash_error_pause_deposit": "계산을 일시 중지했습니다. 직원에게 문의하십시오.",
+
+        "cash_error_open": "열기 오류, 직원에게 문의하십시오.",
+        "cash_error_reg_bad_name": "장치 이름이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_reg_prog_id": "프로그램 ID가 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_create": "장치 생성에 실패했습니다. 장치 설정을 확인하십시오.",
+        "cash_error_bad_if": "인터페이스가 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_no_port": "포트를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_sense_thread": "센서 스레드를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_config": "구성이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_event_thread": "이벤트 스레드를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_failed_open": "열기 실패. 장치 설정을 확인하십시오.",
+        "cash_error_event_class": "이벤트 클래스를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_bad_version": "버전이 잘못되었습니다. 장치 설정을 확인하십시오.",
+        "cash_error_open_so": "SO 파일을 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_no_ported": "포트를 찾을 수 없습니다. 장치 설정을 확인하십시오.",
+        "cash_error_specific": "특정 오류가 발생했습니다. 장치 설정을 확인하십시오.",
+        "cash_error_unknown": "알 수 없는 오류가 발생했습니다. 장치 설정을 확인하십시오.",
+
+
+        "in_shop":"매장 식사",
+        "more_title":"더보기",
+        "main_page":"첫장",
+
+        "dining_welcome":"어서 오세요",
+        "dining_type_tips":"매장 식사 또는 테이크아웃 중 선택해 주세요",
+        "checkout_type_tips": "합의 또는 테이크아웃 중 선택해 주세요",
+        "amount_tips":"'합의' 중 선택해 주세요",
+        'cash_full_tips':'현금 단위 @cash원이 한도에 도달했습니다. \'확인\'을 클릭하면 입금이 환불됩니다. 다른 통화나 결제 방법을 사용하시거나 매장에 문의하여 이 문제를 해결해 주시기 바랍니다. 불편을 드려 대단히 죄송합니다',
+        'cash_full_confirm':'확인',
+        // 'cash_pay_checkout_tips':'결제 금액이 업데이트되었습니다. 확인 후 결제해 주세요.',
+        // 'scan_order_detail_title':'주문',
+        "skip_button":"건너뛰기",
+        "next_button":"다음",
+        "suggest_title":"함께 보면 좋을 것들",
+
+        "repay_cash_error": "오류가 발생했습니다, 직원에게 문의하십시오.",
+        "network_error_tips":"죄송합니다. 네트워크 문제로 인해 서비스를 일시적으로 사용할 수 없습니다. 직원에게 문의하거나 거래를 취소해 주십시오.",
+        "pos_notwork_tips":"죄송합니다. POS 기기가 응답하지 않습니다. 직원에게 도움을 요청해 주십시오. 감사합니다.",
+
+
 };

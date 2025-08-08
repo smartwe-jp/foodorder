@@ -2,7 +2,7 @@
 const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
 const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
 const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = false; //是否生产环境
+const isProduction = true; //是否生产环境
 
 
 const file_url = "https://app.smartwe.co.jp/";
@@ -14,10 +14,11 @@ const servicePath = {
   'webBootIndexv1': base_url + 'pad/web/boot/index/v1', //获取首页菜单地址
 
   //新改版获取分类菜单
-  'webBootIndexCategoryv2':
-      base_url + 'pad/web/boot/index/category/v0', //获取首页分类
+  'webBootIndexCategoryv2': base_url + 'pad/web/boot/index/category/v2', //获取首页分类
+  'webBootIndexCategoryEdit': base_url + 'pad/web/boot/index/category/v0', //获取首页分类
   'webBootIndexMenuv2': base_url + 'pad/web/boot/index/menu/v2', //获取某分类菜单
-  'webBootIndexMenuv3': base_url + 'pad/web/boot/index/menu/v0', //获取某分类菜单
+  'webBootIndexMenuv3': base_url + 'pad/web/boot/index/menu/v3', //获取某分类菜单
+  'webBootIndexMenuvEdit': base_url + 'pad/web/boot/index/menu/v0', //获取某分类菜单
 
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址

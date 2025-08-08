@@ -252,7 +252,7 @@ class EditPageLogic extends GetxController with StateMixin {
       "takeout": queryTakeout,
     };
 
-    request('webBootIndexCategoryv2', method: 'POST', parameters: formData)
+    request('webBootIndexCategoryEdit', method: 'POST', parameters: formData)
         .then((val) {
       debugPrint("getBookingBootIndexCagegory request done");
       var response = json.decode(val.toString());
@@ -329,7 +329,7 @@ class EditPageLogic extends GetxController with StateMixin {
       "categoryCode": queryCategoryCode
     };
 
-    request('webBootIndexMenuv3', method: 'POST', parameters: formData)
+    request('webBootIndexMenuEdit', method: 'POST', parameters: formData)
         .then((val) {
       var response = json.decode(val.toString());
       //debugPrint("getBookingBootIndexMenu request :$response");

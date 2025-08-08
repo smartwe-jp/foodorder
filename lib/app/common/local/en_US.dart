@@ -152,4 +152,68 @@ const Map<String, String> en_US = {
         "payment_cash_unavailable" : "Cash is unavailable, please choose another payment method.",
         "activation_error_tips" : "The activation code is incorrect, please re-enter it.",
 
+
+                //Error handle message
+        "cash_error_no_hardware": "Cash machine is not connected. Please contact our staff.",
+        "cash_error_busy": "Processing, please wait.",
+        "cash_error_no_service": "Service is not available. Please contact our staff.",
+        "cash_error_illegal": "Already open, no need to open again. Please contact our staff.",
+        "cash_error_no_claimed": "Service is not available. Please contact our staff.",
+        "cash_error_disabled": "Device is disabled. Please contact our staff.",
+        "cash_error_claimed": "Service is not available. Please contact our staff.",
+        "cash_error_closed": "Service is not available. Please contact our staff.",
+        "cash_error_common": "An error occurred. Please contact our staff.",
+
+        "cash_error_over_dispense": "Change amount exceeds the maximum limit. Please cancel the order and contact the store.",
+        "cash_error_over": "Change amount exceeds the set amount. Please cancel the order and contact the store.",
+        "cash_error_if_error": "Communication error occurred. Please try again.",
+        "cash_error_set_error": "Offline status. Please contact our staff.",
+        "cash_error_charging": "Calculating change, please wait.",
+        "cash_error_full": "Change box is full. Please contact the store.",
+        "cash_error_cassette_wait": "Please take out the change.",
+        "cash_error_impossible": "Current operation cannot be performed. Please contact our staff.",
+        "cash_error_deposit": "Calculating, please wait.",
+        "cash_error_pause_deposit": "Calculating paused. Please contact our staff.",
+
+        "cash_error_open": "Open error, please contact our staff.",
+        "cash_error_reg_bad_name": "Device name is incorrect. Please check the device settings.",
+        "cash_error_reg_prog_id": "Program ID is incorrect. Please check the device settings.",
+        "cash_error_create": "Device creation failed. Please check the device settings.",
+        "cash_error_bad_if": "Interface is incorrect. Please check the device settings.",
+        "cash_error_no_port": "Port not found. Please check the device settings.",
+        "cash_error_sense_thread": "Sensor thread not found. Please check the device settings.",
+        "cash_error_config": "Configuration is incorrect. Please check the device settings.",
+        "cash_error_event_thread": "Event thread not found. Please check the device settings.",
+        "cash_error_failed_open": "Open failed. Please check the device settings.",
+        "cash_error_event_class": "Event class not found. Please check the device settings.",
+        "cash_error_bad_version": "Version is incorrect. Please check the device settings.",
+        "cash_error_open_so": "SO file not found. Please check the device settings.",
+        "cash_error_no_ported": "Port not found. Please check the device settings.",
+        "cash_error_specific": "Specific error occurred. Please check the device settings.",
+        "cash_error_unknown": "Unknown error occurred. Please check the device settings.",
+
+
+        "in_shop":"Eat in",
+        "more_title":"More",
+        "main_page":"Home",
+
+        "dining_welcome":"Welcome",
+        "dining_type_tips":"Would you like to dine in or take out",
+        "checkout_type_tips": "Would you like to Check Out or take out",
+        "amount_tips":"Please Touch 'Check Out'",
+        'cash_full_tips':'The cash denomination of @cash has reached its limit. Click \'Confirm\' to refund the deposit. Please use other currencies or payment methods, or contact the store to address this issue. We apologize for any inconvenience caused.',
+        'cash_full_confirm':'Confirm',
+        // 'cash_pay_checkout_tips':'Payment amount updated, Please confirm and pay.',
+        // "scan_order_detail_title":"Order",
+
+        "skip_button":"Skip",
+        "next_button":"Next",
+        "suggest_title":"You may also like",
+
+        "repay_cash_error": "Error occurred. Please contact our staff.", 
+
+        "network_error_tips":"We are very sorry, there is a network issue, and the service is temporarily unavailable. Please contact the staff or cancel the transaction.",
+        "pos_notwork_tips":"We are very sorry, the POS machine is not responding. Please contact the staff for assistance. Thank you.",
+
+
 };

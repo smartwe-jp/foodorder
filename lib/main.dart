@@ -137,7 +137,7 @@ void main() {
                         resetTimer.startTimer();
                       } else if (value?.current == Routes.ORDER_HOME ||
                           value?.current == Routes.SETTLEMENT ||
-                          value?.current == Routes.SETTING) {
+                          value?.current == Routes.SETTING || value?.current == '/SettingView') {
                         resetTimer.cancelTimer();
                       }
                     },
