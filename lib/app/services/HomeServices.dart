@@ -262,6 +262,10 @@ class HomeServices {
     }
   }
 
+  static Future<bool> removeSSESetting() async {
+    return await Storage.remove("SSESetting");
+  }
+
   static Future<void> setSSESettingList(List sseSettingList) async {
     final data = json.encode(sseSettingList);
     await Storage.setData("SSESetting", data);

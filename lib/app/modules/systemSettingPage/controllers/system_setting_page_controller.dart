@@ -379,16 +379,20 @@ class SystemSettingPageController extends GetxController with StateMixin {
         title: "$nameのIDを入力してください",
         originValue: identify,
         onConfirmClick: (value) async {
-          if (value.isEmpty) {
-            showToast("IDを入力してください");
-            return;
-          }
+          // if (value.isEmpty) {
+          //   showToast("IDを入力してください");
+          //   return;
+          // }
           if (isOn) {
             //先关闭现有连接
-            updateSSESetting(name, isOn: false);
+            //先找到对应的SSE设置
+            Map sseItem = sseSettingList.firstWhere(
+                (item) => item['name'] == name,
+                orElse: () => {'name': name, 'isOn': false, 'identify': ''});
+            updateSSESetting(name, isOn: false, identify: sseItem['identify'] ?? '');
             await Future.delayed(const Duration(milliseconds: 3000));
             //再开启新的连接
-            updateSSESetting(name, isOn: true, identify: value);
+            updateSSESetting(name, isOn: value.isNotEmpty, identify: value);
           } else {
             //如果是关闭状态，则直接更新设置
             updateSSESetting(name, identify: value);
@@ -411,13 +415,16 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if (centerOn != null) {
             sseSettingList[i]['centerOn'] = centerOn;
           }
-
-          if (identify != null && identify.isNotEmpty) {
+          final needInput = sseSettingList[i]['needInput'] ?? false;
+          if ((identify != null && identify.isNotEmpty) || !needInput) {
+            //debugPrint("updateSSESetting: $name, $identify");
             final domain = servicePath[sseSettingList[i]['server']];
             if (isOn != null && domain != null) {
+              debugPrint("SSE domain: $domain" 
+                  " identify: $identify isOn: $isOn");
               //如果开启了SSE连接，则添加监听
-              final needInput = sseSettingList[i]['needInput'] ?? false;
-              final sseAddress = domain + (needInput ? identify:machineCode.value);
+              
+              final sseAddress = domain + (needInput ? (identify ?? ''):machineCode.value);
               isOn
                   ? sseService.addSseListen(sseAddress)
                   : sseService.disconnect(sseAddress);

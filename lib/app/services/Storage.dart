@@ -57,9 +57,9 @@ class Storage{
     SharedPreferences sp=await SharedPreferences.getInstance();
     return sp.getBool(key);
   }
-  static Future<void> remove(key) async{
+  static Future<bool> remove(key) async{
        SharedPreferences sp=await SharedPreferences.getInstance();
-       sp.remove(key);
+       return sp.remove(key);
   }
   static Future<void> clear() async{
        SharedPreferences sp=await SharedPreferences.getInstance();

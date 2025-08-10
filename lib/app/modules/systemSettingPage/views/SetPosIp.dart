@@ -336,10 +336,10 @@ class _SimpleInputAlertState extends State<SimpleInputAlert> {
                           fontSize: ScreenAdapter.fontSize(32.0)),
                     ),
                     onPressed: () async {
-                        if(_inputValue.isNotEmpty){
+                        //if(_inputValue.isNotEmpty){
                           widget.onConfirmClick!(_inputValue);
                           Navigator.pop(context);
-                        }
+                        //}
                     },
                   ),
                 ),

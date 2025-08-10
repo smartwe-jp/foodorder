@@ -118,13 +118,13 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                 ),
               ),
 
-              //switchButton ios type
-              if (identify.isNotEmpty)
+
+              if (!needInput || identify.isNotEmpty)
               Row(
                 children: [
                   FlutterSwitch(
                     value: isOn,
-                    onToggle: (value) {
+                    onToggle: (value) async {
                       controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
                     },
                   ),

@@ -216,13 +216,13 @@ class ScanDetailPagePage extends StatelessWidget {
     // ];
     return Container(
         padding: EdgeInsets.only(
-            left: ScreenAdapter.width(150), right: ScreenAdapter.width(150)),
+            left: ScreenAdapter.width(150), right: ScreenAdapter.width(100)),
         child:
         //原价
         Row(
           children: [
             Expanded(
-              flex: 55, // 右边占 60%
+              flex: 1, // 右边占 60%
               child: Container(
                 // 右边空白
                 color: Colors.transparent,
@@ -230,7 +230,7 @@ class ScanDetailPagePage extends StatelessWidget {
             ),
 
             Expanded(
-              flex: 45, // 左边占 44%
+              flex: 1, // 左边占 44%
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
@@ -249,7 +249,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          "$count",
+                          "${count.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
@@ -277,7 +277,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          "$discount",
+                          "${discount.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
