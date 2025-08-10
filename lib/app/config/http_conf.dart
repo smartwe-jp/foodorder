@@ -18,7 +18,7 @@ const servicePath = {
   'webBootIndexCategoryEdit': base_url + 'pad/web/boot/index/category/v0', //获取首页分类
   'webBootIndexMenuv2': base_url + 'pad/web/boot/index/menu/v2', //获取某分类菜单
   'webBootIndexMenuv3': base_url + 'pad/web/boot/index/menu/v3', //获取某分类菜单
-  'webBootIndexMenuvEdit': base_url + 'pad/web/boot/index/menu/v0', //获取某分类菜单
+  'webBootIndexMenuEdit': base_url + 'pad/web/boot/index/menu/v0', //获取某分类菜单
 
   'webStockBooking': base_url + 'pad/web/boot/stock-booking', //限量请求地址
   //'webBootOrder': base_url + 'pad/web/boot/order', //提交订单请求地址
