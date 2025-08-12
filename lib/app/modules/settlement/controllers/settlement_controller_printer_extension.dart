@@ -42,7 +42,7 @@ class PrintService extends GetxService {
 
   //创建一个方法来处理打印队列
   void processLabelPrintQueue(String printerIp, Queue<Widget> labelPrintQueue) {
-    Timer.periodic(Duration(milliseconds: 1500), (timer) {
+    Timer.periodic(Duration(milliseconds: 1000), (timer) {
       if (labelPrintQueue.isEmpty) {
         timer.cancel(); // 停止定时器
         return;
@@ -503,6 +503,7 @@ class PrintService extends GetxService {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
+                              flex: 3,
                               child: AutoSizeText(
                                 ' # ' + orderSnCode,
                                 textAlign: TextAlign.right,
@@ -516,6 +517,7 @@ class PrintService extends GetxService {
                               ),
                             ),
                             Expanded(
+                              flex: 2,
                               child: AutoSizeText(
                                 '$itemCount',
                                 textAlign: TextAlign.right,
