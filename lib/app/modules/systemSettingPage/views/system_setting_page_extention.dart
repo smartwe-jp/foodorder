@@ -697,7 +697,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
   _setLabelPrintSize(int type, int receipt, int width) {
 
-    final _labelPrintSize = {"60x30":460, "50x30":384,"40x30":284};
+    final _labelPrintSize = {"60x30":460, "50x30":384,"40x30":300};
 
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),

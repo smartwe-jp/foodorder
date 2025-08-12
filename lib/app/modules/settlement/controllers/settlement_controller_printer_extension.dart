@@ -42,7 +42,7 @@ class PrintService extends GetxService {
 
   //创建一个方法来处理打印队列
   void processLabelPrintQueue(String printerIp, Queue<Widget> labelPrintQueue) {
-    Timer.periodic(Duration(milliseconds: 1000), (timer) {
+    Timer.periodic(Duration(milliseconds: 1500), (timer) {
       if (labelPrintQueue.isEmpty) {
         timer.cancel(); // 停止定时器
         return;
@@ -181,19 +181,7 @@ class PrintService extends GetxService {
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printWidth = printer['labelWidth'] ?? 384.0;
         // Add the head receipt widget to the print queue
-        if (isTakeOut) {
-          final headReceipt = headReceiptWidget(
-            fromPlate,
-            orderSnCode,
-            orderTime,
-            //orderType,
-            remark,
-            printWidth.toDouble(),
-            rotate,
-          );
-
-          labelPrintQueue.add(headReceipt);
-        }
+        int itemCount = 0;
 
         for (var item in items) {
           final qty = item["qty"] ?? 1;
@@ -202,6 +190,7 @@ class PrintService extends GetxService {
 
           for (var i = 0; i < qty; i++) {
             // Generate the receipt widget
+            itemCount += 1;
             final receiptWidget = labelItem(
               name,
               orderSnCode,
@@ -211,6 +200,21 @@ class PrintService extends GetxService {
             );
             labelPrintQueue.add(receiptWidget);
           }
+        }
+
+        if (isTakeOut) {
+          final headReceipt = headReceiptWidget(
+            fromPlate,
+            orderSnCode,
+            orderTime,
+            //orderType,
+            itemCount,
+            remark,
+            printWidth.toDouble(),
+            rotate,
+          );
+
+          labelPrintQueue.addFirst(headReceipt);
         }
 
         processLabelPrintQueue(printerIp, labelPrintQueue);
@@ -383,21 +387,59 @@ class PrintService extends GetxService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
 
-              AutoSizeText(
-                name + ' # ' + number,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                style: TextStyle(
-                  fontSize: 30,
-                  color: Colors.black,
-                  fontWeight: FontWeight.bold,
+              Expanded(
+                flex: 1,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+
+                    Expanded(
+                      flex: 3,
+                      child: AutoSizeText(//
+                        name,
+                        maxLines: 2,
+                        textAlign: TextAlign.left,
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      ),
+                    ),
+
+                    Expanded(
+                      flex: 2,
+                      child: AutoSizeText(
+                        ' # ' + number,
+                        maxLines: 2,
+                        textAlign: TextAlign.right,
+                        style: TextStyle(
+                          fontSize: 30,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      ),
+                    )
+                  ],
                 ),
-                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
               ),
-              Container(
-                margin: EdgeInsets.only(top: 5, left: 10),
-                width: double.infinity,
-                child: optionList(options),
+
+              Divider(
+                color: Colors.black,
+                thickness: 2,
+              ),
+
+
+              Expanded(
+                flex: 2,
+                child: Container(
+                  margin: EdgeInsets.only(top: 5, left: 10),
+                  width: double.infinity,
+                  child: optionList(options),
+                ),
               )
             ],
           ),
@@ -412,6 +454,7 @@ class PrintService extends GetxService {
       String orderSnCode,
       String orderTime,
       //String orderType,
+      int itemCount,
       String remark,
       double printWidth,
       bool rotate) {
@@ -420,35 +463,88 @@ class PrintService extends GetxService {
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
         alignment: Alignment.center,
         child: Container(
-          padding: EdgeInsets.symmetric(horizontal: 8),
+          //padding: EdgeInsets.symmetric(horizontal: 8),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                AutoSizeText(
-                  fromPlate + ' # ' + orderSnCode,
-                  textAlign: TextAlign.center,
-                  maxLines: 1,
-                  style: TextStyle(
-                    fontSize: 54,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+
+                Expanded(
+                  flex: 1,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 3,
+                        child: AutoSizeText(
+                          fromPlate,
+                          textAlign: TextAlign.left,
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontSize: 50,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                        ),
+                      ),
+
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            Expanded(
+                              child: AutoSizeText(
+                                ' # ' + orderSnCode,
+                                textAlign: TextAlign.right,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                              ),
+                            ),
+                            Expanded(
+                              child: AutoSizeText(
+                                '$itemCount',
+                                textAlign: TextAlign.right,
+                                maxLines: 1,
+                                style: TextStyle(
+                                  fontSize: 30,
+                                  color: Colors.black,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                    ],
                   ),
-                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                 ),
+
                 Divider(
                   color: Colors.black,
-                  thickness: 4,
+                  thickness: 2,
                 ),
-                SizedBox(height: 5,),
-                AutoSizeText(
-                  remark,
-                  maxLines: 4,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
+
+                Expanded(
+                  flex: 2,
+                  child: AutoSizeText(
+                    remark,
+                    maxLines: 4,
+                    style: TextStyle(
+                      fontSize: 24,
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    ),
+                    overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                   ),
-                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                 ),
               ]
           ),
