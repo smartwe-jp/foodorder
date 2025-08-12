@@ -132,6 +132,7 @@ class PrintService extends GetxService {
     final orderTime = data["orderTime"] ?? "";
     final orderLinesMap = data["orderLinesMap"] ?? {};
     final remark = data["remark"] ?? "";
+    var payment_code = data["payment_code"] ?? "";
     bool isInShop = data["from_plate"] == "Shop";
     bool isTakeOut = orderType != 'Shop_In';// || orderType == 'takeout' || orderType == 'pickup' || orderType == 'Takeout';
 
@@ -251,9 +252,16 @@ class PrintService extends GetxService {
     if ((isCenterPrintOn && isTakeOut) || (fromSSE && smartWeCenterOn && isInShop)) {
       final printIp = centerPrinter["printIp"];
       final rotate = centerPrinter["direction"] == 1;
+      bool option = centerPrinter['option'] ?? false; // 是否打印选项
+      //假设 payment_code = https://mobile.smartwe.jp/index?p=jM6JKGOpPij9OHl-xlsgl 获取 jM6JKGOpPij9OHl-xlsgl
+      if (payment_code.isNotEmpty) {
+        //如果有支付码，打印支付码
+        payment_code = payment_code.split("=").last;
+      }
 
       printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-          printIp, true, rotate, orderLineItems, remark, isCenterPrint: true);
+          printIp, true, rotate, orderLineItems, remark, isCenterPrint: true,
+          printOption: option, printQrCode: payment_code);
     }
 
 
@@ -635,7 +643,10 @@ class PrintService extends GetxService {
       bool isRotate,
       List items,
       String remark,
-  {bool isCenterPrint = false}
+  {bool isCenterPrint = false,
+    bool printOption = true,
+    String? printQrCode,
+  }
       ) async {
     final rotate = isRotate ? pi : 0.0;
 
@@ -653,7 +664,7 @@ class PrintService extends GetxService {
               final qty = item["qty"] ?? 1;
               final name = item["name"] ?? "";
               final options = item["options"] ?? {};
-              return menuItem(name, qty, options, isUnderLine: true);
+              return menuItem(name, qty, options, isUnderLine: true, needOption: printOption);
             }).toList(),
             Container(
               alignment: Alignment.centerRight,
@@ -664,8 +675,24 @@ class PrintService extends GetxService {
                 ),
               ),
             ),
+
             if (isCenterPrint)
-            remarkTitle(remark)
+            remarkTitle(remark),
+
+            if (printQrCode != null && printQrCode.isNotEmpty)
+              Center(
+                child: Container(
+                    margin: EdgeInsets.symmetric(horizontal: 20),
+                    // width: 200.w,
+                    // height: 200.h,
+                    child: BarcodeWidget(
+                      height: 240,
+                      width: 240,
+                      barcode: Barcode.qrCode(),
+                      data: printQrCode,
+                    )
+                ),
+              ),
           ],
         ),
       ),
@@ -801,7 +828,7 @@ class PrintService extends GetxService {
 
   //单个菜品显示 左标题右分量，如果有Options 换行锁进50 左Option标题 右分量
   Widget menuItem(String title, int qty, Map option,
-      {bool isUnderLine = false}) {
+      {bool isUnderLine = false, bool needOption = true}) {
     final optionQtyString = qty == 1 ? "" : "x $qty";
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
@@ -831,7 +858,7 @@ class PrintService extends GetxService {
               ),
             ],
           ),
-          if (option.isNotEmpty)
+          if (option.isNotEmpty && needOption)
             ...option.entries.map((entry) {
               final optionName = entry.key;
               final optionValues = entry.value;
@@ -849,22 +876,25 @@ class PrintService extends GetxService {
                           //fontWeight: FontWeight.bold,
                         ),
                       ),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: [
-                          ...optionValues.map((option) {
-                            final optionDetail = option["name"] ?? "";
-                            final optionQty = option["qty"] ?? 1;
-                            final optionQtyString =
-                                optionQty == 1 ? "" : "x $optionQty";
-                            return Text(
-                              "    $optionDetail $optionQtyString",
-                              style: TextStyle(
-                                fontSize: 36,
-                              ),
-                            );
-                          }).toList(),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.end,
+                          children: [
+                            ...optionValues.map((option) {
+                              final optionDetail = option["name"] ?? "";
+                              final optionQty = option["qty"] ?? 1;
+                              final optionQtyString =
+                                  optionQty == 1 ? "" : "x $optionQty";
+                              return Text(
+                                      maxLines: 3,
+                                "    $optionDetail $optionQtyString",
+                                style: TextStyle(
+                                  fontSize: 36,
+                                ),
+                              );
+                            }).toList(),
+                          ],
+                        ),
                       )
                     ],
                   ),
