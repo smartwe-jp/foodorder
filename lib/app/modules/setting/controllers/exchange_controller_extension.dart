@@ -46,6 +46,16 @@ extension ExchangeControllerExtension on SettingController {
     }
   }
 
+  int getTotalCashCount() {
+    int totalCount = 0;
+    cashInfo.forEach((key, value) {
+      if (value > 0) {
+        totalCount += (int.parse(key) * value).toInt();
+      }
+    });
+    return totalCount;
+  }
+
   getServerCashInfo() async {
     debugPrint('---getServerCashInfo---');
     var formData = {

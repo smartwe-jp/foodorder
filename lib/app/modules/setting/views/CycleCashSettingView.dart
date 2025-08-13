@@ -2,10 +2,11 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
+import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/views/RecycleButton.dart';
 import 'package:foodorder/app/modules/setting/views/setting_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
-import 'package:get/get.dart';
+import 'package:foodorder/app/common/NumberFormat.dart';
 
 extension CycleCashSettingView on SettingView {
   cycleCashSetting() {
@@ -108,8 +109,72 @@ extension CycleCashSettingView on SettingView {
                   ),
                 );
               }).toList()
-            ])
+            ]),
+            TableRow(children: [
+              Container(
+                height: 80,
+                alignment: Alignment.center,
+                child: Text("金額",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(20),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    )),
+              ),
+              ...controller.cashInfo.entries.map((element) {
+                return Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${(int.parse(element.key) * element.value).toInt().formatSum()}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                );
+              }).toList()
+            ]),
           ]),
+
+      Table(
+          border: TableBorder.all(
+            color: Colors.grey.shade400,
+            width: 1.0,
+          ),
+          columnWidths: const <int, TableColumnWidth>{
+            0: FixedColumnWidth(100),
+          },
+          children: [
+            TableRow(children: [
+              Container(
+                height: 80,
+                alignment: Alignment.center,
+                child: Text("合計",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(20),
+                      fontWeight: FontWeight.w600,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    )),
+              ),
+              Container(
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text("${controller.getTotalCashCount().formatSum()}",
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: ScreenAdapter.fontSize(20),
+                        fontWeight: FontWeight.w600,
+                        color: ColorsUtil.hexToColor("#000000"),
+                      )),
+                )
+              
+            ]),
+          ]
+      ),
+
       Table(
           border: TableBorder.all(
             color: Colors.grey.shade400,
