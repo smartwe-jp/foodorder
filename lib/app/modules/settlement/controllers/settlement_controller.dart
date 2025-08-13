@@ -1224,6 +1224,7 @@ class SettlementController extends GetxController with StateMixin {
       debugPrint("打开现金机成功");
       //调用插件的监听
       _setPayCubeListener();
+      _updatePutMoneyInfo(totalPrice.value);
       showCashTimer?.cancel();
       seconds.value = 120;
     } else {

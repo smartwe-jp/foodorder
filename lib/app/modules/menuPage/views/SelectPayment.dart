@@ -22,7 +22,8 @@ class SelectPaymentPage extends StatelessWidget {
         required this.menuCount,
         required this.shopCartTotalPrice,
         required this.tableNum,
-        this.taxCount = 0,
+        this.tax10 = 0,
+        this.tax8 = 0,
         required this.onConfrimClick,
         required this.onCancelClick})
       : super(key: key);
@@ -31,11 +32,12 @@ class SelectPaymentPage extends StatelessWidget {
   final String shopCartTotalPrice;
   final String tableNum;
   final Function onConfrimClick;
-  final int taxCount; //税率
+  final int tax10; //税率
+  final int tax8;
   final Function(String) onCancelClick;
 
   String get showPrice {
-    return (int.parse(shopCartTotalPrice) + taxCount).toString();
+    return (int.parse(shopCartTotalPrice) + tax10 + tax8).toString();
   }
 
   Widget selectPrintType() {
@@ -1568,7 +1570,7 @@ class SelectPaymentPage extends StatelessWidget {
                         //height: ScreenAdapter.height(100),
                         child: Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          crossAxisAlignment: CrossAxisAlignment.end,
+                          crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Expanded(
                               flex: 1,
@@ -1666,13 +1668,13 @@ class SelectPaymentPage extends StatelessWidget {
                                       children: [
                                         //taxin
                                         Text(
-                                          "tax".localized(),
+                                          "tax".localized() + " 10%",
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),
                                               fontFamily: GFont.getFontFamily(),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 32),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 30),
                                         ),
                                         //showPrice
                                         Spacer(),
@@ -1681,7 +1683,7 @@ class SelectPaymentPage extends StatelessWidget {
                                           "¥ ",
                                           //GString.getToString(this._checkLanguage, "show_price_front"),
                                           style: TextStyle(
-                                            fontSize: 30,
+                                            fontSize: 28,
                                             fontFamily: GFont.getFontFamily(),
                                             fontWeight: FontWeight.w500,
                                             color: ColorsUtil.hexToColor(
@@ -1689,16 +1691,57 @@ class SelectPaymentPage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          formatMoney(taxCount.toString()),
+                                          formatMoney(tax10.toString()),
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),
                                               fontFamily: GFont.getFontFamily(),
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 32),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 30),
                                         ),
                                       ],
                                     ),
+
+                                  if(!controller.taxSystem)
+                                    Row(
+                                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        //taxin
+                                        Text(
+                                          "tax".localized() + " 8%",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 30),
+                                        ),
+                                        //showPrice
+                                        Spacer(),
+                                        //shopCartTotalPrice
+                                        Text(
+                                          "¥ ",
+                                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                                          style: TextStyle(
+                                            fontSize: 28,
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w500,
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                          ),
+                                        ),
+                                        Text(
+                                          formatMoney(tax8.toString()),
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w500,
+                                              fontSize: 30),
+                                        ),
+                                      ],
+                                    ),
+
 
 
 

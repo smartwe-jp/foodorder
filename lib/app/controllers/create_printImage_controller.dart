@@ -766,9 +766,7 @@ class CreatePrintImageController extends GetxController {
             "8%対象",
             24.0,
             FontWeight.w100,
-            (printData["takeOut"] == true)
-                ? "${formatMoney(finalPrice - int.parse(printData["tax"]))}"
-                : "0",
+            "${formatMoney(printData["baseTax2"] ?? 0)}",
             24.0,
             FontWeight.w100,
             true),
@@ -779,9 +777,8 @@ class CreatePrintImageController extends GetxController {
             "　  (内    消費税",
             24.0,
             FontWeight.w100,
-            (printData["takeOut"] == true)
-                ? "${formatMoney(printData["tax"])})"
-                : "0)",
+            //(printData["takeOut"] == true) ?
+            "${formatMoney(printData["tax2"])})",
             24.0,
             FontWeight.w100,
             true),
@@ -793,9 +790,7 @@ class CreatePrintImageController extends GetxController {
             "10%対象",
             24.0,
             FontWeight.w100,
-            (printData["takeOut"] == false)
-                ? "${formatMoney(finalPrice - int.parse(printData["tax"]))}"
-                : "0",
+            "${formatMoney(printData["baseTax1"] ?? 0)}",
             24.0,
             FontWeight.w100,
             true),
@@ -806,9 +801,7 @@ class CreatePrintImageController extends GetxController {
             "　  (内    消費税",
             24.0,
             FontWeight.w100,
-            (printData["takeOut"] == false)
-                ? "${formatMoney(printData["tax"])})"
-                : "0)",
+            "${formatMoney(printData["tax1"] ?? 0)})",
             24.0,
             FontWeight.w100,
             true),
