@@ -296,6 +296,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
+        'option': false,
         'direction': 0,
       });
       printerList.add({
@@ -308,6 +309,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
+        'option': false,
         'direction': 0,
       });
       printerList.add({
@@ -320,6 +322,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
+        'option': false,
         'direction': 0,
       });
       printerList.add({
@@ -332,6 +335,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
+        'option': false,
         'direction': 0,
       });
     }
@@ -420,7 +424,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
             //debugPrint("updateSSESetting: $name, $identify");
             final domain = servicePath[sseSettingList[i]['server']];
             if (isOn != null && domain != null) {
-              debugPrint("SSE domain: $domain" 
+              debugPrint("SSE domain: $domain"
                   " identify: $identify isOn: $isOn");
               //如果开启了SSE连接，则添加监听
               
@@ -893,23 +897,18 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  updatePrinterInfo(int type, int receipt,
-      {bool? isOff,
-      int? continuous,
-      String? printerIp,
-      String? port,
-      int? printWidth,
-      int? direction}) async {
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction, bool? option}) async {
+
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == type &&
-            printerList[i]['receipt'] == receipt) {
-          if (isOff != null) printerList[i]['isOff'] = isOff;
-          if (continuous != null) printerList[i]['continuous'] = continuous;
-          if (printerIp != null) printerList[i]['printIp'] = printerIp;
-          if (port != null) printerList[i]['printPort'] = port;
-          if (printWidth != null) printerList[i]['labelWidth'] = printWidth;
-          if (direction != null) printerList[i]['direction'] = direction;
+        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
+          if(isOff != null) printerList[i]['isOff'] = isOff;
+          if(continuous != null) printerList[i]['continuous'] = continuous;
+          if(printerIp != null) printerList[i]['printIp'] = printerIp;
+          if(port != null) printerList[i]['printPort'] = port;
+          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if(direction != null) printerList[i]['direction'] = direction;
+          if(option != null) printerList[i]['option'] = option ?? false;
           if (type == 10 && !(isOff ?? true)) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
             for (var j = 0; j < printerList.length; j++) {

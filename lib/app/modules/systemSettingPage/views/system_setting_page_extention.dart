@@ -266,6 +266,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     final printIp = printerItem['printIp'] ?? ""; // 打印机IP
     final printPort = printerItem['printPort'] ?? ""; // 打印机端口
     final printDirection = printerItem['direction'] ?? 0; // 打印方向 0 正 1 逆
+    bool printOption = printerItem['option'] ?? false; // 打印选项
     bool isSingleMode = type == 11 ||  receipt == 1;
 
         return
@@ -310,6 +311,41 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
                         ]
                     ),
+                    if (type == 11)
+                      TableRow(
+                          children: <Widget>[
+                            Container(
+                              height: ScreenAdapter.height(80),
+                              alignment: Alignment.center,
+                              child: Text(
+                                "オプション",
+                                style: TextStyle(
+                                    fontFamily: 'NotoSansJP',
+                                    fontSize: ScreenAdapter.fontSize(22),
+                                    fontWeight: FontWeight.w500
+                                ),
+                              ),
+                            ),
+
+                            Container(
+                              padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: [
+                                  FlutterSwitch(
+                                    value: printOption,
+                                    onToggle: (value) {
+                                      controller.updatePrinterInfo(type, receipt, option: value);
+                                    },
+                                  ),
+                                ],
+                              ),
+                            ),
+
+                          ]
+                      ),
+
+
 
                   ]
               ),
@@ -702,7 +738,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
   _setLabelPrintSize(int type, int receipt, int width) {
 
-    final _labelPrintSize = {"60x30":460, "50x30":384,"40x30":284};
+    final _labelPrintSize = {"60x30":460, "50x30":384,"40x30":300};
 
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
