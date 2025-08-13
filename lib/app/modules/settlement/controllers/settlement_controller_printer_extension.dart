@@ -551,8 +551,6 @@ class PrintService extends GetxService {
                     overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                   ),
                 ),
-                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-              ),
             ]),
           )),
       pagerWidth: printWidth,
