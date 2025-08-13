@@ -296,7 +296,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
-        'option': false,
+        'option': true,
         'direction': 0,
       });
       printerList.add({
@@ -309,7 +309,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
-        'option': false,
+        'option': true,
         'direction': 0,
       });
       printerList.add({
@@ -322,7 +322,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
-        'option': false,
+        'option': true,
         'direction': 0,
       });
       printerList.add({
@@ -335,7 +335,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'isDefault': true,
         'printIp': '',
         'printPort': '9100',
-        'option': false,
+        'option': true,
         'direction': 0,
       });
     }
