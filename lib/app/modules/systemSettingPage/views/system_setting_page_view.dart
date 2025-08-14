@@ -645,6 +645,7 @@ class SystemSettingPageView extends GetView {
               ),
             ),
           ),
+          if(controller.actuarial.value == true)
           InkWell(
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
