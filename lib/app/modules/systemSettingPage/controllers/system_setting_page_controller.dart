@@ -100,6 +100,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   String panelType = "Mini";
   bool isAllow10000 = true;
   bool isAllow5000 = true;
+  String labelSize = "40x30"; //默认标签宽度
 
   String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
       : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
@@ -813,7 +814,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction, bool? option}) async {
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option}) async {
 
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
@@ -822,7 +823,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if(continuous != null) printerList[i]['continuous'] = continuous;
           if(printerIp != null) printerList[i]['printIp'] = printerIp;
           if(port != null) printerList[i]['printPort'] = port;
-          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if(printSize != null) printerList[i]['labelSize'] = printSize;
           if(direction != null) printerList[i]['direction'] = direction;
           if(option != null) printerList[i]['option'] = option ?? false;
           if (type == 10 && !(isOff ?? true)) {

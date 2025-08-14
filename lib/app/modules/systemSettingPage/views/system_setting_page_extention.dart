@@ -257,7 +257,8 @@ extension SystemSettingPageExtension on SystemSettingPageView {
   _printerSettingWidget(Map printerItem) {
     final type = printerItem['type'] ?? 0; // 打印机类型
     final receipt = printerItem['receipt'] ?? 0; // 打印机类型 0 小票 1 标签
-    final labelWidth = printerItem['labelWidth'] ?? 0; // 标签宽度
+    final labelSize = printerItem['labelSize'] ?? '300x225'; // 标签宽度
+    final labelWidth = int.parse(labelSize.split('x')[0] ?? "40"); // 标签宽度
     final continuous = printerItem['continuous'] ?? 0; // 连续打印 0 单票 1 连票
     final isOff = printerItem['isOff'] ?? false; // 是否开启打印机
     final printIp = printerItem['printIp'] ?? ""; // 打印机IP
@@ -371,7 +372,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                               ),
                             ),
                           ),
-                          _setLabelPrintSize(type, receipt, labelWidth), //第二台打印机
+                          _setLabelPrintSize(type, receipt, labelSize), //第二台打印机
 
                         ]
                     ),
@@ -731,53 +732,66 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     );
   }
 
-  _setLabelPrintSize(int type, int receipt, int width) {
+  _setLabelPrintSize(int type, int receipt, String size) {
 
-    final _labelPrintSize = { "60x30":460, "50x30":384, "40x30":300,
-                              // "60x40":460, "50x40":384, "40x40":300,
-                              // "60x50":460, "50x50":384, "40x50":300
+    final _labelPrintSize = { "60x30":"460x225", "50x30":"384x225", "40x30":"300x225",
+                              "60x40":"460x300", "50x40":"384x300", "40x40":"300x300",
+                              "60x50":"460x375", "50x50":"384x375", "40x50":"300x375"
     };
+    //size 是 value 找到对应的 key
+    String? labelSizeKey = _labelPrintSize.keys.firstWhere(
+      (key) => _labelPrintSize[key] == size,
+      orElse: () => "40x30" // 默认值
+    );
 
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
-      child: Wrap(
-        spacing: ScreenAdapter.width(15), // 主轴(水平)方向间距
-        children: _labelPrintSize.keys.map((e) {
-          int labelWidth = _labelPrintSize[e] ?? 0;
-          return InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              controller.updatePrinterInfo(type, receipt, printWidth: labelWidth);
+      child:
+      Container(
+        alignment: Alignment.centerLeft,
+        child: Container(
+          width: 200,
+          child: DropdownButtonFormField<String>(
+            value: labelSizeKey,
+            onChanged: (String? newValue) {
+              final printSize = _labelPrintSize[newValue] ?? "300x225";
+              controller.updatePrinterInfo(type, receipt, printSize: printSize);
             },
-            child: Container(
-              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(140),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (width == labelWidth) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],//
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("$e",
-                  style: TextStyle(
+            items: _labelPrintSize.keys.map<DropdownMenuItem<String>>((String key) {
+              return DropdownMenuItem<String>(
+                value: key,
+                child: Text(
+                    key,
+                    style: TextStyle(
+                      color: labelSizeKey == key ? ColorsUtil.hexToColor("#409eff") : Colors.black,
                     fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (width == labelWidth) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
+                    fontWeight: FontWeight.w600,
+                    fontSize: ScreenAdapter.fontSize(20.0),
+                  ),
+                ),
+              );
+            }).toList(),
+            decoration: InputDecoration(
+              contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.grey, width: 1),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide(color: Colors.blue, width: 2),
               ),
             ),
-          );
-        }).toList(),
-      ),
+            icon: Icon(Icons.arrow_drop_down),
+            iconSize: 24,
+            isExpanded: true,
+          ),
+        ),
+      )
     );
   }
 
