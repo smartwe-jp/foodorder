@@ -78,10 +78,10 @@
 @import path_provider_foundation;
 #endif
 
-#if __has_include(<paycube_old/PaycubePlugin.h>)
-#import <paycube_old/PaycubePlugin.h>
+#if __has_include(<paycube/PaycubePlugin.h>)
+#import <paycube/PaycubePlugin.h>
 #else
-@import paycube_old;
+@import paycube;
 #endif
 
 #if __has_include(<permission_handler_apple/PermissionHandlerPlugin.h>)
