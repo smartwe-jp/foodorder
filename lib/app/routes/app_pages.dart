@@ -34,6 +34,7 @@ import '../modules/settingbackTransit/views/settingback_transit_view.dart';
 import '../modules/settlement/bindings/settlement_binding.dart';
 import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
+import '../modules/systemSettingPage/views/system_setting_page.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
 
 part 'app_routes.dart';
@@ -111,6 +112,11 @@ class AppPages {
     GetPage(
       name: _Paths.SYSTEM_SETTING_PAGE,
       page: () => SystemSettingPageView(),
+      binding: SystemSettingPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SYSTEM_SETTING_PAGE_NEW,
+      page: () => SystemSettingPage(),
       binding: SystemSettingPageBinding(),
     ),
     GetPage(

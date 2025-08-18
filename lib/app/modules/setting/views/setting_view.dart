@@ -10,6 +10,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/ScreenAdapter.dart';
 import 'package:foodorder/app/common//Extension/StringExtension.dart';
+import '../../systemSettingPage/views/system_setting_page.dart';
 import '../controllers/setting_controller.dart';
 import 'CashSettingView.dart';
 
@@ -757,12 +758,13 @@ class SettingView extends GetView<SettingController> {
 
                         InkWell(
                           onTap: () async {
-                           final result = await Get.toNamed('/system-setting-page',
-                                arguments: {"machineCode": controller.machineCode.value},
-                            );
-                           if (result != null) {
-                             controller.getSystemSettingInfo();
-                           }
+                            Get.toNamed(Routes.SYSTEM_SETTING_PAGE_NEW);
+                           // final result = await Get.toNamed('/system-setting-page',
+                           //      arguments: {"machineCode": controller.machineCode.value},
+                           //  );
+                           //  if (result != null) {
+                           //   controller.getSystemSettingInfo();
+                           // }
 
                           },
                           child: Container(
