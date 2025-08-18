@@ -36,6 +36,7 @@ import '../modules/settingbackTransit/views/settingback_transit_view.dart';
 import '../modules/settlement/bindings/settlement_binding.dart';
 import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
+import '../modules/systemSettingPage/views/system_setting_page.dart';
 import '../modules/systemSettingPage/views/system_setting_page_view.dart';
 import '../modules/OrderHome/views/opos_apg.dart';
 import '../modules/WATextPage/views/windows_test_view.dart';
@@ -136,6 +137,11 @@ class AppPages {
     GetPage(
       name: _Paths.SYSTEM_SETTING_PAGE,
       page: () => SystemSettingPageView(),
+      binding: SystemSettingPageBinding(),
+    ),
+    GetPage(
+      name: _Paths.SYSTEM_SETTING_PAGE_NEW,
+      page: () => SystemSettingPage(),
       binding: SystemSettingPageBinding(),
     ),
     GetPage(

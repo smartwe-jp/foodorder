@@ -9,6 +9,7 @@ import 'package:foodorder/app/config/http_conf.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:open_file/open_file.dart';
@@ -46,10 +47,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
   AppConfig appConfig = Get.find();
   PrintService printService = Get.find<PrintService>();
   SseService sseService = Get.find<SseService>();
+  MachineInfoController machineInfo = Get.find<MachineInfoController>();
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
-  RxString machineCode = "".obs;
+  //RxString machineCode = "".obs;
 
   RxString dining_type = "1".obs; //1 堂食  2 外袋  3 两种都可
   RxBool dining_type_one = false.obs; //false无堂食 true 堂食
@@ -143,8 +145,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    debugPrint("SystemSettingPageController init");
-    machineCode.value = Get.arguments['machineCode'];
+    //machineCode.value = Get.arguments['machineCode'];
     _getPackageInfo();
 
     super.onInit();
@@ -347,8 +348,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       //如果没有SSE设置，则添加默认设置
       sseSettingList.add({
         'name': 'SmartWe SSE',
-        'server': 'sseSubscribeSmartWe', //servicePath[
-        'identify': '',
+        'server': 'sseSubscribeSmartWe',//servicePath[
+        'identify': machineInfo.machineCode,
         'isOn': false,
         'needCenterPrint': true,
         'centerOn': false,
@@ -428,7 +429,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
                   " identify: $identify isOn: $isOn");
               //如果开启了SSE连接，则添加监听
               
-              final sseAddress = domain + (needInput ? (identify ?? ''):machineCode.value);
+              final sseAddress = domain + (needInput ? (identify ?? ''):machineInfo.machineCode);
               isOn
                   ? sseService.addSseListen(sseAddress)
                   : sseService.disconnect(sseAddress);
@@ -1300,7 +1301,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     var logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
 
     FormData formData = FormData.fromMap({
-      "machineCode": machineCode.value,
+      "machineCode": machineInfo.machineCode,
       "file": await MultipartFile.fromFile(logfile),
     });
 
