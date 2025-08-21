@@ -96,7 +96,7 @@ class SelfservicePageView extends GetView {
               color: Colors.blueGrey[100],
               size: 120,
             ),
-            title: 'settlement_button'.localized(),
+            title: 'settlement_button'.tr,
             selected: false,
             onTap: ()=>controller.goSelfCheckout(),
           ),
@@ -114,7 +114,7 @@ class SelfservicePageView extends GetView {
               color: Colors.blueGrey[100],
               size: 120,
             ),
-            title: 'menu_dingtype_takeout'.localized(),
+            title: 'menu_dingtype_takeout'.tr,
             selected: false,
             onTap: ()=>controller.goMenu(controller.selectLanguage, true),
           ),
@@ -142,7 +142,7 @@ class SelfservicePageView extends GetView {
             borderRadius: BorderRadius.circular(10),
           ),
           child: Text(
-            'settlement_button'.localized(),
+            'settlement_button'.tr,
             maxLines: 2,
             textAlign: TextAlign.center,
             overflow: TextOverflow.ellipsis,
@@ -222,7 +222,7 @@ class SelfservicePageView extends GetView {
                     child: Column(
                       children: [
                         Text(
-                          'menu_dingtype_title'.localized(),
+                          'menu_dingtype_title'.tr,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                           style: TextStyle(
@@ -241,7 +241,7 @@ class SelfservicePageView extends GetView {
                         ),
                         if (controller.machineInfo.diningType == "3")
                           Text(
-                            'menu_ding_type_tips'.localized(),
+                            'menu_ding_type_tips'.tr,
                             maxLines: 2,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(

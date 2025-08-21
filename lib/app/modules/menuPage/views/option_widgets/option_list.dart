@@ -91,11 +91,11 @@ class _OptionListWidgetState extends State<OptionListWidget> {
     }
 
     if (addedOptions.length > _optionSelectMaxNum && isAdd) {
-      final showTag = "menu_option_more_multipleState".localized();
+      final showTag = "menu_option_more_multipleState".tr;
       Get.dialog(
           DialogUtils.alertOneButton("${showTag.replaceAll("%%", widget.title)}",
-              title: GString.getToString(widget.languageKey, "tag_title"),
-              confirmtitle: GString.getToString(widget.languageKey,"tag_button_yes"),
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
               })

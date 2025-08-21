@@ -501,16 +501,14 @@ class SettlementController extends GetxController with StateMixin {
     var showDialogContent;
 
     if (checknum == 1) {
-      showDialogContent = GString.getToString(
-          checkLanguage.value, "settlement_scancodenoopen_error");
+      showDialogContent = "settlement_scancodenoopen_error".tr;
     } else if (checknum == 2) {
-      showDialogContent = GString.getToString(
-          checkLanguage.value, "settlement_scancodenochange_error");
+      showDialogContent = "settlement_scancodenochange_error".tr;
     } else if (checknum == 3) {
       if(showContent != null && showContent!=""){
         showDialogContent = showContent;
       }else{
-        showDialogContent = GString.getToString(checkLanguage.value, "settlement_nopayment_error");
+        showDialogContent = "settlement_nopayment_error".tr;
       }
 
     }
@@ -518,8 +516,8 @@ class SettlementController extends GetxController with StateMixin {
 
     Get.dialog(
         DialogUtils.alertOneButton(showDialogContent,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
               if(payType == "pos"){
@@ -604,9 +602,7 @@ class SettlementController extends GetxController with StateMixin {
       update();
       Get.dialog(
           barrierDismissible: false,
-          DialogUtils.alertOneButton(
-              GString.getToString(
-                  checkLanguage.value, "cash_pay_checkout_tips"), confirm: () {
+          DialogUtils.alertOneButton("cash_pay_checkout_tips".tr, confirm: () {
             Get.back();
           }));
     } else {
@@ -638,14 +634,13 @@ class SettlementController extends GetxController with StateMixin {
     scanQrCodeFocusNode.requestFocus();
 
 
-    var showDialogContent =
-    GString.getToString(checkLanguage.value, "settlement_nopayment_error");
+    var showDialogContent = "settlement_nopayment_error".tr;
 
 
     Get.dialog(
         DialogUtils.alertOneButton(showDialogContent,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
             })
@@ -728,8 +723,7 @@ class SettlementController extends GetxController with StateMixin {
           posManager.resetState();
           _showScanCodeNoOpenDialog(
               3,
-              GString.getToString(
-                  checkLanguage.value, "settlement_posPay_connect_error"),
+              "settlement_posPay_connect_error".tr,
               payType: "pos");
         });
   }
@@ -781,12 +775,12 @@ class SettlementController extends GetxController with StateMixin {
         }
 
       } else {
-        _showScanCodeNoOpenDialog(3,GString.getToString(checkLanguage.value, "settlement_scancodenochange_error"));
+        _showScanCodeNoOpenDialog(3,"settlement_scancodenochange_error".tr);
       }
 
     }).onError((error, stackTrace) {
       debugPrint('_getPaymentPosData : $error');
-      commonErrorAlert(GString.getToString(checkLanguage.value, "network_error_tips"));
+      commonErrorAlert("network_error_tips".tr);
     });
 
   }
@@ -807,10 +801,10 @@ class SettlementController extends GetxController with StateMixin {
 
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
-          DialogUtils.alert(GString.getToString(checkLanguage.value, "settlement_back_alertcontent"),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              canceltitle: GString.getToString(checkLanguage.value, "tag_button_no"),
-              confirmtitle: GString.getToString(checkLanguage.value, "tag_button_yes"),
+          DialogUtils.alert("settlement_back_alertcontent".tr,
+              title: "tag_title".tr,
+              canceltitle: "tag_button_no".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
                 //socketPosCancel.value = true;
@@ -842,7 +836,7 @@ class SettlementController extends GetxController with StateMixin {
         });
       }
     }).onError((error, stackTrace) {
-      commonErrorAlert(GString.getToString(checkLanguage.value, "network_error_tips"));
+      commonErrorAlert("network_error_tips".tr);
     });
   }
 //刷卡机nfc支付汇报
@@ -870,7 +864,7 @@ class SettlementController extends GetxController with StateMixin {
         FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
           "machineCode": machineInfo.machineCode,
         });
-        _checkOutErrorHandle('pos_report_error_tips'.localized());
+        _checkOutErrorHandle('pos_report_error_tips'.tr);
       }
     }).timeout(Duration(seconds: 30), onTimeout: () {
       //TODO 默认重试3次
@@ -882,7 +876,7 @@ class SettlementController extends GetxController with StateMixin {
         FirebaseAnalytics.instance.logEvent(name: "settlement_report_error",parameters: {
           "machineCode": machineInfo.machineCode,
         });
-        _checkOutErrorHandle('pos_report_error_tips'.localized());
+        _checkOutErrorHandle('pos_report_error_tips'.tr);
       }
     });
 
@@ -1018,8 +1012,7 @@ class SettlementController extends GetxController with StateMixin {
           if (times < 3) {
             doPrintOrderMenu(printType, times: times + 1);
           } else {
-            _checkOutErrorHandle(GString.getToString(
-                checkLanguage.value, "tag_print_content_paper_error"));
+            _checkOutErrorHandle("tag_print_content_paper_error".tr);
           }
         }
       })
@@ -1037,18 +1030,16 @@ class SettlementController extends GetxController with StateMixin {
       EasyLoading.dismiss();
       var showDialogContent = "";
       if (printStatus == "7") {
-        showDialogContent = GString.getToString(
-            checkLanguage.value, "tag_print_content_paper_shortage");
+        showDialogContent = "tag_print_content_paper_shortage".tr;
       } else {
-        showDialogContent = GString.getToString(
-            checkLanguage.value, "tag_print_content_paper_error");
+        showDialogContent = "tag_print_content_paper_error".tr;
       }
       //小票状态
       Get.dialog(
           DialogUtils.alert(showDialogContent,
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              canceltitle: GString.getToString(checkLanguage.value,"tag_print_button_no"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_print_button_yes"),
+              title: "tag_title".tr,
+              canceltitle: "tag_print_button_no".tr,
+              confirmtitle: "tag_print_button_yes".tr,
               confirm: () {
                 Get.back();
                 doPrintOrderMenu(printType);
@@ -1070,9 +1061,9 @@ class SettlementController extends GetxController with StateMixin {
     EasyLoading.dismiss();
     if (times > 2) {
       Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".localized(),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+          DialogUtils.alertOneButton("order_network_error".tr,
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
                 commonCancel();
@@ -1085,9 +1076,9 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     Get.dialog(
-        DialogUtils.alert("settlement_order_error".localized(),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+        DialogUtils.alert("settlement_order_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () async {
               Get.back();
               showEasyLoading();
@@ -1128,9 +1119,9 @@ class SettlementController extends GetxController with StateMixin {
     EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alert(showDialogContent,
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            canceltitle: GString.getToString(checkLanguage.value,"cancel_order"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+            title: "tag_title".tr,
+            canceltitle: "cancel_order".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
               commonCancel();
@@ -1150,7 +1141,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _sendEmailAndPlayVoice() async {
-    showToast(GString.getToString(checkLanguage.value,"error_tips_thanks"));
+    showToast("error_tips_thanks".tr);
     AssetsAudioPlayer.newPlayer().open(
       Audio("assets/audios/12248.wav"),
       autoStart: true,
@@ -1390,7 +1381,7 @@ class SettlementController extends GetxController with StateMixin {
     EasyLoading.dismiss();
     Get.dialog(
         DialogUtils.alertOneButton(
-            'tag_cash_error'.localized(),
+            'tag_cash_error'.tr,
             confirm: () {
               Get.back();
               gotonewBack();

@@ -264,8 +264,8 @@ class EditPageLogic extends GetxController with StateMixin {
         if (myList.length == 0 || "" == myList) {
           //showToast("少々お待ちください");
           Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
-              title: GString.getToString("JP", "tag_title"),
-              confirmtitle: GString.getToString("JP", "tag_button_yes"),
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
               }));
@@ -288,8 +288,8 @@ class EditPageLogic extends GetxController with StateMixin {
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
-            title: GString.getToString("JP", "tag_title"),
-            confirmtitle: GString.getToString("JP", "tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
             }));
@@ -340,8 +340,8 @@ class EditPageLogic extends GetxController with StateMixin {
         if (myList.length == 0 || "" == myList) {
           //showToast("少々お待ちください");
           Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
-              title: GString.getToString('JP', "tag_title"),
-              confirmtitle: GString.getToString('JP', "tag_button_yes"),
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
               }));
@@ -354,8 +354,8 @@ class EditPageLogic extends GetxController with StateMixin {
       } else {
         //showToast(response['msg']);
         Get.dialog(DialogUtils.alertOneButton(response['msg'],
-            title: GString.getToString('JP', "tag_title"),
-            confirmtitle: GString.getToString('JP', "tag_button_yes"),
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
             }));

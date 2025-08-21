@@ -16,14 +16,14 @@ class checkStatusView extends GetView<OrderHomeController> {
       return SimpleDialog(
         //机器状态检查
         title: Text(
-          'status_check'.localized(),
+          'status_check'.tr,
           style: TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
         ),
         contentPadding: const EdgeInsets.all(20),
         children: [
           if (!controller.allAreReady.value)
             Text(
-              'status_check_tips'.localized(),
+              'status_check_tips'.tr,
               style: TextStyle(fontSize: 16),
             ),
           const SizedBox(height: 20),
@@ -54,7 +54,7 @@ class checkStatusView extends GetView<OrderHomeController> {
                   onPressed: () {
                     controller.checkPrinterStatus();
                   },
-                  child: Text('retry_button'.localized()),
+                  child: Text('retry_button'.tr),
                 )),
                 SizedBox(width: 20),
                 Expanded(
@@ -63,7 +63,7 @@ class checkStatusView extends GetView<OrderHomeController> {
                     onPressed: () {
                       Get.back();
                     },
-                    child: Text('tag_button_yes'.localized()),
+                    child: Text('tag_button_yes'.tr),
                   ),
                 )
               ],
@@ -98,8 +98,7 @@ class checkStatusView extends GetView<OrderHomeController> {
                   )),
               subtitle:
               Text(
-                '${isOpen ? "status_on".localized() : "status_off"
-                    .localized()}',
+                '${isOpen ? "status_on".tr : "status_off".tr}',
                 style: TextStyle(
                   color: isOpen ? Colors.black : Colors.grey,
                 ),
@@ -122,7 +121,7 @@ class checkStatusView extends GetView<OrderHomeController> {
                     "machineCode": controller.machineInfo.machineCode
                   });
                 },
-                child: Text('go_setting'.localized()),
+                child: Text('go_setting'.tr),
 
               ) : Icon(
                 Icons.timelapse_rounded,

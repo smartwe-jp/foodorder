@@ -105,7 +105,7 @@ extension CheckoutButton on MenuPageView {
                             width: ScreenAdapter.width(20),
                           ),
                           if (controller.showCartTotalGoodsNum.value > 0)
-                            Text("tag_amount".localized(),
+                            Text("tag_amount".tr,
                                 style: TextStyle(
                                   fontSize: 24,
                                   fontFamily: GFont.getFontFamily(),
@@ -134,7 +134,7 @@ extension CheckoutButton on MenuPageView {
                                         color: Colors.white,
                                       ),),
                                       TextSpan(
-                                        text: "（${controller.machineInfo.taxSystem ? "show_price_front".localized() : "tax_out".localized()}）",
+                                        text: "（${controller.machineInfo.taxSystem ? "show_price_front".tr : "tax_out".tr}）",
                                         style: TextStyle(
                                           fontSize: 24,
                                           fontFamily: GFont.getFontFamily(),
@@ -190,7 +190,7 @@ extension CheckoutButton on MenuPageView {
                         // padding: EdgeInsets.only(
                         //     left: ScreenAdapter.width(30),
                         //     right: ScreenAdapter.width(30)),
-                        child: Text("tag_checkout".localized(),
+                        child: Text("tag_checkout".tr,
                             style: TextStyle(
                                 fontSize: 48,
                                 color: Colors.white,
@@ -209,10 +209,9 @@ extension CheckoutButton on MenuPageView {
   }
 
   _showEmptyTips() {
-    Get.dialog(DialogUtils.alertOneButton(GString.getToString(controller.checkLanguage.value, "show_empty_cart_item_title"),
-        title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-        confirmtitle: GString.getToString(
-            controller.checkLanguage.value, "show_del_cart_item_yes"),
+    Get.dialog(DialogUtils.alertOneButton("show_empty_cart_item_title".tr,
+        title: "tag_title".tr,
+        confirmtitle: "show_del_cart_item_yes".tr,
         confirm: () {
           Get.back();
         }));

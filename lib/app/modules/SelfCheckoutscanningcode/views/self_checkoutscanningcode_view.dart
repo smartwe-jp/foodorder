@@ -22,10 +22,10 @@ class SelfCheckoutscanningcodeView
   //清空购物车弹出提示、
   showDialogTag(menuId,index) {
     Get.dialog(
-        DialogUtils.alert(GString.getToString(controller.checkLanguage.value, "show_del_cart_item_tag"),
-            title: GString.getToString(controller.checkLanguage.value, "tag_title"),
-            canceltitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_no"),
-            confirmtitle: GString.getToString(controller.checkLanguage.value,"show_del_cart_item_yes"),
+        DialogUtils.alert("show_del_cart_item_tag".tr,
+            title: "tag_title".tr,
+            canceltitle: "show_del_cart_item_no".tr,
+            confirmtitle: "show_del_cart_item_yes".tr,
             confirm: () {
               //widget.confirmCallback('确定');
               controller.ordersqlcontroller.removeFromCart(menuId ?? 0);
@@ -419,7 +419,7 @@ class SelfCheckoutscanningcodeView
                         height: ScreenAdapter.height(90),
 
                         child: Text(
-                          "  ${controller.showCartTotalGoodsNum.value.toString()}  ${GString.getToString(controller.checkLanguage.value, "show_selectPay_point")}",
+                          "  ${controller.showCartTotalGoodsNum.value.toString()}  ${"show_selectPay_point".tr}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                               color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -442,7 +442,7 @@ class SelfCheckoutscanningcodeView
 
                                   alignment: Alignment.centerRight,
                                   child: Text(
-                                    "${GString.getToString(controller.checkLanguage.value, "settlement_total_price")}",
+                                    "${"settlement_total_price".tr}",
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                         color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
@@ -481,7 +481,7 @@ class SelfCheckoutscanningcodeView
                                               ),
                                               TextSpan(
                                                 text:
-                                                "(${GString.getToString(controller.checkLanguage.value, "show_price_front")})", //" 円",
+                                                "(${"show_price_front".tr})", //" 円",
                                                 style: TextStyle(
                                                   fontFamily: GFont.getFontFamily(),
                                                   fontSize: ScreenAdapter.fontSize(
@@ -529,8 +529,7 @@ class SelfCheckoutscanningcodeView
                             //设置圆角
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
-                          child: Text(
-                            GString.getToString(controller.checkLanguage.value, "settlement_back"),
+                          child: Text("settlement_back".tr,
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontFamily: GFont.getFontFamily(),
@@ -614,9 +613,7 @@ class SelfCheckoutscanningcodeView
                                   //设置圆角
                                   borderRadius: new BorderRadius.circular((5.0)),
                                 ),
-                                child: Text(
-                                    GString.getToString(controller.checkLanguage.value,
-                                        "settlement_button"),
+                                child: Text("settlement_button".tr,
                                     style: TextStyle(
                                       fontSize: ScreenAdapter.fontSize(48),
                                       fontFamily: GFont.getFontFamily(),

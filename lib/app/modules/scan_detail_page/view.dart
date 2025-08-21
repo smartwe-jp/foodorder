@@ -55,9 +55,7 @@ class ScanDetailPagePage extends StatelessWidget {
                       SizedBox(
                         width: ScreenAdapter.width(20),
                       ),
-                      Text(
-                        GString.getToString(
-                            checkoutLogic.selectLanguage, "scan_order_detail_title"),
+                      Text("scan_order_detail_title".tr,
                         style: TextStyle(
                           //color: ColorsUtil.hexToColor("#FFFFFF"),
                             fontWeight: FontWeight.w600,
@@ -128,9 +126,7 @@ class ScanDetailPagePage extends StatelessWidget {
                             //设置圆角
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
-                          child: Text(
-                            GString.getToString(
-                                checkoutLogic.selectLanguage, "settlement_back"),
+                          child: Text("settlement_back".tr,
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#000000"),
                                 fontWeight: FontWeight.w500,
@@ -155,9 +151,7 @@ class ScanDetailPagePage extends StatelessWidget {
                             //设置圆角
                             borderRadius: new BorderRadius.circular((5.0)),
                           ),
-                          child: Text(
-                            GString.getToString(
-                                checkoutLogic.selectLanguage, "settlement_button"),
+                          child: Text("settlement_button".tr,
                             style: TextStyle(
                                 color: ColorsUtil.hexToColor("#FFFFFF"),
                                 fontWeight: FontWeight.w500,
@@ -193,7 +187,7 @@ class ScanDetailPagePage extends StatelessWidget {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(GString.getToString(checkoutLogic.selectLanguage, "show_check_tableno"),
+            Text("show_check_tableno".tr,
                 style: TextStyle(
                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
@@ -245,7 +239,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("settlement_original_price".localized(),
+                      Text("settlement_original_price".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
                               fontWeight: FontWeight.w600,
@@ -273,7 +267,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("settlement_discount".localized(),
+                      Text("settlement_discount".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
                               fontWeight: FontWeight.w600,
@@ -300,7 +294,7 @@ class ScanDetailPagePage extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Text(
-                          "settlement_total_price".localized(),
+                          "settlement_total_price".tr,
                           style: TextStyle(
                             //color: ColorsUtil.hexToColor("#FFFFFF"),
                               fontWeight: FontWeight.w600,
@@ -334,7 +328,7 @@ class ScanDetailPagePage extends StatelessWidget {
                               ),
                               TextSpan(
                                 text:
-                                "(${"show_price_front".localized()})", //" 円",
+                                "(${"show_price_front".tr})", //" 円",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menusettlementBottomPriceRight),

@@ -185,8 +185,8 @@ class MenuPageController extends GetxController with StateMixin {
           //showToast("少々お待ちください");
           Get.dialog(
               DialogUtils.alertOneButton("少々お待ちください",
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  title: "tag_title".tr,
+                  confirmtitle: "tag_button_yes".tr,
                   confirm: () {
                     Get.back();
                   })
@@ -228,8 +228,8 @@ class MenuPageController extends GetxController with StateMixin {
         //showToast(response['msg']);
         Get.dialog(
             DialogUtils.alertOneButton(response['msg'],
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })
@@ -307,8 +307,8 @@ class MenuPageController extends GetxController with StateMixin {
           //showToast("少々お待ちください");
           Get.dialog(
               DialogUtils.alertOneButton("少々お待ちください",
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  title: "tag_title".tr,
+                  confirmtitle: "tag_button_yes".tr,
                   confirm: () {
                     Get.back();
                   })
@@ -376,8 +376,8 @@ class MenuPageController extends GetxController with StateMixin {
         //showToast(response['msg']);
         Get.dialog(
             DialogUtils.alertOneButton(response['msg'],
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })
@@ -439,13 +439,10 @@ class MenuPageController extends GetxController with StateMixin {
       "qtyBounds": d.qtyBounds
     };
     if (d.goodsNum <= 1 && isAdd == false) {
-      Get.dialog(DialogUtils.alert(
-          GString.getToString(checkLanguage.value, "show_del_cart_item_tag"),
-          title: GString.getToString(checkLanguage.value, "tag_title"),
-          canceltitle:
-          GString.getToString(checkLanguage.value, "show_del_cart_item_no"),
-          confirmtitle: GString.getToString(
-              checkLanguage.value, "show_del_cart_item_yes"), confirm: () {
+      Get.dialog(DialogUtils.alert("show_del_cart_item_tag".tr,
+          title: "tag_title".tr,
+          canceltitle:"show_del_cart_item_no".tr,
+          confirmtitle: "show_del_cart_item_yes".tr, confirm: () {
         //widget.confirmCallback('确定');
         ordersqlcontroller.removeFromCart(d.id ?? 0);
         //print("Item removed from cart successfully");
@@ -505,7 +502,7 @@ class MenuPageController extends GetxController with StateMixin {
             //color: Colors.red,
             child: RichText(
               text: TextSpan(
-                  text: "${GString.getToString(checkLanguage.value, "show_original_price_front")}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                  text: "${"show_original_price_front".tr}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(priceFontSize)/2.2,
                     fontWeight: FontWeight.w500,
@@ -586,7 +583,7 @@ class MenuPageController extends GetxController with StateMixin {
                     ),
                   ),
                   TextSpan(
-                    text: "（${GString.getToString(checkLanguage.value, "show_price_front")}）",
+                    text: "（${"show_price_front".tr}）",
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(priceFontSize)/2.5,
@@ -658,7 +655,7 @@ class MenuPageController extends GetxController with StateMixin {
       );
 
     } else if(bounds > 0){
-      var showString = GString.getToString(checkLanguage.value, "show_product_restrictions").replaceAll('%%', bounds.toString());
+      var showString = "show_product_restrictions".tr.replaceAll('%%', bounds.toString());
       return Positioned(
         right: ScreenAdapter.width(10),
         top: ScreenAdapter.height(10),
@@ -698,12 +695,12 @@ class MenuPageController extends GetxController with StateMixin {
     if(cartItem['qtyBounds'] >0){
       var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
       if(checkresult>=cartItem['qtyBounds']){
-        var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
+        var showString = "show_storage_num_error".tr;
         //showToast("${showString}");
         Get.dialog(
             DialogUtils.alertOneButton(showString,
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })
@@ -761,12 +758,12 @@ class MenuPageController extends GetxController with StateMixin {
         if(cartItem['qtyBounds'] >0){
           var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
           if(checkresult>=cartItem['qtyBounds']){
-            var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
+            var showString = "show_storage_num_error".tr;
             //showToast("${showString}");
             Get.dialog(
                 DialogUtils.alertOneButton(showString,
-                    title: GString.getToString(checkLanguage.value, "tag_title"),
-                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    title: "tag_title".tr,
+                    confirmtitle: "tag_button_yes".tr,
                     confirm: () {
                       Get.back();
                     })
@@ -851,12 +848,12 @@ print("加1了");
           }
 
           if(current_option_checked >=int.parse(attr[i]["multipleState"])){
-            var showTag = GString.getToString(checkLanguage.value, "menu_option_more_multipleState");
+            var showTag = "menu_option_more_multipleState".tr;
             //showToast("${showTag.replaceAll("%%", attr[i]["multipleState"])}");
             Get.dialog(
                 DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["multipleState"])}",
-                    title: GString.getToString(checkLanguage.value, "tag_title"),
-                    confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                    title: "tag_title".tr,
+                    confirmtitle: "tag_button_yes".tr,
                     confirm: () {
                       Get.back();
                     })
@@ -931,12 +928,12 @@ print("加1了");
     var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
 
     if(result>=item['qtyBounds']){
-      var showString = GString.getToString(checkLanguage.value,"show_storage_num_error");
+      var showString = "show_storage_num_error".tr;
       //showToast("${showString}");
       Get.dialog(
           DialogUtils.alertOneButton(showString,
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
               })
@@ -1092,7 +1089,7 @@ print("加1了");
 
 
   _showOrderEasyLoading(){
-    var _showTag =Text(GString.getToString(checkLanguage.value, "settlement_noprint_tag"),
+    var _showTag =Text("settlement_noprint_tag".tr,
         style: TextStyle(
           fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(25),
@@ -1201,8 +1198,8 @@ print("加1了");
           //showToast(response['data']["message"]);
           Get.dialog(
               DialogUtils.alertOneButton(response['data']["message"],
-                  title: GString.getToString(checkLanguage.value, "tag_title"),
-                  confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                  title: "tag_title".tr,
+                  confirmtitle: "tag_button_yes".tr,
                   confirm: () {
                     Get.back();
                   })
@@ -1224,9 +1221,10 @@ print("加1了");
     EasyLoading.dismiss();
     if (times > 2) {
       Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".localized(),
-              title: GString.getToString(checkLanguage.value, "tag_title"),
-              confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+          DialogUtils.alertOneButton(
+              "order_network_error".tr,
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr,
               confirm: () {
                 Get.back();
                 FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
@@ -1238,9 +1236,10 @@ print("加1了");
     }
 
     Get.dialog(
-        DialogUtils.alert("show_order_error".localized(),
-            title: GString.getToString(checkLanguage.value, "tag_title"),
-            confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+        DialogUtils.alert(
+            "show_order_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
               doSubmitOrder(times: times + 1);
@@ -1311,8 +1310,8 @@ print("加1了");
         //showToast(response['data']["message"]);
         Get.dialog(
             DialogUtils.alertOneButton(response['data']["message"],
-                title: GString.getToString(checkLanguage.value, "tag_title"),
-                confirmtitle: GString.getToString(checkLanguage.value,"tag_button_yes"),
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr,
                 confirm: () {
                   Get.back();
                 })

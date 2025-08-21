@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_plugin_msprinter/flutter_plugin_msprinter.dart';
 import 'package:foodorder/app/config/font.dart';
+import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
 
@@ -141,7 +142,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
                             child: Text(
-                                "${GString.getToString(this._checkLanguage,"tag_button_no")}",
+                                "${"tag_button_no".tr}",
                               style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                   color: Colors.white,
@@ -166,7 +167,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               borderRadius: new BorderRadius.circular((16.0)),
                             ),
                             child: Text(
-                              "${GString.getToString(this._checkLanguage,"tag_button_yes")}",
+                              "${"tag_button_yes".tr}",
                               style: TextStyle(
                                 fontFamily: GFont.getFontFamily(),
                                   color: Colors.white,
@@ -413,9 +414,9 @@ class _AppointmentPageState extends State<AppointmentPage> {
 
       var show_dialog_content = "";
       if(printStatus == "7"){
-        show_dialog_content = GString.getToString(this._checkLanguage, "tag_print_content_paper_shortage");
+        show_dialog_content = "tag_print_content_paper_shortage".tr;
       }else{
-        show_dialog_content = GString.getToString(this._checkLanguage, "tag_print_content_paper_error");
+        show_dialog_content = "tag_print_content_paper_error".tr;
       }
       //小票状态
       showDialog(
@@ -429,7 +430,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                   ),
                   title: Align(
                       alignment: Alignment.center,
-                      child:  Text(GString.getToString(this._checkLanguage, "tag_title"),style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
+                      child:  Text("tag_title".tr,style: TextStyle(fontFamily: GFont.getFontFamily(),fontSize: ScreenAdapter.fontSize(28),fontWeight: FontWeight.w600))
                   ),
                   children: <Widget>[
                     Container(
@@ -458,8 +459,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               Padding(
                                 padding: const EdgeInsets.only(left: 70.0),
                                 child: TextButton(
-                                  child: Text(
-                                    GString.getToString(this._checkLanguage, "tag_print_button_no"),
+                                  child: Text("tag_print_button_no".tr,
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                         color: Colors.lightBlue,
@@ -482,8 +482,7 @@ class _AppointmentPageState extends State<AppointmentPage> {
                               Padding(
                                 padding: const EdgeInsets.only(right: 70.0),
                                 child: TextButton(
-                                  child: Text(
-                                    GString.getToString(this._checkLanguage, "tag_print_button_yes"),
+                                  child: Text("tag_print_button_yes".tr,
                                     style: TextStyle(
                                       fontFamily: GFont.getFontFamily(),
                                         color: Colors.lightBlue,

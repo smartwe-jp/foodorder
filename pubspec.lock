@@ -376,6 +376,11 @@ packages:
       url: "git@github.com:Aaron51FX/flutter_http_sse.git"
     source: git
     version: "1.0.1"
+  flutter_localizations:
+    dependency: "direct main"
+    description: flutter
+    source: sdk
+    version: "0.0.0"
   flutter_plugin_msprinter:
     dependency: "direct main"
     description:
