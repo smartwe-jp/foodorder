@@ -687,23 +687,47 @@ class PrintService extends GetxService {
               ),
             ),
 
-            if (isCenterPrint)
+            if (isCenterPrint && remark.isNotEmpty)
             remarkTitle(remark),
 
             if (printQrCode != null && printQrCode.isNotEmpty)
-              Center(
-                child: Container(
-                    margin: EdgeInsets.symmetric(horizontal: 20),
-                    // width: 200.w,
-                    // height: 200.h,
-                    child: BarcodeWidget(
-                      height: 240,
-                      width: 240,
-                      barcode: Barcode.qrCode(),
-                      data: printQrCode,
-                    )
-                ),
+              Row(
+                spacing: 20,
+                children: [
+                  Expanded(
+                    flex: 3,
+                    child:
+                    Container(
+                      //margin: EdgeInsets.all(20),
+                      child: Text(
+                        "お会計について、QRコードを精算機にかざしていただき、お支払いくださいますようお願い申し上げます。\nご不明な点がございましたら、恐れ入りますがスタッフまでお声がけくださいませ。",
+                        //maxLines: 4,
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.normal,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                            //margin: EdgeInsets.all(20),
+                            // width: 200.w,
+                            // height: 200.h,
+                            child: BarcodeWidget(
+                              height: 200,
+                              width: 200,
+                              barcode: Barcode.qrCode(),
+                              data: printQrCode,
+                          )
+                      ),
+                    ),
+
+                ],
               ),
+
           ],
         ),
       ),
