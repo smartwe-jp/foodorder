@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/machine_info.dart';
 import '../views/widgets/grid_item_view.dart';
 
 extension MenuPageControllerExtension on MenuPageController {
@@ -95,24 +96,27 @@ extension MenuPageControllerExtension on MenuPageController {
     debugPrint("getCategoryMenu:${classTag.value}");
     Widget? menuWidget = null;
     var queryTakeout = "2";
-    //queryTakeout 0外卖 1都可 2店内
-    switch (machineInfo.diningType) {
-      case "1":
-        queryTakeout = "2";
-        break;
-      case "2":
-        queryTakeout = "0";
-        break;
-      case "3":
-        if (machineInfo.mealType == true) {
-          queryTakeout = "0";
-        } else {
-          queryTakeout = "2";
-        }
-        break;
-      default:
-        queryTakeout = "2";
+    if (machineInfo.currentMode == MachineMode.takeout) {
+      queryTakeout = "0";
     }
+    //queryTakeout 0外卖 1都可 2店内
+    // switch (machineInfo.diningType) {
+    //   case "1":
+    //     queryTakeout = "2";
+    //     break;
+    //   case "2":
+    //     queryTakeout = "0";
+    //     break;
+    //   case "3":
+    //     if (machineInfo.mealType == true) {
+    //       queryTakeout = "0";
+    //     } else {
+    //       queryTakeout = "2";
+    //     }
+    //     break;
+    //   default:
+    //     queryTakeout = "2";
+    // }
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
