@@ -64,6 +64,7 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     }
 
     HomeServices.updatePosSettingInfo(machineInfo.posSettingInfo);
+    machineInfo.updateMachineSettingInfo();
     update();
   }
 
@@ -84,6 +85,7 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     }
 
     HomeServices.updateWlanPanelPrintSettingInfo(machineInfo.screenCallSetting);
+    machineInfo.updateMachineSettingInfo();
     update();
 
   }
