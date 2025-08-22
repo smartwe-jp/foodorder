@@ -85,6 +85,7 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     }
 
     HomeServices.updateWlanPanelPrintSettingInfo(machineInfo.screenCallSetting);
+    machineInfo.updateMachineSettingInfo();
     update();
 
   }
