@@ -381,7 +381,7 @@ class TransitPageController extends GetxController {
       Get.put(MachineInfoController(systemSettingData), permanent: true);
       debugPrint('put MachineInfoController');
     } else {
-      await Get.find<MachineInfoController>().updateMachineSettingInfo(systemSettingData);
+      await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingData);
       debugPrint('update MachineInfoController');
     }
     // await Get.delete<MachineInfoController>();

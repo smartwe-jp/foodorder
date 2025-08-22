@@ -16,6 +16,7 @@ abstract class Routes {
   static const SETTING = _Paths.SETTING;
   static const MIDDLEWARE_SETTING_PAGE = _Paths.MIDDLEWARE_SETTING_PAGE;
   static const SYSTEM_SETTING_PAGE = _Paths.SYSTEM_SETTING_PAGE;
+  static const SYSTEM_SETTING_PAGE_NEW = _Paths.SYSTEM_SETTING_PAGE_NEW;
   static const SETTINGBACK_TRANSIT = _Paths.SETTINGBACK_TRANSIT;
   static const SELF_CHECKOUTSCANNINGCODE = _Paths.SELF_CHECKOUTSCANNINGCODE;
   static const REIMBURSE_ORDER = _Paths.REIMBURSE_ORDER;
@@ -47,4 +48,5 @@ abstract class _Paths {
   static const ERROR_PAGE = '/error_page';
   static const RECEIPT_QUERY = '/receipt_query';
   static const SETTING_EDIT_PAGE = '/setting_edit_page';
+  static const SYSTEM_SETTING_PAGE_NEW = '/system-setting-page-new';
 }

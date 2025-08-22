@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
@@ -42,6 +43,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   AppConfig appConfig = Get.find();
   PrintService printService = Get.find<PrintService>();
   SseService sseService = Get.find<SseService>();
+  final machineInfo = Get.find<MachineInfoController>();
   get payCube => appConfig.payCube;
 
   RxString local_version = "".obs; //本appversion
@@ -134,7 +136,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    machineCode.value = Get.arguments['machineCode'];
+    machineCode.value = machineInfo.machineCode;
     _getPackageInfo();
 
     super.onInit();
@@ -325,6 +327,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needCenterPrint': true,
         'centerOn': false,
         'needInput': false,
+        'printOption': true,
       });
       sseSettingList.add({
         'name': 'Panda SSE',
@@ -334,6 +337,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needCenterPrint': false,
         'centerOn': false,
         'needInput': true,
+        'printOption': true,
       });
       await HomeServices.setSSESettingList(sseSettingList);
     }
@@ -379,8 +383,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     );
   }
 
-
-  updateSSESetting(String name, {bool? isOn, String? identify, bool? centerOn}) async {
+  updateSSESetting(String name,
+      {bool? isOn, String? identify, bool? centerOn, bool? printOption}) async {
     if (sseSettingList.isNotEmpty) {
       for (var i = 0; i < sseSettingList.length; i++) {
         if (sseSettingList[i]['name'] == name) {
@@ -393,6 +397,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
           if (centerOn != null) {
             sseSettingList[i]['centerOn'] = centerOn;
+          }
+
+          if (printOption != null) {
+            sseSettingList[i]['printOption'] = printOption;
           }
           final needInput = sseSettingList[i]['needInput'] ?? false;
           if ((identify != null && identify.isNotEmpty) || !needInput) {
@@ -407,6 +415,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         }
       }
       await HomeServices.setSSESettingList(sseSettingList);
+      machineInfo.updateMachineSettingInfo();
     }
 
     update();
@@ -436,6 +445,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     });
     //存打印机列表
     HomeServices.setPrinterListInfo(printerList);
+    machineInfo.updateMachineSettingInfo();
     update();
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   _scrollToBottom();
@@ -446,6 +456,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     if (printerList.isNotEmpty) {
       printerList.removeWhere((item) => item['type'] == printer['type']);
       HomeServices.setPrinterListInfo(printerList);
+      machineInfo.updateMachineSettingInfo();
       update();
     }
   }
@@ -811,6 +822,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       }
       HomeServices.setPrinterListInfo(printerList);
     }
+    machineInfo.updateMachineSettingInfo();
     update();
   }
 
@@ -837,6 +849,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         }
       }
       HomeServices.setPrinterListInfo(printerList);
+      machineInfo.updateMachineSettingInfo();
     }
     update();
   }
@@ -1195,6 +1208,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     } else {
       print('Key $key does not exist in systemSettingData.');
     }
+    machineInfo.updateMachineSettingInfo(settingInfo: systemSettingData);
     update();
   }
 

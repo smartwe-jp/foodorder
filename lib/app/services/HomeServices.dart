@@ -252,6 +252,15 @@ class HomeServices{
     return printSettingInfo;
   }
 
+  static updateWlanPanelPrintSettingInfo(Map wlanPanelPrintSettingData) async {
+    Storage.setString(
+        'smartwe_wlanPanelPrintSetting', json.encode(wlanPanelPrintSettingData));
+  }
+
+  static updatePosSettingInfo(Map posSettingData) async {
+    Storage.setString('smartwe_posSetting', json.encode(posSettingData));
+  }
+
   //是否展示微信支付宝等
   static getMachineActivateData() async{
     Map machineActivateInfo;
