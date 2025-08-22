@@ -184,7 +184,7 @@ class MenuPageController extends GetxController with StateMixin {
     //   default:
     //     queryTakeout = "2";
     // }
-    
+
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
@@ -1347,10 +1347,12 @@ print("加1了");
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
-          shopCartTotalPrice.value = response['data']["total"].toString();
+          final total = response['data']["total"].toString();
           int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
+          int tax1 = response['data']["tax1"] ?? 0;
+          int tax2 = response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog(tax: totalTax);
+          showSelectMealTypeAndPaymentMethodDialog(total, tax1: tax1, tax2: tax2);
 
         }else{
           //getBookingBootMenu();
@@ -1424,21 +1426,20 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-
-  showSelectMealTypeAndPaymentMethodDialog({int tax = 0}) async {
-    Cashchangerservice.checkMachineState(); 
+  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax1 = 0, int tax2 = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: checkLanguage.value,
           menuCount: showCartTotalGoodsNum.value,
-          taxCount: tax,
-          shopCartTotalPrice: shopCartTotalPrice.value,
+          tax10: tax1,
+          tax8: tax2,
+          shopCartTotalPrice: total,
           tableNum: "",
           onConfrimClick: () {
               showOpenPayment.value = true;
-              gotoSettlement(tax);
+              gotoSettlement(total, tax1 + tax2);
           },
           onCancelClick: (String isBack) async {
             // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
@@ -1501,12 +1502,12 @@ print("加1了");
     //await _resetToFirstCategory();
   }
 
-  gotoSettlement(int tax) async {
+  gotoSettlement(String total, int tax) async {
   await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : (int.parse(shopCartTotalPrice.value) + tax).toString(),
+          "totalPrice" : (int.parse(total) + tax).toString(),
           "machineMode":"1",
           "showOpenPayment": showOpenPayment.value
         });

@@ -2,8 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:logging/logging.dart';
 
 enum PosAction {
   Connect,
@@ -58,13 +56,12 @@ class PosSocketManager {
     _needInterActive = true;
   }
 
-  Future posActionWithData(PosAction action, String writeData,
-      {Function? backTask = null}) async {
+  Future posActionWithData(PosAction action, String writeData, {Function? backTask = null}) async {
     Logger('').info('posActionWithData action:$action data:$writeData');
     _posAction = action;
     switch (action) {
       case PosAction.Connect:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         break;
       case PosAction.WritePay:
         _socketNumberTimes = 0;
@@ -89,7 +86,7 @@ class PosSocketManager {
         _socketNumberTimes = 0;
         break;
       case PosAction.None:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         break;
     }
 
@@ -119,15 +116,15 @@ class PosSocketManager {
   Future payConnectSocket(
       String payment, String pos_ip, int pos_port, String machineCode,
       {questData = "",
-      bool isRetry = false,
-      Function(String)? onError,
-      Function(int)? onLoading,
-      Function? onLoadingEnd,
-      Function(String)? onSuccess,
-      Function? onRequestPayData,
-      Function(PosAction)? onDone,
-      Function? onTimeOut,
-      Function(String, String)? onCancel}) async {
+        bool isRetry = false,
+        Function(String)? onError,
+        Function(int)? onLoading,
+        Function? onLoadingEnd,
+        Function(String)? onSuccess,
+        Function? onRequestPayData,
+        Function(PosAction)? onDone,
+        Function? onTimeOut,
+        Function(String, String)? onCancel}) async {
     debugPrint('payConnectSocket $payment $pos_ip:$pos_port $machineCode');
     debugPrint('questData : $questData');
     _eventReportString = "";
@@ -195,7 +192,7 @@ class PosSocketManager {
       }
 
       _socket?.listen(
-        (List<int> event) {
+            (List<int> event) {
           for (var i = 0; i < event.length; i++) {
             if (event[i] > 127) {
               event[i] = 32;
@@ -216,11 +213,9 @@ class PosSocketManager {
           String resultString = _eventReportString.substring(10, 13);
           String resultMPFSString = _eventReportString.substring(13, 16);
           //
-          debugPrint(
-              "FirstString==${FirstString} SecondString==${SecondString}");
+          debugPrint("FirstString==${FirstString} SecondString==${SecondString}");
           debugPrint("transaction_type==${transactionType}");
-          debugPrint(
-              "resultString==${resultString} resultMPFSString==${resultMPFSString}");
+          debugPrint("resultString==${resultString} resultMPFSString==${resultMPFSString}");
 
           _checkIfTestMode();
 
@@ -338,11 +333,27 @@ class PosSocketManager {
       );
     } catch (e) {
       _isConnected = false;
-      debugPrint('Unable to connect pos: $e');
+      Logger('').info('Unable to connect pos: $e , _posAction = $_posAction');
       if (_posAction == PosAction.None) return;
-      Future.delayed(Duration(milliseconds: 400), () async {
-        await payConnectSocket(payment, pos_ip, pos_port, machineCode,
-            isRetry: true, onTimeOut: onTimeOut, onError: onError);
+      Future.delayed(Duration(milliseconds: 2000), () async {
+        //如果连接失败，重新连接
+        //if (_socketNumberTimes < 6) {
+        debugPrint('Retrying to connect pos: $pos_ip:$pos_port');
+        payConnectSocket(payment, pos_ip, pos_port, machineCode,
+            questData: questData,
+            isRetry: true,
+            onError: _onError,
+            onLoading: _onLoading,
+            onLoadingEnd: onLoadingEnd,
+            onSuccess: onSuccess,
+            onRequestPayData: onRequestPayData,
+            onDone: onDone,
+            onTimeOut: onTimeOut,
+            onCancel: onCancel);
+        // } else {
+        //   debugPrint('Failed to connect pos after multiple attempts');
+        //   if (_onError != null) _onError!("Unable to connect to POS");
+        // }
       });
     }
   }

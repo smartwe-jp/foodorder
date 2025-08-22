@@ -111,6 +111,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   String panelType = "Mini";
   bool isAllow10000 = true;
   bool isAllow5000 = true;
+  String labelSize = "40x30"; //默认标签宽度
 
   String get downloadUrl => appConfig.isAndroid11
       ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
@@ -145,7 +146,6 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    //machineCode.value = Get.arguments['machineCode'];
     _getPackageInfo();
 
     super.onInit();
@@ -354,6 +354,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needCenterPrint': true,
         'centerOn': false,
         'needInput': false,
+        'printOption': true,
       });
       sseSettingList.add({
         'name': 'Panda SSE',
@@ -363,6 +364,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needCenterPrint': false,
         'centerOn': false,
         'needInput': true,
+        'printOption': true,
       });
       await HomeServices.setSSESettingList(sseSettingList);
     }
@@ -406,7 +408,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   updateSSESetting(String name,
-      {bool? isOn, String? identify, bool? centerOn}) async {
+      {bool? isOn, String? identify, bool? centerOn, bool? printOption}) async {
     if (sseSettingList.isNotEmpty) {
       for (var i = 0; i < sseSettingList.length; i++) {
         if (sseSettingList[i]['name'] == name) {
@@ -419,6 +421,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
           if (centerOn != null) {
             sseSettingList[i]['centerOn'] = centerOn;
+          }
+
+          if (printOption != null) {
+            sseSettingList[i]['printOption'] = printOption;
           }
           final needInput = sseSettingList[i]['needInput'] ?? false;
           if ((identify != null && identify.isNotEmpty) || !needInput) {
@@ -438,6 +444,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         }
       }
       await HomeServices.setSSESettingList(sseSettingList);
+      machineInfo.updateMachineSettingInfo();
     }
 
     update();
@@ -466,6 +473,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     });
     //存打印机列表
     HomeServices.setPrinterListInfo(printerList);
+    machineInfo.updateMachineSettingInfo();
     update();
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   _scrollToBottom();
@@ -476,6 +484,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     if (printerList.isNotEmpty) {
       printerList.removeWhere((item) => item['type'] == printer['type']);
       HomeServices.setPrinterListInfo(printerList);
+      machineInfo.updateMachineSettingInfo();
       update();
     }
   }
@@ -895,10 +904,11 @@ class SystemSettingPageController extends GetxController with StateMixin {
       }
       HomeServices.setPrinterListInfo(printerList);
     }
+    machineInfo.updateMachineSettingInfo();
     update();
   }
 
-  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, int? printWidth, int? direction, bool? option}) async {
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option}) async {
 
     if (printerList.isNotEmpty) {
       for (var i = 0; i < printerList.length; i++) {
@@ -907,7 +917,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if(continuous != null) printerList[i]['continuous'] = continuous;
           if(printerIp != null) printerList[i]['printIp'] = printerIp;
           if(port != null) printerList[i]['printPort'] = port;
-          if(printWidth != null) printerList[i]['labelWidth'] = printWidth;
+          if(printSize != null) printerList[i]['labelSize'] = printSize;
           if(direction != null) printerList[i]['direction'] = direction;
           if(option != null) printerList[i]['option'] = option ?? false;
           if (type == 10 && !(isOff ?? true)) {
@@ -922,6 +932,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         }
       }
       HomeServices.setPrinterListInfo(printerList);
+      machineInfo.updateMachineSettingInfo();
     }
     update();
   }
@@ -1281,6 +1292,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     } else {
       print('Key $key does not exist in systemSettingData.');
     }
+    machineInfo.updateMachineSettingInfo(settingInfo: systemSettingData);
     update();
   }
 

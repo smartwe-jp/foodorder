@@ -20,6 +20,7 @@ import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
@@ -372,8 +373,8 @@ class TransitPageController extends GetxController {
     await _getSmartweSystemSettingInfo();
   }
 
-  _getSmartweSystemSettingInfo() async {
-    debugPrint("transit  getSmartweSystemSettingInfo");
+  _getSmartweSystemSettingInfo({bool isLaunch = false}) async {
+    debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     var checkmachineMode = "1";
@@ -459,7 +460,7 @@ class TransitPageController extends GetxController {
       }, permanent: true);
       debugPrint('put MachineInfoController done');
     } else {
-      await Get.find<MachineInfoController>().updateMachineSettingInfo(systemSettingData);
+      await Get.find<MachineInfoController>().updateMachineSettingInfo(settingInfo: systemSettingData);
       debugPrint('update MachineInfoController done');
     }
     // await Get.delete<MachineInfoController>();
@@ -499,6 +500,10 @@ class TransitPageController extends GetxController {
     }
      
      _goNext(checkmachineMode);
+    final posCheckService = Get.find<PosCheckService>();
+    posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
+
+    _goNext(checkmachineMode);
   }
 
   Future _goNext(checkmachineMode) async {

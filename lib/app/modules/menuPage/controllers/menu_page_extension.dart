@@ -10,6 +10,7 @@ import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 
+import '../../../controllers/machine_info.dart';
 import '../views/widgets/grid_item_view.dart';
 
 extension MenuPageControllerExtension on MenuPageController {
@@ -99,7 +100,7 @@ extension MenuPageControllerExtension on MenuPageController {
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
     } 
-    
+
     //queryTakeout 0外卖 1都可 2店内
     // switch (machineInfo.diningType) {
     //   case "1":

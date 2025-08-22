@@ -5,6 +5,7 @@ import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:get/get.dart';
 
 import '../controllers/order_sql_controller.dart';
+import '../services/PosCheckService.dart';
 
 class AppBindings extends Bindings {
   @override
@@ -13,5 +14,6 @@ class AppBindings extends Bindings {
     Get.lazyPut(()=> OrderSqlController());
     Get.lazyPut(() => SseService());
     Get.lazyPut(() => PrinterCheckService());
+    Get.lazyPut(() => PosCheckService());
   }
 }

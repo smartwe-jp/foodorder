@@ -192,10 +192,10 @@ class _SetPosIpPageState extends State<SetPosIpPage> {
                         _posPort = _tcpposPortController?.text ?? "";
                         print(_posIp);
                         print(_posPort);
-                        if(_posIp != "" && _posPort != ""){
+                        //if(_posIp != "" && _posPort != ""){
                           widget.onConfrimClick!(_posIp, _posPort);
                           Navigator.pop(context);
-                        }
+                        //}
 
                       } catch (_) {}
 

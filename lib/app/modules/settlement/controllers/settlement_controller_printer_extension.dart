@@ -180,7 +180,9 @@ class PrintService extends GetxService {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
-        final printWidth = printer['labelWidth'] ?? 384.0;
+        final printSize = printer['labelSize'] ?? '300x225';
+        final printWidth = printSize.split('x')[0].trim().toInt(); // 获取标签宽度
+        final printHeight = printSize.split('x')[1].trim().toInt(); // 获取标签高度
         // Add the head receipt widget to the print queue
         int itemCount = 0;
 
@@ -197,6 +199,7 @@ class PrintService extends GetxService {
               orderSnCode,
               options,
               printWidth.toDouble(),
+              _labelMaxLine(printHeight),
               rotate,
             );
             labelPrintQueue.add(receiptWidget);
@@ -263,6 +266,12 @@ class PrintService extends GetxService {
           printIp, true, rotate, orderLineItems, remark, isCenterPrint: true,
           printOption: option, printQrCode: payment_code);
     }
+  }
+
+  _labelMaxLine(int height) {
+    //计算标签最大行数
+    //假设每行高度为 50
+    return (height/(225*0.25)).floor();
   }
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
@@ -378,8 +387,7 @@ class PrintService extends GetxService {
         )));
   }
 
-  Widget labelItem(
-      String name, String number, Map options, double printWidth, bool rotate) {
+  Widget labelItem(String name, String number, Map options, double printWidth, int maxLines, bool rotate) {
     return LabelConstrainedBox(
       Transform(
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
@@ -441,7 +449,7 @@ class PrintService extends GetxService {
                 child: Container(
                   margin: EdgeInsets.only(top: 5, left: 10),
                   width: double.infinity,
-                  child: optionList(options),
+                  child: optionList(options, maxLines),
                 ),
               )
             ],
@@ -595,7 +603,8 @@ class PrintService extends GetxService {
         }).join(", ");
   }
 
-  Widget optionList(Map options) {
+  Widget optionList(Map options, int maxLines) {
+
     //合并所有Option为一个字符串格式为 optionName: optionDetail1 x qty1, optionDetail2 x qty2;
     if (options.isEmpty) {
       return Container(); // 如果没有选项，返回空容器
@@ -610,7 +619,7 @@ class PrintService extends GetxService {
     //使用 AutoText来自动调整文本大小
     return AutoSizeText(
       optionStrings,
-      maxLines: 4, // 最多显示两行
+      maxLines: maxLines, // 最多显示两行
       style: TextStyle(
         fontSize: 28,
         color: Colors.black,

@@ -2,8 +2,7 @@
 // import 'dart:io';
 // import 'dart:typed_data';
 // import 'package:flutter/material.dart';
-// import 'package:flutter_easyloading/flutter_easyloading.dart';
-
+//
 // enum PosAction {
 //   Connect,
 //   WritePay,
@@ -11,7 +10,7 @@
 //   Close,
 //   None,
 // }
-
+//
 // class PosSocketManager {
 //   final bool posTest = false;
 //   // static final PosSocketManager _instance = PosSocketManager._internal();
@@ -19,17 +18,17 @@
 //   //
 //   // // Private constructor
 //   // PosSocketManager._internal();
-
+//
 //   // Socket instance
 //   Socket? _socket;
 //   bool _isConnected = false;
 //   bool _needInterActive = false;
 //   bool _payProcess = false;
-
+//
 //   int _socketNumberTimes = 0;
 //   String _eventReportString = "";
 //   PosAction _posAction = PosAction.None;
-
+//
 //   Function(String e)? _onError;
 //   Function(int mode)? _onLoading;
 //   // Function(String result)? _onSuccess;
@@ -38,9 +37,9 @@
 //   //static bool get isConnected => _socket != null && !_socket!.done;
 //   // Function? _onTimeOut;
 //   // Function(String resultString, String pfsString)? _onCancel;
-
+//
 //   //PosPayUtil();
-
+//
 //   Future resetState() async {
 //     _payProcess = false;
 //     _eventReportString = "";
@@ -48,15 +47,15 @@
 //     _posAction = PosAction.None;
 //     _socketNumberTimes = 0;
 //   }
-
+//
 //   PosAction posAction() {
 //     return _posAction;
 //   }
-
+//
 //   setPosPadding() {
 //     _needInterActive = true;
 //   }
-
+//
 //   Future posActionWithData(PosAction action, String writeData, {Function? backTask = null}) async {
 //     //Logger('').info('posActionWithData action:$action data:$writeData');
 //     _posAction = action;
@@ -77,24 +76,24 @@
 //             _onDone?.call(action);
 //             _onDone = null;
 //           }
-
+//
 //         } else {
 //           _onLoading?.call(0);
 //         }
-
+//
 //         break;
 //       case PosAction.Close:
 //         _socketNumberTimes = 0;
 //         break;
 //       case PosAction.None:
-//         // TODO: Handle this case.
+//       // TODO: Handle this case.
 //         break;
 //     }
-
+//
 //     //_socket?.write(writeData);
 //     await _posWirteData(writeData);
 //   }
-
+//
 //   Future _posWirteData(String writeData) async {
 //     //Logger('').info('_posWirteData $writeData');
 //     try {
@@ -103,7 +102,7 @@
 //       _onError?.call(e.toString());
 //     }
 //   }
-
+//
 //   Future closePos() async {
 //     debugPrint('--closePos--');
 //     resetState();
@@ -111,9 +110,9 @@
 //       _socket?.destroy();
 //       _socket = null;
 //     }
-
+//
 //   }
-
+//
 //   //pos机相关
 //   Future payConnectSocket(
 //       String payment, String pos_ip, int pos_port, String machineCode,
@@ -134,7 +133,7 @@
 //     _onDone = onDone;
 //     _onLoading = onLoading;
 //     _payProcess = true;
-
+//
 //     if (_isConnected) {
 //       debugPrint('socket has connected');
 //       if (questData != "") {
@@ -148,10 +147,10 @@
 //           onLoadingEnd?.call();
 //         });
 //       }
-
+//
 //       return;
 //     }
-
+//
 //     if (!isRetry) {
 //       _socketNumberTimes = 0;
 //     }
@@ -163,14 +162,14 @@
 //       onTimeOut?.call();
 //       return;
 //     }
-
+//
 //     try {
 //       _posAction = PosAction.Connect;
 //       Socket socket = await Socket.connect(pos_ip, pos_port);
 //       debugPrint('Connected to $pos_ip:$pos_port');
 //       _socket = socket;
 //       _isConnected = true;
-
+//
 //       //扫码过来的，请求数据不为空时候发送POS请求
 //       if (questData != "") {
 //         //判断不为空则POS机
@@ -178,21 +177,21 @@
 //         //socket.write(questData);
 //         _posWirteData(questData);
 //       }
-
+//
 //       //获得pos数据并发送
 //       var paymentMethod = ["3", "4", "5", "6", "7", "8", "9", "10"];
 //       if (paymentMethod.contains(payment) == true) {
 //         onRequestPayData?.call();
 //         debugPrint('--_onRequestPayData--');
 //       }
-
+//
 //       if (payment != "2") {
 //         print("进来关闭弹窗");
 //         Future.delayed(Duration(milliseconds: 1300), () async {
 //           onLoadingEnd?.call();
 //         });
 //       }
-
+//
 //       _socket?.listen(
 //             (List<int> event) {
 //           for (var i = 0; i < event.length; i++) {
@@ -206,7 +205,7 @@
 //           debugPrint("eventString:$eventString");
 //           _eventReportString += eventString;
 //           debugPrint("_eventReportString:$_eventReportString");
-
+//
 //           //print(Utf8Codec().decode(zhuanhuan));
 //           //print("event=====${eventString}=====");
 //           String FirstString = _eventReportString.substring(0, 1);
@@ -218,9 +217,9 @@
 //           debugPrint("FirstString==${FirstString} SecondString==${SecondString}");
 //           debugPrint("transaction_type==${transactionType}");
 //           debugPrint("resultString==${resultString} resultMPFSString==${resultMPFSString}");
-
+//
 //           _checkIfTestMode();
-
+//
 //           //支付成功 打印，返回首页 除了成功都取消
 //           if (transactionType == "900") {
 //             if (FirstString == "3" &&
@@ -249,17 +248,17 @@
 //               if (payment != "2") {
 //                 onLoading?.call(0);
 //               }
-
+//
 //               var thincaCloud = ["5", "6", "7", "8", "9", "10"];
 //               if (thincaCloud.contains(payment) == true) {
 //                 String reportString = eventString.substring(0, 169);
 //                 if (_payProcess)
-//                 onSuccess?.call(reportString);
+//                   onSuccess?.call(reportString);
 //                 resetState();
 //                 _payProcess = false;
 //               } else {
 //                 if (_payProcess)
-//                 onSuccess?.call(_eventReportString);
+//                   onSuccess?.call(_eventReportString);
 //                 resetState();
 //                 _payProcess = false;
 //               }
@@ -287,12 +286,12 @@
 //               if (thincaCloud.contains(payment) == true) {
 //                 String reportString = eventString.substring(0, 169);
 //                 if (_payProcess)
-//                 onSuccess?.call(reportString);
+//                   onSuccess?.call(reportString);
 //                 resetState();
 //                 _payProcess = false;
 //               } else {
 //                 if (_payProcess)
-//                 onSuccess?.call(eventString);
+//                   onSuccess?.call(eventString);
 //                 resetState();
 //                 _payProcess = false;
 //               }
@@ -309,7 +308,7 @@
 //                     debugPrint("Pos error done order");
 //                     //if (!_needInterActive) onDone?.call(_posAction);
 //                     if (_posAction != PosAction.None)
-//                     _onError?.call(resultString);
+//                       _onError?.call(resultString);
 //                     //gotonewMenuPage(); backAction
 //                   });
 //                 } else {
@@ -333,23 +332,39 @@
 //           _socketNumberTimes = 0;
 //           _isConnected = false;
 //           if (!_needInterActive && _posAction != PosAction.None)
-//           onError?.call(e.toString());
+//             onError?.call(e.toString());
 //           _needInterActive = true;
-
-
+//
+//
 //         },
 //       );
 //     } catch (e) {
 //       _isConnected = false;
-//       debugPrint('Unable to connect pos: $e');
+//       debugPrint('Unable to connect pos: $e , _posAction = $_posAction');
 //       if (_posAction == PosAction.None) return;
-//       Future.delayed(Duration(milliseconds: 400), () async {
-//         await payConnectSocket(payment, pos_ip, pos_port, machineCode,
-//             isRetry: true, onTimeOut: onTimeOut, onError: onError);
+//       Future.delayed(Duration(milliseconds: 2000), () async {
+//         //如果连接失败，重新连接
+//         //if (_socketNumberTimes < 6) {
+//         debugPrint('Retrying to connect pos: $pos_ip:$pos_port');
+//         payConnectSocket(payment, pos_ip, pos_port, machineCode,
+//             questData: questData,
+//             isRetry: true,
+//             onError: _onError,
+//             onLoading: _onLoading,
+//             onLoadingEnd: onLoadingEnd,
+//             onSuccess: onSuccess,
+//             onRequestPayData: onRequestPayData,
+//             onDone: onDone,
+//             onTimeOut: onTimeOut,
+//             onCancel: onCancel);
+//         // } else {
+//         //   debugPrint('Failed to connect pos after multiple attempts');
+//         //   if (_onError != null) _onError!("Unable to connect to POS");
+//         // }
 //       });
 //     }
 //   }
-
+//
 //   _checkIfTestMode() {
 //     if (posTest) {
 //       //测试代码 发版时posTest必需为false
@@ -368,7 +383,7 @@
 //         //           "settlement_posPay_error_connect_worker"),
 //         //       payType: "pos");
 //         // }
-
+//
 //         return;
 //       } else if (errorString == "803" || errorString == "802") {
 //         // Get.dialog(DialogUtils.alertOneButton(
