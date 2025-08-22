@@ -83,6 +83,7 @@ class MachineInfoController extends GetxController {
 
   late String pos_ip;
   late String pos_port;
+  int get posPort => int.tryParse(pos_port) ?? 0;
 
   bool get isSellOn => machineModeInfo['sell'] ?? false;
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;

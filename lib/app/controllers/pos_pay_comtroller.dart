@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 enum PosAction {
   Connect,
@@ -341,11 +340,27 @@ class PosSocketManager {
       );
     } catch (e) {
       _isConnected = false;
-      debugPrint('Unable to connect pos: $e');
+      debugPrint('Unable to connect pos: $e , _posAction = $_posAction');
       if (_posAction == PosAction.None) return;
-      Future.delayed(Duration(milliseconds: 400), () async {
-        await payConnectSocket(payment, pos_ip, pos_port, machineCode,
-            isRetry: true, onTimeOut: onTimeOut, onError: onError);
+      Future.delayed(Duration(milliseconds: 2000), () async {
+        //如果连接失败，重新连接
+        //if (_socketNumberTimes < 6) {
+          debugPrint('Retrying to connect pos: $pos_ip:$pos_port');
+          payConnectSocket(payment, pos_ip, pos_port, machineCode,
+              questData: questData,
+              isRetry: true,
+              onError: _onError,
+              onLoading: _onLoading,
+              onLoadingEnd: onLoadingEnd,
+              onSuccess: onSuccess,
+              onRequestPayData: onRequestPayData,
+              onDone: onDone,
+              onTimeOut: onTimeOut,
+              onCancel: onCancel);
+        // } else {
+        //   debugPrint('Failed to connect pos after multiple attempts');
+        //   if (_onError != null) _onError!("Unable to connect to POS");
+        // }
       });
     }
   }

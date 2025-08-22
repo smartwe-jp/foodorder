@@ -19,6 +19,7 @@ import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
@@ -189,7 +190,7 @@ class TransitPageController extends GetxController {
 
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
         await downloadAndSaveImage(shopData["logoImage"]);
-        await _getSmartweSystemSettingInfo();
+        await _getSmartweSystemSettingInfo(isLaunch: true);
       } else {
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
         _showErrorDialog();
@@ -336,7 +337,7 @@ class TransitPageController extends GetxController {
     }
   }
 
-  _getSmartweSystemSettingInfo() async {
+  _getSmartweSystemSettingInfo({bool isLaunch = false}) async {
     debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
@@ -421,6 +422,8 @@ class TransitPageController extends GetxController {
       }
     }
 
+    final posCheckService = Get.find<PosCheckService>();
+    posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
 
     _goNext(checkmachineMode);
 

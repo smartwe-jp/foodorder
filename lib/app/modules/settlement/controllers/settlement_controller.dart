@@ -25,6 +25,7 @@ import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../routes/app_pages.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/showToast.dart';
@@ -43,6 +44,7 @@ class SettlementController extends GetxController with StateMixin {
   final posManager = PosSocketManager();
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();
+  final posCheckService = Get.find<PosCheckService>();
 
   MachineInfoController machineInfo = Get.find();
   PrintService printService = Get.find();
@@ -144,6 +146,7 @@ class SettlementController extends GetxController with StateMixin {
   @override
   void onInit() {
     readyQueryData();
+    posCheckService.updateUseStatus(true);
     Future.delayed(const Duration(),() => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     //Get.focusScope.unfocus();
     //Get.focusScope.requestFocus(scanQrCodeFocusNode);
@@ -162,6 +165,7 @@ class SettlementController extends GetxController with StateMixin {
     //   this._socket?.close();
     // }
     await posManager.closePos();
+    posCheckService.updateUseStatus(false);
     payCube.stopListening();
     paymentTimer?.cancel();
     allowtimer?.cancel();
@@ -670,6 +674,21 @@ class SettlementController extends GetxController with StateMixin {
   //pos机相关
   payConnectSocket({questData=""}) async {
     debugPrint('start connect pos');
+
+    final canUsePos = await posCheckService.canUsePos().timeout(
+      Duration(seconds: 30),
+      onTimeout: () {
+        debugPrint('POS机连接超时');
+        return false;
+      },
+    );
+
+    if (!canUsePos) {
+      debugPrint('POS机繁忙中');
+      //当前不处理 待定 只记录
+    }
+
+    posCheckService.updateUseStatus(true);
     posManager.payConnectSocket(machineInfo.paymentMethod, machineInfo.pos_ip,
         int.parse(machineInfo.pos_port), machineInfo.machineCode, questData: questData,
         onRequestPayData: () {
@@ -684,6 +703,7 @@ class SettlementController extends GetxController with StateMixin {
           }
         },
         onLoadingEnd: () {
+          debugPrint('---onLoadingEnd---');
           EasyLoading.dismiss();
         },
         onCancel: (result, msg) =>
@@ -1215,7 +1235,7 @@ class SettlementController extends GetxController with StateMixin {
       debugPrint("打开现金机成功");
       //调用插件的监听
       _setPayCubeListener();
-      _updatePutMoneyInfo(totalPrice.value);
+      //_updatePutMoneyInfo(totalPrice.value);
       showCashTimer?.cancel();
       seconds.value = 120;
     } else {
