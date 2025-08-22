@@ -9,7 +9,6 @@ import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setti
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 //import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../../services/PosCheckService.dart';
 
@@ -20,30 +19,55 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   Widget build(BuildContext context) {
     return GetBuilder<SystemSettingPageController>(builder: (logic) {
       return Scaffold(
+        backgroundColor: Color.fromARGB(255, 242, 242, 246),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80),
           child: Card(
-            margin: const EdgeInsets.all(8),
             //elevation: 4,
             shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: AppBar(
-              title: const Text('システム設定',
-                  style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontSize: 32,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold)),
+              title: Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: const Text('システム設定',
+                    style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: 32,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
+              ),
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
               foregroundColor: Colors.black,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.blue, size: 38),
-                onPressed: () {
-                  Get.back(result: "setting-back");
-                },
+              leadingWidth: 120,
+              leading: Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    Get.back(result: "setting-back");
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.blue, size: 32),
+                        onPressed: () {
+                          Get.back(result: "setting-back");
+                        },
+                      ),
+                      Text(
+                        '戻る',
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: 26,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              actionsPadding: const EdgeInsets.only(top: 10),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.key, color: Colors.blue, size: 38),
@@ -61,12 +85,13 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 ),
 
                 const SizedBox(width: 16)
-                
+
               ],
             ),
           ),
         ),
         body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             //spacing: 16,
             children: [
@@ -155,7 +180,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
   Widget _settingContentSubtitle(String name) {
     return Text(
-          name,
+      name,
       style: const TextStyle(
         fontFamily: 'NotoSansJP',
         fontSize: 20,
@@ -216,24 +241,24 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 runSpacing: 8.0,
                 children: [
                   _modeButton("店　内", Icons.store, isSellOn,
-                      () => controller.updateMachineMode(sell: !isSellOn)),
+                          () => controller.updateMachineMode(sell: !isSellOn)),
                   _modeButton(
                       'テイクアウト',
                       Icons.takeout_dining,
                       isTakeoutOn,
-                      () =>
+                          () =>
                           controller.updateMachineMode(takeout: !isTakeoutOn)),
                   _modeButton(
                       "精算機",
                       Icons.qr_code,
                       isCheckoutOn,
-                      () => controller.updateMachineMode(
+                          () => controller.updateMachineMode(
                           checkout: !isCheckoutOn)),
                   _modeButton(
                       "スキャン購入",
                       Icons.barcode_reader,
                       isScanbuyOn,
-                      () =>
+                          () =>
                           controller.updateMachineMode(scanbuy: !isScanbuyOn)),
                 ],
               ),
@@ -251,7 +276,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       onTap: onPressed,
       child: Container(
         height: 80,
-        width: 240,
+        width: 230,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -655,7 +680,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
                         color:
-                            isAllowBackHome == '0' ? Colors.white : Colors.grey,
+                        isAllowBackHome == '0' ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -669,7 +694,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
                         color:
-                            isAllowBackHome == '1' ? Colors.white : Colors.grey,
+                        isAllowBackHome == '1' ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -846,7 +871,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                             fontFamily: 'NotoSansJP',
                             fontSize: 16,
                             color:
-                                item['value'] == '1' ? Colors.blue : Colors.red,
+                            item['value'] == '1' ? Colors.blue : Colors.red,
                             fontWeight: FontWeight.w500,
                           ),
                         ),
@@ -879,7 +904,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   //           const Divider(),
   //           // USBプリンター設定内容
   //           if (usbPrinterInfo.isNotEmpty)
-  //             //显示名称和打印按钮
+  //           //显示名称和打印按钮
   //             Row(
   //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
   //               children: [
@@ -897,7 +922,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   //               ],
   //             )
   //           else
-  //             //显示一个搜索按钮
+  //           //显示一个搜索按钮
   //             Container(
   //               alignment: Alignment.centerLeft,
   //               child: ElevatedButton(
@@ -923,7 +948,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   Widget _printerSettingArea(List printerList) {
     // 新增一个“追加”按钮卡片
     final List printersWithAdd = List.from(printerList);
-      //..add({'isAddButton': true});
+    //..add({'isAddButton': true});
 
     return Card(
       color: Colors.white,
@@ -1017,7 +1042,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        //color 乳白色 是什么颜色值？
+        color: Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -1159,7 +1185,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 children: {
                   0: Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Text(
                       'デフォルト',
                       style: TextStyle(
@@ -1172,7 +1198,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   ),
                   1: Padding(
                     padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                     child: Text(
                       '逆に',
                       style: TextStyle(
@@ -1258,58 +1284,58 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     };
     //size 是 value 找到对应的 key
     String? labelSizeKey = _labelPrintSize.keys.firstWhere(
-        (key) => _labelPrintSize[key] == size,
+            (key) => _labelPrintSize[key] == size,
         orElse: () => "40x30" // 默认值
-        );
+    );
 
     return Container(
         child: Container(
-      alignment: Alignment.centerLeft,
-      child: Container(
-        width: 160,
-        child: DropdownButtonFormField<String>(
-          value: labelSizeKey,
-          onChanged: (String? newValue) {
-            final printSize = _labelPrintSize[newValue] ?? "300x225";
-            controller.updatePrinterInfo(type, receipt, printSize: printSize);
-          },
-          items:
+          alignment: Alignment.centerLeft,
+          child: Container(
+            width: 160,
+            child: DropdownButtonFormField<String>(
+              value: labelSizeKey,
+              onChanged: (String? newValue) {
+                final printSize = _labelPrintSize[newValue] ?? "300x225";
+                controller.updatePrinterInfo(type, receipt, printSize: printSize);
+              },
+              items:
               _labelPrintSize.keys.map<DropdownMenuItem<String>>((String key) {
-            return DropdownMenuItem<String>(
-              value: key,
-              child: Text(
-                key,
-                style: TextStyle(
-                  color: labelSizeKey == key
-                      ? ColorsUtil.hexToColor("#409eff")
-                      : Colors.black,
-                  fontFamily: 'NotoSansJP',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 18,
+                return DropdownMenuItem<String>(
+                  value: key,
+                  child: Text(
+                    key,
+                    style: TextStyle(
+                      color: labelSizeKey == key
+                          ? ColorsUtil.hexToColor("#409eff")
+                          : Colors.black,
+                      fontFamily: 'NotoSansJP',
+                      fontWeight: FontWeight.w600,
+                      fontSize: 18,
+                    ),
+                  ),
+                );
+              }).toList(),
+              decoration: InputDecoration(
+                contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.grey, width: 1),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                  borderSide: BorderSide(color: Colors.blue, width: 2),
                 ),
               ),
-            );
-          }).toList(),
-          decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.grey, width: 1),
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(10),
-              borderSide: BorderSide(color: Colors.blue, width: 2),
+              icon: Icon(Icons.arrow_drop_down),
+              iconSize: 24,
+              isExpanded: true,
             ),
           ),
-          icon: Icon(Icons.arrow_drop_down),
-          iconSize: 24,
-          isExpanded: true,
-        ),
-      ),
-    ));
+        ));
   }
 
   //外设关联设置 分别是叫号屏幕 和 POS 机器 都是通过网络连接的方式进行设置
@@ -1408,7 +1434,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     ],
                   ),
                 const SizedBox(width: 20),
-                
+
                 IconButton(
                   icon: const Icon(Icons.settings, color: Colors.blue),
                   onPressed: () {
@@ -1438,7 +1464,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     },
                     activeColor: Colors.blue,
                   ),
-                  SizedBox(width: 65)
+                  //SizedBox(width: 65)
                 ],
               ),
           ],
@@ -1451,161 +1477,161 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   //订单关联设置 为设置SSE消息接收，和打印机设置类似。
 
   Widget _sseSettingArea(List<Map> sseSettingList) {
-  return Card(
-    color: Colors.white,
-    margin: const EdgeInsets.all(8),
-    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-    child: Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _settingTitle('SSE設定'),
-          const Divider(),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 2, // 每行两个
-              childAspectRatio: 2.3,
-              crossAxisSpacing: 20,
-              mainAxisSpacing: 16,
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _settingTitle('SSE設定'),
+            const Divider(),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2, // 每行两个
+                childAspectRatio: 2.3,
+                crossAxisSpacing: 20,
+                mainAxisSpacing: 16,
+              ),
+              itemCount: sseSettingList.length,
+              itemBuilder: (context, index) {
+                final sseItem = sseSettingList[index];
+                return _sseCard(sseItem);
+              },
             ),
-            itemCount: sseSettingList.length,
-            itemBuilder: (context, index) {
-              final sseItem = sseSettingList[index];
-              return _sseCard(sseItem);
-            },
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _sseCard(Map sseItem) {
+    final name = sseItem['name'] ?? '';
+    final identify = sseItem['identify'] ?? '';
+    final isOn = sseItem['isOn'] ?? false;
+    final needInput = sseItem['needInput'] ?? false;
+    final needCenterPrint = sseItem['needCenterPrint'] ?? false;
+    final centerOn = sseItem['centerOn'] ?? false;
+    final printOption = sseItem['printOption'] ?? true;
+    final address = sseItem['address'] ?? "";
+
+    return Container(
+      decoration: BoxDecoration(
+        color: Color(0xFFF5F5F5),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black12,
+            blurRadius: 2,
+            offset: Offset(0, 1),
           ),
         ],
       ),
-    ),
-  );
-}
+      padding: const EdgeInsets.all(12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              _settingContentSubtitle(name),
+              const Spacer(),
 
-Widget _sseCard(Map sseItem) {
-  final name = sseItem['name'] ?? '';
-  final identify = sseItem['identify'] ?? '';
-  final isOn = sseItem['isOn'] ?? false;
-  final needInput = sseItem['needInput'] ?? false;
-  final needCenterPrint = sseItem['needCenterPrint'] ?? false;
-  final centerOn = sseItem['centerOn'] ?? false;
-  final printOption = sseItem['printOption'] ?? true;
-  final address = sseItem['address'] ?? "";
-
-  return Container(
-    decoration: BoxDecoration(
-      color: Colors.grey[100],
-      borderRadius: BorderRadius.circular(12),
-      boxShadow: [
-        BoxShadow(
-          color: Colors.black12,
-          blurRadius: 2,
-          offset: Offset(0, 1),
-        ),
-      ],
-    ),
-    padding: const EdgeInsets.all(12),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          children: [
-            _settingContentSubtitle(name),
-            const Spacer(),
-
-            if (!needInput || identify.isNotEmpty)
-            Row(
-              children: [
-                Text(
-                  isOn ? 'オン' : 'オフ',
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontSize: 16,
-                    color: isOn ? Colors.blue : Colors.red,
-                    fontWeight: FontWeight.w500,
-                  ),
+              if (!needInput || identify.isNotEmpty)
+                Row(
+                  children: [
+                    Text(
+                      isOn ? 'オン' : 'オフ',
+                      style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: 16,
+                        color: isOn ? Colors.blue : Colors.red,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    Switch(
+                      value: isOn,
+                      onChanged: (value) {
+                        // controller.updateSSESetting(
+                        //   name,
+                        //   isOn: value,
+                        //   identify: identify,
+                        //   centerOn: value ? centerOn : false,
+                        // );
+                        controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
+                      },
+                      activeColor: Colors.blue,
+                    ),
+                  ],
                 ),
-                Switch(
-                    value: isOn,
-                    onChanged: (value) {
-                      // controller.updateSSESetting(
-                      //   name,
-                      //   isOn: value,
-                      //   identify: identify,
-                      //   centerOn: value ? centerOn : false,
-                      // );
-                      controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
-                    },
-                    activeColor: Colors.blue,
-                  ),
-              ],
-            ),
-            
-            if (needInput)
-            const SizedBox(width: 8),
+
+              if (needInput)
+                const SizedBox(width: 8),
 
 
-            if (needInput)
-            IconButton(
-              icon: const Icon(Icons.settings, color: Colors.blue),
-              onPressed: () {
-                controller.editSSESetting(name, address, identify, isOn);
-              },
-            ),
-            
-          ],
-        ),
-        const Divider(),
-        const SizedBox(height: 8),
+              if (needInput)
+                IconButton(
+                  icon: const Icon(Icons.settings, color: Colors.blue),
+                  onPressed: () {
+                    controller.editSSESetting(name, address, identify, isOn);
+                  },
+                ),
 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _settingContent('番号：'),
-            _settingContent(identify ?? '', color: Colors.blue),
-          ],
-        ),
+            ],
+          ),
+          const Divider(),
+          const SizedBox(height: 8),
 
-        const SizedBox(height: 8),
-        
-        if (isOn && needCenterPrint)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _settingContent('注文伝票：'),
-              Switch(
-                value: centerOn,
-                onChanged: (value) {
-                  controller.updateSSESetting(name, centerOn: value);
-                },
-                activeColor: Colors.blue,
-              ),
+              _settingContent('番号：'),
+              _settingContent(identify ?? '', color: Colors.blue),
             ],
           ),
 
-        const SizedBox(height: 8),
+          const SizedBox(height: 8),
 
-        if (isOn && centerOn && !needInput) 
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _settingContent('オプション：'),
-            Switch(
-              value: printOption,
-              onChanged: (value) {
-                controller.updateSSESetting(name, printOption: value);
-              },
-              activeColor: Colors.blue,
+          if (isOn && needCenterPrint)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _settingContent('注文伝票：'),
+                Switch(
+                  value: centerOn,
+                  onChanged: (value) {
+                    controller.updateSSESetting(name, centerOn: value);
+                  },
+                  activeColor: Colors.blue,
+                ),
+              ],
             ),
-          ],
-        ),
 
-        
-      ],
-    ),
-  );
-}
+          const SizedBox(height: 8),
+
+          if (isOn && centerOn && !needInput)
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _settingContent('オプション：'),
+                Switch(
+                  value: printOption,
+                  onChanged: (value) {
+                    controller.updateSSESetting(name, printOption: value);
+                  },
+                  activeColor: Colors.blue,
+                ),
+              ],
+            ),
+
+
+        ],
+      ),
+    );
+  }
 
 
 }
