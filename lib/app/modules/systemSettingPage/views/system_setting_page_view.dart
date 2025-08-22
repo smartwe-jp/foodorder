@@ -8,6 +8,7 @@ import 'package:get/get.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../controllers/system_setting_page_controller.dart';
 import 'SetPassword.dart';
@@ -865,7 +866,7 @@ class SystemSettingPageView extends GetView {
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              width: ScreenAdapter.width(120),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
@@ -946,6 +947,7 @@ class SystemSettingPageView extends GetView {
   }
   //设置是否开启pos刷卡
   setIsAllowPos() {
+    final posCheckService = Get.find<PosCheckService>();
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
       padding: EdgeInsets.only(left: ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
@@ -994,7 +996,7 @@ class SystemSettingPageView extends GetView {
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
+              width: ScreenAdapter.width(120),
               //边框设置
               decoration: new BoxDecoration(
                 //背景
@@ -1093,6 +1095,13 @@ class SystemSettingPageView extends GetView {
               //   ],
               // ),
             ),
+          if (controller.pos_ip.value != "")
+          SizedBox(width: ScreenAdapter.width(20)),
+          if (controller.pos_ip.value != "")
+          Switch(value: posCheckService.isActive, onChanged: (value) {
+            posCheckService.toggleActive(value);
+            controller.update();
+          }),
 
         ],
       ),
