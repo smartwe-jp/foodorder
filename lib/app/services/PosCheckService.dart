@@ -95,7 +95,7 @@ class PosCheckService extends GetxService {
   //开启一个定时测试的任务，每60分钟执行一次
   void _startPosCheckTimer(String posIp, int posPort) {
     posCheckTimer?.cancel();
-    posCheckTimer = Timer.periodic(Duration(seconds: 40), (timer) {
+    posCheckTimer = Timer.periodic(Duration(minutes: 60), (timer) {
       if (isPosBeUsedInOneHour || isPosChecking.value) {
         debugPrint('POS机在一小时内被使用过或正在检查中，跳过检查');
         //如果POS机在一小时内被使用过，则不进行检查
