@@ -1417,16 +1417,24 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 ),
               ],
             ),
-            if (machineInfo.allowPos)
+            if (machineInfo.pos_ip.isNotEmpty &&
+                machineInfo.pos_port.isNotEmpty)
               Row(
-                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
                 children: [
-                  _settingContent('POSチェック', color: posCheckService.isActive ? Colors.blue : Colors.grey),
+
+                  ElevatedButton(onPressed: (){
+                    controller.posTest(machineInfo.pos_ip, machineInfo.pos_port);
+                  }, child: const Text('端末テスト')),
+                  Spacer(),
+
+                  _settingContent('端末チェック', color: posCheckService.isActive ? Colors.blue : Colors.grey),
                   const SizedBox(width: 8),
                   Switch(
                     value: posCheckService.isActive,
                     onChanged: (value) {
-                      posCheckService.updateUseStatus(value);
+                      posCheckService.toggleActive(value);
+                      controller.update();
                     },
                     activeColor: Colors.blue,
                   ),

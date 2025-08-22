@@ -64,6 +64,7 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     }
 
     HomeServices.updatePosSettingInfo(machineInfo.posSettingInfo);
+    machineInfo.updateMachineSettingInfo();
     update();
   }
 
