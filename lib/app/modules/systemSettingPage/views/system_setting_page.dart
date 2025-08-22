@@ -7,9 +7,8 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
-//import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
+import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
 
 import '../../../services/PosCheckService.dart';
 
@@ -20,30 +19,55 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   Widget build(BuildContext context) {
     return GetBuilder<SystemSettingPageController>(builder: (logic) {
       return Scaffold(
+        backgroundColor: Color.fromARGB(255, 242, 242, 246),
         appBar: PreferredSize(
           preferredSize: const Size.fromHeight(80),
           child: Card(
-            margin: const EdgeInsets.all(8),
             //elevation: 4,
             shape:
             RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: AppBar(
-              title: const Text('システム設定',
-                  style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      fontSize: 32,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold)),
+              title: Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: const Text('システム設定',
+                    style: TextStyle(
+                        fontFamily: 'NotoSansJP',
+                        fontSize: 32,
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold)),
+              ),
               centerTitle: true,
               backgroundColor: Colors.white,
               elevation: 0,
               foregroundColor: Colors.black,
-              leading: IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new, color: Colors.blue, size: 38),
-                onPressed: () {
-                  Get.back(result: "setting-back");
-                },
+              leadingWidth: 120,
+              leading: Container(
+                padding: const EdgeInsets.only(top: 10),
+                child: GestureDetector(
+                  onTap: () {
+                    Get.back(result: "setting-back");
+                  },
+                  child: Row(
+                    children: [
+                      IconButton(
+                        icon: const Icon(Icons.arrow_back_ios_new, color: Colors.blue, size: 32),
+                        onPressed: () {
+                          Get.back(result: "setting-back");
+                        },
+                      ),
+                      Text(
+                        '戻る',
+                        style: TextStyle(
+                          fontFamily: 'NotoSansJP',
+                          fontSize: 26,
+                          color: Colors.blue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               ),
+              actionsPadding: const EdgeInsets.only(top: 10),
               actions: [
                 IconButton(
                   icon: const Icon(Icons.key, color: Colors.blue, size: 38),
@@ -67,6 +91,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
           ),
         ),
         body: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Column(
             //spacing: 16,
             children: [
@@ -103,7 +128,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               const SizedBox(height: 16),
               _areaTitle('プリンター設定'),
               //如果是Windows系统，显示USB打印机设置
-              //if (Platform.isWindows) _usbPrinterSettingArea(logic.usbDevice),
+              if (Platform.isWindows) _usbPrinterSettingArea(logic.usbDevice),
 
               _printerSettingArea(logic.machineInfo.printerList),
 
@@ -251,7 +276,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
       onTap: onPressed,
       child: Container(
         height: 80,
-        width: 240,
+        width: 230,
         alignment: Alignment.center,
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         decoration: BoxDecoration(
@@ -865,59 +890,59 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 //when is windows will add a additional card for printer settings
 // only one card as other settings
 
-  // Widget _usbPrinterSettingArea(Map usbPrinterInfo) {
-  //   return Card(
-  //     color: Colors.white,
-  //     margin: const EdgeInsets.all(8),
-  //     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-  //     child: Padding(
-  //       padding: const EdgeInsets.all(16.0),
-  //       child: Column(
-  //         crossAxisAlignment: CrossAxisAlignment.start,
-  //         children: [
-  //           _settingTitle('USBプリンター設定'),
-  //           const Divider(),
-  //           // USBプリンター設定内容
-  //           if (usbPrinterInfo.isNotEmpty)
-  //             //显示名称和打印按钮
-  //             Row(
-  //               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //               children: [
-  //                 _settingContent(usbPrinterInfo["productName"], color: Colors.blue),
-  //                 const SizedBox(height: 8),
-  //                 ElevatedButton(
-  //                   onPressed: () {
-  //                     controller.printTest(
-  //                         SearchType.usb,
-  //                         usbPrinterInfo["productName"] ?? "productName",
-  //                         usbPrinterInfo["sId"] ?? "sId");
-  //                   },
-  //                   child: const Text('テスト印刷'),
-  //                 ),
-  //               ],
-  //             )
-  //           else
-  //             //显示一个搜索按钮
-  //             Container(
-  //               alignment: Alignment.centerLeft,
-  //               child: ElevatedButton(
-  //                 onPressed: () {
-  //                   Get.dialog(PrinterListPage(
-  //                     searchType: SearchType.usb,
-  //                     currentPrinter: controller.curUsbPrinter?.id,
-  //                     onPrinterSelected: (device) => {
-  //                       controller.setUsbPrinter(usbPrinter: device.usbDevice)
-  //                     },
-  //                   ));
-  //                 },
-  //                 child: const Text('USBプリンターを検索'),
-  //               ),
-  //             ),
-  //         ],
-  //       ),
-  //     ),
-  //   );
-  // }
+  Widget _usbPrinterSettingArea(Map usbPrinterInfo) {
+    return Card(
+      color: Colors.white,
+      margin: const EdgeInsets.all(8),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            _settingTitle('USBプリンター設定'),
+            const Divider(),
+            // USBプリンター設定内容
+            if (usbPrinterInfo.isNotEmpty)
+              //显示名称和打印按钮
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _settingContent(usbPrinterInfo["productName"], color: Colors.blue),
+                  const SizedBox(height: 8),
+                  ElevatedButton(
+                    onPressed: () {
+                      controller.printTest(
+                          SearchType.usb,
+                          usbPrinterInfo["productName"] ?? "productName",
+                          usbPrinterInfo["sId"] ?? "sId");
+                    },
+                    child: const Text('テスト印刷'),
+                  ),
+                ],
+              )
+            else
+              //显示一个搜索按钮
+              Container(
+                alignment: Alignment.centerLeft,
+                child: ElevatedButton(
+                  onPressed: () {
+                    Get.dialog(PrinterListPage(
+                      searchType: SearchType.usb,
+                      currentPrinter: controller.curUsbPrinter?.id,
+                      onPrinterSelected: (device) => {
+                        controller.setUsbPrinter(usbPrinter: device.usbDevice)
+                      },
+                    ));
+                  },
+                  child: const Text('USBプリンターを検索'),
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
 
 //打印机设置区域 数据来自 printerList
   Widget _printerSettingArea(List printerList) {
@@ -1017,7 +1042,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        //color 乳白色 是什么颜色值？
+        color: Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
@@ -1093,7 +1119,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 IconButton(
                   icon: const Icon(Icons.print, color: Colors.blue),
                   onPressed: () {
-                    controller.printTest(printIp, printPort,
+                    controller.printTest(SearchType.net, printIp, printPort,
                         printType: receipt, labelWidth: labelWidth.toDouble());
                   },
                 ),//SearchType.net,
@@ -1438,7 +1464,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                     },
                     activeColor: Colors.blue,
                   ),
-                  SizedBox(width: 65)
+                  //SizedBox(width: 65)
                 ],
               ),
           ],
@@ -1495,7 +1521,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[100],
+        color: Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
