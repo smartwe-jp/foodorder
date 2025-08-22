@@ -89,7 +89,7 @@ class MachineInfoController extends GetxController {
   late String pos_ip;
   late String pos_port;
   int get posPort => int.tryParse(pos_port) ?? 0;
-  late bool allowPos;
+  bool get allowPos => isAllowPos == '1';
   late Map posSettingInfo;
 
   bool get isSellOn => machineModeInfo['sell'] ?? false;
@@ -134,8 +134,8 @@ class MachineInfoController extends GetxController {
     diningType = systemSettingInfo['diningType'];
     print('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
-    isAllowPos = systemSettingInfo['isAllowPos'];
-    isAllowReceipt = systemSettingInfo['isAllowReceipt'];
+    isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
+    isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     String panelType = systemSettingInfo['panelType'] ?? 'Mini';
     machineMode = systemSettingInfo["machineMode"];
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
@@ -203,7 +203,8 @@ class MachineInfoController extends GetxController {
     posSettingInfo = await HomeServices.getPosSettingInfo();
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
-    allowPos = posSettingInfo['allowPos'] ?? false;
+    //allowPos = posSettingInfo['allowPos'] ?? false;
+    //isAllowPos = allowPos ? '1' : '0';
     screenCallSetting = await HomeServices.getWlanPanelPrintSettingInfo();
     wlan_panel_print_ip = screenCallSetting['wlanPrintIp'] ?? "";
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";

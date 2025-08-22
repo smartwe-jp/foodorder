@@ -1,10 +1,14 @@
 
 
+import 'dart:convert';
+
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/systemSettingPage/controllers/system_setting_page_controller.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/SetPassword.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/SetPosIp.dart';
+import 'package:foodorder/app/services/GetxStorage.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
+import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart';
 
 extension SystemSettingPageControllerExtension on SystemSettingPageController {
@@ -59,12 +63,28 @@ extension SystemSettingPageControllerExtension on SystemSettingPageController {
     }
 
     if (isAllowPos != null) {
-      machineInfo.allowPos = true;
+      machineInfo.isAllowPos = isAllowPos ? '1' : '0';
       machineInfo.posSettingInfo['allowPos'] = isAllowPos;
+      _updateSystemSetting("isAllowPos", machineInfo.isAllowPos);
     }
 
     HomeServices.updatePosSettingInfo(machineInfo.posSettingInfo);
     machineInfo.updateMachineSettingInfo();
+    update();
+  }
+
+
+  void _updateSystemSetting(String key, dynamic value) {
+    if (systemSettingData.containsKey(key)) {
+      systemSettingData[key] = value;
+      Storage.setString(
+          'smartwe_systemSetting', json.encode(systemSettingData));
+      GetxStorage.setData(
+          'smartwe_systemSetting', json.encode(systemSettingData));
+    } else {
+      print('Key $key does not exist in systemSettingData.');
+    }
+    machineInfo.updateMachineSettingInfo(settingInfo: systemSettingData);
     update();
   }
 
