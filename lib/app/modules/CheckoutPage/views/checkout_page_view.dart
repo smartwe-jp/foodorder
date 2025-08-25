@@ -134,7 +134,7 @@ class CheckoutPageView extends GetView {
                 color: Colors.blueGrey[100],
                 size: 120,
               ),
-              title: 'settlement_button'.tr,
+              title: 'settlement_button'.localized(),
               selected: false,
               onTap: () {
                 controller.machineInfo.currentMode = MachineMode.scan;
