@@ -828,7 +828,7 @@ class CreatePrintImageController extends GetxController {
             24.0,
             FontWeight.w100,
             //(printData["takeOut"] == true) ?
-            "${formatMoney(printData["tax2"])})",
+            "${formatMoney(printData["tax2"] ?? 0)})",
             24.0,
             FontWeight.w100,
             true),

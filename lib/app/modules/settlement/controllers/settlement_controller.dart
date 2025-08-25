@@ -667,61 +667,6 @@ class SettlementController extends GetxController with StateMixin {
       });
     });
   }
-  //
-  // //request latest checkout info
-  // requestLatestCheckoutInfo() async {
-  //   bool goNext = true;
-  //   var formData = {
-  //     "orderId": orderId.value,
-  //   };
-  //   await request('webBootCalculateConfirm',
-  //       method: 'POST', parameters: formData)
-  //       .then((val) {
-  //     var response = json.decode(val.toString());
-  //     debugPrint("webBootCalculateConfirm:$response");
-  //     if (response['code'] == 200 && response['data'] != null) {
-  //       String finalTotal = response['data'].toString();
-  //       debugPrint('finalTotal $finalTotal');
-  //       if (totalPrice.value == finalTotal) {
-  //         goNext = true;
-  //       } else {
-  //         totalPrice.value = finalTotal;
-  //         var outMoney = int.parse(getPutMoney.value) - int.parse(totalPrice.value); //找零金额
-  //         showOutMoney.value = outMoney < 0 ? '0':outMoney.toString();
-  //         goNext = false;
-  //       }
-  //       update();
-  //     }
-  //   }).catchError((e) {
-  //     debugPrint("webBootCalculateConfirm:$e");
-  //     goNext = true;
-  //   }).timeout(Duration(seconds: 30), onTimeout: () {
-  //     goNext = true;
-  //   });
-  //   return goNext;
-  // }
-  //
-  // cashPayCheck() async {
-  //   showEasyLoading();
-  //   bool result = await requestLatestCheckoutInfo();
-  //
-  //   if (!result) {
-  //     EasyLoading.dismiss();
-  //     allowClick.value = true;
-  //     isPrintClick.value = false;
-  //     showPrintButton.value = false;
-  //     update();
-  //     Get.dialog(
-  //         barrierDismissible: false,
-  //         DialogUtils.alertOneButton(
-  //             GString.getToString(
-  //                 checkLanguage.value, "cash_pay_checkout_tips"), confirm: () {
-  //           Get.back();
-  //         }));
-  //   } else {
-  //     doPrintOrderMenu(machineInfo.receiptPrintType);
-  //   }
-  // }
 
   doScanCodeTimeOutLastQuery() {
     var formData = {
@@ -771,6 +716,18 @@ class SettlementController extends GetxController with StateMixin {
         if (machineInfo.pos_ip != "" && machineInfo.pos_port != "") {
           payConnectSocket(questData: questData);
         }
+      } else {
+        //提醒未设置POS机 点击返回
+        EasyLoading.dismiss();
+        Get.dialog(
+            barrierDismissible: false,
+            DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr, confirm: () {
+                  
+          Get.back();
+          Get.back();
+        }));
       }
     }
   }

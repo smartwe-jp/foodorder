@@ -214,5 +214,7 @@ const Map<String, String> ko_KR = {
         "network_error_tips":"죄송합니다. 네트워크 문제로 인해 서비스를 일시적으로 사용할 수 없습니다. 직원에게 문의하거나 거래를 취소해 주십시오.",
         "pos_notwork_tips":"죄송합니다. POS 기기가 응답하지 않습니다. 직원에게 도움을 요청해 주십시오. 감사합니다.",
 
+        "settlement_posnosetting_error":"POS 기기가 설정되지 않았습니다. 직원에게 문의하십시오. 감사합니다!",
+
 
 };
