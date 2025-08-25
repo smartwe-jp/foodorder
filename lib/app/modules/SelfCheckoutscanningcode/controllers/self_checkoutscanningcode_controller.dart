@@ -409,7 +409,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout": machineInfo.mealType,
+        "takeout": true,//machineInfo.mealType,
       };
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
