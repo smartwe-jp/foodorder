@@ -54,10 +54,11 @@ jobs:
       - name: Decode Keystore
         run: |
           echo "${{ secrets.KEYSTORE_JKS }}" | base64 --decode > android/app/upload-keystore.jks
-          echo "storeFile=upload-keystore.jks" > android/key.properties
-          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/key.properties
-          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/key.properties
-          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/key.properties
+          # 创建 Gradle 打包所需的 keystore.properties 文件
+          echo "storeFile=upload-keystore.jks" > android/keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/keystore.properties
 
       # 步骤 7: 构建 Flutter APK 和 App Bundle
       - name: Build Flutter (APK & App Bundle)
