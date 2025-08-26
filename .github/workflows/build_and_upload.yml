@@ -61,33 +61,31 @@ jobs:
           flutter build apk --release
           flutter build appbundle --release
 
-      # 步骤 8: 上传已签名的 APK 到 Google Drive
+      # 步骤 8: 上传已签名的 APK 到 Google Drive (使用新的 Action)
       - name: Upload APK to Google Drive
-        uses: glifery/gdrive-upload-action@v1
+        uses: Sanjay-B/gdrive-upload@v1.0.1
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-          path: build/app/outputs/flutter-apk/app-release.apk
-          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
-          fileName: app-release-${{ github.ref_name }}.apk
+          file-path: build/app/outputs/flutter-apk/app-release.apk # <-- 参数名是 'file-path'
+          folder-id: ${{ secrets.GDRIVE_FOLDER_ID }}
+          file-name: app-release-${{ github.ref_name }}.apk
           overwrite: 'true'
 
-      # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
+      # 步骤 9: 上传已签名的 App Bundle 到 Google Drive (使用新的 Action)
       - name: Upload App Bundle to Google Drive
-        uses: glifery/gdrive-upload-action@v1
+        uses: Sanjay-B/gdrive-upload@v1.0.1
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-          path: build/app/outputs/bundle/release/app-release.aab
-          folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
-          fileName: app-release-bundle-${{ github.ref_name }}.aab
+          file-path: build/app/outputs/bundle/release/app-release.aab # <-- 参数名是 'file-path'
+          folder-id: ${{ secrets.GDRIVE_FOLDER_ID }}
+          file-name: app-release-bundle-${{ github.ref_name }}.aab
           overwrite: 'true'
 
-      # 新增步骤 10: 创建 GitHub Release 并自动生成 Release Note
+      # 步骤 10: 创建 GitHub Release 并自动生成 Release Note
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          # 自动根据两次标签之间的 commits 生成发行说明
           generate_release_notes: true
-          # 将打包好的 APK 和 AAB 文件附加到 Release 中
           files: |
             build/app/outputs/flutter-apk/app-release.apk
             build/app/outputs/bundle/release/app-release.aab
