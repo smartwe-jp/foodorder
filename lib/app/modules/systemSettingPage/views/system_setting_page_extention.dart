@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:foodorder/app/modules/systemSettingPage/views/system_setting_page_view.dart';
-import 'package:foodorder/app/widget/customButton.dart';
+
 import 'package:get/get.dart';
 
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
+
+import '../../../widget/CostomIconButton.dart';
 
 extension SystemSettingPageExtension on SystemSettingPageView {
 
