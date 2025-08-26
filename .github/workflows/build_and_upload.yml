@@ -63,20 +63,20 @@ jobs:
 
       # 步骤 8: 上传已签名的 APK 到 Google Drive
       - name: Upload APK to Google Drive
-        uses: adityak74/google-drive-upload-action@v2.0
+        uses: glifery/gdrive-upload-action@v1
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-          filePath: build/app/outputs/flutter-apk/app-release.apk
+          path: build/app/outputs/flutter-apk/app-release.apk
           folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
           fileName: app-release-${{ github.ref_name }}.apk
           overwrite: 'true'
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
       - name: Upload App Bundle to Google Drive
-        uses: adityak74/google-drive-upload-action@v2.0
+        uses: glifery/gdrive-upload-action@v1
         with:
           credentials: ${{ secrets.GDRIVE_CREDENTIALS_DATA }}
-          filePath: build/app/outputs/bundle/release/app-release.aab
+          path: build/app/outputs/bundle/release/app-release.aab
           folderId: ${{ secrets.GDRIVE_FOLDER_ID }}
           fileName: app-release-bundle-${{ github.ref_name }}.aab
           overwrite: 'true'
