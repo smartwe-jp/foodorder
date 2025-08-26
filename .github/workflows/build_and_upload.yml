@@ -70,8 +70,13 @@ jobs:
       - name: Upload APK to Google Drive
         run: |
           sudo apt-get install -y jq
-          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
-          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
+          # 将 Secret 写入文件以避免解析错误
+          echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
+          
+          # 从文件读取凭据
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+          
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
@@ -95,8 +100,13 @@ jobs:
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
       - name: Upload App Bundle to Google Drive
         run: |
-          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
-          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
+          # 将 Secret 写入文件以避免解析错误
+          echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
+
+          # 从文件读取凭据
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
