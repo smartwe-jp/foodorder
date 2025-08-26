@@ -367,15 +367,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "3.0.5"
-  flutter_http_sse:
-    dependency: "direct main"
-    description:
-      path: "."
-      ref: "master-adapter-3.1.5"
-      resolved-ref: "451d8ed058ae50b4da88d1bf92f42834f88a9189"
-      url: "git@github.com:Aaron51FX/flutter_http_sse.git"
-    source: git
-    version: "1.0.1"
   flutter_plugin_msprinter:
     dependency: "direct main"
     description:
