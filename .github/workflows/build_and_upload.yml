@@ -71,8 +71,8 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y jq openssl
 
-          # 写入 Secret 到文件（使用 printf 避免多余换行）
-          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
+          # 使用 base64 Secret（将原始 gdrive JSON 本地先做 base64 -w0 保存到 Secret）
+          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
 
           # 调试：查看不可见字符和 jq 能否解析
           echo "----- gdrive_creds.json (show invisible chars) -----"
@@ -124,9 +124,13 @@ jobs:
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
       - name: Upload App Bundle to Google Drive
         run: |
-          # --- 1. 获取凭据并生成 JWT (同上) ---
-          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
-          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
+          # 使用 base64 Secret（将原始 gdrive JSON 本地先做 base64 -w0 保存到 Secret）
+          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
+
+          # 从文件读取凭据
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
@@ -136,17 +140,12 @@ jobs:
           SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
           SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(echo -n "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
           JWT="$SIGNATURE_INPUT.$SIGNATURE"
-
-          # --- 2. 换取 Access Token (同上) ---
           TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
           ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
-
-          # --- 3. 上传文件 ---
           FILE_PATH="build/app/outputs/bundle/release/app-release.aab"
           FILE_NAME="app-release-bundle-${{ github.ref_name }}.aab"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
-          
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
