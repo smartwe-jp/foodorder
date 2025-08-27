@@ -6,7 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
+import 'package:foodorder/app/services/PosCheckService.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -51,7 +53,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString tableNum = "0".obs;
   RxInt discount = 0.obs;
 
-
   bool machineLanguages_JP = false;
   bool machineLanguages_CH = false;
   bool machineLanguages_EN = false;
@@ -60,17 +61,19 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool startShake = false;
   bool isAnimating = false;
 
-
   RxMap orderInfoMap = {}.obs;
   String scanTextValue = '';
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
 
+  final RxInt posCheckStatus = 0.obs;
+
   @override
   void onInit() {
     debugPrint("CheckoutPageController init");
-    Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
+    Future.delayed(const Duration(),
+        () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     _getMachineLanguages();
     if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
       firstLoad = Get.arguments['initLaunch'] ?? false;
@@ -83,16 +86,21 @@ class CheckoutPageController extends GetxController with StateMixin {
     super.onReady();
     //startRepeatingAnimation();
     if (firstLoad) {
-      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      bool isSseEnabled =
+          sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
-          Get.dialog(
-            checkStatusCopyView(),
-            barrierDismissible: false,
-          );
-          checkPrinterStatus();
+        Get.dialog(
+          checkStatusCopyView(onEnd: () {
+            _showPosCheck();
+          }),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
         //});
+      } else {
+        _showPosCheck();
       }
     }
   }
@@ -101,6 +109,31 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onClose() {
     //stopRepeatingAnimation();
     super.onClose();
+  }
+
+  _checkPosStatus() async {
+    //检查POS机状态
+    final posCheckService = Get.find<PosCheckService>();
+
+    posCheckStatus.value =
+        await posCheckService.checkPosConnection(machineInfo.pos_ip) ? 1 : 2;
+    debugPrint('POS机检查结果: ${posCheckStatus.value == 1 ? "成功" : "失败"}');
+  }
+
+  _showPosCheck() async {
+    //检查POS机状态
+    if (machineInfo.allowPos && machineInfo.pos_ip.isNotEmpty) {
+      posCheckStatus.value = 0; // 检测中
+      Get.dialog(
+        PosCheckView(
+            posCheckStatus: posCheckStatus,
+            onRetry: () {
+              _checkPosStatus();
+            }),
+        barrierDismissible: false,
+      );
+      _checkPosStatus();
+    }
   }
 
   Future<void> checkPrinterStatus() async {
@@ -121,12 +154,14 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     allAreReady.value = false;
     update();
-    
+
     await Future.delayed(const Duration(milliseconds: 3000));
 
     await printerCheckService.checkPrinters(checkList, (printer) {
-      int index = checkList.indexWhere((item) => item['name'] == printer['name']);
-      debugPrint('Checking printer back: ${printer['name']} isOn:${printer['isOn']} isReady: ${printer['isReady']} isChecking: ${printer['isChecking']} checked: ${printer['checked']}');
+      int index =
+          checkList.indexWhere((item) => item['name'] == printer['name']);
+      debugPrint(
+          'Checking printer back: ${printer['name']} isOn:${printer['isOn']} isReady: ${printer['isReady']} isChecking: ${printer['isChecking']} checked: ${printer['checked']}');
       if (index != -1) {
         checkList[index]['isReady'] = printer['isReady'];
         checkList[index]['isChecking'] = printer['isChecking'];
@@ -134,8 +169,8 @@ class CheckoutPageController extends GetxController with StateMixin {
       }
       allAreReady.value = checkList.every((item) => item['checked']);
       //if (allAreReady.value) {
-        //EasyLoading.showToast('All printers are ready');
-        //Get.back(); // Close the dialog
+      //EasyLoading.showToast('All printers are ready');
+      //Get.back(); // Close the dialog
       //}
       update();
     });
@@ -143,7 +178,10 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   _getMachineLanguages() async {
     debugPrint("获取机器语言");
-    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
+    takeOut.value =
+        (machineInfo.diningType == "2" || machineInfo.diningType == "3")
+            ? true
+            : false;
     machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
     machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
     machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
@@ -173,9 +211,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     update();
   }
 
-
-
-  showOrderEasyLoading(){
+  showOrderEasyLoading() {
     EasyLoading.show(
       //status: 'loading...',
       indicator: Container(
@@ -186,14 +222,16 @@ class CheckoutPageController extends GetxController with StateMixin {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             InkWell(
-              onLongPress: (){
+              onLongPress: () {
                 EasyLoading.dismiss();
               },
               child: Container(
                 //width: ScreenAdapter.width(400),
                 margin: EdgeInsets.only(top: 60),
                 height: ScreenAdapter.height(200),
-                child: Image.asset(GImage.getImageString("imgpublic", "printticketloading"),fit: BoxFit.fitHeight),
+                child: Image.asset(
+                    GImage.getImageString("imgpublic", "printticketloading"),
+                    fit: BoxFit.fitHeight),
               ),
             ),
           ],
@@ -201,9 +239,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       ),
       maskType: EasyLoadingMaskType.black,
     );
-
   }
-
 
   //{"msg":"success","code":200,"data":{"orderId":459105413798756352,"totalPrice":2250,"discount":0,"tableNum":"Ａ０２","machineCode":null,"orderQty":15,"orderKey":null,"language":null,"orderInfoMap":{"ミルクティー":3,"枝豆":2,"生ビール":1,"牛すじドテ焼大根日":7,"甘蘭牛肉麺":1,"コーラ":1,"アイス紅茶":1}}}
   requestOrderList(String scanText, {goDetail = true}) async {
@@ -238,10 +274,8 @@ class CheckoutPageController extends GetxController with StateMixin {
       if (response['code'] == 200 &&
           response["data"] != null &&
           response["data"].isNotEmpty &&
-          response["data"]["orderId"] != null
-      ) {
+          response["data"]["orderId"] != null) {
         if (response["data"]["totalPrice"] >= 0) {
-
           orderId.value = response["data"]["orderId"].toString();
           totalPrice.value = response["data"]["totalPrice"];
           discount.value = response["data"]["discount"];
@@ -250,7 +284,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
           if (goDetail) {
             debugPrint('/scan-detail');
-            Get.to(()=>ScanDetailPagePage());
+            Get.to(() => ScanDetailPagePage());
           } else {
             if (Get.isRegistered<ScanDetailPageLogic>())
               Get.find<ScanDetailPageLogic>().update();
@@ -268,51 +302,45 @@ class CheckoutPageController extends GetxController with StateMixin {
     });
   }
 
-
-
   _getOrderKey(qrCodeString) {
     RegExp regExp = new RegExp(r"\?p=(.*)");
     return regExp.stringMatch(qrCodeString).toString().substring(3);
   }
 
-
-
-  _showDialogError(msg){
-      Get.dialog(DialogUtils.alertOneButton(msg,
-      title: "tag_title".tr,
-      confirmtitle:"tag_button_yes".tr,
-      contentTagImg: "error_public", confirm: () {
-        Get.back();
-      }));
+  _showDialogError(msg) {
+    Get.dialog(DialogUtils.alertOneButton(msg,
+        title: "tag_title".tr,
+        confirmtitle: "tag_button_yes".tr,
+        contentTagImg: "error_public", confirm: () {
+      Get.back();
+    }));
   }
 
   //选择食用方式和支付方式
   showSelectMealTypeAndPaymentMethodDialog() async {
-    Cashchangerservice.checkMachineState(); 
+    Cashchangerservice.checkMachineState();
     scanQrCodeFocusNode.requestFocus();
     //scanQrCodeHomeFocusNode.requestFocus();
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
-          () =>
-          SelectPaymentPage(
-              checkLanguage: selectLanguage,
-              menuCount: 0,
-              shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
-              tableNum: tableNum.value,
-              onConfrimClick: () {
-                showOpenPayment.value = true;
-                machineInfo.showReceiptPage = true;
-                goToSettlement();
-            },
-            onCancelClick: (String isBack){
-              if(isBack == "back"){
-                scanQrCodeController.text = "";
-                //scanQrCodeHomeController.text = "";
-              }
-              scanQrCodeFocusNode.requestFocus();// 获取焦点
-              //scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+      () => SelectPaymentPage(
+          checkLanguage: selectLanguage,
+          menuCount: 0,
+          shopCartTotalPrice: (totalPrice.value + discount.value).toString(),
+          tableNum: tableNum.value,
+          onConfrimClick: () {
+            showOpenPayment.value = true;
+            machineInfo.showReceiptPage = true;
+            goToSettlement();
+          },
+          onCancelClick: (String isBack) {
+            if (isBack == "back") {
+              scanQrCodeController.text = "";
+              //scanQrCodeHomeController.text = "";
             }
-        ),
+            scanQrCodeFocusNode.requestFocus(); // 获取焦点
+            //scanQrCodeHomeFocusNode.requestFocus();// 获取焦点
+          }),
       transition: Transition.fadeIn,
       fullscreenDialog: true,
       opaque: false,
@@ -320,7 +348,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   postNewOrderId({orderIdIfTakeOut = ""}) {
-
     if (orderId.value == "") {
       orderId.value = orderIdIfTakeOut;
     }
@@ -329,44 +356,40 @@ class CheckoutPageController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "machineCode": machineInfo.machineCode,
     };
-    request('webBootToPayConfirm', method: 'POST', parameters: formData).then((val) {
+    request('webBootToPayConfirm', method: 'POST', parameters: formData)
+        .then((val) {
       var response = json.decode(val.toString());
       EasyLoading.dismiss();
 
-      if (response['code'] == 200 && response['data'] !=null && response['data']['orderId'] !=null) {
-
+      if (response['code'] == 200 &&
+          response['data'] != null &&
+          response['data']['orderId'] != null) {
         orderId.value = response['data']["orderId"];
         print(orderId.value);
         //goToSettlement();
-      }else{
-
+      } else {
         //showToast(response['data']["message"]);
-        Get.dialog(
-            DialogUtils.alertOneButton("${response['data']["message"]}",
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton("${response['data']["message"]}",
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
       }
     });
-
   }
 
   goToSettlement() async {
     // scanQrCodeController.text = "";
     // scanQrCodeHomeController.text = "";
-    Get.toNamed('/settlement',preventDuplicates: false,
-        arguments: {
-          "checkLanguage": selectLanguage,
-          "machineCode": machineInfo.machineCode,
-          "orderId" : orderId.value,
-          "totalPrice" : (totalPrice.value + discount.value).toString(),
-          "machineMode":"2",
-          "showOpenPayment": showOpenPayment.value,
-          "isScanCheckOut" : true,
-        });
+    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+      "checkLanguage": selectLanguage,
+      "machineCode": machineInfo.machineCode,
+      "orderId": orderId.value,
+      "totalPrice": (totalPrice.value + discount.value).toString(),
+      "machineMode": "2",
+      "showOpenPayment": showOpenPayment.value,
+      "isScanCheckOut": true,
+    });
     // if (result == true) {
     //   debugPrint('---settlement back---');
     //   if (result == true) {
@@ -386,7 +409,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   }
 
   backCheckHome({resetLanguage = false}) {
-
     //final reset = resetLanguage;
     debugPrint('backCheckHome, reset:$resetLanguage');
     // if (reset)
@@ -403,14 +425,14 @@ class CheckoutPageController extends GetxController with StateMixin {
     //   scanQrCodeHomeFocusNode.requestFocus();
     //   scanQrCodeFocusNode.unfocus();
     // } else {
-      debugPrint('isFirstPage = false');
-      scanQrCodeController.text = "";
-      scanQrCodeFocusNode.requestFocus();// 获取焦点
-      //if (resetLanguage) {//返回到首页需要重置首页扫码
-        //scanQrCodeHomeFocusNode.requestFocus();
-      //} else {
-        //scanQrCodeHomeFocusNode.unfocus();
-      //}
+    debugPrint('isFirstPage = false');
+    scanQrCodeController.text = "";
+    scanQrCodeFocusNode.requestFocus(); // 获取焦点
+    //if (resetLanguage) {//返回到首页需要重置首页扫码
+    //scanQrCodeHomeFocusNode.requestFocus();
+    //} else {
+    //scanQrCodeHomeFocusNode.unfocus();
+    //}
 
     //}
   }
@@ -432,18 +454,16 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     Get.toNamed(jumpUrl,
         arguments: {"checkLanguage": lan, "mealType": mealType});
-
   }
 
   goSelfCheckout() {
-    Get.toNamed('/self-checkoutscanningcode',arguments: {
+    Get.toNamed('/self-checkoutscanningcode', arguments: {
       "checkLanguage": selectLanguage,
       "mealType": machineInfo.mealType
     });
   }
 
   updateSettingLanguage(String language) async {
-
     selectLanguage = language;
 
     var locale = const Locale('ja', 'JP');
@@ -458,8 +478,5 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     //var locale = Locale('${language.toLowerCase()}', '$language');
     //Get.updateLocale(locale);
-
   }
-
-
 }

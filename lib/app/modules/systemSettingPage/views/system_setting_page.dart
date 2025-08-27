@@ -1612,11 +1612,11 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
           const SizedBox(height: 8),
 
-          if (isOn && centerOn && !needInput)
+          if (isOn)
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _settingContent('オプション：'),
+                _settingContent('センタープリントオプション：'),
                 Switch(
                   value: printOption,
                   onChanged: (value) {

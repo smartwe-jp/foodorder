@@ -9,6 +9,7 @@ import 'HttpService.dart';
 
 class PosCheckService extends GetxService {
   RxBool isPosChecking = false.obs;
+  bool checkingResult = false;
   bool isPosBeUsedInOneHour = false;
   RxString posIp = ''.obs;
   int posPort = 9999;
@@ -19,7 +20,7 @@ class PosCheckService extends GetxService {
   @override
   void onInit() {
     super.onInit();
-    _startPosCheckTimerIfNeeded();
+    //_startPosCheckTimerIfNeeded();
   }
 
   //如果外部使用POS的时候，需要检查是否正在检测中，如果在检测中需要等在检测完毕才可以使用
@@ -102,116 +103,106 @@ class PosCheckService extends GetxService {
 
         return;
       }
-      _checkPosConnection(posIp, posPort);
+      checkPosConnection(posIp, posPort: posPort);
     });
-
   }
 
   //检查POS机连接状态
-  Future<void> _checkPosConnection(String posIp, int posPort) async {
-    if (isPosChecking.value) return; // 如果正在检查，则不重复执行
+  Future<bool> checkPosConnection(String posIp, {int posPort = 9999}) async {
+    if (isPosChecking.value) return false; // 如果正在检查，则不重复执行
     debugPrint('开始检查POS机连接: IP=$posIp, 端口=$posPort');
     isPosChecking.value = true;
-    _posTest(posIp, posPort);
-
-    // try {
-    //   // 模拟检查POS机连接的逻辑
-    //   debugPrint('正在检查POS机连接: IP=$posIp, 端口=$posPort');
-    //   final socket =
-    //   await Socket.connect(posIp, posPort, timeout: Duration(seconds: 10));
-    //   debugPrint('POS机连接成功: IP=$posIp, 端口=$posPort');
-    //   socket.destroy();
-    // } catch (e) {
-    //   // 处理连接失败的情况
-    //   debugPrint('POS机连接失败: $e');
-    //   isPosChecking.value = false;
-    //   // 可以在这里添加重试逻辑或其他处理方式
-    // } finally {
-    //   debugPrint('POS机连接检查完成');
-    //   isPosChecking.value = false;
-    // }
+    checkingResult = false;
+    return await _posTest(posIp, posPort);
   }
 
-  _posTest(posIp, posPort, {tryTime = 0}) async {
+  Future<bool> _posTest(posIp, posPort, {tryTime = 0}) async {
     debugPrint("--- posTest ---");
-    
-    request('webBootPosTest', method: 'POST')
-        .then((val) {
+
+    try {
+      var val = await request('webBootPosTest', method: 'POST')
+          .timeout(Duration(seconds: 10));
       var response = json.decode(val.toString());
       debugPrint("webBootPosTest: " + response.toString());
       if (response['code'] == 200) {
         debugPrint("POS机连接信息：${response['data']}");
-        _payConnectSocker(response['data'], posIp, posPort);
+        return await _payConnectSocker(response['data'], posIp, posPort);
       } else {
         isPosChecking.value = false;
+        return false;
       }
-    }).catchError((error) {
+    } catch (error) {
       debugPrint("webBootPosTest 错误: $error");
       if (tryTime >= 3) {
         isPosChecking.value = false;
         debugPrint("POS机连接失败超过3次，停止尝试");
-        return;
+        return false;
       }
-    }).timeout(Duration(seconds: 10), onTimeout:() {
-      debugPrint("POS机连接超时");
-      if (tryTime >= 3) {
-        isPosChecking.value = false;
-        debugPrint("POS机连接超时超过3次，停止尝试");
-        return;
-      }
-      Future.delayed(Duration(seconds: 1), () {
-        _posTest(posIp, posPort, tryTime: tryTime + 1);
-      });
-    });
+      await Future.delayed(Duration(seconds: 1));
+      return await _posTest(posIp, posPort, tryTime: tryTime + 1);
+    }
   }
 
+  Future<bool> _payConnectSocker(questData, pos_ip, pos_port,
+      {tryTime = 0}) async {
+    final completer = Completer<bool>();
 
-  _payConnectSocker(questData, pos_ip, pos_port, {tryTime = 0}) async {
-
-    Socket.connect(
+    await Socket.connect(
       pos_ip,
       pos_port,
-      //timeout: Duration(seconds: 5),
+      timeout: Duration(seconds: 10),
     ).then((Socket socket) async {
       debugPrint("POS机连接成功");
 
       socket.write(questData);
       await Future.delayed(Duration(seconds: 5));
       debugPrint("发送取消数据");
-      socket.write("2109000001       00000                  ");// 发送取消数据
+      socket.write("2109000001       00000                  ");
 
-      //EasyLoading.dismiss();
-      //showTestResultDialog("POS Test Connected");
-
-      socket.listen((List<int> event) {
-        debugPrint("POS机返回数据: ${utf8.decode(event)}");
-        //isPosChecking.value = false;
-      },
+      socket.listen(
+        (List<int> event) {
+          debugPrint("POS机返回数据: ${utf8.decode(event)}");
+          isPosChecking.value = false;
+          checkingResult = true;
+        },
         onDone: () async {
           debugPrint("POS机连接已关闭");
           await Future.delayed(Duration(seconds: 2));
+          socket.destroy();
           isPosChecking.value = false;
+          if (!completer.isCompleted) {
+            completer.complete(checkingResult);
+          }
         },
         onError: (e) async {
           debugPrint("POS机连接错误: $e");
           await Future.delayed(Duration(seconds: 2));
           isPosChecking.value = false;
-          //_close();
+          if (!completer.isCompleted) {
+            completer.complete(false);
+          }
         },
+        cancelOnError: true,
       );
-
     }).catchError((e) async {
       debugPrint("POS机连接失败: $e");
       if (tryTime >= 3) {
         await Future.delayed(Duration(seconds: 2));
         isPosChecking.value = false;
         debugPrint("POS机连接失败超过3次，停止尝试");
-        return;
+        if (!completer.isCompleted) {
+          completer.complete(false);
+        }
+      } else {
+        await Future.delayed(Duration(seconds: 1));
+        bool retryResult = await _payConnectSocker(questData, pos_ip, pos_port,
+            tryTime: tryTime + 1);
+        if (!completer.isCompleted) {
+          completer.complete(retryResult);
+        }
       }
-      Future.delayed(Duration(seconds: 1), () {
-        _payConnectSocker(questData, pos_ip, pos_port, tryTime: tryTime + 1);
-      });
     });
 
+    return await completer.future;
   }
 }

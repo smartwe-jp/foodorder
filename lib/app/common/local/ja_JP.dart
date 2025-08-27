@@ -213,5 +213,8 @@ const Map<String, String> ja_JP = {
         "pos_notwork_tips":"申し訳ございません。POS端末が応答しません。店員に対応を依頼してください。ありがとうございます。",
 
         "settlement_posnosetting_error":"POS端末が設定されていません。スタッフに連絡してください。ありがとうございます！",
-
+        "pos_check_title": "POS端末の状態チェック",
+        "pos_checking": "POS端末の状態を確認中です。しばらくお待ちください...",
+        "pos_check_success": "POS端末の状態は正常です。",
+        "pos_check_failed": "POS端末の状態は異常です。",
 };

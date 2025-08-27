@@ -215,7 +215,8 @@ const Map<String, String> zh_CN = {
         "pos_notwork_tips":"非常抱歉，POS机无响应，请联系店员处理，谢谢。",
 
         "settlement_posnosetting_error":"POS机未设置，请联系工作人员，谢谢！",
-
-
-
+        "pos_check_title": "POS机状态检查",
+        "pos_checking": "正在检查POS机状态，请稍候...",
+        "pos_check_success": "POS机状态正常",
+        "pos_check_failed": "POS机状态异常",
 };
