@@ -69,44 +69,48 @@ jobs:
       # 步骤 8: 上传已签名的 APK 到 Google Drive
       - name: Upload APK to Google Drive
         run: |
+          # 安装 jq 用于解析 JSON
           sudo apt-get install -y jq
-          # 将 Secret 写入文件以避免解析错误
-          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
-          
-          # 从文件读取凭据
-          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
-          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+
+          # --- 1. 从 Secrets 获取服务账号凭据并生成 JWT ---
+          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
+          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
           
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
+          
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
           SCOPE="https://www.googleapis.com/auth/drive"
           PAYLOAD="{\"iss\":\"$CLIENT_EMAIL\",\"scope\":\"$SCOPE\",\"aud\":\"https://oauth2.googleapis.com/token\",\"exp\":$EXP,\"iat\":$IAT}"
           PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 | tr '/+' '_-' | tr -d '=')
+          
           SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
           SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(echo -n "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
+          
           JWT="$SIGNATURE_INPUT.$SIGNATURE"
+
+          # --- 2. 用 JWT 换取 Access Token ---
           TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
           ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+
+          # --- 3. 使用 Access Token 上传文件 ---
           FILE_PATH="build/app/outputs/flutter-apk/app-release.apk"
           FILE_NAME="app-release-${{ github.ref_name }}.apk"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
+          
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
           -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
 
+
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
       - name: Upload App Bundle to Google Drive
         run: |
-          # 将 Secret 写入文件以避免解析错误
-          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
-
-          # 从文件读取凭据
-          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
-          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
-
+          # --- 1. 获取凭据并生成 JWT (同上) ---
+          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
+          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
@@ -116,16 +120,22 @@ jobs:
           SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
           SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(echo -n "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
           JWT="$SIGNATURE_INPUT.$SIGNATURE"
+
+          # --- 2. 换取 Access Token (同上) ---
           TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
           ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+
+          # --- 3. 上传文件 ---
           FILE_PATH="build/app/outputs/bundle/release/app-release.aab"
           FILE_NAME="app-release-bundle-${{ github.ref_name }}.aab"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
+          
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
           -F "file=@$FILE_PATH;type=application/octet-stream"
+
 
       # 步骤 10: 创建 GitHub Release
       - name: Create GitHub Release
