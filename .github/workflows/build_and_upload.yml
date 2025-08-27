@@ -72,7 +72,6 @@ jobs:
           sudo apt-get install -y jq
           # 将 Secret 写入文件以避免解析错误
           printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
-          cat gdrive_creds.json
           
           # 从文件读取凭据
           CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
