@@ -69,40 +69,56 @@ jobs:
       # 步骤 8: 上传已签名的 APK 到 Google Drive
       - name: Upload APK to Google Drive
         run: |
-          # 安装 jq 用于解析 JSON
-          sudo apt-get install -y jq
+          sudo apt-get update && sudo apt-get install -y jq openssl
 
-          # --- 1. 从 Secrets 获取服务账号凭据并生成 JWT ---
-          CLIENT_EMAIL=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .client_email)
-          PRIVATE_KEY=$(echo "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" | jq -r .private_key)
-          
+          # 写入 Secret 到文件（使用 printf 避免多余换行）
+          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_DATA }}" > gdrive_creds.json
+
+          # 调试：查看不可见字符和 jq 能否解析
+          echo "----- gdrive_creds.json (show invisible chars) -----"
+          cat -A gdrive_creds.json | sed -n '1,200p'
+          echo "----- jq parse result -----"
+          jq . gdrive_creds.json
+
+          # 使用 jq 从文件读取字段（不经过 shell 展开）
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+
+          # 生成 JWT 并上传
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
-          
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
           SCOPE="https://www.googleapis.com/auth/drive"
           PAYLOAD="{\"iss\":\"$CLIENT_EMAIL\",\"scope\":\"$SCOPE\",\"aud\":\"https://oauth2.googleapis.com/token\",\"exp\":$EXP,\"iat\":$IAT}"
           PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 | tr '/+' '_-' | tr -d '=')
-          
           SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
-          SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(echo -n "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
-          
+
+          # PRIVATE_KEY may contain real newlines; use process substitution to feed openssl
+          SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(printf "%s" "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
           JWT="$SIGNATURE_INPUT.$SIGNATURE"
 
-          # --- 2. 用 JWT 换取 Access Token ---
-          TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
-          ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+          TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
 
-          # --- 3. 使用 Access Token 上传文件 ---
+          echo "Token response preview:"
+          echo "$TOKEN_RESPONSE" | sed -n '1,200p'
+
+          ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+            echo "ERROR: failed to get access token"
+            exit 1
+          fi
+
           FILE_PATH="build/app/outputs/flutter-apk/app-release.apk"
           FILE_NAME="app-release-${{ github.ref_name }}.apk"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
-          
+
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
-          -H "Authorization: Bearer $ACCESS_TOKEN" \
-          -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
-          -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
+            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
 
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
