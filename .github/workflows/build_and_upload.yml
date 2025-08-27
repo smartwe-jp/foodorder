@@ -115,7 +115,7 @@ jobs:
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
 
-          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
+          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
             -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
@@ -146,17 +146,17 @@ jobs:
           FILE_NAME="app-release-bundle-${{ github.ref_name }}.aab"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
           METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
-          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart" \
+          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
           -H "Authorization: Bearer $ACCESS_TOKEN" \
           -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
           -F "file=@$FILE_PATH;type=application/octet-stream"
 
 
-      # 步骤 10: 创建 GitHub Release
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v1
-        with:
-          generate_release_notes: true
-          files: |
-            build/app/outputs/flutter-apk/app-release.apk
-            build/app/outputs/bundle/release/app-release.aab
+      # # 步骤 10: 创建 GitHub Release
+      # - name: Create GitHub Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     generate_release_notes: true
+      #     files: |
+      #       build/app/outputs/flutter-apk/app-release.apk
+      #       build/app/outputs/bundle/release/app-release.aab
