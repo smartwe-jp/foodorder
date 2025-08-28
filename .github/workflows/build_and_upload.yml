@@ -129,17 +129,17 @@ jobs:
           FILE_PATH="build/app/outputs/flutter-apk/${FILE_NAME}"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
 
-          # # 检查文件是否存在
-          # if [ ! -f "$FILE_PATH" ]; then
-          #   echo "ERROR: APK not found: $FILE_PATH"
-          #   ls -l build/app/outputs/flutter-apk || true
-          #   exit 1
-          # fi
+          # 检查文件是否存在
+          if [ ! -f "$FILE_PATH" ]; then
+            echo "ERROR: APK not found: $FILE_PATH"
+            ls -l build/app/outputs/flutter-apk || true
+            exit 1
+          fi
 
-          # # 生成 metadata.json（保证严格的 JSON）
-          # printf '%s' "{\"name\":\"$FILE_NAME\",\"parents\":[\"$FOLDER_ID\"]}" > metadata.json
-          # echo "----- metadata.json -----"
-          # cat metadata.json
+          # 生成 metadata.json（保证严格的 JSON）
+          printf '%s' "{\"name\":\"$FILE_NAME\",\"parents\":[\"$FOLDER_ID\"]}" > metadata.json
+          echo "----- metadata.json -----"
+          cat metadata.json
 
           # 上传：把 metadata 作为文件上传，避免引号/转义问题
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
