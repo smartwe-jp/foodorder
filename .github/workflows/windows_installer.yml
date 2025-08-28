@@ -4,11 +4,11 @@ on:
   push:
     tags:
       - 'w*'
-  workflow_dispatch:
+  workflow_dispatch:   # <- 确保有这行
     inputs:
-      version:
-        description: 'Override version (e.g. 1.2.0)'
+      tag:
         required: false
+        description: 'Optional tag to run with'
 
 jobs:
   build-windows:
