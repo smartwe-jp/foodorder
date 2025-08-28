@@ -64,27 +64,33 @@ jobs:
       - name: Build Flutter (APK & App Bundle)
         run: |
           flutter build apk --release
-          flutter build appbundle --release
+      #    flutter build appbundle --release
+      
+      # 步骤 7.1: 生成版本信息文件
+      - name: Generate Version Info
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          APP_NAME=$(grep '^appName:' pubspec.yaml | awk '{print $2}')
+          if [ -z "$APP_NAME" ]; then
+            APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
+          fi
+          FILE_NAME="${APP_NAME}_${VERSION}.apk"
+          mkdir -p build/app/outputs/flutter-apk
+          mv build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/${FILE_NAME}"
+          # export as step output
+          echo "file_name=${FILE_NAME}" >> "$GITHUB_OUTPUT"
 
       # 步骤 8: 上传已签名的 APK 到 Google Drive
       - name: Upload APK to Google Drive
         run: |
           sudo apt-get update && sudo apt-get install -y jq openssl
-
-          # 使用 base64 Secret（将原始 gdrive JSON 本地先做 base64 -w0 保存到 Secret）
           printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
-
-          # 调试：查看不可见字符和 jq 能否解析
           echo "----- gdrive_creds.json (show invisible chars) -----"
           cat -A gdrive_creds.json | sed -n '1,200p'
           echo "----- jq parse result -----"
           jq . gdrive_creds.json
-
-          # 使用 jq 从文件读取字段（不经过 shell 展开）
           CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
           PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
-
-          # 生成 JWT 并上传
           HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
           IAT=$(date +%s)
           EXP=$(($IAT + 3500))
@@ -92,28 +98,24 @@ jobs:
           PAYLOAD="{\"iss\":\"$CLIENT_EMAIL\",\"scope\":\"$SCOPE\",\"aud\":\"https://oauth2.googleapis.com/token\",\"exp\":$EXP,\"iat\":$IAT}"
           PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 | tr '/+' '_-' | tr -d '=')
           SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
-
-          # PRIVATE_KEY may contain real newlines; use process substitution to feed openssl
           SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(printf "%s" "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
           JWT="$SIGNATURE_INPUT.$SIGNATURE"
-
           TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
             -H "Content-Type: application/x-www-form-urlencoded" \
             -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
-
           echo "Token response preview:"
           echo "$TOKEN_RESPONSE" | sed -n '1,200p'
-
           ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
           if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
             echo "ERROR: failed to get access token"
             exit 1
           fi
 
-          FILE_PATH="build/app/outputs/flutter-apk/app-release.apk"
-          FILE_NAME="app-release-${{ github.ref_name }}.apk"
+          # 使用来自 Rename step 的输出
+          FILE_NAME="${{ steps.rename_apk.outputs.file_name }}"
+          FILE_PATH="build/app/outputs/flutter-apk/${FILE_NAME}"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
-          METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
+          METADATA=$(printf '{"name":"%s","parents":["%s"]}' "$FILE_NAME" "$FOLDER_ID")
 
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
