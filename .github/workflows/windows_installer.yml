@@ -48,6 +48,15 @@ jobs:
         uses: webfactory/ssh-agent@v0.9.0
         with:
           ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+      
+      - name: Add github.com to known_hosts
+        shell: pwsh
+        run: |
+          $sshDir = "$env:USERPROFILE\.ssh"
+          if (-not (Test-Path $sshDir)) { New-Item -ItemType Directory -Path $sshDir | Out-Null }
+          ssh-keyscan github.com 2>$null | Out-File -FilePath "$sshDir\known_hosts" -Append
+          # 可选：测试连接（返回 1 也不失败）
+          ssh -T git@github.com || echo "SSH test finished"
 
       # 步骤 3: 缓存 Flutter 依赖
       - name: Cache Flutter dependencies
