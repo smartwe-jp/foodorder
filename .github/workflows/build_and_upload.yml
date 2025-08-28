@@ -7,6 +7,11 @@ on:
     tags:
       - 'v*'
   workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional tag to run (e.g. v2.7.10). Leave empty to run branch.'
+        required: false
+        default: ''
 
 jobs:
   build_and_release:
@@ -16,6 +21,13 @@ jobs:
       # 步骤 1: 检出代码
       - name: Checkout code
         uses: actions/checkout@v4
+
+      # 如果在手动触发时填写了 tag，则切换到该 tag
+      - name: Checkout specified tag
+        if: ${{ github.event.inputs.tag != '' }}
+        run: |
+          git fetch --tags
+          git checkout tags/${{ github.event.inputs.tag }}
 
       # 新增步骤: 配置 SSH 以访问私有依赖库
       - name: Configure SSH for Private Dependencies
