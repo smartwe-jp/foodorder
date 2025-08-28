@@ -1,0 +1,30 @@
+name: Dispatch Release Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'Branch or tag to run on (release branch name)'
+        required: true
+        default: 'release'
+      tag:
+        description: 'Optional tag input forwarded to target workflow'
+        required: false
+        default: ''
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger build_and_upload.yml on target ref
+        run: |
+          TARGET_WORKFLOW=build_and_upload.yml
+          REF="${{ github.event.inputs.ref }}"
+          TAG_INPUT="${{ github.event.inputs.tag }}"
+          DATA="{\"ref\":\"$REF\",\"inputs\":{\"tag\":\"$TAG_INPUT\"}}"
+          echo "Dispatching $TARGET_WORKFLOW on ref $REF (tag=$TAG_INPUT)"
+          curl -s -X POST \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: token ${{ secrets.REPO_PAT }}" \
+            https://api.github.com/repos/${{ github.repository }}/actions/workflows/$TARGET_WORKFLOW/dispatches \
+            -d "$DATA"
