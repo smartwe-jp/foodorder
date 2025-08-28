@@ -1,0 +1,164 @@
+# .github/workflows/build_and_upload.yml
+
+name: Build Signed App, Upload, and Create Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  build_and_release:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 步骤 1: 检出代码
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 新增步骤: 配置 SSH 以访问私有依赖库
+      - name: Configure SSH for Private Dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 步骤 2: 设置 Java 环境
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'zulu'
+          java-version: '17'
+
+      # 步骤 3: 缓存 Flutter 依赖
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      # 步骤 4: 设置 Flutter 环境
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.32.7'
+          channel: 'stable'
+
+      # 步骤 5: 获取 Flutter 依赖包 (现在可以成功访问私有库)
+      - name: Get Flutter dependencies
+        run: flutter pub get
+
+      # 步骤 6: 解码并配置签名文件
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_JKS }}" | base64 --decode > android/app/upload-keystore.jks
+          # 创建 Gradle 打包所需的 keystore.properties 文件
+          echo "storeFile=upload-keystore.jks" > android/keystore.properties
+          echo "storePassword=${{ secrets.KEYSTORE_PASSWORD }}" >> android/keystore.properties
+          echo "keyAlias=${{ secrets.KEY_ALIAS }}" >> android/keystore.properties
+          echo "keyPassword=${{ secrets.KEY_PASSWORD }}" >> android/keystore.properties
+
+      # 步骤 7: 构建 Flutter APK 和 App Bundle
+      - name: Build Flutter (APK & App Bundle)
+        run: |
+          flutter build apk --release
+
+
+      - name: Rename APK with version and appName
+        id: rename_apk
+        run: |
+          VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
+          APP_NAME=$(grep '^appName:' pubspec.yaml | awk '{print $2}')
+          if [ -z "$APP_NAME" ]; then
+            APP_NAME=$(grep '^name:' pubspec.yaml | awk '{print $2}')
+          fi
+          FILE_NAME="${APP_NAME}_${VERSION}.apk"
+          mkdir -p build/app/outputs/flutter-apk
+          mv build/app/outputs/flutter-apk/app-release.apk "build/app/outputs/flutter-apk/${FILE_NAME}"
+          # export as step output
+          echo "file_name=${FILE_NAME}" >> "$GITHUB_OUTPUT"
+
+      - name: Upload APK to Google Drive
+        run: |
+          sudo apt-get update && sudo apt-get install -y jq openssl
+          printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
+          echo "----- gdrive_creds.json (show invisible chars) -----"
+          cat -A gdrive_creds.json | sed -n '1,200p'
+          echo "----- jq parse result -----"
+          jq . gdrive_creds.json
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+          HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
+          IAT=$(date +%s)
+          EXP=$(($IAT + 3500))
+          SCOPE="https://www.googleapis.com/auth/drive"
+          PAYLOAD="{\"iss\":\"$CLIENT_EMAIL\",\"scope\":\"$SCOPE\",\"aud\":\"https://oauth2.googleapis.com/token\",\"exp\":$EXP,\"iat\":$IAT}"
+          PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 | tr '/+' '_-' | tr -d '=')
+          SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
+          SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(printf "%s" "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
+          JWT="$SIGNATURE_INPUT.$SIGNATURE"
+          TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
+          echo "Token response preview:"
+          echo "$TOKEN_RESPONSE" | sed -n '1,200p'
+          ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+            echo "ERROR: failed to get access token"
+            exit 1
+          fi
+
+          # 使用来自 Rename step 的输出
+          FILE_NAME="${{ steps.rename_apk.outputs.file_name }}"
+          FILE_PATH="build/app/outputs/flutter-apk/${FILE_NAME}"
+          FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
+          METADATA=$(printf '{"name":"%s","parents":["%s"]}' "$FILE_NAME" "$FOLDER_ID")
+
+          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
+            -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
+
+
+
+      # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
+      # - name: Upload App Bundle to Google Drive
+      #   run: |
+      #     # 使用 base64 Secret（将原始 gdrive JSON 本地先做 base64 -w0 保存到 Secret）
+      #     printf "%s" "${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}" | base64 --decode > gdrive_creds.json
+
+      #     # 从文件读取凭据
+      #     CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+      #     PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+
+      #     HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | base64 | tr '/+' '_-' | tr -d '=')
+      #     IAT=$(date +%s)
+      #     EXP=$(($IAT + 3500))
+      #     SCOPE="https://www.googleapis.com/auth/drive"
+      #     PAYLOAD="{\"iss\":\"$CLIENT_EMAIL\",\"scope\":\"$SCOPE\",\"aud\":\"https://oauth2.googleapis.com/token\",\"exp\":$EXP,\"iat\":$IAT}"
+      #     PAYLOAD_B64=$(echo -n "$PAYLOAD" | base64 | tr '/+' '_-' | tr -d '=')
+      #     SIGNATURE_INPUT="$HEADER_B64.$PAYLOAD_B64"
+      #     SIGNATURE=$(echo -n "$SIGNATURE_INPUT" | openssl dgst -sha256 -sign <(echo -n "$PRIVATE_KEY") | base64 | tr '/+' '_-' | tr -d '=')
+      #     JWT="$SIGNATURE_INPUT.$SIGNATURE"
+      #     TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" -H "Content-Type: application/x-www-form-urlencoded" -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
+      #     ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+      #     FILE_PATH="build/app/outputs/bundle/release/app-release.aab"
+      #     FILE_NAME="app-release-bundle-${{ github.ref_name }}.aab"
+      #     FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
+      #     METADATA="{\"name\":\"$FILE_NAME\", \"parents\":[\"$FOLDER_ID\"]}"
+      #     curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
+      #     -H "Authorization: Bearer $ACCESS_TOKEN" \
+      #     -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
+      #     -F "file=@$FILE_PATH;type=application/octet-stream"
+
+
+      # # 步骤 10: 创建 GitHub Release
+      # - name: Create GitHub Release
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     generate_release_notes: true
+      #     files: |
+      #       build/app/outputs/flutter-apk/app-release.apk
+      #       build/app/outputs/bundle/release/app-release.aab
