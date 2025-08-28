@@ -146,7 +146,6 @@ jobs:
             -H "Authorization: Bearer $ACCESS_TOKEN" \
             -F "metadata=@metadata.json;type=application/json;charset=UTF-8" \
             -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
-# ...existing code...
 
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
