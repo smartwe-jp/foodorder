@@ -104,7 +104,7 @@ class CheckoutPageView extends GetView {
       children: [
         SizedBox(width: ScreenAdapter.width(50),),
 
-        if (controller.machineInfo.isSellOn || controller.machineInfo.isScanbuyOn)
+        if (controller.machineInfo.isSellOn)
         // Expanded(
         //   child:
           if (buttonCount > 1)
@@ -126,6 +126,22 @@ class CheckoutPageView extends GetView {
 
         //),
 
+        if (controller.machineInfo.isScanbuyOn)
+          BookingTypeButton(
+              width: _getItemWidth(),
+              icon: Icon(
+                Icons.barcode_reader,
+                color: Colors.blueGrey[100],
+                size: 120,
+              ),
+              title: 'settlement_button'.localized(),
+              selected: false,
+              onTap: () {
+                controller.machineInfo.currentMode = MachineMode.scan;
+                controller.goMenu(controller.selectLanguage, false);
+              },
+            ),
+
         if (controller.machineInfo.isCheckOn)
           SizedBox(width: ScreenAdapter.width(50)),
         if (controller.machineInfo.isCheckOn)
@@ -142,7 +158,7 @@ class CheckoutPageView extends GetView {
               selected: false,
               onTap: () {
                 controller.machineInfo.currentMode = MachineMode.checkout;
-                Get.toNamed("/scancode-page");
+                controller.goMenu(controller.selectLanguage, false);
               },
             ),
           //),
