@@ -36,6 +36,28 @@ jobs:
           "version=$inputVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
           Write-Host "Using version $inputVersion"
 
+       # 如果在手动触发时填写了 tag，则切换到该 tag
+      - name: Checkout specified tag
+        if: ${{ github.event.inputs.tag != '' }}
+        run: |
+          git fetch --tags
+          git checkout tags/${{ github.event.inputs.tag }}
+
+      # 新增步骤: 配置 SSH 以访问私有依赖库
+      - name: Configure SSH for Private Dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      # 步骤 3: 缓存 Flutter 依赖
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
         with:
