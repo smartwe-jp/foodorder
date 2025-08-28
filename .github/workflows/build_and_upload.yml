@@ -67,7 +67,8 @@ jobs:
       #    flutter build appbundle --release
       
       # 步骤 7.1: 生成版本信息文件
-      - name: Generate Version Info
+      - id: generate_version_info
+        name: Generate Version Info
         run: |
           VERSION=$(grep '^version:' pubspec.yaml | awk '{print $2}' | cut -d'+' -f1)
           APP_NAME=$(grep '^appName:' pubspec.yaml | awk '{print $2}')
@@ -111,16 +112,29 @@ jobs:
             exit 1
           fi
 
-          # 使用来自 Rename step 的输出
-          FILE_NAME="${{ steps.rename_apk.outputs.file_name }}"
+          # 使用来自 Generate Version Info step 的输出
+          FILE_NAME="${{ steps.generate_version_info.outputs.file_name }}"
           FILE_PATH="build/app/outputs/flutter-apk/${FILE_NAME}"
           FOLDER_ID="${{ secrets.GDRIVE_FOLDER_ID }}"
-          METADATA=$(printf '{"name":"%s","parents":["%s"]}' "$FILE_NAME" "$FOLDER_ID")
 
+          # # 检查文件是否存在
+          # if [ ! -f "$FILE_PATH" ]; then
+          #   echo "ERROR: APK not found: $FILE_PATH"
+          #   ls -l build/app/outputs/flutter-apk || true
+          #   exit 1
+          # fi
+
+          # # 生成 metadata.json（保证严格的 JSON）
+          # printf '%s' "{\"name\":\"$FILE_NAME\",\"parents\":[\"$FOLDER_ID\"]}" > metadata.json
+          # echo "----- metadata.json -----"
+          # cat metadata.json
+
+          # 上传：把 metadata 作为文件上传，避免引号/转义问题
           curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
             -H "Authorization: Bearer $ACCESS_TOKEN" \
-            -F "metadata=$METADATA;type=application/json;charset=UTF-8" \
+            -F "metadata=@metadata.json;type=application/json;charset=UTF-8" \
             -F "file=@$FILE_PATH;type=application/vnd.android.package-archive"
+# ...existing code...
 
 
       # 步骤 9: 上传已签名的 App Bundle 到 Google Drive
