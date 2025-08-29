@@ -1,6 +1,7 @@
-; CI Inno Setup script adapted from local package.iss
-; Use ISCC to build installer in GitHub Actions.
-; Version token __CI_VERSION__ will be replaced by workflow step.
+; CI Inno Setup script adapted from local origin_local_build.iss
+; __CI_VERSION__ token will be replaced by workflow.
+; Keep functionality parity with local script: upgrade detection, cert install,
+; OPOS setup on first install, uninstall cleanup.
 
 #define MyAppName "Foodorder"
 #define AppName "券売君"
@@ -12,8 +13,7 @@
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
-; Paths relative to repo root (SourcePath() is directory of this script at compile time)
-; #define RepoRoot SourcePath() + "..\\"
+; Paths (SourcePath points to script directory at compile time)
 #define RepoRoot SourcePath
 #define BuildOut RepoRoot + "build\\windows\\x64\\runner\\Release"
 #define ExtraSetup RepoRoot + "windows\\Setup"
@@ -33,7 +33,6 @@ ChangesAssociations=yes
 DisableProgramGroupPage=yes
 OutputDir=output
 OutputBaseFilename=smartwe_ticket_machine_{#MyAppVersion}
-; Place an icon file at windows\icons\a5nhg-kcvff-001.ico or adjust below
 SetupIconFile=windows\icons\a5nhg-kcvff-001.ico
 Compression=lzma
 SolidCompression=yes
@@ -60,9 +59,9 @@ Source: "{#BuildOut}\\flutter_plugin_msprinter_plugin.dll"; DestDir: "{app}"; Fl
 Source: "{#BuildOut}\\flutter_windows.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\permission_handler_windows_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
 Source: "{#BuildOut}\\r_get_ip_plugin.dll"; DestDir: "{app}"; Flags: ignoreversion
-; Data directory (recursively)
+; Data directory (recursive)
 Source: "{#BuildOut}\\data\\*"; DestDir: "{app}\\data"; Flags: ignoreversion recursesubdirs createallsubdirs
-; Extra setup scripts/resources (must be added to repo under windows/Setup)
+; Extra setup scripts/resources
 Source: "{#ExtraSetup}\\*"; DestDir: "{app}\\Setup"; Flags: ignoreversion recursesubdirs createallsubdirs
 
 [Registry]
@@ -77,10 +76,15 @@ Name: "{group}\\券売君"; Filename: "{app}\\{#MyAppExeName}"
 Name: "{userdesktop}\\券売君"; Filename: "{app}\\{#MyAppExeName}"; Tasks: desktopicon
 
 [Run]
+; Generate Windows root cert bundle (for runtime HTTPS trust if needed)
 Filename: "cmd"; Parameters: "/c certutil -generateSSTFromWU roots.sst"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated
+; Import bundle into root store (requires admin)
 Filename: "cmd"; Parameters: "/c certutil -addstore -f root roots.sst"; WorkingDir: "{app}"; Flags: runhidden waituntilterminated
+; One-time peripheral / OPOS setup scripts on fresh install only
 Filename: "{app}\\Setup\\OPOSSetup.bat"; Flags: shellexec; Check: IsNotUpgrade
 Filename: "{app}\\Setup\\OPOSSetup.exe"; Flags: nowait postinstall runascurrentuser; Check: IsNotUpgrade
+; Optional: auto launch application after install (uncomment if desired)
+; Filename: "{app}\\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
@@ -91,6 +95,7 @@ var
 
 function InitializeSetup(): Boolean;
 begin
+  { Detect prior install via registry key }
   IsUpgrade := RegKeyExists(HKEY_CURRENT_USER, 'Software\\{#MyAppName}');
   Result := True;
 end;
@@ -115,6 +120,7 @@ begin
   case CurUninstallStep of
     usUninstall:
       begin
+        { Run cleanup batch if exists }
         if Exec(ExpandConstant('{app}\\Setup\\Cleanup.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
         begin
         end
@@ -122,13 +128,13 @@ begin
         begin
           MsgBox('Failed to execute uninstall script', mbError, MB_OK);
         end;
+        { Remove registry key }
         if RegKeyExists(HKEY_CURRENT_USER, 'Software\\{#MyAppName}') then
-        begin
           RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\\{#MyAppName}');
-        end;
       end;
     usPostUninstall:
       begin
+        { Final directory purge }
         DelTree(ExpandConstant('{app}'), True, True, True);
       end;
   end;
