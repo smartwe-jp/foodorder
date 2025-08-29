@@ -16,7 +16,6 @@
 #include <sstream>
 #include "opos_all.h"
 #include <locale>
-#include <codecvt>
 //#include <thread>
 
 
@@ -39,6 +38,8 @@ void CashChangerPlugin::RegisterWithRegistrar(
 
   registrar->AddPlugin(move(plugin));
 }
+
+// (已移除旧的 BStrToUtf8 辅助，避免未使用警告；如需可再添加 WinAPI 版本)
 
 CashChangerPlugin::CashChangerPlugin() {
 
@@ -1023,12 +1024,11 @@ void CashChangerPlugin::HandleMethodCall(
     cerr << "dispenseCash called 。。" << endl;
 
     if (pCashChanger == nullptr) {
-        //result->Error("Cash Changer not initialized");
         ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("Cash Changer not initialized"));
     }
 
-    
-    BSTR cashCounts = SysAllocString(L"");
+    // 提取参数并转换为 BSTR（仅调用 COM 时使用），避免直接把 BSTR 指针放进 EncodableValue
+    std::string cashCountsStr;
     auto arguments = method_call.arguments();
     if (!arguments) {
         cerr << "dispenseCash param error 。。1" << endl;
@@ -1036,63 +1036,56 @@ void CashChangerPlugin::HandleMethodCall(
         return;
     }
     const auto *mapValue = get_if<flutter::EncodableMap>(arguments);
+    if (!mapValue) {
+        cerr << "dispenseCash param error 。。map not found" << endl;
+        ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
+        return;
+    }
     auto it = mapValue->find(flutter::EncodableValue("cashCounts"));
     if (it != mapValue->end()) {
-        string str = get<string>(it->second);
-        cerr << "cashCounts : " << str << endl;
-        _bstr_t bstr(str.c_str());
-        cashCounts = bstr;
+        cashCountsStr = get<string>(it->second);
+        cerr << "cashCounts : " << cashCountsStr << endl;
     } else {
         cerr << "dispenseCash param error 。。2" << endl;
         ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("param error"));
         return;
     }
 
-    long lngRet = pCashChanger->DispenseCash(cashCounts);
-    cerr << "DispenseCash end 。。 " << lngRet << endl;
-    if (lngRet == OposSuccess) {
-        ReturnMapValue(move(result), flutter::EncodableValue(lngRet), flutter::EncodableValue(cashCounts), flutter::EncodableValue("Success"));
-        //result->Success(flutter::EncodableValue(OposSuccess));
-    } else {
-        if (lngRet == OposEExtended) {
-            // switch (pCashChanger->ResultCodeExtended) {
-            //     case OPOS_ECHAN_OVERDISPENSE:
-            //         result->Success(flutter::EncodableValue(OPOS_ECHAN_OVERDISPENSE));
-            //         cerr << "OPOS_ECHAN_OVERDISPENSE" << endl;
-            //         //pCashChanger->EndDeposit(ChanDepositrepay);
-            //         break;
-            //     case OPOS_ECHAN_OVER:
-            //         result->Success(flutter::EncodableValue(OPOS_ECHAN_OVER));
-            //         cerr << "OPOS_ECHAN_OVER" << endl;
-            //         //pCashChanger->EndDeposit(ChanDepositrepay);
-            //         break;
-            //     case OPOS_ECHAN_SETERROR:
-            //     case OPOS_ECHAN_ERROR:
-            //     case OPOS_ECHAN_BUSY:
-            //         result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-            //         cerr << "OPOS_ECHAN_SETERROR" << endl;
-            //         break;
-            //     default:
-            //         result->Success(flutter::EncodableValue(pCashChanger->ResultCodeExtended));
-
-            // }
-            ReturnMapValue(
-                move(result),
-                flutter::EncodableValue(pCashChanger->ResultCodeExtended), 
-                flutter::EncodableValue(cashCounts), 
-                flutter::EncodableValue("failured")
-            );
-        } else {
-            //result->Success(flutter::EncodableValue(lngRet));
-            ReturnMapValue(
-                move(result), 
-                flutter::EncodableValue(lngRet), 
-                flutter::EncodableValue(cashCounts), 
-                flutter::EncodableValue("failured")
-            );
+    // UTF-8 -> UTF-16 (WinAPI, 避免使用已弃用的 <codecvt>)
+    std::wstring wCashCounts;
+    if (!cashCountsStr.empty()) {
+        int needed = MultiByteToWideChar(CP_UTF8, 0, cashCountsStr.c_str(), (int)cashCountsStr.size(), nullptr, 0);
+        if (needed <= 0) {
+            cerr << "MultiByteToWideChar size query failed" << endl;
+            ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("encoding error"));
+            return;
+        }
+        wCashCounts.resize(needed);
+        int written = MultiByteToWideChar(CP_UTF8, 0, cashCountsStr.c_str(), (int)cashCountsStr.size(), &wCashCounts[0], needed);
+        if (written != needed) {
+            cerr << "MultiByteToWideChar convert failed" << endl;
+            ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("encoding error"));
+            return;
         }
     }
-    //SysFreeString(cashCounts);
+    BSTR bstrCashCounts = SysAllocStringLen(wCashCounts.c_str(), static_cast<UINT>(wCashCounts.size()));
+    if (!bstrCashCounts && !wCashCounts.empty()) {
+        cerr << "SysAllocStringLen failed" << endl;
+        ReturnMapValue(move(result), flutter::EncodableValue(-1), flutter::EncodableValue(0), flutter::EncodableValue("alloc error"));
+        return;
+    }
+
+    long lngRet = pCashChanger->DispenseCash(bstrCashCounts);
+    cerr << "DispenseCash end 。。 " << lngRet << endl;
+    // 返回原始字符串，不传 BSTR 指针
+    if (lngRet == OposSuccess) {
+        ReturnMapValue(move(result), flutter::EncodableValue(lngRet), flutter::EncodableValue(cashCountsStr), flutter::EncodableValue("Success"));
+    } else if (lngRet == OposEExtended) {
+        ReturnMapValue(move(result), flutter::EncodableValue(pCashChanger->ResultCodeExtended), flutter::EncodableValue(cashCountsStr), flutter::EncodableValue("failured"));
+    } else {
+        ReturnMapValue(move(result), flutter::EncodableValue(lngRet), flutter::EncodableValue(cashCountsStr), flutter::EncodableValue("failured"));
+    }
+    SysFreeString(bstrCashCounts);
 
     return;
   }
