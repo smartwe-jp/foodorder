@@ -1637,7 +1637,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       color: ColorsUtil.hexToColor("#000000"),
                                     ),
 
-                                  if(!controller.taxSystem)
+                                  //if(!controller.taxSystem)
                                     Row(
                                       //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -1677,7 +1677,7 @@ class SelectPaymentPage extends StatelessWidget {
                                       ],
                                     ),
 
-                                  if(!controller.taxSystem)
+                                  //if(!controller.taxSystem)
                                     Row(
                                       //mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       children: [
@@ -1720,13 +1720,13 @@ class SelectPaymentPage extends StatelessWidget {
 
 
 
-                                  if(!controller.taxSystem)
+                                  //if(!controller.taxSystem)
                                     Divider(
                                       height: 1.5,
                                       color: ColorsUtil.hexToColor("#000000"),
                                     ),
 
-                                  if (!controller.taxSystem)
+                                  //if (!controller.taxSystem)
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                       crossAxisAlignment: CrossAxisAlignment.center,
@@ -1768,6 +1768,17 @@ class SelectPaymentPage extends StatelessWidget {
                                                           Gcolor.priceColor),
                                                     ),
                                                   ),
+                                                  if (controller.taxSystem)
+                                                    TextSpan(
+                                                      text: "（${ "show_price_front".tr}）",
+                                                      style: TextStyle(
+                                                        fontSize: 24,
+                                                        fontFamily: GFont.getFontFamily(),
+                                                        fontWeight: FontWeight.w600,
+                                                        color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                                        textBaseline: TextBaseline.alphabetic,
+                                                      ),
+                                                    ),
 
                                                 ]),
                                           ),
@@ -1775,59 +1786,59 @@ class SelectPaymentPage extends StatelessWidget {
                                       ],
                                     ),
 
-                                  if(!controller.taxSystem)
+                                  //if(!controller.taxSystem)
                                     Divider(
                                       height: 1.5,
                                       color: ColorsUtil.hexToColor("#000000"),
                                     ),
 
 
-                                  if (controller.taxSystem)
-                                    Container(
-                                      decoration: BoxDecoration(
-                                          color: Colors.white12,
-                                          border: Border(
-                                            bottom:
-                                            BorderSide(color: Colors.black, width: 1.5),
-                                            //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
-                                          )),
-                                      child: RichText(
-                                        text: TextSpan(
-                                            text: "¥ ",
-                                            //GString.getToString(this._checkLanguage, "show_price_front"),
-                                            style: TextStyle(
-                                              fontSize: ScreenAdapter.fontSize(
-                                                  GFontSize.menusettlementBottomPriceLeft),
-                                              fontFamily: GFont.getFontFamily(),
-                                              fontWeight: FontWeight.w600,
-                                              color: ColorsUtil.hexToColor(
-                                                  Gcolor.mainTitleColor),
-                                            ),
-                                            children: [
-                                              TextSpan(
-                                                text: formatMoney(showPrice),
-                                                style: TextStyle(
-                                                  fontSize: ScreenAdapter.fontSize(
-                                                      GFontSize.menusettlementBottomPrice),
-                                                  fontFamily: GFont.getFontFamily(),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(
-                                                      Gcolor.priceColor),
-                                                ),
-                                              ),
-                                              TextSpan(
-                                                text: "（${ "show_price_front".tr}）",
-                                                style: TextStyle(
-                                                  fontSize: 24,
-                                                  fontFamily: GFont.getFontFamily(),
-                                                  fontWeight: FontWeight.w600,
-                                                  color: ColorsUtil.hexToColor(Gcolor.priceColor),
-                                                  textBaseline: TextBaseline.alphabetic,
-                                                ),
-                                              ),
-                                            ]),
-                                      ),
-                                    ),
+                                  // if (controller.taxSystem)
+                                  //   Container(
+                                  //     decoration: BoxDecoration(
+                                  //         color: Colors.white12,
+                                  //         border: Border(
+                                  //           bottom:
+                                  //           BorderSide(color: Colors.black, width: 1.5),
+                                  //           //top: BorderSide(color: Colors.grey.shade100, width: 1.0),
+                                  //         )),
+                                  //     child: RichText(
+                                  //       text: TextSpan(
+                                  //           text: "¥ ",
+                                  //           //GString.getToString(this._checkLanguage, "show_price_front"),
+                                  //           style: TextStyle(
+                                  //             fontSize: ScreenAdapter.fontSize(
+                                  //                 GFontSize.menusettlementBottomPriceLeft),
+                                  //             fontFamily: GFont.getFontFamily(),
+                                  //             fontWeight: FontWeight.w600,
+                                  //             color: ColorsUtil.hexToColor(
+                                  //                 Gcolor.mainTitleColor),
+                                  //           ),
+                                  //           children: [
+                                  //             TextSpan(
+                                  //               text: formatMoney(showPrice),
+                                  //               style: TextStyle(
+                                  //                 fontSize: ScreenAdapter.fontSize(
+                                  //                     GFontSize.menusettlementBottomPrice),
+                                  //                 fontFamily: GFont.getFontFamily(),
+                                  //                 fontWeight: FontWeight.w600,
+                                  //                 color: ColorsUtil.hexToColor(
+                                  //                     Gcolor.priceColor),
+                                  //               ),
+                                  //             ),
+                                  //             TextSpan(
+                                  //               text: "（${ "show_price_front".tr}）",
+                                  //               style: TextStyle(
+                                  //                 fontSize: 24,
+                                  //                 fontFamily: GFont.getFontFamily(),
+                                  //                 fontWeight: FontWeight.w600,
+                                  //                 color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                  //                 textBaseline: TextBaseline.alphabetic,
+                                  //               ),
+                                  //             ),
+                                  //           ]),
+                                  //     ),
+                                  //   ),
                                 ],
                               ),
                             ),
