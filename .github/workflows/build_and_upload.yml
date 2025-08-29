@@ -1,6 +1,6 @@
 # .github/workflows/build_and_upload.yml
 
-name: Build Signed App, Upload, and Create Release
+name: Build Android App
 
 on:
   push:
