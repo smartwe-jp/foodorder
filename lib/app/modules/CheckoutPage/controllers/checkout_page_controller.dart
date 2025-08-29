@@ -417,18 +417,33 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   goMenu(String lan, bool mealType) {
     machineInfo.mealType = mealType;
-    machineInfo.currentMode = MachineMode.sell;
+    //machineInfo.currentMode = MachineMode.sell;
     String jumpUrl = '/menu-page';
 
-    if (mealType) {
-      machineInfo.currentMode = MachineMode.takeout;
-      jumpUrl = '/menu-page';
-    } else {
-      if (machineInfo.isScanbuyOn) {
+    switch (machineInfo.currentMode) {
+      case MachineMode.sell:
+        jumpUrl = '/menu-page';
+        break;
+      case MachineMode.scan:
         jumpUrl = '/self-checkoutscanningcode';
-        machineInfo.currentMode = MachineMode.scan;
-      }
+        break;
+      case MachineMode.takeout:
+        jumpUrl = '/menu-page';
+        break;
+      case MachineMode.checkout:
+        jumpUrl = '/scancode-page';
+        break;
     }
+
+    // if (mealType) {
+    //   machineInfo.currentMode = MachineMode.takeout;
+    //   jumpUrl = '/menu-page';
+    // } else {
+    //   if (machineInfo.isScanbuyOn) {
+    //     jumpUrl = '/self-checkoutscanningcode';
+    //     machineInfo.currentMode = MachineMode.scan;
+    //   }
+    // }
 
     Get.toNamed(jumpUrl,
         arguments: {"checkLanguage": lan, "mealType": mealType});
