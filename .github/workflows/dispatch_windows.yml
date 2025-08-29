@@ -1,0 +1,173 @@
+name: Build and Release Windows App
+
+on:
+  push:
+    tags:
+      - 'w*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Optional Windows tag to build (e.g. w1.1.0)'
+        required: false
+        default: ''
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      FLUTTER_VERSION: 3.29.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine version
+        id: ver
+        shell: pwsh
+        run: |
+          $inputVersion = '${{ github.event.inputs.tag }}'
+          if (-not $inputVersion) {
+            $ref='${{ github.ref }}'
+            if ($ref -match 'refs/tags/w(.+)') { $inputVersion = $Matches[1] }
+          }
+          if (-not $inputVersion) {
+            $pub = Get-Content pubspec.yaml -Raw
+            if ($pub -match "version:\s*([0-9A-Za-z\.-]+)") { $inputVersion = $Matches[1] }
+          }
+          if (-not $inputVersion) { Write-Error 'Version not resolved'; exit 1 }
+          "version=$inputVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Using version $inputVersion"
+
+       # 如果在手动触发时填写了 tag，则切换到该 tag
+      - name: Checkout specified tag
+        if: ${{ github.event.inputs.tag != '' }}
+        run: |
+          git fetch --tags
+          git checkout tags/${{ github.event.inputs.tag }}
+
+      # SSH: 仅加载私钥 + 写 known_hosts（删除旧的 Setup SSH manual 段）
+      - name: Configure SSH for Private Dependencies
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Add github.com to known_hosts
+        shell: bash
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      # 临时调试（确认后可删除）
+      - name: Debug SSH
+        if: ${{ env.SSH_DEBUG == '1' }}
+        shell: bash
+        run: |
+          echo "ssh-add -l:"
+          ssh-add -l || echo "no identities"
+          echo "Test connection (ignore failure exit):"
+          ssh -vvv -T git@github.com || true
+
+      # 步骤 3: 缓存 Flutter 依赖
+      - name: Cache Flutter dependencies
+        uses: actions/cache@v3
+        with:
+          path: /opt/hostedtoolcache/flutter
+          key: ${{ runner.os }}-flutter-${{ hashFiles('**/pubspec.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-flutter-
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Windows Release
+        run: flutter build windows --release
+
+      - name: Prepare Inno Script
+        shell: pwsh
+        run: |
+          if (-not (Test-Path windows/package.ci.iss)) { Write-Error 'windows/package.ci.iss missing'; exit 1 }
+          Copy-Item windows/package.ci.iss package.ci.work.iss -Force
+          (Get-Content package.ci.work.iss) -replace '__CI_VERSION__', '${{ steps.ver.outputs.version }}' | Set-Content package.ci.work.iss -Encoding UTF8
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Compile Installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { Write-Error "ISCC not found at $iscc"; exit 1 }
+          & $iscc /Qp package.ci.work.iss
+          if ($LASTEXITCODE -ne 0) { Write-Error "Inno compilation failed code $LASTEXITCODE" }
+
+      - name: Sign binaries (optional)
+        if: env.SIGNING_CERT && env.SIGNING_PASSWORD
+        env:
+          PFX_B64: ${{ secrets.SIGNING_CERT }}
+          PFX_PASS: ${{ secrets.SIGNING_PASSWORD }}
+        shell: pwsh
+        run: |
+          $pfx = "$env:RUNNER_TEMP\code.pfx"
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:PFX_B64))
+          $signtool = (Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin' -Recurse -Filter signtool.exe | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          if (-not $signtool) { Write-Error 'signtool.exe not found'; exit 1 }
+          $files = @('build/windows/x64/runner/Release/foodorder.exe') + (Get-ChildItem output -Filter *.exe | Select-Object -ExpandProperty FullName)
+          foreach ($f in $files) {
+            if (Test-Path $f) { & $signtool sign /f $pfx /p $PFX_PASS /tr http://timestamp.digicert.com /td sha256 /fd sha256 $f }
+          }
+
+      - name: Upload Installer to Google Drive
+        if: success()
+        shell: pwsh
+        env:
+          GDRIVE_CREDENTIALS_BASE64: ${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+          VERSION: ${{ steps.ver.outputs.version }}
+        run: |
+          if (-not $env:GDRIVE_CREDENTIALS_BASE64 -or -not $env:GDRIVE_FOLDER_ID) { Write-Host 'Drive secrets missing, skip upload'; exit 0 }
+          try { $json = [Text.Encoding]::UTF8.GetString([Convert]::FromBase64String($env:GDRIVE_CREDENTIALS_BASE64)); $sa = $json | ConvertFrom-Json } catch { Write-Error 'Invalid GDRIVE_CREDENTIALS_BASE64'; exit 1 }
+          if (-not $sa.client_email -or -not $sa.private_key) { Write-Error 'client_email/private_key missing'; exit 1 }
+          function To-B64Url([byte[]]$b) { ([Convert]::ToBase64String($b)).TrimEnd('=').Replace('+','-').Replace('/','_') }
+          $headerJson = '{"alg":"RS256","typ":"JWT"}'
+          $now = [DateTimeOffset]::UtcNow.ToUnixTimeSeconds(); $exp = $now + 3500
+          $payloadObj = [ordered]@{ iss=$sa.client_email; scope='https://www.googleapis.com/auth/drive'; aud='https://oauth2.googleapis.com/token'; exp=$exp; iat=$now }
+          $payloadJson = ($payloadObj | ConvertTo-Json -Compress)
+          $headerB64 = To-B64Url ([Text.Encoding]::UTF8.GetBytes($headerJson)); $payloadB64 = To-B64Url ([Text.Encoding]::UTF8.GetBytes($payloadJson)); $toSign = "$headerB64.$payloadB64"
+          $rsa = [System.Security.Cryptography.RSA]::Create(); try { $rsa.ImportFromPem($sa.private_key) } catch { $pk=($sa.private_key -replace '-----BEGIN PRIVATE KEY-----','' -replace '-----END PRIVATE KEY-----','').Replace("`r",'').Replace("`n",''); $pkBytes=[Convert]::FromBase64String($pk); $null=$rsa.ImportPkcs8PrivateKey($pkBytes,[ref]0) }
+          $sig = $rsa.SignData([Text.Encoding]::UTF8.GetBytes($toSign),[System.Security.Cryptography.HashAlgorithmName]::SHA256,[System.Security.Cryptography.RSASignaturePadding]::Pkcs1); $jwt = "$toSign.$(To-B64Url $sig)"
+          $token = Invoke-RestMethod -Method Post -Uri 'https://oauth2.googleapis.com/token' -ContentType 'application/x-www-form-urlencoded' -Body @{grant_type='urn:ietf:params:oauth:grant-type:jwt-bearer'; assertion=$jwt}
+          $access = $token.access_token; if (-not $access) { Write-Error ("Token error: " + ($token | ConvertTo-Json -Compress)); exit 1 }
+          $explicit = Join-Path output ("smartwe_ticket_machine_" + $env:VERSION + ".exe"); if (Test-Path $explicit) { $installer=$explicit } else { $installer = Get-ChildItem output -Filter *.exe -File | Sort-Object LastWriteTime -Descending | Select-Object -First 1 | ForEach-Object FullName }
+          if (-not $installer) { Write-Error 'No installer exe found in output'; Get-ChildItem output -ErrorAction SilentlyContinue | Out-String | Write-Host; exit 1 }
+          Write-Host "Uploading $installer"
+          $meta = @{ name = [IO.Path]::GetFileName($installer); parents = @($env:GDRIVE_FOLDER_ID) } | ConvertTo-Json -Compress
+          $boundary = [Guid]::NewGuid().ToString(); $metaPart = "--$boundary`r`nContent-Type: application/json; charset=UTF-8`r`n`r`n$meta`r`n"; $fileHeader = "--$boundary`r`nContent-Type: application/vnd.microsoft.portable-executable`r`n`r`n"; $closing = "`r`n--$boundary--`r`n"; $fileBytes = [IO.File]::ReadAllBytes($installer)
+          $ms = New-Object IO.MemoryStream; $sw = New-Object IO.StreamWriter($ms); $sw.Write($metaPart); $sw.Write($fileHeader); $sw.Flush(); $ms.Write($fileBytes,0,$fileBytes.Length); $sw2= New-Object IO.StreamWriter($ms); $sw2.Write($closing); $sw2.Flush(); $ms.Position=0
+          $resp = Invoke-WebRequest -Method Post -Uri 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true' -Headers @{Authorization="Bearer $access"} -ContentType "multipart/related; boundary=$boundary" -Body $ms.ToArray()
+          try { $j=$resp.Content | ConvertFrom-Json } catch { Write-Error "Upload response not JSON: $($resp.Content)"; exit 1 }
+          if (-not $j.id) { Write-Error "Upload failed: $($resp.Content)"; exit 1 }
+          Write-Host "Uploaded to Drive file id: $($j.id)"
+
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: installer-${{ steps.ver.outputs.version }}
+      #     path: |
+      #       output/*
+      #       build/windows/x64/runner/Release/**
+
+      # - name: Create GitHub Release
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: output/*.exe
+      #     tag_name: ${{ github.ref_name }}
+      #     name: Windows ${{ steps.ver.outputs.version }}
+      #     generate_release_notes: true
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
