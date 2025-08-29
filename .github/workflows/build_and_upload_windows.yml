@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Optional tag to run (e.g. w1.1.0). Leave empty to run branch.'
+        description: 'Optional Windows tag to build (e.g. w1.1.0)'
         required: false
         default: ''
 
@@ -24,10 +24,10 @@ jobs:
         id: ver
         shell: pwsh
         run: |
-          $inputVersion = '${{ github.event.inputs.version }}'
+          $inputVersion = '${{ github.event.inputs.tag }}'
           if (-not $inputVersion) {
             $ref='${{ github.ref }}'
-            if ($ref -match 'refs/tags/v(.+)') { $inputVersion = $Matches[1] }
+            if ($ref -match 'refs/tags/w(.+)') { $inputVersion = $Matches[1] }
           }
           if (-not $inputVersion) {
             $pub = Get-Content pubspec.yaml -Raw
@@ -94,7 +94,6 @@ jobs:
           if (-not (Test-Path windows/package.ci.iss)) { Write-Error 'windows/package.ci.iss missing'; exit 1 }
           Copy-Item windows/package.ci.iss package.ci.work.iss -Force
           (Get-Content package.ci.work.iss) -replace '__CI_VERSION__', '${{ steps.ver.outputs.version }}' | Set-Content package.ci.work.iss -Encoding UTF8
-
       - name: Install Inno Setup
         run: choco install innosetup -y
 
