@@ -13,7 +13,8 @@
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
 
 ; Paths relative to repo root (SourcePath() is directory of this script at compile time)
-#define RepoRoot SourcePath() + "..\\"
+; #define RepoRoot SourcePath() + "..\\"
+#define RepoRoot SourcePath
 #define BuildOut RepoRoot + "build\\windows\\x64\\runner\\Release"
 #define ExtraSetup RepoRoot + "windows\\Setup"
 
