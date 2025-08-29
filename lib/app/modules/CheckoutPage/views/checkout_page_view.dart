@@ -118,6 +118,7 @@ class CheckoutPageView extends GetView {
             title: 'menu_dingtype_eatin'.tr,
             selected: false,
             onTap: () {
+              controller.machineInfo.currentMode = MachineMode.sell;
                 controller.goMenu(controller.selectLanguage, false);
               },
           )
@@ -178,6 +179,7 @@ class CheckoutPageView extends GetView {
               title: 'menu_dingtype_takeout'.tr,
               selected: false,
               onTap: () {
+                controller.machineInfo.currentMode = MachineMode.takeout;
                 controller.goMenu(controller.selectLanguage, true);
               },
             ),
