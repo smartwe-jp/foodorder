@@ -5,7 +5,7 @@ import 'package:get/get.dart';
 
 class AppConfig extends GetxController {
 
-  bool machineType = true; // true for new_panel, false for old_panel
+  bool machineType = false; // true for new_panel, false for old_panel
 
   get payCube => machineType ? Paycube() : PayCube();
   get isAndroid11 => machineType;
