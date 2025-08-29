@@ -1,4 +1,4 @@
-# .github/workflows/dispatch_windows.yml
+# .github/workflows/dispatch_android.yml
 
 name: Build and Release Android App
 
