@@ -438,7 +438,7 @@ class SettlementController extends GetxController with StateMixin {
     }else if (machineInfo.currentMode == MachineMode.scan) {
       //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //Get.offAllNamed("/selfservice-page");
-      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
+      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
       // if(is_back_home.value == "0"){
       //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
       //   Get.toNamed("/selfservice-page");
