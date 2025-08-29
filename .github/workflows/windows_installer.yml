@@ -1,0 +1,157 @@
+name: Build Windows Installer
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Override version (e.g. 1.2.0)'
+        required: false
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    env:
+      FLUTTER_VERSION: 3.29.2
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Determine version
+        id: ver
+        shell: pwsh
+        run: |
+          $inputVersion = '${{ github.event.inputs.version }}'
+          if (-not $inputVersion) {
+            $ref='${{ github.ref }}'
+            if ($ref -match 'refs/tags/v(.+)') { $inputVersion = $Matches[1] }
+          }
+          if (-not $inputVersion) {
+            $pub = Get-Content pubspec.yaml -Raw
+            if ($pub -match "version:\s*([0-9A-Za-z\.-]+)") { $inputVersion = $Matches[1] }
+          }
+          if (-not $inputVersion) { Write-Error 'Version not resolved'; exit 1 }
+          "version=$inputVersion" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+          Write-Host "Using version $inputVersion"
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Build Windows Release
+        run: flutter build windows --release
+
+      - name: Prepare Inno Script
+        shell: pwsh
+        run: |
+          if (-not (Test-Path windows/package.ci.iss)) { Write-Error 'windows/package.ci.iss missing'; exit 1 }
+          Copy-Item windows/package.ci.iss package.ci.work.iss -Force
+          (Get-Content package.ci.work.iss) -replace '__CI_VERSION__', '${{ steps.ver.outputs.version }}' | Set-Content package.ci.work.iss -Encoding UTF8
+
+      - name: Install Inno Setup
+        run: choco install innosetup -y
+
+      - name: Compile Installer
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { Write-Error "ISCC not found at $iscc"; exit 1 }
+          & $iscc /Qp package.ci.work.iss
+          if ($LASTEXITCODE -ne 0) { Write-Error "Inno compilation failed code $LASTEXITCODE" }
+
+      - name: Sign binaries (optional)
+        if: env.SIGNING_CERT && env.SIGNING_PASSWORD
+        env:
+          PFX_B64: ${{ secrets.SIGNING_CERT }}
+          PFX_PASS: ${{ secrets.SIGNING_PASSWORD }}
+        shell: pwsh
+        run: |
+          $pfx = "$env:RUNNER_TEMP\code.pfx"
+          [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:PFX_B64))
+          $signtool = (Get-ChildItem 'C:\Program Files (x86)\Windows Kits\10\bin' -Recurse -Filter signtool.exe | Sort-Object FullName -Descending | Select-Object -First 1).FullName
+          if (-not $signtool) { Write-Error 'signtool.exe not found'; exit 1 }
+          $files = @('build/windows/x64/runner/Release/foodorder.exe') + (Get-ChildItem output -Filter *.exe | Select-Object -ExpandProperty FullName)
+          foreach ($f in $files) {
+            if (Test-Path $f) { & $signtool sign /f $pfx /p $PFX_PASS /tr http://timestamp.digicert.com /td sha256 /fd sha256 $f }
+          }
+
+      - name: Upload Installer to Google Drive
+        if: success()
+        shell: bash
+        env:
+          GDRIVE_CREDENTIALS_BASE64: ${{ secrets.GDRIVE_CREDENTIALS_BASE64 }}
+          GDRIVE_FOLDER_ID: ${{ secrets.GDRIVE_FOLDER_ID }}
+        run: |
+          set -euo pipefail
+          if [ -z "${GDRIVE_CREDENTIALS_BASE64:-}" ]; then
+            echo "GDRIVE_CREDENTIALS_BASE64 secret missing; skip upload"; exit 0; fi
+          if [ -z "${GDRIVE_FOLDER_ID:-}" ]; then
+            echo "GDRIVE_FOLDER_ID secret missing; skip upload"; exit 0; fi
+          sudo apt-get update -y >/dev/null 2>&1 || true
+          sudo apt-get install -y jq openssl curl >/dev/null 2>&1 || true
+          printf "%s" "$GDRIVE_CREDENTIALS_BASE64" | base64 --decode > gdrive_creds.json
+          CLIENT_EMAIL=$(jq -r .client_email gdrive_creds.json)
+          PRIVATE_KEY=$(jq -r .private_key gdrive_creds.json)
+          if [ -z "$CLIENT_EMAIL" ] || [ -z "$PRIVATE_KEY" ] || [ "$CLIENT_EMAIL" = "null" ]; then
+            echo "Invalid service account JSON"; exit 1; fi
+          HEADER_B64=$(echo -n '{"alg":"RS256","typ":"JWT"}' | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+          IAT=$(date +%s)
+          EXP=$((IAT + 3500))
+            PAYLOAD=$(cat <<JSON
+          {"iss":"$CLIENT_EMAIL","scope":"https://www.googleapis.com/auth/drive","aud":"https://oauth2.googleapis.com/token","exp":$EXP,"iat":$IAT}
+          JSON
+          )
+          PAYLOAD_B64=$(echo -n "$PAYLOAD" | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+          SIG_INPUT="$HEADER_B64.$PAYLOAD_B64"
+          printf '%s' "$PRIVATE_KEY" > key.pem
+          SIGNATURE=$(printf '%s' "$SIG_INPUT" | openssl dgst -sha256 -sign key.pem | openssl base64 -A | tr '+/' '-_' | tr -d '=')
+          JWT="$SIG_INPUT.$SIGNATURE"
+          TOKEN_RESPONSE=$(curl -s -X POST "https://oauth2.googleapis.com/token" \
+            -H "Content-Type: application/x-www-form-urlencoded" \
+            -d "grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=$JWT")
+          ACCESS_TOKEN=$(echo "$TOKEN_RESPONSE" | jq -r .access_token)
+          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
+            echo "Failed to obtain access token"; echo "$TOKEN_RESPONSE"; exit 1; fi
+          VERSION='${{ steps.ver.outputs.version }}'
+          INSTALLER="output/smartwe_ticket_machine_${VERSION}.exe"
+          if [ ! -f "$INSTALLER" ]; then
+            echo "Installer not found at $INSTALLER"; ls -l output || true; exit 1; fi
+          META=$(mktemp)
+          printf '%s' "{\"name\":\"smartwe_ticket_machine_${VERSION}.exe\",\"parents\":[\"$GDRIVE_FOLDER_ID\"]}" > "$META"
+          curl -s -X POST "https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&supportsAllDrives=true" \
+            -H "Authorization: Bearer $ACCESS_TOKEN" \
+            -F "metadata=@$META;type=application/json; charset=UTF-8" \
+            -F "file=@$INSTALLER;type=application/vnd.microsoft.portable-executable" \
+            -o upload_response.json
+          echo "Upload response:"; cat upload_response.json
+          FILE_ID=$(jq -r .id upload_response.json)
+          if [ -z "$FILE_ID" ] || [ "$FILE_ID" = "null" ]; then
+            echo "Upload failed"; exit 1; fi
+          echo "Uploaded to Drive file id: $FILE_ID"
+
+      # - name: Upload Artifacts
+      #   uses: actions/upload-artifact@v4
+      #   with:
+      #     name: installer-${{ steps.ver.outputs.version }}
+      #     path: |
+      #       output/*
+      #       build/windows/x64/runner/Release/**
+
+      # - name: Create GitHub Release
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   uses: softprops/action-gh-release@v2
+      #   with:
+      #     files: output/*.exe
+      #     tag_name: ${{ github.ref_name }}
+      #     name: Windows ${{ steps.ver.outputs.version }}
+      #     generate_release_notes: true
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
