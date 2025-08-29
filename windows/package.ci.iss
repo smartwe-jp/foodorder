@@ -18,7 +18,7 @@
 #define ExtraSetup RepoRoot + "windows\\Setup"
 
 [Setup]
-AppId={{E254136A-A120-4B9F-B394-F712FCC5D560}
+AppId={{E254136A-A120-4B9F-B394-F712FCC5D560}}
 AppName={#AppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
