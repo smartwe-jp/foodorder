@@ -1,4 +1,4 @@
-# .github/workflows/build_and_upload.yml
+# .github/workflows/build_and_upload_android.yml
 
 name: Build and Release Android App
 
