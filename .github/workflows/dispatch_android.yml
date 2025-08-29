@@ -18,7 +18,7 @@ jobs:
     steps:
       - name: Trigger Android Workflow
         run: |
-          TARGET_WORKFLOW=build_and_upload.yml
+          TARGET_WORKFLOW=build_and_upload_android.yml
           REF="${{ github.event.inputs.ref }}"
           TAG_INPUT="${{ github.event.inputs.tag }}"
           DATA="{\"ref\":\"$REF\",\"inputs\":{\"tag\":\"$TAG_INPUT\"}}"
