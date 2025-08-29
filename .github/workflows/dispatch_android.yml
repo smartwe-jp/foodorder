@@ -11,6 +11,10 @@ on:
         description: 'Optional tag input'
         required: false
         default: ''
+        
+permissions:
+  actions: write
+  contents: read
 
 jobs:
   dispatch:
