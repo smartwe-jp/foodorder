@@ -4,11 +4,12 @@ on:
   push:
     tags:
       - 'w*'
-  workflow_dispatch:   # <- 确保有这行
+  workflow_dispatch:
     inputs:
       tag:
+        description: 'Optional tag to run (e.g. w1.1.0). Leave empty to run branch.'
         required: false
-        description: 'Optional tag to run with'
+        default: ''
 
 jobs:
   build-windows:
