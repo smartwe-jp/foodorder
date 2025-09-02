@@ -5,7 +5,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/config/printer_info.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/reimburseOrder/controllers/reimburse_order_controller_extension.dart';
+import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -23,9 +27,10 @@ import '../views/reimbruse_order_print_view.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
   //TODO: Implement ReimburseOrderController
-  TextEditingController orderIdController=TextEditingController();
+  TextEditingController orderIdController = TextEditingController();
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
+  MachineInfoController machineInfo = Get.find();
 
   RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
@@ -66,7 +71,13 @@ class ReimburseOrderController extends GetxController with StateMixin {
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
 
-  double get printWidth => appConfig.isAndroid11 ? 513:385;
+  double get printWidth {
+    if (Platform.isWindows) {
+      return 530;
+    } else {
+      return appConfig.isAndroid11 ? 513 : 385;
+    }
+  }
 
   @override
   void onInit() {
@@ -152,7 +163,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
     reimbursePrintViewSize = viewSize;
     Get.dialog(
         DialogUtils.alert("この注文をキャンセルして返金しますか？",
-            title: "お知らせ", canceltitle: "いいえ", confirmtitle: "はい", confirm: () async {
+            title: "お知らせ",
+            canceltitle: "いいえ",
+            confirmtitle: "はい", confirm: () async {
           Get.back();
           refundInfo.value = orderinfo;
           await refoundOrder();
@@ -173,8 +186,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       payCube.getPayCubeListener();
       _setPayCubeListener();
       startOutPutMoney(refundInfo["amount"]);
-
-    } else if (refundInfo["payChannel"] =="CreditCard") {
+    } else if (refundInfo["payChannel"] == "CreditCard") {
       showPosEasyLoading();
       refundCreditCard();
     } else {
@@ -469,6 +481,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       }
     };
   }
+
   //现金机开始 开始出金 -交易终了
   startOutPutMoney(outMoney) async {
     if (Platform.isWindows) {
@@ -479,7 +492,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
     var outStringMoney = outMoney.toString();
     //await Paycube.setReceiveEvent;
 
-    bool outResult = await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
+    bool outResult =
+        await payCube.outPayCubeMoney(outStringMoney, onSuccess: () {
       debugPrint("出金成功");
     }, catchError: (error) {
       debugPrint("出金失败");
@@ -490,35 +504,32 @@ class ReimburseOrderController extends GetxController with StateMixin {
     // outmoneytimer?.cancel();
     // outmoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outmoneyt) async {
     //   outStatus.value = await Paycube.getPayCubeOutMoneyStatus;
-      // 循环一定要记得设置取消条件，手动取消
-      if (outResult) {
-        //如果打开了现金机，则去掉倒计时监听
-        showCashTimer?.cancel();
-        seconds.value = 180;
-        //如果取消不汇报，则出金后直接关闭 ？？？？？？
-        //_getPayCubeOutMoney();
-        await payCube.setReceiveEvent;
-      } else {
-        cashErrorHandle();
-      }
-
+    // 循环一定要记得设置取消条件，手动取消
+    if (outResult) {
+      //如果打开了现金机，则去掉倒计时监听
+      showCashTimer?.cancel();
+      seconds.value = 180;
+      //如果取消不汇报，则出金后直接关闭 ？？？？？？
+      //_getPayCubeOutMoney();
+      await payCube.setReceiveEvent;
+    } else {
+      cashErrorHandle();
+    }
   }
 
   cashErrorHandle() {
     //现金机出错处理
     EasyLoading.dismiss();
     Get.dialog(
-        DialogUtils.alertOneButton(
-            '返金に失敗しました。現金機の状態を確認してください。ありがとうございます。',
+        DialogUtils.alertOneButton('返金に失敗しました。現金機の状態を確認してください。ありがとうございます。',
             confirm: () {
-              orderIdController.text = "";
-              orderList.value = [];
-              refundInfo.value = {};
-              queryOrder();
-              Get.back();
-            }),
-        barrierDismissible: false
-    );
+          orderIdController.text = "";
+          orderList.value = [];
+          refundInfo.value = {};
+          queryOrder();
+          Get.back();
+        }),
+        barrierDismissible: false);
   }
 
   _getPayCubeOutMoney(currencyStringResult) async {
@@ -533,30 +544,32 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
     //OutMoneytimer = Timer.periodic(Duration(milliseconds: 350), (Timer outMoneyTime) async {
 
-      if(getOutMoneyString.value == true){
-        // 循环一定要记得设置取消条件，手动取消
-        //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
-        debugPrint("currencyStringResult.trim().length : ${currencyStringResult.trim().length}");
-        if (currencyStringResult.trim().length > 50) {
-          var outtotalAmount = MoneyParser.calculateTotalAmount(currencyStringResult.trim());
-          debugPrint("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
-          //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
-          //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
+    if (getOutMoneyString.value == true) {
+      // 循环一定要记得设置取消条件，手动取消
+      //String currencyStringresult = await Paycube.getPayCubeOutMoneyCurrency;
+      debugPrint(
+          "currencyStringResult.trim().length : ${currencyStringResult.trim().length}");
+      if (currencyStringResult.trim().length > 50) {
+        var outtotalAmount =
+            MoneyParser.calculateTotalAmount(currencyStringResult.trim());
+        debugPrint("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
+        //print("计算现金机出金金额与实际投入是否相等${outtotalAmount.toString()}");
+        //print("计算现金机出金金额与实际投入是否相等${currencyStringresult}");
 
-          if (outtotalAmount == refundInfo.value["amount"]) {
-            //如果打开了现金机，则去掉倒计时监听
-            // showCashTimer?.cancel();
-            // seconds.value = 180;
-            currencyString.value = currencyStringResult;
-            getOutMoneyString.value == false;
+        if (outtotalAmount == refundInfo.value["amount"]) {
+          //如果打开了现金机，则去掉倒计时监听
+          // showCashTimer?.cancel();
+          // seconds.value = 180;
+          currencyString.value = currencyStringResult;
+          getOutMoneyString.value == false;
 
-            //OutMoneytimer?.cancel();
+          //OutMoneytimer?.cancel();
 
-            payCubeCloseTransaction(currencyStringResult);
-          }
+          payCubeCloseTransaction(currencyStringResult);
         }
       }
-      queryTimes++;
+    }
+    queryTimes++;
     //});
   }
 
@@ -621,10 +634,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
       showCashTimer?.cancel();
       seconds.value = 180;
       reportChange(cashOutString);
-    }else {
+    } else {
       debugPrint("取引终了结束交易失败");
     }
-
   }
 
   printReimburseReceipt(Size size, Widget widget) async {
@@ -643,7 +655,6 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
       List<int> imageBytes = byteData.buffer
           .asUint8List(byteData.offsetInBytes, byteData.lengthInBytes);
-
 
       String base64Image = base64Encode(imageBytes);
       await FlutterPluginMsprinter.sendPrintImgNew(
@@ -666,6 +677,31 @@ class ReimburseOrderController extends GetxController with StateMixin {
       //   child: widget,
       // );
       sendToUsePrinter(widget);
+    }
+    //发送到厨房
+    _sendToKitchen();
+  }
+
+  _sendToKitchen() async {
+    //发送到厨房
+    final printList = machineInfo.printerList;
+    final kitchenList = printList.firstWhere(
+        (element) =>
+            element['type'] == 10 &&
+            element['receipt'] == 0 &&
+            element['isOff'] == false,
+        orElse: () => null);
+    if (kitchenList != null) {
+      final printWidget = ReceiptConstrainedBox(
+          ReimbursePrintView(reimburseInfo: refundInfo, widgetWidth: 530));
+
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: printWidget as ATempWidget,
+          printTypeEnum: PrintTypeEnum.receipt,
+          params: PrinterInfo(ip: kitchenList['printIp']),
+        ),
+      );
     }
   }
 
