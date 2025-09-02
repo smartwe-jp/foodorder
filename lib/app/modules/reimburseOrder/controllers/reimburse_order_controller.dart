@@ -6,19 +6,24 @@ import 'dart:typed_data';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/services/logUtil.dart';
 import 'package:get/get.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
+import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
+import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/cashMoneyParser.dart';
 import '../../../widget/DialogUtils.dart';
+import '../../settlement/views/receipt_constrained_box.dart';
 import '../views/reimbruse_order_print_view.dart';
 
 class ReimburseOrderController extends GetxController with StateMixin {
@@ -26,6 +31,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   TextEditingController orderIdController=TextEditingController();
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
+  MachineInfoController machineInfo = Get.find();
 
   RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
@@ -635,7 +641,7 @@ LogUtil.d(response);
   }
 
   _printReimburseReceipt(Size size, Widget widget) async {
-    ByteData byteData = await WidgetToImage.widgetToImage(Container(
+     ByteData byteData = await WidgetToImage.widgetToImage(Container(
       width: size.width.toDouble(),
       padding: EdgeInsets.only(left: ScreenAdapter.width(2),right: ScreenAdapter.width(2)),
       height: size.height.toDouble(),
@@ -649,9 +655,42 @@ LogUtil.d(response);
 
     String base64Image = base64Encode(imageBytes);
     await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");//printLogoImage.value
-    Future.delayed(Duration(milliseconds: 300), () async {
-      await FlutterPluginMsprinter.sendPrintCut("0");
-    });
+    await Future.delayed(Duration(milliseconds: 300));
+    await FlutterPluginMsprinter.sendPrintCut("0");
+    //发送到厨房
+    _sendToKitchen();
+  }
+
+  _sendToKitchen() async {
+    //发送到厨房
+    final printList = machineInfo.printerList;
+    final kitchenList = printList.firstWhere((element) =>
+    element['type'] == 10 &&
+        element['receipt'] == 0 &&
+        element['isOff'] == false,
+        orElse: () => null);
+    if (kitchenList != null) {
+      // final printWidget = ReceiptConstrainedBox(
+      //     ReimbursePrintView(reimburseInfo: refundInfo, widgetWidth: printWidth)
+      // );
+
+      PictureGeneratorProvider.instance.addPicGeneratorTask(
+        PicGenerateTask<PrinterInfo>(
+          tempWidget: testReceipt(kitchenList['printIp']) as ATempWidget,
+          printTypeEnum: PrintTypeEnum.receipt,
+          params: PrinterInfo(ip: kitchenList['printIp']),
+        ),
+      );
+    }
+  }
+
+  testReceipt(printIp) {
+    return ReceiptConstrainedBox(Column(
+      mainAxisAlignment: MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ReimbursePrintView(reimburseInfo: refundInfo, widgetWidth: printWidth)],
+    ));
   }
 
   _getPrintLogoImageData() async {
