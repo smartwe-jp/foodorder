@@ -105,8 +105,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   String get downloadUrl {
     String isNp = appConfig.isAndroid11 ? "_NP" : "";
-    String isFx = appConfig.isFx ? "_fx" : "";
-    String url = baseUrl + "smartwe_ticket_machine${isFx}${isNp}.apk";
+    String isFx = appConfig.isFx ? "_fx" : isNp;
+    String url = baseUrl + "smartwe_ticket_machine${isFx}.apk";
     return url;
   }
 
