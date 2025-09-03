@@ -49,6 +49,7 @@ dependencies:
   barcode_widget: ^2.0.4
   qr_flutter: ^4.0.0
   flutter_switch: ^0.3.2
+  device_info_plus: ^10.0.0
   flutter_http_sse:
     git:
       url: git@github.com:Aaron51FX/flutter_http_sse.git

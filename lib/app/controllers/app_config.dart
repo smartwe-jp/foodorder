@@ -2,17 +2,26 @@
 import 'package:foodorder/app/plugins/paycube/lib/paycube.dart';
 import 'package:foodorder/app/plugins/paycube_old/lib/paycube.dart';
 import 'package:get/get.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 
 class AppConfig extends GetxController {
 
+  bool isFx = true; // whether it's a franchise store
   bool machineType = true; // true for new_panel, false for old_panel
+  //get android version
+  String androidVersion = '7';
 
   get payCube => machineType ? Paycube() : PayCube();
   get isAndroid11 => machineType;
 
   @override
-  void onInit() {
+  Future<void> onInit() async {
     super.onInit();
+    final deviceInfo = DeviceInfoPlugin();
+    final androidInfo = await deviceInfo.androidInfo;
+    androidVersion = androidInfo.version.release;
+    machineType = int.parse(androidVersion) >= 11;
+    print("Android version: $androidVersion, machineType: $machineType");
   }
 
   @override

@@ -119,7 +119,13 @@ class HomeController extends GetxController {
     if (connectivityResult.contains(ConnectivityResult.mobile) ||
         connectivityResult.contains(ConnectivityResult.wifi) ||
         connectivityResult.contains(ConnectivityResult.ethernet)) {
-      openPayCube();
+      if (appConfig.isFx){
+        _isCashState.value = false;
+        prohibitOneCash();
+      } else {
+        openPayCube();
+      }
+
     } else {
       print("没有网络");
       // I am not connected to any network.
