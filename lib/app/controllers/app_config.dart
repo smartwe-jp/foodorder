@@ -1,4 +1,5 @@
 
+import 'package:flutter/cupertino.dart';
 import 'package:foodorder/app/plugins/paycube/lib/paycube.dart';
 import 'package:foodorder/app/plugins/paycube_old/lib/paycube.dart';
 import 'package:get/get.dart';
@@ -20,8 +21,9 @@ class AppConfig extends GetxController {
     final deviceInfo = DeviceInfoPlugin();
     final androidInfo = await deviceInfo.androidInfo;
     androidVersion = androidInfo.version.release;
-    machineType = int.parse(androidVersion) >= 11;
-    print("Android version: $androidVersion, machineType: $machineType");
+    final majorVersion = int.tryParse(androidVersion.split('.').first) ?? 7;
+    machineType = majorVersion >= 11;
+    debugPrint("Android version: $androidVersion, machineType: $machineType");
   }
 
   @override

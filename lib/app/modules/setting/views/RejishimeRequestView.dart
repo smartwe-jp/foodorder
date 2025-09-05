@@ -41,7 +41,13 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectUser = "";
   double printLength = 2352;
   AppConfig appConfig = Get.find();
-  double get printWidth => appConfig.isAndroid11 ? 513:385;
+  double get printWidth {
+    if (appConfig.isFx) {
+      return 513;
+    } else {
+      return appConfig.isAndroid11 ? 513:385;
+    }
+  }
 
 
 
