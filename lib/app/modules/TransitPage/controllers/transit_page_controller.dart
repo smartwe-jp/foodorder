@@ -422,8 +422,8 @@ class TransitPageController extends GetxController {
       }
     }
 
-    final posCheckService = Get.find<PosCheckService>();
-    posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
+    // final posCheckService = Get.find<PosCheckService>();
+    // posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
 
     _goNext(checkmachineMode);
 

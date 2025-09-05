@@ -148,4 +148,10 @@ const Map<String, String> ko_KR = {
   "status_off" : "꺼짐",
   "go_setting" : "설정으로 이동",
 
+  "settlement_posnosetting_error":"POS 기기가 설정되지 않았습니다. 직원에게 문의하십시오. 감사합니다!",
+  "pos_check_title": "POS 기기 상태 확인",
+  "pos_checking": "POS 기기 상태를 확인하는 중입니다. 잠시 기다려 주십시오...",
+  "pos_check_success": "POS 기기 상태가 정상입니다.",
+  "pos_check_failed": "POS 기기 상태가 비정상입니다.",
+
 };

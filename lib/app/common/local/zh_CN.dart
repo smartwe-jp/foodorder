@@ -147,5 +147,10 @@ const Map<String, String> zh_CN = {
   "status_off" : "关闭",
   "go_setting" : "去设置",
 
+  "settlement_posnosetting_error":"POS机未设置，请联系工作人员，谢谢！",
+  "pos_check_title": "POS机状态检查",
+  "pos_checking": "正在检查POS机状态，请稍候...",
+  "pos_check_success": "POS机状态正常",
+  "pos_check_failed": "POS机状态异常",
 
 };

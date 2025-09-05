@@ -6,9 +6,11 @@ import 'checkout_page_controller.dart';
 
 class checkStatusCopyView extends GetView<CheckoutPageController> {
 
+  final Function? onEnd;
 
   const checkStatusCopyView({
     Key? key,
+    this.onEnd,
   }) : super(key: key);
 
   @override
@@ -63,6 +65,9 @@ class checkStatusCopyView extends GetView<CheckoutPageController> {
                   ElevatedButton(
                     onPressed: () {
                       Get.back();
+                      if (onEnd != null) {
+                        onEnd!();
+                      }
                     },
                     child: Text('tag_button_yes'.tr),
                   ),

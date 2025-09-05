@@ -1095,13 +1095,13 @@ class SystemSettingPageView extends GetView {
               //   ],
               // ),
             ),
-          if (controller.pos_ip.value != "")
-          SizedBox(width: ScreenAdapter.width(20)),
-          if (controller.pos_ip.value != "")
-          Switch(value: posCheckService.isActive, onChanged: (value) {
-            posCheckService.toggleActive(value);
-            controller.update();
-          }),
+          // if (controller.pos_ip.value != "")
+          // SizedBox(width: ScreenAdapter.width(20)),
+          // if (controller.pos_ip.value != "")
+          // Switch(value: posCheckService.isActive, onChanged: (value) {
+          //   posCheckService.toggleActive(value);
+          //   controller.update();
+          // }),
 
         ],
       ),

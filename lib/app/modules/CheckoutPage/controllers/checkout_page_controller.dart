@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -15,6 +16,7 @@ import '../../../config/string.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
@@ -66,6 +68,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
 
+  final RxInt posCheckStatus = 0.obs;
+
   @override
   void onInit() {
     debugPrint("CheckoutPageController init");
@@ -82,17 +86,21 @@ class CheckoutPageController extends GetxController with StateMixin {
     super.onReady();
     //startRepeatingAnimation();
     if (firstLoad) {
-      bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
+      bool isSseEnabled =
+          sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
       if (isSseEnabled) {
         debugPrint('SSE is enabled, starting to check printer status');
         //Future.delayed(const Duration(milliseconds: 300), () {
-          Get.dialog(
-            checkStatusCopyView(),
-            barrierDismissible: false,
-          );
-          checkPrinterStatus();
+        Get.dialog(
+          checkStatusCopyView(onEnd: () {
+            _showPosCheck();
+          }),
+          barrierDismissible: false,
+        );
+        checkPrinterStatus();
         //});
-
+      } else {
+        _showPosCheck();
       }
     }
   }
@@ -101,6 +109,31 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onClose() {
     //stopRepeatingAnimation();
     super.onClose();
+  }
+
+  _checkPosStatus() async {
+    //检查POS机状态
+    final posCheckService = Get.find<PosCheckService>();
+
+    posCheckStatus.value =
+    await posCheckService.checkPosConnection(machineInfo.pos_ip) ? 1 : 2;
+    debugPrint('POS机检查结果: ${posCheckStatus.value == 1 ? "成功" : "失败"}');
+  }
+
+  _showPosCheck() async {
+    //检查POS机状态
+    if (machineInfo.allowPos && machineInfo.pos_ip.isNotEmpty) {
+      posCheckStatus.value = 0; // 检测中
+      Get.dialog(
+        PosCheckView(
+            posCheckStatus: posCheckStatus,
+            onRetry: () {
+              _checkPosStatus();
+            }),
+        barrierDismissible: false,
+      );
+      _checkPosStatus();
+    }
   }
 
   Future<void> checkPrinterStatus() async {
