@@ -22,6 +22,7 @@ import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
+import 'app/controllers/app_config.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
@@ -69,6 +70,12 @@ void main() {
       options: DefaultFirebaseOptions.currentPlatform,
     );
     await GetStorage.init();
+
+    Get.putAsync<AppConfig>(() async {
+      final config = AppConfig();
+      await config.onInit(); // Assume init() is an async method
+      return config;
+    });
 
     FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterError;
     SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(statusBarColor: Colors.transparent);

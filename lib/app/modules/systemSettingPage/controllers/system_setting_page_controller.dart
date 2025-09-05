@@ -104,8 +104,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   bool isAllow5000 = true;
   String labelSize = "40x30"; //默认标签宽度
 
-  String get downloadUrl => appConfig.isAndroid11 ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
-      : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
+  final baseUrl = "https://app.smartwe.co.jp/";
+
+  String get downloadUrl {
+    String isNp = appConfig.isAndroid11 ? "_NP" : "";
+    String isFx = appConfig.isFx ? "_fx" : isNp;
+    String url = baseUrl + "smartwe_ticket_machine${isFx}.apk";
+    return url;
+  }
 
   final Map subPrinterInfos = {
     '拡張プリンター(1)': 21,

@@ -852,6 +852,19 @@ class SettingView extends GetView<SettingController> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (controller.appConfig.isFx)
+                    Container(
+                      alignment: Alignment.center,
+                      margin: EdgeInsets.only(bottom: ScreenAdapter.height(20)),
+                      //padding: EdgeInsets.only(bottom: ScreenAdapter.width(20)),
+                      child: Text("マシンコード (NO.${controller.machineCode})",
+                          style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontSize: ScreenAdapter.fontSize(22),
+                            fontWeight: FontWeight.w600,
+                            color: ColorsUtil.hexToColor("#000000"),
+                          )),
+                    ),
                   getDepositListShow(),
                   SizedBox(
                     height: ScreenAdapter.height(20),
@@ -860,6 +873,7 @@ class SettingView extends GetView<SettingController> {
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),
+                  if (!controller.appConfig.isFx)
                   CashSettingView(cashInfoList:
                   controller.cashInfoList.value,
                     isAllowRejishime: controller.isAllowRejishime.value,
@@ -878,6 +892,7 @@ class SettingView extends GetView<SettingController> {
                     resetCash: () {
                       controller.recycleCash();
                     },),
+
                   SizedBox(
                     height: ScreenAdapter.height(20),
                   ),

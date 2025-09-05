@@ -10,13 +10,13 @@ import '../controllers/reimburse_order_controller.dart';
 
 class ReimbursePrintView extends StatelessWidget {
 
-  final Map<String, dynamic> reimburseInfo;
+  final Map reimburseInfo;
   final double widgetWidth;
   final GlobalKey containerKey = GlobalKey();
   ReimbursePrintView({Key? key, required this.reimburseInfo, required this.widgetWidth})
       : super(key: key);
   final contentStyle = GoogleFonts.zenKakuGothicAntique(
-      fontSize: 26, fontWeight: FontWeight.w300, color: Colors.black87);
+      fontSize: 26, fontWeight: FontWeight.w500, color: Colors.black);
 
 
   @override
@@ -82,8 +82,8 @@ class ReimbursePrintView extends StatelessWidget {
         textDirection: TextDirection.ltr,
         child: Container(
           margin: EdgeInsets.only(top: 5, bottom: 5),
-          height: 0.5,
-          color: ColorsUtil.hexToColor("#000000"),
+          height: 2,
+          color: Colors.black,
         ));
   }
 

@@ -10,6 +10,7 @@ import 'package:foodorder/app/services/ScreenAdapter.dart';
 class GridItemView extends StatelessWidget {
   final String title;
   final String subtitle;
+  final String originalPrice;
   final String price;
   final ImageProvider image;
   final double imageRadius;
@@ -22,6 +23,7 @@ class GridItemView extends StatelessWidget {
       {Key? key,
         required this.title,
         required this.subtitle,
+        required this.originalPrice,
         required this.price,
         required this.image,
         required this.onTap,
@@ -79,6 +81,7 @@ class GridItemView extends StatelessWidget {
                     Expanded(child: ItemInfoArea(
                         title: title,
                         subtitle: price,
+                        originalPrice: originalPrice,
                         option: option,
                         onTap: onTap),)
 
@@ -127,11 +130,13 @@ class ItemInfoArea extends StatelessWidget {
   final String subtitle;
   final String option;
   final Function onTap;
+  final String originalPrice;
 
   ItemInfoArea(
       {Key? key,
         required this.title,
         required this.subtitle,
+        required this.originalPrice,
         this.option = "",
         required this.onTap});
 
@@ -146,7 +151,7 @@ class ItemInfoArea extends StatelessWidget {
         Row(mainAxisAlignment: MainAxisAlignment.end,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SubTitle(title: subtitle),
+              SubTitle(title: subtitle, originalPrice: originalPrice),
               //SizedBox(width: ScreenAdapter.width(20)),
               //option button
               // (option != "")
@@ -190,8 +195,9 @@ class MainTitle extends StatelessWidget {
 
 class SubTitle extends StatelessWidget {
   final String title;
+  final String originalPrice;
 
-  SubTitle({required this.title});
+  SubTitle({required this.title, required this.originalPrice});
 
   @override
   Widget build(BuildContext context) {
@@ -214,11 +220,25 @@ class SubTitle extends StatelessWidget {
               title.formatSum(),
               style: TextStyle(
                 fontSize: ScreenAdapter.fontSize(28),
-                fontWeight: FontWeight.w500,
+                fontWeight: FontWeight.w600,
                 fontFamily: GFont.getFontFamily(),
                 color: ColorsUtil.hexToColor(Gcolor.itemTitleColor),
               ),
-            )
+            ),
+            if (originalPrice != title && originalPrice != '0')
+            SizedBox(width: ScreenAdapter.width(5),),
+            if (originalPrice != title && originalPrice != '0')
+
+                Text(
+                  originalPrice.formatSum(),
+                  style: TextStyle(
+                    fontSize: ScreenAdapter.fontSize(22),
+                    fontWeight: FontWeight.w500,
+                    fontFamily: GFont.getFontFamily(),
+                    color: ColorsUtil.hexToColor("#A9A9A9"),
+                    decoration: TextDecoration.lineThrough,
+                  ),
+                )
           ]
       ),
 

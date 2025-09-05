@@ -10,7 +10,7 @@ import '../services/PosCheckService.dart';
 class AppBindings extends Bindings {
   @override
   void dependencies() {
-    Get.lazyPut(() => AppConfig());
+    //Get.lazyPut(() => AppConfig());
     Get.lazyPut(()=> OrderSqlController());
     Get.lazyPut(() => SseService());
     Get.lazyPut(() => PrinterCheckService());

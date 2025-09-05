@@ -2748,6 +2748,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowReceiptMenu(),//设置是否允强制必须打印领収书
                                       ]
                                   ),
+                                  if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2765,6 +2766,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowOneYen(),//是否允许一元
                                       ]
                                   ),
+                                  if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2782,6 +2784,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllow5000Yen(),//是否允许一元
                                       ]
                                   ),
+                                  if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
                                         Container(

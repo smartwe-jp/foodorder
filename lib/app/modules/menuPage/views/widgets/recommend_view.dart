@@ -21,6 +21,7 @@ extension RecommendView on MenuPageController {
       title: item['mainTitle'],
       subtitle: publicMenuSubtitle(item['subtitle'] ?? []),
       price: "${item['currentPrice']}",
+      originalPrice: "${item['price'] ?? 0}",
       image: itemImage(item['homeImage']),
       option: item['optionGroupVoList']?.length > 0
           ? "select_option".tr
