@@ -164,8 +164,8 @@ class MenuPageController extends GetxController with StateMixin {
     var queryTakeout = "2";
     if (machineInfo.currentMode == MachineMode.takeout) {
       queryTakeout = "0";
-    } 
-    
+    }
+
     //queryTakeout 0外卖 1都可 2店内
     // switch (machineInfo.diningType) {
     //   case "1":
@@ -202,14 +202,11 @@ class MenuPageController extends GetxController with StateMixin {
         //如果菜单为空则返回言语选择页面并给出提示
         if (myList.length == 0 || null == myList || "" == myList) {
           //showToast("少々お待ちください");
-          Get.dialog(
-              DialogUtils.alertOneButton("少々お待ちください",
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
+          Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr, confirm: () {
+            Get.back();
+          }));
           sleep(Duration(milliseconds: 2000));
           Get.back();
         }
@@ -251,14 +248,11 @@ class MenuPageController extends GetxController with StateMixin {
         change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['msg'],
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton(response['msg'],
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
@@ -274,8 +268,7 @@ class MenuPageController extends GetxController with StateMixin {
         //     parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
-    })
-    .timeout(Duration(seconds: 8), onTimeout: (){
+    }).timeout(Duration(seconds: 8), onTimeout: () {
       //FirebaseAnalytics.instance.logEvent(name: 'load_menu_category_timeout', parameters: {'machineCode': machineInfo.machineCode});
       change(null, status: RxStatus.error('Failed to load data Timeout'));
       // if (retryCount < 3) {
@@ -332,14 +325,11 @@ class MenuPageController extends GetxController with StateMixin {
         //如果菜单为空则返回言语选择页面并给出提示
         if (myList.length == 0 || null == myList || "" == myList) {
           //showToast("少々お待ちください");
-          Get.dialog(
-              DialogUtils.alertOneButton("少々お待ちください",
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
+          Get.dialog(DialogUtils.alertOneButton("少々お待ちください",
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr, confirm: () {
+            Get.back();
+          }));
           sleep(Duration(milliseconds: 2000));
           Get.back();
         }
@@ -407,14 +397,11 @@ class MenuPageController extends GetxController with StateMixin {
         change(null, status: RxStatus.success());
       } else {
         //showToast(response['msg']);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['msg'],
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton(response['msg'],
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
         sleep(Duration(milliseconds: 2000));
         Get.back();
       }
@@ -429,8 +416,7 @@ class MenuPageController extends GetxController with StateMixin {
         //     parameters: {'machineCode': machineInfo.machineCode});
         change(null, status: RxStatus.error('Failed to load data'));
       }
-    })
-    .timeout(Duration(seconds: 12), onTimeout: (){
+    }).timeout(Duration(seconds: 12), onTimeout: () {
       //FirebaseAnalytics.instance.logEvent(name: 'load_menu_timeout', parameters: {'machineCode': machineInfo.machineCode});
       change(null, status: RxStatus.error('Failed to load data Timeout'));
       // if (retryCount < 3) {
@@ -446,22 +432,30 @@ class MenuPageController extends GetxController with StateMixin {
 
   getCartPriceTotal() async {
     debugPrint('getCartPriceTotal');
-    ordersqlcontroller.getCardList();
-    var total = await ordersqlcontroller.getCartAllPrice();
-    if (total != null) {
-      shopCartTotalPrice.value =
-          total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+    try {
+      //获取购物车数据
+      await ordersqlcontroller.getCardList();
+      var total = await ordersqlcontroller.getCartAllPrice();
+      if (total != null) {
+        shopCartTotalPrice.value =
+            total["totalPrice"] == null ? "0" : total["totalPrice"].toString();
+      }
+      logger.info('-- Cart Total Price: ${shopCartTotalPrice.value} --');
+
+      var totalNum = await ordersqlcontroller.getCartTotalNum();
+      showCartTotalGoodsNum.value = totalNum;
+      logger.info('-- Cart Total Items: $totalNum --');
+
+      if (showCartTotalGoodsNum.value == 0) {
+        showShopCart.value = false;
+      }
+
+      showCartItems.value = ordersqlcontroller.cartItems;
+      update(['shopping_cart', 'shoppingCar']);
+    } catch (e) {
+      print(e);
+      logger.info('-- getCartPriceTotal error: $e --');
     }
-
-    var totalNum = await ordersqlcontroller.getCartTotalNum();
-    showCartTotalGoodsNum.value = totalNum;
-
-    if (showCartTotalGoodsNum.value == 0) {
-      showShopCart.value = false;
-    }
-
-    showCartItems.value = ordersqlcontroller.cartItems;
-    update(['shopping_cart', 'shoppingCar']);
   }
 
   publicChangeCartItemCreate(ShopItemModel d, isAdd) async {
@@ -475,7 +469,7 @@ class MenuPageController extends GetxController with StateMixin {
     if (d.goodsNum <= 1 && isAdd == false) {
       Get.dialog(DialogUtils.alert("show_del_cart_item_tag".tr,
           title: "tag_title".tr,
-          canceltitle:"show_del_cart_item_no".tr,
+          canceltitle: "show_del_cart_item_no".tr,
           confirmtitle: "show_del_cart_item_yes".tr, confirm: () {
         //widget.confirmCallback('确定');
         ordersqlcontroller.removeFromCart(d.id ?? 0);
@@ -554,7 +548,8 @@ class MenuPageController extends GetxController with StateMixin {
             //color: Colors.red,
             child: RichText(
               text: TextSpan(
-                  text: "${"show_original_price_front".tr}",//¥GString.getToString(this._checkLanguage, "show_price_front"),
+                  text:
+                      "${"show_original_price_front".tr}", //¥GString.getToString(this._checkLanguage, "show_price_front"),
                   style: TextStyle(
                     fontSize: ScreenAdapter.fontSize(priceFontSize) / 2.2,
                     fontWeight: FontWeight.w500,
@@ -715,8 +710,9 @@ class MenuPageController extends GetxController with StateMixin {
           fit: BoxFit.fitWidth,
         ),
       );
-    } else if(bounds > 0){
-      var showString = "show_product_restrictions".tr.replaceAll('%%', bounds.toString());
+    } else if (bounds > 0) {
+      var showString =
+          "show_product_restrictions".tr.replaceAll('%%', bounds.toString());
       return Positioned(
         right: ScreenAdapter.width(10),
         top: ScreenAdapter.height(10),
@@ -776,19 +772,17 @@ class MenuPageController extends GetxController with StateMixin {
 
   //公共加入购物车
   publicAddCartMenu(cartItem, checkItem) async {
-    if(cartItem['qtyBounds'] >0){
-      var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
-      if(checkresult>=cartItem['qtyBounds']){
+    if (cartItem['qtyBounds'] > 0) {
+      var checkresult =
+          await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
+      if (checkresult >= cartItem['qtyBounds']) {
         var showString = "show_storage_num_error".tr;
         //showToast("${showString}");
-        Get.dialog(
-            DialogUtils.alertOneButton(showString,
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton(showString,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
         return false;
       }
     }
@@ -798,11 +792,11 @@ class MenuPageController extends GetxController with StateMixin {
       await ordersqlcontroller.addToCart(cartItem, checkItem: checkItem);
       ordersqlcontroller.getCardList();
       result = true;
-
       //更改显示购物车价格
       getCartPriceTotal();
     } catch (e) {
       print(e);
+      logger.info('-- publicAddCartMenu error: $e --');
       result = false;
     }
     //update();
@@ -834,20 +828,18 @@ class MenuPageController extends GetxController with StateMixin {
   publicChangeCartMenuCount(cartItem, changeType) async {
     var result;
     try {
-      if(changeType == 'add'){
-        if(cartItem['qtyBounds'] >0){
-          var checkresult = await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
-          if(checkresult>=cartItem['qtyBounds']){
+      if (changeType == 'add') {
+        if (cartItem['qtyBounds'] > 0) {
+          var checkresult =
+              await ordersqlcontroller.getCartItemNum(cartItem['menuCode']);
+          if (checkresult >= cartItem['qtyBounds']) {
             var showString = "show_storage_num_error".tr;
             //showToast("${showString}");
-            Get.dialog(
-                DialogUtils.alertOneButton(showString,
-                    title: "tag_title".tr,
-                    confirmtitle: "tag_button_yes".tr,
-                    confirm: () {
-                      Get.back();
-                    })
-            );
+            Get.dialog(DialogUtils.alertOneButton(showString,
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr, confirm: () {
+              Get.back();
+            }));
             return;
           } else {
             result = await ordersqlcontroller.addToCartNum(cartItem);
@@ -969,17 +961,15 @@ print("加1了");
             }*/
           }
 
-          if(current_option_checked >=int.parse(attr[i]["multipleState"])){
+          if (current_option_checked >= int.parse(attr[i]["multipleState"])) {
             var showTag = "menu_option_more_multipleState".tr;
             //showToast("${showTag.replaceAll("%%", attr[i]["multipleState"])}");
-            Get.dialog(
-                DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["multipleState"])}",
-                    title: "tag_title".tr,
-                    confirmtitle: "tag_button_yes".tr,
-                    confirm: () {
-                      Get.back();
-                    })
-            );
+            Get.dialog(DialogUtils.alertOneButton(
+                "${showTag.replaceAll("%%", attr[i]["multipleState"])}",
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr, confirm: () {
+              Get.back();
+            }));
             break;
           }
 
@@ -1048,17 +1038,14 @@ print("加1了");
 
     var result = await ordersqlcontroller.getCartItemNum(item['menuCode']);
 
-    if(result>=item['qtyBounds']){
+    if (result >= item['qtyBounds']) {
       var showString = "show_storage_num_error".tr;
       //showToast("${showString}");
-      Get.dialog(
-          DialogUtils.alertOneButton(showString,
-              title: "tag_title".tr,
-              confirmtitle: "tag_button_yes".tr,
-              confirm: () {
-                Get.back();
-              })
-      );
+      Get.dialog(DialogUtils.alertOneButton(showString,
+          title: "tag_title".tr,
+          confirmtitle: "tag_button_yes".tr, confirm: () {
+        Get.back();
+      }));
       return;
     } else {
       //如果option 存在，则弹出option
@@ -1217,7 +1204,7 @@ print("加1了");
   }
 
   _showOrderEasyLoading({bool tag = true}) {
-    var _showTag =Text("settlement_noprint_tag".tr,
+    var _showTag = Text("settlement_noprint_tag".tr,
         style: TextStyle(
           fontFamily: GFont.getFontFamily(),
           fontSize: ScreenAdapter.fontSize(25),
@@ -1276,7 +1263,6 @@ print("加1了");
     //   }
     // }
     _doSubmitOrder();
-    
   }
 
   // checkMachineState() async {
@@ -1292,10 +1278,10 @@ print("加1了");
   //     } else {
   //       machineInfo.showCash = false;
   //       machineInfo.cashOn = false;
-  //     } 
+  //     }
   //     machineInfo.update(['selectPayment']);
   //   }
-    
+
   // }
 
   //提交订单
@@ -1338,7 +1324,6 @@ print("加1了");
       };
       debugPrint("formData: $formData");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
-
         EasyLoading.dismiss();
         var response = json.decode(val.toString());
         debugPrint("webBootOrder response: $response");
@@ -1366,14 +1351,11 @@ print("加1了");
             menuLackMap.value = response['data']["menuLackMap"];
           }
           //showToast(response['data']["message"]);
-          Get.dialog(
-              DialogUtils.alertOneButton(response['data']["message"],
-                  title: "tag_title".tr,
-                  confirmtitle: "tag_button_yes".tr,
-                  confirm: () {
-                    Get.back();
-                  })
-          );
+          Get.dialog(DialogUtils.alertOneButton(response['data']["message"],
+              title: "tag_title".tr,
+              confirmtitle: "tag_button_yes".tr, confirm: () {
+            Get.back();
+          }));
         }
       }).timeout(Duration(seconds: 30), onTimeout: () {
         _handleOrderResultAlert(times: times);
@@ -1390,39 +1372,28 @@ print("加1了");
   _handleOrderResultAlert({int times = 0}) {
     EasyLoading.dismiss();
     if (times > 2) {
-      Get.dialog(
-          DialogUtils.alertOneButton(
-              "order_network_error".tr,
-              title: "tag_title".tr,
-              confirmtitle: "tag_button_yes".tr,
-              confirm: () {
-                Get.back();
-                // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-                //   "machineCode": machineInfo.machineCode,
-                // });
-              })
-      );
+      Get.dialog(DialogUtils.alertOneButton("order_network_error".tr,
+          title: "tag_title".tr,
+          confirmtitle: "tag_button_yes".tr, confirm: () {
+        Get.back();
+        // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+        //   "machineCode": machineInfo.machineCode,
+        // });
+      }));
       return;
     }
 
-    Get.dialog(
-        DialogUtils.alert(
-            "show_order_error".tr,
-            title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr,
-            confirm: () {
-              Get.back();
-              _doSubmitOrder(times: times + 1);
-            },
-            cancle: () {
-              Get.back();
-              //clearCartList();
-              // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
-              //   "machineCode": machineInfo.machineCode,
-              // });
-            }
-            )
-    );
+    Get.dialog(DialogUtils.alert("show_order_error".tr,
+        title: "tag_title".tr, confirmtitle: "tag_button_yes".tr, confirm: () {
+      Get.back();
+      _doSubmitOrder(times: times + 1);
+    }, cancle: () {
+      Get.back();
+      //clearCartList();
+      // FirebaseAnalytics.instance.logEvent(name: "submit_order_error",parameters: {
+      //   "machineCode": machineInfo.machineCode,
+      // });
+    }));
   }
 
   //选择食用方式和支付方式
@@ -1475,14 +1446,11 @@ print("加1了");
         //gotoSettlement();
       } else {
         //showToast(response['data']["message"]);
-        Get.dialog(
-            DialogUtils.alertOneButton(response['data']["message"],
-                title: "tag_title".tr,
-                confirmtitle: "tag_button_yes".tr,
-                confirm: () {
-                  Get.back();
-                })
-        );
+        Get.dialog(DialogUtils.alertOneButton(response['data']["message"],
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+          Get.back();
+        }));
       }
     });
   }

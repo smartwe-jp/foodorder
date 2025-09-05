@@ -9,7 +9,7 @@ import '../../../config/colorsUtil.dart';
 import '../controllers/reimburse_order_controller.dart';
 
 class ReimbursePrintView extends StatelessWidget {
-  final Map<String, dynamic> reimburseInfo;
+  final Map reimburseInfo;
   final double widgetWidth;
   final GlobalKey containerKey = GlobalKey();
   ReimbursePrintView({Key? key, required this.reimburseInfo, required this.widgetWidth})
