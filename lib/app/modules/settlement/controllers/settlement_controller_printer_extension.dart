@@ -184,6 +184,11 @@ class PrintService extends GetxService {
         final printWidth = printSize.split('x')[0].trim().toInt(); // 获取标签宽度
         final printHeight = printSize.split('x')[1].trim().toInt(); // 获取标签高度
         // Add the head receipt widget to the print queue
+        var totalQty = 0;
+        for (var item in items) {
+          totalQty += (item["qty"] ?? 0) as int;
+        }
+
         int itemCount = 0;
 
         for (var item in items) {
@@ -201,6 +206,7 @@ class PrintService extends GetxService {
               printWidth.toDouble(),
               _labelMaxLine(printHeight),
               rotate,
+              '$totalQtyー$itemCount',
             );
             labelPrintQueue.add(receiptWidget);
           }
@@ -392,33 +398,41 @@ class PrintService extends GetxService {
             )));
   }
 
-  Widget labelItem(String name, String number, Map options, double printWidth, int maxLines, bool rotate) {
+
+  Widget labelItem(
+      String name,
+      String number,
+      Map options,
+      double printWidth,
+      int maxLines,
+      bool rotate,
+      String index,
+      ) {
     return LabelConstrainedBox(
       Transform(
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
         alignment: Alignment.center,
         child: Container(
-          //padding: EdgeInsets.symmetric(horizontal: 8),
+          padding: EdgeInsets.only(right: 3),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-
               Expanded(
                 flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-
                     Expanded(
-                      flex: 3,
-                      child: AutoSizeText(//
+                      flex: 2,
+                      child: Text(
+                        //
                         name,
                         maxLines: 2,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 50,
+                          fontSize: 23,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
@@ -426,30 +440,64 @@ class PrintService extends GetxService {
                       ),
                     ),
 
+                    // Expanded(
+                    //   flex: 1,
+                    //   child: AutoSizeText(
+                    //     ' # ' + number,
+                    //     maxLines: 2,
+                    //     textAlign: TextAlign.right,
+                    //     style: TextStyle(
+                    //       fontSize: 30,
+                    //       color: Colors.black,
+                    //       fontWeight: FontWeight.bold,
+                    //     ),
+                    //     overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                    //   ),
+                    // ),
                     Expanded(
-                      flex: 2,
-                      child: AutoSizeText(
-                        ' # ' + number,
-                        maxLines: 2,
-                        textAlign: TextAlign.right,
-                        style: TextStyle(
-                          fontSize: 30,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      flex: 1,
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            flex: 1,
+                            child: AutoSizeText(
+                              ' # ' + number,
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                            ),
+                          ),
+                          Expanded(
+                            flex: 1,
+                            child: AutoSizeText(
+                              index,
+                              textAlign: TextAlign.right,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontSize: 30,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                            ),
+                          ),
+                        ],
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
-
               Divider(
                 color: Colors.black,
                 thickness: 2,
               ),
-
-
               Expanded(
                 flex: 2,
                 child: Container(
@@ -480,7 +528,7 @@ class PrintService extends GetxService {
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
         alignment: Alignment.center,
         child: Container(
-          //padding: EdgeInsets.symmetric(horizontal: 8),
+          padding: EdgeInsets.only(right: 3),
           child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -512,7 +560,7 @@ class PrintService extends GetxService {
                           crossAxisAlignment: CrossAxisAlignment.end,
                           children: [
                             Expanded(
-                              flex: 3,
+                              flex: 1,
                               child: AutoSizeText(
                                 ' # ' + orderSnCode,
                                 textAlign: TextAlign.right,
@@ -526,7 +574,7 @@ class PrintService extends GetxService {
                               ),
                             ),
                             Expanded(
-                              flex: 2,
+                              flex: 1,
                               child: AutoSizeText(
                                 '$itemCount',
                                 textAlign: TextAlign.right,
