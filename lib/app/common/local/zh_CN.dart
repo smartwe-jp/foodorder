@@ -153,4 +153,8 @@ const Map<String, String> zh_CN = {
   "pos_check_success": "POS机状态正常",
   "pos_check_failed": "POS机状态异常",
 
+  "skip_button":"跳过",
+  "next_button":"下一步",
+  "suggest_title":"您可能还喜欢",
+
 };

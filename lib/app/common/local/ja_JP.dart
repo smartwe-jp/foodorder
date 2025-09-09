@@ -154,4 +154,8 @@ const Map<String, String> ja_JP = {
   "pos_checking": "POS端末の状態を確認中です。しばらくお待ちください...",
   "pos_check_success": "POS端末の状態は正常です。",
   "pos_check_failed": "POS端末の状態は異常です。",
+
+  "skip_button":"スキップ",
+  "next_button":"進む",
+  "suggest_title":"ご一緒にいかがですか",
 };

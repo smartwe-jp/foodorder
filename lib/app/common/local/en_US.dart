@@ -153,4 +153,8 @@ const Map<String, String> en_US = {
   "pos_check_success": "POS machine status is normal.",
   "pos_check_failed": "POS machine status is abnormal.",
 
+  "skip_button":"Skip",
+  "next_button":"Next",
+  "suggest_title":"You may also like",
+
 };

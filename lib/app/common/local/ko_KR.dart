@@ -154,4 +154,8 @@ const Map<String, String> ko_KR = {
   "pos_check_success": "POS 기기 상태가 정상입니다.",
   "pos_check_failed": "POS 기기 상태가 비정상입니다.",
 
+  "skip_button":"건너뛰기",
+  "next_button":"다음",
+  "suggest_title":"함께 보면 좋을 것들",
+
 };
