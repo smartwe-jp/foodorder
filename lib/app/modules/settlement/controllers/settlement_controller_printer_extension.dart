@@ -407,7 +407,7 @@ class PrintService extends GetxService {
                 flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Expanded(
                       flex: 2,
@@ -417,7 +417,7 @@ class PrintService extends GetxService {
                         maxLines: 2,
                         textAlign: TextAlign.left,
                         style: TextStyle(
-                          fontSize: 24,
+                          fontSize: 23,
                           color: Colors.black,
                           fontWeight: FontWeight.bold,
                         ),
