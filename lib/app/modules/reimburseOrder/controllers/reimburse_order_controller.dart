@@ -72,9 +72,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   double get printWidth {
     if (appConfig.isFx) {
-      return 513;
+      return 550;
     } else {
-      return appConfig.isAndroid11 ? 513:385;
+      return appConfig.isAndroid11 ? 530:385;
     }
   }
 

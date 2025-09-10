@@ -7,15 +7,12 @@ import 'dart:ui' as ui;
 
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:barcode_widget/barcode_widget.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
-import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:qr_flutter/qr_flutter.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
@@ -182,6 +179,7 @@ class PrintService extends GetxService {
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printWidth = printer['labelWidth'] ?? 384.0;
         // Add the head receipt widget to the print queue
+        final time = await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
@@ -203,7 +201,8 @@ class PrintService extends GetxService {
               options,
               printWidth.toDouble(),
               rotate,
-              '$totalQtyー$itemCount',
+              '$totalQty-$itemCount',
+                time
             );
             labelPrintQueue.add(receiptWidget);
           }
@@ -218,6 +217,7 @@ class PrintService extends GetxService {
             itemCount,
             remark,
             printWidth.toDouble(),
+            time,
             rotate,
           );
 
@@ -396,6 +396,7 @@ class PrintService extends GetxService {
       double printWidth,
       bool rotate,
       String index,
+      String time,
       ) {
     return LabelConstrainedBox(
       Transform(
@@ -411,7 +412,7 @@ class PrintService extends GetxService {
                 flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
                     Expanded(
                       flex: 2,
@@ -489,12 +490,36 @@ class PrintService extends GetxService {
               ),
               Expanded(
                 flex: 2,
-                child: Container(
-                  margin: EdgeInsets.only(top: 5, left: 10),
-                  width: double.infinity,
-                  child: optionList(options),
+                child: Column(
+                  children: [
+                    Expanded(
+                      flex: 4,
+                      child: Container(
+                        margin: EdgeInsets.only(top: 5, left: 10),
+                        width: double.infinity,
+                        child: optionList(options),
+                      ),
+                    ),
+
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        margin: EdgeInsets.only(top: 5),
+                        child: Text(
+                          time,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
-              )
+              ),
             ],
           ),
         ),
@@ -511,6 +536,7 @@ class PrintService extends GetxService {
       int itemCount,
       String remark,
       double printWidth,
+      String time,
       bool rotate) {
   return LabelConstrainedBox(
     Transform(
@@ -591,15 +617,34 @@ class PrintService extends GetxService {
 
                 Expanded(
                   flex: 2,
-                  child: AutoSizeText(
-                    remark,
-                    maxLines: 4,
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    ),
-                    overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      AutoSizeText(
+                        remark,
+                        maxLines: 4,
+                        style: TextStyle(
+                          fontSize: 24,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                      ),
+
+                      Container(
+                        alignment: Alignment.centerRight,
+                        margin: EdgeInsets.only(top: 5),
+                        child: Text(
+                          time,
+                          textAlign: TextAlign.right,
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ]
