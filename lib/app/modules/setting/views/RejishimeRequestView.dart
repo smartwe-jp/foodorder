@@ -59,13 +59,12 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   @override
   void initState() {
     super.initState();
-    printWidth = HomeServices.getMachinePrintWidth();
     _loadMailAddress();
   }
 
 
   _loadMailAddress() async {
-
+      printWidth = await HomeServices.getMachinePrintWidth();
       final param = {
         "machineCode": widget.machineCode,
       };
