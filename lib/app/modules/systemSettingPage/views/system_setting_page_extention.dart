@@ -780,6 +780,63 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     );
   }
 
+  setMachinePrintSize(double width) {
+
+    final _labelPrintSize = {"58":385, "80":530};
+
+    return Container(
+      margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+      padding: EdgeInsets.only(left:ScreenAdapter.width(20),top: ScreenAdapter.height(3),bottom: ScreenAdapter.height(3)),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        spacing: ScreenAdapter.width(15), // 主轴(水平)方向间距
+        children: [
+        Text(
+          "プリント幅:",
+          style: TextStyle(
+              fontFamily: 'NotoSansJP',
+              fontSize: ScreenAdapter.fontSize(22),
+              fontWeight: FontWeight.w500
+          ),
+        ),
+        ..._labelPrintSize.keys.map((e) {
+          int labelWidth = _labelPrintSize[e] ?? 0;
+          return InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              controller.updateMachinePrintWidth(labelWidth.toDouble());
+            },
+            child: Container(
+              //1margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(140),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: (width == labelWidth) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],//
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("$e",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: (width == labelWidth) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          );
+        }).toList(),]
+      ),
+    );
+  }
+
   _setPrintDirection(type,receipt, printDirection) {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),

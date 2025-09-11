@@ -15,6 +15,7 @@ import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
@@ -42,13 +43,14 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectUser = "";
   double printLength = 2352;
   AppConfig appConfig = Get.find();
-  double get printWidth {
-    if (appConfig.isFx) {
-      return 550;
-    } else {
-      return appConfig.isAndroid11 ? 530:385;
-    }
-  }
+  double printWidth = 385;
+  // {
+  //   if (appConfig.isFx) {
+  //     return 550;
+  //   } else {
+  //     return appConfig.isAndroid11 ? 530:385;
+  //   }
+  // }
 
 
 
@@ -57,6 +59,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   @override
   void initState() {
     super.initState();
+    printWidth = HomeServices.getMachinePrintWidth();
     _loadMailAddress();
   }
 
