@@ -2809,6 +2809,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
                                   ),
+                                  if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
                                         Container(

@@ -30,6 +30,7 @@ import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_con
 import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
 import '../../TransitPage/controllers/transit_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
+import '../views/RejishimeRequestView.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -451,6 +452,12 @@ class SettingController extends GetxController with StateMixin {
       default:
         return "";
     }
+  }
+
+  showRejishimeView({bool isNotCash = false}) async {
+    Get.dialog(
+        RejishiMeRequestView(machineCode: machineCode.value, isNotCash: isNotCash,)
+    );
   }
 
   goToBack() {
