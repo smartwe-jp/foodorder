@@ -37,6 +37,7 @@ import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/ReplanishView.dart';
+import '../views/RejishimeRequestView.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -912,6 +913,10 @@ class SettingController extends GetxController with StateMixin {
       default:
         return '';
     }
+  showRejishimeView({bool isNotCash = false}) async {
+    Get.dialog(
+        RejishiMeRequestView(machineCode: machineCode.value, isNotCash: isNotCash,)
+    );
   }
 
   goToBack() {

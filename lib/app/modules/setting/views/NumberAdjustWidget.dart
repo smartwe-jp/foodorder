@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 import '../../../services/ScreenAdapter.dart';
+import '../../../widget/NumberKeyboard.dart';
 
 class NumberAdjustWidget extends StatefulWidget {
   final int initialNumber;
   final Function(int) onNumberChanged;
   final int? maxNumber;
   final int? minNumber;
+  final String? content;
 
   NumberAdjustWidget({Key? key,
     required this.initialNumber,
     required this.onNumberChanged,
     this.maxNumber,
-    this.minNumber}) : super(key: key);
+    this.minNumber,
+    this.content,
+  }) : super(key: key);
 
   @override
   _NumberAdjustWidgetState createState() => _NumberAdjustWidgetState();
@@ -85,28 +91,63 @@ class _NumberAdjustWidgetState extends State<NumberAdjustWidget> {
               ),
               TableCell(
                 verticalAlignment: TableCellVerticalAlignment.middle,
-                child: Center(
-                  child: TextField(
-                    controller: TextEditingController(text: '$_currentNumber'),
-                    textAlign: TextAlign.center,
-                    keyboardType: TextInputType.number,
-                    onChanged: (value) {
-                      if (value.isEmpty) {
-                        return;
-                      }
-                      int number = int.parse(value);
-                      if (_maxNumber != null && number > _maxNumber!) {
-                        number = _maxNumber!;
-                      }
-                      if (_minNumber != null && number < _minNumber!) {
-                        number = _minNumber!;
-                      }
-                      _currentNumber = number;
-                      widget.onNumberChanged(_currentNumber);
+                child:
+                  GestureDetector(
+                    onTap: (){
+                      Get.dialog(
+                        NumberKeyboardDialog(
+                          initialValue: '$_currentNumber',
+                          title: "${(widget.content ?? '')}数値を入力",
+                          onConfirm: (value) {
+                            if (value.isEmpty) return;
+                            int number = int.parse(value);
+                            if (_maxNumber != null && number > _maxNumber!) {
+                              number = _maxNumber!;
+                            }
+                            if (_minNumber != null && number < _minNumber!) {
+                              number = _minNumber!;
+                            }
+                            setState(() {
+                              _currentNumber = number;
+                            });
+                            widget.onNumberChanged(_currentNumber);
+                          },
+                        ),
+                        barrierDismissible: false,
+                      );
                     },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.transparent),
+                      ),
+                      child: Center(
+                        child: Text('$_currentNumber', style: TextStyle(fontSize: 20)),
+                      ),
+                    ),
                   ),
-                  //Text('$_currentNumber', style: TextStyle(fontSize: 20)),
-                ),
+
+                // Center(
+                //   child: TextField(
+                //     controller: TextEditingController(text: '$_currentNumber'),
+                //     textAlign: TextAlign.center,
+                //     keyboardType: TextInputType.number,
+                //     onChanged: (value) {
+                //       if (value.isEmpty) {
+                //         return;
+                //       }
+                //       int number = int.parse(value);
+                //       if (_maxNumber != null && number > _maxNumber!) {
+                //         number = _maxNumber!;
+                //       }
+                //       if (_minNumber != null && number < _minNumber!) {
+                //         number = _minNumber!;
+                //       }
+                //       _currentNumber = number;
+                //       widget.onNumberChanged(_currentNumber);
+                //     },
+                //   ),
+                //   //Text('$_currentNumber', style: TextStyle(fontSize: 20)),
+                // ),
               ),
               TableCell(
                 verticalAlignment: TableCellVerticalAlignment.middle,

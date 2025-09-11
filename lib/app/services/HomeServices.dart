@@ -143,8 +143,23 @@ class HomeServices {
     }
     return labelPrintWidth;
   }
+  
+  static getMachinePrintWidth() async{
+    double? labelPrintWidth;
+    try {
+      double? setting = await Storage.getDouble('machinePrintWidth');
+      labelPrintWidth = setting ?? 385.0;
+    } catch (e) {
+      labelPrintWidth = 385.0;
+    }
+    return labelPrintWidth;
+  }
 
-  static setLabelPrintWidth(double labelPrintWidthData) async {
+  static setMachinePrintWidth(double machinePrintWidth) async{
+    Storage.setDouble('machinePrintWidth', machinePrintWidth);
+  }
+
+  static setLabelPrintWidth(double labelPrintWidthData) async{
     Storage.setDouble('labelPrintWidth', labelPrintWidthData);
   }
 

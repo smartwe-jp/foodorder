@@ -104,6 +104,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printTwoDirection = false.obs;
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
+  RxDouble machinePrintWidth = 385.0.obs;
   RxList printerList = [].obs;
   RxList sseSettingList = [].obs;
 
@@ -112,9 +113,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   bool isAllow10000 = true;
   bool isAllow5000 = true;
 
-  String get downloadUrl => appConfig.isAndroid11
-      ? "https://app.smartwe.co.jp/smartwe_ticket_machine_NP.apk"
-      : "https://app.smartwe.co.jp/smartwe_ticket_machine.apk";
+  final baseUrl = "https://app.smartwe.co.jp/";
+
+  String get downloadUrl {
+    String isNp = appConfig.isAndroid11 ? "_NP" : "";
+    String isFx = appConfig.isFx ? "_fx" : isNp;
+    String url = baseUrl + "smartwe_ticket_machine${isFx}.apk";
+    return url;
+  }
 
   final Map subPrinterInfos = {
     '拡張プリンター(1)': 21,
@@ -186,6 +192,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     printThreeDirection.value =
         await HomeServices.getPrintThreeDirection() == "1" ? true : false;
     printLabelWidth.value = await HomeServices.getLabelPrintWidth();
+    machinePrintWidth.value = await HomeServices.getMachinePrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
@@ -923,6 +930,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
       }
       HomeServices.setPrinterListInfo(printerList);
     }
+    update();
+  }
+
+  updateMachinePrintWidth(double width) async {
+    machinePrintWidth.value = width;
+    await HomeServices.setMachinePrintWidth(width);
     update();
   }
 
