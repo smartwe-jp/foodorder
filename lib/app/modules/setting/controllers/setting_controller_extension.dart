@@ -473,7 +473,7 @@ extension SettingControllerExtension on SettingController {
         //全回收功能需要在执行レジ締め后才可以执行。
         errorHandleDialog("この機能はレジ締め後に実行する必要があります。");
       } else {
-        errorHandleDialog("gloryEmptyReport error: ${error}");
+        errorHandleDialog("gloryEmptyReport error: ${error.tr}");
       }
       //showToast('回收失败!');
 
