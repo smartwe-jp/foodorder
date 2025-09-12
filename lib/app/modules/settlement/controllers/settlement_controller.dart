@@ -351,16 +351,31 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  showSuccessAlert(Function task) async {
-    debugPrint("showSuccessAlert");
+  // showSuccessAlert(Function task) async {
+  //   debugPrint("showSuccessAlert");
+  //   EasyLoading.dismiss();
+  //
+  //   Get.dialog(PayResultView(
+  //     dismiss: () {
+  //       Get.back();
+  //       task();
+  //     },
+  //   ));
+  // }
+  Future<void> showSuccessAlert(Function task) async {
     EasyLoading.dismiss();
-
-    Get.dialog(PayResultView(
-      dismiss: () {
-        Get.back();
-        task();
-      },
-    ));
+    try {
+      final result = await Get.dialog(
+        barrierDismissible: false,
+        const PayResultView(),
+      );
+      // result 可用于判断来源，这里忽略
+      task();
+    } catch (e) {
+      // 保障不因异常卡住
+      debugPrint("showSuccessAlert error: $e");
+      task();
+    }
   }
 
   gotonewBack() {
@@ -1198,10 +1213,10 @@ class SettlementController extends GetxController with StateMixin {
         nextOper();
       } else {
         //goToNewMyHome();
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           //goToNewMyHome();
           gotonewBack();
-        });
+        //});
       }
 
     });
@@ -1513,13 +1528,13 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        });
+        //});
       }
     } else {
       //出金失败
