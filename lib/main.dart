@@ -25,6 +25,7 @@ import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
 import 'package:firebase_core/firebase_core.dart';
+import 'app/services/CustomLogerHandler.dart';
 import 'app/services/ResetToHomeTimer.dart';
 import 'firebase_options.dart';
 
@@ -80,6 +81,7 @@ void main() {
     SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
+    await CustomLogHandler.initializeLogging();
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]).then((_) {
       runApp(
         ScreenUtilInit(
@@ -104,6 +106,7 @@ void main() {
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
                       debugPrint("routingCallback : ${value?.current}");
+                      logI("routingCallback : ${value?.current}", tag: "Router");
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||

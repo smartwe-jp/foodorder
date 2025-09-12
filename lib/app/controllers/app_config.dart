@@ -7,7 +7,7 @@ import 'package:device_info_plus/device_info_plus.dart';
 
 class AppConfig extends GetxController {
 
-  bool isFx = false; // whether it's a franchise store
+  bool isFx = true; // whether it's a franchise store
   bool machineType = true; // true for new_panel, false for old_panel
   //get android version
   String androidVersion = '7';

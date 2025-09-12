@@ -9,6 +9,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -1338,6 +1339,7 @@ print("加1了");
 
 
   gotoSettlement(int tax) async {
+    logI("gotoSettlement tax:$tax");
   await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
