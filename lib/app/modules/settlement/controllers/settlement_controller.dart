@@ -371,7 +371,8 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   checkOutModeBack() async {
-    if (Get.isRegistered<CheckoutPageController>())
+    logger.info('checkOutModeBack');
+    if (Get.isRegistered<CheckoutPageController>() && machineInfo.currentMode == MachineMode.checkout)
     Get.find<CheckoutPageController>().resetStateBack();
   }
 
@@ -406,10 +407,59 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
+  bool _isNavigating = false;
+
+  Future<void> safeReturnToHome() async {
+    if (_isNavigating) return;
+      _isNavigating = true;
+    try {
+      await ordersqlcontroller.removeAllFromCart(); // 等待清空
+    } catch (e) {
+      logger.warning('removeAllFromCart error: $e');
+    }
+
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
+
+    // 不再先 Get.back 再 off，直接一次性跳
+    if (machineInfo.currentMode == MachineMode.sell ||
+        machineInfo.currentMode == MachineMode.takeout) {
+      if (is_back_home.value == "0") {
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      } else {
+        // if (Get.isRegistered<MenuPageController>()) {
+        //   final mc = Get.find<MenuPageController>();
+        //   mc.resetToFirstPage();
+        //   mc.paymentIsShow = false;
+          
+        // }
+        //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
+        Get.offNamedUntil('/menu-page', (route) => route.settings.name == '/checkout-page');
+        // 只关闭结算页
+        // if (Get.currentRoute != '/transit-page') {
+        //   Get.back(); 
+        // }
+      }
+    } else if (machineInfo.currentMode == MachineMode.scan) {
+      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
+    } else {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      });
+    }
+  }
+
 
   gotonewBack() {
-    debugPrint('---gotonewBack---');
+    //debugPrint('---gotonewBack---');
     logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
+    safeReturnToHome();
+    return;
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -615,6 +665,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   cashPayCheck() async {
+    logger.info('cashPayCheck');
     showEasyLoading();
     bool result = await requestLatestCheckoutInfo();
 
@@ -866,7 +917,7 @@ class SettlementController extends GetxController with StateMixin {
 
   showPosCancelAlert(){
     //if(socketPosCancel.value == true) return;
-
+    logger.info('showPosCancelAlert');
     Future.delayed(Duration(milliseconds: 50), () async {
       Get.dialog(
           DialogUtils.alert("settlement_back_alertcontent".tr,

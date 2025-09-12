@@ -63,6 +63,7 @@ Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
       conn.writeMultiBytes(printData, 1024 * 8);
     } else if (printerInfo.isNetPrinter) {
       // 网络 打印
+      print('网络 打印 ${printerInfo.ip!}');
       final conn = NetConn(printerInfo.ip!);
       conn.writeMultiBytes(printData);
     }
@@ -77,7 +78,6 @@ void main() {
     WidgetsFlutterBinding.ensureInitialized();
 
     await GetStorage.init();
-
     // if (Platform.isAndroid) {
     //   //Firebase is not full supported on windows
     //   await Firebase.initializeApp(
@@ -92,6 +92,7 @@ void main() {
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
     await CustomLogHandler.initializeLogging();
+    final logger = Logger('main');
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
       runApp(ScreenUtilInit(
@@ -128,7 +129,8 @@ void main() {
                     getPages: AppPages.routes,
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
-                      debugPrint("routingCallback : ${value?.current}");
+                      //debugPrint("routingCallback : ${value?.current}");
+                      logger.info('-- routingCallback : ${value?.current} --');
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||

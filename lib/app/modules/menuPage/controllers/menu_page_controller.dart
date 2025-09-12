@@ -119,9 +119,9 @@ class MenuPageController extends GetxController with StateMixin {
   //获取菜单
   Future<void> onClose() async {
     debugPrint('MenuPageController onClose');
-    player?.dispose();
+    //player?.dispose();
     await customCacheManager.emptyCache();
-    await Get.delete<MenuPageController>();
+    //await Get.delete<MenuPageController>();
     super.onClose();
   }
 
@@ -1476,8 +1476,8 @@ print("加1了");
     //await _resetToFirstCategory();
   }
 
-  gotoSettlement(int tax) async {
-    await Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+  gotoSettlement(int tax) async { //await 
+    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "orderId": doSubmitOrderId.value,
       "totalPrice": (int.parse(shopCartTotalPrice.value) + tax).toString(),
