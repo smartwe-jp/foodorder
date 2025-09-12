@@ -563,7 +563,6 @@ class PrintService extends GetxService {
                           ),
                           overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                         ),
-                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                       ),
 
                       Expanded(
@@ -644,29 +643,14 @@ class PrintService extends GetxService {
                     ],
                   ),
                 ),
-              ),
-              Divider(
-                color: Colors.black,
-                thickness: 2,
-              ),
-              Expanded(
-                flex: 2,
-                child: AutoSizeText(
-                  remark,
-                  maxLines: 4,
-                  style: TextStyle(
-                    fontSize: 24,
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                ),
-              ),
-            ]),
-          )),
+              ]
+          ),
+        )
+      ),
       pagerWidth: printWidth,
     );
   }
+
 
   Widget optionItem1(String optionName, List optionValues) {
     return Container(

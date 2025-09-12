@@ -215,5 +215,7 @@ const Map<String, String> en_US = {
         "network_error_tips":"We are very sorry, there is a network issue, and the service is temporarily unavailable. Please contact the staff or cancel the transaction.",
         "pos_notwork_tips":"We are very sorry, the POS machine is not responding. Please contact the staff for assistance. Thank you.",
 
+        "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
+
 
 };

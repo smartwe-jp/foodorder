@@ -360,7 +360,9 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint("showSuccessAlert");
     EasyLoading.dismiss();
 
-    Get.dialog(PayResultView(
+    Get.dialog(
+      barrierDismissible: false,
+      PayResultView(
       dismiss: () {
         Get.back();
         task();
@@ -407,6 +409,7 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewBack() {
     debugPrint('---gotonewBack---');
+    logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -635,6 +638,21 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
+  showUnExpectedErrorDialog() {
+    EasyLoading.dismiss();
+    allowClick.value = true;
+    isPrintClick.value = false;
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alertOneButton("settlement_unexpected_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+              Get.back();
+              commonCancel();
+            }));
+  }
+
+
   //扫码后超时，再继续请求后台，5秒一次 60次
   _doScanCodeTimeOut() {
     int queryCount = 0;
@@ -663,61 +681,6 @@ class SettlementController extends GetxController with StateMixin {
       });
     });
   }
-  //
-  // //request latest checkout info
-  // requestLatestCheckoutInfo() async {
-  //   bool goNext = true;
-  //   var formData = {
-  //     "orderId": orderId.value,
-  //   };
-  //   await request('webBootCalculateConfirm',
-  //       method: 'POST', parameters: formData)
-  //       .then((val) {
-  //     var response = json.decode(val.toString());
-  //     debugPrint("webBootCalculateConfirm:$response");
-  //     if (response['code'] == 200 && response['data'] != null) {
-  //       String finalTotal = response['data'].toString();
-  //       debugPrint('finalTotal $finalTotal');
-  //       if (totalPrice.value == finalTotal) {
-  //         goNext = true;
-  //       } else {
-  //         totalPrice.value = finalTotal;
-  //         var outMoney = int.parse(getPutMoney.value) - int.parse(totalPrice.value); //找零金额
-  //         showOutMoney.value = outMoney < 0 ? '0':outMoney.toString();
-  //         goNext = false;
-  //       }
-  //       update();
-  //     }
-  //   }).catchError((e) {
-  //     debugPrint("webBootCalculateConfirm:$e");
-  //     goNext = true;
-  //   }).timeout(Duration(seconds: 30), onTimeout: () {
-  //     goNext = true;
-  //   });
-  //   return goNext;
-  // }
-  //
-  // cashPayCheck() async {
-  //   showEasyLoading();
-  //   bool result = await requestLatestCheckoutInfo();
-  //
-  //   if (!result) {
-  //     EasyLoading.dismiss();
-  //     allowClick.value = true;
-  //     isPrintClick.value = false;
-  //     showPrintButton.value = false;
-  //     update();
-  //     Get.dialog(
-  //         barrierDismissible: false,
-  //         DialogUtils.alertOneButton(
-  //             GString.getToString(
-  //                 checkLanguage.value, "cash_pay_checkout_tips"), confirm: () {
-  //           Get.back();
-  //         }));
-  //   } else {
-  //     doPrintOrderMenu(machineInfo.receiptPrintType);
-  //   }
-  // }
 
   doScanCodeTimeOutLastQuery() {
     var formData = {
@@ -1323,10 +1286,10 @@ class SettlementController extends GetxController with StateMixin {
       if (machineInfo.paymentMethod == "1") {
         nextOper();
       } else {
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           //goToNewMyHome();
           gotonewBack();
-        });
+        //});
       }
     });
   }
@@ -1639,13 +1602,14 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        showSuccessAlert(() {
+        logger.info('payCubeCloseTransaction showSuccessAlert');
+        //showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        });
+        //});
       }
     } else {
       //出金失败

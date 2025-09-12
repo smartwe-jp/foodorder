@@ -200,7 +200,8 @@ class SettingController extends GetxController with StateMixin {
   Future<String?> compressFiles() async {
     // 获取临时目录路径
     final tempDir = await getTemporaryDirectory();
-    final logPathPrefix = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
+    final logPathPrefix =
+        '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
     final outputPath = '${tempDir.path}/${_getDate()}PT3Combined_logs.zip';
 
     // 创建一个ZipFileEncoder对象
@@ -209,7 +210,8 @@ class SettingController extends GetxController with StateMixin {
       zipEncoder.create(outputPath);
 
       // 添加第一个文件（zip文件）
-      final zipFile = File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
+      final zipFile =
+          File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
       if (await zipFile.exists()) {
         zipEncoder.addFile(zipFile);
       }
@@ -228,8 +230,6 @@ class SettingController extends GetxController with StateMixin {
       showToast('上传失败! ${e.toString()}');
       return null;
     }
-
-
 
     print('Files compressed successfully. Output: $outputPath');
   }
@@ -368,13 +368,11 @@ class SettingController extends GetxController with StateMixin {
         "remain": 0,
       });
     });
-    Get.dialog(barrierDismissible: false, 
-      Container(
-        padding: EdgeInsets.only(top: 720),
-        child: 
-          ReplanishView(controller: this)
-      )
-    );
+    Get.dialog(
+        barrierDismissible: false,
+        Container(
+            padding: EdgeInsets.only(top: 720),
+            child: ReplanishView(controller: this)));
   }
 
   signoutAlert() async {
@@ -405,11 +403,11 @@ class SettingController extends GetxController with StateMixin {
     debugPrint("SettingController _getPackageInfo");
 
     //if (Platform.isWindows) {
-      //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
+    //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
     //  local_version.value = "2.6.0"; //当前每次打包需要手动修改版本号
     //} else {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      local_version.value = packageInfo.version;
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version;
     //}
     //+"+"+packageInfo.buildNumber
 
@@ -534,7 +532,6 @@ class SettingController extends GetxController with StateMixin {
         //change(null, status: RxStatus.error('获取现金机状态失败'));
         Get.back();
       }
-
     }).timeout(const Duration(seconds: 15), onTimeout: () {
       debugPrint("Timeout getting change state");
       //showToast('获取现金机状态超时');
@@ -554,7 +551,7 @@ class SettingController extends GetxController with StateMixin {
     } else {
       await getCashInfo();
     }
-    
+
     //print(_menuOption);
   }
 
@@ -724,8 +721,7 @@ class SettingController extends GetxController with StateMixin {
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
             title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr,
-            confirm: () {
+            confirmtitle: "tag_button_yes".tr, confirm: () {
           if (confirm != null) {
             confirm();
           } else {
@@ -913,10 +909,6 @@ class SettingController extends GetxController with StateMixin {
       default:
         return '';
     }
-  showRejishimeView({bool isNotCash = false}) async {
-    Get.dialog(
-        RejishiMeRequestView(machineCode: machineCode.value, isNotCash: isNotCash,)
-    );
   }
 
   goToBack() {

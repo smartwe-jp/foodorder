@@ -214,6 +214,8 @@ const Map<String, String> zh_CN = {
         "network_error_tips":"非常抱歉，网络异常，暂时无法使用，请联系店员或者取消交易。",
         "pos_notwork_tips":"非常抱歉，POS机无响应，请联系店员处理，谢谢。",
 
+        "settlement_unexpected_error" : "支付异常，请将返回上一页重新操作。",
+
 
 
 };
