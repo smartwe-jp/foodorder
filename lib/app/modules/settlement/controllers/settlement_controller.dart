@@ -317,7 +317,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   checkOutModeBack() async {
-    if (Get.isRegistered<CheckoutPageController>())
+    if (Get.isRegistered<CheckoutPageController>() && machineInfo.currentMode == MachineMode.checkout)
     Get.find<CheckoutPageController>().resetStateBack();
   }
 
