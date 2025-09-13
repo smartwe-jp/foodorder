@@ -20,6 +20,7 @@ import '../../../config/imageData.dart';
 import '../../../config/system_config.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -120,10 +121,11 @@ class SettingController extends GetxController with StateMixin {
   //上传现金机log
   uploadErrorLog() async {
     _showEasyLoading();
-    String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
-    if (appConfig.isAndroid11)  {
-      logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
-    }
+    // String? logfile = "/mnt/sdcard/Android/data/comlib/log/COMLibLog.txt";
+    // if (appConfig.isAndroid11)  {
+    //   logfile = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/COMLibLog.log';
+    // }
+    final logfile = await CustomLogHandler.exportLogs();
 
     FormData formData = FormData.fromMap({
       "machineCode": machineCode.value,
@@ -149,7 +151,6 @@ class SettingController extends GetxController with StateMixin {
     final tempDir = await getTemporaryDirectory();
     final logPathPrefix = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
     final outputPath = '${tempDir.path}/${_getDate()}PT3Combined_logs.zip';
-
     // 创建一个ZipFileEncoder对象
     try {
       final zipEncoder = ZipFileEncoder();

@@ -68,7 +68,7 @@ class CustomLogHandler {
   }
 
   static Future<String> exportLogs() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
+    final appDocDir = await getTemporaryDirectory();
     final today = DateTime.now();
     final yesterday = today.subtract(Duration(days: 1));
 
