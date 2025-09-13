@@ -204,7 +204,7 @@ class SettingView extends GetView<SettingController> {
               final result = await Get.toNamed('/reimburse-order',
                   arguments: {"machineCode": controller.machineCode.value});
               if (result) {
-                controller.getServerCashInfo();
+                controller.getCashInfo();
               }
             },
             child: Container(
