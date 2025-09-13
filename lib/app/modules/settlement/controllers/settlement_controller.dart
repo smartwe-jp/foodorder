@@ -517,34 +517,10 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  //扫码支付T
-  doToPay() {
+  //扫码支付
+  doToPay({int retryCount = 0}) {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
-
-    /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
-      _showScanCodeNoOpenDialog(1,"");
-      return;
-    }
-
-    var _regExpWechat = r"^1[0-5]\d{16}$";
-    var _regExpAlipay = r"^(?:2[5-9]|30)\d{14,22}$";
-    if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == true &&
-        _showWechat == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else if (RegExp(_regExpAlipay).hasMatch(_scanQrCode) == true &&
-        _showAlipay == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else {
-      if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == false &&
-          RegExp(_regExpAlipay).hasMatch(_scanQrCode) == false &&
-          _showPayPay == false) {
-        _showScanCodeNoOpenDialog(2,"");
-        return;
-      }
-    }*/
     //print(scanQrCodeController.text);
     if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
@@ -580,16 +556,17 @@ class SettlementController extends GetxController with StateMixin {
           }
         } else {
           //扫码后超时，再继续请求后台，1秒一次 20次
+          logger.info("扫码支付失败 ${response['code']}");
           _doScanCodeTimeOut();
         }
       }).catchError((error) {
-        logger.info("扫码支付异常");
+        logger.info("扫码支付异常 $error");
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 30), onTimeout: () {
+      }).timeout(Duration(seconds: 15), onTimeout: () {
         logger.info("扫码支付超时");
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
@@ -705,18 +682,18 @@ class SettlementController extends GetxController with StateMixin {
 
 
   //扫码后超时，再继续请求后台，5秒一次 60次
-  _doScanCodeTimeOut() {
-    int queryCount = 0;
-    ScanCodeConfirmTimer?.cancel();
-    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
-        (Timer confirmTimer) async {
-      queryCount++;
-      if (queryCount > 60) {
-        //退出关闭
-        confirmTimer.cancel();
-        _showScanCodeTimeOutDialog();
-      }
-
+  _doScanCodeTimeOut({int retryCount = 0}) {
+    // int queryCount = 0;
+    // ScanCodeConfirmTimer?.cancel();
+    // ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
+    //     (Timer confirmTimer) async {
+    //   queryCount++;
+    //   if (queryCount > 60) {
+    //     //退出关闭
+    //     confirmTimer.cancel();
+    //     _showScanCodeTimeOutDialog();
+    //   }
+      logger.info("扫码异常，重新请求后台 $retryCount");
       var formData = {
         "orderId": orderId.value,
       };
@@ -726,11 +703,35 @@ class SettlementController extends GetxController with StateMixin {
 
         if (response['code'] == 200 && response['data'] == true) {
           //退出关闭
-          confirmTimer.cancel();
+          //confirmTimer.cancel();
           doPrintOrderMenu(machineInfo.receiptPrintType);
+        } else {
+          if (retryCount < 3) {
+            Future.delayed(Duration(seconds: 5), () {
+              _doScanCodeTimeOut(retryCount: retryCount + 1);
+            });
+          } else {
+            _showScanCodeTimeOutDialog();
+          }
+        }
+      }).catchError((error) {
+        logger.info("扫码支付异常 $error");
+        _checkOutErrorHandle('settlement_order_error'.tr,
+            confirm: () {
+              scanQrCodeController.text = "";
+              scanQrCodeFocusNode.requestFocus();
+            });
+      }).timeout(Duration(seconds: 10), onTimeout: () {
+        logger.info("扫码支付超时");
+        if (retryCount < 3) {
+          Future.delayed(Duration(seconds: 5), () {
+            _doScanCodeTimeOut(retryCount: retryCount + 1);
+          });
+        } else {
+          _showScanCodeTimeOutDialog();
         }
       });
-    });
+    //});
   }
 
   doScanCodeTimeOutLastQuery() {

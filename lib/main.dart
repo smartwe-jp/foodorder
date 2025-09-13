@@ -10,7 +10,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
-import 'package:foodorder/app/services/customLogger.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
@@ -92,7 +92,6 @@ void main() {
 
     WidgetsFlutterBinding.ensureInitialized(); //强制竖屏必须要添加这个进行初始化 否则下面会错误
     await CustomLogHandler.initializeLogging();
-    final logger = Logger('main');
     SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp])
         .then((_) {
       runApp(ScreenUtilInit(
@@ -130,7 +129,7 @@ void main() {
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
                       //debugPrint("routingCallback : ${value?.current}");
-                      logger.info('-- routingCallback : ${value?.current} --');
+                      logI('-- routingCallback : ${value?.current} --');
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||
