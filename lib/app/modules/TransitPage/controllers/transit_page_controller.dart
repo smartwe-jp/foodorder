@@ -75,7 +75,7 @@ class TransitPageController extends GetxController {
     debugPrint("transit getIsShowCashInfo");
     //Map systemSettingInfo = await HomeServices.getIsShowCash();
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
-      _loadActiveInfo.value = Get.arguments['loadActive'];
+      _loadActiveInfo.value = Get.arguments['loadActive'] ?? false;
       _machineCode.value = Get.arguments['machineCode'] ?? "";
     }
 
