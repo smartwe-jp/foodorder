@@ -18,6 +18,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -334,7 +335,7 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewMenuPage() {
 
-    debugPrint('---gotonewMenuPage---');
+    logI('---gotonewMenuPage---');
     if(isPayConfirmOrderId.value == true){
       if(machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1"){
         if(machineInfo.currentMode == MachineMode.checkout) {//精算时候请求
@@ -809,7 +810,7 @@ class SettlementController extends GetxController with StateMixin {
         onCancel: (result, msg) =>
             showPosCancelEasyLoading(result, resultPFSString: msg),
         onDone: (action) {
-          debugPrint('onDone $action');
+          logI('onDone $action');
           if (action == PosAction.Cancel) {
             cancelOrder();
           }
