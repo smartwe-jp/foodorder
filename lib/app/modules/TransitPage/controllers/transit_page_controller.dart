@@ -41,6 +41,7 @@ class TransitPageController extends GetxController {
 
   final RxBool showStartButton = false.obs;
   String? heroImageUrl;
+  bool hasStart = false;
 
   @override
   void onInit() {
@@ -60,12 +61,19 @@ class TransitPageController extends GetxController {
   @override
   void onClose() {
     debugPrint("transit onClose");
+    hasStart = false;
     super.onClose();
     logger.info('--- TransitPageController onClose ---');
   }
 
   getIsShowCashInfo() async {
-    debugPrint("transit getIsShowCashInfo");
+    if (hasStart) {
+      logger.info('-- hasStart true, no need to run again --');
+      return;
+    }
+
+    hasStart = true;
+    logger.info("transit getIsShowCashInfo");
     //Map systemSettingInfo = await HomeServices.getIsShowCash();
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
       _loadActiveInfo.value = Get.arguments['loadActive'] ?? false;
@@ -541,6 +549,7 @@ class TransitPageController extends GetxController {
 
   Future _goCheckOut() async {
     //Future.delayed(Duration(milliseconds: 200), () {
+    hasStart = false;
       Get.toNamed("/checkout-page", arguments: {'initLaunch': _loadActiveInfo.value});
     //});
   }

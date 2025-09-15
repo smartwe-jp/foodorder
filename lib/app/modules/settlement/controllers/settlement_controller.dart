@@ -431,7 +431,8 @@ class SettlementController extends GetxController with StateMixin {
     if (machineInfo.currentMode == MachineMode.sell ||
         machineInfo.currentMode == MachineMode.takeout) {
       if (is_back_home.value == "0") {
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        //Get.offNamedUntil('/checkout-page',(route) => route.settings.name == '/transit-page' || route.isFirst,);
+        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
       } else {
         // if (Get.isRegistered<MenuPageController>()) {
         //   final mc = Get.find<MenuPageController>();
@@ -440,17 +441,17 @@ class SettlementController extends GetxController with StateMixin {
           
         // }
         //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
-        Get.offNamedUntil('/menu-page', (route) => route.settings.name == '/checkout-page');
+        Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
         // 只关闭结算页
         // if (Get.currentRoute != '/transit-page') {
         //   Get.back(); 
         // }
       }
     } else if (machineInfo.currentMode == MachineMode.scan) {
-      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
+      Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
     } else {
       //Future.delayed(const Duration(milliseconds: 50), () {
-        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
       //});
     }
   }
