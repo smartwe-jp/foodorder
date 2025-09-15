@@ -132,7 +132,7 @@ void main() {
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
                       //debugPrint("routingCallback : ${value?.current}");
-                      logI('-- routingCallback : current ${value?.current} -- prev ${value?.previous} --');
+                      logI('-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||
@@ -156,6 +156,9 @@ void main() {
                         Future.microtask(() {
                           if (Get.isRegistered<TransitPageController>()) {
                             Get.find<TransitPageController>().getIsShowCashInfo();
+                          } else {
+                            logI('--TransitPageController not registered--');
+                            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
                           }
                         });
                       } else {
@@ -167,6 +170,9 @@ void main() {
                           Future.microtask(() {
                             if (Get.isRegistered<TransitPageController>()) {
                               Get.find<TransitPageController>().getIsShowCashInfo();
+                            } else {
+                              logI('--TransitPageController not registered--');
+                              Get.offNamedUntil('/transit-page', (route) => route.isFirst);
                             }
                           });
                         }

@@ -431,7 +431,7 @@ class SettlementController extends GetxController with StateMixin {
     if (machineInfo.currentMode == MachineMode.sell ||
         machineInfo.currentMode == MachineMode.takeout) {
       if (is_back_home.value == "0") {
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
       } else {
         // if (Get.isRegistered<MenuPageController>()) {
         //   final mc = Get.find<MenuPageController>();
@@ -449,9 +449,9 @@ class SettlementController extends GetxController with StateMixin {
     } else if (machineInfo.currentMode == MachineMode.scan) {
       Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
     } else {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      });
+      //Future.delayed(const Duration(milliseconds: 50), () {
+        Get.offNamedUntil('/checkout-page', (route) => route.isFirst);
+      //});
     }
   }
 
