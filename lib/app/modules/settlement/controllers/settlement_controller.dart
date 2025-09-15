@@ -309,7 +309,7 @@ class SettlementController extends GetxController with StateMixin {
       seconds.value--;
 
       if (this.seconds == 0) {
-        debugPrint("---- Time out quit -----");
+        logI("---- Time out quit -----");
         //如果60秒未接收返回正确通知，则进行下一步操作
         //eventBus.fire(new setShowCashEvent('支付成功...'));
         showCashTimer?.cancel(); //清除定时器
@@ -1011,9 +1011,10 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _startPaymentTimer() async {
-    debugPrint("startResetTimer");
+    logI("startResetTimer");
     paymentTimer?.cancel();
     paymentTimer = Timer(Duration(seconds: 180), () async {
+      logI("paymentTimer 180s");
       paymentTimer?.cancel();
       if (hasStartPayflow) return;
       commonCancel();
@@ -1021,6 +1022,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   commonCancel() async {
+    logI('commonCancel');
     if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
       showBackEasyLoading();
       cancelOrder();

@@ -5,6 +5,7 @@ import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +17,7 @@ class ResetToHomeTimer {
 
   void startTimer() {
     cancelTimer();
-    debugPrint("--startTimer--");
+    logI("--startTimer--");
     _timeoutSeconds = timeSeconds;
     _timer = Timer.periodic(Duration(seconds: 1), (timer) async {
       _timeoutSeconds--;
@@ -37,7 +38,7 @@ class ResetToHomeTimer {
         } else if (Get.routing.current == Routes.MENU_PAGE) {
           Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
           final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
-          debugPrint("timer isBackHome:$isBackHome");
+          logI("timer isBackHome:$isBackHome");
           if (isBackHome != "0") {
             cancelTimer();
             if (Get.isRegistered<OrderSqlController>()) {
@@ -82,7 +83,7 @@ class ResetToHomeTimer {
             Get.offNamedUntil('/transit-page', (route) => route.isFirst);
           }
         } else {
-          debugPrint('--offNamedUntil--');
+          logI('--offNamedUntil--');
           Get.offNamedUntil('/transit-page', (route) => route.isFirst);
         }
       }
@@ -92,11 +93,11 @@ class ResetToHomeTimer {
   void resetTimer() {
     
     if (_timer == null && Get.routing.current == Routes.MENU_PAGE) {
-      debugPrint("event startTimer");
+      logI("event startTimer");
       startTimer();
     } else {
       if (_timer != null) {
-        debugPrint("event resetTimer");
+        logI("event resetTimer");
       _timeoutSeconds = timeSeconds;
       }
     }
@@ -107,17 +108,17 @@ class ResetToHomeTimer {
     try {
       final response = await http.get(Uri.parse('https://www.google.com'));
       if (response.statusCode == 200) {
-        print('Network Ping successful');
+        logI('Network Ping successful');
       } else {
-        print('Network Ping failed');
+        logI('Network Ping failed');
       }
     } catch (e) {
-      print('Network Ping failed: $e');
+      logI('Network Ping failed: $e');
     }
   }
 
   void cancelTimer() {
-    debugPrint("--cancelTimer--");
+    logI("--cancelTimer--");
     _timer?.cancel();
     _timer = null;
   }

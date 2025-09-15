@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
@@ -69,7 +70,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    debugPrint("CheckoutPageController init");
+    logI("CheckoutPageController init");
     Future.delayed(const Duration(), () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     _getMachineLanguages();
     if (Get.arguments != null && Get.arguments.containsKey('initLaunch')) {
@@ -80,8 +81,10 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   @override
   void onReady() {
+    logI("CheckoutPageController ready");
     super.onReady();
     //startRepeatingAnimation();
+    //Get.back();
     if (firstLoad) {
       bool isSseEnabled = sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
       if (isSseEnabled) {

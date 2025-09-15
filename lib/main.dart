@@ -9,6 +9,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
 import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,7 +28,9 @@ import 'app/config/printer_info.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
-import 'firebase_options.dart';
+class _NavBounceTrack {
+  static String? lastRoute;
+}
 
 //打印图层生成成功
 Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
@@ -129,7 +132,7 @@ void main() {
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
                       //debugPrint("routingCallback : ${value?.current}");
-                      logI('-- routingCallback : ${value?.current} --');
+                      logI('-- routingCallback : current ${value?.current} -- prev ${value?.previous} --');
                       if (value?.current == Routes.MENU_PAGE ||
                           value?.current == Routes.SCANCODE_PAGE ||
                           value?.current == Routes.SELECT_PAYMENT_PAGE ||
@@ -141,6 +144,37 @@ void main() {
                           value?.current == Routes.SETTING || value?.current == '/SettingView') {
                         resetTimer.cancelTimer();
                       }
+
+                      //检测是否从 checkout 返回 transit，若是则立即纠正回 checkout
+                      final cur = value?.current;
+                      final prev = value?.previous;
+                      final isTransit = cur == Routes.TRANSIT_PAGE;
+                      final isFromCheckout = prev == Routes.CHECKOUT_PAGE;
+                      if (isTransit && isFromCheckout) {
+                        // 用 microtask，确保控制器已就绪
+                        logI('--forcing return to Checkout 1--');
+                        Future.microtask(() {
+                          if (Get.isRegistered<TransitPageController>()) {
+                            Get.find<TransitPageController>().getIsShowCashInfo();
+                          }
+                        });
+                      } else {
+                        final last = _NavBounceTrack.lastRoute;
+                        final fromCheckoutBySnapshot = last == Routes.CHECKOUT_PAGE;
+
+                        if (isTransit && fromCheckoutBySnapshot) {
+                          logI('--forcing return to Checkout 2--');
+                          Future.delayed(Duration(milliseconds: 1000), () {
+                            Future.microtask(() {
+                            if (Get.isRegistered<TransitPageController>()) {
+                              Get.find<TransitPageController>().getIsShowCashInfo();
+                            }
+                            });
+                          });
+                        }
+                      }
+                      _NavBounceTrack.lastRoute = cur;
+                      
                     },
                     builder: (context, widget) {
                       return MediaQuery(

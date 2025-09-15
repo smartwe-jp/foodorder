@@ -39,21 +39,12 @@ class TransitPageController extends GetxController {
   String languageCode = "JP";
   final logger = Logger('TransitPageController');
 
-  // ==== Startup watchdog additions ====
-  Timer? _startupWatchdog; // 90s watchdog
-  bool _navigated = false; // whether already navigated to next page
-  bool _activating = false; // prevent parallel _getMachineActivate
-  int _manualRetryCount = 0;
-  static const int _maxManualRetry = 3;
-  // ==== End additions ====
-
   @override
   void onInit() {
     //languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
     getIsShowCashInfo();
     super.onInit();
     logger.info('--- TransitPageController onInit ---');
-    _startStartupWatchdog();
   }
 
   @override
@@ -68,7 +59,6 @@ class TransitPageController extends GetxController {
     debugPrint("transit onClose");
     super.onClose();
     logger.info('--- TransitPageController onClose ---');
-    _startupWatchdog?.cancel();
   }
 
   getIsShowCashInfo() async {
@@ -123,63 +113,9 @@ class TransitPageController extends GetxController {
     _getMachineActivate();
   }
 
-  void _startStartupWatchdog() {
-    _startupWatchdog?.cancel();
-    _startupWatchdog = Timer(const Duration(seconds: 90), () {
-      if (_navigated) return;
-      if (Get.isDialogOpen == true) Get.back();
-      _showStartupTimeoutDialog();
-    });
-  }
-
-  void _showStartupTimeoutDialog() {
-    logger.warning('startup timeout');
-    Get.dialog(
-      DialogUtils.alertOneButton(
-        '加载失败，请点击确认重试',
-        title: 'tag_title'.tr,
-        confirmtitle: '重试',
-        confirm: () {
-          Get.back();
-          _retryActivation(manual: true);
-        },
-      ),
-      barrierDismissible: false,
-    );
-  }
-
-  void _retryActivation({bool manual = false}) {
-    if (manual) {
-      if (_manualRetryCount >= _maxManualRetry) {
-        Get.snackbar('提示', '重试次数已达上限');
-        return;
-      }
-      _manualRetryCount++;
-    }
-    _navigated = false;
-    _startStartupWatchdog();
-    _getMachineActivate();
-  }
-
-  void _markNavigated() {
-    if (_navigated) return;
-    _navigated = true;
-    _startupWatchdog?.cancel();
-    logger.info('startup watchdog canceled');
-  }
 
   _getMachineActivate({isFirst = false, int retryCount = 0}) async {
-    if (_activating) {
-      logger.info('activation skipped: already running');
-      return;
-    }
-    _activating = true;
     try {
-      // var shouldActive = await _checkShouldActive();
-      // if (!shouldActive) {
-      //   await _getSmartweSystemSettingInfo();
-      //   return;
-      // }
 
       bool shouldActive = await _checkShouldActive();
       if (_loadActiveInfo.value == false && !shouldActive) {
@@ -388,7 +324,7 @@ class TransitPageController extends GetxController {
       });
     } finally {
       logger.info('activation finished');
-      _activating = false;
+      //_activating = false;
     }
   }
 
@@ -585,21 +521,18 @@ class TransitPageController extends GetxController {
   void _goMain() async {
     debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
-      _markNavigated();
       Get.toNamed("/order-home", arguments: {'initLaunch': _loadActiveInfo.value});
     });
   }
 
   Future _goCheckOut() async {
-    Future.delayed(Duration(milliseconds: 200), () {
-      _markNavigated();
+    //Future.delayed(Duration(milliseconds: 200), () {
       Get.toNamed("/checkout-page", arguments: {'initLaunch': _loadActiveInfo.value});
-    });
+    //});
   }
 
   Future _goSelfService() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      _markNavigated();
       Get.toNamed("/selfservice-page", arguments: {'initLaunch': _loadActiveInfo.value});
     });
   }
