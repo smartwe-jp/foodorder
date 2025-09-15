@@ -164,12 +164,10 @@ void main() {
 
                         if (isTransit && fromCheckoutBySnapshot) {
                           logI('--forcing return to Checkout 2--');
-                          Future.delayed(Duration(milliseconds: 1000), () {
-                            Future.microtask(() {
+                          Future.microtask(() {
                             if (Get.isRegistered<TransitPageController>()) {
                               Get.find<TransitPageController>().getIsShowCashInfo();
                             }
-                            });
                           });
                         }
                       }

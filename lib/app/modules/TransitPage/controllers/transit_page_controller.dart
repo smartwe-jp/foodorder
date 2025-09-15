@@ -39,6 +39,9 @@ class TransitPageController extends GetxController {
   String languageCode = "JP";
   final logger = Logger('TransitPageController');
 
+  final RxBool showStartButton = false.obs;
+  String? heroImageUrl;
+
   @override
   void onInit() {
     //languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
@@ -502,11 +505,22 @@ class TransitPageController extends GetxController {
         print('error: $e');
       }
     }
+    final list = machineInfo.homeList;
+    if (list.isNotEmpty) {
+      heroImageUrl = list.first;
+    } else {
+      heroImageUrl = null;
+    }
+    showStartButton.value = true;
      
-     _goNext(checkmachineMode);
+     goNext(checkmachineMode);
   }
 
-  Future _goNext(checkmachineMode) async {
+  void startOrder() {
+    goNext('1');
+  }
+
+  Future goNext(checkmachineMode) async {
     Get.updateLocale(Locale('jp', 'JP'));
     _goCheckOut();
     // if(checkmachineMode == "2"){
