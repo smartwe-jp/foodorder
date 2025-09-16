@@ -553,6 +553,7 @@ class SettlementController extends GetxController with StateMixin {
             if(resultData["result"] == true){
               doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
+              EasyLoading.dismiss();
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
           }
