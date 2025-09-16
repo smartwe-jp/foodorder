@@ -518,7 +518,7 @@ class SettlementController extends GetxController with StateMixin {
       //Navigator.pushNamed(context, '/checkOutPage');
     }
   }
-
+  //缺少场景考虑 扫码支付手机端操作异常，但是后续又可以了，但是机器交易流程停止了，订单不正常
   //扫码支付
   doToPay({int retryCount = 0}) {
     //不是扫码支付直接return
@@ -554,12 +554,13 @@ class SettlementController extends GetxController with StateMixin {
               doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
               EasyLoading.dismiss();
+              logger.info("扫码支付失败 1 ${resultData["exceptionMessage"]}");
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
           }
         } else {
           //扫码后超时，再继续请求后台，1秒一次 20次
-          logger.info("扫码支付失败 ${response['code']}");
+          logger.info("扫码支付失败 2 ${response['code']}");
           _doScanCodeTimeOut();
         }
       }).catchError((error) {
@@ -569,8 +570,8 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 15), onTimeout: () {
-        logger.info("扫码支付超时");
+      }).timeout(Duration(seconds: 60), onTimeout: () {
+        logger.info("扫码支付超时 60s"); //留足够时间给用户输入密码
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
@@ -724,8 +725,8 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 10), onTimeout: () {
-        logger.info("扫码支付超时");
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        logger.info("扫码支付超时 30s");
         if (retryCount < 60) {
           Future.delayed(Duration(seconds: 1), () {
             _doScanCodeTimeOut(retryCount: retryCount + 1);
@@ -1267,6 +1268,7 @@ class SettlementController extends GetxController with StateMixin {
 
   _checkOutErrorHandle(showDialogContent, {Function? confirm}) async {
     EasyLoading.dismiss();
+    //非当前页面不再弹框 MARK:TODO
     Get.dialog(
         DialogUtils.alert(showDialogContent,
             title: "tag_title".tr,
