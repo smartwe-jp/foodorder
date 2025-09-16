@@ -3,6 +3,23 @@ import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 import 'package:path_provider/path_provider.dart';
 
+Logger l([String name = 'App']) => Logger(name);
+
+// 级别快捷方法
+void logI(Object msg, {String tag = 'App'}) => Logger(tag).info(msg);
+void logW(Object msg, {String tag = 'App'}) => Logger(tag).warning(msg);
+void logE(Object msg, {String tag = 'App', Object? error, StackTrace? stack}) =>
+    Logger(tag).severe(msg, error, stack);
+
+// 给任意对象用的扩展
+extension LogExt on Object {
+  Logger get logger => Logger(runtimeType.toString());
+  void infoLog(Object msg) => logger.info(msg);
+  void warnLog(Object msg) => logger.warning(msg);
+  void errorLog(Object msg, {Object? error, StackTrace? stack}) =>
+      logger.severe(msg, error, stack);
+}
+
 class CustomLogHandler {
   static late File _logFile;
   static late String _logFileName;

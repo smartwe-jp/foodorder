@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:foodorder/app/widget/PressScaleButton.dart';
 
 import 'package:get/get.dart';
 
@@ -1239,39 +1240,29 @@ class SettlementView extends GetView {
                               padding: EdgeInsets.only(left: ScreenAdapter.width(20),right: ScreenAdapter.width(80)),
                               //width: ScreenAdapter.width(540),
                               alignment: Alignment.centerRight,
-                              child: InkWell(
+                              child: PressScaleButton(
+                                width: ScreenAdapter.width(270),
+                                height: ScreenAdapter.height(140),
+                                color: ColorsUtil.hexToColor("#148DE8"),
+                                borderRadius: 5,
                                 onTap: () {
                                   if (controller.allowClick.value == true ) {
                                     controller.allowClick.value = false;
                                     controller.isPrintClick.value = true;
                                     controller.cashPayCheck();
+                                  } else {
+                                    //交易未正常结束
+                                    debugPrint("交易未正常结束");
+                                    controller.showUnExpectedErrorDialog();
                                   }
                                 },
-                                child: Container(
-                                  margin: EdgeInsets.only(
-                                      left: ScreenAdapter.width(20)),
-                                  width: ScreenAdapter.width(270),
-                                  height: ScreenAdapter.height(140),
-                                  alignment: Alignment.center,
-                                  decoration: BoxDecoration(
-                                    color:ColorsUtil.hexToColor("#148DE8"),
-                                    //设置圆角
-                                    borderRadius:
-                                    new BorderRadius.circular((5.0)),
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                    MainAxisAlignment.center,
-                                    children: [
-                                      Text("settlement_confirmButton".tr,
-                                          style: TextStyle(
-                                            fontFamily: GFont.getFontFamily(),
-                                            fontSize:ScreenAdapter.fontSize(32),
-                                            fontWeight: FontWeight.w600,
-                                            color: ColorsUtil.hexToColor(
-                                                Gcolor.settlementBtnColor),
-                                          )),
-                                    ],
+                                child: Text(
+                                  "settlement_confirmButton".tr,
+                                  style: TextStyle(
+                                    fontFamily: GFont.getFontFamily(),
+                                    fontSize: ScreenAdapter.fontSize(32),
+                                    fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
                                   ),
                                 ),
                               ),

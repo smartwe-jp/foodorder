@@ -40,48 +40,62 @@ class TransitPageController extends GetxController {
   String languageCode = "JP";
   final logger = Logger('TransitPageController');
 
+  final RxBool showStartButton = false.obs;
+  String? heroImageUrl;
+  bool hasStart = false;
+
   @override
   void onInit() {
     //languageCode = Get.locale?.languageCode.toUpperCase() ?? "JP";
     getIsShowCashInfo();
     super.onInit();
+    logger.info('--- TransitPageController onInit ---');
   }
 
   @override
   void onReady() {
     debugPrint("transit onReady");
     super.onReady();
+    logger.info('--- TransitPageController onReady ---');
   }
 
   @override
   void onClose() {
     debugPrint("transit onClose");
+    hasStart = false;
     super.onClose();
+    logger.info('--- TransitPageController onClose ---');
   }
 
   getIsShowCashInfo() async {
-    debugPrint("transit getIsShowCashInfo");
+    if (hasStart) {
+      logger.info('-- hasStart true, no need to run again --');
+      return;
+    }
+
+    hasStart = true;
+    logger.info("transit getIsShowCashInfo");
     //Map systemSettingInfo = await HomeServices.getIsShowCash();
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
-      _loadActiveInfo.value = Get.arguments['loadActive'];
+      _loadActiveInfo.value = Get.arguments['loadActive'] ?? false;
       _machineCode.value = Get.arguments['machineCode'] ?? "";
     }
 
-    if (_machineCode.isNotEmpty) {
-      firstActive();
-    } else {
+    // if (_machineCode.isNotEmpty) {
+    //   firstActive();
+    // } else {
       _getMachineInfo();
-    }
+    //}
   }
 
-  firstActive() async {
-    debugPrint('---firstActive---');
-    if (Platform.isWindows) {
-     _getMachineActivate(isFirst: true);
-    } else {
-     _getPackageInfo();
-    }
-  }
+  // firstActive() async {
+  //   debugPrint('---firstActive---');
+  //   if (Platform.isWindows) {
+  //    _getMachineActivate(isFirst: true);
+  //   } else {
+  //    _getPackageInfo();
+  //   }
+  // }
 
   _getMachineInfo() async {
     debugPrint("transit  getMachineInfo");
@@ -91,11 +105,11 @@ class TransitPageController extends GetxController {
 
       //_getSystemSettingInfo();
 
-      if (Platform.isWindows) {
-         _getMachineActivate();
-      } else {
+      // if (Platform.isWindows) {
+      //    _getMachineActivate();
+      // } else {
          _getPackageInfo();
-      }
+      //}
     } else {
       LogUtil.d("transit getMachineInfo error: machineCode is empty");
     }
@@ -104,230 +118,231 @@ class TransitPageController extends GetxController {
   //获取版本号
   _getPackageInfo() async {
     debugPrint("transit  getPackageInfo");
-    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value =
-        "2.6.0"; //packageInfo.version; //+"+"+packageInfo.buildNumber
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
 
-    _getMachineActivate();
+    _getMachineActivate(isFirst: _loadActiveInfo.value);
   }
 
+
   _getMachineActivate({isFirst = false, int retryCount = 0}) async {
-    // var shouldActive = await _checkShouldActive();
-    // if (!shouldActive) {
-    //   await _getSmartweSystemSettingInfo();
-    //   return;
-    // }
-    debugPrint("getMachineActivate");
-    bool shouldActive = await _checkShouldActive();
-    if (_loadActiveInfo.value == false && !shouldActive) {
-      _actuarial.value = true;
-      _getSmartweSystemSettingInfo();
-      return;
-    }
-    debugPrint("getMachineActivate with loadActive");
-    var formData = {
-      "machineCode": _machineCode.value,
-      "version": local_version.value
-    };
-    debugPrint("getMachineActivate formData: $formData");
-    request('webBootActivatev3', method: 'POST', parameters: formData)
-        .then((val) async {
-      var response = json.decode(val.toString());
-      LogUtil.d("getMachineActivate response: $response");
-      if (response != null &&
-          response['code'] == 200 &&
-          response['data'] != null) {
-        var shopData = response['data'];
-        var _shopCode = "";
-        if (shopData["shopCode"] != null) {
-          _shopCode = shopData["shopCode"];
-        }
-        var _showCash = shopData["linePayChannelMap"]["Cash"] != null
-            ? shopData["linePayChannelMap"]["Cash"]
-            : false;
-        debugPrint("showCash: $_showCash");
-        var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
-            ? shopData["linePayChannelMap"]["Wechat"]
-            : false;
-        var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null
-            ? shopData["linePayChannelMap"]["Alipay"]
-            : false;
-        var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null
-            ? shopData["linePayChannelMap"]["PayPay"]
-            : false;
-        var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null
-            ? shopData["linePayChannelMap"]["POS"]
-            : false;
-        var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null
-            ? shopData["linePayChannelMap"]["au_Pay"]
-            : false;
-        var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null
-            ? shopData["linePayChannelMap"]["d_Pay"]
-            : false;
-        var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null
-            ? shopData["linePayChannelMap"]["R_Pay"]
-            : false;
-        var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null
-            ? shopData["linePayChannelMap"]["m_Pay"]
-            : false;
+    try {
 
-        var _posEdy = shopData["linePayChannelMap"]["Edy"] != null
-            ? shopData["linePayChannelMap"]["Edy"]
-            : false;
-        var _posiD = shopData["linePayChannelMap"]["iD"] != null
-            ? shopData["linePayChannelMap"]["iD"]
-            : false;
-        var _posIC = shopData["linePayChannelMap"]["IC"] != null
-            ? shopData["linePayChannelMap"]["IC"]
-            : false;
-        var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null
-            ? shopData["linePayChannelMap"]["QUICPay"]
-            : false;
-        var _posWAON = shopData["linePayChannelMap"]["WAON"] != null
-            ? shopData["linePayChannelMap"]["WAON"]
-            : false;
-        var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null
-            ? shopData["linePayChannelMap"]["nanaco"]
-            : false;
-        var _visa = shopData["linePayChannelMap"]["VISA"] != null
-            ? shopData["linePayChannelMap"]["VISA"]
-            : false;
-        var _master = shopData["linePayChannelMap"]["MASTER"] != null
-            ? shopData["linePayChannelMap"]["MASTER"]
-            : false;
-        var _jcb = shopData["linePayChannelMap"]["JCB"] != null
-            ? shopData["linePayChannelMap"]["JCB"]
-            : false;
-        var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null
-            ? shopData["linePayChannelMap"]["UnionPay"]
-            : false;
-        var _americanExpress =
-            shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null
-                ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"]
-                : false;
-        var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null
-            ? shopData["linePayChannelMap"]["Diners_Club"]
-            : false;
-        var _discover = shopData["linePayChannelMap"]["Discover"] != null
-            ? shopData["linePayChannelMap"]["Discover"]
-            : false;
-        bool taxSystem = shopData["taxSystem"] ?? false;
-        logger.info('-- server cash state = $_showCash --');
-        var machineActivateData = {
-          "showCash": _showCash,
-          "showWechat": _showWechat,
-          "showAlipay": _showAlipay,
-          "showPayPay": _showPayPay,
-          "showCreditCard": _showCreditCard,
-          "au_Pay": _auPay,
-          "d_Pay": _dPay,
-          "R_Pay": _rPay,
-          "m_Pay": _mPay,
-          "pos_Edy": _posEdy,
-          "pos_iD": _posiD,
-          "pos_IC": _posIC,
-          "pos_QUICPay": _posQUICPay,
-          "pos_WAON": _posWAON,
-          "pos_nanaco": _posnanaco,
-          "show_visa": _visa,
-          "show_master": _master,
-          "show_jcb": _jcb,
-          "show_unionPay": _unionPay,
-          "show_americanExpress": _americanExpress,
-          "show_dinersClub": _dinersClub,
-          "show_discover": _discover,
-          "taxSystem": taxSystem,
-        };
-        //是否允许退款 1展示退款按钮 0 不展示
-        var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
-        Storage.setString(
-            'smartwe_machineActivateData', json.encode(machineActivateData));
-        Storage.setString(
-            'smartwe_machineLanguages', json.encode(shopData["languages"]));
-        Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-        Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-        Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-        Storage.setString('smartwe_reimburse', reimburse);
-        Storage.setString('smartwe_shopCode', _shopCode);
+      bool shouldActive = await _checkShouldActive();
+      if (_loadActiveInfo.value == false && !shouldActive) {
+        logger.info('-- getMachineActivate with loadActive no need --');
+        _actuarial.value = true;
+        _getSmartweSystemSettingInfo();
+        return;
+      }
+      logger.info('-- getMachineActivate with loadActive --');
+      var formData = {
+        "machineCode": _machineCode.value,
+        "version": local_version.value
+      };
+      request('webBootActivatev3', method: 'POST', parameters: formData)
+          .then((val) async {
+        var response = json.decode(val.toString());
+        LogUtil.d("getMachineActivate response: $response");
+        if (response != null &&
+            response['code'] == 200 &&
+            response['data'] != null) {
+          var shopData = response['data'];
+          var _shopCode = "";
+          if (shopData["shopCode"] != null) {
+            _shopCode = shopData["shopCode"];
+          }
+          var _showCash = shopData["linePayChannelMap"]["Cash"] != null
+              ? shopData["linePayChannelMap"]["Cash"]
+              : false;
+          debugPrint("showCash: $_showCash");
+          var _showWechat = shopData["linePayChannelMap"]["Wechat"] != null
+              ? shopData["linePayChannelMap"]["Wechat"]
+              : false;
+          var _showAlipay = shopData["linePayChannelMap"]["Alipay"] != null
+              ? shopData["linePayChannelMap"]["Alipay"]
+              : false;
+          var _showPayPay = shopData["linePayChannelMap"]["PayPay"] != null
+              ? shopData["linePayChannelMap"]["PayPay"]
+              : false;
+          var _showCreditCard = shopData["linePayChannelMap"]["POS"] != null
+              ? shopData["linePayChannelMap"]["POS"]
+              : false;
+          var _auPay = shopData["linePayChannelMap"]["au_Pay"] != null
+              ? shopData["linePayChannelMap"]["au_Pay"]
+              : false;
+          var _dPay = shopData["linePayChannelMap"]["d_Pay"] != null
+              ? shopData["linePayChannelMap"]["d_Pay"]
+              : false;
+          var _rPay = shopData["linePayChannelMap"]["R_Pay"] != null
+              ? shopData["linePayChannelMap"]["R_Pay"]
+              : false;
+          var _mPay = shopData["linePayChannelMap"]["m_Pay"] != null
+              ? shopData["linePayChannelMap"]["m_Pay"]
+              : false;
 
-        GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
-        GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
-        GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
-        GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
-        GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
-        GetxStorage.setData('smartwe_reimburse', reimburse);
+          var _posEdy = shopData["linePayChannelMap"]["Edy"] != null
+              ? shopData["linePayChannelMap"]["Edy"]
+              : false;
+          var _posiD = shopData["linePayChannelMap"]["iD"] != null
+              ? shopData["linePayChannelMap"]["iD"]
+              : false;
+          var _posIC = shopData["linePayChannelMap"]["IC"] != null
+              ? shopData["linePayChannelMap"]["IC"]
+              : false;
+          var _posQUICPay = shopData["linePayChannelMap"]["QUICPay"] != null
+              ? shopData["linePayChannelMap"]["QUICPay"]
+              : false;
+          var _posWAON = shopData["linePayChannelMap"]["WAON"] != null
+              ? shopData["linePayChannelMap"]["WAON"]
+              : false;
+          var _posnanaco = shopData["linePayChannelMap"]["nanaco"] != null
+              ? shopData["linePayChannelMap"]["nanaco"]
+              : false;
+          var _visa = shopData["linePayChannelMap"]["VISA"] != null
+              ? shopData["linePayChannelMap"]["VISA"]
+              : false;
+          var _master = shopData["linePayChannelMap"]["MASTER"] != null
+              ? shopData["linePayChannelMap"]["MASTER"]
+              : false;
+          var _jcb = shopData["linePayChannelMap"]["JCB"] != null
+              ? shopData["linePayChannelMap"]["JCB"]
+              : false;
+          var _unionPay = shopData["linePayChannelMap"]["UnionPay"] != null
+              ? shopData["linePayChannelMap"]["UnionPay"]
+              : false;
+          var _americanExpress =
+              shopData["linePayChannelMap"]["AMERICAN_EXPRESS"] != null
+                  ? shopData["linePayChannelMap"]["AMERICAN_EXPRESS"]
+                  : false;
+          var _dinersClub = shopData["linePayChannelMap"]["Diners_Club"] != null
+              ? shopData["linePayChannelMap"]["Diners_Club"]
+              : false;
+          var _discover = shopData["linePayChannelMap"]["Discover"] != null
+              ? shopData["linePayChannelMap"]["Discover"]
+              : false;
+          bool taxSystem = shopData["taxSystem"] ?? false;
+          logger.info('-- server cash state = $_showCash --');
+          var machineActivateData = {
+            "showCash": _showCash,
+            "showWechat": _showWechat,
+            "showAlipay": _showAlipay,
+            "showPayPay": _showPayPay,
+            "showCreditCard": _showCreditCard,
+            "au_Pay": _auPay,
+            "d_Pay": _dPay,
+            "R_Pay": _rPay,
+            "m_Pay": _mPay,
+            "pos_Edy": _posEdy,
+            "pos_iD": _posiD,
+            "pos_IC": _posIC,
+            "pos_QUICPay": _posQUICPay,
+            "pos_WAON": _posWAON,
+            "pos_nanaco": _posnanaco,
+            "show_visa": _visa,
+            "show_master": _master,
+            "show_jcb": _jcb,
+            "show_unionPay": _unionPay,
+            "show_americanExpress": _americanExpress,
+            "show_dinersClub": _dinersClub,
+            "show_discover": _discover,
+            "taxSystem": taxSystem,
+          };
+          //是否允许退款 1展示退款按钮 0 不展示
+          var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
+          Storage.setString(
+              'smartwe_machineActivateData', json.encode(machineActivateData));
+          Storage.setString(
+              'smartwe_machineLanguages', json.encode(shopData["languages"]));
+          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+          Storage.setString('smartwe_reimburse', reimburse);
+          Storage.setString('smartwe_shopCode', _shopCode);
 
-        var machineSettingBool = {
-          'machineLineup': shopData["lineup"],
-          'machineActuarial': shopData["actuarial"],
-        };
+          GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
+          GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
+          GetxStorage.setData('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
+          GetxStorage.setData('smartwe_reimburse', reimburse);
 
-        Storage.setString(
-            'machineSettingData', json.encode(machineSettingBool));
-        GetxStorage.setData(
-            'machineSettingData', json.encode(machineSettingBool));
+          var machineSettingBool = {
+            'machineLineup': shopData["lineup"],
+            'machineActuarial': shopData["actuarial"],
+          };
 
-        _actuarial.value = shopData["actuarial"];
+          Storage.setString(
+              'machineSettingData', json.encode(machineSettingBool));
+          GetxStorage.setData(
+              'machineSettingData', json.encode(machineSettingBool));
 
-        if (Platform.isAndroid) {
-          // FirebaseAnalytics.instance.logEvent(
-          //     name: 'machine_activate_launch',
-          //     parameters: {'machine_activate': '${_machineCode.value}'});
-        }
-        if (isFirst) {
-           _saveActiveCode(_machineCode.value);
+          _actuarial.value = shopData["actuarial"];
+
+          if (Platform.isAndroid) {
+            // FirebaseAnalytics.instance.logEvent(
+            //     name: 'machine_activate_launch',
+            //     parameters: {'machine_activate': '${_machineCode.value}'});
+          }
+          if (isFirst) {
+             _saveActiveCode(_machineCode.value);
+          } else {
+            //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
+            //await downloadAndSaveImage(shopData["logoImage"]);
+             _getSmartweSystemSettingInfo();
+          }
+
         } else {
-          //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-          //await downloadAndSaveImage(shopData["logoImage"]);
-           _getSmartweSystemSettingInfo();
+          if (Platform.isAndroid) {
+            // FirebaseAnalytics.instance.logEvent(
+            //     name: 'machine_activate_failure',
+            //     parameters: {'machine_activate_error': '${_machineCode.value}'});
+          }
+          _showErrorDialog(isActive: response['data'] == null);
         }
-
-      } else {
+      }).catchError((e) {
+        LogUtil.d("getMachineActivate error: $e");
+        logger.warning('getMachineActivate error: $e');
         if (Platform.isAndroid) {
           // FirebaseAnalytics.instance.logEvent(
-          //     name: 'machine_activate_failure',
+          //     name: 'machine_activate_error',
           //     parameters: {'machine_activate_error': '${_machineCode.value}'});
         }
-        _showErrorDialog(isActive: response['data'] == null);
-      }
-    }).catchError((e) {
-      LogUtil.d("getMachineActivate error: $e");
-      if (Platform.isAndroid) {
-        // FirebaseAnalytics.instance.logEvent(
-        //     name: 'machine_activate_error',
-        //     parameters: {'machine_activate_error': '${_machineCode.value}'});
-      }
-      if (retryCount < 3) {
-        // 如果失败，重试
-        Future.delayed(Duration(seconds: 2), () {
-          _getMachineActivate(retryCount: retryCount + 1);
-        });
-      } else {
-        // 如果重试次数超过3次，显示错误对话框
-        _showErrorDialog(error: e);
-      }
-    })
-    .timeout(Duration(seconds: 10), onTimeout: () {
-      //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
-      //print('timeout');
-      LogUtil.d("getMachineActivate timeout");
-
-      if (retryCount < 3) {
-        // 如果超时，重试
-        Future.delayed(Duration(seconds: 2), () {
-          _getMachineActivate(retryCount: retryCount + 1);
-        });
-      } else {
-        // 如果重试次数超过3次，显示错误对话框
-        _showErrorDialog();
-      }
-    });
+        if (retryCount < 3) {
+          // 如果失败，重试
+          Future.delayed(Duration(seconds: 2), () {
+            _getMachineActivate(retryCount: retryCount + 1);
+          });
+        } else {
+          // 如果重试次数超过3次，显示错误对话框
+          _showErrorDialog(error: e);
+        }
+      })
+      .timeout(Duration(seconds: 10), onTimeout: () {
+        //FirebaseAnalytics.instance.logEvent(name: 'machine_activate_timeout', parameters: {'machine_activate_timeout': '${_machineCode.value}'});
+        //print('timeout');
+        LogUtil.d("getMachineActivate timeout");
+        logger.warning('getMachineActivate timeout');
+        if (retryCount < 3) {
+          // 如果超时，重试
+          Future.delayed(Duration(seconds: 2), () {
+            _getMachineActivate(retryCount: retryCount + 1);
+          });
+        } else {
+          // 如果重试次数超过3次，显示错误对话框
+          _showErrorDialog();
+        }
+      });
+    } finally {
+      logger.info('activation finished');
+      //_activating = false;
+    }
   }
 
   _showErrorDialog({error, bool isActive = false}) => Get.dialog(DialogUtils.alertOneButton(
       isActive
           ? 'activation_error_tips'.tr
-          : 'launch_error_tips'.tr,
+          : 'インターネットが接続していません。ネット環境及び機器の接続状況をご確認の上、券売君アプリを再起動してください。',
 
       title: "tag_title".tr,
       confirmtitle: "reboot_app".tr,
@@ -498,15 +513,23 @@ class TransitPageController extends GetxController {
         print('error: $e');
       }
     }
+    final list = machineInfo.homeList;
+    if (list.isNotEmpty) {
+      heroImageUrl = list.first;
+    } else {
+      heroImageUrl = null;
+    }
+    showStartButton.value = true;
      
-    //  _goNext(checkmachineMode);
-    // final posCheckService = Get.find<PosCheckService>();
-    // posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
 
-    _goNext(checkmachineMode);
+     goNext(checkmachineMode);
   }
 
-  Future _goNext(checkmachineMode) async {
+  void startOrder() {
+    goNext('1');
+  }
+
+  Future goNext(checkmachineMode) async {
     Get.updateLocale(Locale('jp', 'JP'));
     _goCheckOut();
     // if(checkmachineMode == "2"){
@@ -521,28 +544,20 @@ class TransitPageController extends GetxController {
   void _goMain() async {
     debugPrint("transit  goMain");
     Future.delayed(Duration(milliseconds: 200), () {
-      //Get.off(() => OrderHomeView());
-      Get.toNamed("/order-home", arguments: {
-        'initLaunch': _loadActiveInfo.value,
-      });
+      Get.toNamed("/order-home", arguments: {'initLaunch': _loadActiveInfo.value});
     });
   }
 
   Future _goCheckOut() async {
-    Future.delayed(Duration(milliseconds: 200), () {
-      //Get.off(() => CheckoutPageView());
-      Get.toNamed("/checkout-page", arguments: {
-        'initLaunch': _loadActiveInfo.value,
-      });
-    });
+    //Future.delayed(Duration(milliseconds: 200), () {
+    hasStart = false;
+      Get.toNamed("/checkout-page", arguments: {'initLaunch': _loadActiveInfo.value});
+    //});
   }
 
   Future _goSelfService() async {
     Future.delayed(Duration(milliseconds: 200), () {
-      //Get.off(() => SelfservicePageView());
-      Get.toNamed("/selfservice-page", arguments: {
-        'initLaunch': _loadActiveInfo.value,
-      });
+      Get.toNamed("/selfservice-page", arguments: {'initLaunch': _loadActiveInfo.value});
     });
   }
 }

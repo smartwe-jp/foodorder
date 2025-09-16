@@ -1,7 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -9,17 +7,12 @@ import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:foodorder/app/services/PosCheckService.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:get/get.dart';
-import 'package:get_storage/get_storage.dart';
-
-import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
-import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
-import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
 import '../../scan_detail_page/logic.dart';
@@ -71,7 +64,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    debugPrint("CheckoutPageController init");
+    logI("CheckoutPageController init");
     Future.delayed(const Duration(),
         () => SystemChannels.textInput.invokeMethod('TextInput.hide'));
     _getMachineLanguages();
@@ -83,8 +76,10 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   @override
   void onReady() {
+    logI("CheckoutPageController ready");
     super.onReady();
     //startRepeatingAnimation();
+    //Get.back();
     if (firstLoad) {
       bool isSseEnabled =
           sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);

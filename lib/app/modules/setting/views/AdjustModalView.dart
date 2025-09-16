@@ -202,7 +202,9 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                 children: [
                                   Container(
 
-                                    child: NumberAdjustWidget(initialNumber: int.tryParse(_value) ?? 0, minNumber: 0, onNumberChanged: (int number){
+                                    child: NumberAdjustWidget(
+                                        content: "$_field最初枚数",
+                                        initialNumber: int.tryParse(_value) ?? 0, minNumber: 0, onNumberChanged: (int number){
                                       setState(() {
                                         _value = number.toString();
                                       });
@@ -372,6 +374,7 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                             child: Container(
                                 alignment: Alignment.centerLeft,
                                 child: NumberAdjustWidget(
+                                    content: "預り金からの枚数",
                                     initialNumber: _depositQty,
                                     maxNumber: _getMaxDepositQty(_depositCatVal),
                                     onNumberChanged: (int number){
@@ -413,7 +416,9 @@ class _AdjustModalViewState extends State<AdjustModalView> {
                                 children: [
                                   Container(
                                       alignment: Alignment.centerLeft,
-                                      child: NumberAdjustWidget(initialNumber: _selectNumber, onNumberChanged: (int number){
+                                      child: NumberAdjustWidget(
+                                          content: "$_field補充/削减枚数",
+                                          initialNumber: _selectNumber, onNumberChanged: (int number){
                                         setState(() {
                                           _selectNumber = number;
                                         });

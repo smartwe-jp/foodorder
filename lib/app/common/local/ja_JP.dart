@@ -217,4 +217,6 @@ const Map<String, String> ja_JP = {
         "pos_checking": "POS端末の状態を確認中です。しばらくお待ちください...",
         "pos_check_success": "POS端末の状態は正常です。",
         "pos_check_failed": "POS端末の状態は異常です。",
+
+        "settlement_unexpected_error" : "決済中に予期しないエラーが発生しました。前のページに戻って再試行してください。",
 };

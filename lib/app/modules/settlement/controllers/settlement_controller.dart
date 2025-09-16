@@ -18,6 +18,7 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
@@ -312,7 +313,7 @@ class SettlementController extends GetxController with StateMixin {
       seconds.value--;
 
       if (this.seconds == 0) {
-        debugPrint("---- Time out quit -----");
+        logI("---- Time out quit -----");
         //如果60秒未接收返回正确通知，则进行下一步操作
         //eventBus.fire(new setShowCashEvent('支付成功...'));
         showCashTimer?.cancel(); //清除定时器
@@ -338,7 +339,7 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewMenuPage() {
 
-    debugPrint('---gotonewMenuPage---');
+    logI('---gotonewMenuPage---');
     if(isPayConfirmOrderId.value == true){
       if(machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1"){
         if(machineInfo.currentMode == MachineMode.checkout) {//精算时候请求
@@ -364,7 +365,9 @@ class SettlementController extends GetxController with StateMixin {
     debugPrint("showSuccessAlert");
     EasyLoading.dismiss();
 
-    Get.dialog(PayResultView(
+    Get.dialog(
+      barrierDismissible: false,
+      PayResultView(
       dismiss: () {
         Get.back();
         task();
@@ -373,7 +376,8 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   checkOutModeBack() async {
-    if (Get.isRegistered<CheckoutPageController>())
+    logger.info('checkOutModeBack');
+    if (Get.isRegistered<CheckoutPageController>() && machineInfo.currentMode == MachineMode.checkout)
     Get.find<CheckoutPageController>().resetStateBack();
   }
 
@@ -408,9 +412,60 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
+  bool _isNavigating = false;
+
+  Future<void> safeReturnToHome() async {
+    if (_isNavigating) return;
+      _isNavigating = true;
+    try {
+      await ordersqlcontroller.removeAllFromCart(); // 等待清空
+    } catch (e) {
+      logger.warning('removeAllFromCart error: $e');
+    }
+
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
+
+    // 不再先 Get.back 再 off，直接一次性跳
+    if (machineInfo.currentMode == MachineMode.sell ||
+        machineInfo.currentMode == MachineMode.takeout) {
+      if (is_back_home.value == "0") {
+        //Get.offNamedUntil('/checkout-page',(route) => route.settings.name == '/transit-page' || route.isFirst,);
+        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
+      } else {
+        // if (Get.isRegistered<MenuPageController>()) {
+        //   final mc = Get.find<MenuPageController>();
+        //   mc.resetToFirstPage();
+        //   mc.paymentIsShow = false;
+          
+        // }
+        //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
+        Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        // 只关闭结算页
+        // if (Get.currentRoute != '/transit-page') {
+        //   Get.back(); 
+        // }
+      }
+    } else if (machineInfo.currentMode == MachineMode.scan) {
+      Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+    } else {
+      //Future.delayed(const Duration(milliseconds: 50), () {
+        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
+      //});
+    }
+  }
+
 
   gotonewBack() {
-    debugPrint('---gotonewBack---');
+    //debugPrint('---gotonewBack---');
+    logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
+    safeReturnToHome();
+    return;
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -467,35 +522,11 @@ class SettlementController extends GetxController with StateMixin {
       //Navigator.pushNamed(context, '/checkOutPage');
     }
   }
-
-  //扫码支付T
-  doToPay() {
+  //缺少场景考虑 扫码支付手机端操作异常，但是后续又可以了，但是机器交易流程停止了，订单不正常
+  //扫码支付
+  doToPay({int retryCount = 0}) {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
-
-    /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
-      _showScanCodeNoOpenDialog(1,"");
-      return;
-    }
-
-    var _regExpWechat = r"^1[0-5]\d{16}$";
-    var _regExpAlipay = r"^(?:2[5-9]|30)\d{14,22}$";
-    if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == true &&
-        _showWechat == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else if (RegExp(_regExpAlipay).hasMatch(_scanQrCode) == true &&
-        _showAlipay == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else {
-      if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == false &&
-          RegExp(_regExpAlipay).hasMatch(_scanQrCode) == false &&
-          _showPayPay == false) {
-        _showScanCodeNoOpenDialog(2,"");
-        return;
-      }
-    }*/
     //print(scanQrCodeController.text);
     if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
@@ -526,22 +557,25 @@ class SettlementController extends GetxController with StateMixin {
             if(resultData["result"] == true){
               doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
+              EasyLoading.dismiss();
+              logger.info("扫码支付失败 1 ${resultData["exceptionMessage"]}");
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
           }
         } else {
           //扫码后超时，再继续请求后台，1秒一次 20次
+          logger.info("扫码支付失败 2 ${response['code']}");
           _doScanCodeTimeOut();
         }
       }).catchError((error) {
-        logger.info("扫码支付异常");
+        logger.info("扫码支付异常 $error");
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 30), onTimeout: () {
-        logger.info("扫码支付超时");
+      }).timeout(Duration(seconds: 60), onTimeout: () {
+        logger.info("扫码支付超时 60s"); //留足够时间给用户输入密码
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
@@ -616,6 +650,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   cashPayCheck() async {
+    logger.info('cashPayCheck');
     showEasyLoading();
     bool result = await requestLatestCheckoutInfo();
 
@@ -639,19 +674,34 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  //扫码后超时，再继续请求后台，5秒一次 60次
-  _doScanCodeTimeOut() {
-    int queryCount = 0;
-    ScanCodeConfirmTimer?.cancel();
-    ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
-        (Timer confirmTimer) async {
-      queryCount++;
-      if (queryCount > 60) {
-        //退出关闭
-        confirmTimer.cancel();
-        _showScanCodeTimeOutDialog();
-      }
+  showUnExpectedErrorDialog() {
+    EasyLoading.dismiss();
+    allowClick.value = true;
+    isPrintClick.value = false;
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alertOneButton("settlement_unexpected_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+              Get.back();
+              commonCancel();
+            }));
+  }
 
+
+  //扫码后超时，再继续请求后台，5秒一次 60次
+  _doScanCodeTimeOut({int retryCount = 0}) {
+    // int queryCount = 0;
+    // ScanCodeConfirmTimer?.cancel();
+    // ScanCodeConfirmTimer = Timer.periodic(Duration(milliseconds: 5000),
+    //     (Timer confirmTimer) async {
+    //   queryCount++;
+    //   if (queryCount > 60) {
+    //     //退出关闭
+    //     confirmTimer.cancel();
+    //     _showScanCodeTimeOutDialog();
+    //   }
+      logger.info("扫码异常，重新请求后台 $retryCount");
       var formData = {
         "orderId": orderId.value,
       };
@@ -661,11 +711,35 @@ class SettlementController extends GetxController with StateMixin {
 
         if (response['code'] == 200 && response['data'] == true) {
           //退出关闭
-          confirmTimer.cancel();
+          //confirmTimer.cancel();
           doPrintOrderMenu(machineInfo.receiptPrintType);
+        } else {
+          if (retryCount < 60) {
+            Future.delayed(Duration(seconds: 5), () {
+              _doScanCodeTimeOut(retryCount: retryCount + 1);
+            });
+          } else {
+            _showScanCodeTimeOutDialog();
+          }
+        }
+      }).catchError((error) {
+        logger.info("扫码支付异常 $error");
+        _checkOutErrorHandle('settlement_order_error'.tr,
+            confirm: () {
+              scanQrCodeController.text = "";
+              scanQrCodeFocusNode.requestFocus();
+            });
+      }).timeout(Duration(seconds: 30), onTimeout: () {
+        logger.info("扫码支付超时 30s");
+        if (retryCount < 60) {
+          Future.delayed(Duration(seconds: 1), () {
+            _doScanCodeTimeOut(retryCount: retryCount + 1);
+          });
+        } else {
+          _showScanCodeTimeOutDialog();
         }
       });
-    });
+    //});
   }
 
   doScanCodeTimeOutLastQuery() {
@@ -771,7 +845,7 @@ class SettlementController extends GetxController with StateMixin {
         onCancel: (result, msg) =>
             showPosCancelEasyLoading(result, resultPFSString: msg),
         onDone: (action) {
-          debugPrint('onDone $action');
+          logI('onDone $action');
           if (action == PosAction.Cancel) {
             cancelOrder();
           }
@@ -880,7 +954,7 @@ class SettlementController extends GetxController with StateMixin {
 
   showPosCancelAlert(){
     //if(socketPosCancel.value == true) return;
-
+    logger.info('showPosCancelAlert');
     Future.delayed(Duration(milliseconds: 50), () async {
       Get.dialog(
           DialogUtils.alert("settlement_back_alertcontent".tr,
@@ -972,9 +1046,10 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _startPaymentTimer() async {
-    debugPrint("startResetTimer");
+    logI("startResetTimer");
     paymentTimer?.cancel();
     paymentTimer = Timer(Duration(seconds: 180), () async {
+      logI("paymentTimer 180s");
       paymentTimer?.cancel();
       if (hasStartPayflow) return;
       commonCancel();
@@ -982,6 +1057,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   commonCancel() async {
+    logI('commonCancel');
     if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
       showBackEasyLoading();
       cancelOrder();
@@ -1224,6 +1300,7 @@ class SettlementController extends GetxController with StateMixin {
 
   _checkOutErrorHandle(showDialogContent, {Function? confirm}) async {
     EasyLoading.dismiss();
+    //非当前页面不再弹框 MARK:TODO
     Get.dialog(
         DialogUtils.alert(showDialogContent,
             title: "tag_title".tr,
@@ -1300,10 +1377,10 @@ class SettlementController extends GetxController with StateMixin {
       if (machineInfo.paymentMethod == "1") {
         nextOper();
       } else {
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           //goToNewMyHome();
           gotonewBack();
-        });
+        //});
       }
     });
   }
@@ -1617,13 +1694,14 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        showSuccessAlert(() {
+        logger.info('payCubeCloseTransaction showSuccessAlert');
+        //showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        });
+        //});
       }
     } else {
       //出金失败

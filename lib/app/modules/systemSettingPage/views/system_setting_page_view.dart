@@ -2787,7 +2787,7 @@ class SystemSettingPageView extends GetView {
                               },
                                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                 children: <TableRow>[
-                                  if(controller.actuarial.value == true)
+                                  //if(controller.actuarial.value == true)
                                   TableRow(
                                       children: <Widget>[
                                         Container(

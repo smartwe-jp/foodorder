@@ -17,8 +17,8 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller_ext
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:foodorder/app/services/Storage.dart';
-import 'package:foodorder/app/services/customLogger.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';
 import 'package:logging/logging.dart';
@@ -37,6 +37,7 @@ import '../../../widget/DialogUtils.dart';
 import '../../CheckoutPage/controllers/checkout_page_controller.dart';
 import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/ReplanishView.dart';
+import '../views/RejishimeRequestView.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -199,7 +200,8 @@ class SettingController extends GetxController with StateMixin {
   Future<String?> compressFiles() async {
     // 获取临时目录路径
     final tempDir = await getTemporaryDirectory();
-    final logPathPrefix = '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
+    final logPathPrefix =
+        '/mnt/sdcard/Android/data/com.fanxing.foodorder/files/Comlib/';
     final outputPath = '${tempDir.path}/${_getDate()}PT3Combined_logs.zip';
 
     // 创建一个ZipFileEncoder对象
@@ -208,7 +210,8 @@ class SettingController extends GetxController with StateMixin {
       zipEncoder.create(outputPath);
 
       // 添加第一个文件（zip文件）
-      final zipFile = File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
+      final zipFile =
+          File(logPathPrefix + '${_getYestodayDate()}PT3_OperationLog.log.zip');
       if (await zipFile.exists()) {
         zipEncoder.addFile(zipFile);
       }
@@ -227,8 +230,6 @@ class SettingController extends GetxController with StateMixin {
       showToast('上传失败! ${e.toString()}');
       return null;
     }
-
-
 
     print('Files compressed successfully. Output: $outputPath');
   }
@@ -367,10 +368,18 @@ class SettingController extends GetxController with StateMixin {
         "remain": 0,
       });
     });
+<<<<<<< HEAD
     Get.dialog(barrierDismissible: false,
     Container(
       padding: EdgeInsets.only(top: 720),
       child: ReplanishView(controller: this)));
+=======
+    Get.dialog(
+        barrierDismissible: false,
+        Container(
+            padding: EdgeInsets.only(top: 720),
+            child: ReplanishView(controller: this)));
+>>>>>>> release-1.1.7
   }
 
   signoutAlert() async {
@@ -401,11 +410,11 @@ class SettingController extends GetxController with StateMixin {
     debugPrint("SettingController _getPackageInfo");
 
     //if (Platform.isWindows) {
-      //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
+    //local_version.value = await _getWindowsAppVersion();//该API windows 版本 需要等Flutter Stable 版本升级到3.3.0才能使用
     //  local_version.value = "2.6.0"; //当前每次打包需要手动修改版本号
     //} else {
-      PackageInfo packageInfo = await PackageInfo.fromPlatform();
-      local_version.value = packageInfo.version;
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version;
     //}
     //+"+"+packageInfo.buildNumber
 
@@ -530,7 +539,6 @@ class SettingController extends GetxController with StateMixin {
         //change(null, status: RxStatus.error('获取现金机状态失败'));
         Get.back();
       }
-
     }).timeout(const Duration(seconds: 15), onTimeout: () {
       debugPrint("Timeout getting change state");
       //showToast('获取现金机状态超时');
@@ -550,7 +558,7 @@ class SettingController extends GetxController with StateMixin {
     } else {
       await getCashInfo();
     }
-    
+
     //print(_menuOption);
   }
 
@@ -689,9 +697,9 @@ class SettingController extends GetxController with StateMixin {
           },
           showError: (String error) {
             EasyLoading.dismiss();
-            debugPrint("recycleCash error: $error");
+            debugPrint("recycleCash error: $error.tr");
             //showToast('回收失败');
-            commonHandleDialog("回收失败：$error");
+            commonHandleDialog("回收失败：$error.tr");
           });
     } else {
       var formData = {
@@ -720,8 +728,7 @@ class SettingController extends GetxController with StateMixin {
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
             title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr,
-            confirm: () {
+            confirmtitle: "tag_button_yes".tr, confirm: () {
           if (confirm != null) {
             confirm();
           } else {

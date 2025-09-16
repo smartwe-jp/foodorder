@@ -220,5 +220,6 @@ const Map<String, String> en_US = {
         "pos_checking": "Checking POS machine status, please wait...",
         "pos_check_success": "POS machine status is normal.",
         "pos_check_failed": "POS machine status is abnormal.",
+        "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
 
 };

@@ -575,7 +575,7 @@ extension SettlementControllerExtension on SettlementController {
     CashStep.value = 4;
 
     debugPrint('cash showSuccessAlert');
-
+    logger.info('payCubeCloseTransaction cancel: $cancel isPrint: ${isPrint.value}');
     if (cancel) {
       if (isPrint.value == true) {
         gotonewBack();
@@ -583,13 +583,13 @@ extension SettlementControllerExtension on SettlementController {
         gotonewMenuPage();
       }
     } else {
-      showSuccessAlert(() {
+      //showSuccessAlert(() {
         if (isPrint.value == true) {
           gotonewBack();
         } else {
           gotonewMenuPage();
         }
-      });
+      //});
     }
 
     // if (isPrint.value == true) {

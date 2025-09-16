@@ -220,5 +220,7 @@ const Map<String, String> ko_KR = {
         "pos_check_success": "POS 기기 상태가 정상입니다.",
         "pos_check_failed": "POS 기기 상태가 비정상입니다.",
 
+        "settlement_unexpected_error" : "결제 중 예기치 않은 오류가 발생했습니다. 이전 페이지로 돌아가서 다시 시도해 주십시오.",
+
 
 };
