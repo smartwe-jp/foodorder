@@ -95,6 +95,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   RxBool printTwoDirection = false.obs;
   RxBool printThreeDirection = false.obs;
   RxDouble printLabelWidth = 400.0.obs;
+  RxDouble machinePrintWidth = 385.0.obs;
   RxList printerList = [].obs;
   RxList sseSettingList = [].obs;
 
@@ -178,6 +179,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     printTwoDirection.value = await HomeServices.getPrintTwoDirection() == "1" ? true : false;
     printThreeDirection.value = await HomeServices.getPrintThreeDirection() == "1" ? true : false;
     printLabelWidth.value = await HomeServices.getLabelPrintWidth();
+    machinePrintWidth.value = await HomeServices.getMachinePrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting = await HomeServices.getSmartweMachineSettingData();
 
@@ -857,6 +859,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
       HomeServices.setPrinterListInfo(printerList);
       machineInfo.updateMachineSettingInfo();
     }
+    update();
+  }
+
+  updateMachinePrintWidth(double width) async {
+    machinePrintWidth.value = width;
+    await HomeServices.setMachinePrintWidth(width);
     update();
   }
 

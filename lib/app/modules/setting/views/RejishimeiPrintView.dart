@@ -10,7 +10,8 @@ class RejishimePrintView extends StatefulWidget {
   final Map printInfo;
   final bool isPrint;
   final Function(double)? lengthUpdate;
-  RejishimePrintView({super.key, this.isPrint = false, required this.printInfo, this.lengthUpdate});
+  final isNotCashInfo;
+  RejishimePrintView({super.key, this.isPrint = false, required this.printInfo, this.lengthUpdate, this.isNotCashInfo = false});
   @override
   RejishimePrintViewState createState() => RejishimePrintViewState();
 }
@@ -154,10 +155,15 @@ class RejishimePrintViewState extends State<RejishimePrintView> {
                 color: ColorsUtil.hexToColor("#9C9C9C"),
               ),
 
-              if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+              if (printInfo['cashInfo'] != null &&
+                  (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty)
+                  && !widget.isNotCashInfo
+              )
                 _normalTitle("釣銭機情報（枚数）"),
 
-              if (printInfo['cashInfo'] != null && (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty))
+              if (printInfo['cashInfo'] != null &&
+                  (printInfo['cashInfo'] is Map && !printInfo['cashInfo'].isEmpty)
+                  && !widget.isNotCashInfo)
                 _cashInfoTable(printInfo['cashInfo']),
             ],
 

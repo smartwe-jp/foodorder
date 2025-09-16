@@ -15,6 +15,7 @@ import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../controllers/app_config.dart';
 import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/num_pad.dart';
@@ -24,8 +25,9 @@ import '../../settlement/views/receipt_constrained_box.dart';
 class RejishiMeRequestView extends StatefulWidget {
 
   final String machineCode;
+  final bool isNotCash;
 
-  const RejishiMeRequestView({super.key, required this.machineCode});
+  const RejishiMeRequestView({super.key, required this.machineCode, this.isNotCash = false});
 
   @override
   RejishiMeRequestState createState() => RejishiMeRequestState();
@@ -41,13 +43,14 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   String selectUser = "";
   double printLength = 2352;
   AppConfig appConfig = Get.find();
-  double get printWidth {
-    if (appConfig.isFx) {
-      return 513;
-    } else {
-      return appConfig.isAndroid11 ? 513:385;
-    }
-  }
+  double printWidth = 385;
+  // {
+  //   if (appConfig.isFx) {
+  //     return 550;
+  //   } else {
+  //     return appConfig.isAndroid11 ? 530:385;
+  //   }
+  // }
 
 
 
@@ -61,7 +64,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
 
   _loadMailAddress() async {
-
+      printWidth = await HomeServices.getMachinePrintWidth();
       final param = {
         "machineCode": widget.machineCode,
       };
@@ -444,7 +447,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
   _printRejishime(data, double length) async {
     ByteData byteData = await WidgetToImage.widgetToImage(
-      RejishimePrintView(isPrint: true, printInfo: data),
+      RejishimePrintView(isPrint: true, printInfo: data, isNotCashInfo: widget.isNotCash,),
       size: Size(printWidth, length + 150),
     );
 
@@ -514,7 +517,9 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
                   border: Border.all(color: ColorsUtil.hexToColor("#000000"), width: 1),
                 ),
 
-                child: RejishimePrintView(printInfo: printData, lengthUpdate: (double length){
+                child: RejishimePrintView(printInfo: printData,
+                  isNotCashInfo: widget.isNotCash,
+                  lengthUpdate: (double length){
                   print("printLength: $length");
                   printLength = length;
                 },),

@@ -250,6 +250,32 @@ class SettingView extends GetView<SettingController> {
               ),
             ),
           ),
+          if(controller.appConfig.isFx)
+          InkWell(
+            onTap: () async {
+              controller.showRejishimeView(isNotCash: true);
+            },
+            child: Container(
+              margin: EdgeInsets.only(
+                  left: ScreenAdapter.width(10), right: ScreenAdapter.width(10)),
+              width: ScreenAdapter.width(180),
+              height: ScreenAdapter.height(65),
+              alignment: Alignment.center,
+              decoration: BoxDecoration(
+                color: ColorsUtil.hexToColor("#A61C1C"),
+                //设置圆角
+                borderRadius: new BorderRadius.circular((16.0)),
+              ),
+              child: Text("レジ締め",
+                  style: TextStyle(
+                    fontFamily: GFont.getFontFamily(),
+                    fontSize: ScreenAdapter.fontSize(24),
+                    fontWeight: FontWeight.w600,
+                    color: ColorsUtil.hexToColor("#FFFFFF"),
+                  )
+              ),
+            ),
+          ),
 
         ],
       )

@@ -70,13 +70,14 @@ class ReimburseOrderController extends GetxController with StateMixin {
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
 
-  double get printWidth {
-    if (appConfig.isFx) {
-      return 513;
-    } else {
-      return appConfig.isAndroid11 ? 513:385;
-    }
-  }
+  double printWidth = 385;
+  // {
+  //   if (appConfig.isFx) {
+  //     return 550;
+  //   } else {
+  //     return appConfig.isAndroid11 ? 530:385;
+  //   }
+  // }
 
   @override
   void onInit() {
@@ -98,6 +99,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
   _getSystemSettingInfo() async {
     Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     isAllowPos.value = systemSettingInfo['isAllowPos'];
+    printWidth = await HomeServices.getMachinePrintWidth();
     _getPosSettingInfo();
     _getPrintLogoImageData();
   }

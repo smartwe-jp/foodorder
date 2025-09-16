@@ -23,6 +23,7 @@ import '../../../controllers/order_sql_controller.dart';
 import '../../../controllers/pos_pay_comtroller.dart';
 import '../../../plugins/paycube/lib/paycube.dart';
 import '../../../routes/app_pages.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PosCheckService.dart';
@@ -320,7 +321,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   checkOutModeBack() async {
-    if (Get.isRegistered<CheckoutPageController>())
+    if (Get.isRegistered<CheckoutPageController>() && machineInfo.currentMode == MachineMode.checkout)
     Get.find<CheckoutPageController>().resetStateBack();
   }
 
@@ -355,20 +356,84 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  showSuccessAlert(Function task) async {
-    debugPrint("showSuccessAlert");
+  // showSuccessAlert(Function task) async {
+  //   debugPrint("showSuccessAlert");
+  //   EasyLoading.dismiss();
+  //
+  //   Get.dialog(PayResultView(
+  //     dismiss: () {
+  //       Get.back();
+  //       task();
+  //     },
+  //   ));
+  // }
+  Future<void> showSuccessAlert(Function task) async {
     EasyLoading.dismiss();
+    try {
+      final result = await Get.dialog(
+        barrierDismissible: false,
+        const PayResultView(),
+      );
+      // result 可用于判断来源，这里忽略
+      task();
+    } catch (e) {
+      // 保障不因异常卡住
+      debugPrint("showSuccessAlert error: $e");
+      task();
+    }
+  }
 
-    Get.dialog(PayResultView(
-      dismiss: () {
-        Get.back();
-        task();
-      },
-    ));
+  bool _isNavigating = false;
+
+  Future<void> safeReturnToHome() async {
+    if (_isNavigating) return;
+    _isNavigating = true;
+    try {
+      await ordersqlcontroller.removeAllFromCart(); // 等待清空
+    } catch (e) {
+      logger.warning('removeAllFromCart error: $e');
+    }
+
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
+
+    // 不再先 Get.back 再 off，直接一次性跳
+    if (machineInfo.currentMode == MachineMode.sell ||
+        machineInfo.currentMode == MachineMode.takeout) {
+      if (is_back_home.value == "0") {
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      } else {
+        // if (Get.isRegistered<MenuPageController>()) {
+        //   final mc = Get.find<MenuPageController>();
+        //   mc.resetToFirstPage();
+        //   mc.paymentIsShow = false;
+
+        // }
+        //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
+        Get.offNamedUntil('/menu-page', (route) => route.settings.name == '/checkout-page');
+        // 只关闭结算页
+        // if (Get.currentRoute != '/transit-page') {
+        //   Get.back();
+        // }
+      }
+    } else if (machineInfo.currentMode == MachineMode.scan) {
+      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
+    } else {
+      Future.delayed(const Duration(milliseconds: 50), () {
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      });
+    }
   }
 
   gotonewBack() {
-    debugPrint('---gotonewBack---');
+    logI('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
+    safeReturnToHome();
+    return;
     ordersqlcontroller.removeAllFromCart();
     EasyLoading.dismiss();
     Get.back();
@@ -428,31 +493,7 @@ class SettlementController extends GetxController with StateMixin {
   doToPay() {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
-
-    /*if (_showWechat == false && _showAlipay == false && _showPayPay == false) {
-      _showScanCodeNoOpenDialog(1,"");
-      return;
-    }
-
-    var _regExpWechat = r"^1[0-5]\d{16}$";
-    var _regExpAlipay = r"^(?:2[5-9]|30)\d{14,22}$";
-    if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == true &&
-        _showWechat == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else if (RegExp(_regExpAlipay).hasMatch(_scanQrCode) == true &&
-        _showAlipay == false) {
-      _showScanCodeNoOpenDialog(2,"");
-      return;
-    } else {
-      if (RegExp(_regExpWechat).hasMatch(_scanQrCode) == false &&
-          RegExp(_regExpAlipay).hasMatch(_scanQrCode) == false &&
-          _showPayPay == false) {
-        _showScanCodeNoOpenDialog(2,"");
-        return;
-      }
-    }*/
-    //print(scanQrCodeController.text);
+    logI("doToPay", tag: "ScanPay");
     if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
       //_showEasyLoading();
       showEasyLoadingScan();
@@ -689,6 +730,7 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     posCheckService.updateUseStatus(true);
+    logI('start connect pos', tag: 'POS');
     posManager.payConnectSocket(machineInfo.paymentMethod, machineInfo.pos_ip,
         int.parse(machineInfo.pos_port), machineInfo.machineCode, questData: questData,
         onRequestPayData: () {
@@ -723,7 +765,7 @@ class SettlementController extends GetxController with StateMixin {
         },
         onError: (error) {
           EasyLoading.dismiss();
-          debugPrint('onError pos $error');
+          logI('onError pos $error', tag: 'POS');
           if (error == "L11") {
             gotonewMenuPage();
             return;
@@ -738,7 +780,7 @@ class SettlementController extends GetxController with StateMixin {
               }));
         },
         onTimeOut: () {
-          debugPrint('onTimeOut');
+          logI('onTimeOut', tag: 'POS');
           EasyLoading.dismiss();
           posManager.resetState();
           _showScanCodeNoOpenDialog(
@@ -861,7 +903,8 @@ class SettlementController extends GetxController with StateMixin {
   }
 //刷卡机nfc支付汇报
   posPayReport(String eventString, {int retryCount = 0}) {
-    debugPrint('posPayReport retryCount = $retryCount');
+    //debugPrint('posPayReport retryCount = $retryCount');
+    logI('posPayReport retryCount = $retryCount', tag: 'POS');
     posResultReportData["result"] = true;
     posResultReportData["paymentInfo"] = eventString;//LogUtil.d("huibaohhhhhh===${_posResultReportData}");
     request('webBootPosPayReport', method: 'POST', parameters: posResultReportData).then((val) {
@@ -989,7 +1032,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //去打印小票
   doPrintOrderMenu(printType,{int times = 0}) async {
-    debugPrint("doPrintOrderMenu");
+    logI("doPrintOrderMenu", tag: "Print");
     //判断全局设置是否强制打印小票
     if (is_allow_receipt.value == "1") {
         printType = "1";
@@ -1172,7 +1215,7 @@ class SettlementController extends GetxController with StateMixin {
 
   //
   printGoNext() async {
-    debugPrint("printGoNext");
+    logI("printGoNext", tag: "Print");
     Future.delayed(Duration(milliseconds: 300),() async {
       if (machineInfo.currentMode == MachineMode.checkout) {
         //eventBus.fire(new clearCartEvent('支付成功...'));
@@ -1209,10 +1252,10 @@ class SettlementController extends GetxController with StateMixin {
         nextOper();
       } else {
         //goToNewMyHome();
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           //goToNewMyHome();
           gotonewBack();
-        });
+        //});
       }
 
     });
@@ -1224,6 +1267,7 @@ class SettlementController extends GetxController with StateMixin {
   Starttoubi({int connectCount = 1}) async {
     //入金开始
     debugPrint("Starttoubi $connectCount");
+    logI("Start open cash $connectCount");
     await Future.delayed(Duration(milliseconds: 500));
     bool result = await payCube.startPayCube(onSuccess: () {
       debugPrint("onSuccess");
@@ -1255,15 +1299,18 @@ class SettlementController extends GetxController with StateMixin {
     payCube.onCashInfoChange = (int type, String value) {
       switch (type) {
         case 0:
-          debugPrint("putMoney==$value");
+          //debugPrint("putMoney==$value");
+          logI("putMoney==$value");
           _updatePutMoneyInfo(value);
           break;
         case 1:
-          debugPrint("putCurrency==$value");
+          //debugPrint("putCurrency==$value");
+          logI("putCurrency==$value");
           _getPayCubePutMoneyCurrency(value, canReportFromListen);
           break;
         case 2:
-          debugPrint("currencyString==$value");
+          //debugPrint("currencyString==$value");
+          logI("currencyString==$value");
           _getPayCubeOutMoney(value, isRepayCash);
           break;
         default:
@@ -1331,7 +1378,8 @@ class SettlementController extends GetxController with StateMixin {
 
   //入金开始-入金结束-交易结束-出金开始-交易结束  中间可set
   endToubi() async {
-    debugPrint("---endToubi---");
+    //debugPrint("---endToubi---");
+    logI("---endToubi---");
     await Future.delayed(Duration(milliseconds: 500));
     //await Paycube.setReceiveEvent;
     bool endStatus = await payCube.endPayCube(onSuccess: () {
@@ -1525,13 +1573,13 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        });
+        //});
       }
     } else {
       //出金失败

@@ -2819,6 +2819,7 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowSettlementHome(),//是否结算完后回到首页
                                       ]
                                   ),
+                                  if (!controller.appConfig.isFx)
                                   TableRow(
                                       children: <Widget>[
                                         Container(
@@ -2870,6 +2871,7 @@ class SystemSettingPageView extends GetView {
                             padding: EdgeInsets.zero,
                             child: Column(
                               children: [
+
                                 Table(
                                     border: TableBorder.all(),
                                     columnWidths: const <int, TableColumnWidth>{
@@ -2907,6 +2909,24 @@ class SystemSettingPageView extends GetView {
                                     },
                                     defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                                     children: <TableRow>[
+                                      TableRow(
+                                          children: <Widget>[
+                                            Container(
+                                              height: ScreenAdapter.height(90),
+                                              alignment: Alignment.center,
+                                              child: Text(
+                                                "マシンプリンター",
+                                                style: TextStyle(
+                                                    fontSize: ScreenAdapter.fontSize(22),
+                                                    fontWeight: FontWeight.w500
+                                                ),
+                                              ),
+                                            ),
+                                            //setUSBPrint(),//usb打印机
+                                            setMachinePrintSize(controller.machinePrintWidth.value)
+
+                                          ]
+                                      ),
                                       ...controller.printerList.map((printer) => printerSettingWidget(printer)).toList(),
                                       if (controller.printerList.length < 9)
                                         TableRow(
