@@ -708,7 +708,7 @@ class SettlementController extends GetxController with StateMixin {
           //confirmTimer.cancel();
           doPrintOrderMenu(machineInfo.receiptPrintType);
         } else {
-          if (retryCount < 3) {
+          if (retryCount < 60) {
             Future.delayed(Duration(seconds: 5), () {
               _doScanCodeTimeOut(retryCount: retryCount + 1);
             });
@@ -725,8 +725,8 @@ class SettlementController extends GetxController with StateMixin {
             });
       }).timeout(Duration(seconds: 10), onTimeout: () {
         logger.info("扫码支付超时");
-        if (retryCount < 3) {
-          Future.delayed(Duration(seconds: 5), () {
+        if (retryCount < 60) {
+          Future.delayed(Duration(seconds: 1), () {
             _doScanCodeTimeOut(retryCount: retryCount + 1);
           });
         } else {
