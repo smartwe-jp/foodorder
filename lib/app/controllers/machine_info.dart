@@ -136,7 +136,7 @@ class MachineInfoController extends GetxController {
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
-    menu_direction = systemSettingInfo['menu_direction'] ?? '1';
+    menu_direction = systemSettingInfo['menuDirection'] ?? '1';
     machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
     showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
