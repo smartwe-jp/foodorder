@@ -80,21 +80,21 @@ class TransitPageController extends GetxController {
       _machineCode.value = Get.arguments['machineCode'] ?? "";
     }
 
-    if (_machineCode.isNotEmpty) {
-      firstActive();
-    } else {
+    // if (_machineCode.isNotEmpty) {
+    //   firstActive();
+    // } else {
       _getMachineInfo();
-    }
+    //}
   }
 
-  firstActive() async {
-    debugPrint('---firstActive---');
-    if (Platform.isWindows) {
-     _getMachineActivate(isFirst: true);
-    } else {
-     _getPackageInfo();
-    }
-  }
+  // firstActive() async {
+  //   debugPrint('---firstActive---');
+  //   if (Platform.isWindows) {
+  //    _getMachineActivate(isFirst: true);
+  //   } else {
+  //    _getPackageInfo();
+  //   }
+  // }
 
   _getMachineInfo() async {
     debugPrint("transit  getMachineInfo");
@@ -104,11 +104,11 @@ class TransitPageController extends GetxController {
 
       //_getSystemSettingInfo();
 
-      if (Platform.isWindows) {
-         _getMachineActivate();
-      } else {
+      // if (Platform.isWindows) {
+      //    _getMachineActivate();
+      // } else {
          _getPackageInfo();
-      }
+      //}
     } else {
       LogUtil.d("transit getMachineInfo error: machineCode is empty");
     }
@@ -117,11 +117,10 @@ class TransitPageController extends GetxController {
   //获取版本号
   _getPackageInfo() async {
     debugPrint("transit  getPackageInfo");
-    //PackageInfo packageInfo = await PackageInfo.fromPlatform();
-    local_version.value =
-        "2.6.0"; //packageInfo.version; //+"+"+packageInfo.buildNumber
+    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+    local_version.value = packageInfo.version; //+"+"+packageInfo.buildNumber
 
-    _getMachineActivate();
+    _getMachineActivate(isFirst: _loadActiveInfo.value);
   }
 
 
