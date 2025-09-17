@@ -368,18 +368,11 @@ class SettingController extends GetxController with StateMixin {
         "remain": 0,
       });
     });
-<<<<<<< HEAD
-    Get.dialog(barrierDismissible: false,
-    Container(
-      padding: EdgeInsets.only(top: 720),
-      child: ReplanishView(controller: this)));
-=======
     Get.dialog(
         barrierDismissible: false,
         Container(
             padding: EdgeInsets.only(top: 720),
             child: ReplanishView(controller: this)));
->>>>>>> release-1.1.7
   }
 
   signoutAlert() async {
