@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:get/get.dart';
 
 import 'checkout_page_controller.dart';

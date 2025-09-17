@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_view.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';

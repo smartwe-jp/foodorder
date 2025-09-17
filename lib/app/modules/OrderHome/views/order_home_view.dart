@@ -5,7 +5,6 @@ import 'package:animated_widgets/widgets/scale_animated.dart';
 import 'package:animated_widgets/widgets/shake_animated_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/OrderHome/views/widgets/BookingTypeButton.dart';
 import 'package:foodorder/app/modules/OrderHome/views/widgets/ShakeWidget.dart';
 import 'package:foodorder/app/modules/OrderHome/views/widgets/languageButton.dart';

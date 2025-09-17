@@ -5,12 +5,10 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
 
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';

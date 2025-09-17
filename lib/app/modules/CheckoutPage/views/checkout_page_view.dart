@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_swiper_plus/flutter_swiper_plus.dart';
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 
 import 'package:get/get.dart';
@@ -11,8 +10,6 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
-import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../OrderHome/views/widgets/BookingTypeButton.dart';

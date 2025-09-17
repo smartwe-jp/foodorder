@@ -8,7 +8,6 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/fontSize.dart';
 import 'package:foodorder/app/config/imageData.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/grid_item_view.dart';

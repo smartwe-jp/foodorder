@@ -8,7 +8,6 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';

@@ -7,8 +7,6 @@ import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/modules/menuPage/controllers/menu_page_extension.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
@@ -22,7 +20,6 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';

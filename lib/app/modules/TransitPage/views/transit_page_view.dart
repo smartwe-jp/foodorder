@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/localString.dart';
 
 import 'package:get/get.dart';
 
@@ -60,7 +59,7 @@ class TransitPageView extends GetView<TransitPageController> {
                   children: [
                     Spacer(),
                     Text(
-                      'menu_dingtype_title'.localized(),
+                      'menu_dingtype_title'.tr,
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(

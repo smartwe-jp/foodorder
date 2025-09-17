@@ -9,14 +9,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
-import '../../../config/string.dart';
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';

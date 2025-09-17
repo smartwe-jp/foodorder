@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
@@ -12,7 +11,6 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';

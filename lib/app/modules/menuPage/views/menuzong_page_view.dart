@@ -14,7 +14,6 @@ import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../../../services/showToast.dart';

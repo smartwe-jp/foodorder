@@ -8,7 +8,6 @@ import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/ErrorPage/controllers/error_controller.dart';
 import 'package:get/get.dart';
 
-import '../../../config/string.dart';
 
 class ErrorPageView extends GetView<ErrorPageController> {
 

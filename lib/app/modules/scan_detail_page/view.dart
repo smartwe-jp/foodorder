@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +8,6 @@ import '../../config/colorsUtil.dart';
 import '../../config/font.dart';
 import '../../config/fontSize.dart';
 import '../../config/imageData.dart';
-import '../../config/string.dart';
 import '../../services/ScreenAdapter.dart';
 import 'logic.dart';
 

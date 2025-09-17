@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 
 import 'package:get/get.dart';
@@ -9,7 +8,6 @@ import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
 import '../../../widget/DialogUtils.dart';

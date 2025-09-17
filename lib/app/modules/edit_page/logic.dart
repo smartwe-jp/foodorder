@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/edit_page/state.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/showToast.dart';

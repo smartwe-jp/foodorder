@@ -3,7 +3,6 @@ import 'dart:convert';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/modules/menuPage/views/menu_page_category.dart';
 import 'package:foodorder/app/services/HttpService.dart';

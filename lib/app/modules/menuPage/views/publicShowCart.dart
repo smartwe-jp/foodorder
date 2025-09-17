@@ -1,7 +1,6 @@
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/menuPage/views/widgets/recommend_view.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -10,7 +9,6 @@ import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
-import '../../../config/string.dart';
 import '../../../models/ItemModel.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';

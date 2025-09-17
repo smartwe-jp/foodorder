@@ -1,5 +1,3 @@
-import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 
@@ -8,7 +6,6 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/formatMoney.dart';
