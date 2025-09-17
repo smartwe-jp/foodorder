@@ -83,7 +83,7 @@ class TransitPageController extends GetxController {
     // if (_machineCode.isNotEmpty) {
     //   firstActive();
     // } else {
-      _getMachineInfo();
+      _getMachineInfo(machineCode: _machineCode.value);
     //}
   }
 
@@ -96,22 +96,14 @@ class TransitPageController extends GetxController {
   //   }
   // }
 
-  _getMachineInfo() async {
+  _getMachineInfo({String machineCode = ""}) async {
     debugPrint("transit  getMachineInfo");
-    var machineCode = await HomeServices.getMachineInfo();
-    if (machineCode != "") {
-      _machineCode.value = machineCode;
 
-      //_getSystemSettingInfo();
-
-      // if (Platform.isWindows) {
-      //    _getMachineActivate();
-      // } else {
-         _getPackageInfo();
-      //}
-    } else {
-      LogUtil.d("transit getMachineInfo error: machineCode is empty");
+    if (machineCode.isEmpty) {
+      _machineCode.value = await HomeServices.getMachineInfo();
     }
+    _getPackageInfo();
+
   }
 
   //获取版本号
