@@ -18,7 +18,7 @@ class PayResultViewState extends State<PayResultView> {
   @override
   void initState() {
     super.initState();
-    hideTimer = Timer(const Duration(seconds: 2), () {
+    hideTimer = Timer(const Duration(seconds: 3), () {
       if (mounted) Navigator.of(context).pop(true); // 只返回，业务不写这里
     });
   }
@@ -54,7 +54,7 @@ class PayResultViewState extends State<PayResultView> {
               vertical: ScreenAdapter.height(30),
             ),
             child: Text(
-              'pay_success_title'.tr,
+              'pay_success_title'.localized(),
               style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(28),
@@ -89,7 +89,7 @@ class PayResultViewState extends State<PayResultView> {
                 ),
                 alignment: Alignment.center,
                 child: Text(
-                  "settlement_back".tr,
+                  "settlement_back".localized(),
                   style: TextStyle(
                     color: Colors.white,
                     fontFamily: GFont.getFontFamily(),

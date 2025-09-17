@@ -58,7 +58,7 @@ class SettlementController extends GetxController with StateMixin {
   RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
 
   RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
-  RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
+  //RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
   RxString is_allow_oneyen = "0".obs;//0 禁用  1 允许
 
@@ -233,7 +233,7 @@ class SettlementController extends GetxController with StateMixin {
     is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
     is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
     print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
-    is_back_home.value = systemSettingInfo['isAllowBackHome'];
+    //is_back_home.value = systemSettingInfo['isAllowBackHome'];
     //新版精算模式也可点外带
     machineMode.value = systemSettingInfo['machineMode'];
     showPrintType.value = int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
@@ -352,29 +352,27 @@ class SettlementController extends GetxController with StateMixin {
     }
   }
 
-  // showSuccessAlert(Function task) async {
-  //   debugPrint("showSuccessAlert");
-  //   EasyLoading.dismiss();
-  //
-  //   Get.dialog(PayResultView(
-  //     dismiss: () {
-  //       Get.back();
-  //       task();
-  //     },
-  //   ));
-  // }
   Future<void> showSuccessAlert(Function task) async {
-    EasyLoading.dismiss();
+
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
+
     try {
       final result = await Get.dialog(
         barrierDismissible: false,
         const PayResultView(),
       );
+      logger.infoLog("showSuccessAlert result: $result");
       // result 可用于判断来源，这里忽略
       task();
     } catch (e) {
       // 保障不因异常卡住
-      debugPrint("showSuccessAlert error: $e");
+      logger.infoLog("showSuccessAlert error: $e");
       task();
     }
   }
@@ -398,92 +396,28 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
 
-    // 不再先 Get.back 再 off，直接一次性跳
-    if (machineInfo.currentMode == MachineMode.sell ||
-        machineInfo.currentMode == MachineMode.takeout) {
-      if (is_back_home.value == "0") {
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      } else {
-        // if (Get.isRegistered<MenuPageController>()) {
-        //   final mc = Get.find<MenuPageController>();
-        //   mc.resetToFirstPage();
-        //   mc.paymentIsShow = false;
-
-        // }
-        //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
-        Get.offNamedUntil('/menu-page', (route) => route.settings.name == '/checkout-page');
-        // 只关闭结算页
-        // if (Get.currentRoute != '/transit-page') {
-        //   Get.back();
-        // }
-      }
-    } else if (machineInfo.currentMode == MachineMode.scan) {
-      Get.offNamedUntil('/selfservice-page', (route) => route.isFirst);
-    } else {
-      Future.delayed(const Duration(milliseconds: 50), () {
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      });
+    switch (machineInfo.currentMode) {
+      case MachineMode.sell:
+      case MachineMode.takeout:
+        if (machineInfo.isBackHome == "0") {
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        } else {
+          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        }
+        break;
+      case MachineMode.scan:
+        await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+        break;
+      case MachineMode.checkout:
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
     }
   }
 
   gotonewBack() {
-    logI('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
+    logI('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${machineInfo.isBackHome}');
     safeReturnToHome();
-    return;
-    ordersqlcontroller.removeAllFromCart();
-    EasyLoading.dismiss();
-    Get.back();
-    if (machineInfo.currentMode == MachineMode.sell || machineInfo.currentMode == MachineMode.takeout) {
-      if(is_back_home.value == "0"){
-        //Get.delete<MenuPageController>(); // 手动删除控制器实例
-        //Get.toNamed("/order-home");
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-        //Navigator.pushNamed(context, '/home');
-      }else{
-        // eventBus.fire(new clearCartEvent('支付成功...'));
-        //有弹窗选择支付才在关闭一个
-        Get.find<MenuPageController>().resetToFirstPage();
-
-        if(showOpenPayment.value == true){
-          Get.find<MenuPageController>().paymentIsShow = false;
-          Get.back();
-        }
-      }
-
-    }else if (machineInfo.currentMode == MachineMode.scan) {
-      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      //Get.offAllNamed("/selfservice-page");
-      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      // if(is_back_home.value == "0"){
-      //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      //   Get.toNamed("/selfservice-page");
-      //   //Navigator.pushNamed(context, '/selfServiceHomePage');
-      // }else{
-      //   //eventBus.fire(new clearCartEvent('支付成功...'));
-      //
-      //   //有弹窗选择支付才在关闭一个
-      //   if(showOpenPayment.value == true){
-      //     Get.back();
-      //   }
-      //
-      // }
-
-    } else {
-      //Get.delete<CheckoutPageController>();// 手动删除控制器实例
-      if (Get.isRegistered<CheckoutPageController>()) {
-        Get.find<CheckoutPageController>().selectLanguage = 'JP';
-      }
-      //精算页面
-      Future.delayed(Duration(milliseconds: 100), () {
-        //Get.toNamed("/checkout-page");
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      });
-      //Navigator.pushNamed(context, '/checkOutPage');
-    }
   }
-
-
-
 
   //扫码支付T
   doToPay() {
@@ -653,6 +587,20 @@ class SettlementController extends GetxController with StateMixin {
     } else {
       doPrintOrderMenu(machineInfo.receiptPrintType);
     }
+  }
+
+  showUnExpectedErrorDialog() {
+    EasyLoading.dismiss();
+    allowClick.value = true;
+    isPrintClick.value = false;
+    Get.dialog(
+        barrierDismissible: false,
+        DialogUtils.alertOneButton("settlement_unexpected_error".tr,
+            title: "tag_title".tr,
+            confirmtitle: "tag_button_yes".tr, confirm: () {
+              Get.back();
+              commonCancel();
+            }));
   }
 
   doScanCodeTimeOutLastQuery() {
@@ -1240,10 +1188,10 @@ class SettlementController extends GetxController with StateMixin {
         nextOper();
       } else {
         //goToNewMyHome();
-        //showSuccessAlert(() {
+        showSuccessAlert(() {
           //goToNewMyHome();
           gotonewBack();
-        //});
+        });
       }
 
     });
@@ -1560,13 +1508,13 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        //showSuccessAlert(() {
+        showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        //});
+        });
       }
     } else {
       //出金失败

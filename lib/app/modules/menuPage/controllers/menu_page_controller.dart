@@ -801,10 +801,12 @@ class MenuPageController extends GetxController with StateMixin {
 
     Widget toast = Container(
       color: Colors.transparent,
-      child: Image.asset(GImage.getImageString("imgpublic", "checked_green"),width: ScreenAdapter.width(150),height: ScreenAdapter.height(150)),
+      child: Image.asset(GImage.getImageString("imgpublic", "checked_green"),
+          width: ScreenAdapter.width(150),
+          height: ScreenAdapter.height(150)),
     );
 
-    FToast().showToast(
+    fToast?.showToast(
       child: toast,
       gravity: ToastGravity.CENTER,
       toastDuration: Duration(milliseconds: 500),

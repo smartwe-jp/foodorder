@@ -21,6 +21,7 @@ import 'app/app_binding/app_bindings.dart';
 import 'app/config/color.dart';
 import 'app/config/printer_info.dart';
 import 'app/controllers/app_config.dart';
+import 'app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
@@ -28,6 +29,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'app/services/CustomLogerHandler.dart';
 import 'app/services/ResetToHomeTimer.dart';
 import 'firebase_options.dart';
+
+class _NavBounceTrack {
+  static String? lastRoute;
+}
 
 //打印图层生成成功
 Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
@@ -105,19 +110,7 @@ void main() {
                     getPages: AppPages.routes,
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
-                      debugPrint("routingCallback : ${value?.current}");
-                      logI("routingCallback : ${value?.current}", tag: "Router");
-                      if (value?.current == Routes.MENU_PAGE ||
-                          value?.current == Routes.SCANCODE_PAGE ||
-                          value?.current == Routes.SELECT_PAYMENT_PAGE ||
-                          (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
-                      ) {
-                        resetTimer.startTimer();
-                      } else if (value?.current == Routes.ORDER_HOME ||
-                          value?.current == Routes.SETTLEMENT ||
-                          value?.current == Routes.SETTING || value?.current == '/SettingView') {
-                        resetTimer.cancelTimer();
-                      }
+                      routerCallback(value, resetTimer);
                     },
                     builder: (context, widget) {
                       return MediaQuery(
@@ -150,6 +143,53 @@ void main() {
     print('runZonedGuarded: Caught error in my root zone.:$error');
     FirebaseCrashlytics.instance.recordError(error, stackTrace);
   });
+}
 
+void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
+  logI('-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
+  if (value?.current == Routes.MENU_PAGE ||
+      value?.current == Routes.SCANCODE_PAGE ||
+      value?.current == Routes.SELECT_PAYMENT_PAGE ||
+      (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
+  ) {
+    resetTimer.startTimer();
+  } else if (value?.current == Routes.ORDER_HOME ||
+      value?.current == Routes.SETTLEMENT ||
+      value?.current == Routes.SETTING || value?.current == '/SettingView') {
+    resetTimer.cancelTimer();
+  }
 
+  //检测是否从 checkout 返回 transit，若是则立即纠正回 checkout
+  final cur = value?.current;
+  final prev = value?.previous;
+  final isTransit = cur == Routes.TRANSIT_PAGE;
+  final isFromCheckout = prev == Routes.CHECKOUT_PAGE;
+  if (isTransit && isFromCheckout) {
+    // 用 microtask，确保控制器已就绪
+    logI('--forcing return to Checkout 1--');
+    Future.microtask(() {
+      if (Get.isRegistered<TransitPageController>()) {
+        Get.find<TransitPageController>().getIsShowCashInfo();
+      } else {
+        logI('--TransitPageController not registered--');
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      }
+    });
+  } else {
+    final last = _NavBounceTrack.lastRoute;
+    final fromCheckoutBySnapshot = last == Routes.CHECKOUT_PAGE;
+
+    if (isTransit && fromCheckoutBySnapshot) {
+      logI('--forcing return to Checkout 2--');
+      Future.microtask(() {
+        if (Get.isRegistered<TransitPageController>()) {
+          Get.find<TransitPageController>().getIsShowCashInfo();
+        } else {
+          logI('--TransitPageController not registered--');
+          Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+        }
+      });
+    }
+  }
+  _NavBounceTrack.lastRoute = cur;
 }

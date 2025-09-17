@@ -17,6 +17,7 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/logUtil.dart';
@@ -34,6 +35,10 @@ class TransitPageController extends GetxController {
   RxBool _loadActiveInfo = false.obs;
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
+
+  final RxBool showStartButton = false.obs;
+  String? heroImageUrl;
+  bool hasStart = false;
 
   @override
   Future<void> onInit() async {
@@ -53,6 +58,11 @@ class TransitPageController extends GetxController {
 
 
   getIsShowCashInfo() async {
+    if (hasStart) {
+      logI('-- hasStart true, no need to run again --');
+      return;
+    }
+
     debugPrint("getIsShowCashInfo");
 
     if (Get.arguments != null && Get.arguments.containsKey('loadActive')) {
@@ -98,12 +108,12 @@ class TransitPageController extends GetxController {
       "machineCode": _machineCode.value,
       "version":local_version.value
     };
-    print(formData);
+    //print(formData);
     request('webBootActivatev3', method: 'POST', parameters: formData).then((val) async {
       var response = json.decode(val.toString());
 
       if (response != null && response['code'] == 200 && response['data'] != null) {
-        LogUtil.d(response);
+        //LogUtil.d(response);
         var shopData = response['data'];
         var _shopCode = "";
         if (shopData["shopCode"] != null) {
@@ -188,7 +198,7 @@ class TransitPageController extends GetxController {
         _actuarial.value = shopData["actuarial"];
 
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_launch', parameters: {'machine_activate': '${_machineCode.value}'});
-        await downloadAndSaveImage(shopData["logoImage"]);
+        //await downloadAndSaveImage(shopData["logoImage"]);
         await _getSmartweSystemSettingInfo();
       } else {
         FirebaseAnalytics.instance.logEvent(name: 'machine_activate_failure', parameters: {'machine_activate_error': '${_machineCode.value}'});
@@ -431,6 +441,9 @@ class TransitPageController extends GetxController {
     Get.find<PrintService>().printData(data);
   }
 
+  void startOrder() {
+    _goNext('1');
+  }
 
   void _goNext(checkmachineMode) async {
     Get.updateLocale(Locale('jp', 'JP'));
@@ -456,12 +469,12 @@ class TransitPageController extends GetxController {
   }
 
   void _goCheckOut() async {
-    Future.delayed(Duration(milliseconds: 200), () {
+    //Future.delayed(Duration(milliseconds: 200), () {
       //Get.off(() => CheckoutPageView());
       Get.toNamed("/checkout-page", arguments: {
         'initLaunch': _loadActiveInfo.value,
       });
-    });
+    //});
   }
 
   void _goSelfService() async {
