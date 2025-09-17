@@ -42,6 +42,7 @@ class MachineInfoController extends GetxController {
   late bool taxSystem;
 
   late Map machineModeInfo;
+  late String isAllowRejishime;
 
   //payment info
   late bool showCash;
@@ -135,6 +136,7 @@ class MachineInfoController extends GetxController {
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     String panelType = systemSettingInfo['panelType'] ?? 'Mini';
     machineMode = systemSettingInfo["machineMode"] ?? '0';
+    isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
