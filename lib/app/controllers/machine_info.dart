@@ -1,6 +1,8 @@
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
+import '../services/CustomLogerHandler.dart';
+
 enum MachineType { new_panel, new_panel_max, old_panel }
 
 enum MachineMode { sell, takeout, checkout, scan }
@@ -14,7 +16,9 @@ class MachineInfoController extends GetxController {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
   };
+  bool isChecking = false;
   //base info
+  late String isBackHome;
   late String machineCode;
   late String shopCode;
   late bool mealType;
@@ -99,7 +103,7 @@ class MachineInfoController extends GetxController {
 
   @override
   Future<void> onInit() async {
-    print('loadMachineSettingInfo onInit');
+    logI('loadMachineSettingInfo onInit');
     await loadMachineSettingInfo();
     super.onInit();
   }
@@ -107,7 +111,7 @@ class MachineInfoController extends GetxController {
   @override
   void dispose() {
     // TODO: implement dispose
-    print('loadMachineSettingInfo dispose');
+    logI('loadMachineSettingInfo dispose');
     super.dispose();
   }
 
@@ -117,11 +121,15 @@ class MachineInfoController extends GetxController {
     } else {
       systemSettingInfo = settingInfo;
     }
-    await loadMachineSettingInfo();
+    try {
+      await loadMachineSettingInfo();
+    } catch (e) {
+      logE('updateMachineSettingInfo error: $e');
+    }
   }
 
   Future loadMachineSettingInfo() async {
-    print('loadMachineSettingInfo');
+    logI('loadMachineSettingInfo');
     receiptPrintType = '1';
     mealType = false;
     var machineCodeString = await HomeServices.getMachineInfo();
@@ -129,27 +137,26 @@ class MachineInfoController extends GetxController {
       machineCode = machineCodeString;
       shopCode = await HomeServices.getShopCode();
     }
-    print('loadMachineSettingInfo 0');
+    logI('loadMachineSettingInfo 0');
 
-    diningType = systemSettingInfo['diningType'];
-    print('loadMachineSettingInfo diningType : $diningType');
+    isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+    diningType = systemSettingInfo['diningType'] ?? '1';
+    logI('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
+
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     String panelType = systemSettingInfo['panelType'] ?? 'Mini';
-    machineMode = systemSettingInfo["machineMode"];
+    machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
-    menu_direction = (systemSettingInfo["menuDirection"] != "" &&
-            systemSettingInfo["menuDirection"] != null)
-        ? systemSettingInfo["menuDirection"]
-        : "1";
+    menu_direction = systemSettingInfo['menuDirection'] ?? '1';
     machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
-    showPrintType = int.parse(systemSettingInfo['showPrintType']); // 0:普通 1:贴纸
+    showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
     is_allow_wlanPrint_continuous =
         systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
@@ -170,37 +177,46 @@ class MachineInfoController extends GetxController {
 
     Map cashInfo = await HomeServices.getIsShowCash();
     cashOn = cashInfo['isCash'] ?? false;
-    print('loadMachineSettingInfo 1');
+    logI('loadMachineSettingInfo 1');
     Map machineActivateData = await HomeServices.getMachineActivateData();
-    taxSystem = machineActivateData['taxSystem'];
-    isAllowCash = machineActivateData['showCash'];
+    taxSystem = machineActivateData['taxSystem'] ?? false;
+    isAllowCash = machineActivateData['showCash'] ?? false;
     showCash = isAllowCash && cashOn;
-    showWechat = machineActivateData['showWechat'];
-    showAlipay = machineActivateData['showAlipay'];
-    showPayPay = machineActivateData['showPayPay'];
-    showCreditCard = machineActivateData['showCreditCard'];
-    print('loadMachineSettingInfo 2');
-    showAuPay = machineActivateData['au_Pay'];
-    showDPay = machineActivateData['d_Pay'];
-    showRPay = machineActivateData['R_Pay'];
-    showMPay = machineActivateData['m_Pay'];
-    print('loadMachineSettingInfo 3');
-    showPosEdy = machineActivateData['pos_Edy'];
-    showPosiD = machineActivateData['pos_iD'];
-    showPosIC = machineActivateData['pos_IC'];
-    showPosQUICPay = machineActivateData['pos_QUICPay'];
-    showPosWAON = machineActivateData['pos_WAON'];
-    showPosnanaco = machineActivateData['pos_nanaco'];
-    print('loadMachineSettingInfo 4');
-    showVisa = machineActivateData['show_visa'];
-    showMaster = machineActivateData['show_master'];
-    showJcb = machineActivateData['show_jcb'];
-    showUnionPay = machineActivateData['show_unionPay'];
-    showAmericanExpress = machineActivateData['show_americanExpress'];
-    showDinersClub = machineActivateData['show_dinersClub'];
-    showDiscover = machineActivateData['show_discover'];
-    print('loadMachineSettingInfo 5');
-    posSettingInfo = await HomeServices.getPosSettingInfo();
+
+    showWechat = machineActivateData['showWechat'] ?? false;
+    showAlipay = machineActivateData['showAlipay'] ?? false;
+    showPayPay = machineActivateData['showPayPay'] ?? false;
+    showCreditCard = machineActivateData['showCreditCard'] ?? false;
+    logI('loadMachineSettingInfo 2');
+    showAuPay = machineActivateData['au_Pay'] ?? false;
+    showDPay = machineActivateData['d_Pay'] ?? false;
+    showRPay = machineActivateData['R_Pay'] ?? false;
+    showMPay = machineActivateData['m_Pay'] ?? false;
+    logI('loadMachineSettingInfo 3');
+    showPosEdy = machineActivateData['pos_Edy'] ?? false;
+    showPosiD = machineActivateData['pos_iD'] ?? false;
+    showPosIC = machineActivateData['pos_IC'] ?? false;
+    showPosQUICPay = machineActivateData['pos_QUICPay'] ?? false;
+    showPosWAON = machineActivateData['pos_WAON'] ?? false;
+    showPosnanaco = machineActivateData['pos_nanaco'] ?? false;
+    logI('loadMachineSettingInfo 4');
+    showVisa = machineActivateData['show_visa'] ?? false;
+    showMaster = machineActivateData['show_master'] ?? false;
+    showJcb = machineActivateData['show_jcb'] ?? false;
+    showUnionPay = machineActivateData['show_unionPay'] ?? false;
+    showAmericanExpress = machineActivateData['show_americanExpress'] ?? false;
+    showDinersClub = machineActivateData['show_dinersClub'] ?? false;
+    showDiscover = machineActivateData['show_discover'] ?? false;
+    logI('loadMachineSettingInfo 5');
+
+    printerList = await HomeServices.getPrinterListInfo();
+    sseSettingList = await HomeServices.getSSESettingList();
+
+    machineModeInfo = await HomeServices.getMachineModeInfo();
+    logI('machineModeInfo: $machineModeInfo');
+
+    Map posSettingInfo = await HomeServices.getPosSettingInfo();
+
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
     //allowPos = posSettingInfo['allowPos'] ?? false;
@@ -218,11 +234,6 @@ class MachineInfoController extends GetxController {
         await HomeServices.getWlanPrintSettingTwoInfo();
     wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
     wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
-
-    printerList = await HomeServices.getPrinterListInfo();
-    sseSettingList = await HomeServices.getSSESettingList();
-
-    machineModeInfo = await HomeServices.getMachineModeInfo();
 
     print('loadMachineSettingInfo 6');
   }

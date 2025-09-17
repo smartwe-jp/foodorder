@@ -37,7 +37,7 @@ class CustomLogHandler {
           '${record.time}: ${record.level.name}: ${record.message}';
       _writeToFile(logMessage);
       print(logMessage); // 同时在控制台输出
-      print('Log file path: $_appDocDir');
+      //print('Log file path: $_appDocDir');
     });
   }
 

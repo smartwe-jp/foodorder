@@ -18,7 +18,7 @@ class PayResultViewState extends State<PayResultView> {
   @override
   void initState() {
     super.initState();
-    hideTimer = Timer(const Duration(seconds: 2), () {
+    hideTimer = Timer(const Duration(seconds: 3), () {
       if (mounted) Navigator.of(context).pop(true); // 只返回，业务不写这里
     });
   }
