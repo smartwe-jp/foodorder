@@ -36,34 +36,36 @@ class _NavBounceTrack {
 
 //打印图层生成成功
 Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
-  //final imageBytes = imgdata.data;
   final printTask = imgData.taskItem;
-
-  //指定的打印机
   final printerInfo = printTask.params as PrinterInfo;
-  //打印票据类型（标签、小票）
   final printTypeEnum = printTask.printTypeEnum;
+  Uint8List? imageBytes;
+  List<List<int>>? printData;
+  try {
+    imageBytes = await imgData.convertUint8List(imageByteFormat: ImageByteFormat.png);
+    if (imageBytes == null) return;
 
-  final imageBytes = await imgData.convertUint8List(imageByteFormat:ImageByteFormat.rawRgba);
-  //也可以使用 ImageByteFormat.png
-  final argbWidth = imgData.imageWidth;
-  final argbHeight = imgData.imageHeight;
-  if (imageBytes == null) {
-    return;
+    printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
+      imgData: imageBytes,
+      printType: printTypeEnum,
+    );
+    final printIp = printerInfo.ip ?? '';
+    if (printIp.isEmpty) {
+      logE('--- Printer IP is empty ---');
+      return;
+    }
+    logI('--- printData ip: ${printerInfo.ip} ---');
+    final conn = printerPlus.NetConn(printIp);
+    try {
+      conn.writeMultiBytes(printData);
+    } finally {
+      printData.clear();
+      printData = null;
+    }
+  } finally {
+    imageBytes = null;
+    logI('--- imageBytes cleared ---');
   }
-
-  var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-    imgData: imageBytes,
-    printType: printTypeEnum,
-    argbWidthPx: argbWidth,
-    argbHeightPx: argbHeight,
-  );
-
-  // 网络 打印
-  final conn = printerPlus.NetConn(printerInfo.ip!);
-  print("打印机连接地址：${printerInfo.ip}");
-  conn.writeMultiBytes(printData);
-
 }
 
 void main() {
