@@ -1548,11 +1548,13 @@ class SelectPaymentPage extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: 1,
-                              child: Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (tableNum != "")
                                     Text(
-                                      "${"show_check_tableno".tr}${tableNum}    ",
+                                      //"${"show_check_tableno".tr}${tableNum}    ",
+                                      tableNum,
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
@@ -1560,24 +1562,29 @@ class SelectPaymentPage extends StatelessWidget {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(40.0)),
                                     ),
-                                  Text("settlement_total_price".tr,
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.mainTitleColor),
-                                        fontFamily: GFont.getFontFamily(),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: ScreenAdapter.fontSize(40.0)),
-                                  ),
-                                  if (menuCount > 0)
-                                    Text(
-                                      "  ${menuCount.toString()}  ${"show_selectPay_point".tr}",
-                                      style: TextStyle(
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor),
-                                          fontFamily: GFont.getFontFamily(),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: ScreenAdapter.fontSize(40.0)),
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text("settlement_total_price".tr,
+                                        style: TextStyle(
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: ScreenAdapter.fontSize(40.0)),
+                                      ),
+                                      if (menuCount > 0)
+                                        Text(
+                                          "  ${menuCount.toString()}  ${"show_selectPay_point".tr}",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ScreenAdapter.fontSize(40.0)),
+                                        ),
+                                    ],
+                                  )
+
                                 ],
                               ),
                             ),

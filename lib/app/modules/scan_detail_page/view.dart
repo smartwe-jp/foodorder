@@ -66,7 +66,7 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _tableNumber(checkoutLogic.tableNum.value),
+                _tableNumber(checkoutLogic.tableNumText.value, checkoutLogic.tableNum.value),
                 _publicSplitLine(),
                 SizedBox(
                   height: ScreenAdapter.height(30),
@@ -180,12 +180,12 @@ class ScanDetailPagePage extends StatelessWidget {
     );
   }
 
-  Widget _tableNumber(number) {
+  Widget _tableNumber(title,number) {
     return Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("show_check_tableno".tr,
+            Text(title,
                 style: TextStyle(
                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
