@@ -242,7 +242,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           orderId.value = response["data"]["orderId"].toString();
           totalPrice.value = response["data"]["totalPrice"];
           discount.value = response["data"]["discount"];
-          tableNum.value = response["data"]["tableNum"].toString();
+          tableNum.value = response["data"]["tableNumText"];
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
 
           if (goDetail) {
