@@ -45,6 +45,7 @@ class MachineInfoController extends GetxController {
   late String isAllowRejishime;
 
   late Map machineModeInfo;
+  late String isAllowRejishime;
 
   //payment info
   late bool showCash;
