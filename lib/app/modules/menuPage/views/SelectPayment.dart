@@ -19,6 +19,7 @@ class SelectPaymentPage extends StatelessWidget {
         required this.menuCount,
         required this.shopCartTotalPrice,
         required this.tableNum,
+        this.tableName = "",
         this.tax10 = 0,
         this.tax8 = 0,
         required this.onConfrimClick,
@@ -28,6 +29,7 @@ class SelectPaymentPage extends StatelessWidget {
   final int menuCount;
   final String shopCartTotalPrice;
   final String tableNum;
+  final String tableName;
   final Function onConfrimClick;
   final int tax10; //税率
   final int tax8;
@@ -1553,8 +1555,7 @@ class SelectPaymentPage extends StatelessWidget {
                                 children: [
                                   if (tableNum != "")
                                     Text(
-                                      //"${"show_check_tableno".tr}${tableNum}    ",
-                                      tableNum,
+                                      tableName + tableNum,
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
