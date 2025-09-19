@@ -25,7 +25,6 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/fontSize.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../controllers/ImageCacheManager.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../services/HttpService.dart';

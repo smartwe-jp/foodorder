@@ -11,7 +11,7 @@ import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
-import 'package:foodorder/app/services/CustomLogHandler.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';

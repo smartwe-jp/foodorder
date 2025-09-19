@@ -7,7 +7,7 @@ import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
 import 'package:foodorder/app/services/PosCheckService.dart';
-import 'package:foodorder/app/services/CustomLogHandler.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
 import '../../../config/imageData.dart';
 import '../../../services/HttpService.dart';

@@ -8,7 +8,6 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/rejishimei/view.dart';
@@ -17,7 +16,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller_ext
 import 'package:foodorder/app/modules/setting/views/ExchangeView.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
-import 'package:foodorder/app/services/CustomLogHandler.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:dio/dio.dart';

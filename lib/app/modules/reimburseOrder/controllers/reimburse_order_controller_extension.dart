@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/printer_info.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/reimburseOrder/controllers/reimburse_order_controller.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';

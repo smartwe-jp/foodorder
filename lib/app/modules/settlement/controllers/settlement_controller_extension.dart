@@ -4,7 +4,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer_define.dart';
 import 'package:foodorder/app/services/HttpService.dart';

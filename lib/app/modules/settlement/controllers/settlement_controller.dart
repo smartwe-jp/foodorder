@@ -18,12 +18,11 @@ import 'package:foodorder/app/modules/settlement/controllers/settlement_controll
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
 import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
-import 'package:foodorder/app/services/CustomLogHandler.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:logging/logging.dart';
 
-import '../../../config/string.dart';
 import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
@@ -361,19 +360,19 @@ class SettlementController extends GetxController with StateMixin {
     Get.back(result: true);
   }
 
-  showSuccessAlert(Function task) async {
-    debugPrint("showSuccessAlert");
-    EasyLoading.dismiss();
+  // showSuccessAlert(Function task) async {
+  //   debugPrint("showSuccessAlert");
+  //   EasyLoading.dismiss();
 
-    Get.dialog(
-      barrierDismissible: false,
-      PayResultView(
-      dismiss: () {
-        Get.back();
-        task();
-      },
-    ));
-  }
+  //   Get.dialog(
+  //     barrierDismissible: false,
+  //     PayResultView(
+  //     dismiss: () {
+  //       Get.back();
+  //       task();
+  //     },
+  //   ));
+  // }
 
   checkOutModeBack() async {
     logger.info('checkOutModeBack');

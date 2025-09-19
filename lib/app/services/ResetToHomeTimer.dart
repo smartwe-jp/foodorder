@@ -5,7 +5,7 @@ import 'package:foodorder/app/controllers/order_sql_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:foodorder/app/modules/menuPage/controllers/menu_page_controller.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
-import 'package:foodorder/app/services/CustomLogHandler.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 import 'package:http/http.dart' as http;

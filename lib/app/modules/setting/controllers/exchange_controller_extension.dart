@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';

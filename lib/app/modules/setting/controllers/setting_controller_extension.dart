@@ -5,7 +5,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/common/StringExtension.dart';
-import 'package:foodorder/app/config/string.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';

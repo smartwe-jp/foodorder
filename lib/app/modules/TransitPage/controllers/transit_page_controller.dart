@@ -5,8 +5,6 @@ import 'dart:typed_data';
 
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/config/localString.dart';
-import 'package:foodorder/app/config/string.dart';
 //import 'package:foodorder/app/controllers/machine_info_controller.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
