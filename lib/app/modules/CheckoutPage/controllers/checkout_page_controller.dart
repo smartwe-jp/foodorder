@@ -95,6 +95,9 @@ class CheckoutPageController extends GetxController with StateMixin {
 
       }
     }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Get.updateLocale(Locale('jp', 'JP'));//默认日语
+    });
   }
 
   @override
