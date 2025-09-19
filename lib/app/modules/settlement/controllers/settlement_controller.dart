@@ -570,8 +570,8 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 60), onTimeout: () {
-        logger.info("扫码支付超时 60s"); //留足够时间给用户输入密码
+      }).timeout(Duration(seconds: 90), onTimeout: () {
+        logger.info("扫码支付超时 90s"); //留足够时间给用户输入密码
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
