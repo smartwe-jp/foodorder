@@ -1,4 +1,5 @@
 name: foodorder
+appName: smartwe_ticket_machine
 version: 2.7.20+152
 publish_to: none
 description: A new Fanxing Food Order Flutter project.
