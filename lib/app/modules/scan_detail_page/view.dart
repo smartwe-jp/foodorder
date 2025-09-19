@@ -90,7 +90,7 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _payCountTitle(checkoutLogic.totalPrice.value,
+                _payCountTitle(checkoutLogic.showTotalPrice,
                     checkoutLogic.discount.value),
                 SizedBox(
                   height: ScreenAdapter.height(30),
@@ -247,7 +247,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          "$count",
+                          count.formatIntSum(),
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
@@ -275,7 +275,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          "$discount",
+                          discount.formatIntSum(),
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
@@ -315,7 +315,7 @@ class ScanDetailPagePage extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: (count + discount).formatIntSum(),
+                                text: count.formatIntSum(),
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menusettlementBottomPrice),

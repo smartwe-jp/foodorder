@@ -49,6 +49,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxInt totalPrice = 0.obs;
   RxString tableNum = "0".obs;
   RxString tableNumText = "0".obs;
+  RxInt tax10 = 0.obs;
+  RxInt tax8 = 0.obs;
   RxInt discount = 0.obs;
   RxInt itemCount = 0.obs;
 
@@ -67,6 +69,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
+  int get showTotalPrice => totalPrice.value + discount.value + tax10.value + tax8.value;
 
   final RxInt posCheckStatus = 0.obs;
 
@@ -103,6 +106,9 @@ class CheckoutPageController extends GetxController with StateMixin {
         _showPosCheck();
       }
     }
+    Future.delayed(const Duration(milliseconds: 500), () {
+      Get.updateLocale(Locale('jp', 'JP'));//默认日语
+    });
   }
 
   @override
@@ -277,6 +283,8 @@ class CheckoutPageController extends GetxController with StateMixin {
           discount.value = response["data"]["discount"];
           tableNum.value = response["data"]["tableNum"] ?? "0";
           tableNumText.value = response["data"]["tableNumText"] ?? "";
+          tax10.value = response["data"]["tax1"] ?? 0;
+          tax8.value = response["data"]["tax2"] ?? 0;
 
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
           //orderInfoMap: {牛すじドテ焼大根日8: 1}
@@ -333,6 +341,9 @@ class CheckoutPageController extends GetxController with StateMixin {
             menuCount: itemCount.value,
             shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
             tableNum: tableNum.value,
+            tableName: tableNumText.value,
+            tax10: tax10.value,
+            tax8: tax8.value,
             onConfrimClick: () {
                 showOpenPayment.value = true;
                 machineInfo.showReceiptPage = true;

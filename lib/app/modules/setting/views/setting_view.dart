@@ -789,7 +789,12 @@ class SettingView extends GetView<SettingController> {
                            if (result != null) {
                              controller.getSystemSettingInfo();
                            }
-
+                          },
+                          onLongPress: () async {
+                              final result = Get.toNamed(Routes.SYSTEM_SETTING_PAGE_NEW);
+                              if (result != null) {
+                                controller.getSystemSettingInfo();
+                              }
                           },
                           child: Container(
                             margin: EdgeInsets.only(
@@ -813,34 +818,34 @@ class SettingView extends GetView<SettingController> {
                           ),
                         ),
 
-                        InkWell(
-                          onTap: () async {
-                            final result = Get.toNamed(Routes.SYSTEM_SETTING_PAGE_NEW);
-                            if (result != null) {
-                              controller.getSystemSettingInfo();
-                            }
-                          },
-                          child: Container(
-                            margin: EdgeInsets.only(
-                                left: ScreenAdapter.width(10),
-                                right: ScreenAdapter.width(10)),
-                            width: ScreenAdapter.width(180),
-                            height: ScreenAdapter.height(65),
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              color: ColorsUtil.hexToColor("#409eff"),
-                              //设置圆角
-                              borderRadius: new BorderRadius.circular((16.0)),
-                            ),
-                            child: Text("新システム設定",
-                                style: TextStyle(
-                                  fontFamily: 'NotoSansJP',
-                                  fontSize: ScreenAdapter.fontSize(24),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor("#FFFFFF"),
-                                )),
-                          ),
-                        ),
+                        // InkWell(
+                        //   onTap: () async {
+                        //     final result = Get.toNamed(Routes.SYSTEM_SETTING_PAGE_NEW);
+                        //     if (result != null) {
+                        //       controller.getSystemSettingInfo();
+                        //     }
+                        //   },
+                        //   child: Container(
+                        //     margin: EdgeInsets.only(
+                        //         left: ScreenAdapter.width(10),
+                        //         right: ScreenAdapter.width(10)),
+                        //     width: ScreenAdapter.width(180),
+                        //     height: ScreenAdapter.height(65),
+                        //     alignment: Alignment.center,
+                        //     decoration: BoxDecoration(
+                        //       color: ColorsUtil.hexToColor("#409eff"),
+                        //       //设置圆角
+                        //       borderRadius: new BorderRadius.circular((16.0)),
+                        //     ),
+                        //     child: Text("新システム設定",
+                        //         style: TextStyle(
+                        //           fontFamily: 'NotoSansJP',
+                        //           fontSize: ScreenAdapter.fontSize(24),
+                        //           fontWeight: FontWeight.w600,
+                        //           color: ColorsUtil.hexToColor("#FFFFFF"),
+                        //         )),
+                        //   ),
+                        // ),
 
 
                       ],

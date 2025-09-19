@@ -1555,7 +1555,7 @@ class SelectPaymentPage extends StatelessWidget {
                                 children: [
                                   if (tableNum != "")
                                     Text(
-                                      tableName + tableNum,
+                                      tableNum,
                                       style: TextStyle(
                                           color: ColorsUtil.hexToColor(
                                               Gcolor.mainTitleColor),
