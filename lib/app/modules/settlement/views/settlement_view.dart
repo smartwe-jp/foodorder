@@ -1301,8 +1301,8 @@ class SettlementView extends GetView {
 
                                 controller.showPosCancelAlert();
                               }else{
-                                controller.checkOutModeBack();
                                 Get.back();
+                                controller.checkOutModeBack();
                               }
                               /*if (controller.machineInfo.paymentMethod == "3" ||
                                   controller.machineInfo.paymentMethod == "4") {
