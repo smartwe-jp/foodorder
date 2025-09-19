@@ -9,7 +9,6 @@ import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
-import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showImage.dart';
 import '../controllers/checkout_page_controller.dart';

@@ -222,4 +222,14 @@ const Map<String, String> en_US = {
         "pos_check_failed": "POS machine status is abnormal.",
         "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
 
+  "settlement_posnosetting_error":"POS machine is not set. Please contact the staff. Thank you!",
+  "pos_check_title": "POS machine status check",
+  "pos_checking": "Checking POS machine status, please wait...",
+  "pos_check_success": "POS machine status is normal.",
+  "pos_check_failed": "POS machine status is abnormal.",
+
+  "skip_button":"Skip",
+  "next_button":"Next",
+  "suggest_title":"You may also like",
+
 };

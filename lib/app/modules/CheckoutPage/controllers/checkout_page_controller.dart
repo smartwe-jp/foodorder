@@ -12,6 +12,7 @@ import 'package:get/get.dart';
 import '../../../config/imageData.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';
+import '../../../services/PosCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
@@ -44,7 +45,9 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString orderId = "".obs;
   RxInt totalPrice = 0.obs;
   RxString tableNum = "0".obs;
+  RxString tableNumText = "0".obs;
   RxInt discount = 0.obs;
+  RxInt itemCount = 0.obs;
 
   bool machineLanguages_JP = false;
   bool machineLanguages_CH = false;
@@ -274,8 +277,13 @@ class CheckoutPageController extends GetxController with StateMixin {
           orderId.value = response["data"]["orderId"].toString();
           totalPrice.value = response["data"]["totalPrice"];
           discount.value = response["data"]["discount"];
-          tableNum.value = response["data"]["tableNum"].toString();
+          tableNum.value = response["data"]["tableNum"] ?? "0";
+          tableNumText.value = response["data"]["tableNumText"] ?? "";
+
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
+          //orderInfoMap: {牛すじドテ焼大根日8: 1}
+          itemCount.value = orderInfoMap.map((key, value) => MapEntry(key, value as int)).values.fold(0, (previousValue, element) => previousValue + element);
+          
 
           if (goDetail) {
             debugPrint('/scan-detail');
@@ -320,9 +328,10 @@ class CheckoutPageController extends GetxController with StateMixin {
     Get.to(
       () => SelectPaymentPage(
           checkLanguage: selectLanguage,
-          menuCount: 0,
+          menuCount: itemCount.value,
           shopCartTotalPrice: (totalPrice.value + discount.value).toString(),
           tableNum: tableNum.value,
+          tableName: tableNumText.value,
           onConfrimClick: () {
             showOpenPayment.value = true;
             machineInfo.showReceiptPage = true;

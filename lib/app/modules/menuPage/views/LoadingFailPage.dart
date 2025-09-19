@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'dart:async';
 
-import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
-import '../../../config/string.dart';
 import '../../../services/ScreenAdapter.dart';
 
 class LoadingFailedWidget extends StatefulWidget {

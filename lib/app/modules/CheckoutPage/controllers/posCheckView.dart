@@ -24,7 +24,7 @@ class PosCheckView extends StatelessWidget {
         children: [
           Center(
             child: SizedBox(
-              height: 160,
+              height: 170,
               width: 160,
               child: _buildStatusView(posCheckStatus.value),
             ),

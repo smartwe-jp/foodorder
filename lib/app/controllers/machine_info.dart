@@ -2,6 +2,8 @@ import 'package:foodorder/app/services/CustomLogHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get.dart';
 
+import '../services/CustomLogerHandler.dart';
+
 enum MachineType { new_panel, new_panel_max, old_panel }
 
 enum MachineMode { sell, takeout, checkout, scan }
@@ -17,6 +19,7 @@ class MachineInfoController extends GetxController {
   };
   bool isChecking = false;
   //base info
+  late String isBackHome;
   late String machineCode;
   late String shopCode;
   late bool mealType;
@@ -40,9 +43,8 @@ class MachineInfoController extends GetxController {
   late bool cashOn;
   late bool taxSystem;
 
-  late String isAllowRejishime;
-
   late Map machineModeInfo;
+  late String isAllowRejishime;
 
   //payment info
   late bool showCash;
@@ -139,6 +141,8 @@ class MachineInfoController extends GetxController {
 
     diningType = systemSettingInfo['diningType'] ?? '1';
     logI('loadMachineSettingInfo diningType : $diningType');
+    isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+    logI('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
@@ -210,13 +214,11 @@ class MachineInfoController extends GetxController {
 
     machineModeInfo = await HomeServices.getMachineModeInfo();
     logI('machineModeInfo: $machineModeInfo');
-    
     Map posSettingInfo = await HomeServices.getPosSettingInfo();
 
     pos_ip = posSettingInfo['posIp'] ?? "";
     pos_port = posSettingInfo['posPort'] ?? "";
-    // allowPos = posSettingInfo['allowPos'] ?? false;
-    // isAllowPos = allowPos ? '1' : '0';
+
     screenCallSetting = await HomeServices.getWlanPanelPrintSettingInfo();
     wlan_panel_print_ip = screenCallSetting['wlanPrintIp'] ?? "";
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";

@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 
 import '../../../../../config/colorsUtil.dart';
 import '../../../../../config/font.dart';
-import '../../../../../config/string.dart';
 import '../../../../../services/ScreenAdapter.dart';
 import '../../../../../services/formatMoney.dart';
 

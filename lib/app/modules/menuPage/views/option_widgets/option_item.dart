@@ -3,13 +3,11 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:badges/badges.dart' as badges;
-import 'package:foodorder/app/config/localString.dart';
 import 'package:get/get.dart';
 
 import '../../../../config/color.dart';
 import '../../../../config/colorsUtil.dart';
 import '../../../../config/font.dart';
-import '../../../../config/string.dart';
 import '../../../../services/ScreenAdapter.dart';
 import '../../../../widget/DialogUtils.dart';
 

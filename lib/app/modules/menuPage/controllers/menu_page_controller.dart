@@ -876,8 +876,8 @@ class MenuPageController extends GetxController with StateMixin {
           width: ScreenAdapter.width(150), height: ScreenAdapter.height(150)),
     );
 
-    FToast().showToast(
-      child: toast,
+    fToast?.showToast(
+    child: toast,
       gravity: ToastGravity.CENTER,
       toastDuration: Duration(milliseconds: 300),
     );

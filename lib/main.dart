@@ -131,54 +131,7 @@ void main() {
                     getPages: AppPages.routes,
                     initialBinding: AppBindings(),
                     routingCallback: (value) {
-                      //debugPrint("routingCallback : ${value?.current}");
-                      logI('-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
-                      if (value?.current == Routes.MENU_PAGE ||
-                          value?.current == Routes.SCANCODE_PAGE ||
-                          value?.current == Routes.SELECT_PAYMENT_PAGE ||
-                          (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
-                      ) {
-                        resetTimer.startTimer();
-                      } else if (value?.current == Routes.ORDER_HOME ||
-                          value?.current == Routes.SETTLEMENT ||
-                          value?.current == Routes.SETTING || value?.current == '/SettingView') {
-                        resetTimer.cancelTimer();
-                      }
-
-                      //检测是否从 checkout 返回 transit，若是则立即纠正回 checkout
-                      final cur = value?.current;
-                      final prev = value?.previous;
-                      final isTransit = cur == Routes.TRANSIT_PAGE;
-                      final isFromCheckout = prev == Routes.CHECKOUT_PAGE;
-                      if (isTransit && isFromCheckout) {
-                        // 用 microtask，确保控制器已就绪
-                        logI('--forcing return to Checkout 1--');
-                        Future.microtask(() {
-                          if (Get.isRegistered<TransitPageController>()) {
-                            Get.find<TransitPageController>().getIsShowCashInfo();
-                          } else {
-                            logI('--TransitPageController not registered--');
-                            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-                          }
-                        });
-                      } else {
-                        final last = _NavBounceTrack.lastRoute;
-                        final fromCheckoutBySnapshot = last == Routes.CHECKOUT_PAGE;
-
-                        if (isTransit && fromCheckoutBySnapshot) {
-                          logI('--forcing return to Checkout 2--');
-                          Future.microtask(() {
-                            if (Get.isRegistered<TransitPageController>()) {
-                              Get.find<TransitPageController>().getIsShowCashInfo();
-                            } else {
-                              logI('--TransitPageController not registered--');
-                              Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-                            }
-                          });
-                        }
-                      }
-                      _NavBounceTrack.lastRoute = cur;
-                      
+                      routerCallback(value, resetTimer);
                     },
                     builder: (context, widget) {
                       return MediaQuery(
@@ -224,4 +177,53 @@ class MyHttpOverrides extends HttpOverrides {
       ..badCertificateCallback =
           (X509Certificate cert, String host, int port) => true;
   }
+}
+
+void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
+  logI('-- routingCallback : prev ${value?.previous} current ${value?.current} --  --');
+  if (value?.current == Routes.MENU_PAGE ||
+      value?.current == Routes.SCANCODE_PAGE ||
+      value?.current == Routes.SELECT_PAYMENT_PAGE ||
+      (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
+  ) {
+    resetTimer.startTimer();
+  } else if (value?.current == Routes.ORDER_HOME ||
+      value?.current == Routes.SETTLEMENT ||
+      value?.current == Routes.SETTING || value?.current == '/SettingView') {
+    resetTimer.cancelTimer();
+  }
+
+  //检测是否从 checkout 返回 transit，若是则立即纠正回 checkout
+  final cur = value?.current;
+  final prev = value?.previous;
+  final isTransit = cur == Routes.TRANSIT_PAGE;
+  final isFromCheckout = prev == Routes.CHECKOUT_PAGE;
+  if (isTransit && isFromCheckout) {
+    // 用 microtask，确保控制器已就绪
+    logI('--forcing return to Checkout 1--');
+    Future.microtask(() {
+      if (Get.isRegistered<TransitPageController>()) {
+        Get.find<TransitPageController>().getIsShowCashInfo();
+      } else {
+        logI('--TransitPageController not registered--');
+        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      }
+    });
+  } else {
+    final last = _NavBounceTrack.lastRoute;
+    final fromCheckoutBySnapshot = last == Routes.CHECKOUT_PAGE;
+
+    if (isTransit && fromCheckoutBySnapshot) {
+      logI('--forcing return to Checkout 2--');
+      Future.microtask(() {
+        if (Get.isRegistered<TransitPageController>()) {
+          Get.find<TransitPageController>().getIsShowCashInfo();
+        } else {
+          logI('--TransitPageController not registered--');
+          Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+        }
+      });
+    }
+  }
+  _NavBounceTrack.lastRoute = cur;
 }

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
-import 'package:foodorder/app/config/localString.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:get/get.dart';
 
@@ -9,7 +8,6 @@ import '../../config/colorsUtil.dart';
 import '../../config/font.dart';
 import '../../config/fontSize.dart';
 import '../../config/imageData.dart';
-import '../../config/string.dart';
 import '../../services/ScreenAdapter.dart';
 import 'logic.dart';
 
@@ -68,7 +66,7 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _tableNumber(checkoutLogic.tableNum.value),
+                _tableNumber(checkoutLogic.tableNumText.value, checkoutLogic.tableNum.value),
                 _publicSplitLine(),
                 SizedBox(
                   height: ScreenAdapter.height(30),
@@ -182,12 +180,12 @@ class ScanDetailPagePage extends StatelessWidget {
     );
   }
 
-  Widget _tableNumber(number) {
+  Widget _tableNumber(title,number) {
     return Center(
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text("show_check_tableno".tr,
+            Text(title,
                 style: TextStyle(
                   //color: ColorsUtil.hexToColor("#FFFFFF"),
                     fontWeight: FontWeight.w600,
