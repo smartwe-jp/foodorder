@@ -28,9 +28,9 @@ class ActivationController extends GetxController {
   }
 
   void _goMain() async {
-    Future.delayed(Duration(milliseconds: 300), () {
+    //Future.delayed(Duration(milliseconds: 300), () {
       Get.toNamed("/transit-page", arguments: {"loadActive": true, "machineCode":machineCodeController.text});
-    });
+    //});
   }
 
   //把机器码保存到本地
