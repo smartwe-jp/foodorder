@@ -66,7 +66,7 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _tableNumber(checkoutLogic.tableNumText.value, checkoutLogic.tableNum.value),
+                _tableNumber(checkoutLogic.showTotalPrice, checkoutLogic.tableNum.value),
                 _publicSplitLine(),
                 SizedBox(
                   height: ScreenAdapter.height(30),
@@ -314,7 +314,7 @@ class ScanDetailPagePage extends StatelessWidget {
                             ),
                             children: [
                               TextSpan(
-                                text: (count + discount).formatIntSum(),
+                                text: count.formatIntSum(),
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menusettlementBottomPrice),

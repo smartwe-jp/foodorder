@@ -1332,7 +1332,7 @@ print("加1了");
 
           doSubmitOrderId.value = response['data']["orderId"];
           final total = response['data']["total"].toString();
-          int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
+          //int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
           int tax1 = response['data']["tax1"] ?? 0;
           int tax2 = response['data']["tax2"] ?? 0;
 
