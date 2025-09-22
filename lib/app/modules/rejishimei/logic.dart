@@ -116,9 +116,10 @@ class RejishimeLogic extends GetxController {
     };
     debugPrint("Rejishimei request: $param");
 
-    final domain = Platform.isAndroid
-        ? 'webBootRejishimeiPrintInfo'
-        : 'webGloryRejishimeiPrintInfo';
+    final domain = 'webBootRejishimeiPrintInfo';
+    // Platform.isAndroid
+    //     ? 'webBootRejishimeiPrintInfo'
+    //     : 'webGloryRejishimeiPrintInfo';
 
     request(domain, method: 'POST', parameters: param).then((val) {
       EasyLoading.dismiss();
