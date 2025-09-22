@@ -35,7 +35,11 @@ class SelectPaymentPage extends StatelessWidget {
   final Function(String) onCancelClick;
 
   String get showPrice {
-    return (int.parse(shopCartTotalPrice) + taxCount).toString();
+    return (int.parse(shopCartTotalPrice)).toString();
+  }
+
+  String get taxOutPrice {
+    return (int.parse(shopCartTotalPrice) - taxCount).toString();
   }
 
   Widget selectPrintType() {
@@ -1572,7 +1576,8 @@ class SelectPaymentPage extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: 1,
-                              child: Row(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   if (tableNum != "")
                                     Text(
@@ -1584,26 +1589,31 @@ class SelectPaymentPage extends StatelessWidget {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(40.0)),
                                     ),
-                                  Text(
-                                    GString.getToString(
-                                        checkLanguage, "settlement_total_price"),
-                                    style: TextStyle(
-                                        color: ColorsUtil.hexToColor(
-                                            Gcolor.mainTitleColor),
-                                        fontFamily: GFont.getFontFamily(),
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: ScreenAdapter.fontSize(40.0)),
-                                  ),
-                                  if (menuCount > 0)
-                                    Text(
-                                      "  ${menuCount.toString()}  ${GString.getToString(checkLanguage, "show_selectPay_point")}",
-                                      style: TextStyle(
-                                          color: ColorsUtil.hexToColor(
-                                              Gcolor.mainTitleColor),
-                                          fontFamily: GFont.getFontFamily(),
-                                          fontWeight: FontWeight.w600,
-                                          fontSize: ScreenAdapter.fontSize(40.0)),
-                                    ),
+                                  Row(
+                                    children: [
+                                      Text(
+                                        GString.getToString(
+                                            checkLanguage, "settlement_total_price"),
+                                        style: TextStyle(
+                                            color: ColorsUtil.hexToColor(
+                                                Gcolor.mainTitleColor),
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontWeight: FontWeight.w600,
+                                            fontSize: ScreenAdapter.fontSize(40.0)),
+                                      ),
+                                      if (menuCount > 0)
+                                        Text(
+                                          "  ${menuCount.toString()}  ${GString.getToString(checkLanguage, "show_selectPay_point")}",
+                                          style: TextStyle(
+                                              color: ColorsUtil.hexToColor(
+                                                  Gcolor.mainTitleColor),
+                                              fontFamily: GFont.getFontFamily(),
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: ScreenAdapter.fontSize(40.0)),
+                                        ),
+                                    ],
+                                  )
+
                                 ],
                               ),
                             ),
@@ -1643,7 +1653,7 @@ class SelectPaymentPage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          formatMoney(shopCartTotalPrice),
+                                          formatMoney(taxOutPrice),
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),
