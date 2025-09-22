@@ -427,32 +427,31 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
 
-    // 不再先 Get.back 再 off，直接一次性跳
-    if (machineInfo.currentMode == MachineMode.sell ||
-        machineInfo.currentMode == MachineMode.takeout) {
-      if (is_back_home.value == "0") {
-        //Get.offNamedUntil('/checkout-page',(route) => route.settings.name == '/transit-page' || route.isFirst,);
-        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
-      } else {
-        // if (Get.isRegistered<MenuPageController>()) {
-        //   final mc = Get.find<MenuPageController>();
-        //   mc.resetToFirstPage();
-        //   mc.paymentIsShow = false;
-          
-        // }
-        //Get.offNamedUntil('/menu-page', (route) => route.isFirst);
-        Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
-        // 只关闭结算页
-        // if (Get.currentRoute != '/transit-page') {
-        //   Get.back(); 
-        // }
-      }
-    } else if (machineInfo.currentMode == MachineMode.scan) {
-      Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
-    } else {
-      //Future.delayed(const Duration(milliseconds: 50), () {
-        Get.offNamedUntil(Routes.CHECKOUT_PAGE,(route) => route.settings.name == Routes.TRANSIT_PAGE);
-      //});
+    try {
+      await resetToHome();
+    } catch (e) {
+      logger.warning('resetToHome error: $e');
+    } finally {
+      _isNavigating = false;
+    }
+  }
+
+  resetToHome() async {
+    switch (machineInfo.currentMode) {
+      case MachineMode.sell:
+      case MachineMode.takeout:
+        if (machineInfo.isBackHome) {
+          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        } else {
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        }
+        break;
+      case MachineMode.scan:
+        await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+        break;
+      case MachineMode.checkout:
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
     }
   }
 

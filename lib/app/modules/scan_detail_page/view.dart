@@ -93,7 +93,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   height: ScreenAdapter.height(30),
                 ),
                 _payCountTitle(checkoutLogic.totalPrice.value,
-                    checkoutLogic.discount.value),
+                    checkoutLogic.discount.value, checkoutLogic.containtax),
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
@@ -203,7 +203,7 @@ class ScanDetailPagePage extends StatelessWidget {
         ));
   }
 
-  Widget _payCountTitle(int count, int discount) {
+  Widget _payCountTitle(int count, int discount, bool containTax) {
     // List leftKeys = [
     //   "settlement_original_price".localized(),
     //   "settlement_discount".localized(),
@@ -327,7 +327,7 @@ class ScanDetailPagePage extends StatelessWidget {
                               ),
                               TextSpan(
                                 text:
-                                "(${"show_price_front".tr})", //" 円",
+                                "(${containTax ? "show_price_front".tr : "tax_out".tr})", //" 円",
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
                                       GFontSize.menusettlementBottomPriceRight),

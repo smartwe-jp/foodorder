@@ -37,7 +37,11 @@ class SelectPaymentPage extends StatelessWidget {
   final Function(String) onCancelClick;
 
   String get showPrice {
-    return (int.parse(shopCartTotalPrice) + taxCount).toString();
+    return (int.parse(shopCartTotalPrice)).toString();
+  }
+
+  String get taxOutPrice {
+    return (int.parse(shopCartTotalPrice) - taxCount).toString();
   }
 
   Widget selectPrintType() {
@@ -1608,7 +1612,7 @@ class SelectPaymentPage extends StatelessWidget {
                           children: [
                             Expanded(
                               flex: 1,
-                              child: Row(
+                              child: Column(
                                 children: [
                                   if (tableNum != "")
                                     Text(
@@ -1620,7 +1624,9 @@ class SelectPaymentPage extends StatelessWidget {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(40.0)),
                                     ),
-                                  Text("settlement_total_price".tr,
+                                  Row(
+                                    children: [
+                                      Text("settlement_total_price".tr,
                                     style: TextStyle(
                                         color: ColorsUtil.hexToColor(
                                             Gcolor.mainTitleColor),
@@ -1638,6 +1644,9 @@ class SelectPaymentPage extends StatelessWidget {
                                           fontWeight: FontWeight.w600,
                                           fontSize: ScreenAdapter.fontSize(40.0)),
                                     ),
+                                    ],
+                                  )  
+                                  
                                 ],
                               ),
                             ),
@@ -1676,7 +1685,7 @@ class SelectPaymentPage extends StatelessWidget {
                                           ),
                                       ),
                                       Text(
-                                        formatMoney(shopCartTotalPrice),
+                                        formatMoney(taxOutPrice),
                                         style: TextStyle(
                                             color: ColorsUtil.hexToColor(
                                                 Gcolor.mainTitleColor),

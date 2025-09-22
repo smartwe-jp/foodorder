@@ -4,7 +4,7 @@ const Map<String, String> zh_CN = {
         "top_back_button":"Language",
 
         "show_price_front":"含税",
-        "tax_out":"小计",
+        "tax_out":"不含税",
         "tax":"消费税",
         "taxout_price":"小计",
         "original_price":"原价",

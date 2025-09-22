@@ -1338,12 +1338,12 @@ print("加1了");
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
-          shopCartTotalPrice.value = response['data']["total"].toString();
+          final totalPrice = response['data']["total"];
           int totalTax = machineInfo.mealType
               ? (response['data']["tax2"] ?? 0)
               : (response['data']["tax1"] ?? 0);
 
-          showSelectMealTypeAndPaymentMethodDialog(tax: totalTax);
+          showSelectMealTypeAndPaymentMethodDialog(totalPrice, tax: totalTax);
         } else {
           //getBookingBootMenu();
           // FirebaseAnalytics.instance
@@ -1403,7 +1403,7 @@ print("加1了");
 
   //选择食用方式和支付方式
 
-  showSelectMealTypeAndPaymentMethodDialog({int tax = 0}) async {
+  showSelectMealTypeAndPaymentMethodDialog(int total, {int tax = 0}) async {
     Cashchangerservice.checkMachineState();
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
@@ -1412,11 +1412,11 @@ print("加1了");
           checkLanguage: checkLanguage.value,
           menuCount: showCartTotalGoodsNum.value,
           taxCount: tax,
-          shopCartTotalPrice: shopCartTotalPrice.value,
+          shopCartTotalPrice: total.toString(),
           tableNum: "",
           onConfrimClick: () {
             showOpenPayment.value = true;
-            gotoSettlement(tax);
+            gotoSettlement(total,tax);
           },
           onCancelClick: (String isBack) async {
             // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
@@ -1476,11 +1476,11 @@ print("加1了");
     //await _resetToFirstCategory();
   }
 
-  gotoSettlement(int tax) async { //await 
+  gotoSettlement(int total,int tax) async { //await
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "orderId": doSubmitOrderId.value,
-      "totalPrice": (int.parse(shopCartTotalPrice.value) + tax).toString(),
+      "totalPrice": total.toString(),
       "machineMode": "1",
       "showOpenPayment": showOpenPayment.value
     });
