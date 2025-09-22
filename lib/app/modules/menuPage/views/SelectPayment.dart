@@ -36,7 +36,11 @@ class SelectPaymentPage extends StatelessWidget {
   final Function(String) onCancelClick;
 
   String get showPrice {
-    return (int.parse(shopCartTotalPrice) + tax10 + tax8).toString();
+    return (int.parse(shopCartTotalPrice)).toString();
+  }
+
+  String get taxOutPrice {
+    return (int.parse(shopCartTotalPrice) - tax10 - tax8).toString();
   }
 
   Widget selectPrintType() {
@@ -1625,7 +1629,7 @@ class SelectPaymentPage extends StatelessWidget {
                                           ),
                                         ),
                                         Text(
-                                          formatMoney(shopCartTotalPrice),
+                                          formatMoney(taxOutPrice),
                                           style: TextStyle(
                                               color: ColorsUtil.hexToColor(
                                                   Gcolor.mainTitleColor),
