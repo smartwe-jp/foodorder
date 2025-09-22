@@ -1252,7 +1252,7 @@ class SettlementView extends GetView {
                                   } else {
                                     //交易未正常结束
                                     debugPrint("交易未正常结束");
-                                    controller.showUnExpectedErrorDialog();
+                                    controller.resetToHome();
                                   }
                                 },
                                 child: Text(
