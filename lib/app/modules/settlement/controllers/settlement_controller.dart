@@ -398,6 +398,10 @@ class SettlementController extends GetxController with StateMixin {
       }
     }
 
+    resetToHome();
+  }
+
+  resetToHome() async {
     switch (machineInfo.currentMode) {
       case MachineMode.sell:
       case MachineMode.takeout:
