@@ -220,5 +220,5 @@ const Map<String, String> zh_CN = {
         "pos_check_success": "POS机状态正常",
         "pos_check_failed": "POS机状态异常",
 
-        "settlement_unexpected_error" : "支付异常，请将返回上一页重新操作。",
+        "settlement_unexpected_error" : "支付异常，将返回上一页重新操作。",
 };
