@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 enum PosAction {
   Connect,
@@ -166,7 +167,7 @@ class PosSocketManager {
 
     try {
       _posAction = PosAction.Connect;
-      Socket socket = await Socket.connect(pos_ip, pos_port);
+      Socket socket = await Socket.connect(pos_ip, pos_port, timeout: Duration(seconds: 15));
       debugPrint('Connected to $pos_ip:$pos_port');
       _socket = socket;
       _isConnected = true;
@@ -341,11 +342,13 @@ class PosSocketManager {
       );
     } catch (e) {
       _isConnected = false;
-      debugPrint('Unable to connect pos: $e');
+      logger.infoLog('Unable to connect pos: $e');
       if (_posAction == PosAction.None) return;
       Future.delayed(Duration(milliseconds: 400), () async {
         await payConnectSocket(payment, pos_ip, pos_port, machineCode,
-            isRetry: true, onTimeOut: onTimeOut, onError: onError);
+          isRetry: true, onTimeOut: onTimeOut, onError: onError, questData: questData,
+          onLoading: onLoading, onLoadingEnd: onLoadingEnd,
+          onSuccess: onSuccess,);
       });
     }
   }
