@@ -1338,11 +1338,8 @@ print("加1了");
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
-          final totalPrice = response['data']["total"];
-          int totalTax = machineInfo.mealType
-              ? (response['data']["tax2"] ?? 0)
-              : (response['data']["tax1"] ?? 0);
-
+          final totalPrice = response['data']["total"].toString();
+          int totalTax = (response['data']["tax2"] ?? 0) + (response['data']["tax1"] ?? 0);
           showSelectMealTypeAndPaymentMethodDialog(totalPrice, tax: totalTax);
         } else {
           //getBookingBootMenu();
@@ -1403,7 +1400,7 @@ print("加1了");
 
   //选择食用方式和支付方式
 
-  showSelectMealTypeAndPaymentMethodDialog(int total, {int tax = 0}) async {
+  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax = 0}) async {
     Cashchangerservice.checkMachineState();
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
@@ -1412,11 +1409,11 @@ print("加1了");
           checkLanguage: checkLanguage.value,
           menuCount: showCartTotalGoodsNum.value,
           taxCount: tax,
-          shopCartTotalPrice: total.toString(),
+          shopCartTotalPrice: total,
           tableNum: "",
           onConfrimClick: () {
             showOpenPayment.value = true;
-            gotoSettlement(total,tax);
+            gotoSettlement(total);
           },
           onCancelClick: (String isBack) async {
             // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
@@ -1476,11 +1473,11 @@ print("加1了");
     //await _resetToFirstCategory();
   }
 
-  gotoSettlement(int total,int tax) async { //await
+  gotoSettlement(String total) async { //await
     Get.toNamed('/settlement', preventDuplicates: false, arguments: {
       "checkLanguage": checkLanguage.value,
       "orderId": doSubmitOrderId.value,
-      "totalPrice": total.toString(),
+      "totalPrice": total,
       "machineMode": "1",
       "showOpenPayment": showOpenPayment.value
     });

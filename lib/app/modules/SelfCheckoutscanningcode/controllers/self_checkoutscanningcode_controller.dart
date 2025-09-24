@@ -422,9 +422,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           doSubmitOrderId.value = response['data']["orderId"];
           //shopCartTotalPrice.value = response['data']["total"].toString();
           final totalPrice = response['data']["total"];
-          int totalTax = machineInfo.mealType
-              ? (response['data']["tax2"] ?? 0)
-              : (response['data']["tax1"] ?? 0);
+          int totalTax = (response['data']["tax2"] ?? 0) + (response['data']["tax1"] ?? 0);
 
           showSelectMealTypeAndPaymentMethodDialog(totalPrice, tax: totalTax);
 
