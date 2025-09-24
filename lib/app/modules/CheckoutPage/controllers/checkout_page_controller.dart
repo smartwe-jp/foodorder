@@ -130,6 +130,12 @@ class CheckoutPageController extends GetxController with StateMixin {
 
     posCheckStatus.value =
         await posCheckService.checkPosConnection(machineInfo.pos_ip) ? 1 : 2;
+    if (posCheckStatus.value == 1) {
+      await Future.delayed(const Duration(milliseconds: 800));
+      if (Get.isDialogOpen == true) {
+        Get.back(); // Close the dialog
+      }
+    }
     debugPrint('POS机检查结果: ${posCheckStatus.value == 1 ? "成功" : "失败"}');
   }
 

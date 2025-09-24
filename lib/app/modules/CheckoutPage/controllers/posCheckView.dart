@@ -34,6 +34,7 @@ class PosCheckView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
+                if (posCheckStatus.value == 0)
                 Expanded(
                   child: ElevatedButton(
                     onPressed: () {
