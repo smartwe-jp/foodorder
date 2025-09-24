@@ -92,8 +92,8 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _payCountTitle(checkoutLogic.totalPrice.value,
-                    checkoutLogic.discount.value, checkoutLogic.containtax),
+                _payCountTitle(checkoutLogic.showTotalPrice,
+                    checkoutLogic.discount.value, checkoutLogic.containTax),
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),

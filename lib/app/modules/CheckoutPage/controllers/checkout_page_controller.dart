@@ -50,6 +50,8 @@ class CheckoutPageController extends GetxController with StateMixin {
   RxString orderId = "".obs;
   RxInt totalPrice = 0.obs;
   RxString tableNum = "0".obs;
+  RxInt tax10 = 0.obs;
+  RxInt tax8 = 0.obs;
   RxInt discount = 0.obs;
 
 
@@ -67,7 +69,15 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
-  bool get containtax => machineInfo.taxSystem;
+
+  int get showTotalPrice {
+    if (machineInfo.taxSystem) {
+      return totalPrice.value + discount.value;
+    } else {
+      return totalPrice.value + discount.value - tax10.value - tax8.value;
+    }
+  }
+  bool get containTax => machineInfo.taxSystem;
 
   @override
   void onInit() {
@@ -253,6 +263,8 @@ class CheckoutPageController extends GetxController with StateMixin {
           totalPrice.value = response["data"]["totalPrice"];
           discount.value = response["data"]["discount"];
           tableNum.value = response["data"]["tableNum"].toString();
+          tax10.value = response["data"]["tax1"] ?? 0;
+          tax8.value = response["data"]["tax2"] ?? 0;
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
 
           if (goDetail) {
@@ -305,6 +317,7 @@ class CheckoutPageController extends GetxController with StateMixin {
               checkLanguage: selectLanguage,
               menuCount: 0,
               shopCartTotalPrice:(totalPrice.value + discount.value).toString(),
+              taxCount: tax10.value + tax8.value,
               tableNum: tableNum.value,
               onConfrimClick: () {
                 showOpenPayment.value = true;
