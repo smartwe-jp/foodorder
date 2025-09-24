@@ -1186,8 +1186,8 @@ print("加1了");
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
 
           doSubmitOrderId.value = response['data']["orderId"];
-          final total = response['data']["total"];
-          int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
+          final total = response['data']["total"].toString();
+          int totalTax = (response['data']["tax2"] ?? 0) + (response['data']["tax1"] ?? 0);
 
           showSelectMealTypeAndPaymentMethodDialog(total, tax: totalTax);
 
@@ -1258,7 +1258,7 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog(int total, {int tax = 0}) async {
+  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
@@ -1267,11 +1267,11 @@ print("加1了");
           menuCount: showCartTotalGoodsNum.value,
           taxCount: tax,
 
-          shopCartTotalPrice: total.toString(),
+          shopCartTotalPrice: total,
           tableNum: "",
           onConfrimClick: () {
               showOpenPayment.value = true;
-              gotoSettlement(total, tax);
+              gotoSettlement(total);
 
           },
           onCancelClick: (String isBack) async {
@@ -1340,13 +1340,13 @@ print("加1了");
   }
 
 
-  gotoSettlement(int total ,int tax) async {
-    logI("gotoSettlement tax:$tax");
+  gotoSettlement(String total) async {
+    logI("gotoSettlement");
   await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : total.toString(),
+          "totalPrice" : total,
           "machineMode":"1",
           "showOpenPayment": showOpenPayment.value
         });

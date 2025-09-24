@@ -40,6 +40,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   RxBool showOpenPayment = false.obs;
 
   RxString doSubmitOrderId = "".obs;
+  bool get containTax => machineInfo.taxSystem;
 
   @override
   void onInit() {
@@ -363,8 +364,9 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
           doSubmitOrderId.value = response['data']["orderId"];
-          shopCartTotalPrice.value = response['data']["total"].toString();
-          showSelectMealTypeAndPaymentMethodDialog();
+          final totalPrice = response['data']["total"].toString();
+          int totalTax = (response['data']["tax2"] ?? 0) + (response['data']["tax1"] ?? 0);
+          showSelectMealTypeAndPaymentMethodDialog(totalPrice, tax: totalTax);
         }else{
           Get.dialog(
               DialogUtils.alertOneButton(response['data']["message"],
@@ -420,20 +422,21 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog() async {
+  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax = 0}) async {
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
             () =>
             SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
+            taxCount: tax,
             //mealType:_mealType.value,
-            shopCartTotalPrice:shopCartTotalPrice.value,
+            shopCartTotalPrice:total,
             tableNum: "",
             onConfrimClick: () {
                 showOpenPayment.value = true;
                 machineInfo.showReceiptPage = true;
-                gotoSettlement();
+                gotoSettlement(total);
 
             },
             onCancelClick: (String isBack){
@@ -480,13 +483,13 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
 
-  gotoSettlement() async {
+  gotoSettlement(String total) async {
     await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineInfo.machineCode,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : shopCartTotalPrice.value,
+          "totalPrice" : total,
           "machineMode":"1",
           "showOpenPayment":showOpenPayment.value
         });

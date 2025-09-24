@@ -17,7 +17,7 @@ class MachineInfoController extends GetxController {
   };
   bool isChecking = false;
   //base info
-  late String isBackHome;
+  late bool isBackHome;
   late String machineCode;
   late String shopCode;
   late bool mealType;
@@ -128,7 +128,7 @@ class MachineInfoController extends GetxController {
     }
     logI('loadMachineSettingInfo 0');
 
-    isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+    isBackHome = (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
     diningType = systemSettingInfo['diningType'] ?? '1';
     logI('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
