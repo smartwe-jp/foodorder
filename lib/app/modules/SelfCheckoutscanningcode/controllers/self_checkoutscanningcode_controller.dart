@@ -45,6 +45,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   final player = AudioPlayer();
 
+  bool get containTax => machineInfo.taxSystem;
+
   @override
   void onInit() {
     readyQueryData();
@@ -414,13 +416,17 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {
         var response = json.decode(val.toString());
         EasyLoading.dismiss();
-
+        debugPrint("---- doSubmitOrder ---- $response");
         if (response['code'] == 200) {
           //"paymentMethod" 1，现金 2，扫码 3，刷卡 4nfc
           doSubmitOrderId.value = response['data']["orderId"];
-          shopCartTotalPrice.value = response['data']["total"].toString();
+          //shopCartTotalPrice.value = response['data']["total"].toString();
+          final totalPrice = response['data']["total"];
+          int totalTax = machineInfo.mealType
+              ? (response['data']["tax2"] ?? 0)
+              : (response['data']["tax1"] ?? 0);
 
-          showSelectMealTypeAndPaymentMethodDialog();
+          showSelectMealTypeAndPaymentMethodDialog(totalPrice, tax: totalTax);
 
         }else{
           Get.dialog(
@@ -477,7 +483,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog() async {
+  showSelectMealTypeAndPaymentMethodDialog(int total, {int tax = 0}) async {
     Cashchangerservice.checkMachineState(); 
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
@@ -485,12 +491,13 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
         SelectPaymentPage(
             checkLanguage: checkLanguage.value,
             menuCount: showCartTotalGoodsNum.value,
-            shopCartTotalPrice:shopCartTotalPrice.value,
+            taxCount: tax,
+            shopCartTotalPrice: total.toString(),
             tableNum: "",
             onConfrimClick: () {
               showOpenPayment.value = true;
               machineInfo.showReceiptPage = true;
-              gotoSettlement();
+              gotoSettlement(total);
 
             },
             onCancelClick: (String isBack){
@@ -536,22 +543,22 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   }
 
-  _getPosSettingInfo() async {
-    // Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    // pos_ip.value = posSettingInfo['posIp'];
-    // pos_port.value = posSettingInfo['posPort'];
-    //postNewOrderId();
-    gotoSettlement();
-  }
+  // _getPosSettingInfo() async {
+  //   // Map posSettingInfo = await HomeServices.getPosSettingInfo();
+  //   // pos_ip.value = posSettingInfo['posIp'];
+  //   // pos_port.value = posSettingInfo['posPort'];
+  //   //postNewOrderId();
+  //   gotoSettlement();
+  // }
 
 
-  gotoSettlement() async {
+  gotoSettlement(int total) async {
     await Get.toNamed('/settlement',preventDuplicates: false,
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineInfo.machineCode,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : shopCartTotalPrice.value,
+          "totalPrice" : total.toString(),
           "machineMode":"1",
           "showOpenPayment":showOpenPayment.value
         });
