@@ -460,62 +460,6 @@ class SettlementController extends GetxController with StateMixin {
     //debugPrint('---gotonewBack---');
     logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
     safeReturnToHome();
-    return;
-    ordersqlcontroller.removeAllFromCart();
-    EasyLoading.dismiss();
-    Get.back();
-    if (machineInfo.currentMode == MachineMode.sell || machineInfo.currentMode == MachineMode.takeout) {
-      if(is_back_home.value == "0"){
-        //Get.delete<MenuPageController>(); // 手动删除控制器实例
-        //Get.toNamed("/order-home");
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-        //Navigator.pushNamed(context, '/home');
-      } else {
-        // eventBus.fire(new clearCartEvent('支付成功...'));
-        //有弹窗选择支付才在关闭一个
-// <<<<<<< HEAD
-//         Get.find<MenuPageController>().getCartPriceTotal();
-//         Get.find<MenuPageController>().getBookingBootIndexCagegory("");
-//         if (showOpenPayment.value == true) {
-// =======
-        Get.find<MenuPageController>().resetToFirstPage();
-
-        if(showOpenPayment.value == true){
-          Get.find<MenuPageController>().paymentIsShow = false;
-          Get.back();
-        }
-      }
-    }else if (machineInfo.currentMode == MachineMode.scan) {
-      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      //Get.offAllNamed("/selfservice-page");
-      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      // if(is_back_home.value == "0"){
-      //   Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-      //   Get.toNamed("/selfservice-page");
-      //   //Navigator.pushNamed(context, '/selfServiceHomePage');
-      // }else{
-      //   //eventBus.fire(new clearCartEvent('支付成功...'));
-      //
-      //   //有弹窗选择支付才在关闭一个
-      //   if(showOpenPayment.value == true){
-      //     Get.back();
-      //   }
-      //
-      // }
-    } else {
-      //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
-      //精算页面
-      //Get.delete<CheckoutPageController>();// 手动删除控制器实例
-      if (Get.isRegistered<CheckoutPageController>()) {
-        //Get.find<CheckoutPageController>().selectLanguage = 'JP';
-      }
-      //精算页面
-      Future.delayed(Duration(milliseconds: 100), () {
-        //Get.toNamed("/checkout-page");
-        Get.offNamedUntil('/transit-page', (route) => route.isFirst);
-      });
-      //Navigator.pushNamed(context, '/checkOutPage');
-    }
   }
   //缺少场景考虑 扫码支付手机端操作异常，但是后续又可以了，但是机器交易流程停止了，订单不正常
   //扫码支付
@@ -569,8 +513,8 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 90), onTimeout: () {
-        logger.info("扫码支付超时 90s"); //留足够时间给用户输入密码
+      }).timeout(Duration(seconds: 180), onTimeout: () {
+        logger.info("扫码支付超时 180s"); //留足够时间给用户输入密码
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
