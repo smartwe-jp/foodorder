@@ -429,17 +429,24 @@ class SettlementController extends GetxController with StateMixin {
         logger.warning('EasyLoading.dismiss error: $e');
       }
     }
-    resetToHome();
+    //resetToHome();
+    try {
+      await resetToHome();
+    } catch (e) {
+      logger.warning('resetToHome error: $e');
+    } finally {
+      _isNavigating = false;
+    }
   }
 
   resetToHome() async {
     switch (machineInfo.currentMode) {
       case MachineMode.sell:
       case MachineMode.takeout:
-        if (machineInfo.isBackHome == "0") {
-          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
-        } else {
+        if (machineInfo.isBackHome) {
           await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        } else {
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         }
         break;
       case MachineMode.scan:
@@ -492,7 +499,6 @@ class SettlementController extends GetxController with StateMixin {
             if(resultData["result"] == true){
               doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
-              EasyLoading.dismiss();
               logger.info("扫码支付失败 1 ${resultData["exceptionMessage"]}");
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -509,8 +515,8 @@ class SettlementController extends GetxController with StateMixin {
               scanQrCodeController.text = "";
               scanQrCodeFocusNode.requestFocus();
             });
-      }).timeout(Duration(seconds: 60), onTimeout: () {
-        logger.info("扫码支付超时 60s"); //留足够时间给用户输入密码
+      }).timeout(Duration(seconds: 180), onTimeout: () {
+        logger.info("扫码支付超时 180s"); //留足够时间给用户输入密码
         _checkOutErrorHandle('settlement_order_error'.tr,
             confirm: () {
               scanQrCodeController.text = "";
@@ -521,8 +527,14 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //三种扫码支付都未开通，弹出dialog
-  _showScanCodeNoOpenDialog(checknum, showContent, {payType: "qr"}) {
-    //EasyLoading.dismiss();
+  _showScanCodeNoOpenDialog(checknum, showContent, {payType = "qr"}) async {
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
     scanQrCodeController.text = "";
     //_scanQrCode = "";
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode); // 获取焦点

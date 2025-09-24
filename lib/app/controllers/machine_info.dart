@@ -41,6 +41,7 @@ class MachineInfoController extends GetxController {
   late bool isAllowCash;
   late bool cashOn;
   late bool taxSystem;
+  late bool isBackHome;
 
   late Map machineModeInfo;
   late String isAllowRejishime;
@@ -138,6 +139,7 @@ class MachineInfoController extends GetxController {
     }
     logI('loadMachineSettingInfo 0');
 
+    isBackHome = (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
     diningType = systemSettingInfo['diningType'] ?? '1';
     logI('loadMachineSettingInfo diningType : $diningType');
     isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';

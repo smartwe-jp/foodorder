@@ -43,6 +43,8 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
 
   final player = AudioPlayer();
 
+  bool get containTax => machineInfo.taxSystem;
+
   @override
   void onInit() {
     readyQueryData();
@@ -545,7 +547,7 @@ class SelfCheckoutscanningcodeController extends GetxController with StateMixin 
           "checkLanguage":  checkLanguage.value,
           "machineCode":  machineInfo.machineCode,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : (int.parse(total) + tax).toString(),
+          "totalPrice" : total,
           "machineMode":"1",
           "showOpenPayment":showOpenPayment.value
         });
