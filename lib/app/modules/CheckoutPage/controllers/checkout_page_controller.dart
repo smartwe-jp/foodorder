@@ -64,7 +64,6 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
   get sseList => machineInfo.sseSettingList;
-  bool get containtax => machineInfo.taxSystem;
 
   int get showTotalPrice {
     if (machineInfo.taxSystem) {
