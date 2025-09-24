@@ -496,7 +496,6 @@ class SettlementController extends GetxController with StateMixin {
             if(resultData["result"] == true){
               doPrintOrderMenu(machineInfo.receiptPrintType);
             }else{
-              EasyLoading.dismiss();
               logger.info("扫码支付失败 1 ${resultData["exceptionMessage"]}");
               _showScanCodeNoOpenDialog(3,resultData["exceptionMessage"]);
             }
@@ -525,8 +524,14 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   //三种扫码支付都未开通，弹出dialog
-  _showScanCodeNoOpenDialog(checknum, showContent, {payType: "qr"}) {
-    //EasyLoading.dismiss();
+  _showScanCodeNoOpenDialog(checknum, showContent, {payType = "qr"}) async {
+    if (EasyLoading.isShow) {
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
     scanQrCodeController.text = "";
     //_scanQrCode = "";
     //FocusScope.of(context).requestFocus(_scanQrCodeFocusNode); // 获取焦点
