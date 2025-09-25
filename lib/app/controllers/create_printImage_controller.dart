@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'dart:typed_data';
 
 import 'package:foodorder/app/services/logUtil.dart';
@@ -65,6 +66,7 @@ class CreatePrintImageController extends GetxController {
   }
 
   tpPrintnew(print_paper_txt_size, printData, printType) async {
+    logI("tpPrintnew serialNumber: ${printData["serialNumber"] ?? ''}");
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
     List categoryVos = [];
@@ -427,6 +429,7 @@ class CreatePrintImageController extends GetxController {
     List<Widget> categoryMenus = [];
 
     debugPrint('printData:$printData');
+    logI("tpPrintReceipt serialNumber: ${printData["serialNumber"] ?? ''}");
     int discount = printData["discount"] ?? 0;
     int finalPrice = int.parse(printData["price"] ?? '0');
     int originalPrice = finalPrice + discount;
