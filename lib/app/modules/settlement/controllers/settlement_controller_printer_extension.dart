@@ -81,7 +81,7 @@ class PrintService extends GetxService {
     if (uuid.isEmpty) return;
 
     try {
-      LogUtil.d("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
+      debugPrint("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
@@ -89,7 +89,7 @@ class PrintService extends GetxService {
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        LogUtil.d("callbackBeforePrint uuid: $uuid send success");
+        debugPrint("callbackBeforePrint uuid: $uuid send success");
         if (event == 'message') {
           printData(data);
         }
@@ -101,27 +101,27 @@ class PrintService extends GetxService {
       debugPrint('TimeoutException:${e.toString()}');
       if (retryCount < 3) {
         // 如果超时，重试最多3次
-        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
       }
     } catch (e) {
       debugPrint('error Exception:${e.toString()}');
       if (retryCount < 3) {
         // 如果发生错误，重试最多3次
-        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
       }
     }
   }
 
   void printData(Map data, {bool fromSSE = true}) async {
-    LogUtil.d("printData == $data");
+    debugPrint("printData == $data");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
