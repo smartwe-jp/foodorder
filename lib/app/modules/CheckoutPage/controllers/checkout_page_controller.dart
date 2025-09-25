@@ -11,6 +11,7 @@ import 'package:get_storage/get_storage.dart';
 
 import '../../../config/colorsUtil.dart';
 import '../../../config/imageData.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';
@@ -97,6 +98,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onReady() {
     super.onReady();
     //startRepeatingAnimation();
+    _checkToCloseLoading();
     if (firstLoad) {
       bool isSseEnabled =
           sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
@@ -124,6 +126,17 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onClose() {
     //stopRepeatingAnimation();
     super.onClose();
+  }
+
+  _checkToCloseLoading() async {
+    if (EasyLoading.isShow) {
+      logI('--Dismissing EasyLoading--');
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
   }
 
   _checkPosStatus() async {

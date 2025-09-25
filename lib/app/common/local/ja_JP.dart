@@ -4,8 +4,8 @@ const Map<String, String> ja_JP = {
   "top_back_button":"Language",
 
   "show_price_front":"税込",
-  "tax_out":"税别",
-  "tax":"消費税",
+  "tax_out":"税抜",
+  "tax":"内 消費税",
   "taxout_price":"小計",
   "original_price":"原価",
   "show_original_price_front":"定価",

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:math';
 import 'package:assets_audio_player/assets_audio_player.dart';
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -107,8 +108,8 @@ class MenuPageController extends GetxController with StateMixin {
 
   @override
   void onReady() {
-
     super.onReady();
+    _checkToCloseLoading();
   }
 
   @override
@@ -117,6 +118,17 @@ class MenuPageController extends GetxController with StateMixin {
     await customCacheManager.emptyCache();
     await Get.delete<MenuPageController>();
     super.onClose();
+  }
+
+  _checkToCloseLoading() async {
+    if (EasyLoading.isShow) {
+      logI('--Dismissing EasyLoading--');
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
   }
 
   readyQueryData(){
@@ -137,7 +149,7 @@ class MenuPageController extends GetxController with StateMixin {
 
   //获取页面分类
   getBookingBootIndexCategory({isReset = false, int retryCount = 0}){
-    debugPrint('getBookingBootIndexCategory');
+    logI('getBookingBootIndexCategory');
     if (isReset) {
       change(null, status: RxStatus.loading());
     } else {
@@ -1181,7 +1193,6 @@ print("加1了");
 
           doSubmitOrderId.value = response['data']["orderId"];
           final total = response['data']["total"].toString();
-          int totalTax = machineInfo.mealType ? (response['data']["tax2"] ?? 0) : (response['data']["tax1"] ?? 0);
           int tax1 = response['data']["tax1"] ?? 0;
           int tax2 = response['data']["tax2"] ?? 0;
 

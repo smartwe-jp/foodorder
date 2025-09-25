@@ -5,7 +5,7 @@ const Map<String, String> en_US = {
 
   "show_price_front":"Tax-In",
   "tax_out":"Subtotal",
-  "tax":"Tax",
+  "tax":"Incl. Tax",
   "taxout_price":"Subtotal",
   "original_price":"Original Price",
   "show_original_price_front":"Orig",
