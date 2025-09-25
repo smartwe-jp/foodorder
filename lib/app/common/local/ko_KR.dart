@@ -5,7 +5,7 @@ const Map<String, String> ko_KR = {
 
         "show_price_front":"세금 포함",//含税
         "tax_out":"상품 금액",//不含税
-        "tax":"부가세",//税
+        "tax":"세금 포함",//含税
         "taxout_price":"상품 금액",//金额
         "original_price":"원가",//原价
         "show_original_price_front":"원가",

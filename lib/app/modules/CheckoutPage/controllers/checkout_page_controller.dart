@@ -12,7 +12,6 @@ import 'package:get/get.dart';
 import '../../../config/imageData.dart';
 import '../../../services/HttpService.dart';
 import '../../../services/PinterCheckService.dart';
-import '../../../services/PosCheckService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
 import '../../menuPage/views/SelectPayment.dart';
