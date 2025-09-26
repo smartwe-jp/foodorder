@@ -1005,7 +1005,7 @@ class SettlementController extends GetxController with StateMixin {
         //debugPrint("doPrintOrderMenu== $response");
         //LogUtil.d(response);
         if (response['code'] == 200) {
-          if (response['data']["printInfo"] != null && !isScanCheckOut) {
+          if (response['data']["printInfo"] != null) {
             printService.printData(response['data']["printInfo"], fromSSE: false);
           }
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){

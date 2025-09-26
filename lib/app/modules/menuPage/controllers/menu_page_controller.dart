@@ -1357,7 +1357,7 @@ print("加1了");
         arguments: {
           "checkLanguage":  checkLanguage.value,
           "orderId" : doSubmitOrderId.value,
-          "totalPrice" : (int.parse(total)).toString(),
+          "totalPrice" : total,
           "machineMode":"1",
           "showOpenPayment": showOpenPayment.value
         });
