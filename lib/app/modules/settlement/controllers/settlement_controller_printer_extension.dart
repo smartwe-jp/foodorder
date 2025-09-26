@@ -181,6 +181,7 @@ class PrintService extends GetxService {
         final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
         final printHeight = int.tryParse(printSize.split('x')[1]) ?? 225; // 获取标签高度
         // Add the head receipt widget to the print queue
+        debugPrint("Label Print Width: $printWidth, Height: $printHeight");
         final time = await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
@@ -202,6 +203,7 @@ class PrintService extends GetxService {
               orderSnCode,
               options,
               printWidth.toDouble(),
+              printHeight.toDouble(),
               _labelMaxLine(printHeight),
               rotate,
               '$totalQty-$itemCount',
@@ -220,6 +222,7 @@ class PrintService extends GetxService {
             itemCount,
             remark,
             printWidth.toDouble(),
+            printHeight.toDouble(),
             time,
             rotate,
           );
@@ -404,6 +407,7 @@ class PrintService extends GetxService {
       String number,
       Map options,
       double printWidth,
+      double printHeight,
       int maxLines,
       bool rotate,
       String index,
@@ -419,8 +423,9 @@ class PrintService extends GetxService {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 1,
+              SizedBox(
+                height: 80.h,
+                //flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -441,20 +446,6 @@ class PrintService extends GetxService {
                       ),
                     ),
 
-                    // Expanded(
-                    //   flex: 1,
-                    //   child: AutoSizeText(
-                    //     ' # ' + number,
-                    //     maxLines: 2,
-                    //     textAlign: TextAlign.right,
-                    //     style: TextStyle(
-                    //       fontSize: 30,
-                    //       color: Colors.black,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //     overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                    //   ),
-                    // ),
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -500,7 +491,7 @@ class PrintService extends GetxService {
                 thickness: 2,
               ),
               Expanded(
-                flex: 2,
+                //flex: 2,
                 child: Column(
                   children: [
                     Expanded(
@@ -536,6 +527,7 @@ class PrintService extends GetxService {
         ),
       ),
       pagerWidth: printWidth,
+      pagerHeight: printHeight,
     );
   }
 
@@ -547,6 +539,7 @@ class PrintService extends GetxService {
       int itemCount,
       String remark,
       double printWidth,
+      double printHeight,
       String time,
       bool rotate) {
   return LabelConstrainedBox(
@@ -559,8 +552,8 @@ class PrintService extends GetxService {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Expanded(
-                  flex: 1,
+                SizedBox(
+                  height: 80.h,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -627,7 +620,7 @@ class PrintService extends GetxService {
                 ),
 
                 Expanded(
-                  flex: 2,
+                  //flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -663,6 +656,7 @@ class PrintService extends GetxService {
         )
     ),
     pagerWidth: printWidth,
+    pagerHeight: printHeight
   );
 }
 
