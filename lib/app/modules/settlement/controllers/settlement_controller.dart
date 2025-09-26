@@ -447,7 +447,7 @@ class SettlementController extends GetxController with StateMixin {
         }
         break;
       case MachineMode.scan:
-        await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
       case MachineMode.checkout:
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
