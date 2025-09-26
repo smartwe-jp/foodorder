@@ -27,7 +27,7 @@ class CreatePrintImageController extends GetxController {
 
   MachineInfoController machineInfo = Get.find();
   AppConfig appConfig = Get.find();
-  double get printWidth => appConfig.isAndroid11 ? 513:385;
+  double get printWidth => 550.0;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -438,7 +438,7 @@ class CreatePrintImageController extends GetxController {
     // String base64Image = base64Encode(imageBytes);
     //LogUtil.d(base64Image);
     final printWidget = Container(
-      width: 513,
+      width: printWidth,
       height: totalHight.toDouble(),
       padding: EdgeInsets.only(left: 0.5, right: 0.5),
       color: Colors.white,
@@ -600,7 +600,7 @@ class CreatePrintImageController extends GetxController {
       var takeoutTag = (printData["takeOut"] == true) ? "*" : "";
       if (groupNameLength > 10) {
         linNum += 2;
-        addRowHight += 86;
+        addRowHight += 86 + 48;
         categoryMenus.add(
           Directionality(
               textDirection: TextDirection.ltr,
@@ -977,7 +977,7 @@ class CreatePrintImageController extends GetxController {
 
     var totalHight = lineZeng + lineHight + addRowHight;
     final printWidget = Container(
-      width: 385,
+      width: printWidth,
       padding: EdgeInsets.only(
           left: ScreenAdapter.width(20), right: ScreenAdapter.width(15)),
       height: totalHight.toDouble() + 100 + 180,
