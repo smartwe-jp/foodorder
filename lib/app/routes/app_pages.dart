@@ -32,6 +32,7 @@ import '../modules/setting/views/setting_view.dart';
 import '../modules/settingbackTransit/bindings/settingback_transit_binding.dart';
 import '../modules/settingbackTransit/views/settingback_transit_view.dart';
 import '../modules/settlement/bindings/settlement_binding.dart';
+import '../modules/settlement/result/view.dart';
 import '../modules/settlement/views/settlement_view.dart';
 import '../modules/systemSettingPage/bindings/system_setting_page_binding.dart';
 import '../modules/systemSettingPage/views/system_setting_page.dart';
@@ -148,6 +149,11 @@ class AppPages {
       name: _Paths.SETTING_EDIT_PAGE,
       page: () => EditPage(),
     ),
+    GetPage(
+      name: _Paths.RESULT_PAGE,
+      page: () => ResultPage(),
+    ),
+
 
   ];
 }

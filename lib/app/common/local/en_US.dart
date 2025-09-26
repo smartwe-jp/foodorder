@@ -157,4 +157,8 @@ const Map<String, String> en_US = {
   "next_button":"Next",
   "suggest_title":"You may also like",
 
+  "order_success_title":"Order Successful",
+  "order_success_tips":"Thank you for your order.",
+  "origin_home":"Back to Home",
+
 };

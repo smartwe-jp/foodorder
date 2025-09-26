@@ -157,4 +157,8 @@ const Map<String, String> zh_CN = {
   "next_button":"下一步",
   "suggest_title":"您可能还喜欢",
 
+  "order_success_title":"下单成功",
+  "order_success_tips":"感谢您的下单",
+  "origin_home":"返回首页",
+
 };

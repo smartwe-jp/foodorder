@@ -401,26 +401,26 @@ class SettlementController extends GetxController with StateMixin {
 
   resetToHome() async {
     logI('---resetToHome---');
-    switch (machineInfo.currentMode) {
-      case MachineMode.sell:
-      case MachineMode.takeout:
-        if (machineInfo.isBackHome == "0") {
-          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
-        } else {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
-        }
-        break;
-      case MachineMode.scan:
-        await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
-        break;
-      case MachineMode.checkout:
-        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
-        break;
-    }
+    // switch (machineInfo.currentMode) {
+    //   case MachineMode.sell:
+    //   case MachineMode.takeout:
+    //     if (machineInfo.isBackHome == "0") {
+    //       await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+    //     } else {
+    //       await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+    //     }
+    //     break;
+    //   case MachineMode.scan:
+    //     await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+    //     break;
+    //   case MachineMode.checkout:
+    //     await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+    //     break;
+    // }
+    Get.toNamed(Routes.RESULT_PAGE);
   }
 
   gotonewBack() {
-    logI('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${machineInfo.isBackHome}');
     safeReturnToHome();
   }
 
@@ -1184,9 +1184,12 @@ class SettlementController extends GetxController with StateMixin {
       if (machineInfo.paymentMethod == "1") {
         nextOper();
       } else {
-        showSuccessAlert(() {
+
+        //goToNewMyHome();
+        //showSuccessAlert(() {
+          //goToNewMyHome();
           gotonewBack();
-        });
+        //});
       }
 
     });
@@ -1503,13 +1506,13 @@ class SettlementController extends GetxController with StateMixin {
           gotonewMenuPage();
         }
       } else {
-        showSuccessAlert(() {
+        //showSuccessAlert(() {
           if (isPrint.value == true) {
             gotonewBack();
           } else {
             gotonewMenuPage();
           }
-        });
+        //});
       }
     } else {
       //出金失败

@@ -158,4 +158,8 @@ const Map<String, String> ko_KR = {
   "next_button":"다음",
   "suggest_title":"함께 보면 좋을 것들",
 
+  "order_success_title":"주문 성공",
+  "order_success_tips":"주문해 주셔서 감사합니다.",
+  "origin_home":"홈으로 돌아가기",
+
 };
