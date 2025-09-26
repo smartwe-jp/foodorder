@@ -44,12 +44,16 @@ Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
   Uint8List? imageBytes;
   List<List<int>>? printData;
   try {
-    imageBytes = await imgData.convertUint8List(imageByteFormat: ImageByteFormat.png);
+    imageBytes = await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
     if (imageBytes == null) return;
+    final argbWidth = imgData.imageWidth;
+    final argbHeight = imgData.imageHeight;
 
     printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
       imgData: imageBytes,
       printType: printTypeEnum,
+      argbWidthPx: argbWidth,
+      argbHeightPx: argbHeight,
     );
     final printIp = printerInfo.ip ?? '';
     if (printIp.isEmpty) {
@@ -61,11 +65,11 @@ Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
     try {
       conn.writeMultiBytes(printData);
     } finally {
-      printData.clear();
-      printData = null;
+      //printData.clear();
+      //printData = null;
     }
   } finally {
-    imageBytes = null;
+    //imageBytes = null;
     logI('--- imageBytes cleared ---');
   }
 }
