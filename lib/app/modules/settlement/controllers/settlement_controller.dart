@@ -388,13 +388,13 @@ class SettlementController extends GetxController with StateMixin {
       logger.warning('removeAllFromCart error: $e');
     }
 
-    if (EasyLoading.isShow) {
+    //if (EasyLoading.isShow) {
       try {
         await EasyLoading.dismiss();
       } catch (e) {
         logger.warning('EasyLoading.dismiss error: $e');
       }
-    }
+    //}
 
     resetToHome();
   }
@@ -429,9 +429,10 @@ class SettlementController extends GetxController with StateMixin {
     //不是扫码支付直接return
     if (machineInfo.paymentMethod != "2") return;
     logI("doToPay", tag: "ScanPay");
-    if (machineInfo.machineCode != "" && scanQrCodeController.text != "" && orderId.value != null) {
+    if (machineInfo.machineCode != "" && scanQrCodeController.text != "") {
       //_showEasyLoading();
       showEasyLoadingScan();
+      hasStartPayFlow = true;
       var formData = {
         "auth_code": scanQrCodeController.text,
         "machineCode": machineInfo.machineCode,
@@ -468,6 +469,12 @@ class SettlementController extends GetxController with StateMixin {
           _doScanCodeTimeOut();
         }
 
+      }).timeout(Duration(seconds: 180), onTimeout: () {
+        logI("doToPay timeout after 180s", tag: "ScanPay");
+        _showScanCodeTimeOutDialog();
+      }).catchError((e) {
+        logI("doToPay error: $e", tag: "ScanPay");
+        _showScanCodeNoOpenDialog(3,"");
       });
 
     }
@@ -909,6 +916,7 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   commonCancel() async {
+    logI('---commonCancel--- paymentMethod = ${machineInfo.paymentMethod}');
     if (machineInfo.paymentMethod == "0" || machineInfo.paymentMethod == "1") {
       showBackEasyLoading();
       cancelOrder();
@@ -933,6 +941,13 @@ class SettlementController extends GetxController with StateMixin {
         }
 
       } else {
+        if (EasyLoading.isShow) {
+          try {
+            await EasyLoading.dismiss();
+          } catch (e) {
+            logger.warning('EasyLoading.dismiss error: $e');
+          }
+        }
         Get.back();
       }
     }

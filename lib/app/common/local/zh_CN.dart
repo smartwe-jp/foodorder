@@ -56,7 +56,7 @@ const Map<String, String> zh_CN = {
   "settlement_print_outprice_tag":"请取出零钱,等待小票打印",
   "settlement_print_tag":"请等待小票打印",
   "settlement_print_loading_tag":"请稍候~",//，请稍候
-  "settlement_noprint_tag":"请稍候~",
+  "settlement_noprint_tag":"请稍候~~",
   "settlement_nopayment_error":"支付失败，请选择其他方式支付",
   "settlement_scancodenoopen_error":"请选择现金支付。",
   "settlement_scancodenochange_error":"暂不支持该支付，请选择其他方式。",

@@ -154,7 +154,7 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text("settlement_print_loading_tag".tr,
+      _showTag = Text("settlement_print_loading_tag".tr + ".",
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
@@ -162,7 +162,7 @@ extension SettlementControllerUIExtension on SettlementController {
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
     } else {
-      _showTag = Text("settlement_print_loading_tag".tr,
+      _showTag = Text("settlement_print_loading_tag".tr + ".",
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
