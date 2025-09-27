@@ -65,7 +65,7 @@ dependencies:
   flutter:
     sdk: flutter
  #不同版本Android加载不同的插件
- paycube_old: # Android 7
+  paycube_old: # Android 7
    path: ./lib/app/plugins/paycube_old
   # paycube: # Android 11
   #   path: ./lib/app/plugins/paycube
