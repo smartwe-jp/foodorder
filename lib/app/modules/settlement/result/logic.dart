@@ -67,14 +67,13 @@ class ResultLogic extends GetxController {
     switch (machineInfo.currentMode) {
       case MachineMode.sell:
       case MachineMode.takeout:
-        if (machineInfo.isBackHome == "0") {
-          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        if (machineInfo.isBackHome) {
+          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         } else {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         }
         break;
       case MachineMode.scan:
-        //await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
         await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         break;
       case MachineMode.checkout:

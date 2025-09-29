@@ -1378,4 +1378,21 @@ class SystemSettingPageController extends GetxController with StateMixin {
       maskType: EasyLoadingMaskType.black,
     );
   }
+
+  showRestartDialog(Function saveAction) => Get.dialog(DialogUtils.alert(
+      'この設定を変更すると、アプリケーションを再起動する必要があります。今すぐ再起動しますか？',
+
+      title: "tag_title".tr,
+      confirmtitle: "reboot_app".tr,
+      cancle: () {
+        Get.back();
+      },
+      confirm: () {
+        saveAction();
+        Get.back();
+        Future.delayed(Duration(milliseconds: 500), () async {
+          Appset.restartApp;
+        });
+      })
+  );
 }

@@ -2419,7 +2419,10 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkIsAllowBackHome("0");
+              
+              controller.showRestartDialog(() {
+                controller.checkIsAllowBackHome("0");
+              });
             },
             child: Container(
               //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
@@ -2450,7 +2453,10 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkIsAllowBackHome("1");
+              //controller.checkIsAllowBackHome("1");
+              controller.showRestartDialog(() {
+                controller.checkIsAllowBackHome("1");
+              });
             },
             child: Container(
               margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
