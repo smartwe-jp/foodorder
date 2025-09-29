@@ -379,7 +379,7 @@ class SettlementController extends GetxController with StateMixin {
 
   bool _isNavigating = false;
 
-  Future<void> safeReturnToHome() async {
+  Future<void> safeReturnToHome({bool success = false}) async {
     if (_isNavigating) return;
     _isNavigating = true;
     try {
@@ -395,33 +395,37 @@ class SettlementController extends GetxController with StateMixin {
         logger.warning('EasyLoading.dismiss error: $e');
       }
     //}
+    if (success) {
+      Get.toNamed(Routes.RESULT_PAGE);
+    } else {
+      resetToHome();
+    }
 
-    resetToHome();
   }
 
   resetToHome() async {
     logI('---resetToHome---');
-    // switch (machineInfo.currentMode) {
-    //   case MachineMode.sell:
-    //   case MachineMode.takeout:
-    //     if (machineInfo.isBackHome == "0") {
-    //       await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
-    //     } else {
-    //       await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
-    //     }
-    //     break;
-    //   case MachineMode.scan:
-    //     await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
-    //     break;
-    //   case MachineMode.checkout:
-    //     await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
-    //     break;
-    // }
-    Get.toNamed(Routes.RESULT_PAGE);
+    switch (machineInfo.currentMode) {
+      case MachineMode.sell:
+      case MachineMode.takeout:
+        if (machineInfo.isBackHome == "0") {
+          await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        } else {
+          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
+        }
+        break;
+      case MachineMode.scan:
+        //await Get.offNamedUntil(Routes.SELFSERVICE_PAGE, (route) => route.isFirst);
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
+      case MachineMode.checkout:
+        await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+        break;
+    }
   }
 
   gotonewBack() {
-    safeReturnToHome();
+    safeReturnToHome(success: true);
   }
 
   //扫码支付T
