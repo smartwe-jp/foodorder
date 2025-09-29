@@ -56,35 +56,13 @@ class ResultPage extends StatelessWidget {
 
               // 倒计时提示 (使用 Obx 进行响应式更新)
               Obx(() {
-                if (state.secondsLeft.value > 0) {
-                  return RichText(
-                    text: TextSpan(
-                      style: const TextStyle(
-                        fontSize: 20, // 对应 text-lg
-                        color: Color(0xFF64748B), // 对应 slate-500
-                        fontFamily: 'Inter', // 确保字体一致
-                      ),
-                      children: [
-                        TextSpan(
-                          text: '${state.secondsLeft.value}',
-                          style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Color(0xFF334155), // 对应 slate-700
-                          ),
-                        ),
-                        TextSpan(text: state.countdownMessage.value),
-                      ],
-                    ),
-                  );
-                } else {
-                  return Text(
-                    state.countdownMessage.value,
+                return Text(
+                    state.countdownMessage.replaceAll('%%', '${state.secondsLeft.value}'),
                     style: const TextStyle(
                       fontSize: 18,
                       color: Color(0xFF64748B),
                     ),
                   );
-                }
               }),
               const SizedBox(height: 40), // 对应 mb-10
 
