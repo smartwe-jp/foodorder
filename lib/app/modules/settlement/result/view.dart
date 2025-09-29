@@ -90,25 +90,13 @@ class ResultPage extends StatelessWidget {
 
               // 手动返回按钮
 
-              Container(
-                  width: double.infinity,
-                  margin: const EdgeInsets.symmetric(horizontal: 400),
-                  decoration: BoxDecoration(
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.grey.withValues(alpha: 10),
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        offset: const Offset(0, 2), // changes position of shadow
-                      ),
-                    ],
-                  ),
-                  child:
                   PressScaleButton(
                     onTap: logic.manualBack,
-                    width: double.infinity,
+                    width: 200,
                     height: 64,
                     color: Colors.white,
+                    borderColor: const Color(0xFFCBD5E1),
+                    borderWidth: 1,
                     borderRadius: 8,
                     child: Text(
                       'origin_home'.tr,
@@ -152,7 +140,7 @@ class ResultPage extends StatelessWidget {
 
 
                 ),
-              ),
+
 
               const Spacer(flex: 3),
             ],

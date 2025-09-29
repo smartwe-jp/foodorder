@@ -12,6 +12,8 @@ class PressScaleButton extends StatefulWidget {
   final Color color;
   final double pressedScale;      // 按下缩放比例
   final Duration duration;
+  final Color borderColor;
+  final double borderWidth;
 
   const PressScaleButton({
     Key? key,
@@ -23,6 +25,8 @@ class PressScaleButton extends StatefulWidget {
     this.borderRadius = 6,
     this.pressedScale = 0.94,
     this.duration = const Duration(milliseconds: 110),
+    this.borderColor = Colors.transparent,
+    this.borderWidth = 0,
   }) : super(key: key);
 
   @override
@@ -57,8 +61,9 @@ class _PressScaleButtonState extends State<PressScaleButton> {
           width: widget.width,
           height: widget.height,
           decoration: BoxDecoration(
-            color: widget.color,
-            borderRadius: BorderRadius.circular(widget.borderRadius),
+              color: widget.color,
+              borderRadius: BorderRadius.circular(widget.borderRadius),
+              border: Border.all(color: widget.borderColor, width: widget.borderWidth)
           ),
           alignment: Alignment.center,
           child: widget.child,
