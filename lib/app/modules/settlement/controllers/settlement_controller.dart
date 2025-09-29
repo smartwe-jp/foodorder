@@ -381,7 +381,10 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   goToNewMyHome() {
-    debugPrint("----goToNewMyHome----");
+    logI('---goToNewMyHome---');
+
+    safeReturnToHome();
+    return;
     ordersqlcontroller.removeAllFromCart();
 
     EasyLoading.dismiss();
@@ -413,7 +416,7 @@ class SettlementController extends GetxController with StateMixin {
 
   bool _isNavigating = false;
 
-  Future<void> safeReturnToHome() async {
+  Future<void> safeReturnToHome({bool success = false}) async {
     if (_isNavigating) return;
       _isNavigating = true;
     try {
@@ -422,21 +425,30 @@ class SettlementController extends GetxController with StateMixin {
       logger.warning('removeAllFromCart error: $e');
     }
 
-    if (EasyLoading.isShow) {
+    //if (EasyLoading.isShow) {
       try {
         await EasyLoading.dismiss();
       } catch (e) {
         logger.warning('EasyLoading.dismiss error: $e');
       }
+    //}
+
+
+    if (success) {
+      Get.toNamed(Routes.RESULT_PAGE);
+    } else {
+      resetToHome();
     }
+
+
     //resetToHome();
-    try {
-      await resetToHome();
-    } catch (e) {
-      logger.warning('resetToHome error: $e');
-    } finally {
-      _isNavigating = false;
-    }
+    // try {
+    //   await resetToHome();
+    // } catch (e) {
+    //   logger.warning('resetToHome error: $e');
+    // } finally {
+    //   _isNavigating = false;
+    // }
   }
 
   resetToHome() async {
@@ -461,8 +473,8 @@ class SettlementController extends GetxController with StateMixin {
 
   gotonewBack() {
     //debugPrint('---gotonewBack---');
-    logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
-    safeReturnToHome();
+    //logger.info('---gotonewBack--- machineInfo.currentMode = ${machineInfo.currentMode}， is_back_home = ${is_back_home.value}');
+    safeReturnToHome(success: true);
   }
   //缺少场景考虑 扫码支付手机端操作异常，但是后续又可以了，但是机器交易流程停止了，订单不正常
   //扫码支付
@@ -1028,6 +1040,13 @@ class SettlementController extends GetxController with StateMixin {
           getPaymentCancelPosData();
         }
       } else {
+        if (EasyLoading.isShow) {
+          try {
+            await EasyLoading.dismiss();
+          } catch (e) {
+            logger.warning('EasyLoading.dismiss error: $e');
+          }
+        }
         Get.back();
       }
     }
