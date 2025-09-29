@@ -456,7 +456,7 @@ class SettlementController extends GetxController with StateMixin {
       case MachineMode.sell:
       case MachineMode.takeout:
         if (machineInfo.isBackHome) {
-          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
+          await Get.offNamedUntil(Routes.MENU_PAGE, (route) => route.settings.name == Routes.CHECKOUT_PAGE);
         } else {
           await Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         }
