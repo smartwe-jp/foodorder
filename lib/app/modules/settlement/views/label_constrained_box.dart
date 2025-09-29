@@ -8,8 +8,9 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 class LabelConstrainedBox extends StatelessWidget with ATempWidget {
   final Widget child;
   final double pagerWidth;
+  final double pagerHeight;
 
-  const LabelConstrainedBox(this.child, {Key? key, this.pagerWidth = 384}) : super(key: key);
+  const LabelConstrainedBox(this.child, {Key? key, this.pagerWidth = 384, this.pagerHeight = 232}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +18,7 @@ class LabelConstrainedBox extends StatelessWidget with ATempWidget {
     return Container(
       color: Colors.white,
       width: ScreenUtil().setWidth(pagerWidth),
-      height: 232.w,
+      height: pagerHeight.w,
       child: ColorFiltered(
         colorFilter: const ColorFilter.mode(
           Colors.black,

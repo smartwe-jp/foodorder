@@ -93,7 +93,7 @@ class CheckoutPageController extends GetxController with StateMixin {
     logI("CheckoutPageController ready");
     super.onReady();
     //startRepeatingAnimation();
-    //Get.back();
+    _checkToCloseLoading();
     if (firstLoad) {
       bool isSseEnabled =
           sseList.isNotEmpty && sseList.any((item) => item['isOn'] == true);
@@ -121,6 +121,17 @@ class CheckoutPageController extends GetxController with StateMixin {
   void onClose() {
     //stopRepeatingAnimation();
     super.onClose();
+  }
+
+  _checkToCloseLoading() async {
+    if (EasyLoading.isShow) {
+      logI('--Dismissing EasyLoading--');
+      try {
+        await EasyLoading.dismiss();
+      } catch (e) {
+        logger.warning('EasyLoading.dismiss error: $e');
+      }
+    }
   }
 
   _checkPosStatus() async {

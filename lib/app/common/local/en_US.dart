@@ -2,7 +2,6 @@ const Map<String, String> en_US = {
         //"top_back_button":"言語",
         //"top_back_button":"Home",
         "top_back_button":"Language",
-
         "show_price_front":"Tax-In",
         "tax_out":"Subtotal",
         "tax":"Incl. Tax",
@@ -221,5 +220,9 @@ const Map<String, String> en_US = {
         "pos_check_success": "POS machine status is normal.",
         "pos_check_failed": "POS machine status is abnormal.",
         "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
+
+  "order_success_title":"Order Successful",
+  "order_success_tips":"Thank you for your order.",
+  "origin_home":"Back to Home",
 
 };

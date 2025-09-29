@@ -222,4 +222,8 @@ const Map<String, String> ko_KR = {
 
         "settlement_unexpected_error" : "결제 중 예기치 않은 오류가 발생했습니다. 이전 페이지로 돌아가서 다시 시도해 주십시오.",
 
+        "order_success_title":"주문 성공",
+        "order_success_tips":"주문해 주셔서 감사합니다.",
+        "origin_home":"홈으로 돌아가기",
+
 };

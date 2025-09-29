@@ -28,6 +28,7 @@ abstract class Routes {
   static const RECEIPT_QUERY = _Paths.RECEIPT_QUERY;
   static const SELECT_PAYMENT_PAGE = _Paths.SELECT_PAYMENT_PAGE;
   static const SETTING_EDIT_PAGE = _Paths.SETTING_EDIT_PAGE;
+  static const RESULT_PAGE  = _Paths.RESULT_PAGE;
 }
 
 abstract class _Paths {
@@ -58,4 +59,5 @@ abstract class _Paths {
   //static const SETTING_EDIT_PAGE = '/edit_page';
   static const SETTING_EDIT_PAGE = '/setting_edit_page';
   static const SYSTEM_SETTING_PAGE_NEW = '/system-setting-page-new';
+  static const RESULT_PAGE = '/result_page';
 }

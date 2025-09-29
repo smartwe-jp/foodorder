@@ -1,22 +1,20 @@
-
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
 
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../widget/DialogUtils.dart';
 
 extension SettlementControllerUIExtension on SettlementController {
 
   showCashAlert(){
-    print("现金取消");
+    logI("--现金取消--");
     Future.delayed(Duration(milliseconds: 50),() async {
       Get.dialog(
           DialogUtils.alert("settlement_back_alertcontent".tr,
@@ -156,7 +154,7 @@ extension SettlementControllerUIExtension on SettlementController {
     var _showTag;
     if (int.parse(showOutMoney.value) > 0) {
       //_showTag = Text(GString.getToString(this._checkLanguage, "settlement_print_outprice_tag"),
-      _showTag = Text("settlement_print_loading_tag".tr,
+      _showTag = Text("settlement_print_loading_tag".tr + ".",
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),
@@ -164,7 +162,7 @@ extension SettlementControllerUIExtension on SettlementController {
             color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
           ));
     } else {
-      _showTag = Text("settlement_print_loading_tag".tr,
+      _showTag = Text("settlement_print_loading_tag".tr + ".",
           style: TextStyle(
             fontFamily: GFont.getFontFamily(),
             fontSize: ScreenAdapter.fontSize(25),

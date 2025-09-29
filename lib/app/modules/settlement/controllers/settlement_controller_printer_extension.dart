@@ -81,7 +81,7 @@ class PrintService extends GetxService {
     if (uuid.isEmpty) return;
 
     try {
-      LogUtil.d("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
+      debugPrint("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
@@ -89,7 +89,7 @@ class PrintService extends GetxService {
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        LogUtil.d("callbackBeforePrint uuid: $uuid send success");
+        debugPrint("callbackBeforePrint uuid: $uuid send success");
         if (event == 'message') {
           printData(data);
         }
@@ -101,27 +101,27 @@ class PrintService extends GetxService {
       debugPrint('TimeoutException:${e.toString()}');
       if (retryCount < 3) {
         // 如果超时，重试最多3次
-        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
       }
     } catch (e) {
       debugPrint('error Exception:${e.toString()}');
       if (retryCount < 3) {
         // 如果发生错误，重试最多3次
-        LogUtil.d("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        LogUtil.d("callbackBeforePrint uuid: $uuid failed after retries");
+        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
       }
     }
   }
 
   void printData(Map data, {bool fromSSE = true}) async {
-    LogUtil.d("printData == $data");
+    debugPrint("printData == $data");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";
@@ -182,6 +182,7 @@ class PrintService extends GetxService {
         final printWidth = int.parse(printSize.split('x')[0]); // 获取标签宽度
         final printHeight = int.parse(printSize.split('x')[1]); // 获取标签高度
         // Add the head receipt widget to the print queue
+        debugPrint("Label Print Width: $printWidth, Height: $printHeight");
         final time = await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
@@ -203,6 +204,7 @@ class PrintService extends GetxService {
               orderSnCode,
               options,
               printWidth.toDouble(),
+              printHeight.toDouble(),
               _labelMaxLine(printHeight),
               rotate,
               '$totalQty-$itemCount',
@@ -221,6 +223,7 @@ class PrintService extends GetxService {
             itemCount,
             remark,
             printWidth.toDouble(),
+            printHeight.toDouble(),
             time,
             rotate,
           );
@@ -398,6 +401,7 @@ class PrintService extends GetxService {
       String number,
       Map options,
       double printWidth,
+      double printHeight,
       int maxLines,
       bool rotate,
       String index,
@@ -412,8 +416,9 @@ class PrintService extends GetxService {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(
-                flex: 1,
+              SizedBox(
+                height: 80.h,
+                //flex: 1,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
@@ -434,20 +439,6 @@ class PrintService extends GetxService {
                       ),
                     ),
 
-                    // Expanded(
-                    //   flex: 1,
-                    //   child: AutoSizeText(
-                    //     ' # ' + number,
-                    //     maxLines: 2,
-                    //     textAlign: TextAlign.right,
-                    //     style: TextStyle(
-                    //       fontSize: 30,
-                    //       color: Colors.black,
-                    //       fontWeight: FontWeight.bold,
-                    //     ),
-                    //     overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                    //   ),
-                    // ),
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -493,7 +484,7 @@ class PrintService extends GetxService {
                 thickness: 2,
               ),
               Expanded(
-                flex: 2,
+                //flex: 2,
                 child: Column(
                   children: [
                     Expanded(
@@ -529,6 +520,7 @@ class PrintService extends GetxService {
         ),
       ),
       pagerWidth: printWidth,
+      pagerHeight: printHeight,
     );
   }
 
@@ -540,6 +532,7 @@ class PrintService extends GetxService {
       int itemCount,
       String remark,
       double printWidth,
+      double printHeight,
       String time,
       bool rotate) {
   return LabelConstrainedBox(
@@ -552,8 +545,8 @@ class PrintService extends GetxService {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
 
-                Expanded(
-                  flex: 1,
+                SizedBox(
+                  height: 80.h,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -620,7 +613,7 @@ class PrintService extends GetxService {
                 ),
 
                 Expanded(
-                  flex: 2,
+                  //flex: 2,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
@@ -654,11 +647,11 @@ class PrintService extends GetxService {
               ]
           ),
         )
-      ),
-      pagerWidth: printWidth,
-    );
-  }
-
+    ),
+    pagerWidth: printWidth,
+    pagerHeight: printHeight
+  );
+}
 
   Widget optionItem1(String optionName, List optionValues) {
     return Container(

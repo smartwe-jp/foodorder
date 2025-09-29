@@ -100,6 +100,19 @@ class MachineInfoController extends GetxController {
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
 
+  String get printType {
+    String type = "";
+    final labelPrinter = printerList.firstWhere(
+        (printer) => printer['type'] == 10 && printer['receipt'] == 1 && !printer['isOff'],
+        orElse: () => null);
+
+    if (labelPrinter != null) {
+      type = 'Label';
+    }
+
+    return type;
+  }
+
   @override
   Future<void> onInit() async {
     logI('loadMachineSettingInfo onInit');
