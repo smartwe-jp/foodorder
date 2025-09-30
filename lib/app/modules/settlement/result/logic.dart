@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:assets_audio_player/assets_audio_player.dart';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:get/get.dart';
@@ -24,14 +26,23 @@ class ResultLogic extends GetxController {
     //_playSound();
   }
 
-  void _playSound() {
+  void _playSound() async {
     // Implement sound playing logic here
     logI('Playing sound...');
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/thankyou_voice.m4a"),
-      autoStart: true,
-      volume: 1.0,
-    );
+
+    if (Platform.isWindows) {
+        final player = AudioPlayer();
+        await player.setVolume(1.2);
+        await player.setSource(AssetSource('audios/thankyou_voice.m4a'));
+        await player.resume();
+    } else {
+        AssetsAudioPlayer.newPlayer().open(
+              Audio("assets/audios/thankyou_voice.m4a"),
+              autoStart: true,
+              volume: 1.0,
+        );
+    }
+
   }
 
   void _checkToCloseLoading() async {
