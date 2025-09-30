@@ -72,7 +72,7 @@ class ResultLogic extends GetxController {
         }
       } else {
         state.secondsLeft.value = v;
-        if (state.secondsLeft.value == 4){
+        if (state.secondsLeft.value == 3){
           _playSound();
         }
       }
