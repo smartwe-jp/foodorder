@@ -668,10 +668,29 @@ class SettlementController extends GetxController with StateMixin {
         machineInfo.pos_port = posSettingInfo['posPort'];
         if(machineInfo.pos_ip != "" && machineInfo.pos_port != ""){
           payConnectSocket(questData: questData);
+        } else {
+          //提醒未设置POS机 点击返回
+          EasyLoading.dismiss();
+          Get.dialog(
+              barrierDismissible: false,
+              DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
+                  title: "tag_title".tr,
+                  confirmtitle: "tag_button_yes".tr, confirm: () {
+                    Get.back();
+                    Get.back();
+                  }));
         }
-
       } else {
-        //需要添加提醒，并取消当前流程。
+        //提醒未设置POS机 点击返回
+        EasyLoading.dismiss();
+        Get.dialog(
+            barrierDismissible: false,
+            DialogUtils.alertOneButton("settlement_posnosetting_error".tr,
+                title: "tag_title".tr,
+                confirmtitle: "tag_button_yes".tr, confirm: () {
+                  Get.back();
+                  Get.back();
+                }));
       }
     }
   }
