@@ -1195,8 +1195,8 @@ class SettlementController extends GetxController with StateMixin {
         //Get.find<MenuPageController>().getBookingBootMenu();
       } else
         if (machineInfo.currentMode == MachineMode.scan){
-        if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-          Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
+        // if (Get.isRegistered<SelfCheckoutscanningcodeController>())
+        //   Get.find<SelfCheckoutscanningcodeController>().clearCartList(hideLoading: false);
 
         // if (Get.isRegistered<MenuPageController>()) {
         //   MenuPageController controller = Get.find<MenuPageController>();
@@ -1209,13 +1209,13 @@ class SettlementController extends GetxController with StateMixin {
           // if (Get.isRegistered<OrderHomeController>())
           //   Get.find<OrderHomeController>().clearCartList();
 
-          if (Get.isRegistered<MenuPageController>()) {
-            MenuPageController controller = Get.find<MenuPageController>();
-            controller.clearCartList();
-            //if (controller.machineInfo.mealType) {
-              //controller.clearCartList();
-            //}
-          }
+          // if (Get.isRegistered<MenuPageController>()) {
+          //   MenuPageController controller = Get.find<MenuPageController>();
+          //   controller.clearCartList();
+          //   //if (controller.machineInfo.mealType) {
+          //     //controller.clearCartList();
+          //   //}
+          // }
       }
 
       //先打印小票，然后在结束入金进行下一步流程,如果扫码则直接取引终了返回，否则进行出金、汇报等操作
