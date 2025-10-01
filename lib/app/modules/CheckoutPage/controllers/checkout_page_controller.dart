@@ -59,6 +59,7 @@ class CheckoutPageController extends GetxController with StateMixin {
   bool isAnimating = false;
 
   RxMap orderInfoMap = {}.obs;
+  RxList orderLines = [].obs;
   String scanTextValue = '';
   bool firstLoad = false;
   get printerList => machineInfo.printerList;
@@ -314,6 +315,7 @@ class CheckoutPageController extends GetxController with StateMixin {
           tax8.value = response["data"]["tax2"] ?? 0;
 
           orderInfoMap.value = response["data"]["orderInfoMap"] ?? {};
+          orderLines.value = response["data"]["orderLines"] ?? [];
           //orderInfoMap: {牛すじドテ焼大根日8: 1}
           itemCount.value = orderInfoMap.map((key, value) => MapEntry(key, value as int)).values.fold(0, (previousValue, element) => previousValue + element);
           
