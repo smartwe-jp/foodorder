@@ -435,23 +435,9 @@ class CreatePrintImageController extends GetxController {
     // 现在details没有提供值了，换成了 printInfo 内的 orderLinesMap
     // 提取 orderLinesMap 中的菜品信息转换成原来的 menuVos 格式
     if (printData["printInfo"] != null) {
-      final orderLinesMap = printData["printInfo"]["orderLinesMap"];
+      //final orderLinesMap = printData["printInfo"]["orderLinesMap"];
       final orderLines = printData["printInfo"]["orderLines"];
-      if (orderLinesMap != null && orderLinesMap.isNotEmpty) {
-        menuVos = [];
-        for (var key in orderLinesMap.keys) {
-          final items = orderLinesMap[key];
-          if (items != null && items.isNotEmpty) {
-            for (var item in items) {
-              menuVos.add({
-                "menuName": item["name"],
-                "menuQty": item["qty"],
-                "price": item["price"] ?? 0,
-              });
-            }
-          }
-        }
-      } else if (orderLines != null && orderLines.isNotEmpty) {
+      if (orderLines != null && orderLines.isNotEmpty) {
         menuVos = [];
         for (var item in orderLines) {
           menuVos.add({

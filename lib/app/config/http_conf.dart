@@ -2,7 +2,7 @@
 const base_url_profile = "https://api.smartwe.jp/";  //new生产环境地址
 const base_url_test = "https://sit-api.smartwe.jp/";  //测试环境地址//是否生产环境
 const base_url = isProduction ? base_url_profile : base_url_test;  //根据环境选择地址
-const isProduction = true; //是否生产环境
+const isProduction = false; //是否生产环境
 
 const oa_base_url = "https://oa.gutingjun.com/api/";  //刷脸正式环境地址
 
@@ -37,6 +37,7 @@ const servicePath = {
   'webBootToPrintV6': base_url + 'pad/web/boot/v6/print', //打印小票请求地址 领収书有变化
   'webBootToPrintV7': base_url + 'pad/web/boot/v7/print', //打印小票请求地址 增加多选，厨房菜单有变化
   'webBootToPrintV8': base_url + 'pad/web/boot/v8/print',
+  'webBootToPrintV9': base_url + 'pad/web/boot/v9/print',
   'webBootToRetryPrint': base_url + 'pad/web/boot/retry/print',
   'webBootCancel': base_url + 'pad/web/boot/cancel', //取消订单请求地址
   'webBootCancelV1': base_url + 'pad/web/boot/v1/cancel', //取消订单请求地址

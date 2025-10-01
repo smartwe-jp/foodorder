@@ -79,9 +79,9 @@ class ScanDetailPagePage extends StatelessWidget {
                     child: ListView(
                       shrinkWrap: true,
                       children: [
-                        ...checkoutLogic.orderInfoMap.entries
+                        ...checkoutLogic.orderLines
                             .map(
-                                (entry) => _orderItem(entry.key, entry.value))
+                                (entry) => _orderItem(entry))
                             .toList()
                       ],
                     ),
@@ -346,8 +346,13 @@ class ScanDetailPagePage extends StatelessWidget {
         ));
   }
 
+  //orderLines: [{name: Kanran Beef Noodle, price: 100, qty: 1, bizId: 461188153690226689, options: {麺の型: [{name: 👍🏻平麺, qty: 1}], パクチー: [{name: 無し, qty: 1}], 脂・菜・にん: [{name: あり, qty: 1}]}
+  _orderItem(order) {
 
-  _orderItem(title, qty) {
+    final title = order['name'] ?? '';
+    final qty = order['qty'] ?? 0;
+    final options = order['options'] ?? {};
+
     return
 
       Column(
@@ -357,29 +362,84 @@ class ScanDetailPagePage extends StatelessWidget {
               top: ScreenAdapter.height(10),
               bottom: ScreenAdapter.height(10),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.end,
+            child: Column(
               children: [
-                Container(
-                  width: ScreenAdapter.width(500),
-                  child: Text('$title',
-                      maxLines: 2,
-                      style: TextStyle(
-                        fontFamily: GFont.getFontFamily(),
-                        fontSize: ScreenAdapter.fontSize(40),
-                        fontWeight: FontWeight.w500,
-                        color: Colors.black,
-                      )),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Container(
+                      width: ScreenAdapter.width(500),
+                      child: Text('$title',
+                          maxLines: 2,
+                          style: TextStyle(
+                            fontFamily: GFont.getFontFamily(),
+                            fontSize: ScreenAdapter.fontSize(40),
+                            fontWeight: FontWeight.w500,
+                            color: Colors.black,
+                          )),
+                    ),
+                    SizedBox(width: ScreenAdapter.width(30)),
+                    Text('x $qty',
+                        style: TextStyle(
+                          fontFamily: GFont.getFontFamily(),
+                          fontSize: ScreenAdapter.fontSize(30),
+                          fontWeight: FontWeight.w500,
+                          color: Colors.black,
+                        )),
+                  ],
                 ),
-                SizedBox(width: ScreenAdapter.width(30)),
-                Text('x $qty',
-                    style: TextStyle(
-                      fontFamily: GFont.getFontFamily(),
-                      fontSize: ScreenAdapter.fontSize(30),
-                      fontWeight: FontWeight.w500,
-                      color: Colors.black,
-                    )),
+                //选项
+                if (options.isNotEmpty)
+                  Container(
+                    margin: EdgeInsets.only(top: ScreenAdapter.height(10)),
+                    child: Column(
+                      children: [
+                        ...options.entries.map<Widget>((entry) {
+                          final optionName = entry.key;
+                          final optionValues = entry.value as List<dynamic>;
+                          return Container(
+                            margin: EdgeInsets.only(top: ScreenAdapter.height(5)),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Container(
+                                  width: ScreenAdapter.width(300),
+                                  child: Text('$optionName',
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
+                                        fontSize: ScreenAdapter.fontSize(28),
+                                        fontWeight: FontWeight.w400,
+                                        color: Colors.black54,
+                                      )),
+                                ),
+                                SizedBox(width: ScreenAdapter.width(20)),
+                                Expanded(
+                                  child: Wrap(
+                                    spacing: ScreenAdapter.width(10),
+                                    runSpacing: ScreenAdapter.height(5),
+                                    children: optionValues.map<Widget>((opt) {
+                                      final optName = opt['name'] ?? '';
+                                      final optQty = opt['qty'] ?? 0;
+                                      return Text('$optName x $optQty',
+                                          style: TextStyle(
+                                            fontFamily: GFont.getFontFamily(),
+                                            fontSize: ScreenAdapter.fontSize(28),
+                                            fontWeight: FontWeight.w400,
+                                            color: Colors.black54,
+                                          ));
+                                    }).toList(),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                  )
               ],
             ),
           ),

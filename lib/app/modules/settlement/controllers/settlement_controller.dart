@@ -1036,7 +1036,7 @@ class SettlementController extends GetxController with StateMixin {
         "printType": machineInfo.printType
       };
 
-      final queryUrl = "webBootToPrintV8"; //230704新修改小票
+      final queryUrl = "webBootToPrintV9";
 
       request(queryUrl, method: 'POST', parameters: formData).then((val) async {
         var response = json.decode(val.toString());
