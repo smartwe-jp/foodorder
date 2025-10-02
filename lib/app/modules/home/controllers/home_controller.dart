@@ -35,9 +35,7 @@ class HomeController extends GetxController {
   RxBool _isCashState = true.obs;
   RxInt checkSteeps = 1.obs; //自检步骤
   RxString _machineCode = "".obs;
-  var _allowStatus;
-  var _stopStatus;
-  var _closeStatus;
+
   final logger = Logger('SettingController');
 
   @override

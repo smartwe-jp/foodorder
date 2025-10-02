@@ -7,7 +7,6 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/transit_page_controller.dart';
 import 'package:foodorder/app/services/ResetToHomeTimer.dart';
@@ -16,65 +15,14 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:logging/logging.dart';
-import 'package:print_image_generate_tool/print_image_generate_tool.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
-
-
-
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
-import 'app/config/printer_info.dart';
-import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
 class _NavBounceTrack {
   static String? lastRoute;
 }
-
-//打印图层生成成功
-Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
-  //final imageBytes = imgdata.data;
-    final printTask = imgData.taskItem;
-
-  //指定的打印机
-    final printerInfo = printTask.params as PrinterInfo;
-    print('printerInfo: $printerInfo');
-    //打印票据类型（标签、小票）
-    final printTypeEnum = printTask.printTypeEnum;
-
-    final imageBytes =
-        await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
-    //也可以使用 ImageByteFormat.png
-    final argbWidth = imgData.imageWidth;
-    final argbHeight = imgData.imageHeight;
-    if (imageBytes == null) {
-      return;
-    }
-
-    var printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-    imgData: imageBytes,
-    printType: printTypeEnum,
-    argbWidthPx: argbWidth,
-    argbHeightPx: argbHeight,
-  );
-
-    if (printerInfo.isUsbPrinter) {
-      // usb 打印
-      print('usb 打印');
-      final conn = UsbConn(printerInfo.usbDevice!);
-      conn.writeMultiBytes(printData, 1024 * 8);
-    } else if (printerInfo.isNetPrinter) {
-      // 网络 打印
-      print('网络 打印 ${printerInfo.ip!}');
-      final conn = NetConn(printerInfo.ip!);
-      conn.writeMultiBytes(printData);
-    }
-
-    // // 网络 打印
-    // final conn = printerPlus.NetConn(printerInfo.ip!);
-    // conn.writeMultiBytes(printData);
-  }
 
 void main() {
   runZonedGuarded(() async {
@@ -110,7 +58,7 @@ void main() {
                       primaryColor: Gcolor.primaryColor, // 设置主体颜色
                     ),
                     home: child,
-                    //initialRoute: Routes.HOME,
+                    initialRoute: Routes.HOME,
                     //initialRoute: AppPages.INITIAL,
                     //配置ios动画
                     locale: Locale('ja', 'JP'), // 默认语言
@@ -144,16 +92,16 @@ void main() {
                   ));
 
         },
-        child: Scaffold(
-          body: PrintImageGenerateWidget(
-            contentBuilder: (context) {
-              return HomeView();
-              //return WindewsTestView();
+        // child: Scaffold(
+        //   body: PrintImageGenerateWidget(
+        //     contentBuilder: (context) {
+        //       return HomeView();
+        //       //return WindewsTestView();
 
-            },
-            onPictureGenerated: _onPictureGenerated,
-          ),
-        ),
+        //     },
+        //     onPictureGenerated: _onPictureGenerated,
+        //   ),
+        // ),
       ));
       //HttpOverrides.global = MyHttpOverrides();flutter
     });
