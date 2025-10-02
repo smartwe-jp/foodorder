@@ -113,7 +113,7 @@ class CheckoutPageController extends GetxController with StateMixin {
         _showPosCheck();
       }
     }
-    Future.delayed(const Duration(milliseconds: 500), () {
+    Future.delayed(const Duration(milliseconds: 1000), () {
       Get.updateLocale(Locale('jp', 'JP'));//默认日语
     });
   }
