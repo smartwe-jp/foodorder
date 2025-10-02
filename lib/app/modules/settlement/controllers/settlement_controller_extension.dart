@@ -100,7 +100,7 @@ extension SettlementControllerExtension on SettlementController {
       logger.info('-- getInputMoney onGetPutMoneyStringChange: $result--');
       if (result > 0) {
         hasStartPayflow = true;
-        timer?.cancel();
+        //timer?.cancel();
         getPutMoney.value = result.toString();
         debugPrint("getPutMoney.value==${getPutMoney.value}");
         scanQrCodeFocusNode.unfocus();
@@ -463,7 +463,7 @@ extension SettlementControllerExtension on SettlementController {
 
   _getPayCubeOutMoney({reportWithOrder = true}) async {
     //_currencyString现金机出款币种:A3 00 00  A1 02 00 A3 01 00
-    OutMoneytimer?.cancel();
+    //OutMoneytimer?.cancel();
 
     debugPrint("_getPayCubeOutMoney");
     logger.info('-- getPayCubeOutMoney --');

@@ -182,7 +182,7 @@ extension SettlementControllerUIExtension on SettlementController {
             _showTag,
             InkWell(
               onLongPress: () {
-                ScanCodeConfirmTimer?.cancel();
+                //ScanCodeConfirmTimer?.cancel();
                 doScanCodeTimeOutLastQuery();
               },
               child: Container(
