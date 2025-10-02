@@ -6,6 +6,7 @@ import 'package:flutter_http_sse/enum/request_method_type_enum.dart';
 import 'package:flutter_http_sse/model/sse_request.dart';
 import 'package:flutter_http_sse/model/sse_response.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
 
 class SseService extends GetxService {
@@ -20,12 +21,12 @@ class SseService extends GetxService {
   Future<void> addSseListen(String url) async {
 
     if (_subscriptions.containsKey(url)) {
-      print('SSE Service: Already subscribed to $url');
+      logI('SSE Service: Already subscribed to $url');
       return;
     }
 
     //if (kDebugMode) {
-      print('SSE Service: Attempting to connect to $url');
+      logI('SSE Service: Attempting to connect to $url');
     //}
 
     final request = SSERequest(
@@ -40,7 +41,7 @@ class SseService extends GetxService {
       onData: (SSEResponse response) {},
       onError: (error) {
         if (kDebugMode) {
-          print('SSE Service: Error in request for $url: $error');
+          logI('SSE Service: Error in request for $url: $error');
         }
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
@@ -92,7 +93,7 @@ class SseService extends GetxService {
         _heartbeatTimers[url]?.cancel();
         _heartbeatTimers[url] = Timer(const Duration(seconds: 46), () {
           //if (kDebugMode) {
-            print('SSE Service: Heartbeat timeout for $url, reconnecting...');
+            logI('SSE Service: Heartbeat timeout for $url, reconnecting...');
           //}
           disconnect(url).then((_) {
             _startReconnect(url, request);
@@ -101,7 +102,7 @@ class SseService extends GetxService {
       },
       onError: (err) {
         //if (kDebugMode) {
-          print('SSE Service: Connection error for $url: $err');
+          logI('SSE Service: Connection error for $url: $err');
         //}
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
@@ -138,13 +139,13 @@ class SseService extends GetxService {
     //check if the subscription exists
     if (!_subscriptions.containsKey(url)) {
       //if (kDebugMode) {
-        print('SSE Service: No found active subscription for $url');
+        logI('SSE Service: No found active subscription for $url');
       //}
       return;
     }
 
     //if (kDebugMode) {
-      print('SSE Service: disconnect for $url');
+      logI('SSE Service: disconnect for $url');
     //}
 
     _subscriptions[url]?.cancel();
@@ -165,7 +166,7 @@ class SseService extends GetxService {
   /// 断开所有连接
   Future<void> disconnectAll() async {
     if (kDebugMode) {
-      print('SSE Service: Disconnecting all subscriptions');
+      logI('SSE Service: Disconnecting all subscriptions');
     }
     for (final url in _subscriptions.keys.toList()) {
       await disconnect(url);
