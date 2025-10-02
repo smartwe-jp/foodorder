@@ -913,14 +913,14 @@ class SettingController extends GetxController with StateMixin {
   goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
     if (machine_mode.value == "1") {
-      if (Get.isRegistered<MenuPageController>()) {
-        Get.find<MenuPageController>().clearCartList();
-        Get.delete<MenuPageController>();
-      } // 手动删除控制器实例
+      // if (Get.isRegistered<MenuPageController>()) {
+      //   Get.find<MenuPageController>().clearCartList();
+      //   Get.delete<MenuPageController>();
+      // } // 手动删除控制器实例
     } else if (machine_mode.value == "2") {
-      if (Get.isRegistered<CheckoutPageController>()) {
+      //if (Get.isRegistered<CheckoutPageController>()) {
         //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
-      }
+      //}
     } else if (machine_mode.value == "3") {
       //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
       //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
@@ -928,18 +928,14 @@ class SettingController extends GetxController with StateMixin {
       //if (Get.isRegistered<SelfservicePageController>())
       //Get.delete<SelfservicePageController>();
     }
-    if (Get.isRegistered<SettingController>())
-      Get.delete<SettingController>(); // 手动删除控制器实例
-    if (Platform.isAndroid) {
-      // FirebaseAnalytics.instance.logEvent(name: "setting_back", parameters: {
-      //   "machineCode": machineCode.value,
-      // });
+    if (Get.isRegistered<SettingController>()) {
+      //Get.delete<SettingController>(); // 手动删除控制器实例
     }
     //Future.delayed(Duration(milliseconds: 100), () {
     //Get.offAllNamed('/transit-page');
     //Get.toNamed('/transit-page');
     //Get.offNamedUntil('/transit-page', ModalRoute.withName('/home'));
-    Get.updateLocale(Locale('jp', 'JP'));
+    //Get.updateLocale(Locale('jp', 'JP'));
     Get.offNamedUntil('/transit-page',
         (route) => route.isFirst); //, arguments: {'toView2': true}
     //});

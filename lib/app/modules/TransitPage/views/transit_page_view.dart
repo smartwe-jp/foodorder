@@ -11,7 +11,10 @@ class TransitPageView extends GetView<TransitPageController> {
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() {
+    return //Obx(() {
+      GetBuilder<TransitPageController>(
+        //init: controller,
+        builder: (controller) {
       // 未加载完：保留原有 UI（加载 GIF）
       if (!controller.showStartButton.value) {
         return Scaffold(
@@ -116,5 +119,6 @@ class TransitPageView extends GetView<TransitPageController> {
         ),
       );
     });
+    //});
   }
 }
