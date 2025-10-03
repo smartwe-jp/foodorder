@@ -592,11 +592,11 @@ class SettlementController extends GetxController with StateMixin {
             Get.back();
           }));
     } else {
-      if (Platform.isAndroid) {
+      //if (Platform.isAndroid) {
         doPrintOrderMenu(machineInfo.receiptPrintType);
-      } else {
-        gloryPayFlow(machineInfo.receiptPrintType);
-      }
+      //} else {
+      //  gloryPayFlow(machineInfo.receiptPrintType);
+      //}
     }
   }
 
@@ -1481,7 +1481,8 @@ class SettlementController extends GetxController with StateMixin {
     //var executeCount = 0;
     CashStep.value = 2;
     if (Platform.isWindows) {
-      await gloryNextOper();
+      //await gloryNextOper();
+      gloryPayFlow();
       return;
     }
     //sleep(Duration(milliseconds: 50));

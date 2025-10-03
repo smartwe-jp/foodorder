@@ -234,7 +234,7 @@ extension SettlementControllerExtension on SettlementController {
   cashPayCheck() async {}
 
   //先找零钱后打印
-  gloryPayFlow(printType) async {
+  gloryPayFlow() async {
     // debugPrint("nextOper");
     // CashStep.value = 2;
     //sleep(Duration(milliseconds: 50));
@@ -248,11 +248,16 @@ extension SettlementControllerExtension on SettlementController {
       //找零
       if (await _startOutputMoney(giveChangeMoney.value)) {
         //TODO 如果已经找钱但是 后续失败了。如何恢复或者下一步。
-        doPrintOrderMenu(printType);
+        //doPrintOrderMenu(printType);
+        gloryNextOper();
+      } else {
+        //找零失败
+        logger.info('-- gloryPayFlow startOutPutMoney failed --');
       }
     } else {
       //已经结束入金，处理取引终了
-      doPrintOrderMenu(printType);
+      //doPrintOrderMenu(printType);
+       gloryNextOper();
     }
   }
 
