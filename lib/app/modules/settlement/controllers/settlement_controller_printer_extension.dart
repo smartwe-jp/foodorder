@@ -161,12 +161,12 @@ class PrintService extends GetxService {
         orElse: () => null,
       );
       if (printer == null) {
-        debugPrint("Printer IP not configured for key: $key");
+        logI("Printer IP not configured for key: $key");
         continue;
       }
       final printerIp = printer["printIp"];
       if (printerIp == null || printerIp.isEmpty) {
-        debugPrint("Printer IP is empty for key: $key");
+        logI("Printer IP is empty for key: $key");
         continue;
       }
 
