@@ -89,11 +89,11 @@ class SseService extends GetxService {
           // }
         }
 
-        // 每收到消息，重置35秒超时检测
+        // 每收到消息，重置75秒超时检测
         _heartbeatTimers[url]?.cancel();
-        _heartbeatTimers[url] = Timer(const Duration(seconds: 46), () {
+        _heartbeatTimers[url] = Timer(const Duration(seconds: 75), () {
           //if (kDebugMode) {
-            logI('SSE Service: Heartbeat timeout for $url, reconnecting...');
+            logI('SSE Service: Heartbeat timeout for (75s) $url, reconnecting...');
           //}
           disconnect(url).then((_) {
             _startReconnect(url, request);
@@ -125,12 +125,14 @@ class SseService extends GetxService {
     _subscriptions[url] = sub;
 
     // 启动首次心跳定时器（防止连接后迟迟没消息）
-    // _heartbeatTimers[url]?.cancel();
-    // _heartbeatTimers[url] = Timer(const Duration(seconds: 35), () {
-    //   disconnect(url).then((_) {
-    //     _startReconnect(url, request);
-    //   });
-    // });
+    _heartbeatTimers[url]?.cancel();
+    _heartbeatTimers[url] = Timer(const Duration(seconds: 90), () {
+      //if (kDebugMode) {
+        logI('SSE Service: Initial heartbeat timeout (no first event in 90s) $url, reconnecting...');
+      disconnect(url).then((_) {
+        _startReconnect(url, request);
+      });
+    });
   }
 
   /// 主动断开连接
