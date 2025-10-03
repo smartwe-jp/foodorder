@@ -56,6 +56,7 @@ extension HomeControllerExtension on HomeController {
   openCashChanger() async {
     debugPrint("OpenPayCube 1");
     checkSteeps.value = 2;
+    update();
     //如果检测现金机打开错误，则重新打开一下
     logger.info('-- openCashChanger --');
     bool retCode = await CashChanger.openCashChanger(
@@ -130,6 +131,7 @@ extension HomeControllerExtension on HomeController {
   stopCashChanger(action, next) async {
     debugPrint("stopPaycube 1");
     checkSteeps.value = 3;
+    update();
     logger.info('-- stopCashChanger --');
     int? result = await CashChanger.endDeposit(action);
     await CashChanger.changerResultNext(
@@ -156,6 +158,7 @@ extension HomeControllerExtension on HomeController {
   closeCashChanger() async {
     debugPrint("closePaycube 1");
     checkSteeps.value = 4;
+    update();
     showCashTimer?.cancel();
     prohibitOneCash();
   }

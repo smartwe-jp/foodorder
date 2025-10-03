@@ -2,6 +2,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/printer_info.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
 import 'package:print_image_generate_tool/print_image_generate_tool.dart';
@@ -100,7 +101,7 @@ class HomeView extends GetView<HomeController> {
 
     //指定的打印机
       final printerInfo = printTask.params as PrinterInfo;
-      print('printerInfo: $printerInfo');
+      //print('printerInfo: $printerInfo');
       //打印票据类型（标签、小票）
       final printTypeEnum = printTask.printTypeEnum;
 
@@ -122,12 +123,12 @@ class HomeView extends GetView<HomeController> {
 
       if (printerInfo.isUsbPrinter) {
         // usb 打印
-        print('usb 打印');
+        logI('usb 打印');
         final conn = printerPlus.UsbConn(printerInfo.usbDevice!);
         conn.writeMultiBytes(printData, 1024 * 8);
       } else if (printerInfo.isNetPrinter) {
         // 网络 打印
-        print('网络 打印 ${printerInfo.ip!}');
+        logI('网络 打印 ${printerInfo.ip!}');
         final conn = printerPlus.NetConn(printerInfo.ip!);
         conn.writeMultiBytes(printData);
       }

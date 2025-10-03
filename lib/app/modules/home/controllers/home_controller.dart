@@ -110,6 +110,7 @@ class HomeController extends GetxController {
   // 先に、インターネットの接続のご確認をお願いします。 （）提示的提示语
   checkInterNetStatus() async {
     checkSteeps.value = 1;
+    update();
     List<ConnectivityResult> connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult.contains(ConnectivityResult.mobile) ||
     connectivityResult.contains(ConnectivityResult.wifi) ||
@@ -158,6 +159,7 @@ class HomeController extends GetxController {
   //打开现金机
   openPayCube() async {
     checkSteeps.value = 2;
+    update();
     //倒计时，一定时间不开启现金机则继续执行下一步
     countDownTimer();
     String checkStatus = await payCube.CheckPayCubeStatus;
@@ -274,6 +276,7 @@ class HomeController extends GetxController {
   stopPayCube() async {
     debugPrint("--stopPayCube--");
     checkSteeps.value = 3;
+    update();
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
     bool endStatus = await payCube.endPayCube(onSuccess: () {
@@ -320,6 +323,7 @@ class HomeController extends GetxController {
 
   closePayCube() async {
     checkSteeps.value = 4;
+    update();
     //取引终了结束交易
     //await Paycube.setReceiveEvent;
     await Future.delayed(Duration(milliseconds: 500));
