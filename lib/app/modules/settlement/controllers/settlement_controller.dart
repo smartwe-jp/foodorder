@@ -1123,7 +1123,7 @@ class SettlementController extends GetxController with StateMixin {
         if (response['code'] == 200) {
           if (response['data']["printInfo"] != null) {
             printService.printData(response['data']["printInfo"], fromSSE: false);
-            saveService.addPrintJob(response['data']);
+            //saveService.addPrintJob(response['data']);
           }
           if(response['data']["orderType"] == 1 && machineInfo.isAllowReceipt == "1"){
             //debugPrint("response['data']====${response['data']}");
