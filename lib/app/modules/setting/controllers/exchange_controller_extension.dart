@@ -5,6 +5,7 @@ import 'package:foodorder/app/common/StringExtension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
 import 'package:foodorder/app/plugins/cash_changer/lib/cash_changer.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:get/get.dart';
@@ -24,7 +25,7 @@ extension ExchangeControllerExtension on SettingController {
 
   getCashInfo({String? cashString}) async {
     String? cash =  cashString ?? await getMachineCashInfo(showAlert: false);
-    debugPrint('cashInfo: $cash'); //'1:12,5:5'
+    logI('cashInfo: $cash'); //'1:12,5:5'
 
     if (cash != null) {
       Map result = await cash.split(',').asMap().map((key, value) {
@@ -33,7 +34,7 @@ extension ExchangeControllerExtension on SettingController {
       });
 
       cashInfoList.value = result;
-      debugPrint('cashInfoList: $cashInfoList');
+      logI('cashInfoList: $cashInfoList');
       cashInfo.value = await _changeMapKey(result, getCatVal);
       debugPrint('cashInfo: $cashInfo');
       update();
@@ -121,7 +122,7 @@ extension ExchangeControllerExtension on SettingController {
     var resultMap = null;
     await CashChanger.getCashBalance(
       onSuccess: (value) {
-        debugPrint("getMachineCashInfo 1");
+        logI("getMachineCashInfo 1");
         getCashInfo(cashString: value);
         resultMap = value.split(',').asMap().map((key, value) {
           final cash = value.split(':');
@@ -129,7 +130,7 @@ extension ExchangeControllerExtension on SettingController {
         });
       },
       catchError: (error) {
-        debugPrint("getMachineCashInfo error: $error");
+        logI("getMachineCashInfo error: $error");
         errorHandleDialog(error.tr);
       },
     );
@@ -278,14 +279,14 @@ extension ExchangeControllerExtension on SettingController {
       List<String> coins, Map<String, int> coinCounts, int target) {
     if (target == 0) return [];
     if (target < 0 || coins.isEmpty) return null;
-    debugPrint("findOptimalChange");
+    logI("findOptimalChange");
     List<MapEntry<String, int>>? bestResult;
     int minCoins = 9223372036854775807;
-    debugPrint("minCoins:$minCoins");
+    logI("minCoins:$minCoins");
     String coin = coins.first;
     int coinValue = int.parse(coin);
     int count = coinCounts[coin] ?? 0;
-    debugPrint("coin:$coin, coinValue:$coinValue, count:$count");
+    logI("coin:$coin, coinValue:$coinValue, count:$count");
 
     for (int i = 0; i <= count; i++) {
       var result = findOptimalChange(
@@ -332,11 +333,11 @@ extension ExchangeControllerExtension on SettingController {
 
   //exchangeFlow
   exchangeFlow(type, count, disconut) async {
-    debugPrint('exChangeFlow: $type, $count, $disconut');
+    logI('exChangeFlow: $type, $count, $disconut');
 
     showEasyLoading();
 
-    debugPrint(
+    logI(
         'exChangeFlow getPutMoneyCurrency: ${getPutMoneyCurrency.value}');
 
     String? localCashInfo = await getMachineCashInfo();
@@ -344,13 +345,13 @@ extension ExchangeControllerExtension on SettingController {
     Map<String, int> coinCounts = parseCoinCounts(
         getPutMoneyCurrency.value, localCashInfo, '$type:$count');
 
-    debugPrint('coinCounts : $coinCounts');
+    logI('coinCounts : $coinCounts');
     List<String> availableCoins = coinCounts.keys.toList(); //..sort();
-    debugPrint('availableCoins : $availableCoins');
+    logI('availableCoins : $availableCoins');
 
     List<MapEntry<String, int>>? change =
         findChange(availableCoins, coinCounts, disconut);
-    debugPrint('change : $change');
+    logI('change : $change');
 
     if (change == null) {
       EasyLoading.dismiss();
@@ -360,10 +361,10 @@ extension ExchangeControllerExtension on SettingController {
     }
 
     String changeString = formatChange(change, type, count);
-    debugPrint('changeString : $changeString');
+    logI('changeString : $changeString');
 
     String outInfo = getNoneZeroInfo(changeString);
-    debugPrint('outInfo: $outInfo');
+    logI('outInfo: $outInfo');
 
     Map<String, int> putCoinCounts = parseCoinCount(getPutMoneyCurrency.value);
     //Map remainingCoins = formatRemainingCoins(putCoinCounts, change);
@@ -375,7 +376,7 @@ extension ExchangeControllerExtension on SettingController {
       };
     }).toList();
 
-    debugPrint('puts: $puts');
+    logI('puts: $puts');
 
     final pops = [
       {
@@ -388,7 +389,7 @@ extension ExchangeControllerExtension on SettingController {
           })
     ];
 
-    debugPrint('pops: $pops');
+    logI('pops: $pops');
 
     //final depositAmount =
     await CashChanger.fixDeposit;
@@ -427,7 +428,7 @@ extension ExchangeControllerExtension on SettingController {
 
   gloryOutputMoney(outMoney, {Function? successTask, bool? fromeError}) async {
     //debugPrint("startOutPutMoney");
-    print("outMoney: $outMoney");
+    //print("outMoney: $outMoney");
     logger.info('-- gloryOutputMoney: $outMoney --');
     await CashChanger.removeEventsListener();
     bool success = false;
@@ -462,10 +463,10 @@ extension ExchangeControllerExtension on SettingController {
         });
     return success;
   }
-
+  //添加重试3次逻辑 和最后失败弹框提示。
   reportExchange(puts, pops) async {
     var success = false;
-    debugPrint('reportExchange');
+    logI('reportExchange');
     var formData = {
       'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4',
       'puts': puts,
@@ -473,7 +474,7 @@ extension ExchangeControllerExtension on SettingController {
       'shopCode': shopCode.value,
     };
 
-    debugPrint('formData: $formData');
+    logI('formData: $formData');
 
     await request(
       'webBootGloryExchange',
@@ -481,16 +482,18 @@ extension ExchangeControllerExtension on SettingController {
       parameters: formData,
     ).then((value) {
       final response = json.decode(value.toString());
-      debugPrint("response: $response");
+      logI("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
         success = true;
         //showToast('完了しました', context: Get.context);
       } else {
         success = false;
+        logI('---reportExchange failed: ${response["message"]}');
         showToast('両替失败!', context: Get.context);
       }
     }).catchError((error) {
+      logI('---reportExchange error: $error');
       success = false;
       EasyLoading.dismiss();
       showToast('両替失败!', context: Get.context);

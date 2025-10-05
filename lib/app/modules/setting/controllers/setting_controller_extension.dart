@@ -293,7 +293,7 @@ extension SettingControllerExtension on SettingController {
     if (taskTouch) return;
     taskTouch = true;
     showEasyLoading(content: 'お待ち下さい');
-
+    logger.info('-- cancelTimer --');
     var seconds = 5;
     showCashTimer?.cancel();
     showCashTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
