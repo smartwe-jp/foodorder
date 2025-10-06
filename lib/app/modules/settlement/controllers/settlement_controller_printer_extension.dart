@@ -289,6 +289,17 @@ class PrintService extends GetxService {
   printTableSeatInfo(Map data) async {
     debugPrint("printTableSeatInfo data: $data");
 
+    final smartWeSSE = sseList.firstWhere(
+      (sse) => sse["name"] == 'SmartWe SSE',
+      orElse: () => null,
+    );
+    
+
+    if (smartWeSSE == null || (smartWeSSE["printSeat"] ?? true)) {
+      debugPrint("SmartWe SSE printSeat is off");
+      return;
+    }
+
     //find pinter with type 11
     final printer = printerList.firstWhere(
       (p) => p["type"] == 11 && !p["isOff"],

@@ -417,7 +417,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   updateSSESetting(String name,
-      {bool? isOn, String? identify, bool? centerOn, bool? printOption}) async {
+      {bool? isOn, String? identify, bool? centerOn, bool? printOption, bool? printSeat}) async {
     if (sseSettingList.isNotEmpty) {
       for (var i = 0; i < sseSettingList.length; i++) {
         if (sseSettingList[i]['name'] == name) {
@@ -434,6 +434,10 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
           if (printOption != null) {
             sseSettingList[i]['printOption'] = printOption;
+          }
+
+          if (printSeat != null) {
+            sseSettingList[i]['printSeat'] = printSeat;
           }
           final needInput = sseSettingList[i]['needInput'] ?? false;
           if ((identify != null && identify.isNotEmpty) || !needInput) {
