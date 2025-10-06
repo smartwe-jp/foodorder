@@ -7,6 +7,7 @@ import 'package:foodorder/app/modules/setting/controllers/exchange_controller_ex
 import 'package:foodorder/app/modules/setting/printList/view.dart';
 import 'package:foodorder/app/modules/setting/views/CycleCashSettingView.dart';
 import 'package:foodorder/app/routes/app_pages.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 
 import 'package:get/get.dart';
 import '../../../config/colorsUtil.dart';
@@ -782,6 +783,7 @@ class SettingView extends GetView<SettingController> {
                                 if (Platform.isAndroid) {
                                   await controller.showBullyScreen();
                                 }
+                                logI('--- App exit...');
                                 sleep(Duration(milliseconds: 1500));
                                 Get.back();
                                 //退出关闭

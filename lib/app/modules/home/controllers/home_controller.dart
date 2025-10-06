@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/modules/home/controllers/home_controller_extension.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
 import 'package:appset/appset.dart';
@@ -42,6 +43,7 @@ class HomeController extends GetxController {
   void onInit() {
     debugPrint("home onInit");
     super.onInit();
+    logI('--- App Start ---');
     requestPermission();
     //getIsFirstOpen();
     //checkInterNetStatus();
