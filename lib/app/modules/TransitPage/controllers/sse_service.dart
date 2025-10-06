@@ -16,6 +16,8 @@ class SseService extends GetxService {
   final Map<String, Timer> _heartbeatTimers = {};
   PrintService _printService = Get.find();
 
+  final RxMap subscriptions = {}.obs; //为空则未连接，true为已连接，false为连接中
+
   /// 添加新的 SSE 监听
 
   Future<void> addSseListen(String url) async {
@@ -25,9 +27,8 @@ class SseService extends GetxService {
       return;
     }
 
-    //if (kDebugMode) {
-      logI('SSE Service: Attempting to connect to $url');
-    //}
+    logI('SSE Service: Attempting to connect to $url');
+    subscriptions[url] = false;
 
     final request = SSERequest(
       requestType: RequestMethodType.get,
@@ -40,9 +41,9 @@ class SseService extends GetxService {
       retry: true,
       onData: (SSEResponse response) {},
       onError: (error) {
-        if (kDebugMode) {
-          logI('SSE Service: Error in request for $url: $error');
-        }
+
+        logI('SSE Service: Error in request for $url: $error');
+      
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
             addSseListen(url);
@@ -56,10 +57,11 @@ class SseService extends GetxService {
     final sub = stream.listen(
       (SSEResponse res) {
         // ...数据处理...
-        //if (kDebugMode) {
+        if (kDebugMode) {
           print('SSE Service: Received from $url  event: ${res.event} message: ${res.data}');
-        //}
-        final event = res.event ?? 'Unknown';
+        }
+        subscriptions[url] = true;
+        final event = res.event;
         Map? data;
         if (res.data is Map) {
           data = res.data as Map;
@@ -84,6 +86,7 @@ class SseService extends GetxService {
             _printService.callbackBeforePrint(event, data);
           }
         } else {
+
           // if (kDebugMode) {
           //   print('SSE Service: Received event: $event');
           // }
@@ -92,18 +95,14 @@ class SseService extends GetxService {
         // 每收到消息，重置75秒超时检测
         _heartbeatTimers[url]?.cancel();
         _heartbeatTimers[url] = Timer(const Duration(seconds: 75), () {
-          //if (kDebugMode) {
-            logI('SSE Service: Heartbeat timeout for (75s) $url, reconnecting...');
-          //}
+          logI('SSE Service: Heartbeat timeout for (75s) $url, reconnecting...');
           disconnect(url).then((_) {
             _startReconnect(url, request);
           });
         });
       },
       onError: (err) {
-        //if (kDebugMode) {
-          logI('SSE Service: Connection error for $url: $err');
-        //}
+        logI('SSE Service: onError Connection error for $url: $err');
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
@@ -112,6 +111,7 @@ class SseService extends GetxService {
         });
       },
       onDone: () {
+        logI('SSE Service: onDone Connection closed for $url');
         _heartbeatTimers[url]?.cancel();
         Future.delayed(Duration(milliseconds: 500), (){
           disconnect(url).then((_) {
@@ -126,9 +126,8 @@ class SseService extends GetxService {
 
     // 启动首次心跳定时器（防止连接后迟迟没消息）
     _heartbeatTimers[url]?.cancel();
-    _heartbeatTimers[url] = Timer(const Duration(seconds: 90), () {
-      //if (kDebugMode) {
-        logI('SSE Service: Initial heartbeat timeout (no first event in 90s) $url, reconnecting...');
+    _heartbeatTimers[url] = Timer(const Duration(seconds: 55), () {
+      logI('SSE Service: Initial heartbeat timeout (no first event in 55s) $url, reconnecting...');
       disconnect(url).then((_) {
         _startReconnect(url, request);
       });
@@ -140,16 +139,12 @@ class SseService extends GetxService {
 
     //check if the subscription exists
     if (!_subscriptions.containsKey(url)) {
-      //if (kDebugMode) {
-        logI('SSE Service: No found active subscription for $url');
-      //}
+      logI('SSE Service: No found active subscription for $url');
       return;
     }
 
-    //if (kDebugMode) {
-      logI('SSE Service: disconnect for $url');
-    //}
-
+    logI('SSE Service: disconnect for $url');
+    subscriptions.remove(url);
     _subscriptions[url]?.cancel();
     _subscriptions.remove(url);
     _client.close(connectionId: url);

@@ -159,6 +159,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   @override
   void onReady() {
     super.onReady();
+    ever(sseService.subscriptions, (value) {
+      update();
+    });
   }
 
   @override
