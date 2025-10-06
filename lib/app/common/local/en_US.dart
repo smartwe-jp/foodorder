@@ -67,7 +67,7 @@ const Map<String, String> en_US = {
         "settlement_posPay_tips_title":"Follow the instructions displayed on the terminal screen and proceed with the operation.",
 
         "tag_print_content_paper_shortage":"System error. Please contact our staff.",
-        "tag_print_content_paper_error":"System error. Please contact our staff.",
+        "tag_print_content_paper_error":"Print error. Please contact our staff.",
         "tag_print_button_yes":"已处理",
         "tag_print_button_no":"不打印",
         "show_server_error":"System error. Please contact our staff.",

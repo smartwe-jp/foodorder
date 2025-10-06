@@ -571,6 +571,12 @@ class SettlementController extends GetxController with StateMixin {
           goNext = false;
         }
       }
+    }).timeout(Duration(seconds: 15), onTimeout: () {
+      logger.info("requestLatestCheckoutInfo 超时 15s");
+      goNext = true;
+    }).catchError((error) {
+      logger.info("requestLatestCheckoutInfo 异常 $error");
+      goNext = true;
     });
     return goNext;
   }
@@ -1091,12 +1097,12 @@ class SettlementController extends GetxController with StateMixin {
     }
 
     //判断是否允许打印小票
-    var printStatus = "0";
-    if (Platform.isWindows) {
-      printStatus = "8";
-    } else {
-      //printStatus = await FlutterPluginMsprinter.getPrintStatus();
-    }
+    // var printStatus = "0";
+    // if (Platform.isWindows) {
+    //   printStatus = "8";
+    // } else {
+    //   //printStatus = await FlutterPluginMsprinter.getPrintStatus();
+    // }
 
     // if (retry &&
     //     (machineInfo.paymentMethod == "0" ||
@@ -1106,8 +1112,8 @@ class SettlementController extends GetxController with StateMixin {
     //     await Future.delayed(Duration(milliseconds: 2000));
     // }
     //await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
-    if (printStatus == "0" || printStatus == "8") {
-      var formData = {
+    //if (printStatus == "0" || printStatus == "8") {
+      final formData = {
         "orderId": orderId.value,
         "payAmount": getPutMoney.value,
         "machineCode": machineInfo.machineCode,
@@ -1144,67 +1150,88 @@ class SettlementController extends GetxController with StateMixin {
           if (times < 3) {
             doPrintOrderMenu(printType, times: times + 1);
           } else {
-            _checkOutErrorHandle("tag_print_content_paper_error".tr);
+            //_checkOutErrorHandle("tag_print_content_paper_error".tr);
+            _handleOrderResultAlert(printType, times: times);
           }
         }
       }).catchError((e) {
         //错误后重新调用一次
-        _handleOrderResultAlert(printType, times: times);
-      }).timeout(Duration(seconds: 30), onTimeout: () {
+        if (times < 3) {
+          doPrintOrderMenu(printType, times: times + 1);
+        } else {
+          _handleOrderResultAlert(printType, times: times);
+        }
+        
+      }).timeout(Duration(seconds: 15), onTimeout: () {
         //错误后重新调用一次
-        _handleOrderResultAlert(printType, times: times);
+        if (times < 2) {
+          doPrintOrderMenu(printType, times: times + 1);
+        } else {
+          _handleOrderResultAlert(printType, times: times);
+        }
+        
       });
-    } else {
-      EasyLoading.dismiss();
-      var showDialogContent = "";
-      if (printStatus == "7") {
-        showDialogContent = "tag_print_content_paper_shortage".tr;
-      } else {
-        showDialogContent = "tag_print_content_paper_error".tr;
-      }
-      //小票状态
-      Get.dialog(
-          DialogUtils.alert(showDialogContent,
-              title: "tag_title".tr,
-              canceltitle: "tag_print_button_no".tr,
-              confirmtitle: "tag_print_button_yes".tr,
-              confirm: () {
-                Get.back();
-                doPrintOrderMenu(printType);
-              },
-              cancle: () {
-                Get.back();
-                //goToNewMyHome();
-                if (machineInfo.paymentMethod == "1") {
-                  nextOper();
-                } else {
-                  goToNewMyHome();
-                }
-              })
-      );
-    }
+    // } else {
+    //   EasyLoading.dismiss();
+    //   var showDialogContent = "";
+    //   if (printStatus == "7") {
+    //     showDialogContent = "tag_print_content_paper_shortage".tr;
+    //   } else {
+    //     showDialogContent = "tag_print_content_paper_error".tr;
+    //   }
+    //   //小票状态
+    //   Get.dialog(
+    //       DialogUtils.alert(showDialogContent,
+    //           title: "tag_title".tr,
+    //           canceltitle: "tag_print_button_no".tr,
+    //           confirmtitle: "tag_print_button_yes".tr,
+    //           confirm: () {
+    //             Get.back();
+    //             doPrintOrderMenu(printType);
+    //           },
+    //           cancle: () {
+    //             Get.back();
+    //             //goToNewMyHome();
+    //             if (machineInfo.paymentMethod == "1") {
+    //               nextOper();
+    //             } else {
+    //               goToNewMyHome();
+    //             }
+    //           })
+    //   );
+    // }
   }
 
   _handleOrderResultAlert(printType,{int times= 0}) {
     EasyLoading.dismiss();
-    if (times > 2) {
+    //if (times > 2) {
       Get.dialog(
-          DialogUtils.alertOneButton("order_network_error".tr,
+          DialogUtils.alert("tag_print_content_paper_error".tr,
               title: "tag_title".tr,
-              confirmtitle: "tag_button_yes".tr,
+              confirmtitle: "skip_button".tr,
+              canceltitle: "cancel_order".tr,
               confirm: () {
+                Get.back();
+                printGoNext();
+                
+                // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
+                //   "machineCode": machineInfo.machineCode,
+                // });
+              },
+              cancle: () {
                 Get.back();
                 commonCancel();
                 // FirebaseAnalytics.instance.logEvent(name: "settlement_order_error",parameters: {
                 //   "machineCode": machineInfo.machineCode,
                 // });
-              })
+                }
+              )
       );
       return;
-    }
+    //}
 
     Get.dialog(
-        DialogUtils.alert("settlement_order_error".tr,
+        DialogUtils.alert("tag_print_content_paper_error".tr,
             title: "tag_title".tr,
             confirmtitle: "tag_button_yes".tr,
             confirm: () async {
@@ -1225,23 +1252,6 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
-  _sendToDisplayPanel(data) async {
-    debugPrint("_sendToDisplayPanel data: $data");
-    if (machineInfo.wlan_panel_print_ip.isEmpty || machineInfo.wlan_panel_print_port.isEmpty) {
-      debugPrint("DisplayPanel IP or Port is empty, not sending data.");
-      return;
-    }
-    final String panelAddress =
-        'http://${machineInfo.wlan_panel_print_ip}:${machineInfo.wlan_panel_print_port}/api/add/order';
-    try {
-      final response =
-      await request(panelAddress, method: 'POST', parameters: data);
-      final responseValue = json.decode(response.toString());
-      debugPrint('_sendToDisplayPanel:$responseValue');
-    } catch (error) {
-      debugPrint('_sendToDisplayPanel error: ${error.toString()}');
-    }
-  }
 
   _checkOutErrorHandle(showDialogContent, {Function? confirm}) async {
     EasyLoading.dismiss();
@@ -1253,19 +1263,11 @@ class SettlementController extends GetxController with StateMixin {
             confirmtitle: "tag_button_yes".tr,
             confirm: () {
               Get.back();
-              //commonCancel();
-              //发邮件或者播放感谢语
-              // if (retryAction != null) {
-              //   retryAction();
-              // } else {
-              //   _sendEmailAndPlayVoice();
-              // }
-
               if (confirm != null) {
                 confirm();
               } else {
                 commonCancel();
-          }
+              }
 
             },
             cancle: () {
@@ -1275,14 +1277,6 @@ class SettlementController extends GetxController with StateMixin {
     );
   }
 
-  _sendEmailAndPlayVoice() async {
-    showToast("error_tips_thanks".tr);
-    AssetsAudioPlayer.newPlayer().open(
-      Audio("assets/audios/12248.wav"),
-      autoStart: true,
-      volume: 0.5,
-    );
-  }
 
   //
   printGoNext() async {

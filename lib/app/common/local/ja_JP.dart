@@ -68,7 +68,7 @@ const Map<String, String> ja_JP = {
         "settlement_posPay_tips_title":"端末の画面に表示される指示に従って、操作してください。",
 
         "tag_print_content_paper_shortage":"用紙切れです、お近くのスタッフにお知らせください",
-        "tag_print_content_paper_error":"故障、お近くのスタッフにお知らせください",
+        "tag_print_content_paper_error":"印刷故障、お近くのスタッフにお知らせください",
         "tag_print_button_yes":"処理済み",
         "tag_print_button_no":"印刷しない",
 
