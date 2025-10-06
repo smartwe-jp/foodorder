@@ -1518,6 +1518,18 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     final centerOn = sseItem['centerOn'] ?? false;
     final printOption = sseItem['printOption'] ?? true;
     final address = sseItem['address'] ?? "";
+    var statusColor = Colors.red;
+
+    for (var item in controller.sseService.subscriptions.entries) {
+      if (item.key.contains(identify) && identify.isNotEmpty) {
+        if (item.value == true) {
+          statusColor = Colors.green;
+        } else {
+          statusColor = Colors.orange;
+        }
+        break;
+      }
+    }
 
     return Container(
       decoration: BoxDecoration(
@@ -1538,6 +1550,8 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
           Row(
             children: [
               _settingContentSubtitle(name),
+              const SizedBox(width: 8),
+              Icon(Icons.circle, color: statusColor, size: 20),
               const Spacer(),
 
               if (!needInput || identify.isNotEmpty)
