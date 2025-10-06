@@ -221,7 +221,7 @@ const Map<String, String> en_US = {
         "pos_check_failed": "POS machine status is abnormal.",
         "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
 
-        "order_success_title":"Order Successful",
+        "order_success_title":"Payment Successful",
         "order_success_tips":"Thank you for your order.",
         "order_success_subtips":"Returning to the home screen in %% seconds.",
         "origin_home":"Back to Home",
