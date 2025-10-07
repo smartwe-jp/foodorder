@@ -121,7 +121,7 @@ class PrintService extends GetxService {
     }
   }
 
-  void printData(Map data, {bool fromSSE = true}) async {
+  void printData(Map data, {bool fromSSE = true, String orderId = ""}) async {
     logI("---printData---");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
@@ -177,7 +177,6 @@ class PrintService extends GetxService {
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
-        final orderId = data["order_id"] ?? "";
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printSize = printer['labelSize'] ?? '300x225';
         final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
