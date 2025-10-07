@@ -161,7 +161,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
         style: const TextStyle(
             fontFamily: 'NotoSansJP',
             fontSize: 22,
-            color: Color.fromARGB(255, 83, 82, 82),
+            color: Color.fromARGB(255, 38, 149, 240),
             fontWeight: FontWeight.bold),
       ),
     );
