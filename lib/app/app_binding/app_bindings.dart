@@ -2,6 +2,7 @@
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
 import 'package:foodorder/app/services/PinterCheckService.dart';
+import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:get/get.dart';
 
 import '../controllers/order_sql_controller.dart';
@@ -15,5 +16,6 @@ class AppBindings extends Bindings {
     Get.lazyPut(() => SseService());
     Get.lazyPut(() => PrinterCheckService());
     Get.lazyPut(() => PosCheckService());
+    Get.lazyPut(() => PrintInfoService());
   }
 }

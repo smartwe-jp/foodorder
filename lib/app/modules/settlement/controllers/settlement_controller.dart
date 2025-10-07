@@ -12,6 +12,9 @@ import 'package:fluttertoast/fluttertoast.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_ui_extension.dart';
+import 'package:foodorder/app/modules/settlement/views/PayResultView.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 
@@ -46,6 +49,7 @@ class SettlementController extends GetxController with StateMixin {
   final posCheckService = Get.find<PosCheckService>();
 
   MachineInfoController machineInfo = Get.find();
+  PrintInfoService saveService = Get.find();
   PrintService printService = Get.find();
   AppConfig appConfig = Get.find();
   get payCube => appConfig.payCube;
@@ -1045,6 +1049,7 @@ class SettlementController extends GetxController with StateMixin {
         if (response['code'] == 200) {
           if (response['data']["printInfo"] != null) {
             printService.printData(response['data']["printInfo"], fromSSE: false);
+            saveService.addPrintJob(response['data']);
           }
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
