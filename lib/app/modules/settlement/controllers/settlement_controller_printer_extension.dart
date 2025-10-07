@@ -10,6 +10,7 @@ import 'package:barcode_widget/barcode_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -57,11 +58,11 @@ class PrintService extends GetxService {
   }
 
   _sendToDisplayPanel(data) async {
-    debugPrint("_sendToDisplayPanel data: $data");
+    logI("_sendToDisplayPanel data: $data");
 
     if (_machineInfo.wlan_panel_print_ip.isEmpty||
         _machineInfo.wlan_panel_print_port.isEmpty) {
-      debugPrint("_sendToDisplayPanel: Panel IP or Port is not set.");
+      logI("_sendToDisplayPanel: Panel IP or Port is not set.");
       return;
     }
     final String panelAddress =
@@ -70,9 +71,9 @@ class PrintService extends GetxService {
       final response =
       await request(panelAddress, method: 'POST', parameters: data);
       final responseValue = json.decode(response.toString());
-      debugPrint('_sendToDisplayPanel:$responseValue');
+      logI('_sendToDisplayPanel:$responseValue');
     } catch (error) {
-      debugPrint('_sendToDisplayPanel error: ${error.toString()}');
+      logI('_sendToDisplayPanel error: ${error.toString()}');
     }
   }
 
@@ -81,7 +82,7 @@ class PrintService extends GetxService {
     if (uuid.isEmpty) return;
 
     try {
-      debugPrint("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
+      logI("callbackBeforePrint uuid: $uuid send"); //会出现发送没有回复的现象15秒超时了。
       final val = await request('sseCallback',
           method: 'POST',
           parameters: {'uuid': uuid}).timeout(const Duration(seconds: 15));
@@ -89,7 +90,7 @@ class PrintService extends GetxService {
       if (response != null &&
           response['code'] == 200 &&
           response['data'] != null) {
-        debugPrint("callbackBeforePrint uuid: $uuid send success");
+        logI("callbackBeforePrint uuid: $uuid send success");
         if (event == 'message') {
           printData(data);
         }
@@ -98,30 +99,30 @@ class PrintService extends GetxService {
         }
       }
     } on TimeoutException catch (e) {
-      debugPrint('TimeoutException:${e.toString()}');
+      logI('TimeoutException:${e.toString()}');
       if (retryCount < 3) {
         // 如果超时，重试最多3次
-        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        logI("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
+        logI("callbackBeforePrint uuid: $uuid failed after retries");
       }
     } catch (e) {
-      debugPrint('error Exception:${e.toString()}');
+      logI('error Exception:${e.toString()}');
       if (retryCount < 3) {
         // 如果发生错误，重试最多3次
-        debugPrint("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
+        logI("callbackBeforePrint uuid: $uuid retrying... ($retryCount)");
         await Future.delayed(Duration(seconds: 2));
         callbackBeforePrint(event, data, retryCount: retryCount + 1);
       } else {
-        debugPrint("callbackBeforePrint uuid: $uuid failed after retries");
+        logI("callbackBeforePrint uuid: $uuid failed after retries");
       }
     }
   }
 
   void printData(Map data, {bool fromSSE = true}) async {
-    debugPrint("printData == $data");
+    logI("---printData---");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
     final orderType = data["order_type"] ?? "";

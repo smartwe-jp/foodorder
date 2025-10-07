@@ -36,44 +36,6 @@ class _NavBounceTrack {
   static String? lastRoute;
 }
 
-//打印图层生成成功
-Future<void> _onPictureGenerated(PicGenerateResult imgData) async {
-  final printTask = imgData.taskItem;
-  final printerInfo = printTask.params as PrinterInfo;
-  final printTypeEnum = printTask.printTypeEnum;
-  Uint8List? imageBytes;
-  List<List<int>>? printData;
-  try {
-    imageBytes = await imgData.convertUint8List(imageByteFormat: ImageByteFormat.rawRgba);
-    if (imageBytes == null) return;
-    final argbWidth = imgData.imageWidth;
-    final argbHeight = imgData.imageHeight;
-
-    printData = await printerPlus.PrinterCommandTool.generatePrintCmd(
-      imgData: imageBytes,
-      printType: printTypeEnum,
-      argbWidthPx: argbWidth,
-      argbHeightPx: argbHeight,
-    );
-    final printIp = printerInfo.ip ?? '';
-    if (printIp.isEmpty) {
-      logE('--- Printer IP is empty ---');
-      return;
-    }
-    logI('--- printData ip: ${printerInfo.ip} ---');
-    final conn = printerPlus.NetConn(printIp);
-    try {
-      conn.writeMultiBytes(printData);
-    } finally {
-      //printData.clear();
-      //printData = null;
-    }
-  } finally {
-    //imageBytes = null;
-    logI('--- imageBytes cleared ---');
-  }
-}
-
 void main() {
   runZonedGuarded(() async {
 
@@ -110,7 +72,7 @@ void main() {
                       primaryColor: Gcolor.primaryColor, // 设置主体颜色
                     ),
                     home: child,
-                    //initialRoute: Routes.HOME,
+                    initialRoute: Routes.HOME,
                     //initialRoute: AppPages.INITIAL,
                     //配置ios动画
                     locale: Locale('ja', 'JP'), // 默认语言
@@ -142,17 +104,20 @@ void main() {
                       );
                     },
                   ));
-            },
-              child: Scaffold(
-                body: PrintImageGenerateWidget(
-                  contentBuilder: (context) {
-                    return HomeView();
-                  },
-                  onPictureGenerated: _onPictureGenerated,
-                ),
-              ),
-            )
-      );
+
+        },
+        // child: Scaffold(
+        //   body: PrintImageGenerateWidget(
+        //     contentBuilder: (context) {
+        //       return HomeView();
+        //       //return WindewsTestView();
+
+        //     },
+        //     onPictureGenerated: _onPictureGenerated,
+        //   ),
+        // ),
+      ));
+      //HttpOverrides.global = MyHttpOverrides();flutter
     });
 
     //隐藏状态栏导航栏
