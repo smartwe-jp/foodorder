@@ -177,13 +177,14 @@ class PrintService extends GetxService {
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
         // 先打印票号和基本信息
+        final orderId = data["order_id"] ?? "";
         final Queue<Widget> labelPrintQueue = Queue<Widget>();
         final printSize = printer['labelSize'] ?? '300x225';
         final printWidth = int.tryParse(printSize.split('x')[0]) ?? 300; // 获取标签宽度
         final printHeight = int.tryParse(printSize.split('x')[1]) ?? 225; // 获取标签高度
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
-        final time = await DateTime.now().toString().substring(5, 16);
+        final time = orderId + " " + await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
