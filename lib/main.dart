@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:ui';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -12,8 +11,6 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-import 'package:print_image_generate_tool/print_image_generate_tool.dart';
-import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 
 
 
@@ -21,10 +18,8 @@ import 'package:flutter_printer_plus/flutter_printer_plus.dart' as printerPlus;
 import 'app/app_binding/app_bindings.dart';
 import 'app/common/local/translation_service.dart';
 import 'app/config/color.dart';
-import 'app/config/printer_info.dart';
 import 'app/controllers/app_config.dart';
 import 'app/modules/TransitPage/controllers/transit_page_controller.dart';
-import 'app/modules/home/views/home_view.dart';
 import 'app/routes/app_pages.dart';
 
 import 'package:firebase_core/firebase_core.dart';
