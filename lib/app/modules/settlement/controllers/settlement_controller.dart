@@ -583,7 +583,7 @@ class SettlementController extends GetxController with StateMixin {
     }).catchError((e) {
       debugPrint("webBootCalculateConfirm:$e");
       goNext = true;
-    }).timeout(Duration(seconds: 30), onTimeout: () {
+    }).timeout(Duration(seconds: 15), onTimeout: () {
       goNext = true;
     });
     return goNext;
@@ -1031,9 +1031,9 @@ class SettlementController extends GetxController with StateMixin {
     if (is_allow_receipt.value == "1") {
         printType = "1";
     }
-    var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
-    if (printStatus == "0" || printStatus == "8") {
-      var formData = {
+    // var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
+    // if (printStatus == "0" || printStatus == "8") {
+      final formData = {
         "orderId": orderId.value,
         "payAmount": getPutMoney.value,
         "machineCode": machineInfo.machineCode,
@@ -1079,39 +1079,39 @@ class SettlementController extends GetxController with StateMixin {
         _handleOrderResultAlert(printType, times: times);
 
       })
-      .timeout(Duration(seconds: 30), onTimeout: () {
+      .timeout(Duration(seconds: 15), onTimeout: () {
         //错误后重新调用一次
         _handleOrderResultAlert(printType, times: times);
       });
-    } else {
-
-      EasyLoading.dismiss();
-      var showDialogContent = "";
-      if (printStatus == "7") {
-        showDialogContent = "tag_print_content_paper_shortage".tr;
-      } else {
-        showDialogContent = "tag_print_content_paper_error".tr;
-      }
-      //小票状态
-      Get.dialog(
-          DialogUtils.alert(showDialogContent,
-              title: "tag_title".tr,
-              canceltitle: "tag_print_button_no".tr,
-              confirmtitle: "tag_print_button_yes".tr,
-              confirm: () {
-                Get.back();
-                doPrintOrderMenu(printType);
-              },
-              cancle: () {
-                Get.back();
-                if (machineInfo.paymentMethod == "1") {
-                  nextOper();
-                } else {
-                  goToNewMyHome();
-                }
-              })
-      );
-    }
+    // } else {
+    //
+    //   EasyLoading.dismiss();
+    //   var showDialogContent = "";
+    //   if (printStatus == "7") {
+    //     showDialogContent = "tag_print_content_paper_shortage".tr;
+    //   } else {
+    //     showDialogContent = "tag_print_content_paper_error".tr;
+    //   }
+    //   //小票状态
+    //   Get.dialog(
+    //       DialogUtils.alert(showDialogContent,
+    //           title: "tag_title".tr,
+    //           canceltitle: "tag_print_button_no".tr,
+    //           confirmtitle: "tag_print_button_yes".tr,
+    //           confirm: () {
+    //             Get.back();
+    //             doPrintOrderMenu(printType);
+    //           },
+    //           cancle: () {
+    //             Get.back();
+    //             if (machineInfo.paymentMethod == "1") {
+    //               nextOper();
+    //             } else {
+    //               goToNewMyHome();
+    //             }
+    //           })
+    //   );
+    // }
   }
 
   _handleOrderResultAlert(printType,{int times= 0}) {
