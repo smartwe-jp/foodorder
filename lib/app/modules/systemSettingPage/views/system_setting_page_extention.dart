@@ -93,12 +93,11 @@ extension SystemSettingPageExtension on SystemSettingPageView {
             bottom: ScreenAdapter.height(3), right: ScreenAdapter.width(20)),
         child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             spacing: ScreenAdapter.height(10),
             children: [
               if (needInput)
-              Container(
-                margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
-                child:
+              
                 InkWell(
                   highlightColor: Colors.transparent, // 透明色
                   splashColor: Colors.transparent,
@@ -106,7 +105,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     controller.editSSESetting(name, address, identify, isOn);
                   },
                   child: Container(
-                    margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                    //margin: EdgeInsets.only(left: ScreenAdapter.width(20)),
                     //设置 child 居中
                     alignment: Alignment(0, 0),
                     height: ScreenAdapter.height(60),
@@ -120,14 +119,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                       //设置四周边框
                       //border: new Border.all(width: 1, color: Colors.red),
                     ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
+                    child: Text(
                             identify.isEmpty ? "ターチして設置":identify,
                                 style: TextStyle(
                                   fontFamily: 'NotoSansJP',
@@ -135,13 +127,9 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                                   color: ColorsUtil.hexToColor("#FFFFFF"),
                                 )
                             ),
-                          ],
-                        )
-                      ],
-                    ),
                   ),
                 ),
-              ),
+            
 
 
               if (!needInput || identify.isNotEmpty)
