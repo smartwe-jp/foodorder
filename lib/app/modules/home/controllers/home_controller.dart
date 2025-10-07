@@ -17,6 +17,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
 import '../../../plugins/paycube_old/lib/paycube.dart';
+import '../../../services/CustomLogerHandler.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/ScreenAdapter.dart';
@@ -50,7 +51,8 @@ class HomeController extends GetxController {
   @override
   void onInit() {
   super.onInit();
-    requestPermission();
+  logI('--- App Start ---');
+  requestPermission();
   //getIsFirstOpen();
     //checkInterNetStatus();
 
