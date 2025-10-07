@@ -20,7 +20,18 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     final needInput = sseItem['needInput'] ?? false;
     final needCenterPrint = sseItem['needCenterPrint'] ?? false;
     final centerOn = sseItem['centerOn'] ?? false;
+    var statusColor = Colors.red;
 
+    for (var item in controller.sseService.subscriptions.entries) {
+      if (item.key.contains(identify) && identify.isNotEmpty) {
+        if (item.value == true) {
+          statusColor = Colors.green;
+        } else {
+          statusColor = Colors.orange;
+        }
+        break;
+      }
+    }
 
     return Table(
         border: TableBorder.all(),
@@ -35,15 +46,23 @@ extension SystemSettingPageExtension on SystemSettingPageView {
           TableRow(
               children: <Widget>[
                 Container(
-                  //height: ScreenAdapter.height(65),
-                  alignment: Alignment.center,
-                  child: Text(
-                    name,
-                    style: TextStyle(
-                        fontFamily: 'NotoSansJP',
-                        fontSize: ScreenAdapter.fontSize(22),
-                        fontWeight: FontWeight.w500
-                    ),
+                  padding: EdgeInsets.symmetric(horizontal: ScreenAdapter.width(20)),
+                  child: 
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        name,
+                        style: TextStyle(
+                            fontFamily: 'NotoSansJP',
+                            fontSize: ScreenAdapter.fontSize(22),
+                            fontWeight: FontWeight.w500
+                        ),
+                      ),
+                      //sse status
+                      SizedBox(width: ScreenAdapter.width(10)),
+                      Icon(Icons.circle, color: statusColor, size: ScreenAdapter.width(24)),
+                    ],
                   ),
                 ),
                 _setSSECell(
