@@ -121,7 +121,7 @@ class PrintService extends GetxService {
     }
   }
 
-  void printData(Map data, {bool fromSSE = true}) async {
+  void printData(Map data, {bool fromSSE = true, String orderId = ""}) async {
     logI("---printData---");
     _sendToDisplayPanel(data);
     final fromPlate = data["from_plate"] ?? "";
@@ -184,7 +184,7 @@ class PrintService extends GetxService {
         final printHeight = int.parse(printSize.split('x')[1]); // 获取标签高度
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
-        final time = await DateTime.now().toString().substring(5, 16);
+        final time = orderId + " " + await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
@@ -293,7 +293,6 @@ class PrintService extends GetxService {
       (sse) => sse["name"] == 'SmartWe SSE',
       orElse: () => null,
     );
-    
 
     if (smartWeSSE == null || (smartWeSSE["printSeat"] ?? true)) {
       debugPrint("SmartWe SSE printSeat is off");

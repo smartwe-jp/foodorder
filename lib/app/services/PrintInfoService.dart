@@ -1,6 +1,7 @@
 
 
 import 'dart:convert';
+import 'package:foodorder/app/services/Storage.dart';
 import 'package:get/get.dart';
 
 /// Service to cache printer job payloads (JSON objects) in memory + persistent key-value storage.
@@ -16,13 +17,13 @@ class PrintInfoService extends GetxService {
 	final RxList<Map<String, dynamic>> _printJobs = <Map<String, dynamic>>[].obs;
 
 	bool _initialized = false;
-  int maxJobs = 30; // Maximum number of jobs to retain
+	int maxJobs = 30; // Maximum number of jobs to retain
 
-  @override
-  void onInit() async {
-    init();
-    super.onInit();
-  }
+	@override
+	void onInit() async {
+		init();
+		super.onInit();
+	}
 
 	/// Initialize by loading existing data from persistent storage.
 	Future<PrintInfoService> init() async {
@@ -48,8 +49,8 @@ class PrintInfoService extends GetxService {
 				final decoded = json.decode(data);
 				if (decoded is Map<String, dynamic>) obj = decoded;
 			} catch (e) {
-        print("Error decoding JSON: $e");
-      }
+				print("Error decoding JSON: $e");
+			}
 		}
 		if (obj == null) return _printJobs.length; // ignore invalid input
 		_printJobs.add(obj);
@@ -75,20 +76,10 @@ class PrintInfoService extends GetxService {
 		try {
 			// Try GetStorage first if available via Get.find, else fallback to custom Storage class if present.
 			dynamic raw;
-			try {
-				// If GetStorage registered via Get.put, we can access it. Using dynamic to avoid hard dep.
-				final box = Get.isRegistered<dynamic>(tag: 'GetStorage')
-						? Get.find<dynamic>(tag: 'GetStorage')
-						: null;
-				if (box != null) {
-					raw = box.read(_storageKey);
-				}
-			} catch (e) {
-        print("Error reading from GetStorage: $e");
-      }
+			raw = await _tryStaticStorageRead();
 
 			// Fallback: attempt reflection to a global Storage static API if exists.
-			raw ??= await _tryStaticStorageRead();
+			//raw ??= await _tryStaticStorageRead();
 
 			if (raw is String && raw.isNotEmpty) {
 				final decoded = json.decode(raw);
@@ -100,7 +91,7 @@ class PrintInfoService extends GetxService {
 			}
 		} catch (e) {
 			// ignore corrupt stored data
-      print("Error loading from storage: $e");
+			print("Error loading from storage: $e");
 			_printJobs.clear();
 		}
 		_enforceLimit();
@@ -109,21 +100,9 @@ class PrintInfoService extends GetxService {
 	Future<void> _persist() async {
 		final jsonStr = json.encode(_printJobs);
 		// Write to GetStorage if exists else fallback.
-		bool written = false;
-		try {
-			final box = Get.isRegistered<dynamic>(tag: 'GetStorage')
-					? Get.find<dynamic>(tag: 'GetStorage')
-					: null;
-			if (box != null) {
-				await box.write(_storageKey, jsonStr);
-				written = true;
-			}
-		} catch (e) {
-			print("Error writing to GetStorage: $e");
-		}
-		if (!written) {
-			await _tryStaticStorageWrite(jsonStr);
-		}
+		//bool written = false;
+
+		await _tryStaticStorageWrite(jsonStr);
 	}
 
 	// ------- Fallback helpers (optional, no-op if Storage class absent) -------
@@ -132,16 +111,20 @@ class PrintInfoService extends GetxService {
 			// Using mirrors is not available in Flutter; rely on a known global Storage class if imported elsewhere.
 			// If your project has a Storage.getString method, you can integrate it directly here.
 			// Example (uncomment if Storage is accessible):
-			// return Storage.getString(_storageKey);
-		} catch (_) {}
+			return Storage.getString(_storageKey);
+		} catch (_) {
+			print("Error accessing Storage.getString");
+		}
 		return null;
 	}
 
 	Future<void> _tryStaticStorageWrite(String value) async {
 		try {
 			// Example (uncomment if Storage is accessible):
-			// Storage.setString(_storageKey, value);
-		} catch (_) {}
+			Storage.setString(_storageKey, value);
+		} catch (_) {
+			print("Error accessing Storage.setString");
+		}
 	}
 
 	/// Ensure list does not exceed [maxJobs] by removing oldest (front) entries.
