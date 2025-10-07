@@ -1493,7 +1493,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // 每行两个
-                childAspectRatio: 2.3,
+                childAspectRatio: 1.9,
                 crossAxisSpacing: 20,
                 mainAxisSpacing: 16,
               ),
@@ -1519,6 +1519,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     final printOption = sseItem['printOption'] ?? true;
     final address = sseItem['address'] ?? "";
     var statusColor = Colors.red;
+    final printSeat = sseItem['printSeat'] ?? true;
 
     for (var item in controller.sseService.subscriptions.entries) {
       if (item.key.contains(identify) && identify.isNotEmpty) {
@@ -1640,6 +1641,22 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                 ),
               ],
             ),
+
+            if (isOn && name == "SmartWe SSE") 
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                  
+                  _settingContent('お会計伝票：'),
+                  Switch(
+                    value: printSeat,
+                    onChanged: (value) {
+                      controller.updateSSESetting(name, printSeat: value);
+                    },
+                    activeColor: Colors.blue,
+                  ),
+                ],
+              ),
 
 
         ],

@@ -179,7 +179,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                 ],
               ),
 
-              if (name == "SmartWe SSE") 
+              if (isOn && name == "SmartWe SSE") 
                 Row(
                 children: [
                   
