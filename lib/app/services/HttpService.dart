@@ -24,8 +24,8 @@ Future request(String url, {method, parameters, link_parameters=""}) async {
         print("Response: ${response.statusCode} ${response.data}");
         handler.next(response);
       },
-      onError: (DioError e, handler) {
-        print("Error: ${e.message}");
+      onError: (DioException e, handler) {
+        //print("Error: ${e.message}");
         handler.next(e);
       },
     ));
