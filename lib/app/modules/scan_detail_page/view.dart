@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/common/Extension/StringExtension.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
+import 'package:foodorder/app/services/formatMoney.dart';
 import 'package:get/get.dart';
 
 import '../../config/color.dart';
@@ -90,8 +92,8 @@ class ScanDetailPagePage extends StatelessWidget {
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
-                _payCountTitle(checkoutLogic.showTotalPrice,
-                    checkoutLogic.discount.value, checkoutLogic.containTax),
+                _payCountTitle(checkoutLogic.totalPrice.value,
+                    checkoutLogic.discount.value, checkoutLogic.containTax, checkoutLogic.tax8.value, checkoutLogic.tax10.value),
                 SizedBox(
                   height: ScreenAdapter.height(30),
                 ),
@@ -201,26 +203,20 @@ class ScanDetailPagePage extends StatelessWidget {
         ));
   }
 
-  Widget _payCountTitle(int count, int discount, bool containTax) {
-    // List leftKeys = [
-    //   "settlement_original_price".localized(),
-    //   "settlement_discount".localized(),
-    //   "settlement_total_price".localized()
-    // ];
-    // List rightValues = [
-    //   count,
-    //   discount,
-    //   count + discount
-    // ];
+  Widget _payCountTitle(int count, int discount, bool containTax, int tax8, int tax10) {
+
+    int taxOutPrice = count - tax8 - tax10 + discount;
+    int taxInPrice = count + discount;
+    
     return Container(
         padding: EdgeInsets.only(
-            left: ScreenAdapter.width(150), right: ScreenAdapter.width(150)),
+            left: ScreenAdapter.width(150), right: ScreenAdapter.width(100)),
         child:
         //原价
         Row(
           children: [
             Expanded(
-              flex: 55, // 右边占 60%
+              flex: 1, // 右边占 60%
               child: Container(
                 // 右边空白
                 color: Colors.transparent,
@@ -228,12 +224,147 @@ class ScanDetailPagePage extends StatelessWidget {
             ),
 
             Expanded(
-              flex: 45, // 左边占 44%
+              flex: 1, // 左边占 44%
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  //原价显示： 原价：2000
-                  if(discount != 0)
+
+                  if(!containTax)
+                    Row(
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //taxout
+                        Text(
+                          "taxout_price".tr,
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32),
+                        ),
+                        Spacer(),
+                        //shopCartTotalPrice
+                        Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 30,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
+                        Text(
+                          formatMoney(taxOutPrice),
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              fontSize: 32),
+                        ),
+                      ],
+                    ),
+
+                  if(!containTax)
+                    Divider(
+                      height: 1.5,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ),
+
+                  //if(!controller.taxSystem)
+                    Row(
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //taxin
+                        Text(
+                          "tax".tr + " 10%",
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 30),
+                        ),
+                        //showPrice
+                        Spacer(),
+                        //shopCartTotalPrice
+                        Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
+                        Text(
+                          formatMoney(tax10),
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 30),
+                        ),
+                      ],
+                    ),
+
+                  //if(!controller.taxSystem)
+                    Row(
+                      //mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        //taxin
+                        Text(
+                          "tax".tr + " 8%",
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 30),
+                        ),
+                        //showPrice
+                        Spacer(),
+                        //shopCartTotalPrice
+                        Text(
+                          "¥ ",
+                          //GString.getToString(this._checkLanguage, "show_price_front"),
+                          style: TextStyle(
+                            fontSize: 28,
+                            fontFamily: GFont.getFontFamily(),
+                            fontWeight: FontWeight.w500,
+                            color: ColorsUtil.hexToColor(
+                                Gcolor.mainTitleColor),
+                          ),
+                        ),
+                        Text(
+                          formatMoney(tax8),
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w500,
+                              fontSize: 30),
+                        ),
+                      ],
+                    ),
+
+
+
+
+                  //if(!controller.taxSystem)
+                    Divider(
+                      height: 1.5,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ),
+
+                     //原价显示： 原价：2000
+                  if(discount != 0 && containTax)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
@@ -247,7 +378,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          count.formatIntSum(),
+                          "${count.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
@@ -259,7 +390,7 @@ class ScanDetailPagePage extends StatelessWidget {
                   ),
                   //折扣显示： 折扣：1000
                   SizedBox(
-                    height: ScreenAdapter.height(20),
+                    height: ScreenAdapter.height(10),
                   ),
                   if(discount != 0)
                   Row(
@@ -275,7 +406,7 @@ class ScanDetailPagePage extends StatelessWidget {
                         width: ScreenAdapter.width(20),
                       ),
                       Text(
-                          discount.formatIntSum(),
+                          "${discount.formatIntSum()}",
                           style: TextStyle(
                             fontFamily: GFont.getFontFamily(),
                             fontSize: ScreenAdapter.fontSize(35.0),
@@ -285,60 +416,75 @@ class ScanDetailPagePage extends StatelessWidget {
                       ),
                     ],
                   ),
-                  SizedBox(
-                    height: ScreenAdapter.height(10),
-                  ),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(
-                          "settlement_total_price".tr,
-                          style: TextStyle(
-                            //color: ColorsUtil.hexToColor("#FFFFFF"),
-                              fontWeight: FontWeight.w600,
-                              fontFamily: GFont.getFontFamily(),
-                              fontSize: ScreenAdapter.fontSize(40.0))),
-                      SizedBox(
-                        width: ScreenAdapter.width(20),
-                      ),
 
-                      RichText(
-                        text: TextSpan(
-                            text: "¥",
-                            //GString.getToString(this._checkLanguage, "show_price_front"),
-                            style: TextStyle(
-                              fontSize: ScreenAdapter.fontSize(
-                                  GFontSize.menusettlementBottomPriceLeft),
+                  //if (!controller.taxSystem)
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        //taxin
+                        Text(
+                          "tag_amount".tr,
+                          style: TextStyle(
+                              color: ColorsUtil.hexToColor(
+                                  Gcolor.mainTitleColor),
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w600,
-                              color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                            ),
-                            children: [
-                              TextSpan(
-                                text: count.formatIntSum(),
+                              fontSize: 34),
+                        ),
+                        //showPrice
+                        Container(
+
+                          child: RichText(
+                            text: TextSpan(
+                                text: "¥ ",
+                                //GString.getToString(this._checkLanguage, "show_price_front"),
                                 style: TextStyle(
                                   fontSize: ScreenAdapter.fontSize(
-                                      GFontSize.menusettlementBottomPrice),
+                                      GFontSize.menusettlementBottomPriceLeft),
                                   fontFamily: GFont.getFontFamily(),
                                   fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                  color: ColorsUtil.hexToColor(
+                                      Gcolor.mainTitleColor),
                                 ),
-                              ),
-                              TextSpan(
-                                text:
-                                "(${containTax ? "show_price_front".tr : "tax_out".tr})", //" 円",
-                                style: TextStyle(
-                                  fontSize: ScreenAdapter.fontSize(
-                                      GFontSize.menusettlementBottomPriceRight),
-                                  fontFamily: GFont.getFontFamily(),
-                                  fontWeight: FontWeight.w600,
-                                  color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),
-                                ),
-                              ),
-                            ]),
-                      ),
-                    ],
-                  ),
+                                children: [
+                                  TextSpan(
+                                    text: formatMoney(taxInPrice),
+                                    style: TextStyle(
+                                      fontSize: ScreenAdapter.fontSize(
+                                          GFontSize.menusettlementBottomPrice),
+                                      fontFamily: GFont.getFontFamily(),
+                                      fontWeight: FontWeight.w600,
+                                      color: ColorsUtil.hexToColor(
+                                          Gcolor.priceColor),
+                                    ),
+                                  ),
+                                  if (containTax)
+                                    TextSpan(
+                                      text: "（${ "show_price_front".tr}）",
+                                      style: TextStyle(
+                                        fontSize: 24,
+                                        fontFamily: GFont.getFontFamily(),
+                                        fontWeight: FontWeight.w600,
+                                        color: ColorsUtil.hexToColor(Gcolor.priceColor),
+                                        textBaseline: TextBaseline.alphabetic,
+                                      ),
+                                    ),
+
+                                ]),
+                          ),
+                        ),
+                      ],
+                    ),
+
+                  //if(!controller.taxSystem)
+                    Divider(
+                      height: 1.5,
+                      color: ColorsUtil.hexToColor("#000000"),
+                    ),
+
+
+
                 ],
               ),
             ),
