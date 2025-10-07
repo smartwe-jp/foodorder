@@ -2,6 +2,8 @@ import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/services/CustomLogerHandler.dart';
+import 'package:logging/logging.dart';
 
 enum PosAction {
   Connect,
@@ -56,8 +58,9 @@ class PosSocketManager {
     _needInterActive = true;
   }
 
-  Future posActionWithData(PosAction action, String writeData, {Function? backTask = null}) async {
-    //Logger('').info('posActionWithData action:$action data:$writeData');
+  Future posActionWithData(PosAction action, String writeData,
+      {Function? backTask = null}) async {
+    logger.infoLog('posActionWithData action:$action data:$writeData');
     _posAction = action;
     switch (action) {
       case PosAction.Connect:
@@ -69,6 +72,7 @@ class PosSocketManager {
       case PosAction.Cancel:
         _socketNumberTimes = 0;
         if (_isConnected == false) {
+          Logger('').info('_isConnected = false onDone = $_onDone');
           if (_onDone == null) {
             resetState();
             backTask?.call();
@@ -76,7 +80,6 @@ class PosSocketManager {
             _onDone?.call(action);
             _onDone = null;
           }
-
         } else {
           _onLoading?.call(0);
         }
@@ -86,7 +89,7 @@ class PosSocketManager {
         _socketNumberTimes = 0;
         break;
       case PosAction.None:
-        // TODO: Handle this case.
+      // TODO: Handle this case.
         break;
     }
 
@@ -110,7 +113,6 @@ class PosSocketManager {
       _socket?.destroy();
       _socket = null;
     }
-
   }
 
   //pos机相关
@@ -126,7 +128,7 @@ class PosSocketManager {
         Function(PosAction)? onDone,
         Function? onTimeOut,
         Function(String, String)? onCancel}) async {
-    debugPrint('payConnectSocket $payment $pos_ip:$pos_port $machineCode');
+    logger.infoLog('payConnectSocket $payment $pos_ip:$pos_port $machineCode');
     debugPrint('questData : $questData');
     _eventReportString = "";
     _onError = onError;
@@ -142,7 +144,7 @@ class PosSocketManager {
         _posWirteData(questData);
       }
       if (payment != "2") {
-        print("进来关闭弹窗");
+        logger.infoLog("进来关闭弹窗");
         Future.delayed(Duration(milliseconds: 1300), () async {
           onLoadingEnd?.call();
         });
@@ -157,7 +159,7 @@ class PosSocketManager {
     //判断socket请求次数
     _posAction = PosAction.Connect;
     _socketNumberTimes++;
-    if (_socketNumberTimes > 6) {
+    if (_socketNumberTimes > 3) {
       //return posPayUtil;
       onTimeOut?.call();
       return;
@@ -165,8 +167,8 @@ class PosSocketManager {
 
     try {
       _posAction = PosAction.Connect;
-      Socket socket = await Socket.connect(pos_ip, pos_port);
-      debugPrint('Connected to $pos_ip:$pos_port');
+      Socket socket = await Socket.connect(pos_ip, pos_port, timeout: Duration(seconds: 15));
+      logger.infoLog('Connected to $pos_ip:$pos_port');
       _socket = socket;
       _isConnected = true;
 
@@ -186,7 +188,7 @@ class PosSocketManager {
       }
 
       if (payment != "2") {
-        print("进来关闭弹窗");
+        logger.infoLog("进来关闭弹窗2");
         Future.delayed(Duration(milliseconds: 1300), () async {
           onLoadingEnd?.call();
         });
@@ -252,13 +254,11 @@ class PosSocketManager {
               var thincaCloud = ["5", "6", "7", "8", "9", "10"];
               if (thincaCloud.contains(payment) == true) {
                 String reportString = eventString.substring(0, 169);
-                if (_payProcess)
-                onSuccess?.call(reportString);
+                if (_payProcess) onSuccess?.call(reportString);
                 resetState();
                 _payProcess = false;
               } else {
-                if (_payProcess)
-                onSuccess?.call(_eventReportString);
+                if (_payProcess) onSuccess?.call(_eventReportString);
                 resetState();
                 _payProcess = false;
               }
@@ -285,30 +285,28 @@ class PosSocketManager {
               var thincaCloud = ["5", "6", "7", "8", "9", "10"];
               if (thincaCloud.contains(payment) == true) {
                 String reportString = eventString.substring(0, 169);
-                if (_payProcess)
-                onSuccess?.call(reportString);
+                if (_payProcess) onSuccess?.call(reportString);
                 resetState();
                 _payProcess = false;
               } else {
-                if (_payProcess)
-                onSuccess?.call(eventString);
+                if (_payProcess) onSuccess?.call(eventString);
                 resetState();
                 _payProcess = false;
               }
               _eventReportString = "";
             } else {
               if (resultString.trim() != "") {
+                logger.infoLog("Pos error code $resultString");
                 _needInterActive = true;
-                debugPrint("---Recorde error to firebase old---");
                 //T10 交通系等待时间超过30-40后自动返回
                 var posErrorCode = ["L11", "T10"];
                 //onError?.call(resultString);
                 if (posErrorCode.contains(resultString) == true) {
                   Future.delayed(Duration(milliseconds: 2500), () async {
-                    debugPrint("Pos error done order");
+                    logger.info("Pos error done order");
                     //if (!_needInterActive) onDone?.call(_posAction);
                     if (_posAction != PosAction.None)
-                    _onError?.call(resultString);
+                      _onError?.call(resultString);
                     //gotonewMenuPage(); backAction
                   });
                 } else {
@@ -321,42 +319,40 @@ class PosSocketManager {
           }
         },
         onDone: () {
-          debugPrint('pos is done');
+          logger.infoLog('pos is done');
           _socketNumberTimes = 0;
           _isConnected = false;
           if (!_needInterActive && _posAction != PosAction.None)
             onDone?.call(_posAction);
         },
         onError: (e) {
-          debugPrint('pos is error: $e');
+          logger.infoLog('pos is error: $e');
           _socketNumberTimes = 0;
           _isConnected = false;
           if (!_needInterActive && _posAction != PosAction.None)
-          onError?.call(e.toString());
+            onError?.call(e.toString());
           _needInterActive = true;
-
-
         },
       );
     } catch (e) {
       _isConnected = false;
-      debugPrint('Unable to connect pos: $e , _posAction = $_posAction');
+      logger.infoLog('Unable to connect pos: $e , _posAction = $_posAction');
       if (_posAction == PosAction.None) return;
       Future.delayed(Duration(milliseconds: 2000), () async {
         //如果连接失败，重新连接
         //if (_socketNumberTimes < 6) {
-          debugPrint('Retrying to connect pos: $pos_ip:$pos_port');
-          payConnectSocket(payment, pos_ip, pos_port, machineCode,
-              questData: questData,
-              isRetry: true,
-              onError: _onError,
-              onLoading: _onLoading,
-              onLoadingEnd: onLoadingEnd,
-              onSuccess: onSuccess,
-              onRequestPayData: onRequestPayData,
-              onDone: onDone,
-              onTimeOut: onTimeOut,
-              onCancel: onCancel);
+        logger.infoLog('Retrying to connect pos: $pos_ip:$pos_port');
+        payConnectSocket(payment, pos_ip, pos_port, machineCode,
+            questData: questData,
+            isRetry: true,
+            onError: _onError,
+            onLoading: _onLoading,
+            onLoadingEnd: onLoadingEnd,
+            onSuccess: onSuccess,
+            onRequestPayData: onRequestPayData,
+            onDone: onDone,
+            onTimeOut: onTimeOut,
+            onCancel: onCancel);
         // } else {
         //   debugPrint('Failed to connect pos after multiple attempts');
         //   if (_onError != null) _onError!("Unable to connect to POS");
