@@ -159,7 +159,7 @@ const Map<String, String> ja_JP = {
   "next_button":"進む",
   "suggest_title":"ご一緒にいかがですか",
 
-  "order_success_title":"注文完了",
+  "order_success_title":"支払い完了",
   "order_success_tips":"ご利用いただきありがとうございました",
   "order_success_subtips":"%%秒後に自動で最初の画面に戻ります",
   "origin_home":"最初の画面に戻る",
