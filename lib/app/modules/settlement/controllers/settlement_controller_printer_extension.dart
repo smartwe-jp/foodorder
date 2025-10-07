@@ -288,8 +288,17 @@ class PrintService extends GetxService {
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
   printTableSeatInfo(Map data) async {
+    logI("---printTableSeatInfo---");
+    final smartWeSSE = sseList.firstWhere(
+      (sse) => sse["name"] == 'SmartWe SSE',
+      orElse: () => null,
+    );
+    
 
-      print("printTableSeatInfo data: $data");
+    if (smartWeSSE == null || (smartWeSSE["printSeat"] ?? true)) {
+      debugPrint("SmartWe SSE printSeat is off");
+      return;
+    }
 
       //find pinter with type 11
       final printer = printerList.firstWhere(

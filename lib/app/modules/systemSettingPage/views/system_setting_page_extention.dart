@@ -20,6 +20,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     final needInput = sseItem['needInput'] ?? false;
     final needCenterPrint = sseItem['needCenterPrint'] ?? false;
     final centerOn = sseItem['centerOn'] ?? false;
+    final printSeat = sseItem['printSeat'] ?? true;
     var statusColor = Colors.red;
 
     for (var item in controller.sseService.subscriptions.entries) {
@@ -70,7 +71,8 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     address, identify, isOn,
                     needInput: needInput,
                     needCenterPrint: needCenterPrint,
-                    centerOn: centerOn
+                    centerOn: centerOn,
+                    printSeat: printSeat
                 ),
               ]
           ),
@@ -78,15 +80,17 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     );
   }
 
-  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true, bool needCenterPrint = false, bool centerOn = false}) {
+  _setSSECell(String name, String address, String identify, bool isOn, {bool needInput = true, bool needCenterPrint = false, 
+  bool centerOn = false, bool printSeat = true}) {
     return Container(
         margin: EdgeInsets.only(
             top: ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
         padding: EdgeInsets.only(left: ScreenAdapter.width(20),
             top: ScreenAdapter.height(3),
             bottom: ScreenAdapter.height(3), right: ScreenAdapter.width(20)),
-        child: Row(
+        child: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            spacing: ScreenAdapter.height(10),
             children: [
               if (needInput)
               Container(
@@ -140,13 +144,6 @@ extension SystemSettingPageExtension on SystemSettingPageView {
               if (identify.isNotEmpty)
               Row(
                 children: [
-                  FlutterSwitch(
-                    value: isOn,
-                    onToggle: (value) {
-                      controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
-                    },
-                  ),
-                  SizedBox(width: ScreenAdapter.width(10)),
                   Text(
                     isOn ? "オン" : "オフ",
                     style: TextStyle(
@@ -155,13 +152,24 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                       color: isOn ? ColorsUtil.hexToColor("#409eff") : Colors.grey,
                     ),
                   ),
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  FlutterSwitch(
+                    value: isOn,
+                    onToggle: (value) async {
+                      controller.updateSSESetting(name, identify: identify, isOn: value, centerOn: value == true ? centerOn : false);
+                    },
+                  ),
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  
                 ],
               ),
+
+              
 
               if (isOn && needCenterPrint)
               Row(
                 children: [
-                  SizedBox(width: ScreenAdapter.width(10)),
+                  
                   Text(
                     "注文伝票",
                     style: TextStyle(
@@ -175,6 +183,28 @@ extension SystemSettingPageExtension on SystemSettingPageView {
                     value: centerOn,
                     onToggle: (value) {
                       controller.updateSSESetting(name, centerOn: value);
+                    },
+                  ),
+                ],
+              ),
+
+              if (name == "SmartWe SSE") 
+                Row(
+                children: [
+                  
+                  Text(
+                    "お会計伝票",
+                    style: TextStyle(
+                      fontFamily: 'NotoSansJP',
+                      fontSize: ScreenAdapter.fontSize(22),
+                      color: printSeat ? ColorsUtil.hexToColor("#409eff") : Colors.grey,
+                    ),
+                  ),
+                  SizedBox(width: ScreenAdapter.width(10)),
+                  FlutterSwitch(
+                    value: printSeat,
+                    onToggle: (value) {
+                      controller.updateSSESetting(name, printSeat: value);
                     },
                   ),
                 ],
