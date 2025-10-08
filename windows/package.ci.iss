@@ -88,6 +88,11 @@ Filename: "{app}\\Setup\\OPOSSetup.exe"; Flags: nowait postinstall runascurrentu
 
 [UninstallDelete]
 Type: filesandordirs; Name: "{app}"
+; 同时删除当前用户的 AppData 数据
+Type: filesandordirs; Name: "{userappdata}\{#AppDataSubPath}"
+Type: filesandordirs; Name: "{localappdata}\{#AppDataSubPath}"
+; 如有共享数据可启用
+; Type: filesandordirs; Name: "{commonappdata}\{#AppDataSubPath}"
 
 [Code]
 var
@@ -131,6 +136,11 @@ begin
           // 批处理文件执行失败
           MsgBox('Failed to execute uninstall script', mbError, MB_OK);
         end;
+
+        // 删除当前用户 AppData（Roaming 与 Local）
+        DelTree(ExpandConstant('{userappdata}\{#AppDataSubPath}'), True, True, True);
+        DelTree(ExpandConstant('{localappdata}\{#AppDataSubPath}'), True, True, True);
+
         // 删除注册表项
         if RegKeyExists(HKEY_CURRENT_USER, 'Software\{#MyAppName}') then
         begin
