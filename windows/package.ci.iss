@@ -12,6 +12,8 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+; 清理的 AppData 子路径（请按实际路径调整）
+#define AppDataSubPath "com.fanxing\\foodorder"
 
 ; Paths (SourcePath points to script directory at compile time)
 #define RepoRoot SourcePath
