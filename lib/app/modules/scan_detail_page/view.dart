@@ -514,18 +514,21 @@ class ScanDetailPagePage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
-                      width: ScreenAdapter.width(500),
-                      child: Text('$title',
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontFamily: GFont.getFontFamily(),
-                            fontSize: ScreenAdapter.fontSize(40),
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black,
-                          )),
+                    Expanded(
+                      child: Container(
+                        //width: ScreenAdapter.width(500),
+                        child: Text('$title',
+                            maxLines: 2,
+                            style: TextStyle(
+                              fontFamily: GFont.getFontFamily(),
+                              fontSize: ScreenAdapter.fontSize(40),
+                              fontWeight: FontWeight.w500,
+                              color: Colors.black,
+                            )),
+                      ),
                     ),
-                    SizedBox(width: ScreenAdapter.width(30)),
+                    //Spacer(),
+                    SizedBox(width: ScreenAdapter.width(50)),
                     Text('x $qty',
                         style: TextStyle(
                           fontFamily: GFont.getFontFamily(),
