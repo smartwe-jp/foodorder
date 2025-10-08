@@ -95,8 +95,8 @@ var
 
 function InitializeSetup(): Boolean;
 begin
-  { Detect prior install via registry key }
-  IsUpgrade := RegKeyExists(HKEY_CURRENT_USER, 'Software\\{#MyAppName}');
+  // 检查注册表中是否存在升级标志
+  IsUpgrade := RegKeyExists(HKEY_CURRENT_USER, 'Software\{#MyAppName}');
   Result := True;
 end;
 
@@ -105,11 +105,13 @@ begin
   Result := not IsUpgrade;
 end;
 
+
 procedure CurStepChanged(CurStep: TSetupStep);
 begin
   if CurStep = ssPostInstall then
   begin
-    RegWriteStringValue(HKEY_CURRENT_USER, 'Software\\{#MyAppName}', 'Installed', 'Yes');
+    // 安装完成后,将升级标志写入注册表
+    RegWriteStringValue(HKEY_CURRENT_USER, 'Software\{#MyAppName}', 'Installed', 'Yes');
   end;
 end;
 
@@ -120,21 +122,24 @@ begin
   case CurUninstallStep of
     usUninstall:
       begin
-        { Run cleanup batch if exists }
-        if Exec(ExpandConstant('{app}\\Setup\\Cleanup.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+        if Exec(ExpandConstant('{app}\Setup\Cleanup.bat'), '', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
         begin
+          // 批处理文件执行成功
         end
         else
         begin
+          // 批处理文件执行失败
           MsgBox('Failed to execute uninstall script', mbError, MB_OK);
         end;
-        { Remove registry key }
-        if RegKeyExists(HKEY_CURRENT_USER, 'Software\\{#MyAppName}') then
-          RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\\{#MyAppName}');
+        // 删除注册表项
+        if RegKeyExists(HKEY_CURRENT_USER, 'Software\{#MyAppName}') then
+        begin
+          RegDeleteKeyIncludingSubkeys(HKEY_CURRENT_USER, 'Software\{#MyAppName}');
+        end;
       end;
     usPostUninstall:
       begin
-        { Final directory purge }
+        // 直接删除安装文件夹
         DelTree(ExpandConstant('{app}'), True, True, True);
       end;
   end;
