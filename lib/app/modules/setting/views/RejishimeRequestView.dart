@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
 import 'package:get/get.dart';
@@ -460,6 +461,11 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
     });
 
     //_resetCash();
+    if (!widget.isNotCash) {
+      final settingController = Get.find<SettingController>();
+      settingController.getChangeState();
+    }
+
     Get.back();
 
   }

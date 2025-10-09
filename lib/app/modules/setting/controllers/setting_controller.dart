@@ -340,12 +340,12 @@ class SettingController extends GetxController with StateMixin {
       }
     });
 
-    _getChangeState();
+    getChangeState();
 
     //print(_menuOption);
   }
 
-  _getChangeState() {
+  getChangeState() {
     var formData = {
       "machineCode": machineCode.value,
     };
@@ -383,7 +383,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }
@@ -409,7 +409,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }
@@ -434,7 +434,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('设置成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('设置失败');
       }
@@ -452,7 +452,7 @@ class SettingController extends GetxController with StateMixin {
 
       if (response != null && response['code'] == 200) {
         showToast('リサイクル成功');
-        _getChangeState();
+        getChangeState();
       } else {
         showToast('リサイクルに失敗しました');
       }
