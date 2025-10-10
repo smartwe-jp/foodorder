@@ -168,7 +168,7 @@ class SettingView extends GetView<SettingController> {
               onTap: () {
                 //controller.printPreviewReceipt();
                 Get.toNamed('/receipt_query',
-                    arguments: {"machineCode": controller.machineCode.value});
+                    arguments: {"machineCode": controller.machineCode});
               },
               child: Container(
                 padding: EdgeInsets.only(
@@ -200,11 +200,11 @@ class SettingView extends GetView<SettingController> {
           ],
         ),
         SizedBox(width: ScreenAdapter.width(10)),
-        if (controller.is_reimburse.value == "1")
+        if (controller.is_reimburse)
           InkWell(
             onTap: () async {
               final result = await Get.toNamed('/reimburse-order',
-                  arguments: {"machineCode": controller.machineCode.value});
+                  arguments: {"machineCode": controller.machineCode});
               if (result) {
                 controller.getCashInfo();
               }
@@ -293,7 +293,7 @@ class SettingView extends GetView<SettingController> {
                 bottom: ScreenAdapter.height(15)),
             child: Column(
               children: [
-                Text("お釣り状態(NO.${controller.machineCode.value})",
+                Text("お釣り状態(NO.${controller.machineCode})",
                     style: TextStyle(
                       fontFamily: GFont.getFontFamily(),
                       fontSize: ScreenAdapter.fontSize(22),
@@ -843,7 +843,7 @@ class SettingView extends GetView<SettingController> {
                                 final result = await Get.toNamed(
                                   '/system-setting-page',
                                   arguments: {
-                                    "machineCode": controller.machineCode.value
+                                    "machineCode": controller.machineCode
                                   },
                                 );
                                 if (result != null) {
@@ -959,9 +959,9 @@ class SettingView extends GetView<SettingController> {
 
                       if (Platform.isAndroid)
                         CashSettingView(
-                          cashInfoList: controller.cashInfoList.value,
-                          isAllowRejishime: controller.isAllowRejishime.value,
-                          machineCode: controller.machineCode.value,
+                          cashInfoList: controller.cashInfoList,
+                          isAllowRejishime: controller.isAllowRejishime,
+                          machineCode: controller.machineCode,
                           recycleCash: () {
                             controller.recycleCash('', '');
                           },

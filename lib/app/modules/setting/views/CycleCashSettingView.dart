@@ -18,7 +18,7 @@ extension CycleCashSettingView on SettingView {
         alignment: Alignment.center,
         margin: EdgeInsets.only(bottom: ScreenAdapter.height(20)),
         //padding: EdgeInsets.only(bottom: ScreenAdapter.width(20)),
-        child: Text("お預り金/釣り状態(NO.${controller.machineCode.value})",
+        child: Text("お預り金/釣り状態(NO.${controller.machineCode})",
             style: TextStyle(
               fontFamily: 'NotoSansJP',
               fontSize: ScreenAdapter.fontSize(22),
@@ -196,7 +196,7 @@ extension CycleCashSettingView on SettingView {
                       color: ColorsUtil.hexToColor("#000000"),
                     )),
               ),
-              (controller.machineInfo.isAllowRejishime == "1")
+              (controller.isAllowRejishime || Platform.isWindows)
                   ? RecycleButton(
                       title: "レジ締め",
                       onPressed: () {

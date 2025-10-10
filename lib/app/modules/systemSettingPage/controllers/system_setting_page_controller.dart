@@ -845,7 +845,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   UsbDeviceInfo? get curUsbPrinter {
-    if (usbDevice.value.isEmpty) {
+    if (usbDevice.isEmpty) {
       debugPrint('usbDevice is empty');
       return null;
     }

@@ -40,6 +40,7 @@ class MachineInfoController extends GetxController {
   late List sseSettingList;
 
   late bool isAllowCash;
+  late bool isAllowReimburse;
   late bool cashOn;
   late bool taxSystem;
 
@@ -123,7 +124,6 @@ class MachineInfoController extends GetxController {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     logI('loadMachineSettingInfo dispose');
     super.dispose();
   }
@@ -181,6 +181,8 @@ class MachineInfoController extends GetxController {
     homeList = homeImageList ?? [];
 
     headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
+
+    isAllowReimburse = await HomeServices.getSmartweReimburseData() == '1' ? true : false;
 
     supportLanguages = await HomeServices.getMachineLanguages();
 

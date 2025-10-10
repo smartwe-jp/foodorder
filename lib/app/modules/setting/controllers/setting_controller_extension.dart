@@ -443,8 +443,8 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': machineChangeInfo,
-      'machineCode': machineCode.value,
-      'shopCode': shopCode.value,
+      'machineCode': machineCode,
+      'shopCode': shopCode,
       'verifyCode': verifyCode,
       'verifyEmail': verifyEmail,
     };
@@ -517,8 +517,8 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': machineCash,
-      'machineCode': machineCode.value,
-      'shopCode': shopCode.value,
+      'machineCode': machineCode,
+      'shopCode': shopCode,
     };
     debugPrint("formData: $formData");
     request(
@@ -556,8 +556,8 @@ extension SettingControllerExtension on SettingController {
 
     var formData = {
       'changeInfoMap': uploadMoneyInfo,
-      'machineCode': machineCode.value, //'PAZK8N7KKE8evkXks4'
-      'shopCode': shopCode.value,
+      'machineCode': machineCode, //'PAZK8N7KKE8evkXks4'
+      'shopCode': shopCode,
     };
     debugPrint("formData: $formData");
     request(
