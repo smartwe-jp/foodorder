@@ -19,7 +19,6 @@ import 'app_config.dart';
 import 'machine_info.dart';
 
 class CreatePrintImageController extends GetxController {
-
   RxString machineCode = "".obs;
   RxString machineMode = "1".obs;
   RxString printLogoImage = "".obs;
@@ -63,15 +62,15 @@ class CreatePrintImageController extends GetxController {
   }
 
   _getPrintLogoImageData() async {
-    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+    String logoImageInfo = machineInfo.printLogoImageUrl;
     if (logoImageInfo != "") {
       printLogoImage.value = logoImageInfo;
     }
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    machineMode.value = systemSettingInfo["machineMode"];
-    
+    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    machineMode.value = machineInfo.machineMode;
+
     usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
-    machineCode.value = await HomeServices.getMachineInfo();
+    machineCode.value = machineInfo.machineCode;
 
     //change(null, status: RxStatus.success());
   }
@@ -212,7 +211,8 @@ class CreatePrintImageController extends GetxController {
           var optionLine = (groupNameLength + optionNameLength) / wrapNum;
           var countLine = 0; //optionLine.ceil();
 
-          final qtyString = (value[0]["qty"] ?? 1) > 1 ? " ×${value[0]["qty"]}" : "";
+          final qtyString =
+              (value[0]["qty"] ?? 1) > 1 ? " ×${value[0]["qty"]}" : "";
           final optionString = (value[0]["name"] ?? "") + qtyString;
 
           //处理option 开始-----------
@@ -325,7 +325,8 @@ class CreatePrintImageController extends GetxController {
             List<Widget> optionSons = [];
             for (var j = 1; j < value.length; j++) {
               //print(value[j]);
-              final qtyString = (value[j]["qty"] ?? 1) > 1 ? " ×${value[j]["qty"]}" : "";
+              final qtyString =
+                  (value[j]["qty"] ?? 1) > 1 ? " ×${value[j]["qty"]}" : "";
               final optionString = (value[j]["name"] ?? "") + qtyString;
               newOptionSonLine += optionString.length / (wrapNum - 2);
               var oneOptionlength = 0.0;
@@ -384,10 +385,10 @@ class CreatePrintImageController extends GetxController {
 
       //分割线
       //if (machineInfo.currentMode != MachineMode.takeout) {
-        addRowHight += 8;
-        categoryMenus.add(
-          _publicSplitLine(),
-        );
+      addRowHight += 8;
+      categoryMenus.add(
+        _publicSplitLine(),
+      );
       //}
     }
     // if(machineInfo.currentMode == MachineMode.takeout)
@@ -744,27 +745,14 @@ class CreatePrintImageController extends GetxController {
 
     if (discount != 0)
       categoryMenus.add(
-        _publicTwoColumnsTxtNew(
-            "定価",
-            26.0,
-            FontWeight.w200,
-            "${formatMoney(originalPrice)}",
-            26.0,
-            FontWeight.w200,
-            true),
+        _publicTwoColumnsTxtNew("定価", 26.0, FontWeight.w200,
+            "${formatMoney(originalPrice)}", 26.0, FontWeight.w200, true),
       );
-
 
     if (discount != 0)
       categoryMenus.add(
-        _publicTwoColumnsTxtNew(
-            "割引",
-            26.0,
-            FontWeight.w200,
-            "${formatMoney(discount)}",
-            26.0,
-            FontWeight.w200,
-            true),
+        _publicTwoColumnsTxtNew("割引", 26.0, FontWeight.w200,
+            "${formatMoney(discount)}", 26.0, FontWeight.w200, true),
       );
 //合计
     categoryMenus.add(
@@ -919,42 +907,42 @@ class CreatePrintImageController extends GetxController {
                 )),
             Expanded(
                 child: Column(
-                  children: [
-                    if (printData["payMethod"] == "現金支払")
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "お預り",
-                                style: printMenuFont,
-                              ),
-                              Text(
-                                "￥${formatMoney(printData["payPrice"])}",
-                                style: printMenuFont,
-                              ),
-                            ],
-                          )),
-                    if (printData["payMethod"] == "現金支払" &&
-                        printData["change"] != null)
-                      Directionality(
-                          textDirection: TextDirection.ltr,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                "お釣",
-                                style: printMenuFont,
-                              ),
-                              Text(
-                                "￥${formatMoney(printData["change"])}",
-                                style: printMenuFont,
-                              ),
-                            ],
-                          )),
-                  ],
-                )),
+              children: [
+                if (printData["payMethod"] == "現金支払")
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "お預り",
+                            style: printMenuFont,
+                          ),
+                          Text(
+                            "￥${formatMoney(printData["payPrice"])}",
+                            style: printMenuFont,
+                          ),
+                        ],
+                      )),
+                if (printData["payMethod"] == "現金支払" &&
+                    printData["change"] != null)
+                  Directionality(
+                      textDirection: TextDirection.ltr,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "お釣",
+                            style: printMenuFont,
+                          ),
+                          Text(
+                            "￥${formatMoney(printData["change"])}",
+                            style: printMenuFont,
+                          ),
+                        ],
+                      )),
+              ],
+            )),
           ],
         ),
       ),
@@ -1012,19 +1000,19 @@ class CreatePrintImageController extends GetxController {
     final Completer<void> completer = Completer<void>();
 
     provider.resolve(config).addListener(
-      ImageStreamListener(
+          ImageStreamListener(
             (ImageInfo image, bool synchronousCall) {
-          if (!completer.isCompleted) {
-            completer.complete();
-          }
-        },
-        onError: (Object error, StackTrace? stackTrace) {
-          if (!completer.isCompleted) {
-            completer.completeError(error);
-          }
-        },
-      ),
-    );
+              if (!completer.isCompleted) {
+                completer.complete();
+              }
+            },
+            onError: (Object error, StackTrace? stackTrace) {
+              if (!completer.isCompleted) {
+                completer.completeError(error);
+              }
+            },
+          ),
+        );
 
     await completer.future;
   }
@@ -1074,9 +1062,9 @@ class CreatePrintImageController extends GetxController {
             children: [
               Expanded(
                   child: Text(
-                    "${txtContext}",
-                    style: printMenuFont,
-                  )),
+                "${txtContext}",
+                style: printMenuFont,
+              )),
             ],
           )),
     );
@@ -1094,14 +1082,14 @@ class CreatePrintImageController extends GetxController {
             children: [
               Expanded(
                   child: Text(
-                    "${txtContext}",
-                    style: TextStyle(
-                      fontFamily: 'NotoSansJP',
-                      color: Colors.black,
-                      fontSize: txtFontSize,
-                      fontWeight: txtFontWeight,
-                    ),
-                  )),
+                "${txtContext}",
+                style: TextStyle(
+                  fontFamily: 'NotoSansJP',
+                  color: Colors.black,
+                  fontSize: txtFontSize,
+                  fontWeight: txtFontWeight,
+                ),
+              )),
             ],
           )),
     );
@@ -1128,32 +1116,32 @@ class CreatePrintImageController extends GetxController {
                   )),
               (isMoney == true)
                   ? Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Container(
-                    //width: ScreenAdapter.width(120),
-                    alignment: Alignment.centerRight,
-                    child: RichText(
-                      text: TextSpan(
-                          text: "￥",
-                          style: printMenuFont,
-                          children: [
-                            TextSpan(
-                              text: "${rightTxtContext}",
+                      textDirection: TextDirection.ltr,
+                      child: Container(
+                        //width: ScreenAdapter.width(120),
+                        alignment: Alignment.centerRight,
+                        child: RichText(
+                          text: TextSpan(
+                              text: "￥",
                               style: printMenuFont,
-                            ),
-                          ]),
-                    ),
-                  ))
+                              children: [
+                                TextSpan(
+                                  text: "${rightTxtContext}",
+                                  style: printMenuFont,
+                                ),
+                              ]),
+                        ),
+                      ))
                   : Directionality(
-                  textDirection: TextDirection.ltr,
-                  child: Container(
-                    width: ScreenAdapter.width(120),
-                    alignment: Alignment.centerRight,
-                    child: Text(
-                      "${rightTxtContext}",
-                      style: printMenuFont,
-                    ),
-                  )),
+                      textDirection: TextDirection.ltr,
+                      child: Container(
+                        width: ScreenAdapter.width(120),
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          "${rightTxtContext}",
+                          style: printMenuFont,
+                        ),
+                      )),
             ],
           ),
         ));

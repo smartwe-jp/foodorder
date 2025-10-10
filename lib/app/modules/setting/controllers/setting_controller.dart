@@ -62,7 +62,7 @@ class SettingController extends GetxController with StateMixin {
   RxBool showSignOut = false.obs;
 
   RxString local_version = "".obs; //本appversion
-  RxMap usbPrinter = {}.obs;
+  //RxMap usbPrinter = {}.obs;
   RxString getPutMoneyCurrency = "".obs;
   RxString getOutMoneyCurrency = "".obs;
   RxInt getPutMoney = 0.obs;
@@ -84,6 +84,7 @@ class SettingController extends GetxController with StateMixin {
   String get machineCode => machineInfo.machineCode;
   String get shopCode => machineInfo.shopCode;
   bool get is_reimburse => machineInfo.isAllowReimburse;
+  Map get usbDevice => machineInfo.usbDevice;
 
   @override
   void onInit() {
@@ -434,8 +435,8 @@ class SettingController extends GetxController with StateMixin {
     //     (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1" ? true : false;
     //is_reimburse.value = await HomeServices.getSmartweReimburseData();
     //shopCode.value = await HomeServices.getShopCode();
-    usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
-    debugPrint("usbPrinter = ${usbPrinter}");
+    // usbPrinter.value = await HomeServices.getUsbPrintSettingInfo();
+    // debugPrint("usbPrinter = ${usbPrinter}");
     //查看机器零钱状态
     await _getPaycubeChangeState();
   }

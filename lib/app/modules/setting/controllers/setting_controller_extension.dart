@@ -483,7 +483,7 @@ extension SettingControllerExtension on SettingController {
   }
 
   UsbDeviceInfo? get curUsbPrinter {
-    if (usbPrinter.isEmpty) {
+    if (usbDevice.isEmpty) {
       print("usbDevice is empty");
       //弹出提示框，打印机未设置，请设置打印机或者联系管理员
       DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
@@ -491,8 +491,8 @@ extension SettingControllerExtension on SettingController {
       });
       return null;
     }
-    print("usbDevice.value:${usbPrinter.value}");
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbPrinter.value));
+    print("usbDevice.value:${usbDevice}");
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
   }
 
   sendToUsePrinter(widget) async {

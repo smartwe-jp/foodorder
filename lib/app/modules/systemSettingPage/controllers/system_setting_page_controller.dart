@@ -91,7 +91,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   RxDouble downloadProgress = 0.0.obs;
 
-  RxMap usbDevice = {}.obs;
+  //RxMap usbDevice = {}.obs;
 
   // RxBool printDirection = false.obs;
   // RxBool printTwoDirection = false.obs;
@@ -140,6 +140,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     })
       ..removeWhere((key, value) => value == null);
   }
+
+  Map get usbDevice => machineInfo.usbDevice;
 
   @override
   void onInit() {
@@ -192,7 +194,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
-    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
+    //usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
 
     // is_edit_mode.value = await HomeServices.getEditMode();
 
@@ -851,7 +853,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     }
 
     // ignore: invalid_use_of_protected_member
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice.value));
+    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
   }
 
   setUsbPrinter({UsbDeviceInfo? usbPrinter}) async {
@@ -867,7 +869,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
       'position': usbPrinter.position,
     };
 
-    usbDevice.value = data;
+    machineInfo.usbDevice = data;
 
     Storage.setString('smartwe_usbPrintSetting', json.encode(data));
     GetxStorage.setData('smartwe_usbPrintSetting', json.encode(data));
@@ -1122,7 +1124,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         ? PrinterInfo(ip: printIp)
         : PrinterInfo(
             usbDevice:
-                UsbDeviceInfo.fromMap(usbDevice.value as Map<String, dynamic>));
+                UsbDeviceInfo.fromMap(usbDevice as Map<String, dynamic>));
 
     if (printType == 0) {
       PictureGeneratorProvider.instance.addPicGeneratorTask(
