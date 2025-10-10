@@ -10,6 +10,7 @@ import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/rejishimei/view.dart';
 import 'package:foodorder/app/modules/setting/controllers/exchange_controller_extension.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller_extension.dart';
@@ -33,10 +34,7 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../CheckoutPage/controllers/checkout_page_controller.dart';
-import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/ReplanishView.dart';
-import '../views/RejishimeRequestView.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
@@ -45,11 +43,12 @@ class SettingController extends GetxController with StateMixin {
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
   AppConfig appConfig = Get.find<AppConfig>();
+  MachineInfoController machineInfo = Get.find<MachineInfoController>();
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
-  RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
+  //RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
   RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
-  RxBool isAllowRejishime = false.obs;
+  //RxBool isAllowRejishime = false.obs;
   RxString checkLanguage = "JP".obs;
 
   RxList cashList = [].obs;
@@ -424,10 +423,10 @@ class SettingController extends GetxController with StateMixin {
   }
 
   getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-    machine_mode.value = SystemSettingInfo['machineMode'];
-    isAllowRejishime.value =
-        (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1" ? true : false;
+    //Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
+    //machine_mode.value = SystemSettingInfo['machineMode'];
+    // isAllowRejishime.value =
+    //     (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1" ? true : false;
     var reimburse = await HomeServices.getSmartweReimburseData();
     is_reimburse.value = reimburse;
     shopCode.value = await HomeServices.getShopCode();
@@ -913,25 +912,25 @@ class SettingController extends GetxController with StateMixin {
 
   goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
-    if (machine_mode.value == "1") {
-      // if (Get.isRegistered<MenuPageController>()) {
-      //   Get.find<MenuPageController>().clearCartList();
-      //   Get.delete<MenuPageController>();
-      // } // 手动删除控制器实例
-    } else if (machine_mode.value == "2") {
-      //if (Get.isRegistered<CheckoutPageController>()) {
-        //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
-      //}
-    } else if (machine_mode.value == "3") {
-      //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+    // if (machine_mode.value == "1") {
+    //   // if (Get.isRegistered<MenuPageController>()) {
+    //   //   Get.find<MenuPageController>().clearCartList();
+    //   //   Get.delete<MenuPageController>();
+    //   // } // 手动删除控制器实例
+    // } else if (machine_mode.value == "2") {
+    //   //if (Get.isRegistered<CheckoutPageController>()) {
+    //     //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+    //   //}
+    // } else if (machine_mode.value == "3") {
+    //   //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
+    //   //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
 
-      //if (Get.isRegistered<SelfservicePageController>())
-      //Get.delete<SelfservicePageController>();
-    }
-    if (Get.isRegistered<SettingController>()) {
-      //Get.delete<SettingController>(); // 手动删除控制器实例
-    }
+    //   //if (Get.isRegistered<SelfservicePageController>())
+    //   //Get.delete<SelfservicePageController>();
+    // }
+    // if (Get.isRegistered<SettingController>()) {
+    //   //Get.delete<SettingController>(); // 手动删除控制器实例
+    // }
     //Future.delayed(Duration(milliseconds: 100), () {
     //Get.offAllNamed('/transit-page');
     //Get.toNamed('/transit-page');

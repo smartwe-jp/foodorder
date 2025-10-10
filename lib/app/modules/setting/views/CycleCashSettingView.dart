@@ -196,7 +196,7 @@ extension CycleCashSettingView on SettingView {
                       color: ColorsUtil.hexToColor("#000000"),
                     )),
               ),
-              (controller.isAllowRejishime.value || Platform.isWindows)
+              (controller.machineInfo.isAllowRejishime == "1")
                   ? RecycleButton(
                       title: "レジ締め",
                       onPressed: () {
