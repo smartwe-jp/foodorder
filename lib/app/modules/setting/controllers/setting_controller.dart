@@ -100,6 +100,7 @@ class SettingController extends GetxController with StateMixin {
   @override
   void onClose() {
     super.onClose();
+    debugPrint("---SettingController onClose---");
   }
 
   //显示状态栏导航栏
@@ -936,8 +937,9 @@ class SettingController extends GetxController with StateMixin {
     //Get.toNamed('/transit-page');
     //Get.offNamedUntil('/transit-page', ModalRoute.withName('/home'));
     //Get.updateLocale(Locale('jp', 'JP'));
-    Get.offNamedUntil('/transit-page',
-        (route) => route.isFirst); //, arguments: {'toView2': true}
+    // Get.offNamedUntil('/transit-page',
+    //     (route) => route.isFirst); //, arguments: {'toView2': true}
+    Get.back();
     //});
   }
 }
