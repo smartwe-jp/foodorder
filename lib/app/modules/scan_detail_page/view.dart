@@ -498,6 +498,7 @@ class ScanDetailPagePage extends StatelessWidget {
     final title = order['name'] ?? '';
     final qty = order['qty'] ?? 0;
     final options = order['options'] ?? {};
+    final price = order['price'] ?? 0;
 
     return
 
@@ -536,6 +537,17 @@ class ScanDetailPagePage extends StatelessWidget {
                           color: Colors.black,
                         )),
                   ],
+                ),
+                //价格
+                Container(
+                  alignment: Alignment.centerRight,
+                  child: Text('¥ ${formatMoney(price)}',
+                      style: TextStyle(
+                        fontFamily: GFont.getFontFamily(),
+                        fontSize: ScreenAdapter.fontSize(30),
+                        fontWeight: FontWeight.w500,
+                        color: Colors.black,
+                      )),
                 ),
                 //选项
                 if (options.isNotEmpty)
