@@ -38,10 +38,10 @@ import '../views/ReplanishView.dart';
 
 class SettingController extends GetxController with StateMixin {
   //TODO: Implement SettingController
-  OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
+  OrderSqlController ordersqlcontroller = Get.find<OrderSqlController>();
   //MenuPageController menuPagecontroller = Get.put(MenuPageController());
   CreatePrintImageController createPrintImageController =
-      Get.put(CreatePrintImageController());
+      Get.find<CreatePrintImageController>();
   AppConfig appConfig = Get.find<AppConfig>();
   MachineInfoController machineInfo = Get.find<MachineInfoController>();
   //RxString machineCode = "".obs;

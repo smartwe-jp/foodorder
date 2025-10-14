@@ -39,7 +39,7 @@ import '../../menuPage/controllers/menu_page_controller.dart';
 class SettlementController extends GetxController with StateMixin {
 
   OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-  CreatePrintImageController createPrintImageController = Get.put(CreatePrintImageController());
+  CreatePrintImageController createPrintImageController = Get.find<CreatePrintImageController>();
   final posManager = PosSocketManager();
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();

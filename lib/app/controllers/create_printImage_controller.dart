@@ -12,21 +12,23 @@ import 'package:android_usb_printer/android_usb_printer.dart';
 
 import '../config/colorsUtil.dart';
 import '../plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
-import '../services/HomeServices.dart';
+//import '../services/HomeServices.dart';
 import '../services/ScreenAdapter.dart';
 import '../services/formatMoney.dart';
 import 'app_config.dart';
 import 'machine_info.dart';
 
 class CreatePrintImageController extends GetxController {
-  RxString machineCode = "".obs;
-  RxString machineMode = "1".obs;
-  RxString printLogoImage = "".obs;
-  RxMap usbDevice = {}.obs;
+  //RxString machineCode = "".obs;
+  //RxString machineMode = "1".obs;
+  //RxString printLogoImage = "".obs;
+  //RxMap usbDevice = {}.obs;
 
   MachineInfoController machineInfo = Get.find();
   AppConfig appConfig = Get.find();
   double get printWidth => 550.0;
+  Map get usbDevice => machineInfo.usbDevice;
+  String get printLogoImage => machineInfo.printLogoImageUrl;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -56,24 +58,24 @@ class CreatePrintImageController extends GetxController {
   );
 
   @override
-  Future<void> onInit() async {
+  void onInit() async {
     super.onInit();
-    _getPrintLogoImageData();
+    //_getPrintLogoImageData();
   }
 
-  _getPrintLogoImageData() async {
-    String logoImageInfo = machineInfo.printLogoImageUrl;
-    if (logoImageInfo != "") {
-      printLogoImage.value = logoImageInfo;
-    }
+  //_getPrintLogoImageData() async {
+    // String logoImageInfo = machineInfo.printLogoImageUrl;
+    // if (logoImageInfo != "") {
+    //   printLogoImage.value = logoImageInfo;
+    // }
     //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    machineMode.value = machineInfo.machineMode;
+    //machineMode.value = machineInfo.machineMode;
 
-    usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
-    machineCode.value = machineInfo.machineCode;
+    //usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
+    //machineCode.value = machineInfo.machineCode;
 
     //change(null, status: RxStatus.success());
-  }
+  //}
 
   UsbDeviceInfo? get curUsbPrinter {
     if (usbDevice.isEmpty) {
@@ -545,7 +547,7 @@ class CreatePrintImageController extends GetxController {
     //注文番号
     categoryMenus.add(_publicOneColumnTxtNew(
         "注文番号:${printData["order"]}", 26.0, FontWeight.w300));
-    if (machineMode.value == "1" || machineMode.value == "3") {
+    if (machineInfo.machineMode == "1" || machineInfo.machineMode == "3") {
       addRowHight += 48;
       categoryMenus.add(_publicOneColumnText(
           "${printData["numberTip"]}${printData["serialNumber"]}",
@@ -976,7 +978,7 @@ class CreatePrintImageController extends GetxController {
               decoration: BoxDecoration(
                 //color: Colors.green,
                 image: DecorationImage(
-                  image: CachedNetworkImageProvider(printLogoImage.value),
+                  image: CachedNetworkImageProvider(printLogoImage),
                   fit: BoxFit.fitWidth,
                 ),
               )),

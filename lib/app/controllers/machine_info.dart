@@ -48,6 +48,15 @@ class MachineInfoController extends GetxController {
   late Map machineModeInfo;
   late String isAllowRejishime;
 
+  //settings
+  double machinePrintWidth = 385.0;
+  late String print_paper_txt_size;
+  late String isReservation;
+  late String panelType;
+  bool isAllow10000 = true;
+  bool isAllow5000 = true;
+  String is_allow_oneyen = "0";
+
   //payment info
   late bool showCash;
   late bool showAlipay;
@@ -106,7 +115,10 @@ class MachineInfoController extends GetxController {
   String get printType {
     String type = "";
     final labelPrinter = printerList.firstWhere(
-        (printer) => printer['type'] == 10 && printer['receipt'] == 1 && !printer['isOff'],
+        (printer) =>
+            printer['type'] == 10 &&
+            printer['receipt'] == 1 &&
+            !printer['isOff'],
         orElse: () => null);
 
     if (labelPrinter != null) {
@@ -153,16 +165,24 @@ class MachineInfoController extends GetxController {
     }
     logI('loadMachineSettingInfo 0');
 
-    isBackHome = (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
+    isBackHome =
+        (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
     diningType = systemSettingInfo['diningType'] ?? '1';
     logI('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '0';
-    String panelType = systemSettingInfo['panelType'] ?? 'Mini';
+    panelType = systemSettingInfo['panelType'] ?? 'Mini';
     machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
+
+    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
+    isReservation = systemSettingInfo['isReservation'];
+    isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
+    isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
+    is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
+
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
@@ -170,7 +190,8 @@ class MachineInfoController extends GetxController {
     menu_direction = systemSettingInfo['menuDirection'] ?? '1';
     machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
-    showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
+    showPrintType =
+        int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
     // is_allow_wlanPrint_continuous =
     //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
@@ -183,7 +204,8 @@ class MachineInfoController extends GetxController {
 
     headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
 
-    isAllowReimburse = await HomeServices.getSmartweReimburseData() == '1' ? true : false;
+    isAllowReimburse =
+        await HomeServices.getSmartweReimburseData() == '1' ? true : false;
 
     supportLanguages = await HomeServices.getMachineLanguages();
 
@@ -241,6 +263,8 @@ class MachineInfoController extends GetxController {
     isAllowScreenCall = screenCallSetting['isAllowScreenCall'] ?? false;
 
     usbDevice = await HomeServices.getUsbPrintSettingInfo();
+
+    machinePrintWidth = await HomeServices.getMachinePrintWidth();
 
     // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
     // wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';

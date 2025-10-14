@@ -50,15 +50,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
   // RxBool dining_type_one = false.obs; //false无堂食 true 堂食
   // RxBool dining_type_two = false.obs; //false无外卖  true 外卖
   // RxString menu_direction = "1".obs; //1 默认顶部横向  2 左侧纵向
-  RxString print_paper_size = "1".obs; //1 默认58mm  2 宽纸80mm
-  RxString print_paper_txt_size = "1".obs; //1 普通　2大　3特大
+  // RxString print_paper_size = "1".obs; //1 默认58mm  2 宽纸80mm
+  //RxString print_paper_txt_size = "1".obs; //1 普通　2大　3特大
   // RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须打印
   // RxString is_allow_receipt_menu = "1".obs; //1 必须打印  2 不要
   // RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
-  RxString isReservation = "0".obs; // 0 不开启  1开启
+  // RxString isReservation = "0".obs; // 0 不开启  1开启
   // RxString is_allow_attendance = "0".obs; //0 不开启  1 开启
   // RxString is_allow_settlementhome = "0".obs; //0 不开启  1 开启
-  RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
+  // RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
   // RxString is_allow_backhome = "0".obs; //0 返回  1 返回菜单
   // RxString is_allow_rejishime = "0".obs; //0 不开启  1 开启
   //券卖机设置里面也设置开启并设置好ip，则展示图标及请求pos支付的相关数据
@@ -97,14 +97,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   // RxBool printTwoDirection = false.obs;
   // RxBool printThreeDirection = false.obs;
   // RxDouble printLabelWidth = 400.0.obs;
-  RxDouble machinePrintWidth = 385.0.obs;
-  RxList printerList = [].obs;
-  RxList sseSettingList = [].obs;
+  // RxDouble machinePrintWidth = 385.0.obs;
+  // RxList printerList = [].obs;
+  // RxList sseSettingList = [].obs;
 
   List<String> panelTypes = ['Mini', 'Max'];
-  String panelType = "Mini";
-  bool isAllow10000 = true;
-  bool isAllow5000 = true;
+  //String panelType = "Mini";
+  // bool isAllow10000 = true;
+  // bool isAllow5000 = true;
 
   final baseUrl = "https://app.smartwe.co.jp/";
 
@@ -135,7 +135,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   Map get notSelectedPrinterMap {
     return subPrinterInfos.map((key, value) {
       // 检查 printerList 中是否包含该 type
-      bool isSelected = printerList.any((item) => item['type'] == value);
+      bool isSelected = machineInfo.printerList.any((item) => item['type'] == value);
       return MapEntry(key, isSelected ? null : value);
     })
       ..removeWhere((key, value) => value == null);
@@ -176,7 +176,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //获取系统设置信息
   _getSystemSettingInfo() async {
     await _checkAndInitialPrinters();
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    // Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
     // Map posSettingInfo = await HomeServices.getPosSettingInfo();
     // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
     // Map wlanPrintSettingInfoTwo =
@@ -190,7 +190,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // printThreeDirection.value =
     //     await HomeServices.getPrintThreeDirection() == "1" ? true : false;
     // printLabelWidth.value = await HomeServices.getLabelPrintWidth();
-    machinePrintWidth.value = await HomeServices.getMachinePrintWidth();
+    //machinePrintWidth.value = await HomeServices.getMachinePrintWidth();
     //var billButtonList = await HomeServices.getSmartweCheckOutBillData();
     var smartweMachineSetting =
         await HomeServices.getSmartweMachineSettingData();
@@ -211,12 +211,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // }
     // menu_direction.value = systemSettingInfo['menuDirection'];
     // _print_paper_size = systemSettingInfo['printPaperSize'];
-    print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
+    // print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
 
     // is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
     // is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
     // machine_mode.value = systemSettingInfo['machineMode'];
-   isReservation.value = systemSettingInfo['isReservation'];
+    // isReservation.value = systemSettingInfo['isReservation'];
     // is_allow_attendance.value = systemSettingInfo['isAllowAttendance'];
     // is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
     // is_allow_backhome.value = systemSettingInfo['isAllowBackHome'];
@@ -230,7 +230,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // is_allow_wlanPrint_Two_continuous.value =
     //     systemSettingInfo['isAllowWlanPrintTwoContinuous'];
     // is_allow_wlanPanelPrint = systemSettingInfo['isAllowWlanPanelPrint'] ?? "0";
-    panelType = systemSettingInfo['panelType'] ?? 'Mini';
+    // panelType = systemSettingInfo['panelType'] ?? 'Mini';
 
     // if (posSettingInfo['posIp'] != null &&
     //     posSettingInfo['posIp'] != "" &&
@@ -267,15 +267,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //"diningType": dining_type.value, //1堂食 2外带
     "menuDirection": machineInfo.menu_direction, //1顶部横向 2左侧竖
     //"printPaperSize": _print_paper_size, //1 58mm 2 80mm
-    "printPaperTxtSize": print_paper_txt_size.value, //1 普通　2大　3特大
+    "printPaperTxtSize": machineInfo.print_paper_txt_size, //1 普通　2大　3特大
     "isAllowReceipt": machineInfo.isAllowReceipt, //1必须打印小票 2不必须
     "isAllowReceiptMenu": machineInfo.isPrintReceipt, //1必须 2 不要
     //"machineMode": machine_mode.value, //1普通券卖机 2 精算机
-    "isReservation": isReservation.value, //是否开启预约服务
+    "isReservation": machineInfo.isReservation, //是否开启预约服务
     //"isAllowAttendance": is_allow_attendance.value, //0不开启 1开启
-    "isAllowOneYen": is_allow_oneyen.value, //0禁用1元 1不禁用
-    "isAllow5000": isAllow5000 ? "1" : "0",
-    "isAllow10000": isAllow10000 ? "1" : "0",
+    "isAllowOneYen": machineInfo.is_allow_oneyen, //0禁用1元 1不禁用
+    "isAllow5000": machineInfo.isAllow5000 ? "1" : "0",
+    "isAllow10000": machineInfo.isAllow10000 ? "1" : "0",
     "isAllowRejishime": machineInfo.isAllowRejishime, //0不开启 1开启
     "isAllowBackHome": machineInfo.isBackHome ? "1" : "0", //0返回home 1返回到菜单
     "isAllowPos": machineInfo.isAllowPos, //0不开启 1开启
@@ -284,15 +284,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
     // "showPrintType": showPrintType.value.toString(), //0receipt 1label
     // "isAllowWlanPrintTwo": is_allow_wlanPrint_Two.value, //0不开启 1开启
     // "isAllowWlanPrintTwoContinuous": is_allow_wlanPrint_Two_continuous.value,
-    "panelType": panelType,
+    "panelType": machineInfo.panelType,
     // "isAllowWlanPanelPrint": is_allow_wlanPanelPrint ?? "0",
   };
 
   _checkAndInitialPrinters() async {
-    printerList.value = await HomeServices.getPrinterListInfo();
-    if (printerList.isEmpty) {
+    //printerList.value = await HomeServices.getPrinterListInfo();
+    if (machineInfo.printerList.isEmpty) {
       //如果没有打印机信息，则添加默认打印机
-      printerList.add({
+      machineInfo.printerList.add({
         'name': 'キッチン',
         'type': 10,
         'receipt': 0,
@@ -305,7 +305,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'option': true,
         'direction': 0,
       });
-      printerList.add({
+      machineInfo.printerList.add({
         'name': 'キッチン (ラベル)',
         'type': 10,
         'receipt': 1,
@@ -318,7 +318,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'option': true,
         'direction': 0,
       });
-      printerList.add({
+      machineInfo.printerList.add({
         'name': 'センター',
         'type': 11,
         'receipt': 0,
@@ -331,7 +331,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'option': true,
         'direction': 0,
       });
-      printerList.add({
+      machineInfo.printerList.add({
         'name': 'カウンター',
         'type': 12,
         'receipt': 0,
@@ -346,12 +346,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
       });
     }
     //save
-    await HomeServices.setPrinterListInfo(printerList);
+    await HomeServices.setPrinterListInfo(machineInfo.printerList);
     //获取SSE设置
-    sseSettingList.value = await HomeServices.getSSESettingList();
-    if (sseSettingList.isEmpty) {
+    machineInfo.sseSettingList = await HomeServices.getSSESettingList();
+    if (machineInfo.sseSettingList.isEmpty) {
       //如果没有SSE设置，则添加默认设置
-      sseSettingList.add({
+      machineInfo.sseSettingList.add({
         'name': 'SmartWe SSE',
         'server': 'sseSubscribeSmartWe',//servicePath[
         'identify': machineInfo.machineCode,
@@ -361,7 +361,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needInput': false,
         'printOption': true,
       });
-      sseSettingList.add({
+      machineInfo.sseSettingList.add({
         'name': 'Panda SSE',
         'server': 'sseSubscribePanda',
         'identify': '',
@@ -371,7 +371,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
         'needInput': true,
         'printOption': true,
       });
-      await HomeServices.setSSESettingList(sseSettingList);
+      await HomeServices.setSSESettingList(machineInfo.sseSettingList);
     }
 
     machineModeInfo = await HomeServices.getMachineModeInfo();
@@ -398,7 +398,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if (isOn) {
             //先关闭现有连接
             //先找到对应的SSE设置
-            Map sseItem = sseSettingList.firstWhere(
+            Map sseItem = machineInfo.sseSettingList.firstWhere(
                 (item) => item['name'] == name,
                 orElse: () => {'name': name, 'isOn': false, 'identify': ''});
             updateSSESetting(name, isOn: false, identify: sseItem['identify'] ?? '');
@@ -414,31 +414,31 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   updateSSESetting(String name,
       {bool? isOn, String? identify, bool? centerOn, bool? printOption, bool? printSeat}) async {
-    if (sseSettingList.isNotEmpty) {
-      for (var i = 0; i < sseSettingList.length; i++) {
-        if (sseSettingList[i]['name'] == name) {
+    if (machineInfo.sseSettingList.isNotEmpty) {
+      for (var i = 0; i < machineInfo.sseSettingList.length; i++) {
+        if (machineInfo.sseSettingList[i]['name'] == name) {
           if (isOn != null) {
-            sseSettingList[i]['isOn'] = isOn;
+            machineInfo.sseSettingList[i]['isOn'] = isOn;
           }
           if (identify != null) {
-            sseSettingList[i]['identify'] = identify;
+            machineInfo.sseSettingList[i]['identify'] = identify;
           }
 
           if (centerOn != null) {
-            sseSettingList[i]['centerOn'] = centerOn;
+            machineInfo.sseSettingList[i]['centerOn'] = centerOn;
           }
 
           if (printOption != null) {
-            sseSettingList[i]['printOption'] = printOption;
+            machineInfo.sseSettingList[i]['printOption'] = printOption;
           }
 
           if (printSeat != null) {
-            sseSettingList[i]['printSeat'] = printSeat;
+            machineInfo.sseSettingList[i]['printSeat'] = printSeat;
           }
-          final needInput = sseSettingList[i]['needInput'] ?? false;
+          final needInput = machineInfo.sseSettingList[i]['needInput'] ?? false;
           if ((identify != null && identify.isNotEmpty) || !needInput) {
             //debugPrint("updateSSESetting: $name, $identify");
-            final domain = servicePath[sseSettingList[i]['server']];
+            final domain = servicePath[machineInfo.sseSettingList[i]['server']];
             if (isOn != null && domain != null) {
               debugPrint("SSE domain: $domain"
                   " identify: $identify isOn: $isOn");
@@ -452,8 +452,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
           }
         }
       }
-      HomeServices.setSSESettingList(sseSettingList);
-      machineInfo.sseSettingList = sseSettingList;
+      HomeServices.setSSESettingList(machineInfo.sseSettingList);
+      //machineInfo.sseSettingList = machineInfo.sseSettingList;
     }
 
     update();
@@ -468,7 +468,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     if (!subPrinterList.contains(printerType)) {
       subPrinterList.add(printerType);
     }
-    printerList.add({
+    machineInfo.printerList.add({
       'name': name, //打印机名称
       'type': printerType,
       'receipt': 0, //0 小票 1 标签
@@ -481,8 +481,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       'direction': 0,
     });
     //存打印机列表
-    HomeServices.setPrinterListInfo(printerList);
-    machineInfo.printerList = printerList;
+    HomeServices.setPrinterListInfo(machineInfo.printerList);
+    //machineInfo.printerList = machineInfo.printerList;
     update();
     // Future.delayed(const Duration(milliseconds: 300), () {
     //   _scrollToBottom();
@@ -490,9 +490,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   removePrinter(Map printer) {
-    if (printerList.isNotEmpty) {
-      printerList.removeWhere((item) => item['type'] == printer['type']);
-      HomeServices.setPrinterListInfo(printerList);
+    if (machineInfo.printerList.isNotEmpty) {
+      machineInfo.printerList.removeWhere((item) => item['type'] == printer['type']);
+      HomeServices.setPrinterListInfo(machineInfo.printerList);
       machineInfo.updateMachineSettingInfo();
       update();
     }
@@ -500,15 +500,15 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   editPrinterInfo(int printerType, int continuousType, bool isOff,
       {String name = "", String printIp = ""}) {
-    if (printerList.isNotEmpty) {
-      for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == printerType) {
-          printerList[i]['isOff'] = isOff;
-          printerList[i]['continuous'] = continuousType;
-          printerList[i]['printIp'] = printIp;
+    if (machineInfo.printerList.isNotEmpty) {
+      for (var i = 0; i < machineInfo.printerList.length; i++) {
+        if (machineInfo.printerList[i]['type'] == printerType) {
+          machineInfo.printerList[i]['isOff'] = isOff;
+          machineInfo.printerList[i]['continuous'] = continuousType;
+          machineInfo.printerList[i]['printIp'] = printIp;
         }
       }
-      HomeServices.setPrinterListInfo(printerList);
+      HomeServices.setPrinterListInfo(machineInfo.printerList);
     }
     update();
   }
@@ -793,12 +793,12 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   checkPanelType(String type) {
-    panelType = type;
+    machineInfo.panelType = type;
     _updateSystemSetting("panelType", type);
   }
 
   checkPrintPaperTxtSize(checkedType) async {
-    print_paper_txt_size.value = checkedType;
+    machineInfo.print_paper_txt_size = checkedType;
     _updateSystemSetting("printPaperTxtSize", checkedType);
   }
 
@@ -818,7 +818,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   // }
 
   checkIsReservation(checkedType) async {
-    isReservation.value = checkedType;
+    machineInfo.isReservation = checkedType;
     _updateSystemSetting("isReservation", checkedType);
   }
 
@@ -895,24 +895,24 @@ class SystemSettingPageController extends GetxController with StateMixin {
   }
 
   updatePrinterState(int type, int receipt, bool isOff) async {
-    if (printerList.isNotEmpty) {
-      for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == type &&
-            printerList[i]['receipt'] == receipt) {
-          printerList[i]['isOff'] = isOff;
+    if (machineInfo.printerList.isNotEmpty) {
+      for (var i = 0; i < machineInfo.printerList.length; i++) {
+        if (machineInfo.printerList[i]['type'] == type &&
+            machineInfo.printerList[i]['receipt'] == receipt) {
+          machineInfo.printerList[i]['isOff'] = isOff;
           if (!isOff && type == 10) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
-            for (var j = 0; j < printerList.length; j++) {
-              if (printerList[j]['type'] == 10 &&
-                  printerList[j]['receipt'] != receipt) {
-                printerList[j]['isOff'] = true;
+            for (var j = 0; j < machineInfo.printerList.length; j++) {
+              if (machineInfo.printerList[j]['type'] == 10 &&
+                  machineInfo.printerList[j]['receipt'] != receipt) {
+                machineInfo.printerList[j]['isOff'] = true;
               }
             }
           }
         }
       }
-      HomeServices.setPrinterListInfo(printerList);
-      machineInfo.printerList = printerList;
+      HomeServices.setPrinterListInfo(machineInfo.printerList);
+      //machineInfo.printerList = printerList;
     }
     //machineInfo.updateMachineSettingInfo();
     update();
@@ -920,36 +920,36 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option}) async {
 
-    if (printerList.isNotEmpty) {
-      for (var i = 0; i < printerList.length; i++) {
-        if (printerList[i]['type'] == type && printerList[i]['receipt'] == receipt) {
-          if(isOff != null) printerList[i]['isOff'] = isOff;
-          if(continuous != null) printerList[i]['continuous'] = continuous;
-          if(printerIp != null) printerList[i]['printIp'] = printerIp;
-          if(port != null) printerList[i]['printPort'] = port;
-          if(printSize != null) printerList[i]['labelSize'] = printSize;
-          if(direction != null) printerList[i]['direction'] = direction;
-          if(option != null) printerList[i]['option'] = option ?? false;
+    if (machineInfo.printerList.isNotEmpty) {
+      for (var i = 0; i < machineInfo.printerList.length; i++) {
+        if (machineInfo.printerList[i]['type'] == type && machineInfo.printerList[i]['receipt'] == receipt) {
+          if(isOff != null) machineInfo.printerList[i]['isOff'] = isOff;
+          if(continuous != null) machineInfo.printerList[i]['continuous'] = continuous;
+          if(printerIp != null) machineInfo.printerList[i]['printIp'] = printerIp;
+          if(port != null) machineInfo.printerList[i]['printPort'] = port;
+          if(printSize != null) machineInfo.printerList[i]['labelSize'] = printSize;
+          if(direction != null) machineInfo.printerList[i]['direction'] = direction;
+          if(option != null) machineInfo.printerList[i]['option'] = option ?? false;
           if (type == 10 && !(isOff ?? true)) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
-            for (var j = 0; j < printerList.length; j++) {
-              if (printerList[j]['type'] == 10 &&
-                  printerList[j]['receipt'] != receipt) {
-                printerList[j]['isOff'] = true;
+            for (var j = 0; j < machineInfo.printerList.length; j++) {
+              if (machineInfo.printerList[j]['type'] == 10 &&
+                  machineInfo.printerList[j]['receipt'] != receipt) {
+                machineInfo.printerList[j]['isOff'] = true;
               }
             }
           }
         }
       }
-      HomeServices.setPrinterListInfo(printerList);
+      HomeServices.setPrinterListInfo(machineInfo.printerList);
       //machineInfo.updateMachineSettingInfo();
-      machineInfo.printerList = printerList;
+      //machineInfo.printerList = machineInfo.printerList;
     }
     update();
   }
 
   updateMachinePrintWidth(double width) async {
-    machinePrintWidth.value = width;
+    machineInfo.machinePrintWidth = width;
     await HomeServices.setMachinePrintWidth(width);
     update();
   }
@@ -1224,7 +1224,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     } else {
       var allowOneCashStatus = await payCube.allowOneCash;
     }
-    is_allow_oneyen.value = checkedType;
+    machineInfo.is_allow_oneyen = checkedType;
 
     _updateSystemSetting("isAllowOneYen", checkedType);
   }
@@ -1232,7 +1232,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllow5000Yen(checkedType) async {
     _showEasyLoading();
     await payCube.setAcceptCash(checkedType, 5000, onSuccess: () {
-      isAllow5000 = checkedType;
+      machineInfo.isAllow5000 = checkedType;
       _updateSystemSetting("isAllow5000", checkedType ? "1" : "0");
     }, catchError: (error) {
       handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: () {
@@ -1246,7 +1246,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
   checkIsAllow10000Yen(checkedType) async {
     _showEasyLoading();
     await payCube.setAcceptCash(checkedType, 10000, onSuccess: () {
-      isAllow10000 = checkedType;
+      machineInfo.isAllow10000 = checkedType;
       _updateSystemSetting("isAllow10000", checkedType ? "1" : "0");
     }, catchError: (error) {
       handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: () {
