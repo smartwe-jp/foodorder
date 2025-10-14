@@ -1,7 +1,7 @@
 
 import 'package:foodorder/app/controllers/app_config.dart';
 import 'package:foodorder/app/controllers/create_printImage_controller.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:get/get.dart';

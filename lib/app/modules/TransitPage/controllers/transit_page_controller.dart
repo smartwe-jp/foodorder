@@ -1,7 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
-import 'dart:typed_data';
 
 //import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
@@ -10,7 +9,7 @@ import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';
 import 'package:logging/logging.dart';
 import 'package:foodorder/app/config/http_conf.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -18,7 +17,6 @@ import '../../../controllers/app_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../services/HomeServices.dart';
 import '../../../services/HttpService.dart';
-import '../../../services/PosCheckService.dart';
 import '../../../services/logUtil.dart';
 import '../../../services/GetxStorage.dart';
 import '../../../services/Storage.dart';
@@ -240,15 +238,15 @@ class TransitPageController extends GetxController {
           };
           //是否允许退款 1展示退款按钮 0 不展示
           var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
-          Storage.setString(
-              'smartwe_machineActivateData', json.encode(machineActivateData));
-          Storage.setString(
-              'smartwe_machineLanguages', json.encode(shopData["languages"]));
-          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-          Storage.setString('smartwe_reimburse', reimburse);
-          Storage.setString('smartwe_shopCode', _shopCode);
+          // Storage.setString(
+          //     'smartwe_machineActivateData', json.encode(machineActivateData));
+          // Storage.setString(
+          //     'smartwe_machineLanguages', json.encode(shopData["languages"]));
+          // Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          // Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          // Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+          // Storage.setString('smartwe_reimburse', reimburse);
+          // Storage.setString('smartwe_shopCode', _shopCode);
 
           GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
           GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
@@ -256,6 +254,7 @@ class TransitPageController extends GetxController {
           GetxStorage.setData('smartwe_headerImages', json.encode(shopData["headerImages"]));
           GetxStorage.setData('smartwe_logoImage', shopData["logoImage"]);
           GetxStorage.setData('smartwe_reimburse', reimburse);
+          GetxStorage.setData('smartwe_shopCode', _shopCode);
 
           var machineSettingBool = {
             'machineLineup': shopData["lineup"],

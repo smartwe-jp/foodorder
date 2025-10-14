@@ -9,7 +9,7 @@ import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:foodorder/app/controllers/machine_info.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:open_file/open_file.dart';
 import 'package:package_info_plus/package_info_plus.dart';
