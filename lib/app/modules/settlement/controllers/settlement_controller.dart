@@ -59,10 +59,10 @@ class SettlementController extends GetxController with StateMixin {
   // RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
   // RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
 
-  RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
+  //RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   //RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
   //RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
-  RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
+  //RxString is_allow_oneyen = "0".obs; //0 禁用  1 允许
 
   RxString orderId = "".obs;
   //RxString scanQrCode = "".obs;
@@ -256,17 +256,17 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
 
     // is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
     // is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
-    print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
+    //print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
     //is_back_home.value = systemSettingInfo['isAllowBackHome'];
     //新版精算模式也可点外带
     //machineMode.value = systemSettingInfo['machineMode'];
     //showPrintType.value =
     //    int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
-    is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
+    //is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
 
     // if (systemSettingInfo['isAllowWlanPrint'] == "1") {
     //   is_allow_wlanPrint_continuous.value =
@@ -1134,11 +1134,11 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && machineInfo.isAllowReceipt == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            createPrintImageController.tpPrintnew(print_paper_txt_size.value, response['data'], printType);
+            createPrintImageController.tpPrintnew(response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(print_paper_txt_size.value, response['data']);
+              createPrintImageController.tpPrintReceipt(response['data']);
             }
           }
           //打印小票
@@ -1720,7 +1720,7 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "price": int.parse(getPutMoney.value),
       "operation": operation,
-      "coinForbidden": Platform.isAndroid ? int.parse(is_allow_oneyen.value) : 1
+      "coinForbidden": Platform.isAndroid ? int.parse(machineInfo.is_allow_oneyen) : 1
     };
     print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
@@ -1760,7 +1760,7 @@ class SettlementController extends GetxController with StateMixin {
         "machineCode": machineInfo.machineCode,
         "orderId": orderId.value,
         "price": giveChangeMoney.value,
-        "coinForbidden": int.parse(is_allow_oneyen.value)
+        "coinForbidden": int.parse(machineInfo.is_allow_oneyen)
       }; //print(formData);
       request('webBootToReportV1', method: 'POST', parameters: formData)
           .then((val) {

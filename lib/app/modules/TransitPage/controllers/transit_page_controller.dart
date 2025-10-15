@@ -238,15 +238,15 @@ class TransitPageController extends GetxController {
           };
           //是否允许退款 1展示退款按钮 0 不展示
           var reimburse = (shopData["reimburse"] == true) ? "1" : "0";
-          // Storage.setString(
-          //     'smartwe_machineActivateData', json.encode(machineActivateData));
-          // Storage.setString(
-          //     'smartwe_machineLanguages', json.encode(shopData["languages"]));
-          // Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
-          // Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
-          // Storage.setString('smartwe_logoImage', shopData["logoImage"]);
-          // Storage.setString('smartwe_reimburse', reimburse);
-          // Storage.setString('smartwe_shopCode', _shopCode);
+          Storage.setString(
+              'smartwe_machineActivateData', json.encode(machineActivateData));
+          Storage.setString(
+              'smartwe_machineLanguages', json.encode(shopData["languages"]));
+          Storage.setString('smartwe_homeImages', json.encode(shopData["homeImages"]));
+          Storage.setString('smartwe_headerImages', json.encode(shopData["headerImages"]));
+          Storage.setString('smartwe_logoImage', shopData["logoImage"]);
+          Storage.setString('smartwe_reimburse', reimburse);
+          Storage.setString('smartwe_shopCode', _shopCode);
 
           GetxStorage.setData('smartwe_machineActivateData', json.encode(machineActivateData));
           GetxStorage.setData('smartwe_machineLanguages', json.encode(shopData["languages"]));
@@ -377,7 +377,7 @@ class TransitPageController extends GetxController {
     await _getSmartweSystemSettingInfo();
   }
 
-  _getSmartweSystemSettingInfo({bool isLaunch = false}) async {
+  _getSmartweSystemSettingInfo() async {
     debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 

@@ -29,6 +29,7 @@ class CreatePrintImageController extends GetxController {
   double get printWidth => 550.0;
   Map get usbDevice => machineInfo.usbDevice;
   String get printLogoImage => machineInfo.printLogoImageUrl;
+  String get print_paper_txt_size => machineInfo.print_paper_txt_size;
 
   final printTitleFont = TextStyle(
     fontFamily: 'NotoSansJP',
@@ -102,7 +103,7 @@ class CreatePrintImageController extends GetxController {
     );
   }
 
-  tpPrintnew(print_paper_txt_size, printData, printType) async {
+  tpPrintnew(printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
     List categoryVos = [];
@@ -129,7 +130,7 @@ class CreatePrintImageController extends GetxController {
     }
 
     if (categoryVos.length == 0) {
-      tpPrintReceipt(print_paper_txt_size, printData);
+      tpPrintReceipt(printData);
       return;
     }
     var print_menu_txt_size = 28.0;
@@ -460,7 +461,7 @@ class CreatePrintImageController extends GetxController {
       //await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "1", "0"," ");
       Future.delayed(Duration(milliseconds: 300), () async {
         //await FlutterPluginMsprinter.sendPrintCut("1");
-        tpPrintReceipt(print_paper_txt_size, printData);
+        tpPrintReceipt(printData);
       });
     } else {
       _sendToUsePrinter(printWidget);
@@ -473,7 +474,7 @@ class CreatePrintImageController extends GetxController {
     //});
   }
 
-  tpPrintReceipt(print_paper_txt_size, printData) async {
+  tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
     debugPrint('printData:$printData');
     int discount = printData["discount"] ?? 0;
