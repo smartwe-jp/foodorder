@@ -295,7 +295,7 @@ class PrintService extends GetxService {
     );
     
 
-    if (smartWeSSE == null || (smartWeSSE["printSeat"] ?? true)) {
+    if (smartWeSSE == null || !(smartWeSSE["printSeat"] ?? true)) {
       debugPrint("SmartWe SSE printSeat is off");
       return;
     }

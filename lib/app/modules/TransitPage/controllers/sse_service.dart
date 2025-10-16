@@ -81,7 +81,7 @@ class SseService extends GetxService {
           if (data != null) {
             _printService.callbackBeforePrint(event, data);
           }
-        } else if (event == 'print') {
+        } else if (event == 'print' || event == 'payment_Completed') {
           if (data != null) {
             _printService.callbackBeforePrint(event, data);
           }
