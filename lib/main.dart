@@ -132,6 +132,7 @@ void routerCallback(Routing? value, ResetToHomeTimer resetTimer) {
   if (value?.current == Routes.MENU_PAGE ||
       value?.current == Routes.SCANCODE_PAGE ||
       value?.current == Routes.SELECT_PAYMENT_PAGE ||
+      value?.current == Routes.SELF_CHECKOUTSCANNINGCODE ||
       (value?.current == Routes.CHECKOUT_PAGE && Platform.isAndroid)
   ) {
     resetTimer.startTimer();

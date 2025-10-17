@@ -69,6 +69,14 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   final RxInt posCheckStatus = 0.obs;
 
+  String get defaultLanguage {
+    final languages = machineInfo.supportLanguages;
+    if (languages.length == 1) {
+      return languages[0] ?? 'JP';
+    }
+    return 'JP';
+  }
+
   @override
   void onInit() {
     logI("CheckoutPageController init");
@@ -106,7 +114,7 @@ class CheckoutPageController extends GetxController with StateMixin {
       }
     }
     Future.delayed(const Duration(milliseconds: 1000), () {
-      Get.updateLocale(Locale('jp', 'JP'));//默认日语
+      updateSettingLanguage(defaultLanguage);
     });
   }
 

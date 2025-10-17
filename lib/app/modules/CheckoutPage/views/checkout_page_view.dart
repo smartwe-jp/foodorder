@@ -56,6 +56,10 @@ class CheckoutPageView extends GetView {
         "icon": AssetImage("assets/images/public/language_Korean.png"),
       });
 
+    if(languages.length == 1){
+      return SizedBox.shrink();
+    }
+
     final buttonList = languages.map((e) {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,

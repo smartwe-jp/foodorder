@@ -479,6 +479,9 @@ class TransitPageController extends GetxController {
     final sseSettingList = machineInfo.sseSettingList;
 
     for (final sseSetting in sseSettingList) {
+      if (sseSetting['name'] == 'SmartWe SSE') { //针对切换机器码重新设置存储值
+        sseSetting['identify'] = machineInfo.machineCode;
+      }
       if (sseSetting['isOn'] == true) {
         final url = servicePath[sseSetting['server']];// + sseSetting['identify'];
         if (url != null && url.isNotEmpty) {
@@ -489,6 +492,7 @@ class TransitPageController extends GetxController {
         }
       }
     }
+    HomeServices.setSSESettingList(sseSettingList);
 
     if (systemSettingData["isAllowOneYen"] == "0") {
       try {
