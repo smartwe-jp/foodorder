@@ -73,6 +73,7 @@ class SettingController extends GetxController with StateMixin {
   @override
   void onClose() {
     super.onClose();
+    debugPrint("---SettingController onClose---");
   }
 
   //显示状态栏导航栏
@@ -538,7 +539,8 @@ class SettingController extends GetxController with StateMixin {
     });
     //Future.delayed(Duration(milliseconds: 100), () {
       //Get.toNamed('/transit-page');
-      Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+      Get.back();
     //});
   }
 }
