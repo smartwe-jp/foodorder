@@ -54,6 +54,8 @@ class MachineInfoController extends GetxController {
   late String panelType;
   bool isAllow10000 = true;
   bool isAllow5000 = true;
+  bool isAllow10 = true;
+  bool isAllow5 = true;
   String is_allow_oneyen = "0";
 
 
@@ -179,6 +181,8 @@ class MachineInfoController extends GetxController {
     isReservation = systemSettingInfo['isReservation'];
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
+    isAllow10 = systemSettingInfo['isAllow10'] ?? true;
+    isAllow5 = systemSettingInfo['isAllow5'] ?? true;
     is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;

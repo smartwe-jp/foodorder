@@ -272,6 +272,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isAllowOneYen": machineInfo.is_allow_oneyen, //0禁用1元 1不禁用
     "isAllow5000": machineInfo.isAllow5000 ? "1" : "0",
     "isAllow10000": machineInfo.isAllow10000 ? "1" : "0",
+    "isAllow5": machineInfo.isAllow5,
+    "isAllow10": machineInfo.isAllow10,
     "isAllowRejishime": machineInfo.isAllowRejishime, //0不开启 1开启
     "isAllowBackHome": machineInfo.isBackHome ? "1" : "0", //0返回home 1返回到菜单
     "isAllowPos": machineInfo.isAllowPos, //0不开启 1开启
@@ -1165,6 +1167,34 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
     _updateSystemSetting("isAllowOneYen", checkedType);
 
+  }
+
+  checkIsAllow5Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 5, onSuccess: (){
+      machineInfo.isAllow5 = checkedType;
+      _updateSystemSetting("isAllow5", checkedType);
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow5Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
+  }
+
+  checkIsAllow10Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 10, onSuccess: (){
+      machineInfo.isAllow10 = checkedType;
+      _updateSystemSetting("isAllow10", checkedType);
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow10Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
   }
 
   checkIsAllow5000Yen(checkedType) async {
