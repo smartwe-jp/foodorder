@@ -934,8 +934,8 @@ class SettingView extends GetView<SettingController> {
                   ),
                   if (!controller.appConfig.isFx)
                   CashSettingView(cashInfoList:
-                  controller.cashInfoList.value,
-                    isAllowRejishime: controller.isAllowRejishime.value,
+                  controller.cashInfoList,
+                    isAllowRejishime: controller.machineInfo.isAllowRejishime == '1',
                     machineCode: controller.machineCode.value,
                     recycleCash: () {
                       controller.recycleCash();

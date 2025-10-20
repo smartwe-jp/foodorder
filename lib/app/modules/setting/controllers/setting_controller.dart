@@ -18,6 +18,7 @@ import '../../../config/colorsUtil.dart';
 import '../../../config/font.dart';
 import '../../../config/imageData.dart';
 import '../../../config/system_config.dart';
+import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
 import '../../../services/CustomLogerHandler.dart';
@@ -40,11 +41,12 @@ class SettingController extends GetxController with StateMixin {
   CreatePrintImageController createPrintImageController =
       Get.put(CreatePrintImageController());
   AppConfig appConfig = Get.find<AppConfig>();
+  MachineInfoController machineInfo = Get.find<MachineInfoController>();
   RxString machineCode = "".obs;
   RxString shopCode = "".obs;
   RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
   RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
-  RxBool isAllowRejishime = false.obs;
+  //RxBool isAllowRejishime = false.obs;
 
   RxList cashList = [].obs;
   RxMap cashInfoList = {}.obs;
@@ -256,11 +258,9 @@ class SettingController extends GetxController with StateMixin {
   }
 
   getSystemSettingInfo() async {
-    Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
-    machine_mode.value = SystemSettingInfo['machineMode'];
-    isAllowRejishime.value = (SystemSettingInfo['isAllowRejishime'] ?? "0") == "1"  ? true : false;
-    var reimburse = await HomeServices.getSmartweReimburseData();
-    is_reimburse.value = reimburse;
+
+    // var reimburse = await HomeServices.getSmartweReimburseData();
+    // is_reimburse.value = reimburse;
 
     shopCode.value = await HomeServices.getShopCode();
     //查看机器零钱状态
@@ -516,22 +516,22 @@ class SettingController extends GetxController with StateMixin {
 
   goToBack() {
     //Get.find<TransitPageController>().getIsShowCashInfo();
-    if (machine_mode.value == "1") {
-      // if (Get.isRegistered<MenuPageController>()) {
-      //   Get.find<MenuPageController>().clearCartList();
-      //   //Get.delete<MenuPageController>();
-      // }// 手动删除控制器实例
-    } else if (machine_mode.value == "2") {
-      // if (Get.isRegistered<CheckoutPageController>()) {
-      //   //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
-      // }
-    } else if (machine_mode.value == "3") {
-      //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
-      //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
-
-      //if (Get.isRegistered<SelfservicePageController>())
-      //Get.delete<SelfservicePageController>();
-    }
+    // if (machine_mode.value == "1") {
+    //   // if (Get.isRegistered<MenuPageController>()) {
+    //   //   Get.find<MenuPageController>().clearCartList();
+    //   //   //Get.delete<MenuPageController>();
+    //   // }// 手动删除控制器实例
+    // } else if (machine_mode.value == "2") {
+    //   // if (Get.isRegistered<CheckoutPageController>()) {
+    //   //   //Get.delete<CheckoutPageController>(); // 手动删除控制器实例
+    //   // }
+    // } else if (machine_mode.value == "3") {
+    //   //if (Get.isRegistered<SelfCheckoutscanningcodeController>())
+    //   //Get.delete<SelfCheckoutscanningcodeController>(); // 手动删除控制器实例
+    //
+    //   //if (Get.isRegistered<SelfservicePageController>())
+    //   //Get.delete<SelfservicePageController>();
+    // }
     // if (Get.isRegistered<SettingController>())
     // Get.delete<SettingController>(); // 手动删除控制器实例
     FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
