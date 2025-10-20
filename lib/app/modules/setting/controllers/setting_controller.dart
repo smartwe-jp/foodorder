@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 import 'dart:io';
 import 'package:archive/archive_io.dart';
 import 'package:firebase_analytics/firebase_analytics.dart';
@@ -13,11 +12,7 @@ import 'package:intl/intl.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 
-import '../../../config/color.dart';
-import '../../../config/colorsUtil.dart';
-import '../../../config/font.dart';
 import '../../../config/imageData.dart';
-import '../../../config/system_config.dart';
 import '../../../controllers/machine_info.dart';
 import '../../../controllers/order_sql_controller.dart';
 import '../../../plugins/appset/lib/appset.dart';
@@ -27,11 +22,6 @@ import '../../../services/HttpService.dart';
 import '../../../services/ScreenAdapter.dart';
 import '../../../services/showToast.dart';
 import '../../../widget/DialogUtils.dart';
-import '../../CheckoutPage/controllers/checkout_page_controller.dart';
-import '../../SelfCheckoutscanningcode/controllers/self_checkoutscanningcode_controller.dart';
-import '../../SelfservicePage/controllers/selfservice_page_controller.dart';
-import '../../TransitPage/controllers/transit_page_controller.dart';
-import '../../menuPage/controllers/menu_page_controller.dart';
 import '../views/RejishimeRequestView.dart';
 
 class SettingController extends GetxController with StateMixin {
@@ -42,10 +32,10 @@ class SettingController extends GetxController with StateMixin {
       Get.put(CreatePrintImageController());
   AppConfig appConfig = Get.find<AppConfig>();
   MachineInfoController machineInfo = Get.find<MachineInfoController>();
-  RxString machineCode = "".obs;
-  RxString shopCode = "".obs;
-  RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
-  RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
+  // RxString machineCode = "".obs;
+  // RxString shopCode = "".obs;
+  // RxString machine_mode = "1".obs; //1 普通点餐券卖机  2 精算机（结账机）
+  // RxString is_reimburse = "0".obs; //是否展示退款按钮， 0 不展示 1 展示
   //RxBool isAllowRejishime = false.obs;
 
   RxList cashList = [].obs;
@@ -59,9 +49,14 @@ class SettingController extends GetxController with StateMixin {
   RxString local_version = "".obs; //本appversion
   var progressValue = 0.0;
 
+  bool get isAllowRejishime => machineInfo.isAllowRejishime == '1' ? true : false;
+  String get machineCode => machineInfo.machineCode;
+  String get shopCode => machineInfo.shopCode;
+  bool get is_reimburse => machineInfo.isAllowReimburse;
+
   @override
   void onInit() {
-    machineCode.value = Get.arguments['machineCode'];
+    //machineCode.value = Get.arguments['machineCode'];
     _getPackageInfo();
 
     super.onInit();
@@ -172,7 +167,7 @@ class SettingController extends GetxController with StateMixin {
 
       // 3) Build multipart and upload the zip
       final formData = FormData.fromMap({
-        "machineCode": machineCode.value,
+        "machineCode": machineCode,
         "file": file
       });
 
@@ -262,7 +257,7 @@ class SettingController extends GetxController with StateMixin {
     // var reimburse = await HomeServices.getSmartweReimburseData();
     // is_reimburse.value = reimburse;
 
-    shopCode.value = await HomeServices.getShopCode();
+    // shopCode = await HomeServices.getShopCode();
     //查看机器零钱状态
     _getPaycubeChangeState();
   }
@@ -270,7 +265,7 @@ class SettingController extends GetxController with StateMixin {
   printPreviewReceipt() async {
     _showEasyLoading();
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineCode,
     };
     request('webBootToRetryPrint', method: 'POST', parameters: formData)
         .then((val) {
@@ -292,13 +287,13 @@ class SettingController extends GetxController with StateMixin {
             barrierDismissible: false);
       }
     });
-    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode.value});
+    Get.toNamed('/receipt-query', arguments: {"machineCode": machineCode});
   }
 
   //获取现金机列表
   _getPaycubeChangeState({retryCount = 0}) {
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineCode,
     };
     request('webBootChangeState', method: 'POST', parameters: formData)
         .then((val) {
@@ -348,7 +343,7 @@ class SettingController extends GetxController with StateMixin {
 
   getChangeState() {
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineCode,
     };
     request('webBootChangeInfo', method: 'POST', parameters: formData)
         .then((val) {
@@ -375,8 +370,8 @@ class SettingController extends GetxController with StateMixin {
         "outset": number,
       },
       "fromDeposit": false,
-      "machineCode": machineCode.value,
-      "shopCode": shopCode.value,
+      "machineCode": machineCode,
+      "shopCode": shopCode,
     };
     request('webBootChangeSet', method: 'PUT', parameters: formData)
         .then((val) {
@@ -401,8 +396,8 @@ class SettingController extends GetxController with StateMixin {
       "fromDeposit": false,
       "fromDepositCatVal": "",
       "fromDepositQty": "",
-      "machineCode": machineCode.value,
-      "shopCode": shopCode.value,
+      "machineCode": machineCode,
+      "shopCode": shopCode,
     };
     request('webBootChangeSet', method: 'PUT', parameters: formData)
         .then((val) {
@@ -426,8 +421,8 @@ class SettingController extends GetxController with StateMixin {
       "fromDeposit": true,
       "fromDepositCatVal": _getDepositCatVal(depositCatVal),
       "fromDepositQty": depositQty,
-      "machineCode": machineCode.value,
-      "shopCode": shopCode.value,
+      "machineCode": machineCode,
+      "shopCode": shopCode,
     };
     request('webBootChangeSet', method: 'PUT', parameters: formData)
         .then((val) {
@@ -444,8 +439,8 @@ class SettingController extends GetxController with StateMixin {
 
   recycleCash() {
     var formData = {
-      "machineCode": machineCode.value,
-      "shopCode": shopCode.value,
+      "machineCode": machineCode,
+      "shopCode": shopCode,
     };
     request('webBootChangeReset', method: 'POST', parameters: formData)
         .then((val) {
@@ -510,7 +505,7 @@ class SettingController extends GetxController with StateMixin {
 
   showRejishimeView({bool isNotCash = false}) async {
     Get.dialog(
-        RejishiMeRequestView(machineCode: machineCode.value, isNotCash: isNotCash,)
+        RejishiMeRequestView(machineCode: machineCode, isNotCash: isNotCash,)
     );
   }
 
@@ -535,7 +530,7 @@ class SettingController extends GetxController with StateMixin {
     // if (Get.isRegistered<SettingController>())
     // Get.delete<SettingController>(); // 手动删除控制器实例
     FirebaseAnalytics.instance.logEvent(name: "setting_back",parameters: {
-      "machineCode":machineCode.value,
+      "machineCode":machineCode,
     });
     //Future.delayed(Duration(milliseconds: 100), () {
       //Get.toNamed('/transit-page');
