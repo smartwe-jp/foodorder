@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
@@ -121,7 +122,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     '拡張プリンター(5)': 25,
   };
 
-  Map machineModeInfo = {};
+  //Map machineModeInfo = {};
 
   List subPrinterList = [];
 
@@ -373,8 +374,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       await HomeServices.setSSESettingList(machineInfo.sseSettingList);
     }
 
-    machineModeInfo = await HomeServices.getMachineModeInfo();
-    if (machineModeInfo.isEmpty) {
+    //machineModeInfo = await HomeServices.getMachineModeInfo();
+    if (machineInfo.machineModeInfo.isEmpty) {
       await HomeServices.setMachineModeInfo({
         'sell': true,
         'takeout': false,
@@ -734,23 +735,25 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   updateMachineMode({bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
     if (sell != null) {
-      machineModeInfo['sell'] = sell;
-      if (sell) machineModeInfo['scanbuy'] = false;
+      machineInfo.machineModeInfo['sell'] = sell;
+      if (sell) machineInfo.machineModeInfo['scanbuy'] = false;
     }
 
-      if (takeout != null) machineModeInfo['takeout'] = takeout;
+      if (takeout != null) machineInfo.machineModeInfo['takeout'] = takeout;
 
       if (checkout != null) {
-        machineModeInfo['checkout'] = checkout;
+        machineInfo.machineModeInfo['checkout'] = checkout;
         //if (checkout) machineModeInfo['scanbuy'] = false;
       }
 
       if (scanbuy != null) {
-        machineModeInfo['scanbuy'] = scanbuy;
-        if (scanbuy) machineModeInfo['sell'] = false;
+        machineInfo.machineModeInfo['scanbuy'] = scanbuy;
+        if (scanbuy) machineInfo.machineModeInfo['sell'] = false;
       }
 
-      HomeServices.setMachineModeInfo(machineModeInfo);
+      HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
+      final mainController = Get.find<CheckoutPageController>();
+      mainController.update();
       update();
 
 

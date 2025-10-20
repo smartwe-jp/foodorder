@@ -112,7 +112,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   const SizedBox(width: 16),
                 ],
               ),
-              _modeArea(logic.machineModeInfo),
+              _modeArea(logic.machineInfo.machineModeInfo),
               _setMenuDirection(logic.machineInfo.systemSettingInfo),
               _machineTypeArea(logic.machineInfo.systemSettingInfo),
               _allowReceiptArea(logic.machineInfo.systemSettingInfo),

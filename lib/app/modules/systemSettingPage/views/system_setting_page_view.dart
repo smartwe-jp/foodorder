@@ -2663,7 +2663,7 @@ class SystemSettingPageView extends GetView {
                                               ),
                                             ),
                                           ),
-                                          setMachineMode(controller.machineModeInfo),//设置机器类型
+                                          setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                         ]
                                     ), //设置机器类型
                                   if(controller.lineup.value == true)
