@@ -6,7 +6,7 @@ import 'dart:typed_data';
 import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:foodorder/app/config/http_conf.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart';

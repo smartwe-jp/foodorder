@@ -4,7 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
-import 'package:foodorder/app/modules/TransitPage/controllers/sse_service.dart';
+import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:get/get.dart'  hide Response,FormData,MultipartFile;
 import 'package:open_file/open_file.dart';
