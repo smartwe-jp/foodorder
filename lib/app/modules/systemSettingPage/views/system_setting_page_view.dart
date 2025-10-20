@@ -734,7 +734,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machineInfo.isAllowScreenCall == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: !(controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -745,7 +745,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machineInfo.isAllowScreenCall == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: !(controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -765,7 +765,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.machineInfo.isAllowScreenCall == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -776,7 +776,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.machineInfo.isAllowScreenCall == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.isAllowScreenCall) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
