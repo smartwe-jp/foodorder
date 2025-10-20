@@ -5,6 +5,7 @@ import 'package:foodorder/app/services/PinterCheckService.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:get/get.dart';
 
+import '../controllers/create_printImage_controller.dart';
 import '../controllers/order_sql_controller.dart';
 import '../services/PosCheckService.dart';
 
@@ -12,10 +13,12 @@ class AppBindings extends Bindings {
   @override
   void dependencies() {
     //Get.lazyPut(() => AppConfig());
-    Get.lazyPut(()=> OrderSqlController());
-    Get.lazyPut(() => SseService());
-    Get.lazyPut(() => PrinterCheckService());
-    Get.lazyPut(() => PosCheckService());
-    Get.lazyPut(() => PrintInfoService());
+    Get.lazyPut(() => OrderSqlController(), fenix: true);
+    Get.lazyPut(() => SseService(), fenix: true);
+    Get.lazyPut(() => PrinterCheckService(), fenix: true);
+    Get.lazyPut(() => PosCheckService(), fenix: true);
+    Get.lazyPut(() => PrintInfoService(), fenix: true);
+    Get.lazyPut(() => CreatePrintImageController(), fenix: true);
+
   }
 }

@@ -14,7 +14,7 @@ import '../../../services/logUtil.dart';
 import '../../../widget/DialogUtils.dart';
 
 class ReceiptQueryController extends GetxController with StateMixin {
-  CreatePrintImageController createPrintImageController = Get.put(CreatePrintImageController());
+  CreatePrintImageController createPrintImageController = Get.find<CreatePrintImageController>();
 
   RxList receiptList = [].obs;
   RxString machineCode = "".obs;

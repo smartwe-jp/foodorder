@@ -105,7 +105,7 @@ class SystemSettingPageView extends GetView {
           child: Container(
             width: 200,
             child: DropdownButtonFormField<String>(
-              value: controller.panelType,
+              value: controller.machineInfo.panelType,
               onChanged: (String? newValue) {
 
                 controller.checkPanelType(newValue ?? 'Mini');
@@ -171,7 +171,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.print_paper_txt_size.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -182,7 +182,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.print_paper_txt_size.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -202,7 +202,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.print_paper_txt_size.value == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == "2") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -213,7 +213,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.print_paper_txt_size.value == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == "2") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -233,7 +233,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.print_paper_txt_size.value == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.print_paper_txt_size == "3") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -244,7 +244,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.print_paper_txt_size.value == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.print_paper_txt_size == "3") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -660,7 +660,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.isReservation.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.isReservation == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -671,7 +671,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.isReservation.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.isReservation == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -691,7 +691,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.isReservation.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.isReservation == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -702,7 +702,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.isReservation.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.isReservation == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -1799,7 +1799,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.is_allow_oneyen == "0") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1810,7 +1810,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_oneyen.value == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.is_allow_oneyen == "0") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -1830,7 +1830,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: (controller.machineInfo.is_allow_oneyen == "1") ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1841,7 +1841,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (controller.is_allow_oneyen.value == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: (controller.machineInfo.is_allow_oneyen == "1") ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -1874,7 +1874,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: controller.isAllow5000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
+                color: controller.machineInfo.isAllow5000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1885,7 +1885,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.isAllow5000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
+                    color: controller.machineInfo.isAllow5000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
                   )
               ),
             ),
@@ -1905,7 +1905,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: controller.isAllow5000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: controller.machineInfo.isAllow5000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1916,7 +1916,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.isAllow5000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: controller.machineInfo.isAllow5000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -1949,7 +1949,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: controller.isAllow10000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
+                color: controller.machineInfo.isAllow10000 ? Colors.grey[200]:ColorsUtil.hexToColor("#409eff"),
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1960,7 +1960,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.isAllow10000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
+                    color: controller.machineInfo.isAllow10000 ? ColorsUtil.hexToColor("#000000"):ColorsUtil.hexToColor("#FFFFFF"),
                   )
               ),
             ),
@@ -1980,7 +1980,7 @@ class SystemSettingPageView extends GetView {
               //边框设置
               decoration: new BoxDecoration(
                 //背景
-                color: controller.isAllow10000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                color: controller.machineInfo.isAllow10000 ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
                 //设置四周圆角 角度
                 borderRadius: BorderRadius.all(Radius.circular(5.0)),
                 //设置四周边框
@@ -1991,7 +1991,7 @@ class SystemSettingPageView extends GetView {
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
-                    color: controller.isAllow10000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                    color: controller.machineInfo.isAllow10000 ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),
@@ -2824,12 +2824,12 @@ class SystemSettingPageView extends GetView {
                                               ),
                                             ),
                                             //setUSBPrint(),//usb打印机
-                                            setMachinePrintSize(controller.machinePrintWidth.value)
+                                            setMachinePrintSize(controller.machineInfo.machinePrintWidth)
 
                                           ]
                                       ),
-                                      ...controller.printerList.map((printer) => printerSettingWidget(printer)).toList(),
-                                      if (controller.printerList.length < 9)
+                                      ...controller.machineInfo.printerList.map((printer) => printerSettingWidget(printer)).toList(),
+                                      if (controller.machineInfo.printerList.length < 9)
                                         TableRow(
                                             children: <Widget>[
                                               Text(
@@ -2913,7 +2913,7 @@ class SystemSettingPageView extends GetView {
                       ]
                   ),
 
-                  ...controller.sseSettingList.map((sseItem) =>
+                  ...controller.machineInfo.sseSettingList.map((sseItem) =>
                       editSSETable(sseItem)
                   ).toList(),
 

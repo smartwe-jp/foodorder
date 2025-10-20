@@ -41,8 +41,8 @@ import '../views/PayResultView.dart';
 
 class SettlementController extends GetxController with StateMixin {
   //TODO: Implement SettlementController
-  OrderSqlController ordersqlcontroller = Get.put(OrderSqlController());
-  CreatePrintImageController createPrintImageController = Get.put(CreatePrintImageController());
+  OrderSqlController ordersqlcontroller = Get.find();
+  CreatePrintImageController createPrintImageController = Get.find();
   final posManager = PosSocketManager();
   TextEditingController scanQrCodeController = new TextEditingController();
   FocusNode scanQrCodeFocusNode = FocusNode();

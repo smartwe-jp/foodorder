@@ -47,6 +47,16 @@ class MachineInfoController extends GetxController {
   late Map machineModeInfo;
   late String isAllowRejishime;
 
+  //settings
+  double machinePrintWidth = 385.0;
+  late String print_paper_txt_size;
+  late String isReservation;
+  late String panelType;
+  bool isAllow10000 = true;
+  bool isAllow5000 = true;
+  String is_allow_oneyen = "0";
+
+
   //payment info
   late bool showCash;
   late bool showAlipay;
@@ -161,9 +171,15 @@ class MachineInfoController extends GetxController {
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '0';
-    String panelType = systemSettingInfo['panelType'] ?? 'Mini';
+    panelType = systemSettingInfo['panelType'] ?? 'Mini';
     machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
+
+    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
+    isReservation = systemSettingInfo['isReservation'];
+    isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
+    isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
+    is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
 
     showReceiptPage = isAllowReceipt == "1" ? false : true;
     isReceiptPageShow = isAllowReceipt == "1" ? false : true;
@@ -242,6 +258,8 @@ class MachineInfoController extends GetxController {
     wlan_panel_print_ip = screenCallSetting['wlanPrintIp'] ?? "";
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";
     isAllowScreenCall = screenCallSetting['isAllowScreenCall'] ?? false;
+
+    machinePrintWidth = await HomeServices.getMachinePrintWidth();
 
     // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
     // wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
