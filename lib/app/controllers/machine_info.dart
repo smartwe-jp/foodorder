@@ -77,14 +77,14 @@ class MachineInfoController extends GetxController {
   late bool isAllowScreenCall;
   late Map screenCallSetting;
 
-  late String wlan_print_ip;
-  late String wlan_print_port;
-
-  late String wlan_print_ip_two;
-  late String wlan_print_port_two;
-
-  late String is_allow_wlanPrint_continuous;
-  late String is_allow_wlanPrint_continuous_two;
+  // late String wlan_print_ip;
+  // late String wlan_print_port;
+  //
+  // late String wlan_print_ip_two;
+  // late String wlan_print_port_two;
+  //
+  // late String is_allow_wlanPrint_continuous;
+  // late String is_allow_wlanPrint_continuous_two;
 
   late int showPrintType;
 
@@ -173,10 +173,10 @@ class MachineInfoController extends GetxController {
 
     showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
-    is_allow_wlanPrint_continuous =
-        systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
-    is_allow_wlanPrint_continuous_two =
-        systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
+    // is_allow_wlanPrint_continuous =
+    //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';
+    // is_allow_wlanPrint_continuous_two =
+    //     systemSettingInfo['isAllowWlanPrintContinuousTwo'] ?? '0';
 
     final homeImageList = await HomeServices.getSmartweHomeImagesData();
 
@@ -243,14 +243,14 @@ class MachineInfoController extends GetxController {
     wlan_panel_print_port = screenCallSetting['wlanPrintPort'] ?? "";
     isAllowScreenCall = screenCallSetting['isAllowScreenCall'] ?? false;
 
-    Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
-    wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
-    wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
-
-    Map wlanPrintSettingTwoInfo =
-        await HomeServices.getWlanPrintSettingTwoInfo();
-    wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
-    wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
+    // Map wlanPrintSettingInfo = await HomeServices.getWlanPrintSettingInfo();
+    // wlan_print_ip = wlanPrintSettingInfo['wlanPrintIp'] ?? '';
+    // wlan_print_port = wlanPrintSettingInfo['wlanPrintPort'] ?? '';
+    //
+    // Map wlanPrintSettingTwoInfo =
+    //     await HomeServices.getWlanPrintSettingTwoInfo();
+    // wlan_print_ip_two = wlanPrintSettingTwoInfo['wlanPrintTwoIp'] ?? '';
+    // wlan_print_port_two = wlanPrintSettingTwoInfo['wlanPrintTwoPort'] ?? '';
 
     print('loadMachineSettingInfo 6');
   }
