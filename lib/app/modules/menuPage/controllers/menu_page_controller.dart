@@ -282,24 +282,27 @@ class MenuPageController extends GetxController with StateMixin {
   getBookingBootIndexMenu(queryCategoryCode, {int retryCount = 0}) {
     debugPrint('getBookingBootIndexMenu');
     var queryTakeout = "2";
-    //queryTakeout 0外卖 1都可 2店内
-    switch(machineInfo.diningType){
-      case "1":
-        queryTakeout = "2";
-        break;
-      case "2":
-        queryTakeout = "0";
-        break;
-      case "3":
-        if(machineInfo.mealType == true){
-          queryTakeout = "0";
-        }else{
-          queryTakeout = "2";
-        }
-        break;
-      default:
-        queryTakeout = "2";
+    if (machineInfo.currentMode == MachineMode.takeout) {
+      queryTakeout = "0";
     }
+    //queryTakeout 0外卖 1都可 2店内
+    // switch(machineInfo.diningType){
+    //   case "1":
+    //     queryTakeout = "2";
+    //     break;
+    //   case "2":
+    //     queryTakeout = "0";
+    //     break;
+    //   case "3":
+    //     if(machineInfo.mealType == true){
+    //       queryTakeout = "0";
+    //     }else{
+    //       queryTakeout = "2";
+    //     }
+    //     break;
+    //   default:
+    //     queryTakeout = "2";
+    // }
     var formData = {
       "machineCode": machineInfo.machineCode,
       "language": checkLanguage.value,
@@ -1179,7 +1182,7 @@ print("加1了");
         "orderLineList": selectedItem,
         "total": orderTotlaPrice,
         //"takeout": (_dining_type == "2") ? true: false,
-        "takeout": machineInfo.mealType,
+        "takeout": machineInfo.isTakeoutMode,
       };
       debugPrint("formData: $formData");
       request('webBootOrder', method: 'POST', parameters: formData).then((val) {

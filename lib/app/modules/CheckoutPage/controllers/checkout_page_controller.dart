@@ -41,7 +41,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   RxBool actuarial = false.obs;
   RxBool lineup = false.obs;
-  RxBool takeOut = false.obs; //是否允许外带
+  //RxBool takeOut = false.obs; //是否允许外带
 
   RxString isReservation = "0".obs;
   RxBool showOpenPayment = false.obs;
@@ -209,7 +209,7 @@ class CheckoutPageController extends GetxController with StateMixin {
 
   _getMachineLanguages() async {
     debugPrint("获取机器语言");
-    takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
+    //takeOut.value = (machineInfo.diningType == "2" || machineInfo.diningType == "3") ? true : false;
     machineLanguages_JP = machineInfo.supportLanguages.contains('JP');
     machineLanguages_CH = machineInfo.supportLanguages.contains('CH');
     machineLanguages_EN = machineInfo.supportLanguages.contains('EN');
@@ -377,7 +377,7 @@ class CheckoutPageController extends GetxController with StateMixin {
             tax8: tax8.value,
             onConfrimClick: () {
                 showOpenPayment.value = true;
-                machineInfo.showReceiptPage = true;
+                //machineInfo.showReceiptPage = true;
                 goToSettlement();
             },
             onCancelClick: (String isBack){
@@ -491,8 +491,8 @@ class CheckoutPageController extends GetxController with StateMixin {
     //}
   }
 
-  goMenu(String lan, bool mealType) {
-    machineInfo.mealType = mealType;
+  goMenu(String lan) {
+    // machineInfo.mealType = mealType;
     //machineInfo.currentMode = MachineMode.sell;
     String jumpUrl = '/menu-page';
 
@@ -522,16 +522,16 @@ class CheckoutPageController extends GetxController with StateMixin {
     // }
 
     Get.toNamed(jumpUrl,
-        arguments: {"checkLanguage": lan, "mealType": mealType});
+        arguments: {"checkLanguage": lan});
 
   }
 
-  goSelfCheckout() {
-    Get.toNamed('/self-checkoutscanningcode',arguments: {
-      "checkLanguage": selectLanguage,
-      "mealType": machineInfo.mealType
-    });
-  }
+  // goSelfCheckout() {
+  //   Get.toNamed('/self-checkoutscanningcode',arguments: {
+  //     "checkLanguage": selectLanguage,
+  //     "mealType": machineInfo.mealType
+  //   });
+  // }
 
   updateSettingLanguage(String language) async {
 

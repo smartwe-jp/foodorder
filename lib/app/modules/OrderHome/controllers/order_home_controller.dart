@@ -129,19 +129,19 @@ class OrderHomeController extends GetxController with StateMixin {
     });
   }
 
-  goMenu(String lan, bool mealType) {
-    if (machineInfo.diningType == '2') {
-      machineInfo.mealType = true;
-    } else {
-      machineInfo.mealType = mealType;
-    }
-
-    var jumpUrl = '/menu-page';
-    startShake = false;
-    Get.toNamed(jumpUrl,arguments: {
-      "checkLanguage": lan,
-    });
-  }
+  // goMenu(String lan, bool mealType) {
+  //   if (machineInfo.diningType == '2') {
+  //     machineInfo.mealType = true;
+  //   } else {
+  //     machineInfo.mealType = mealType;
+  //   }
+  //
+  //   var jumpUrl = '/menu-page';
+  //   startShake = false;
+  //   Get.toNamed(jumpUrl,arguments: {
+  //     "checkLanguage": lan,
+  //   });
+  // }
 
   getmenchineLanguages() async {
     debugPrint("获取机器语言");
