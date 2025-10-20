@@ -186,7 +186,9 @@ class SelectPaymentPage extends StatelessWidget {
                   padding: EdgeInsets.only(
                       top: ScreenAdapter.height(20),
                       bottom: ScreenAdapter.height(0)),
-                  child: Column(
+                  child: machineInfo.showReceiptPage
+                      ? selectPrintType()
+                      : Column(
                     crossAxisAlignment: CrossAxisAlignment.end,
                     children: [
                       Container(
@@ -197,9 +199,8 @@ class SelectPaymentPage extends StatelessWidget {
                             bottom: ScreenAdapter.height(30)),
                         //width: ScreenAdapter.width(650),
 
-                        child: machineInfo.showReceiptPage
-                            ? selectPrintType()
-                            : Column(
+                        child:
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.center,
                           children: [
                             Text("select_payment_type_title".tr,

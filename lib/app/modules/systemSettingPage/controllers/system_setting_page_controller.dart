@@ -9,6 +9,7 @@ import 'package:foodorder/app/modules/systemSettingPage/views/printer_list_page.
 import 'package:foodorder/app/plugins/appset/lib/appset.dart';
 import 'package:get/get.dart' hide Response, FormData, MultipartFile;
 import 'package:foodorder/app/controllers/machine_info.dart';
+import 'package:foodorder/app/modules/CheckoutPage/controllers/checkout_page_controller.dart';
 import 'package:foodorder/app/services/sse_service.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:open_file/open_file.dart';
@@ -19,6 +20,7 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 import '../../../config/color.dart';
 import '../../../config/colorsUtil.dart';
+import '../../../config/http_conf.dart';
 import '../../../config/imageData.dart';
 import '../../../config/printer_info.dart';
 import '../../../controllers/app_config.dart';
@@ -122,7 +124,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     '拡張プリンター(5)': 25,
   };
 
-  Map machineModeInfo = {};
+  //Map machineModeInfo = {};
 
   List subPrinterList = [];
 
@@ -276,6 +278,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isAllowOneYen": machineInfo.is_allow_oneyen, //0禁用1元 1不禁用
     "isAllow5000": machineInfo.isAllow5000 ? "1" : "0",
     "isAllow10000": machineInfo.isAllow10000 ? "1" : "0",
+    "isAllow5": machineInfo.isAllow5,
+    "isAllow10": machineInfo.isAllow10,
     "isAllowRejishime": machineInfo.isAllowRejishime, //0不开启 1开启
     "isAllowBackHome": machineInfo.isBackHome ? "1" : "0", //0返回home 1返回到菜单
     "isAllowPos": machineInfo.isAllowPos, //0不开启 1开启
@@ -348,7 +352,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     //save
     await HomeServices.setPrinterListInfo(machineInfo.printerList);
     //获取SSE设置
-    machineInfo.sseSettingList = await HomeServices.getSSESettingList();
+    //machineInfo.sseSettingList = await HomeServices.getSSESettingList();
     if (machineInfo.sseSettingList.isEmpty) {
       //如果没有SSE设置，则添加默认设置
       machineInfo.sseSettingList.add({
@@ -374,8 +378,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
       await HomeServices.setSSESettingList(machineInfo.sseSettingList);
     }
 
-    machineModeInfo = await HomeServices.getMachineModeInfo();
-    if (machineModeInfo.isEmpty) {
+    //machineModeInfo = await HomeServices.getMachineModeInfo();
+    if (machineInfo.machineModeInfo.isEmpty) {
       await HomeServices.setMachineModeInfo({
         'sell': true,
         'takeout': false,
@@ -764,25 +768,27 @@ class SystemSettingPageController extends GetxController with StateMixin {
 
   updateMachineMode(
       {bool? sell, bool? takeout, bool? checkout, bool? scanbuy}) {
-    if (sell != null) {
-      machineModeInfo['sell'] = sell;
-      if (sell) machineModeInfo['scanbuy'] = false;
-    }
+      if (sell != null) {
+        machineInfo.machineModeInfo['sell'] = sell;
+        if (sell) machineInfo.machineModeInfo['scanbuy'] = false;
+      }
 
-    if (takeout != null) machineModeInfo['takeout'] = takeout;
+      if (takeout != null) machineInfo.machineModeInfo['takeout'] = takeout;
 
-    if (checkout != null) {
-      machineModeInfo['checkout'] = checkout;
-      //if (checkout) machineModeInfo['scanbuy'] = false;
-    }
+      if (checkout != null) {
+        machineInfo.machineModeInfo['checkout'] = checkout;
+        //if (checkout) machineModeInfo['scanbuy'] = false;
+      }
 
-    if (scanbuy != null) {
-      machineModeInfo['scanbuy'] = scanbuy;
-      if (scanbuy) machineModeInfo['sell'] = false;
-    }
+      if (scanbuy != null) {
+        machineInfo.machineModeInfo['scanbuy'] = scanbuy;
+        if (scanbuy) machineInfo.machineModeInfo['sell'] = false;
+      }
 
-    HomeServices.setMachineModeInfo(machineModeInfo);
-    update();
+      HomeServices.setMachineModeInfo(machineInfo.machineModeInfo);
+      final mainController = Get.find<CheckoutPageController>();
+      mainController.update();
+      update();
   }
 
   checkMenuDirection(checkedType) {
@@ -1227,6 +1233,34 @@ class SystemSettingPageController extends GetxController with StateMixin {
     machineInfo.is_allow_oneyen = checkedType;
 
     _updateSystemSetting("isAllowOneYen", checkedType);
+  }
+
+  checkIsAllow5Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 5, onSuccess: (){
+      machineInfo.isAllow5 = checkedType;
+      _updateSystemSetting("isAllow5", checkedType);
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow5Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
+  }
+
+  checkIsAllow10Yen(checkedType) async {
+    _showEasyLoading();
+    await payCube.setAcceptCash(checkedType, 10, onSuccess: (){
+      machineInfo.isAllow10 = checkedType;
+      _updateSystemSetting("isAllow10", checkedType);
+    }, catchError: (error){
+      handleMassageAlert('設定が失敗した場合に再試行するかどうか。', confirm: (){
+        Get.back();
+        checkIsAllow10Yen(checkedType);
+      });
+    });
+    EasyLoading.dismiss();
   }
 
   checkIsAllow5000Yen(checkedType) async {

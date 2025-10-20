@@ -104,7 +104,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
             ),
             title: 'menu_dingtype_eatin'.tr,
             selected: false,
-            onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+            //onTap: ()=>controller.goMenu(controller.selectLanguage, false),
           ),
         ),
 
@@ -122,7 +122,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
             ),
             title: 'menu_dingtype_takeout'.tr,
             selected: false,
-            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
+            //onTap: ()=>controller.goMenu(controller.selectLanguage, true),
           ),
         )
       ],
@@ -137,7 +137,7 @@ class OrderHomeView extends GetView<OrderHomeController> {
       scaleEnabled: 1.0,
       child:
       InkWell(
-        onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+        //onTap: ()=>controller.goMenu(controller.selectLanguage, false),
         child: Container(
           padding: EdgeInsets.all(10),
           height:ScreenAdapter.height(260),
@@ -247,42 +247,42 @@ class OrderHomeView extends GetView<OrderHomeController> {
                             ],
                           ),
                         ),
-                        if (controller.machineInfo.diningType == "3")
-                          Text(
-                            'menu_ding_type_tips'.tr,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                              fontSize: 40,
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.white,
-                                  offset: Offset(2.0, -2.0),
-                                  blurRadius: 2.0,
-                                ),
-                              ],
-                            ),
-                          ),
+                        // if (controller.machineInfo.diningType == "3")
+                        //   Text(
+                        //     'menu_ding_type_tips'.tr,
+                        //     maxLines: 2,
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(
+                        //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                        //       fontSize: 40,
+                        //       fontFamily: GFont.getFontFamily(),
+                        //       fontWeight: FontWeight.w600,
+                        //       shadows: [
+                        //         Shadow(
+                        //           color: Colors.white,
+                        //           offset: Offset(2.0, -2.0),
+                        //           blurRadius: 2.0,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
                   )
               ),
 
 
-              Positioned(
-                bottom: ScreenAdapter.height(400),
-                width: ScreenAdapter.width(1080),
-                child: Center(
-                    child:
-                    controller.machineInfo.diningType == "3" ?
-                    _diningSelectArea()
-                        : _startButton()
-
-                ),
-              ),
+              // Positioned(
+              //   bottom: ScreenAdapter.height(400),
+              //   width: ScreenAdapter.width(1080),
+              //   child: Center(
+              //       child:
+              //       controller.machineInfo.diningType == "3" ?
+              //       _diningSelectArea()
+              //           : _startButton()
+              //
+              //   ),
+              // ),
 
 
               Positioned(

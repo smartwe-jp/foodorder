@@ -113,7 +113,7 @@ class SelfservicePageView extends GetView {
             ),
             title: 'menu_dingtype_takeout'.tr,
             selected: false,
-            onTap: ()=>controller.goMenu(controller.selectLanguage, true),
+            //onTap: ()=>controller.goMenu(controller.selectLanguage, true),
           ),
         )
       ],
@@ -236,42 +236,42 @@ class SelfservicePageView extends GetView {
                             ],
                           ),
                         ),
-                        if (controller.machineInfo.diningType == "3")
-                          Text(
-                            'menu_ding_type_tips'.tr,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                              fontSize: 40,
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.white,
-                                  offset: Offset(2.0, -2.0),
-                                  blurRadius: 2.0,
-                                ),
-                              ],
-                            ),
-                          ),
+                        // if (controller.machineInfo.diningType == "3")
+                        //   Text(
+                        //     'menu_ding_type_tips'.tr,
+                        //     maxLines: 2,
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(
+                        //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                        //       fontSize: 40,
+                        //       fontFamily: GFont.getFontFamily(),
+                        //       fontWeight: FontWeight.w600,
+                        //       shadows: [
+                        //         Shadow(
+                        //           color: Colors.white,
+                        //           offset: Offset(2.0, -2.0),
+                        //           blurRadius: 2.0,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
                   )
               ),
 
 
-              Positioned(
-                bottom: ScreenAdapter.height(400),
-                width: ScreenAdapter.width(1080),
-                child: Center(
-                    child:
-                    controller.machineInfo.diningType == "3" ?
-                    _diningSelectArea()
-                        : _startButton()
-
-                ),
-              ),
+              // Positioned(
+              //   bottom: ScreenAdapter.height(400),
+              //   width: ScreenAdapter.width(1080),
+              //   child: Center(
+              //       child:
+              //       controller.machineInfo.diningType == "3" ?
+              //       _diningSelectArea()
+              //           : _startButton()
+              //
+              //   ),
+              // ),
 
 
               Positioned(

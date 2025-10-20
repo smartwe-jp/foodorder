@@ -120,7 +120,7 @@ class CheckoutPageView extends GetView {
             selected: false,
             onTap: () {
                 controller.machineInfo.currentMode = MachineMode.sell;
-                controller.goMenu(controller.selectLanguage, false);
+                controller.goMenu(controller.selectLanguage);
               },
           )
           else
@@ -140,7 +140,7 @@ class CheckoutPageView extends GetView {
               selected: false,
               onTap: () {
                 controller.machineInfo.currentMode = MachineMode.scan;
-                controller.goMenu(controller.selectLanguage, false);
+                controller.goMenu(controller.selectLanguage);
               },
             ),
 
@@ -160,7 +160,7 @@ class CheckoutPageView extends GetView {
               selected: false,
               onTap: () {
                 controller.machineInfo.currentMode = MachineMode.checkout;
-                controller.goMenu(controller.selectLanguage, false);
+                controller.goMenu(controller.selectLanguage);
               },
             ),
           //),
@@ -181,7 +181,7 @@ class CheckoutPageView extends GetView {
               selected: false,
               onTap: () {
                 controller.machineInfo.currentMode = MachineMode.takeout;
-                controller.goMenu(controller.selectLanguage, true);
+                controller.goMenu(controller.selectLanguage);
               },
             ),
           //),
@@ -214,7 +214,7 @@ class CheckoutPageView extends GetView {
       // scaleEnabled: 1.0,
       // child:
       InkWell(
-        onTap: ()=>controller.goMenu(controller.selectLanguage, false),
+        onTap: ()=>controller.goMenu(controller.selectLanguage),
         child: Container(
           padding: EdgeInsets.all(10),
           height:ScreenAdapter.height(260),
@@ -322,25 +322,25 @@ class CheckoutPageView extends GetView {
                             ],
                           ),
                         ),
-                        if (controller.machineInfo.diningType == "3")
-                          Text(
-                            'menu_ding_type_tips'.tr,
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                              fontSize: 40,
-                              fontFamily: GFont.getFontFamily(),
-                              fontWeight: FontWeight.w600,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.white,
-                                  offset: Offset(2.0, -2.0),
-                                  blurRadius: 2.0,
-                                ),
-                              ],
-                            ),
-                          ),
+                        // if (controller.machineInfo.diningType == "3")
+                        //   Text(
+                        //     'menu_ding_type_tips'.tr,
+                        //     maxLines: 2,
+                        //     overflow: TextOverflow.ellipsis,
+                        //     style: TextStyle(
+                        //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
+                        //       fontSize: 40,
+                        //       fontFamily: GFont.getFontFamily(),
+                        //       fontWeight: FontWeight.w600,
+                        //       shadows: [
+                        //         Shadow(
+                        //           color: Colors.white,
+                        //           offset: Offset(2.0, -2.0),
+                        //           blurRadius: 2.0,
+                        //         ),
+                        //       ],
+                        //     ),
+                        //   ),
                       ],
                     ),
                   )

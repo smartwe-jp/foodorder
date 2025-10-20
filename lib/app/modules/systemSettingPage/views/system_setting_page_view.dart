@@ -22,7 +22,6 @@ class SystemSettingPageView extends GetView {
   SystemSettingPageView({Key? key}) : super(key: key);
 
 
-
   //设置菜单方向
   setMenuDirection() {
     return Container(
@@ -2623,7 +2622,7 @@ class SystemSettingPageView extends GetView {
                                             ),
                                           ),
                                         ),
-                                        setMachineMode(controller.machineModeInfo),//设置机器类型
+                                        setMachineMode(controller.machineInfo.machineModeInfo),//设置机器类型
                                       ]
                                   ), //设置机器类型
                                   if(controller.lineup.value == true)

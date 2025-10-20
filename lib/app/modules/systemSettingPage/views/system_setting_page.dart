@@ -112,7 +112,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   const SizedBox(width: 16),
                 ],
               ),
-              _modeArea(logic.machineModeInfo),
+              _modeArea(logic.machineInfo.machineModeInfo),
               _setMenuDirection(logic.machineInfo.systemSettingInfo),
               _machineTypeArea(logic.machineInfo.systemSettingInfo),
               _allowReceiptArea(logic.machineInfo.systemSettingInfo),
@@ -1636,6 +1636,21 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                   value: printOption,
                   onChanged: (value) {
                     controller.updateSSESetting(name, printOption: value);
+                  },
+                  activeColor: Colors.blue,
+                ),
+              ],
+            ),
+          if (isOn && name == "SmartWe SSE")
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+
+                _settingContent('お会計伝票：'),
+                Switch(
+                  value: printSeat,
+                  onChanged: (value) {
+                    controller.updateSSESetting(name, printSeat: value);
                   },
                   activeColor: Colors.blue,
                 ),

@@ -21,21 +21,20 @@ class MachineInfoController extends GetxController {
   late bool isBackHome;
   late String machineCode;
   late String shopCode;
-  late bool mealType;
-  late String diningType;
+  //late bool mealType;
+  //late String diningType;
   late String isAllowPos;
   late String isAllowReceipt;
   late String isPrintReceipt;
-  late String receiptPrintType;
-  late bool showReceiptPage;
+  String receiptPrintType = '1';
   late List homeList;
   late List headImageList;
   late String menu_direction;
   late List supportLanguages;
-  bool isReceiptPageShow = false;
+  //bool isReceiptPageShow = false;
   late String printLogoImageData;
   late String printLogoImageUrl;
-  late String machineMode;
+  //String machineMode = '1'; //1 券卖机  2 精算机 3 自助收银
   late List printerList;
   late List sseSettingList;
   Map usbDevice = {};
@@ -55,10 +54,14 @@ class MachineInfoController extends GetxController {
   late String panelType;
   bool isAllow10000 = true;
   bool isAllow5000 = true;
+  bool isAllow10 = true;
+  bool isAllow5 = true;
   String is_allow_oneyen = "0";
+  bool showReceiptPage = false;
+
 
   //payment info
-  late bool showCash;
+  //late bool showCash;
   late bool showAlipay;
   late bool showWechat;
   late bool showPayPay;
@@ -111,6 +114,19 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+  //1 券卖机  2 精算机 3 自助收银
+  String get machineMode {
+    if (currentMode == MachineMode.checkout) {
+      return '2';
+    } else if (currentMode == MachineMode.scan) {
+      return '3';
+    }
+    return '1';
+  }
+
+  bool get isTakeoutMode {
+    return currentMode == MachineMode.checkout || currentMode == MachineMode.scan;
+  }
 
   String get printType {
     String type = "";
@@ -126,6 +142,22 @@ class MachineInfoController extends GetxController {
     }
 
     return type;
+  }
+
+  // bool get showReceiptPage {
+  //   return isAllowReceipt == "1" ? false : true;
+  // }
+
+  bool get isReceiptPageShow {
+    return isAllowReceipt == "1" ? false : true;
+  }
+
+  // bool get mealType {
+  //   return diningType == '2' ? true : false;
+  // }
+
+  bool get showCash {
+    return isAllowCash && cashOn;
   }
 
   @override
@@ -156,8 +188,7 @@ class MachineInfoController extends GetxController {
 
   Future loadMachineSettingInfo() async {
     logI('loadMachineSettingInfo');
-    receiptPrintType = '1';
-    mealType = false;
+    //mealType = false;
     var machineCodeString = await HomeServices.getMachineInfo();
     if (machineCodeString != "") {
       machineCode = machineCodeString;
@@ -167,25 +198,26 @@ class MachineInfoController extends GetxController {
 
     isBackHome =
         (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
-    diningType = systemSettingInfo['diningType'] ?? '1';
-    logI('loadMachineSettingInfo diningType : $diningType');
-    mealType = diningType == '2' ? true : false;
+    // diningType = systemSettingInfo['diningType'] ?? '1';
+    // logI('loadMachineSettingInfo diningType : $diningType');
+    // mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '0';
     panelType = systemSettingInfo['panelType'] ?? 'Mini';
-    machineMode = systemSettingInfo["machineMode"] ?? '0';
+    //machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
 
     print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
     isReservation = systemSettingInfo['isReservation'];
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
+    isAllow10 = systemSettingInfo['isAllow10'] ?? true;
+    isAllow5 = systemSettingInfo['isAllow5'] ?? true;
     is_allow_oneyen = systemSettingInfo['isAllowOneyen'] ?? '0';
 
-
     showReceiptPage = isAllowReceipt == "1" ? false : true;
-    isReceiptPageShow = isAllowReceipt == "1" ? false : true;
+    //isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
     menu_direction = systemSettingInfo['menuDirection'] ?? '1';
     machineType = panelTypes[panelType] ?? MachineType.new_panel;
@@ -219,7 +251,7 @@ class MachineInfoController extends GetxController {
     Map machineActivateData = await HomeServices.getMachineActivateData();
     taxSystem = machineActivateData['taxSystem'] ?? false;
     isAllowCash = machineActivateData['showCash'] ?? false;
-    showCash = isAllowCash && cashOn;
+    //showCash = isAllowCash && cashOn;
 
     showWechat = machineActivateData['showWechat'] ?? false;
     showAlipay = machineActivateData['showAlipay'] ?? false;

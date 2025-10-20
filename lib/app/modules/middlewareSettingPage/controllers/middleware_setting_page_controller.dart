@@ -34,8 +34,8 @@ class MiddlewareSettingPageController extends GetxController {
     if(smartweMachineSettingPassword != null && smartweMachineSettingPassword!= ""){
       showSettingPassword();
     }else{
-      //Get.offAllNamed('/setting', arguments: {"machineCode": machineCode.value});
-      Get.off(()=>SettingView(), arguments: {"machineCode": machineCode.value});
+      Get.offNamed('/setting');
+      //Get.off(()=>SettingView(), arguments: {"machineCode": machineCode.value});
     }
   }
 

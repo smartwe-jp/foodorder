@@ -76,20 +76,20 @@ class SelfservicePageController extends GetxController with StateMixin {
     change(null, status: RxStatus.success());
   }
 
-  goMenu(String lan, bool mealType) {
-    machineInfo.mealType = mealType;
-    var jumpUrl = '/menu-page';
-    startShake = false;
-    Get.toNamed(jumpUrl,arguments: {
-      "checkLanguage": lan,
-      "mealType":mealType
-    });
-  }
+  // goMenu(String lan, bool mealType) {
+  //   machineInfo.mealType = mealType;
+  //   var jumpUrl = '/menu-page';
+  //   startShake = false;
+  //   Get.toNamed(jumpUrl,arguments: {
+  //     "checkLanguage": lan,
+  //     "mealType":mealType
+  //   });
+  // }
 
   goSelfCheckout() {
     Get.toNamed('/self-checkoutscanningcode',arguments: {
       "checkLanguage": selectLanguage,
-      "mealType": machineInfo.mealType
+      //"mealType": machineInfo.mealType
     });
   }
 

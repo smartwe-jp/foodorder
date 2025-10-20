@@ -381,17 +381,17 @@ class TransitPageController extends GetxController {
     debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-    var checkmachineMode = "1";
-    if (SystemSettingInfo["machineMode"] != "" &&
-        SystemSettingInfo["machineMode"] != null &&
-        SystemSettingInfo["machineMode"] != "1") {
-      if (_actuarial.value == true) {
-        checkmachineMode =
-            (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
-      } else {
-        checkmachineMode = "1";
-      }
-    }
+    // var checkmachineMode = "1";
+    // if (SystemSettingInfo["machineMode"] != "" &&
+    //     SystemSettingInfo["machineMode"] != null &&
+    //     SystemSettingInfo["machineMode"] != "1") {
+    //   if (_actuarial.value == true) {
+    //     checkmachineMode =
+    //         (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
+    //   } else {
+    //     checkmachineMode = "1";
+    //   }
+    // }
     var systemSettingData = {
       "diningType": (SystemSettingInfo["diningType"] != "" &&
               SystemSettingInfo["diningType"] != null)
@@ -405,7 +405,7 @@ class TransitPageController extends GetxController {
       "printPaperTxtSize":(SystemSettingInfo["printPaperTxtSize"] !="" && SystemSettingInfo["printPaperTxtSize"]!=null) ? SystemSettingInfo["printPaperTxtSize"] :"1",//1 普通　2大　3特大
       "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
       "isAllowReceiptMenu":(SystemSettingInfo["isAllowReceiptMenu"] !="" && SystemSettingInfo["isAllowReceiptMenu"]!=null) ? SystemSettingInfo["isAllowReceiptMenu"] :"1",//1必须打印小票顶部菜单 2不打印
-      "machineMode":checkmachineMode,
+      //"machineMode":checkmachineMode,
       "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
       "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
       "isAllowOneYen":(SystemSettingInfo["isAllowOneYen"] !="" && SystemSettingInfo["isAllowOneYen"]!=null) ? SystemSettingInfo["isAllowOneYen"] :"0",//0禁用1元 1不禁用
@@ -443,10 +443,10 @@ class TransitPageController extends GetxController {
     //_goNext(checkmachineMode);
 
     //_goNext(checkmachineMode);
-     _injectControllers(checkmachineMode, systemSettingData);
+     _injectControllers(systemSettingData);
   }
 
-  Future _injectControllers(checkmachineMode, systemSettingData) async {
+  Future _injectControllers(systemSettingData) async {
     // if (Get.isRegistered<PosPayController>()) Get.delete<PosPayController>();
     // Get.put(PosPayController());
 
@@ -515,14 +515,14 @@ class TransitPageController extends GetxController {
     showStartButton.value = true;
      
 
-     goNext(checkmachineMode);
+     goNext();
   }
 
   void startOrder() {
-    goNext('1');
+    goNext();
   }
 
-  Future goNext(checkmachineMode) async {
+  Future goNext() async {
     Get.updateLocale(Locale('jp', 'JP'));
     _goCheckOut();
     // if(checkmachineMode == "2"){

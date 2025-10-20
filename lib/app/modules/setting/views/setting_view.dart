@@ -286,7 +286,7 @@ class SettingView extends GetView<SettingController> {
   }
 
   getCashListShow() {
-    return controller.cashList.value.length > 0
+    return controller.cashList.length > 0
         ? Container(
             margin: EdgeInsets.only(
                 top: ScreenAdapter.height(15),
