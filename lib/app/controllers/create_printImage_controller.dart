@@ -23,6 +23,8 @@ class CreatePrintImageController extends GetxController {
   MachineInfoController machineInfo = Get.find();
   AppConfig appConfig = Get.find();
   double printWidth = 385;
+  String get print_paper_txt_size => machineInfo.print_paper_txt_size;
+
   // {
   //   if (appConfig.isFx) {
   //     return 550;
@@ -64,7 +66,7 @@ class CreatePrintImageController extends GetxController {
     super.onInit();
   }
 
-  tpPrintnew(print_paper_txt_size, printData, printType) async {
+  tpPrintnew(printData, printType) async {
     var takeOut = printData["takeOut"] ?? false;
     var takeoutTag = (takeOut == true) ? "【T】" : "";
     List categoryVos = [];
@@ -91,7 +93,7 @@ class CreatePrintImageController extends GetxController {
     }
 
     if (categoryVos.length == 0) {
-      tpPrintReceipt(print_paper_txt_size, printData);
+      tpPrintReceipt(printData);
       return;
     }
     var print_menu_txt_size = 28.0;
@@ -413,7 +415,7 @@ class CreatePrintImageController extends GetxController {
       await Future.delayed(Duration(milliseconds: 500));
       await FlutterPluginMsprinter.sendPrintCut("1");
       await Future.delayed(Duration(milliseconds: 300));
-      tpPrintReceipt(print_paper_txt_size, printData);
+      tpPrintReceipt(printData);
     } else {
       await FlutterPluginMsprinter.sendPrintImgNew(base64Image, "0", "0", "");
       await Future.delayed(Duration(milliseconds: 800));
@@ -423,7 +425,7 @@ class CreatePrintImageController extends GetxController {
     //});
   }
 
-  tpPrintReceipt(print_paper_txt_size, printData) async {
+  tpPrintReceipt(printData) async {
     List<Widget> categoryMenus = [];
 
     debugPrint('printData:$printData');

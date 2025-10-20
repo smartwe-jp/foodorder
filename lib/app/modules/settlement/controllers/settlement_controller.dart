@@ -1054,11 +1054,11 @@ class SettlementController extends GetxController with StateMixin {
           if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
-            createPrintImageController.tpPrintnew(print_paper_txt_size.value, response['data'], printType);
+            createPrintImageController.tpPrintnew(response['data'], printType);
           }else{
             if (printType == "1") {
               //_tpPrintReceipt(response['data']);
-              createPrintImageController.tpPrintReceipt(print_paper_txt_size.value, response['data']);
+              createPrintImageController.tpPrintReceipt(response['data']);
             }
           }
           //打印小票
