@@ -61,7 +61,7 @@ class MachineInfoController extends GetxController {
 
 
   //payment info
-  //late bool showCash;
+  late bool showCash;
   late bool showAlipay;
   late bool showWechat;
   late bool showPayPay;
@@ -156,9 +156,9 @@ class MachineInfoController extends GetxController {
   //   return diningType == '2' ? true : false;
   // }
 
-  bool get showCash {
-    return isAllowCash && cashOn;
-  }
+  // bool get showCash {
+  //   return isAllowCash && cashOn;
+  // }
 
   @override
   Future<void> onInit() async {
@@ -251,7 +251,7 @@ class MachineInfoController extends GetxController {
     Map machineActivateData = await HomeServices.getMachineActivateData();
     taxSystem = machineActivateData['taxSystem'] ?? false;
     isAllowCash = machineActivateData['showCash'] ?? false;
-    //showCash = isAllowCash && cashOn;
+    showCash = isAllowCash && cashOn;
 
     showWechat = machineActivateData['showWechat'] ?? false;
     showAlipay = machineActivateData['showAlipay'] ?? false;
