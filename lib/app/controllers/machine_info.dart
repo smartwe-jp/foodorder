@@ -35,7 +35,7 @@ class MachineInfoController extends GetxController {
   bool isReceiptPageShow = false;
   late String printLogoImageData;
   late String printLogoImageUrl;
-  late String machineMode;
+  //String machineMode = '1'; //1 券卖机  2 精算机 3 自助收银
   late List printerList;
   late List sseSettingList;
 
@@ -113,6 +113,15 @@ class MachineInfoController extends GetxController {
   bool get isTakeoutOn => machineModeInfo['takeout'] ?? false;
   bool get isCheckOn => machineModeInfo['checkout'] ?? false;
   bool get isScanbuyOn => machineModeInfo['scanbuy'] ?? false;
+  //1 券卖机  2 精算机 3 自助收银
+  String get machineMode {
+    if (currentMode == MachineMode.checkout) {
+      return '2';
+    } else if (currentMode == MachineMode.scan) {
+      return '3';
+    }
+    return '1';
+  }
 
   String get printType {
     String type = "";
@@ -174,7 +183,7 @@ class MachineInfoController extends GetxController {
     isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
     isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '0';
     panelType = systemSettingInfo['panelType'] ?? 'Mini';
-    machineMode = systemSettingInfo["machineMode"] ?? '0';
+    //machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
 
     print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];

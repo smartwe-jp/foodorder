@@ -56,15 +56,15 @@ class SettlementController extends GetxController with StateMixin {
 
   //默认语言包选择
   RxString checkLanguage = "JP".obs;
+  //
+  // RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
+  // RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
+  // RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
 
-  RxString is_query_receipt = "1".obs; //1 要领収书  2 不要领収书
-  RxString is_allow_receipt = "1".obs; //1 必须打印  2 不必须
-  RxString is_allow_receipt_menu = "1".obs;//1 必须打印  2 不要
-
-  RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
+  //RxString print_paper_txt_size = "1".obs;//1普通　2大　3特大
   //RxString is_back_home = "0".obs; //0 返回home  1 返回菜单
-  RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
-  RxString is_allow_oneyen = "0".obs;//0 禁用  1 允许
+  //RxString machineMode = "1".obs; //机器类型 1普通券卖机 2精算机
+  //RxString is_allow_oneyen = "0".obs;//0 禁用  1 允许
 
   RxString orderId = "".obs;
   RxString scanQrCode = "".obs;
@@ -234,16 +234,16 @@ class SettlementController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-    is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
-    is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
-    print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
+    // is_allow_receipt.value = systemSettingInfo['isAllowReceipt'];
+    // is_allow_receipt_menu.value = systemSettingInfo['isAllowReceiptMenu'];
+    // print_paper_txt_size.value = systemSettingInfo['printPaperTxtSize'];
     //is_back_home.value = systemSettingInfo['isAllowBackHome'];
     //新版精算模式也可点外带
-    machineMode.value = systemSettingInfo['machineMode'];
+    //machineMode.value = systemSettingInfo['machineMode'];
     //showPrintType.value = int.parse(systemSettingInfo['showPrintType']); //0 receipt   1Lable
-    is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
+    //is_allow_oneyen.value = systemSettingInfo['isAllowOneYen'];
 
     // if(systemSettingInfo['isAllowWlanPrint'] == "1"){
     //   is_allow_wlanPrint_continuous.value = systemSettingInfo['isAllowWlanPrintContinuous'];
@@ -1028,7 +1028,7 @@ class SettlementController extends GetxController with StateMixin {
   doPrintOrderMenu(printType,{int times = 0}) async {
     logI("doPrintOrderMenu times = $times", tag: "Print");
     //判断全局设置是否强制打印小票
-    if (is_allow_receipt.value == "1") {
+    if (machineInfo.isAllowReceipt == "1") {
         printType = "1";
     }
     // var printStatus = "0";//await FlutterPluginMsprinter.getPrintStatus();//暂时去掉 默认为"0"
@@ -1051,7 +1051,7 @@ class SettlementController extends GetxController with StateMixin {
             printService.printData(response['data']["printInfo"], orderId: response['data']['order'] ?? "", fromSSE: false);
             saveService.addPrintJob(response['data']);
           }
-          if(response['data']["orderType"] == 1 && is_allow_receipt_menu.value == "1"){
+          if(response['data']["orderType"] == 1 && machineInfo.isPrintReceipt == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
             createPrintImageController.tpPrintnew(response['data'], printType);
@@ -1622,7 +1622,7 @@ class SettlementController extends GetxController with StateMixin {
     //operation  0 确认支付  1 取消返回(券売機)　2 取消返回(精算機、自助结算)
     var operation = 0;
     if (isCancel.value == true) {
-      if(machineMode.value == "1") {
+      if(machineInfo.machineMode == "1") {
         operation = 1;
       }else{
         operation = 2;
@@ -1636,7 +1636,7 @@ class SettlementController extends GetxController with StateMixin {
       "orderId": orderId.value,
       "price": int.parse(getPutMoney.value),
       "operation": operation,
-      "coinForbidden":int.parse(is_allow_oneyen.value)
+      "coinForbidden":int.parse(machineInfo.is_allow_oneyen)
     };//print("webBootToReportV1==${formData}");
     request('webBootToReportV1', method: 'POST', parameters: formData)
         .then((value) {

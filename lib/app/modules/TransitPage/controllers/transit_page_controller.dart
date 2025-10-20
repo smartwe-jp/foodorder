@@ -29,7 +29,7 @@ import '../../../widget/DialogUtils.dart';
 class TransitPageController extends GetxController {
   //TODO: Implement TransitPageController
   RxString _machineCode = "".obs;
-  var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
+  //var _machineMode = "1";//1 券卖机  2 精算机 3 自助收银
   //RxBool _isCashState = true.obs;
   RxBool _actuarial = false.obs;
   RxString local_version = "".obs; //本appversion
@@ -351,14 +351,14 @@ class TransitPageController extends GetxController {
     debugPrint("getSmartweSystemSettingInfo");
     Map SystemSettingInfo = await HomeServices.getSystemSettingInfo();
 
-    var checkmachineMode = "1";
-    if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
-      if(_actuarial.value==true){
-        checkmachineMode = (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
-      }else{
-        checkmachineMode = "1";
-      }
-    }
+    // var checkmachineMode = "1";
+    // if(SystemSettingInfo["machineMode"] !="" && SystemSettingInfo["machineMode"]!=null &&SystemSettingInfo["machineMode"] != "1"){
+    //   if(_actuarial.value==true){
+    //     checkmachineMode = (SystemSettingInfo["machineMode"] == "3") ? "3" : "2";
+    //   }else{
+    //     checkmachineMode = "1";
+    //   }
+    // }
     var systemSettingData = {
       "diningType": (SystemSettingInfo["diningType"] !="" && SystemSettingInfo["diningType"]!=null) ? SystemSettingInfo["diningType"] :"1", //1堂食 2外带
       "menuDirection":(SystemSettingInfo["menuDirection"] !="" && SystemSettingInfo["menuDirection"]!=null) ? SystemSettingInfo["menuDirection"] :"1",//1顶部横向 2左侧竖
@@ -366,7 +366,7 @@ class TransitPageController extends GetxController {
       "printPaperTxtSize":(SystemSettingInfo["printPaperTxtSize"] !="" && SystemSettingInfo["printPaperTxtSize"]!=null) ? SystemSettingInfo["printPaperTxtSize"] :"1",//1 普通　2大　3特大
       "isAllowReceipt":(SystemSettingInfo["isAllowReceipt"] !="" && SystemSettingInfo["isAllowReceipt"]!=null) ? SystemSettingInfo["isAllowReceipt"] :"1",//1必须打印小票 2不必须
       "isAllowReceiptMenu":(SystemSettingInfo["isAllowReceiptMenu"] !="" && SystemSettingInfo["isAllowReceiptMenu"]!=null) ? SystemSettingInfo["isAllowReceiptMenu"] :"1",//1必须打印小票顶部菜单 2不打印
-      "machineMode":checkmachineMode,
+      //"machineMode":checkmachineMode,
       "isReservation":(SystemSettingInfo["isReservation"] !="" && SystemSettingInfo["isReservation"]!=null) ? SystemSettingInfo["isReservation"] :"0",//是否开启预约 0不开启 1开启
       "isAllowAttendance":(SystemSettingInfo["isAllowAttendance"] !="" && SystemSettingInfo["isAllowAttendance"]!=null) ? SystemSettingInfo["isAllowAttendance"] :"0",//0 不开考勤 1开考勤
       "isAllowOneYen":(SystemSettingInfo["isAllowOneYen"] !="" && SystemSettingInfo["isAllowOneYen"]!=null) ? SystemSettingInfo["isAllowOneYen"] :"0",//0禁用1元 1不禁用
@@ -439,7 +439,7 @@ class TransitPageController extends GetxController {
     // final posCheckService = Get.find<PosCheckService>();
     // posCheckService.setPosConnection(machineInfo.pos_ip, machineInfo.posPort);
     showStartButton.value = true;
-    _goNext(checkmachineMode);
+    _goNext();
 
   }
 
@@ -449,11 +449,11 @@ class TransitPageController extends GetxController {
   }
 
   void startOrder() {
-    _goNext('1');
+    _goNext();
   }
 
-  void _goNext(checkmachineMode) async {
-    Get.updateLocale(Locale('jp', 'JP'));
+  void _goNext() async {
+    //Get.updateLocale(Locale('jp', 'JP'));
     _goCheckOut();
     // if(checkmachineMode == "2"){
     //  _goCheckOut();
