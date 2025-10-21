@@ -11,7 +11,9 @@ class MachineInfoController extends GetxController {
   Map systemSettingInfo;
   MachineInfoController(this.systemSettingInfo);
 
-  late MachineType machineType;
+  MachineType get  machineType {
+    return panelTypes[panelType] ?? MachineType.new_panel;
+  }
   Map<String, MachineType> panelTypes = {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
@@ -225,7 +227,6 @@ class MachineInfoController extends GetxController {
     //isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
     menu_direction = systemSettingInfo['menuDirection'] ?? '1';
-    machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
     showPrintType =
         int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
