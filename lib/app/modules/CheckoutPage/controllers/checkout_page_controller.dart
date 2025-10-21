@@ -2,10 +2,12 @@ import 'dart:async';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/CheckoutPage/controllers/posCheckView.dart';
 import 'package:foodorder/app/services/CashChangerService.dart';
+import 'package:foodorder/app/services/HomeServices.dart';
 import 'package:foodorder/app/services/PosCheckService.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:get/get.dart';
@@ -76,6 +78,16 @@ class CheckoutPageController extends GetxController with StateMixin {
     }
     return 'JP';
   }
+
+  Color get themeColor {
+    return Color(machineInfo.themeColor);
+  }
+
+  Color get themeTextColor {
+    return machineInfo.is_dark_theme ? const Color(0xFFFFFFFF) : const Color(0xFF000000);
+  }
+
+  Color preThemeColor = Colors.green.shade900;
 
   @override
   void onInit() {
@@ -235,6 +247,36 @@ class CheckoutPageController extends GetxController with StateMixin {
     debugPrint('stopRepeatingAnimation');
     isAnimating = false;
     startShake = false;
+    update();
+  }
+
+  void updateThemeColor(Color color) async {
+    //translate color to int
+    machineInfo.themeColor = color.toARGB32();
+    machineInfo.is_dark_theme = useWhiteForeground(color);
+    // final systemSetting = await HomeServices.getSystemSettingInfo();
+    // systemSetting['themeColor'] = machineInfo.themeColor;
+    // systemSetting['isDarkTheme'] = machineInfo.is_dark_theme;
+    // HomeServices.updateSystemSettingInfo(systemSetting);
+    update();
+  }
+
+  void confirmColorSetting(Color color) async {
+    machineInfo.themeColor = color.toARGB32();
+    machineInfo.is_dark_theme = useWhiteForeground(color);
+    final systemSetting = await HomeServices.getSystemSettingInfo();
+    systemSetting['themeColor'] = machineInfo.themeColor;
+    systemSetting['isDarkTheme'] = machineInfo.is_dark_theme;
+    HomeServices.updateSystemSettingInfo(systemSetting);
+  }
+
+  void cancelColorSetting() async {
+    machineInfo.themeColor = preThemeColor.toARGB32();
+    machineInfo.is_dark_theme = useWhiteForeground(preThemeColor);
+    final systemSetting = await HomeServices.getSystemSettingInfo();
+    systemSetting['themeColor'] = machineInfo.themeColor;
+    systemSetting['isDarkTheme'] = machineInfo.is_dark_theme;
+    HomeServices.updateSystemSettingInfo(systemSetting);
     update();
   }
 
