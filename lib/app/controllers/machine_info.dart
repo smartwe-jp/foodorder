@@ -59,6 +59,9 @@ class MachineInfoController extends GetxController {
   String is_allow_oneyen = "0";
   bool showReceiptPage = false;
 
+  //theme info
+  int themeColor = 0xFF1B5E20;
+  bool is_dark_theme = false;
 
   //payment info
   //late bool showCash;
@@ -205,6 +208,8 @@ class MachineInfoController extends GetxController {
     panelType = systemSettingInfo['panelType'] ?? 'Mini';
     //machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
+    is_dark_theme = systemSettingInfo['isDarkTheme'] ?? false;
+    themeColor = systemSettingInfo['themeColor'] ?? 0xFF1B5E20;
 
     print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
     isReservation = systemSettingInfo['isReservation'];

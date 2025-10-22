@@ -14,12 +14,16 @@ class BookingTypeButton extends StatelessWidget {
   final bool selected;
   final Function? onTap;
   final double width;
+  final Color bgColor;
+  final Color textColor;
 
   BookingTypeButton(
       {Key? key,
         required this.icon,
         required this.title,
         this.width = 400,
+        this.bgColor = const Color(0xFF1B5E20),
+        this.textColor = Colors.white,
         this.onTap, required this.selected,});
 
   @override
@@ -34,7 +38,7 @@ class BookingTypeButton extends StatelessWidget {
           height:ScreenAdapter.height(280),
           width: ScreenAdapter.width(width),
           decoration: BoxDecoration(
-            color: selected ? ColorsUtil.hexToColor(Gcolor.greenThemeColor) : Colors.green[900],
+            color: bgColor,
             borderRadius: BorderRadius.circular(10),
             // boxShadow: [
             //   BoxShadow(
@@ -64,7 +68,7 @@ class BookingTypeButton extends StatelessWidget {
                   textAlign: TextAlign.center,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    color: selected ? Colors.white : Colors.white,//const Color.fromARGB(255, 53,59,80),
+                    color: textColor,//const Color.fromARGB(255, 53,59,80),
                     fontSize: 60,
                     fontFamily: GFont.getFontFamily(),
                     fontWeight: FontWeight.w600,

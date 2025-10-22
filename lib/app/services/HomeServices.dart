@@ -167,6 +167,13 @@ class HomeServices{
     return systemSettingInfo;
   }
 
+  static updateSystemSettingInfo(Map systemSettingData) async {
+    //GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
+    Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
+    GetxStorage.setData(
+        'smartwe_systemSetting', json.encode(systemSettingData));
+  }
+
   //pos机多参数设置
   static getPosSettingInfo() async{
     Map? posSettingInfo;
