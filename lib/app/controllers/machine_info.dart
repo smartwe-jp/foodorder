@@ -130,7 +130,7 @@ class MachineInfoController extends GetxController {
   }
 
   bool get isTakeoutMode {
-    return currentMode == MachineMode.checkout || currentMode == MachineMode.scan;
+    return currentMode == MachineMode.takeout || currentMode == MachineMode.scan;
   }
 
   String get printType {
