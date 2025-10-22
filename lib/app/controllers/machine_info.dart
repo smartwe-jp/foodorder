@@ -11,7 +11,10 @@ class MachineInfoController extends GetxController {
   Map systemSettingInfo;
   MachineInfoController(this.systemSettingInfo);
 
-  late MachineType machineType;
+  MachineType get  machineType {
+    return panelTypes[panelType] ?? MachineType.new_panel;
+  }
+
   Map<String, MachineType> panelTypes = {
     'Mini': MachineType.new_panel,
     'Max': MachineType.new_panel_max
@@ -203,16 +206,16 @@ class MachineInfoController extends GetxController {
     //mealType = diningType == '2' ? true : false;
 
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
-    isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
-    isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '0';
+    isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '1';
+    isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '1';
     panelType = systemSettingInfo['panelType'] ?? 'Mini';
     //machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
     is_dark_theme = systemSettingInfo['isDarkTheme'] ?? false;
     themeColor = systemSettingInfo['themeColor'] ?? 0xFF1B5E20;
 
-    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'];
-    isReservation = systemSettingInfo['isReservation'];
+    print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? '1';
+    isReservation = systemSettingInfo['isReservation'] ?? '0';
     isAllow10000 = (systemSettingInfo['isAllow10000'] ?? '1') == '1';
     isAllow5000 = (systemSettingInfo['isAllow5000'] ?? '1') == '1';
     isAllow10 = systemSettingInfo['isAllow10'] ?? true;
@@ -223,7 +226,6 @@ class MachineInfoController extends GetxController {
     //isReceiptPageShow = isAllowReceipt == "1" ? false : true;
 
     menu_direction = systemSettingInfo['menuDirection'] ?? '1';
-    machineType = panelTypes[panelType] ?? MachineType.new_panel;
 
     showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
