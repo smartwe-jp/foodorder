@@ -2,8 +2,6 @@
 
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
-import 'package:foodorder/app/config/color.dart';
-import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 
 import '../../../menuPage/views/widgets/car_item_view.dart';
@@ -13,8 +11,15 @@ class LanguageButton extends StatelessWidget {
   final String title;
   final bool selected;
   final Function? onTap;
+  final Color startColor;
+  final Color textColor;
 
-  LanguageButton({Key? key, required this.title, required this.selected, this.onTap, required this.icon});
+  LanguageButton({Key? key, required this.title,  this.selected = false,
+    this.onTap,
+    required this.icon,
+    this.startColor = Colors.green,
+    this.textColor = Colors.white,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +46,7 @@ class LanguageButton extends StatelessWidget {
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [selected ? Colors.white : Colors.green, selected ? Colors.white:Colors.lightGreen],
+            colors: [selected ? Colors.white : startColor, selected ? Colors.white:startColor.withValues(alpha: 80)],
           ),
           borderRadius: BorderRadius.circular(5),
           //border: Border.all(color: Colors.red, width: 2),
@@ -64,7 +69,7 @@ class LanguageButton extends StatelessWidget {
                 AutoSizeText(
                   title,
                   style: TextStyle(
-                    color: selected ? Colors.black : Colors.white,
+                    color: selected ? Colors.black : textColor,
                     fontSize: 32,
                     fontWeight: FontWeight.w600,
                   ),

@@ -1457,42 +1457,10 @@ class SystemSettingPageView extends GetView {
             highlightColor: Colors.transparent, // 透明色
             splashColor: Colors.transparent, // 透明色
             onTap: (){
-              controller.checkIsAllowBackHome("0");
+              controller.checkIsAllowBackHome(true);
             },
             child: Container(
               //margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
-              //设置 child 居中
-              alignment: Alignment(0, 0),
-              height: ScreenAdapter.height(60),
-              width: ScreenAdapter.width(220),
-              //边框设置
-              decoration: new BoxDecoration(
-                //背景
-                color: (!controller.machineInfo.isBackHome) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
-                //设置四周圆角 角度
-                borderRadius: BorderRadius.all(Radius.circular(5.0)),
-                //设置四周边框
-                //border: new Border.all(width: 1, color: Colors.red),
-              ),
-              child: Text("トップページに戻る",
-                  style: TextStyle(
-                    fontFamily: 'NotoSansJP',
-                    fontWeight: FontWeight.w400,
-                    fontSize: ScreenAdapter.fontSize(22.0),
-                    color: (!controller.machineInfo.isBackHome) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
-                  )
-              ),
-            ),
-          ),
-          InkWell(
-            highlightColor: Colors.transparent, // 透明色
-            splashColor: Colors.transparent, // 透明色
-            onTap: (){
-              //controller.checkIsAllowBackHome("1");
-              controller.checkIsAllowBackHome("1");
-            },
-            child: Container(
-              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
               //设置 child 居中
               alignment: Alignment(0, 0),
               height: ScreenAdapter.height(60),
@@ -1506,12 +1474,44 @@ class SystemSettingPageView extends GetView {
                 //设置四周边框
                 //border: new Border.all(width: 1, color: Colors.red),
               ),
-              child: Text("メニューリストに戻る",
+              child: Text("トップページに戻る",
                   style: TextStyle(
                     fontFamily: 'NotoSansJP',
                     fontWeight: FontWeight.w400,
                     fontSize: ScreenAdapter.fontSize(22.0),
                     color: (controller.machineInfo.isBackHome) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
+                  )
+              ),
+            ),
+          ),
+          InkWell(
+            highlightColor: Colors.transparent, // 透明色
+            splashColor: Colors.transparent, // 透明色
+            onTap: (){
+              //controller.checkIsAllowBackHome("1");
+              controller.checkIsAllowBackHome(false);
+            },
+            child: Container(
+              margin: EdgeInsets.only(left: ScreenAdapter.width(15)),
+              //设置 child 居中
+              alignment: Alignment(0, 0),
+              height: ScreenAdapter.height(60),
+              width: ScreenAdapter.width(220),
+              //边框设置
+              decoration: new BoxDecoration(
+                //背景
+                color: !(controller.machineInfo.isBackHome) ? ColorsUtil.hexToColor("#409eff"):Colors.grey[200],
+                //设置四周圆角 角度
+                borderRadius: BorderRadius.all(Radius.circular(5.0)),
+                //设置四周边框
+                //border: new Border.all(width: 1, color: Colors.red),
+              ),
+              child: Text("メニューリストに戻る",
+                  style: TextStyle(
+                    fontFamily: 'NotoSansJP',
+                    fontWeight: FontWeight.w400,
+                    fontSize: ScreenAdapter.fontSize(22.0),
+                    color: !(controller.machineInfo.isBackHome) ? ColorsUtil.hexToColor("#FFFFFF"):ColorsUtil.hexToColor("#000000"),
                   )
               ),
             ),

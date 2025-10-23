@@ -1514,7 +1514,7 @@ class SettlementController extends GetxController with StateMixin {
             'tag_cash_error'.tr,
             confirm: () {
               Get.back();
-              gotonewBack();
+              safeReturnToHome();
             }),
       barrierDismissible: false
     );

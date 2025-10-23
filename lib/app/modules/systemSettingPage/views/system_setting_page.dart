@@ -655,7 +655,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
 
   //setIsAllowSettlementHome
   Widget _allowSettlementHome(Map settingInfo) {
-    String isAllowBackHome = settingInfo['isAllowBackHome'] ?? '0';
+    bool isAllowBackHome = settingInfo['isBackHome'] ?? true;
 
     return Card(
       color: Colors.white,
@@ -669,9 +669,9 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
             _settingTitle('会計完了後の画面'),
             const Spacer(),
             ClipRRect(
-              child: CupertinoSegmentedControl<String>(
+              child: CupertinoSegmentedControl<bool>(
                 children: {
-                  '0': Padding(
+                  true: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 10),
                     child: Text(
@@ -680,12 +680,12 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
                         color:
-                        isAllowBackHome == '0' ? Colors.white : Colors.grey,
+                        isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
                   ),
-                  '1': Padding(
+                  false: Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 30, vertical: 10),
                     child: Text(
@@ -694,7 +694,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
                         fontFamily: 'NotoSansJP',
                         fontSize: 20,
                         color:
-                        isAllowBackHome == '1' ? Colors.white : Colors.grey,
+                        !isAllowBackHome ? Colors.white : Colors.grey,
                         fontWeight: FontWeight.w600,
                       ),
                     ),

@@ -281,7 +281,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     "isAllow5": machineInfo.isAllow5,
     "isAllow10": machineInfo.isAllow10,
     "isAllowRejishime": machineInfo.isAllowRejishime, //0不开启 1开启
-    "isAllowBackHome": machineInfo.isBackHome ? "1" : "0", //0返回home 1返回到菜单
+    "isBackHome": machineInfo.isBackHome, //0返回home 1返回到菜单
     "isAllowPos": machineInfo.isAllowPos, //0不开启 1开启
     // "isAllowWlanPrint": is_allow_wlanPrint.value, //0不开启 1开启
     // "isAllowWlanPrintContinuous": is_allow_wlanPrint_continuous.value,
@@ -1343,9 +1343,9 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  checkIsAllowBackHome(checkedType) async {
-    machineInfo.isBackHome = checkedType == "1";
-    _updateSystemSetting("isAllowBackHome", checkedType);
+  checkIsAllowBackHome(bool checkedType) async {
+    machineInfo.isBackHome = checkedType;
+    _updateSystemSetting("isBackHome", checkedType);
   }
 
   // checkIsEditMode(mode) async {
