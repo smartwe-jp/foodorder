@@ -64,7 +64,7 @@ class MachineInfoController extends GetxController {
 
   //theme info
   int themeColor = 0xFF1B5E20;
-  bool is_dark_theme = false;
+  bool is_dark_theme = true;
 
   //payment info
   //late bool showCash;
@@ -200,7 +200,8 @@ class MachineInfoController extends GetxController {
     }
     logI('loadMachineSettingInfo 0');
 
-    isBackHome = (systemSettingInfo['isAllowBackHome'] ?? '0') == '1' ? true : false;
+    isBackHome = systemSettingInfo['isBackHome'] ?? true;
+    logI('--isBackHome: $isBackHome');
     //diningType = systemSettingInfo['diningType'] ?? '1';
     //logI('loadMachineSettingInfo diningType : $diningType');
     //mealType = diningType == '2' ? true : false;
@@ -211,7 +212,7 @@ class MachineInfoController extends GetxController {
     panelType = systemSettingInfo['panelType'] ?? 'Mini';
     //machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';
-    is_dark_theme = systemSettingInfo['isDarkTheme'] ?? false;
+    is_dark_theme = systemSettingInfo['isDarkTheme'] ?? true;
     themeColor = systemSettingInfo['themeColor'] ?? 0xFF1B5E20;
 
     print_paper_txt_size = systemSettingInfo['printPaperTxtSize'] ?? '1';
@@ -241,6 +242,7 @@ class MachineInfoController extends GetxController {
     headImageList = await HomeServices.getSmartweHeaderImagesData() ?? [];
 
     isAllowReimburse = await HomeServices.getSmartweReimburseData() == '1' ? true : false;
+    logI('--isAllowReimburse: $isAllowReimburse');
 
     supportLanguages = await HomeServices.getMachineLanguages();
 

@@ -199,7 +199,7 @@ class SettingView extends GetView<SettingController> {
 
           ),
           SizedBox(width: ScreenAdapter.width(10)),
-          if(controller.is_reimburse == "1")
+          if(controller.is_reimburse)
             InkWell(
               onTap: () {
                 Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode});
