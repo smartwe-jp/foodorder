@@ -65,7 +65,8 @@ class CheckoutPageView extends GetView {
       return LanguageButton(
         icon: e["icon"] as ImageProvider,
         title: e["text"] as String,
-        selected: false, //e["language"] == controller.checkLanguage.value,
+        startColor: controller.themeColor,
+        textColor: controller.themeTextColor, //e["language"] == controller.checkLanguage.value,
         onTap: () {
           controller.updateSettingLanguage(e["language"] as String);
         },
