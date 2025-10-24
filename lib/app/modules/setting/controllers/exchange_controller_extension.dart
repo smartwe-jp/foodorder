@@ -417,6 +417,10 @@ extension ExchangeControllerExtension on SettingController {
   tipsTitle() {
     if (getPutMoney.value == 0) {
       return 'お金を入れてください';
+    } else if (getExchange().isNotEmpty && getExchange().length == 3 &&
+        getExchange()[2] > 0) { 
+      //请继续投钱
+      return '在庫が不足しているため、両替できません。キャンセルして再度お試しください。';
     } else if (getPutMoney.value > 0 && (getExchangeList().isEmpty)) {
       //请继续投钱
       return 'お金を入れ続けてください';

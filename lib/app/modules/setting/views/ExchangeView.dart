@@ -101,7 +101,8 @@ class Exchangeview extends StatelessWidget {
           if (controller.canExchange())
             Column(
               children: [
-                if (controller.getExchange().length == 3)
+                if (controller.getExchange().length == 3 &&
+                    controller.getExchange()[2] == 0)
                   exchangeItem(controller.getExchange()[0].toString(),
                       controller.getExchange()[1], controller.getExchange()[2])
               ],
