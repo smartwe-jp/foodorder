@@ -37,9 +37,9 @@ class ResetToHomeTimer {
           return;
         } else if (Get.routing.current == Routes.MENU_PAGE) {
           Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-          final isBackHome = systemSettingInfo['isAllowBackHome'] ?? '0';
+          final isBackHome = systemSettingInfo['isBackHome'] ?? true;
           logI("timer isBackHome:$isBackHome");
-          if (isBackHome != "0") {
+          if (isBackHome != true) {
             cancelTimer();
             if (Get.isRegistered<OrderSqlController>()) {
               final orderSqlController = Get.find<OrderSqlController>();
@@ -80,11 +80,13 @@ class ResetToHomeTimer {
             Get.find<SettlementController>().commonCancel();
             Get.back();
           } else {
-            Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+            //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+            Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
           }
         } else {
           logI('--offNamedUntil--');
-          Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+          //Get.offNamedUntil('/transit-page', (route) => route.isFirst);
+          Get.offNamedUntil(Routes.CHECKOUT_PAGE, (route) => route.settings.name == Routes.TRANSIT_PAGE);
         }
       }
     });

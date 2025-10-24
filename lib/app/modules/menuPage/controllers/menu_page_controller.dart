@@ -1507,6 +1507,10 @@ print("加1了");
       Get.back();
       paymentIsShow = false;
     }
+    if (Get.isDialogOpen == true) {
+      debugPrint('---close dialog---');
+      Get.back();
+    }
     getCartPriceTotal();
   }
 
