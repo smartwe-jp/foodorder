@@ -1856,36 +1856,36 @@ class SystemSettingPageView extends GetView {
                                         setIsAllowReceipt(),//设置是否允强制必须打印领収书
                                       ]
                                   ),
-                                  TableRow(
-                                      children: <Widget>[
-                                        Container(
-                                          //height: ScreenAdapter.height(65),
-                                          alignment: Alignment.center,
-                                          child: Column(
-                                            children: [
-                                              Text(
-                                                "レシート字体",
-                                                style: TextStyle(
-                                                    fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(22),
-                                                    fontWeight: FontWeight.w500
-                                                ),
-                                              ),
-                                              Text(
-                                                "（セルフレジから）",
-                                                style: TextStyle(
-                                                  fontFamily: 'NotoSansJP',
-                                                    fontSize: ScreenAdapter.fontSize(18),
-                                                    fontWeight: FontWeight.w500,
-                                                  color: ColorsUtil.hexToColor("#d90000"),
-                                                ),
-                                              ),
-                                            ],
-                                          ),
-                                        ),
-                                        setPrintPaperTxtSize(),//打印菜单文字大小
-                                      ]
-                                  ),
+                                  // TableRow(
+                                  //     children: <Widget>[
+                                  //       Container(
+                                  //         //height: ScreenAdapter.height(65),
+                                  //         alignment: Alignment.center,
+                                  //         child: Column(
+                                  //           children: [
+                                  //             Text(
+                                  //               "レシート字体",
+                                  //               style: TextStyle(
+                                  //                   fontFamily: 'NotoSansJP',
+                                  //                   fontSize: ScreenAdapter.fontSize(22),
+                                  //                   fontWeight: FontWeight.w500
+                                  //               ),
+                                  //             ),
+                                  //             Text(
+                                  //               "（セルフレジから）",
+                                  //               style: TextStyle(
+                                  //                 fontFamily: 'NotoSansJP',
+                                  //                   fontSize: ScreenAdapter.fontSize(18),
+                                  //                   fontWeight: FontWeight.w500,
+                                  //                 color: ColorsUtil.hexToColor("#d90000"),
+                                  //               ),
+                                  //             ),
+                                  //           ],
+                                  //         ),
+                                  //       ),
+                                  //       setPrintPaperTxtSize(),//打印菜单文字大小
+                                  //     ]
+                                  // ),
                                   TableRow(
                                       children: <Widget>[
                                         Container(

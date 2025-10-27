@@ -116,7 +116,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               _setMenuDirection(logic.machineInfo.systemSettingInfo),
               _machineTypeArea(logic.machineInfo.systemSettingInfo),
               _allowReceiptArea(logic.machineInfo.systemSettingInfo),
-              _setPrintPaperTxtSize(logic.machineInfo.systemSettingInfo),
+              //_setPrintPaperTxtSize(logic.machineInfo.systemSettingInfo),
               _setIsAllowReceiptMenu(logic.machineInfo.systemSettingInfo),
               _allowSettlementHome(logic.machineInfo.systemSettingInfo),
               if (Platform.isAndroid)
