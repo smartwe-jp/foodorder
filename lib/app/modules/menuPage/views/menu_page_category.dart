@@ -20,11 +20,11 @@ import 'package:badges/badges.dart' as badges;
 extension MenuPageCategory on MenuPageController {
 
   showCategoryOne(showItemList,context) {
-    Offset temp;
+    //Offset temp;
     //第一页第一个商品以及剩余商品
     List items = [];
     Map itemsFirst = {};
-    List itemsTree = [];
+    //List itemsTree = [];
 
     items = showItemList;
     if (items.length > 0) {
@@ -32,191 +32,197 @@ extension MenuPageCategory on MenuPageController {
 
     }
 
-    if (itemsFirst != null) {
-      return Container(
-        color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-        padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
-        child: ListView(
-          padding: EdgeInsets.zero,
-          shrinkWrap: true,
-          children: [
-            publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:1080.0, imgHeight:850.0,subTitle:itemsFirst["subtitle"]),
-            Container(
-              color: ColorsUtil.hexToColor(Gcolor.whiteColor),
-              width: ScreenAdapter.width(1080),
-              //height: ScreenAdapter.height(408),
-              padding: EdgeInsets.only(
-                  left: ScreenAdapter.width(25),
-                  right: ScreenAdapter.width(25),
-                  bottom: ScreenAdapter.height(5)),
-              child: StatefulBuilder(
-                builder: (BuildContext context, setFirstMenuState) {
-                  return Column(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      (itemsFirst['optionGroupVoList']?.length > 0)
-                          ? publicShowMenuOptionGroupWidget(itemsFirst['menuCode'], setFirstMenuState)
-                          : Container(
-                        height: 0,
-                      ),
-                      Divider(
-                        height: 1,
-                        color: Color.fromRGBO(227, 227, 227, 1),
-                      ),
-
-                      //标题价格
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.end,
+    //if (itemsFirst != null) {
+      return 
+      GetBuilder<MenuPageController>(
+        id: 'option_view',
+        builder: (controller) {
+          return Container(
+            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+            padding: EdgeInsets.only(top:ScreenAdapter.height(8), bottom: ScreenAdapter.height(8)),
+            child: ListView(
+              padding: EdgeInsets.zero,
+              shrinkWrap: true,
+              children: [
+                publicShowMenuImage(imgPath:itemsFirst['homeImage'], imgWidth:880.0, imgHeight:850.0,subTitle:itemsFirst["subtitle"]),
+                Container(
+                  color: ColorsUtil.hexToColor(Gcolor.whiteColor),
+                  width: ScreenAdapter.width(880),
+                  //height: ScreenAdapter.height(408),
+                  padding: EdgeInsets.only(
+                      left: ScreenAdapter.width(25),
+                      right: ScreenAdapter.width(25),
+                      bottom: ScreenAdapter.height(5)),
+                  child: StatefulBuilder(
+                    builder: (BuildContext context, setFirstMenuState) {
+                      return Column(
+                        mainAxisAlignment: MainAxisAlignment.start,
                         children: [
-                          Expanded(
-                            child: publicShowMenuTitle(itemsFirst['mainTitle'],
-                                42.0, Gcolor.mainTitleColor),),
-                          //价格展示 //itemsFirst['currentPrice']
-                          Container(
-                            alignment: Alignment.centerRight,
-                            //width: ScreenAdapter.width(200),
-                            padding:EdgeInsets.only(right: ScreenAdapter.width(15)),
-                            child: publicShowMenuPrice(
-                                selectedMenuOptionChangePrice.value[itemsFirst['menuCode']]+addselectedMenuOptionChangePrice.value[itemsFirst['menuCode']],
-                                itemsFirst['price'],
-                                45.0,
-                                Gcolor.mainTitleColor,
-                                55.0,
-                                Gcolor.priceColor,
-                                26.0,
-                                Gcolor.mainTitleColor),
+                          (itemsFirst['optionGroupVoList']?.length > 0)
+                              ? publicShowMenuOptionGroupWidget(itemsFirst['menuCode'], setFirstMenuState)
+                              : Container(
+                            height: 0,
                           ),
-                          //原价格展示 //itemsFirst['currentPrice']
-                          /*Container(
-                            width: ScreenAdapter.width(80),
-                            child: Text("${itemsFirst['price']}",
-                              style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w600,
-                                color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),),
-                            ),
-                          ),*/
-
-                          //确认按钮
-                          InkWell(
-                            enableFeedback: false,
-
-                            onTap: () {
-
-                              var currentPrice = itemsFirst['currentPrice'];
-                              var optionCodeList = "";
-                              var optionTitle = "";
-                              //--------------检测option单选还是多选是否满足
-                              var attr = menuOption.value[itemsFirst['menuCode']];
-                              var nexOrder = true;
-                              for (var i = 0; i < attr.length; i++) {
-                                //如果是多选，那么需要判断该组option数量是否超过最大值
-                                if(int.parse(attr[i]["smallest"]) >0){
-                                  var current_option_checked = 0;
-                                  for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
-                                    if(attr[i]['optionVoList'][n]["checked"] == true){
-                                      current_option_checked++;
-                                    }
-                                  }
-                                  if(current_option_checked <int.parse(attr[i]["smallest"])){
-                                    nexOrder = false;
-                                    var showTag = "menu_option_less_smallest".tr;
-                                    //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
-                                    Get.dialog(
-                                        DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
-                                            title: "tag_title".tr,
-                                            confirmtitle: "tag_button_yes".tr,
-                                            confirm: () {
-                                              Get.back();
-                                            })
-                                    );
-                                    break;
-                                  }
-                                }
-
-                              }
-                              if(nexOrder == false) return;
-                              //--------------end
-                              var checkoptionGroupList = {};
-                              for (var optionItem in selectedMenuOptionList.value[itemsFirst['menuCode']]) {
-                                currentPrice += optionItem['currentPrice'];
-
-                                optionCodeList += (optionCodeList != "")
-                                    ? "," + optionItem['optionCode']
-                                    : optionItem['optionCode'];
-                                var groupKey = optionItem['group'];
-                                //整理新数组
-                                checkoptionGroupList[groupKey] = {
-                                  "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
-                                  "groupTitle":optionItem['groupTitle']
-                                };
-                              }
-
-                              checkoptionGroupList.forEach((key, value) {
-                                optionTitle += (optionTitle != "")
-                                    ? "," + value['groupTitle']+":"+value['optionTitles']
-                                    : value['groupTitle']+":"+value['optionTitles'];
-                              });
-
-
-                              var cartItem = {
-                                "menuCode": itemsFirst['menuCode'],
-                                "mainTitle": itemsFirst['mainTitle'],
-                                "image": itemsFirst['homeImage'],
-                                "currentPrice": currentPrice,
-                                "optionGroupVoList": optionCodeList,
-                                "optionVoListMsg": optionTitle,
-                                "goodsNum": 1,
-                                "qtyBounds": itemsFirst['qtyBounds'],
-                                "unitPrice":currentPrice
-                              };
-                              publicAddCartMenu(cartItem, false).then((val) {
-                                //_publicShowAddCart(temp,itemsFirst['homeImage']);
-                                //更改显示购物车价格
-                                //getCartPriceTotal();
-                                if(val != false){
-                                  publicShowAddCartNew(context);
-                                }
-
-
-                                changeInitialAllOption(itemsFirst['menuCode']);
-
-                              });
-                            },
-                            child: Container(
-                              margin: EdgeInsets.only(
-                                  top: ScreenAdapter.height(10)),
-                              width: ScreenAdapter.width(270),
-                              height: ScreenAdapter.height(75),
-                              alignment: Alignment.center,
-                              decoration: BoxDecoration(
-                                color: ColorsUtil.hexToColor("#078E42"),
-                                borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                          Divider(
+                            height: 1,
+                            color: Color.fromRGBO(227, 227, 227, 1),
+                          ),
+          
+                          //标题价格
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            crossAxisAlignment: CrossAxisAlignment.end,
+                            children: [
+                              Expanded(
+                                child: publicShowMenuTitle(itemsFirst['mainTitle'],
+                                    42.0, Gcolor.mainTitleColor),),
+                              //价格展示 //itemsFirst['currentPrice']
+                              Container(
+                                alignment: Alignment.centerRight,
+                                //width: ScreenAdapter.width(200),
+                                padding:EdgeInsets.only(right: ScreenAdapter.width(15)),
+                                child: publicShowMenuPrice(
+                                    selectedMenuOptionChangePrice[itemsFirst['menuCode']]+addselectedMenuOptionChangePrice[itemsFirst['menuCode']],
+                                    itemsFirst['price'],
+                                    45.0,
+                                    Gcolor.mainTitleColor,
+                                    55.0,
+                                    Gcolor.priceColor,
+                                    26.0,
+                                    Gcolor.mainTitleColor),
                               ),
-                              child: Text("add_option_cart".tr,
-                                  style: TextStyle(
-                                    fontFamily: GFont.getFontFamily(),
-                                    color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
-                                    fontSize: 34,
-                                    fontWeight: FontWeight.w600,
-
-                                  )),
-                            ),
+                              //原价格展示 //itemsFirst['currentPrice']
+                              /*Container(
+                                width: ScreenAdapter.width(80),
+                                child: Text("${itemsFirst['price']}",
+                                  style: TextStyle(decoration: TextDecoration.lineThrough,fontSize: ScreenAdapter.fontSize(32),fontWeight: FontWeight.w600,
+                                    color: ColorsUtil.hexToColor(Gcolor.mainTitleColor),),
+                                ),
+                              ),*/
+          
+                              //确认按钮
+                              InkWell(
+                                enableFeedback: false,
+          
+                                onTap: () {
+          
+                                  var currentPrice = itemsFirst['currentPrice'];
+                                  var optionCodeList = "";
+                                  var optionTitle = "";
+                                  //--------------检测option单选还是多选是否满足
+                                  var attr = menuOption[itemsFirst['menuCode']];
+                                  var nexOrder = true;
+                                  for (var i = 0; i < attr.length; i++) {
+                                    //如果是多选，那么需要判断该组option数量是否超过最大值
+                                    if(int.parse(attr[i]["smallest"]) >0){
+                                      var current_option_checked = 0;
+                                      for (var n = 0; n < attr[i]['optionVoList'].length; n++) {
+                                        if(attr[i]['optionVoList'][n]["checked"] == true){
+                                          current_option_checked++;
+                                        }
+                                      }
+                                      if(current_option_checked <int.parse(attr[i]["smallest"])){
+                                        nexOrder = false;
+                                        var showTag = "menu_option_less_smallest".tr;
+                                        //showToast("${showTag.replaceAll("%%", attr[i]["groupName"])}");
+                                        Get.dialog(
+                                            DialogUtils.alertOneButton("${showTag.replaceAll("%%", attr[i]["groupName"])}",
+                                                title: "tag_title".tr,
+                                                confirmtitle: "tag_button_yes".tr,
+                                                confirm: () {
+                                                  Get.back();
+                                                })
+                                        );
+                                        break;
+                                      }
+                                    }
+          
+                                  }
+                                  if(nexOrder == false) return;
+                                  //--------------end
+                                  var checkoptionGroupList = {};
+                                  for (var optionItem in selectedMenuOptionList[itemsFirst['menuCode']]) {
+                                    currentPrice += optionItem['currentPrice'];
+          
+                                    optionCodeList += (optionCodeList != "")
+                                        ? "," + optionItem['optionCode']
+                                        : optionItem['optionCode'];
+                                    var groupKey = optionItem['group'];
+                                    //整理新数组
+                                    checkoptionGroupList[groupKey] = {
+                                      "optionTitles": (checkoptionGroupList[groupKey] == null) ? optionItem['mainTitle'] : checkoptionGroupList[groupKey]["optionTitles"]+","+optionItem['mainTitle'],
+                                      "groupTitle":optionItem['groupTitle']
+                                    };
+                                  }
+          
+                                  checkoptionGroupList.forEach((key, value) {
+                                    optionTitle += (optionTitle != "")
+                                        ? "," + value['groupTitle']+":"+value['optionTitles']
+                                        : value['groupTitle']+":"+value['optionTitles'];
+                                  });
+          
+          
+                                  var cartItem = {
+                                    "menuCode": itemsFirst['menuCode'],
+                                    "mainTitle": itemsFirst['mainTitle'],
+                                    "image": itemsFirst['homeImage'],
+                                    "currentPrice": currentPrice,
+                                    "optionGroupVoList": optionCodeList,
+                                    "optionVoListMsg": optionTitle,
+                                    "goodsNum": 1,
+                                    "qtyBounds": itemsFirst['qtyBounds'],
+                                    "unitPrice":currentPrice
+                                  };
+                                  publicAddCartMenu(cartItem, false).then((val) {
+                                    //_publicShowAddCart(temp,itemsFirst['homeImage']);
+                                    //更改显示购物车价格
+                                    //getCartPriceTotal();
+                                    if(val != false){
+                                      publicShowAddCartNew(context);
+                                    }
+          
+          
+                                    changeInitialAllOption(itemsFirst['menuCode']);
+          
+                                  });
+                                },
+                                child: Container(
+                                  margin: EdgeInsets.only(
+                                      top: ScreenAdapter.height(10)),
+                                  width: ScreenAdapter.width(270),
+                                  height: ScreenAdapter.height(75),
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    color: ColorsUtil.hexToColor("#078E42"),
+                                    borderRadius: BorderRadius.all(Radius.circular(10.0)),
+                                  ),
+                                  child: Text("add_option_cart".tr,
+                                      style: TextStyle(
+                                        fontFamily: GFont.getFontFamily(),
+                                        color: ColorsUtil.hexToColor(Gcolor.settlementBtnColor),
+                                        fontSize: 34,
+                                        fontWeight: FontWeight.w600,
+          
+                                      )),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
-                      ),
-                    ],
-                  );
-                },
-              ),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
-          ],
-        ),
+          );
+        }
       );
-    } else {
-      return Container(
-        height: 0,
-      );
-    }
+    // } else {
+    //   return Container(
+    //     height: 0,
+    //   );
+    // }
   }
 
 //获取第一个页面的widget
@@ -824,6 +830,7 @@ extension MenuPageCategory on MenuPageController {
       padding: EdgeInsets.only(
           top: ScreenAdapter.height(5), bottom: ScreenAdapter.height(5)),
       child: Column(
+        spacing: 15,
         children: getFirstOptionWidget(menuCode, setFirstMenuState),
       ),
     );
@@ -831,7 +838,7 @@ extension MenuPageCategory on MenuPageController {
 
   //获取第一个页面的option widget
   getFirstOptionWidget(menuCode, setFirstState) {
-    var optionGroupVoList = menuOption.value[menuCode];
+    var optionGroupVoList = menuOption[menuCode];
 
     List<Widget> options = []; //先建一个数组用于存放循环生成的widget
 
@@ -880,14 +887,15 @@ extension MenuPageCategory on MenuPageController {
             optionVolistSon['buttonColorValue'] != "") {
           buttonColor = optionVolistSon['buttonColorValue'].split(',');
         }
-        optionSons.add(Container(
-          alignment: Alignment.center,
-          padding: EdgeInsets.only(
-              left: ScreenAdapter.width(12),
-              top: ScreenAdapter.height(3),
-              right: ScreenAdapter.width(12),
-              bottom: ScreenAdapter.height(3)),
-          child: InkWell(
+        optionSons.add(
+          // Container(
+          // padding: EdgeInsets.only(
+          //     left: ScreenAdapter.width(12),
+          //     top: ScreenAdapter.height(3),
+          //     right: ScreenAdapter.width(12),
+          //     bottom: ScreenAdapter.height(3)),
+          // child: 
+          InkWell(
             //enableFeedback: true,
               onTap: () {
                 changeOptionv1(
@@ -922,7 +930,7 @@ extension MenuPageCategory on MenuPageController {
                 child: Container(
                     width: ScreenAdapter.width(224),
                     height: ScreenAdapter.height(60),
-                    alignment: Alignment.center,
+                    //alignment: Alignment.center,
                     decoration: (optionVolistSon['checked'] == true)
                         ? BoxDecoration(
                       borderRadius:
@@ -1037,11 +1045,14 @@ extension MenuPageCategory on MenuPageController {
                       ],
                     )),
               )),
-        ));
+       // )
+        );
       }
-      options.add(Row(
-        mainAxisAlignment: MainAxisAlignment.start,
-        crossAxisAlignment: CrossAxisAlignment.end,
+      options.add(Wrap(
+        alignment: WrapAlignment.start,
+        crossAxisAlignment: WrapCrossAlignment.start,
+        spacing: ScreenAdapter.width(20),   // 根据需要设置
+        runSpacing: ScreenAdapter.height(15),
         children: optionSons,
       ));
     }
