@@ -74,19 +74,18 @@ class SseService extends GetxService {
           if (kDebugMode) {
             print('SSE Service: Received event: $event');
           }
-        } else if (event == 'message') {
+        } else if (event == 'message'
+                  || event == 'print'
+                  || event == 'payment_Completed'
+                  || event == 'rePrint'
+                  || event == 'item_cancel') {
           if (kDebugMode) {
-            print('SSE Service: Received heartbeat event');
+            print('SSE Service: Received $event event');
           }
-          if (data != null) {
-            _printService.callbackBeforePrint(event, data);
-          }
-        } else if (event == 'print' || event == 'payment_Completed') {
           if (data != null) {
             _printService.callbackBeforePrint(event, data);
           }
         } else {
-
           // if (kDebugMode) {
           //   print('SSE Service: Received event: $event');
           // }

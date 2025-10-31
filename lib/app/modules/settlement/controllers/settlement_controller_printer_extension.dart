@@ -91,11 +91,14 @@ class PrintService extends GetxService {
           response['code'] == 200 &&
           response['data'] != null) {
         logI("callbackBeforePrint uuid: $uuid send success");
-        if (event == 'message') {
+        if (event == 'message' || event == 'rePrint') {
           printData(data);
         }
         if (event == 'print') {
           printTableSeatInfo(data);
+        }
+        if (event == 'item_cancel') {
+          _sendToDisplayPanel(data);
         }
       }
     } on TimeoutException catch (e) {
