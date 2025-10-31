@@ -7,6 +7,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/imageData.dart';
+import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/modules/rejishimei/state.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
@@ -19,11 +20,13 @@ import 'package:widget_to_image/widget_to_image.dart';
 
 class RejishimeLogic extends GetxController {
   final RejishimeState state = RejishimeState();
+  final machineCode = Get.find<MachineInfoController>().machineCode;
+  final SettingController settingController = Get.find();
 
   @override
   void onInit() {
     debugPrint('---RejishimeLogic onInit---');
-    state.machineCode = Get.arguments['machineCode'];
+    //state.machineCode = Get.arguments['machineCode'];
 
     super.onInit();
     loadMailAddress();
@@ -38,7 +41,7 @@ class RejishimeLogic extends GetxController {
   loadMailAddress() async {
     debugPrint('---loadMailAddress---');
     final param = {
-      "machineCode": state.machineCode,
+      "machineCode": machineCode,
     };
     request('webBootEmailList', method: 'POST', parameters: param).then((val) {
       var response = json.decode(val.toString());
@@ -72,7 +75,7 @@ class RejishimeLogic extends GetxController {
     update();
 
     final param = {
-      "machineCode": state.machineCode,
+      "machineCode": machineCode,
       "verifyEmail": state.selectMail,
       "verifyUserName": state.selectUser,
     };
@@ -105,7 +108,7 @@ class RejishimeLogic extends GetxController {
   }
 
   requestShimeInfo(
-      code, machineCode, SettingController settingController) async {
+      code, machineCode) async {
     _showEasyLoading();
 
     final param = {
@@ -132,7 +135,7 @@ class RejishimeLogic extends GetxController {
         debugPrint("Rejishimei total: $total");
         state.recycleCash = total;
         Get.back();
-        showPrintView(response['data'], settingController);
+        showPrintView(response['data']);
       } else {
         //当前没有レジ情報
         showToast('レジ情報がありません');
@@ -150,11 +153,11 @@ class RejishimeLogic extends GetxController {
   }
 
   _comfirmShimeInfo(
-      code, printData, SettingController settingController) async {
+      code, printData) async {
     _showEasyLoading();
 
     final param = {
-      "machineCode": state.machineCode,
+      "machineCode": machineCode,
       "verifyCode": code,
       "verifyEmail": state.selectMail,
       "verifyUserName": state.selectUser,
@@ -168,7 +171,7 @@ class RejishimeLogic extends GetxController {
           response['code'] == 200 &&
           null != response['data']) {
         //printView(response['data']);
-        _printRejishime(printData, state.printLength, settingController);
+        _printRejishime(printData, state.printLength);
       } else {
         //当前没有レジ情報
         showToast('印刷に失敗しました');
@@ -186,29 +189,28 @@ class RejishimeLogic extends GetxController {
     );
   }
 
-  _comfirmGloryShimeInfo(code, printData, SettingController settingController,
+  _comfirmGloryShimeInfo(code, printData,
       {skip = false}) async {
-    final outResult = await _outCash(settingController, () {
+    final outResult = await _outCash( () {
       //_comfirmGloryShimeInfo(code, printData, settingController, skip: true);
-      _directRejishime(code, printData, settingController, null);//
+      _directRejishime(code, printData, null);//
       return;
     });
 
     if (outResult == null && skip == false) return;
 
-    _directRejishime(code, printData, settingController, outResult);
+    _directRejishime(code, printData, outResult);
   }
 
-  _directRejishime(code, printData, SettingController settingController,
-      Map? outResult) async {
+  _directRejishime(code, printData, Map? outResult) async {
     final result =
         await _comfirmGloryShimeInfos(code, printData, outResult ?? {});
     if (!result) return;
-    await _printRejishime(printData, state.printLength, settingController);
+    await _printRejishime(printData, state.printLength);
   }
 
   _printRejishime(
-      data, double length, SettingController settingController) async {
+      data, double length) async {
     //_showEasyLoading();
     if (Platform.isAndroid) {
       ByteData byteData = await WidgetToImage.widgetToImage(
@@ -231,11 +233,11 @@ class RejishimeLogic extends GetxController {
     }
   }
 
-  recycleCash(SettingController settingController) {
+  recycleCash() {
     settingController.recycleCash(state.verifyCode, state.selectMail);
   }
 
-  _outCash(SettingController settingController, Function skipAction) async {
+  _outCash(Function skipAction) async {
     Map? result =
         await settingController.recycleCashOut(state.recycleCash, skipAction);
 
@@ -258,7 +260,7 @@ class RejishimeLogic extends GetxController {
 
     final param = {
       "changeInfoMap": result,
-      "machineCode": state.machineCode,
+      "machineCode": machineCode,
       "verifyCode": code,
       "verifyEmail": state.selectMail,
       "verifyUserName": state.selectUser,
@@ -326,7 +328,7 @@ class RejishimeLogic extends GetxController {
     );
   }
 
-  showPrintView(printData, SettingController settingController) {
+  showPrintView(printData) {
     Get.dialog(
         barrierDismissible: false,
         SimpleDialog(contentPadding: EdgeInsets.all(0), children: [
@@ -421,10 +423,10 @@ class RejishimeLogic extends GetxController {
                         if (Platform.isWindows) {
                           debugPrint("comfirmGloryShimeInfo");
                           await _comfirmGloryShimeInfo(
-                              state.verifyCode, printData, settingController);
+                              state.verifyCode, printData);
                         } else {
                           _comfirmShimeInfo(
-                              state.verifyCode, printData, settingController);
+                              state.verifyCode, printData);
                         }
                         //_printRejishime(printData,printLength);
                         //Get.back();

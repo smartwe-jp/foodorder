@@ -14,5 +14,5 @@ class RejishimeState {
 
  late String verifyCode;
 
- late String machineCode;
+ //late String machineCode;
 }

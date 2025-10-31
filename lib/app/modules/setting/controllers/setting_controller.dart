@@ -325,10 +325,7 @@ class SettingController extends GetxController with StateMixin {
     // ));
 
     Get.dialog(
-        RejishimeView(
-          settingController: this,
-        ),
-        arguments: {'machineCode': machineCode});
+        RejishimeView());
   }
 
   showRecycleAlert() {
@@ -337,9 +334,7 @@ class SettingController extends GetxController with StateMixin {
     Get.dialog(
         RejishimeView(
           isRejishime: false,
-          settingController: this,
-        ),
-        arguments: {'machineCode': machineCode});
+        ));
 
     // Get.to(RejishimeView(
     //   machineCode: machineCode.value,

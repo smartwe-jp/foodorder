@@ -11,11 +11,11 @@ import 'package:get/get.dart';
 
 class RejishimeView extends StatelessWidget {
 
-  RejishimeView({Key? key, this.isRejishime = true, required this.settingController})
+  RejishimeView({Key? key, this.isRejishime = true})
       : super(key: key);
 
   final bool isRejishime;
-  final SettingController settingController;
+  //final SettingController settingController;
 
   final logic = Get.put(RejishimeLogic());
   final state = Get.find<RejishimeLogic>().state;
@@ -111,10 +111,10 @@ class RejishimeView extends StatelessWidget {
                                   state.verifyCode = _verifyCodeController.text;
                                   if (isRejishime) {
                                     logic.requestShimeInfo(
-                                        _verifyCodeController.text, state.machineCode, settingController);
+                                        _verifyCodeController.text, logic.machineCode);
                                   } else {
                                     Get.back();
-                                    logic.recycleCash(settingController);
+                                    logic.recycleCash();
                                   }
                                 },
                               ),
