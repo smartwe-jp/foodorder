@@ -64,19 +64,19 @@ extension MenuPageControllerExtension on MenuPageController {
             }
           }
           //需要创建的小组件
-          // menuOption[menuVoList['menuCode']] = attr;
-          // noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
-          // initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
-          // selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
-          // selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
+          menuOption[menuVoList['menuCode']] = attr;
+          noChangeinitialmenuOption[menuVoList['menuCode']] = initalCode;
+          initialMenuOption[menuVoList['menuCode']] = tempArr; //tempArr;
+          selectedMenuOptionList[menuVoList['menuCode']] = tempArr;
+          selectedMenuOptionCheckedNum[menuVoList['menuCode']] = checkNum;
           attr = [];
           tempArr = [];
           checkNum = 0;
         }
-        // selectedMenuOptionChangePrice[menuVoList['menuCode']] =
-        // menuVoList['currentPrice'];
-        // addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
-        //     _addOptionPrice;
+        selectedMenuOptionChangePrice[menuVoList['menuCode']] =
+        menuVoList['currentPrice'];
+        addselectedMenuOptionChangePrice[menuVoList['menuCode']] =
+            _addOptionPrice;
       }
     }
   }
