@@ -38,6 +38,44 @@ class PrintService extends GetxService {
   //Label打印先存在在一个队列中
   //final Queue<Widget> labelPrintQueue = Queue<Widget>();
 
+    // 全局队列 + 是否正在排队
+  final Queue<Widget> _labelQueue = Queue<Widget>();
+  bool _labelDraining = false;
+
+  void processLabelPrintQueueNew(String printerIp, Queue<Widget> labelPrintQueue) {
+    if (labelPrintQueue.isEmpty) return;
+    _labelQueue.addAll(labelPrintQueue); // 合并到全局队列
+    _ensureLabelDrain(printerIp);                 // 启动/复用单次循环
+  }
+
+  void _ensureLabelDrain(String printerIp) {
+    if (_labelDraining) return;
+    _labelDraining = true;
+    _drainLabelQueue(printerIp);
+  }
+
+  Future<void> _drainLabelQueue(String printerIp) async {
+    try {
+      while (_labelQueue.isNotEmpty) {
+        final widget = _labelQueue.removeFirst();
+        PictureGeneratorProvider.instance.addPicGeneratorTask(
+          PicGenerateTask<PrinterInfo>(
+            tempWidget: widget as ATempWidget,
+            printTypeEnum: PrintTypeEnum.label,
+            params: PrinterInfo(ip: printerIp), // 不做 IP 检查
+          ),
+        );
+        await Future.delayed(const Duration(seconds: 1)); // 每张间隔 1 秒
+      }
+    } finally {
+      _labelDraining = false;
+      // 若刚结束又入队了，补一次启动
+      if (_labelQueue.isNotEmpty) {
+        _ensureLabelDrain(printerIp);
+      }
+    }
+  }
+
   //创建一个方法来处理打印队列
   void processLabelPrintQueue(String printerIp, Queue<Widget> labelPrintQueue) {
     Timer.periodic(Duration(milliseconds: 1000), (timer) {
