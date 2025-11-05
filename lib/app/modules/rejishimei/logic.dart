@@ -13,6 +13,7 @@ import 'package:foodorder/app/modules/setting/controllers/setting_controller.dar
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:get/get.dart';
@@ -22,6 +23,7 @@ class RejishimeLogic extends GetxController {
   final RejishimeState state = RejishimeState();
   final machineCode = Get.find<MachineInfoController>().machineCode;
   final SettingController settingController = Get.find();
+  final PrintInfoService saveService = Get.find();
 
   @override
   void onInit() {
@@ -274,6 +276,7 @@ class RejishimeLogic extends GetxController {
       if (response != null &&
           response['code'] == 200 &&
           null != response['data']) {
+          saveService.addPrintJob(printData, category: 'rejishime');
         //printView(response['data']);
         success = true;
       } else {

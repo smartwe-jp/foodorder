@@ -3,7 +3,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/modules/rejishimei/logic.dart';
-import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/services/showToast.dart';
 import 'package:foodorder/app/widget/num_pad.dart';

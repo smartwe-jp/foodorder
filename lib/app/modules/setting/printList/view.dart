@@ -23,7 +23,7 @@ class PrintListPage extends StatelessWidget {
             Expanded(
               child: GetBuilder<PrintListPageLogic>(
                 builder: (_) => logic.obx(
-                  (s) => _buildList(theme),
+                  (s) => _buildRoot(theme),
                   onLoading: _buildLoading(),
                   onEmpty: _buildEmpty(),
                   onError: (e) => _buildError(e, theme),
@@ -67,23 +67,171 @@ class PrintListPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: '再読み込み',
-            onPressed: () => logic.loadPrintList(),
+            onPressed: () {
+              final cat = state.selectedCategory ?? 'default';
+              logic.loadCategoryItems(cat);
+            },
           )
         ],
       ),
     );
   }
 
-  Widget _buildList(ThemeData theme) {
-    if (state.printList.isEmpty) return _buildEmpty();
+  /// 根内容：左侧分类 + 右侧列表
+  Widget _buildRoot(ThemeData theme) {
+    return Row(
+      children: [
+        _buildSidebar(theme),
+        const VerticalDivider(width: 1),
+        Expanded(child: _buildCategoryContent(theme)),
+      ],
+    );
+  }
+
+  /// 左侧 Sidebar 分类
+  Widget _buildSidebar(ThemeData theme) {
+    final cats = state.categories;
+    final selected = state.selectedCategory;
+    final primary = ColorsUtil.hexToColor('#80B646');
+    return Container(
+      width: 220,
+      margin: const EdgeInsets.only(left: 8, top: 8, bottom: 8),
+      child: ListView.builder(
+        padding: const EdgeInsets.only(right: 8, top: 8, bottom: 8),
+        itemCount: cats.length,
+        itemBuilder: (context, index) {
+          final cat = cats[index];
+          final isSelected = cat == selected;
+          return Padding(
+            padding: const EdgeInsets.only(bottom: 8),
+            child: Card(
+              elevation: isSelected ? 2 : 0,
+              color: isSelected ? primary : Colors.white,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(10),
+                onTap: () => logic.changeSelectedCategory(cat),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                  child: Row(
+                    children: [
+                      Icon(
+                        isSelected ? Icons.folder_open : Icons.folder,
+                        size: 18,
+                        color: isSelected ? Colors.white : Colors.grey[700],
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          logic.getRendererForCategory(cat),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: isSelected ? FontWeight.w700 : FontWeight.w500,
+                            color: isSelected ? Colors.white : Colors.grey[800],
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  }
+
+  /// 根据分类渲染列表（更灵活）：仅依赖 state.currentItemsRaw + 映射类型
+  Widget _buildCategoryContent(ThemeData theme) {
+    final items = state.currentItemsRaw;
+    if (items.isEmpty) return _buildEmpty();
+    final cat = state.selectedCategory ?? 'default';
+    //final renderer = state.categoryRenderer[cat] ?? 'order';
     return ListView.separated(
       padding: const EdgeInsets.all(12),
-      itemCount: state.printList.length,
+      itemCount: items.length,
       separatorBuilder: (_, __) => const SizedBox(height: 10),
       itemBuilder: (context, index) {
-        final item = state.printList[index];
-        return _buildItem(item, theme);
+        final map = items[index];
+        switch (cat) {
+          case 'rejishime':
+            final item = PrintSummaryItem.fromMap(map);
+            return _buildSummaryItem(item, theme);
+          case 'default':
+          default:
+            final item = PrintOrderItem.fromMap(map);
+            return _buildItem(item, theme);
+        }
       },
+    );
+  }
+
+  Widget _buildSummaryItem(PrintSummaryItem item, ThemeData theme) {
+    final primary = ColorsUtil.hexToColor('#80B646');
+    return Material(
+      color: Colors.white,
+      borderRadius: BorderRadius.circular(12),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // 左侧：店铺名
+            SizedBox(
+              width: 140,
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('店舗', style: theme.textTheme.labelMedium?.copyWith(color: Colors.grey[600])),
+                  const SizedBox(height: 4),
+                  Text(
+                    item.shopName,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: primary,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            // 中间：时间信息
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  _infoRow('開始', item.startTime, theme),
+                  _infoRow('終了', item.endTime, theme),
+                  _infoRow('印刷時間', item.printTime, theme),
+                  _infoRow('確認者', item.verifyUserName, theme),
+                ],
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              children: [
+              
+                ElevatedButton.icon(
+                    onPressed: () => logic.rePrintSummary(item),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: primary,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 18, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 2,
+                    ),
+                    icon: const Icon(Icons.print, size: 22),
+                    label: const Text('再印刷'),
+                  ),
+              ],
+            )
+          ],
+        ),
+      ),
     );
   }
 
