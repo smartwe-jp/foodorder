@@ -7,6 +7,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/modules/setting/controllers/setting_controller.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/services/HttpService.dart';
+import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -447,6 +448,10 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _printRejishime(data, double length) async {
+    
+    PrintInfoService printInfoService = await Get.find();
+    printInfoService.addPrintJob(data, category: 'rejishime');
+    
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: data, isNotCashInfo: widget.isNotCash,),
       size: Size(printWidth, length + 150),

@@ -293,7 +293,7 @@ class SettingView extends GetView<SettingController> {
               //设置圆角
                 borderRadius: new BorderRadius.circular((16.0)),
               ),
-              child: Text("最近の注文",
+              child: Text("印刷履歴",
                 style: TextStyle(
                 fontFamily: GFont.getFontFamily(),
                 fontSize: ScreenAdapter.fontSize(24),
