@@ -14,7 +14,6 @@ import 'package:foodorder/app/modules/setting/printList/state.dart';
 import 'package:foodorder/app/modules/setting/views/RejishimeiPrintView.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller_printer_extension.dart';
 import 'package:foodorder/app/modules/settlement/views/receipt_constrained_box.dart';
-import 'package:foodorder/app/plugins/flutter_plugin_msprinter/lib/flutter_plugin_msprinter.dart';
 import 'package:foodorder/app/services/PrintInfoService.dart';
 import 'package:foodorder/app/services/ScreenAdapter.dart';
 import 'package:foodorder/app/widget/DialogUtils.dart';
@@ -23,6 +22,8 @@ import 'package:print_image_generate_tool/print_image_generate_tool.dart';
 import 'package:android_usb_printer/android_usb_printer.dart';
 import 'package:widget_to_image/widget_to_image.dart';
 
+import '../../../plugins/flutter_plugin_msprint/lib/flutter_plugin_msprinter.dart';
+
 
 class PrintListPageLogic extends GetxController with StateMixin {
   MachineInfoController machineInfo = Get.find();
@@ -30,7 +31,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
   PrintService printService = Get.find();
   CreatePrintImageController createPrintImageController = Get.find();
   PrintInfoService printInfoService = Get.find();
-  Map get usbDevice => machineInfo.usbDevice;
+  //Map get usbDevice => machineInfo.usbDevice;
 
   @override
   void onInit() {
@@ -93,35 +94,35 @@ class PrintListPageLogic extends GetxController with StateMixin {
   }
 
   void printSummaryWindows(Map data, double printLength) {
-    final printView = PrintView(isPrint: true, printInfo: data);
-
-    final printWidget = Container(
-      width: machineInfo.machinePrintWidth,
-      height: printLength + 150,
-      child: printView,
-    );
-
-    final widget = ReceiptConstrainedBox(printWidget);
-    PictureGeneratorProvider.instance.addPicGeneratorTask(
-      PicGenerateTask<PrinterInfo>(
-        tempWidget: widget as ATempWidget,
-        printTypeEnum: PrintTypeEnum.receipt,
-        params: PrinterInfo(usbDevice: curUsbPrinter),
-      ),
-    );
+    // final printView = PrintView(isPrint: true, printInfo: data);
+    //
+    // final printWidget = Container(
+    //   width: machineInfo.machinePrintWidth,
+    //   height: printLength + 150,
+    //   child: printView,
+    // );
+    //
+    // final widget = ReceiptConstrainedBox(printWidget);
+    // PictureGeneratorProvider.instance.addPicGeneratorTask(
+    //   PicGenerateTask<PrinterInfo>(
+    //     tempWidget: widget as ATempWidget,
+    //     printTypeEnum: PrintTypeEnum.receipt,
+    //     params: PrinterInfo(usbDevice: curUsbPrinter),
+    //   ),
+    // );
   
   }
 
-  UsbDeviceInfo? get curUsbPrinter {
-    if (usbDevice.isEmpty) {
-      //弹出提示框，打印机未设置，请设置打印机或者联系管理员
-      DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
-        Get.back();
-      });
-      return null;
-    }
-    return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
-  }
+  // UsbDeviceInfo? get curUsbPrinter {
+  //   if (usbDevice.isEmpty) {
+  //     //弹出提示框，打印机未设置，请设置打印机或者联系管理员
+  //     DialogUtils.alertOneButton('プリンター未設定,設定してください', confirm: () {
+  //       Get.back();
+  //     });
+  //     return null;
+  //   }
+  //   return UsbDeviceInfo.fromMap(Map<String, dynamic>.from(usbDevice));
+  // }
 
   /// 根据分类加载数据，并识别为订单型（旧结构）或摘要型（新结构）
   Future<void> loadCategoryItems(String category) async {
@@ -195,7 +196,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
                   border: Border.all(
                       color: ColorsUtil.hexToColor("#000000"), width: 1),
                 ),
-                child: PrintView(
+                child: RejishimePrintView(
                   printInfo: printData,
                   lengthUpdate: (double length) {
                     print("printLength: $length");
@@ -270,7 +271,7 @@ class PrintListPageLogic extends GetxController with StateMixin {
   
   void printSummaryAndroid(printData, double printLength) async{
     ByteData byteData = await WidgetToImage.widgetToImage(
-      PrintView(isPrint: true, printInfo: printData),
+      RejishimePrintView(isPrint: true, printInfo: printData),
       size: Size(machineInfo.machinePrintWidth, printLength + 150),
     );
 
