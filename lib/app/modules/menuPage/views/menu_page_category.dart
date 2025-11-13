@@ -1101,6 +1101,10 @@ extension MenuPageCategory on MenuPageController {
       }
     }
 
+    return 
+     GetBuilder<MenuPageController>(
+        id: 'option_view',
+        builder: (controller) {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
       padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
@@ -1390,6 +1394,7 @@ extension MenuPageCategory on MenuPageController {
         ),
       ),
     );
+  });
   }
 
   getThreeOptionWidget(menuCode, setFirstState, qtyBounds) {
@@ -1905,6 +1910,10 @@ extension MenuPageCategory on MenuPageController {
       }
     }
 
+    return  
+    GetBuilder<MenuPageController>(
+        id: 'option_view',
+        builder: (controller) {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
       padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
@@ -2192,6 +2201,7 @@ extension MenuPageCategory on MenuPageController {
         ),
       ),
     );
+    });
   }
 
   getFiveOptionWidget(menuCode, setFirstState, qtyBounds) {
