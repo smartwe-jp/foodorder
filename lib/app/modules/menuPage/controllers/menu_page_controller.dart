@@ -101,6 +101,8 @@ class MenuPageController extends GetxController with StateMixin {
   final PageController pageController = PageController(viewportFraction: 1.0);
   bool forceUpdate = false;
 
+  RxString bgColor = "#F9F9F9".obs;
+
   @override
   Future<void> onInit() async {
     print("---MenuPageController onInit");
@@ -230,12 +232,17 @@ class MenuPageController extends GetxController with StateMixin {
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
             "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
+            "background": categoryVoList['background'],
             "index": menuIndex
           });
           menuIndex++;
           colorIndex++;
           //配置顶部菜单默认项
-          if (i == 0) classTag.value = categoryVoList['categoryCode'];
+          if (i == 0) {
+            classTag.value = categoryVoList['categoryCode'];
+            bgColor .value =
+                categoryVoList['background'] ?? "#F9F9F9";
+          }
         }
         // if (isReset) {
         //   _resetToFirstCategory();
@@ -879,7 +886,7 @@ class MenuPageController extends GetxController with StateMixin {
     );
 
     fToast?.showToast(
-    child: toast,
+      child: toast,
       gravity: ToastGravity.CENTER,
       toastDuration: Duration(milliseconds: 300),
     );
@@ -1339,9 +1346,9 @@ print("加1了");
           int tax1 = response['data']["tax1"] ?? 0;
           int tax2 = response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog(total, tax1: tax1, tax2: tax2);
-
-        }else{
+          showSelectMealTypeAndPaymentMethodDialog(total,
+              tax1: tax1, tax2: tax2);
+        } else {
           //getBookingBootMenu();
           // FirebaseAnalytics.instance
           //     .logEvent(name: "submit_order_fail", parameters: {
@@ -1399,7 +1406,8 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax1 = 0, int tax2 = 0}) async {
+  showSelectMealTypeAndPaymentMethodDialog(String total,
+      {int tax1 = 0, int tax2 = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(
@@ -1411,8 +1419,8 @@ print("加1了");
           shopCartTotalPrice: total,
           tableNum: "",
           onConfrimClick: () {
-              showOpenPayment.value = true;
-              gotoSettlement(total, tax1 + tax2);
+            showOpenPayment.value = true;
+            gotoSettlement(total, tax1 + tax2);
           },
           onCancelClick: (String isBack) async {
             // if (Platform.isWindows) {//Windows 系统会自动退出结算页面的时候，添加退金操作点。
@@ -1473,14 +1481,13 @@ print("加1了");
   }
 
   gotoSettlement(String total, int tax) async {
-    Get.toNamed('/settlement',preventDuplicates: false,
-        arguments: {
-          "checkLanguage":  checkLanguage.value,
-          "orderId" : doSubmitOrderId.value,
-          "totalPrice" : total,
-          "machineMode":"1",
-          "showOpenPayment": showOpenPayment.value
-        });
+    Get.toNamed('/settlement', preventDuplicates: false, arguments: {
+      "checkLanguage": checkLanguage.value,
+      "orderId": doSubmitOrderId.value,
+      "totalPrice": total,
+      "machineMode": "1",
+      "showOpenPayment": showOpenPayment.value
+    });
   }
 
   CancelOrder() {

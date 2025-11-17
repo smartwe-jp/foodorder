@@ -40,6 +40,10 @@ class GridItemView extends StatelessWidget {
           child: Stack(
             children: [
               Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF0F5F5),
+                  borderRadius: BorderRadius.circular(10),
+                ),
                 child: Column(
                   children: [
 
@@ -48,7 +52,7 @@ class GridItemView extends StatelessWidget {
                         alignment: Alignment.bottomLeft,
                         children: [
                           RectangleImageView(
-                              image: image, radius: imageRadius, onTap: onTap, aspectRatio: aspectRatio),
+                              image: image, radius: imageRadius, onlyTopRadius: true, onTap: onTap, aspectRatio: aspectRatio),
                           //subtitle 底部叠在图片上，限制两行
                           if (subtitle.isNotEmpty)
                             Container(
@@ -98,11 +102,12 @@ class GridItemView extends StatelessWidget {
 class RectangleImageView extends StatelessWidget {
   final ImageProvider image;
   final double radius;
+  final onlyTopRadius;
   final Function? onTap;
   final double aspectRatio;
 
   RectangleImageView(
-      {Key? key, required this.image, this.radius = 10.0, this.onTap, this.aspectRatio = 1.0});
+      {Key? key, required this.image, this.radius = 10.0, this.onlyTopRadius = false, this.onTap, this.aspectRatio = 1.0});
 
   @override
   Widget build(BuildContext context) {
@@ -116,7 +121,12 @@ class RectangleImageView extends StatelessWidget {
                 image: image,
                 fit: BoxFit.cover,
               ),
-              borderRadius: BorderRadius.all(Radius.circular(radius)),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(radius),
+                topRight: Radius.circular(radius),
+                bottomLeft: Radius.circular(onlyTopRadius ? 0 : radius),
+                bottomRight: Radius.circular(onlyTopRadius ? 0 : radius),
+              ),
             ),
 
             //child: publicShowMenuImage(imgPath:item['homeImageHttp'], imgWidth:350.0, imgHeight:350.0,subTitle:item["subtitle"]),
@@ -174,7 +184,7 @@ class MainTitle extends StatelessWidget {
     return
         Expanded(
           child: Container(
-            margin: EdgeInsets.only(top: 20),
+            margin: EdgeInsets.only(top: 20, left: ScreenAdapter.width(10)),
             alignment: Alignment.topLeft,
             child: AutoSizeText(
               title,
@@ -203,6 +213,8 @@ class SubTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       alignment: Alignment.centerLeft,
+      padding: EdgeInsets.only(
+          right: ScreenAdapter.width(10)),
       child:
       Row(
           children: [

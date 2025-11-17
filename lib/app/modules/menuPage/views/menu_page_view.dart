@@ -252,58 +252,68 @@ class MenuPageView extends GetView {
               value: SystemUiOverlayStyle.light,
               child: Stack(
                 children: [
-                  Column(
-                    children: [
-                      if (controller.machineInfo.machineType == MachineType.new_panel_max && controller.machineInfo.menu_direction != "1")
-                        topArea(),
-                      //顶部导航
-                      if (controller.machineInfo.menu_direction == "1")
-                      GetBuilder<MenuPageController>(
-                          id: 'side_bar',
-                          builder: (logic) {
-                        return Container(
-                          width: ScreenAdapter.getScreenWidth(),
-                          height: ScreenAdapter.height(95),
-                          padding: EdgeInsets.only(
-                              left: ScreenAdapter.width(10),
-                              right: ScreenAdapter.width(20)),
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: ColorsUtil.hexToColor(Gcolor.mainBackground),
-                          ),
-                          child: showTopCategoryMenu(),
-                        );
-                      }),
-
-                      SizedBox(height: ScreenAdapter.height(15)),
-
-                      Expanded(
-                        child: Row(
+                  GetBuilder<MenuPageController>(
+                      id: 'background',
+                    builder: (logic) {
+                      return Container(
+                        decoration: BoxDecoration(
+                          color: ColorsUtil.hexToColor(controller.bgColor.value),
+                        ),
+                        child: Column(
                           children: [
-                            //侧栏
-                            if (controller.machineInfo.menu_direction != '1')
-                            sideBarMenu(),
+                            if (controller.machineInfo.machineType == MachineType.new_panel_max && controller.machineInfo.menu_direction != "1")
+                              topArea(),
+                            //顶部导航
+                            if (controller.machineInfo.menu_direction == "1")
+                            GetBuilder<MenuPageController>(
+                                id: 'side_bar',
+                                builder: (logic) {
+                              return Container(
+                                width: ScreenAdapter.getScreenWidth(),
+                                height: ScreenAdapter.height(95),
+                                padding: EdgeInsets.only(
+                                    left: ScreenAdapter.width(10),
+                                    right: ScreenAdapter.width(20)),
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: ColorsUtil.hexToColor(Gcolor.mainBackground),
+                                ),
+                                child: showTopCategoryMenu(),
+                              );
+                            }),
+                        
+                            SizedBox(height: ScreenAdapter.height(15)),
+                        
                             Expanded(
-                                child:
-                                Column(
-                                  children: [
-                                    Expanded(
-                                        child: MenuView(state: controller)),
-
-                                    if (controller.machineInfo.menu_direction != '1')
-                                      bottomCart()
-                                  ],
-                                )
+                              child: Row(
+                                children: [
+                                  //侧栏
+                                  if (controller.machineInfo.menu_direction != '1')
+                                  sideBarMenu(),
+                                  Expanded(
+                                      child:
+                                      Column(
+                                        children: [
+                                          Expanded(
+                                              child: MenuView(state: controller)),
+                        
+                                          if (controller.machineInfo.menu_direction != '1')
+                                            bottomCart()
+                                        ],
+                                      )
+                                  ),
+                                ],
+                              ),
                             ),
+                        
+                            if (controller.machineInfo.menu_direction == '1')
+                            bottomCart()
+                        
+                        
                           ],
                         ),
-                      ),
-
-                      if (controller.machineInfo.menu_direction == '1')
-                      bottomCart()
-
-
-                    ],
+                      );
+                    }
                   ),
 
                   //controller.shoppingCar(),
