@@ -23,8 +23,12 @@ extension MenuPageControllerExtension on MenuPageController {
     //     subElement.isSelected = false;
     //   }
     // }
+    bgColor.value = topMenu.isNotEmpty && topMenu.length > selectIndex
+        ? (topMenu[selectIndex]['background'] ?? "#F9F9F9")
+        : "#F9F9F9";
 
     update(['side_bar']);
+    update(['background']);
   }
 
   _updateOptionsInfo(List menuList) {

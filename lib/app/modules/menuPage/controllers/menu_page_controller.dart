@@ -97,7 +97,7 @@ class MenuPageController extends GetxController with StateMixin {
   final PageController pageController = PageController(viewportFraction: 1.0);
   bool forceUpdate = false;
 
-
+  RxString bgColor = "#F9F9F9".obs;
 
   @override
   void onInit() {
@@ -217,14 +217,18 @@ class MenuPageController extends GetxController with StateMixin {
             "categoryCode": categoryVoList['categoryCode'],
             "categoryName": categoryVoList['categoryName'],
             "showType": categoryVoList['showType'],
-            "showColor":categoryVoList['color'] ?? MenuColor[colorIndex],
-            "index":menuIndex
+            "showColor": categoryVoList['color'] ?? MenuColor[colorIndex],
+            "background": categoryVoList['background'],
+            "index": menuIndex
           });
           menuIndex++;
           colorIndex++;
           //配置顶部菜单默认项
-          if (i == 0) classTag.value = categoryVoList['categoryCode'];
-
+          if (i == 0) {
+            classTag.value = categoryVoList['categoryCode'];
+            bgColor .value =
+                categoryVoList['background'] ?? "#F9F9F9";
+          }
         }
         // if (isReset) {
         //   _resetToFirstCategory();
@@ -1199,9 +1203,9 @@ print("加1了");
           int tax1 = response['data']["tax1"] ?? 0;
           int tax2 = response['data']["tax2"] ?? 0;
 
-          showSelectMealTypeAndPaymentMethodDialog(total, tax1: tax1, tax2: tax2);
-
-        }else{
+          showSelectMealTypeAndPaymentMethodDialog(total,
+              tax1: tax1, tax2: tax2);
+        } else {
           //getBookingBootMenu();
           FirebaseAnalytics.instance.logEvent(name: "submit_order_fail",parameters: {
             "machineCode": machineInfo.machineCode,
@@ -1270,7 +1274,8 @@ print("加1了");
   }
 
   //选择食用方式和支付方式
-  showSelectMealTypeAndPaymentMethodDialog(String total, {int tax1 = 0, int tax2 = 0}) async {
+  showSelectMealTypeAndPaymentMethodDialog(String total,
+      {int tax1 = 0, int tax2 = 0}) async {
     paymentIsShow = true;
     machineInfo.showReceiptPage = machineInfo.isReceiptPageShow;
     Get.to(

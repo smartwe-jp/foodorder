@@ -1064,7 +1064,6 @@ extension MenuPageCategory on MenuPageController {
   showCategoryTwo(showItemList, context, {popupType: "old"}) {
     if (showItemList != null && showItemList.length > 0) {
       return Container(
-        //height: 450,
         child: showCategoryTwoItemList(showItemList, context,
             popupType: popupType),
       );
@@ -1106,7 +1105,7 @@ extension MenuPageCategory on MenuPageController {
         builder: (controller) {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
-      padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
+      //padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
       decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
@@ -1914,7 +1913,7 @@ extension MenuPageCategory on MenuPageController {
         builder: (controller) {
     return Container(
       margin: EdgeInsets.only(top: ScreenAdapter.width(20)),
-      padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
+      //padding: EdgeInsets.only(top: ScreenAdapter.height(8)),
       decoration: BoxDecoration(
           border: Border(
             bottom: BorderSide(color: ColorsUtil.hexToColor("#c38d4d"), width: 2.0),
@@ -1924,7 +1923,7 @@ extension MenuPageCategory on MenuPageController {
           children: [
             Container(
               padding: EdgeInsets.only(
-                  top: ScreenAdapter.height(10),
+                  //top: ScreenAdapter.height(10),
                   bottom: ScreenAdapter.height(10)),
               margin: EdgeInsets.only(
                   left: ScreenAdapter.width(10),
