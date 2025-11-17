@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 import 'dart:typed_data';
@@ -57,6 +58,23 @@ class PosSocketManager {
   setPosPadding() {
     _needInterActive = true;
   }
+  Timer? _responseTimer;
+  final Duration _flushTimeout = const Duration(seconds: 15);      // 写缓冲推送超时
+  final Duration _responseTimeout = const Duration(seconds: 30);  // 协议响应超时
+
+  void _startResponseTimer() {
+    _responseTimer?.cancel();
+    _responseTimer = Timer(_responseTimeout, () {
+      logger.infoLog('POS response timeout');
+      _responseTimer = null;
+      _onError?.call('POS response timeout');
+    });
+  }
+
+  void _stopResponseTimer() {
+    _responseTimer?.cancel();
+    _responseTimer = null;
+  }
 
   Future posActionWithData(PosAction action, String writeData,
       {Function? backTask = null}) async {
@@ -94,17 +112,18 @@ class PosSocketManager {
     }
 
     //_socket?.write(writeData);
-    await _posWirteData(writeData);
+    await _posWriteData(writeData);
   }
 
-  Future _posWirteData(String writeData) async {
-    //Logger('').info('_posWirteData $writeData');
-    try {
-      _socket?.write(writeData);
-    } catch (e) {
-      _onError?.call(e.toString());
-    }
-  }
+  // Future _posWirteData(String writeData) async {
+  //   //Logger('').info('_posWirteData $writeData');
+  //   await _posWriteData(writeData);
+  //   // try {
+  //   //   _socket?.write(writeData);
+  //   // } catch (e) {
+  //   //   _onError?.call(e.toString());
+  //   // }
+  // }
 
   Future closePos() async {
     debugPrint('--closePos--');
@@ -113,6 +132,29 @@ class PosSocketManager {
       _socket?.destroy();
       _socket = null;
     }
+  }
+
+  Future<void> _posWriteData(String writeData) async {
+    final s = _socket;
+    if (s == null || !_isConnected) {
+      _onError?.call('POS disconnected');
+      return;
+    }
+    try {
+      // 写入 + flush 推送到底层缓冲
+      s.write(writeData);
+      await s.flush().timeout(_flushTimeout);
+    } on TimeoutException {
+      logger.infoLog('POS flush timeout');
+      _onError?.call('POS write timeout');
+      return;
+    } catch (e) {
+      logger.infoLog('Error writing to POS: $e');
+      _onError?.call(e.toString());
+      return;
+    }
+    // 写成功后等待协议/设备响应
+    _startResponseTimer();
   }
 
   //pos机相关
@@ -141,7 +183,7 @@ class PosSocketManager {
       if (questData != "") {
         _posAction = PosAction.WritePay;
         //_socket?.write(questData);
-        _posWirteData(questData);
+        _posWriteData(questData);
       }
       if (payment != "2") {
         logger.infoLog("进来关闭弹窗");
@@ -177,7 +219,7 @@ class PosSocketManager {
         //判断不为空则POS机
         _posAction = PosAction.WritePay;
         //socket.write(questData);
-        _posWirteData(questData);
+        _posWriteData(questData);
       }
 
       //获得pos数据并发送
@@ -196,6 +238,7 @@ class PosSocketManager {
 
       _socket?.listen(
             (List<int> event) {
+              _stopResponseTimer();
           for (var i = 0; i < event.length; i++) {
             if (event[i] > 127) {
               event[i] = 32;
@@ -319,6 +362,7 @@ class PosSocketManager {
           }
         },
         onDone: () {
+          _stopResponseTimer();
           logger.infoLog('pos is done');
           _socketNumberTimes = 0;
           _isConnected = false;
@@ -326,6 +370,7 @@ class PosSocketManager {
             onDone?.call(_posAction);
         },
         onError: (e) {
+          _stopResponseTimer();
           logger.infoLog('pos is error: $e');
           _socketNumberTimes = 0;
           _isConnected = false;
