@@ -792,9 +792,11 @@ class SettlementController extends GetxController with StateMixin {
           if (action == PosAction.Cancel) {
             cancelOrder();
           }
-          else if (action == PosAction.WritePay) {
-            gotonewMenuPage();
+          else if (action == PosAction.WritePay) {//该处处理不当
+            //gotonewMenuPage();
             //goToNewMyHome();
+            //show error
+            _showScanCodeNoOpenDialog(3,"repay_cash_error".tr, payType: "pos");
           }
         },
         onSuccess: (msg) {
