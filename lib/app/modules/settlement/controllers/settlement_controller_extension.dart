@@ -583,11 +583,12 @@ extension SettlementControllerExtension on SettlementController {
       }
     } else {
       //showSuccessAlert(() {
-        if (isPrint.value == true) {
-          gotonewBack();
-        } else {
-          gotonewMenuPage();
-        }
+        // if (isPrint.value == true) {
+        //   gotonewBack();
+        // } else {
+        //   gotonewMenuPage();
+        // }
+        gotonewBack();
       //});
     }
 
