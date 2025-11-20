@@ -25,6 +25,7 @@ class MachineInfoController extends GetxController {
   late String diningType;
   late String isAllowPos;
   late String isAllowReceipt;
+  late String isPrintReceipt;
   late String receiptPrintType;
   late bool showReceiptPage;
   late List homeList;
@@ -156,7 +157,9 @@ class MachineInfoController extends GetxController {
     logI('loadMachineSettingInfo diningType : $diningType');
     mealType = diningType == '2' ? true : false;
     isAllowPos = systemSettingInfo['isAllowPos'] ?? '0'; // 0 不开pos 1开pos
-    isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '0';
+    isAllowReceipt = systemSettingInfo['isAllowReceipt'] ?? '1';
+    isPrintReceipt = systemSettingInfo['isAllowReceiptMenu'] ?? '1';
+
     String panelType = systemSettingInfo['panelType'] ?? 'Mini';
     machineMode = systemSettingInfo["machineMode"] ?? '0';
     isAllowRejishime = systemSettingInfo['isAllowRejishime'] ?? '0';

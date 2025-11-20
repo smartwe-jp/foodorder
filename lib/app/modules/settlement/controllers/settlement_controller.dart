@@ -1131,7 +1131,7 @@ class SettlementController extends GetxController with StateMixin {
             printService.printData(response['data']["printInfo"], orderId: response['data']['order'] ?? "", fromSSE: false);
             saveService.addPrintJob(response['data']);
           }
-          if(response['data']["orderType"] == 1 && machineInfo.isAllowReceipt == "1"){
+          if(response['data']["orderType"] == 1 && machineInfo.isPrintReceipt == "1"){
             //debugPrint("response['data']====${response['data']}");
             //_tpPrintnew(response['data'], printType);
             createPrintImageController.tpPrintnew(print_paper_txt_size.value, response['data'], printType);
