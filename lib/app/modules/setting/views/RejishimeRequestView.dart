@@ -57,6 +57,7 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
 
 
   final TextEditingController _verifyCodeController = TextEditingController();
+  PrintInfoService saveService = Get.find();
 
   @override
   void initState() {
@@ -448,9 +449,8 @@ class RejishiMeRequestState extends State<RejishiMeRequestView> {
   }
 
   _printRejishime(data, double length) async {
-    
-    PrintInfoService printInfoService = await Get.find();
-    printInfoService.addPrintJob(data, category: 'rejishime');
+
+    saveService.addPrintJob(data, category: 'rejishime');
     
     ByteData byteData = await WidgetToImage.widgetToImage(
       RejishimePrintView(isPrint: true, printInfo: data, isNotCashInfo: widget.isNotCash,),
