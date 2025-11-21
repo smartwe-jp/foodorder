@@ -31,6 +31,9 @@ class CarItemView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+
+    String curPrice = quantity > 0 ? (double.parse(price) * quantity).toString() : price;
+
     return Container(
       height: ScreenAdapter.height(188),
       padding: EdgeInsets.only(
@@ -87,7 +90,7 @@ class CarItemView extends StatelessWidget {
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 96,98,102),
                                   ),),
-                                  TextSpan(text: price,style: TextStyle(
+                                  TextSpan(text: curPrice, style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: 32,
                                     fontWeight: FontWeight.w500,
