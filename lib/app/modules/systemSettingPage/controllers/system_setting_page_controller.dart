@@ -1264,14 +1264,14 @@ class SystemSettingPageController extends GetxController with StateMixin {
   //   update();
   // }
 
-  void _updateSystemSetting(String key, dynamic value) {
-    if (systemSettingData.containsKey(key)) {
+  void _updateSystemSetting(String key, dynamic value) async {
+    final systemSettingData = await HomeServices.getSystemSettingInfo();
+    //if (systemSettingData.containsKey(key)) {
       systemSettingData[key] = value;
-      Storage.setString('smartwe_systemSetting', json.encode(systemSettingData));
-      GetxStorage.setData('smartwe_systemSetting', json.encode(systemSettingData));
-    } else {
-      print('Key $key does not exist in systemSettingData.');
-    }
+      await HomeServices.updateSystemSettingInfo(systemSettingData);
+    // } else {
+    //   print('Key $key does not exist in systemSettingData.');
+    // }
     //machineInfo.updateMachineSettingInfo(settingInfo: systemSettingData);
     update();
   }

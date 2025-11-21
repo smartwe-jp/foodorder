@@ -247,7 +247,7 @@ class PosSocketManager {
           }
           var zhuanhuan = Uint8List.fromList(event);
           var eventString = Utf8Codec().decode(zhuanhuan);
-          debugPrint("eventString:$eventString");
+          logger.infoLog("eventString:$eventString");
           _eventReportString += eventString;
           debugPrint("_eventReportString:$_eventReportString");
 
