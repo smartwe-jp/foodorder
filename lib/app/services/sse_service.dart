@@ -75,10 +75,12 @@ class SseService extends GetxService {
             print('SSE Service: Received event: $event');
           }
         } else if (event == 'message'
-                  || event == 'print'
-                  || event == 'payment_Completed'
-                  || event == 'rePrint'
-                  || event == 'item_cancel') {
+          || event == 'print'
+          || event == 'payment_Completed'
+          || event == 'rePrint'
+          || event == 'item_cancel'
+          || event == 'efficientPrint'
+          ) {
           if (kDebugMode) {
             print('SSE Service: Received $event event');
           }

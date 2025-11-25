@@ -78,6 +78,9 @@ class PrintService extends GetxService {
   }
 
   callbackBeforePrint(String event, Map data, {int retryCount = 0}) async {
+    // if (event == 'efficientPrint') {
+    //     _printEfficientLabel(data);
+    // }
     String uuid = data['uuid'] ?? '';
     if (uuid.isEmpty) return;
 
@@ -100,6 +103,10 @@ class PrintService extends GetxService {
         if (event == 'item_cancel') {
           _sendToDisplayPanel(data);
         }
+        if (event == 'efficientPrint') {
+        _printEfficientLabel(data);
+        }
+        
       }
     } on TimeoutException catch (e) {
       logI('TimeoutException:${e.toString()}');
@@ -287,6 +294,162 @@ class PrintService extends GetxService {
     //计算标签最大行数
     //假设每行高度为 50
     return (height/(225*0.25)).floor();
+  }
+  // shopCode=UGE4RRQR, 
+  // number=MAT009, 
+  // name=オレンジスライス, 
+  // saveMethod=冷蔵庫内＋蓋付き, 
+  // expiredNumber=0,
+  // efficientType=CURRENT_DATE, 
+  // expiredTimeStr=2025-11-21  店じまい廃棄, 
+  // printTimeStr=2025-11-21 16:30:31, 
+  // operatorName=倪圣
+
+  //_printEfficientLabel
+  _printEfficientLabel(Map data) async {
+    logI("_printEfficientLabel data: $data");
+
+    final printer = printerList.firstWhere(
+      (p) => p["type"] == 10 && !p["isOff"] && p['receipt'] == 1,
+      orElse: () => null,
+    );
+    if (printer == null) {
+      logI("Printer IP not configured for type 10");
+      return;
+    }
+
+    double rotate =
+        printer["direction"] == 1 ? pi : 0.0; // Rotate if direction is 1
+    final printSize = printer['labelSize'] ?? '300x225';
+    final printWidth = double.parse(printSize.split('x')[0]); // 获取标签宽度
+    final printHeight = double.parse(printSize.split('x')[1]); // 获取标签高度
+    debugPrint("Print size: $printSize, Width: $printWidth, Height: $printHeight");
+
+    //final number = data["number"] ?? "";
+    final name = data["name"] ?? "";
+    final saveMethod = data["saveMethod"] ?? "";
+    //final expexpiredNumber = data["expiredNumber"] ?? "";
+    //final efficientType = data["efficientType"] ?? "";
+    final expiredTimeStr = data["expiredTimeStr"] ?? "";
+    final printTimeStr = data["printTimeStr"] ?? "";
+    final operatorName = data["operatorName"] ?? "";
+    //String expiredTime = "当日廃棄";
+    // if (efficientType.isEmpty) {
+    //   logI("efficientType is empty");
+    //   return;
+    // }
+    // if (efficientType == "HOURS") {
+    //   expiredTime = "+ $expexpiredNumber 時間";
+    // } else if (efficientType == "DAYS") {
+    //   expiredTime = "+ $expexpiredNumber 日";
+    // }
+
+
+    final imageWidget = await _efficientLabel(
+        name,
+        saveMethod,
+        expiredTimeStr,
+        printTimeStr,
+        operatorName,
+        printWidth,
+        printHeight,
+        rotate);
+
+    //show print preview
+
+    // 生成打印图层任务，指定任务类型为标签
+    PictureGeneratorProvider.instance.addPicGeneratorTask(
+      PicGenerateTask<PrinterInfo>(
+        tempWidget: imageWidget as ATempWidget,
+        printTypeEnum: PrintTypeEnum.label,
+        params: PrinterInfo(ip: printer["printIp"]),
+      ),
+    );
+  }
+
+  _efficientLabel(
+      String name,
+      String saveMethod,
+      String expiredTimeStr,
+      String printTimeStr,
+      String operatorName,
+      double printWidth,
+      double printHeight,
+      rotate) async {
+
+    List<Widget> printMenus = [];
+    printMenus.add(
+      Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Container(
+            margin: EdgeInsets.only(top: 40, bottom: 40),
+            child: Text(name,
+                    maxLines: 2,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                                fontSize: 32,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 4),
+            child: Text(saveMethod,
+                    textAlign: TextAlign.right,
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    )),
+          ),
+          
+          Container(
+            margin: EdgeInsets.only(bottom: 4),
+            child: Text("開封：$printTimeStr",
+                    maxLines: 2,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 28,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    )),
+          ),
+          Container(
+            margin: EdgeInsets.only(bottom: 4),
+            child: Text("期限切れ：$expiredTimeStr",
+                    maxLines: 2,
+                    textAlign: TextAlign.left,
+                    style: TextStyle(
+                      fontSize: 28,
+                      color: Colors.black,
+                      fontWeight: FontWeight.w500,
+                    )),
+          ),
+        ],
+      ),
+    );
+    return LabelConstrainedBox(
+      Transform(
+          transform: Matrix4.rotationZ(rotate),
+          alignment: Alignment.center,
+          child: Container(
+            //padding: EdgeInsets.only(left: 0.5, right: 0.5),
+            // color: Colors.white,
+            // alignment: Alignment.topCenter,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: printMenus,
+            ),
+          )),
+          pagerWidth: printWidth,
+          pagerHeight: printHeight,
+      );
+
+        
   }
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
