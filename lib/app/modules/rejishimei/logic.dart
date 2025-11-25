@@ -146,10 +146,10 @@ class RejishimeLogic extends GetxController {
       EasyLoading.dismiss();
       showToast('レジ情報の取得に失敗しました');
     }).timeout(
-      const Duration(seconds: 45),
+      const Duration(seconds: 60),
       onTimeout: () {
         EasyLoading.dismiss();
-        showToast('レジ情報の取得に失敗しました');
+        showToast('レジ情報の取得にタイムアウトしました');
       },
     );
   }
