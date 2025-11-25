@@ -78,7 +78,9 @@ class SseService extends GetxService {
           || event == 'print'
           || event == 'payment_Completed'
           || event == 'rePrint'
-          || event == 'item_cancel') {
+          || event == 'item_cancel'
+          || event == 'efficientPrint'
+          ) {
           if (kDebugMode) {
             print('SSE Service: Received $event event');
           }
