@@ -311,7 +311,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   }
 
   Widget _setMenuDirection(Map systemSettingInfo) {
-    String menuDirection = systemSettingInfo['menuDirection'] ?? '0';
+    String menuDirection = systemSettingInfo['menuDirection'] ?? '1';
 
     return Card(
       color: Colors.white,
@@ -1657,21 +1657,21 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               ],
             ),
 
-            if (isOn && name == "SmartWe SSE") 
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
+            // if (isOn && name == "SmartWe SSE") 
+            //     Row(
+            //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            //       children: [
                   
-                  _settingContent('お会計伝票：'),
-                  Switch(
-                    value: printSeat,
-                    onChanged: (value) {
-                      controller.updateSSESetting(name, printSeat: value);
-                    },
-                    activeColor: Colors.blue,
-                  ),
-                ],
-              ),
+            //       _settingContent('お会計伝票：'),
+            //       Switch(
+            //         value: printSeat,
+            //         onChanged: (value) {
+            //           controller.updateSSESetting(name, printSeat: value);
+            //         },
+            //         activeColor: Colors.blue,
+            //       ),
+            //     ],
+            //   ),
 
 
         ],
