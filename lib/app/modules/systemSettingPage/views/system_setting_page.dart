@@ -311,7 +311,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
   }
 
   Widget _setMenuDirection(Map systemSettingInfo) {
-    String menuDirection = systemSettingInfo['menuDirection'] ?? '0';
+    String menuDirection = systemSettingInfo['menuDirection'] ?? '1';
 
     return Card(
       color: Colors.white,
