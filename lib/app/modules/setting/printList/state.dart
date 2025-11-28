@@ -56,7 +56,7 @@ class PrintOrderItem {
 			orderTime: _pickStr(map['orderTime'] ?? map['payDate']),
 			payMethod: _pickStr(map['payMethod']),
 			payPrice: _pickStr(map['payPrice'] ?? map['price']),
-			change: _pickStr(map['change']),
+			change: _pickStr(map['change'] ?? '0'),
 			raw: map,
 		);
 	}

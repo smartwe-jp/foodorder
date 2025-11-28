@@ -336,13 +336,13 @@ class SystemSettingPageView extends GetView {
               ],
             ),
           ),
-          Text("注：現金でお支払いの場合の設定です。他のお支払い方法の場合は全て「発行」となります。",
-              style: TextStyle(
-                fontFamily: 'NotoSansJP',
-                fontSize: ScreenAdapter.fontSize(17),
-                fontWeight: FontWeight.w400,
-                color: ColorsUtil.hexToColor("#d90000"),
-              )),
+          // Text("注：現金でお支払いの場合の設定です。他のお支払い方法の場合は全て「発行」となります。",
+          //     style: TextStyle(
+          //       fontFamily: 'NotoSansJP',
+          //       fontSize: ScreenAdapter.fontSize(17),
+          //       fontWeight: FontWeight.w400,
+          //       color: ColorsUtil.hexToColor("#d90000"),
+          //     )),
         ],
       ),
     );

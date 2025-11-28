@@ -549,6 +549,7 @@ class SettingController extends GetxController with StateMixin {
       await _getChangeState();
     } else {
       await getCashInfo();
+      await gloryConfirmSync(showLoading: false);
     }
 
     //print(_menuOption);

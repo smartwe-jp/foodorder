@@ -91,8 +91,9 @@ extension CheckoutButton on MenuPageView {
                                     child: Text(
                                       "${controller.showCartTotalGoodsNum}",
                                       style: TextStyle(
-                                        fontSize: 20,
+                                        fontSize: 24,
                                         color: Colors.white,
+                                        fontWeight: FontWeight.w500,
                                       ),
                                     ),
                                   ),

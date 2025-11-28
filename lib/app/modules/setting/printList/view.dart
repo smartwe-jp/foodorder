@@ -277,7 +277,7 @@ class PrintListPage extends StatelessWidget {
                     _infoRow('オーダーID', item.orderId, theme),
                     _infoRow('注文日時', item.orderTime, theme),
                     _infoRow('支払い方法', item.payMethod, theme),
-                    _infoRow('金額/お釣り', '${item.payPrice} / ${item.change}', theme),
+                    _infoRow('金額/お釣り', '${item.payPrice} / ${item.change == 'null' ? '0' : item.change}', theme),
                   ],
                 ),
               ),

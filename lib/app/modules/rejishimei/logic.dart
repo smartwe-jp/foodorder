@@ -186,7 +186,7 @@ class RejishimeLogic extends GetxController {
       const Duration(seconds: 30),
       onTimeout: () {
         EasyLoading.dismiss();
-        showToast('印刷に失敗しました');
+        showToast('印刷にタイムアウトしました');
       },
     );
   }

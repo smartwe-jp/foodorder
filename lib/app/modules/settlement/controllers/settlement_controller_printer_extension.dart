@@ -12,6 +12,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:foodorder/app/controllers/machine_info.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
 import 'package:foodorder/app/services/HomeServices.dart';
+import 'package:get/get.dart';
 import 'package:get/get_state_manager/src/rx_flutter/rx_disposable.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:widget_to_image/widget_to_image.dart';
@@ -38,14 +39,15 @@ class PrintService extends GetxService {
   //Label打印先存在在一个队列中
   //final Queue<Widget> labelPrintQueue = Queue<Widget>();
 
-    // 全局队列 + 是否正在排队
+  // 全局队列 + 是否正在排队
   final Queue<Widget> _labelQueue = Queue<Widget>();
   bool _labelDraining = false;
 
-  void processLabelPrintQueueNew(String printerIp, Queue<Widget> labelPrintQueue) {
+  void processLabelPrintQueueNew(
+      String printerIp, Queue<Widget> labelPrintQueue) {
     if (labelPrintQueue.isEmpty) return;
     _labelQueue.addAll(labelPrintQueue); // 合并到全局队列
-    _ensureLabelDrain(printerIp);                 // 启动/复用单次循环
+    _ensureLabelDrain(printerIp); // 启动/复用单次循环
   }
 
   void _ensureLabelDrain(String printerIp) {
@@ -141,10 +143,9 @@ class PrintService extends GetxService {
         if (event == 'item_cancel') {
           _sendToDisplayPanel(data);
         }
-        if (event == 'efficientPrint') {
-        _printEfficientLabel(data);
+        if (event == 'expiryPrint') {
+          _printEfficientLabel(data);
         }
-        
       }
     } on TimeoutException catch (e) {
       logI('TimeoutException:${e.toString()}');
@@ -232,7 +233,8 @@ class PrintService extends GetxService {
         final printHeight = int.parse(printSize.split('x')[1]); // 获取标签高度
         // Add the head receipt widget to the print queue
         debugPrint("Label Print Width: $printWidth, Height: $printHeight");
-        final time = orderId + "#" + await DateTime.now().toString().substring(5, 16);
+        final time =
+            orderId + "#" + await DateTime.now().toString().substring(5, 16);
         var totalQty = 0;
         for (var item in items) {
           totalQty += (item["qty"] ?? 0) as int;
@@ -249,16 +251,15 @@ class PrintService extends GetxService {
             // Generate the receipt widget
             itemCount += 1;
             final receiptWidget = labelItem(
-              name,
-              orderSnCode,
-              options,
-              printWidth.toDouble(),
-              printHeight.toDouble(),
-              _labelMaxLine(printHeight),
-              rotate,
-              '$totalQty-$itemCount',
-                time
-            );
+                name,
+                orderSnCode,
+                options,
+                printWidth.toDouble(),
+                printHeight.toDouble(),
+                _labelMaxLine(printHeight),
+                rotate,
+                '$totalQty-$itemCount',
+                time);
             labelPrintQueue.add(receiptWidget);
           }
         }
@@ -330,16 +331,16 @@ class PrintService extends GetxService {
   _labelMaxLine(int height) {
     //计算标签最大行数
     //假设每行高度为 50
-    return (height/(225*0.25)).floor();
+    return (height / (225 * 0.25)).floor();
   }
-  // shopCode=UGE4RRQR, 
-  // number=MAT009, 
-  // name=オレンジスライス, 
-  // saveMethod=冷蔵庫内＋蓋付き, 
+  // shopCode=UGE4RRQR,
+  // number=MAT009,
+  // name=オレンジスライス,
+  // saveMethod=冷蔵庫内＋蓋付き,
   // expiredNumber=0,
-  // efficientType=CURRENT_DATE, 
-  // expiredTimeStr=2025-11-21  店じまい廃棄, 
-  // printTimeStr=2025-11-21 16:30:31, 
+  // efficientType=CURRENT_DATE,
+  // expiredTimeStr=2025-11-21  店じまい廃棄,
+  // printTimeStr=2025-11-21 16:30:31,
   // operatorName=倪圣
 
   //_printEfficientLabel
@@ -360,7 +361,8 @@ class PrintService extends GetxService {
     final printSize = printer['labelSize'] ?? '300x225';
     final printWidth = double.parse(printSize.split('x')[0]); // 获取标签宽度
     final printHeight = double.parse(printSize.split('x')[1]); // 获取标签高度
-    debugPrint("Print size: $printSize, Width: $printWidth, Height: $printHeight");
+    debugPrint(
+        "Print size: $printSize, Width: $printWidth, Height: $printHeight");
 
     //final number = data["number"] ?? "";
     final name = data["name"] ?? "";
@@ -381,20 +383,31 @@ class PrintService extends GetxService {
     //   expiredTime = "+ $expexpiredNumber 日";
     // }
 
-
-    final imageWidget = await _efficientLabel(
-        name,
-        saveMethod,
-        expiredTimeStr,
-        printTimeStr,
-        operatorName,
-        printWidth,
-        printHeight,
-        rotate);
+    final imageWidget = await _efficientLabel(name, saveMethod, expiredTimeStr,
+        printTimeStr, operatorName, printWidth, printHeight, rotate);
 
     //show print preview
+    // Get.dialog(
+    //   AlertDialog(
+    //     title: Text('Print Preview'),
+    //     content: Container(
+    //       width: printWidth,
+    //       height: printHeight,
+    //       child: imageWidget,
+    //     ),
+    //     actions: [
+    //       TextButton(
+    //         onPressed: () {
+    //           Get.back();
+              
+    //         },
+    //         child: Text('Close'),
+    //       ),
+    //     ],
+    //   ),
+    // );
 
-    // 生成打印图层任务，指定任务类型为标签
+    //生成打印图层任务，指定任务类型为标签
     PictureGeneratorProvider.instance.addPicGeneratorTask(
       PicGenerateTask<PrinterInfo>(
         tempWidget: imageWidget as ATempWidget,
@@ -414,79 +427,72 @@ class PrintService extends GetxService {
       double printHeight,
       rotate) async {
 
-    List<Widget> printMenus = [];
-    printMenus.add(
-      Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 40, bottom: 40),
-            child: Text(name,
-                    maxLines: 2,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                                fontSize: 32,
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
+    final printMenus = 
+    Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Container(
+          margin: EdgeInsets.only(top: 20, bottom: 3),
+          child: Text(
+            name,
+            maxLines: 2,
+            textAlign: TextAlign.left,
+            style: TextStyle(
+              fontSize: 22,
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
           ),
-          Container(
-            margin: EdgeInsets.only(bottom: 4),
-            child: Text(saveMethod,
-                    textAlign: TextAlign.right,
-                    style: TextStyle(
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                    )),
-          ),
-          
-          Container(
-            margin: EdgeInsets.only(bottom: 4),
-            child: Text("開封：$printTimeStr",
-                    maxLines: 2,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    )),
-          ),
-          Container(
-            margin: EdgeInsets.only(bottom: 4),
-            child: Text("期限切れ：$expiredTimeStr",
-                    maxLines: 2,
-                    textAlign: TextAlign.left,
-                    style: TextStyle(
-                      fontSize: 28,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    )),
-          ),
-        ],
-      ),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 4),
+          child: AutoSizeText(saveMethod,
+              textAlign: TextAlign.right,
+              style: TextStyle(
+                fontSize: 22,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              )),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 4),
+          child: AutoSizeText("開封：$printTimeStr",
+              maxLines: 1,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              )),
+        ),
+        Container(
+          margin: EdgeInsets.only(bottom: 4),
+          child: AutoSizeText("期限切れ：$expiredTimeStr",
+              maxLines: 2,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                fontSize: 22,
+                color: Colors.black,
+                fontWeight: FontWeight.w500,
+              )),
+        ),
+      ],
     );
+
     return LabelConstrainedBox(
       Transform(
           transform: Matrix4.rotationZ(rotate),
           alignment: Alignment.center,
-          child: Container(
-            //padding: EdgeInsets.only(left: 0.5, right: 0.5),
-            // color: Colors.white,
-            // alignment: Alignment.topCenter,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: printMenus,
+            child: Transform(
+              transform: Matrix4.rotationZ(rotate),
+              alignment: Alignment.center,
+              child: printMenus,
             ),
-          )),
-          pagerWidth: printWidth,
-          pagerHeight: printHeight,
-      );
-
-        
+          ),
+      pagerWidth: printWidth,
+      pagerHeight: printHeight,
+    );
   }
 
 //{description: いらっしゃいませ。お客様のスマートフォンで、QRコードをスキャンしてご注文をお願いします。お帰りの際は、QRコードを精算機にスキャンして、お支払いくださいますようお願いいたします。ご不明な点がございましたら、スタッフまでお声がけくださいませ。, line1: 卓番：Ａ０２, line2: セルフオーダーQR票, qrCode: a1ght77ycN0OnMBijXzt_}
@@ -613,15 +619,17 @@ class PrintService extends GetxService {
         )));
   }
 
-  Widget labelItem(String name,
-      String number,
-      Map options,
-      double printWidth,
-      double printHeight,
-      int maxLines,
-      bool rotate,
-      String index,
-      String time,) {
+  Widget labelItem(
+    String name,
+    String number,
+    Map options,
+    double printWidth,
+    double printHeight,
+    int maxLines,
+    bool rotate,
+    String index,
+    String time,
+  ) {
     return LabelConstrainedBox(
       Transform(
         transform: Matrix4.rotationZ(rotate ? pi : 0.0),
@@ -654,7 +662,6 @@ class PrintService extends GetxService {
                         overflow: TextOverflow.ellipsis, // 超出部分显示省略号
                       ),
                     ),
-
                     Expanded(
                       flex: 1,
                       child: Column(
@@ -711,7 +718,6 @@ class PrintService extends GetxService {
                         child: optionList(options, maxLines),
                       ),
                     ),
-
                     Expanded(
                       flex: 1,
                       child: Container(
@@ -751,123 +757,116 @@ class PrintService extends GetxService {
       double printHeight,
       String time,
       bool rotate) {
-  return LabelConstrainedBox(
-    Transform(
-        transform: Matrix4.rotationZ(rotate ? pi : 0.0),
-        alignment: Alignment.center,
-        child: Container(
-          padding: EdgeInsets.only(right: 3),
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-
-                SizedBox(
-                  height: 80.h,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Expanded(
-                        flex: 3,
-                        child: AutoSizeText(
-                          fromPlate,
-                          textAlign: TextAlign.left,
-                          maxLines: 2,
-                          style: TextStyle(
-                            fontSize: 50,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
+    return LabelConstrainedBox(
+        Transform(
+            transform: Matrix4.rotationZ(rotate ? pi : 0.0),
+            alignment: Alignment.center,
+            child: Container(
+              padding: EdgeInsets.only(right: 3),
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      height: 80.h,
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            flex: 3,
+                            child: AutoSizeText(
+                              fromPlate,
+                              textAlign: TextAlign.left,
+                              maxLines: 2,
+                              style: TextStyle(
+                                fontSize: 50,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
+                              ),
+                              overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                            ),
                           ),
-                          overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                        ),
-                      ),
-
-                      Expanded(
-                        flex: 2,
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.end,
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: AutoSizeText(
-                                ' # ' + orderSnCode,
-                                textAlign: TextAlign.right,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
+                          Expanded(
+                            flex: 2,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                Expanded(
+                                  flex: 1,
+                                  child: AutoSizeText(
+                                    ' # ' + orderSnCode,
+                                    textAlign: TextAlign.right,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow:
+                                        TextOverflow.ellipsis, // 超出部分显示省略号
+                                  ),
                                 ),
-                                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                                Expanded(
+                                  flex: 1,
+                                  child: AutoSizeText(
+                                    '$itemCount',
+                                    textAlign: TextAlign.right,
+                                    maxLines: 1,
+                                    style: TextStyle(
+                                      fontSize: 30,
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    overflow:
+                                        TextOverflow.ellipsis, // 超出部分显示省略号
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Divider(
+                      color: Colors.black,
+                      thickness: 2,
+                    ),
+                    Expanded(
+                      //flex: 2,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          AutoSizeText(
+                            remark,
+                            maxLines: 4,
+                            style: TextStyle(
+                              fontSize: 24,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            overflow: TextOverflow.ellipsis, // 超出部分显示省略号
+                          ),
+                          Container(
+                            alignment: Alignment.centerRight,
+                            margin: EdgeInsets.only(top: 5),
+                            child: Text(
+                              time,
+                              textAlign: TextAlign.right,
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.black,
+                                fontWeight: FontWeight.bold,
                               ),
                             ),
-                            Expanded(
-                              flex: 1,
-                              child: AutoSizeText(
-                                '$itemCount',
-                                textAlign: TextAlign.right,
-                                maxLines: 1,
-                                style: TextStyle(
-                                  fontSize: 30,
-                                  color: Colors.black,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                                overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-
-                    ],
-                  ),
-                ),
-
-                Divider(
-                  color: Colors.black,
-                  thickness: 2,
-                ),
-
-                Expanded(
-                  //flex: 2,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      AutoSizeText(
-                        remark,
-                        maxLines: 4,
-                        style: TextStyle(
-                          fontSize: 24,
-                          color: Colors.black,
-                          fontWeight: FontWeight.bold,
-                        ),
-                        overflow: TextOverflow.ellipsis, // 超出部分显示省略号
-                      ),
-
-                      Container(
-                        alignment: Alignment.centerRight,
-                        margin: EdgeInsets.only(top: 5),
-                        child: Text(
-                          time,
-                          textAlign: TextAlign.right,
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
                           ),
-                        ),
+                        ],
                       ),
-                    ],
-                  ),
-                ),
-              ]
-          ),
-        )
-    ),
-    pagerWidth: printWidth,
-    pagerHeight: printHeight
-  );
-}
+                    ),
+                  ]),
+            )),
+        pagerWidth: printWidth,
+        pagerHeight: printHeight);
+  }
 
   Widget optionItem1(String optionName, List optionValues) {
     return Container(
@@ -908,7 +907,6 @@ class PrintService extends GetxService {
   }
 
   Widget optionList(Map options, int maxLines) {
-
     //合并所有Option为一个字符串格式为 optionName: optionDetail1 x qty1, optionDetail2 x qty2;
     if (options.isEmpty) {
       return Container(); // 如果没有选项，返回空容器

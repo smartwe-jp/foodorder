@@ -74,8 +74,7 @@ extension SettingControllerExtension on SettingController {
         update();
       },
       catchError: (error) {
-        logger.info(
-            '-- supplyCounts error: ${error.tr} --');
+        logger.info('-- supplyCounts error: ${error.tr} --');
         errorHandleDialog(error.tr);
       },
     );
@@ -375,9 +374,9 @@ extension SettingControllerExtension on SettingController {
         // errorHandleDialog(GString.getToString(
         //     checkLanguage.value, 'cash_error_over_dispense'));
         errorHandleDialogTwo('cash_error_over_dispense'.tr,
-              confirmtitle: 'スキップ', () {
-            skipAction();
-          });
+            confirmtitle: 'スキップ', () {
+          skipAction();
+        });
         return false;
       }
       final result = await dispenseCashOutside(
@@ -415,11 +414,9 @@ extension SettingControllerExtension on SettingController {
         },
         showError: (String error) {
           debugPrint("dispenseCashOutside error: $error");
-          logger.info(
-              '-- dispenseCashOutside error: ${error.tr} --');
+          logger.info('-- dispenseCashOutside error: ${error.tr} --');
           //errorHandleDialog(GString.getToString(checkLanguage.value, error));
-          errorHandleDialogTwo(error.tr,
-              confirmtitle: 'スキップ', () {
+          errorHandleDialogTwo(error.tr, confirmtitle: 'スキップ', () {
             skipAction();
           });
         });
@@ -506,11 +503,13 @@ extension SettingControllerExtension on SettingController {
     );
   }
 
-  gloryConfirmSync() async {
+  gloryConfirmSync({bool showLoading = true}) async {
     debugPrint("---gloryConfirmSync---");
 
     //
-    showEasyLoading(content: "データを同期中");
+    if (showLoading) {
+      showEasyLoading(content: "データを同期中");
+    }
     Map machineCash = await getMachineCashInfos() ?? {};
     if (machineCash.isEmpty) return false;
     debugPrint("gloryConfirmSync: $machineCash");
@@ -531,16 +530,21 @@ extension SettingControllerExtension on SettingController {
       debugPrint("response: $response");
       EasyLoading.dismiss();
       if (response["code"] == 200) {
-        showToast('完了しました');
+        if (showLoading) {
+          showToast('完了しました');
+        }
         getCashInfo();
       } else {
-        commonHandleDialog('同期失败!');
-        errorHandleDialogTwo('同期失败', gloryConfirmSync());
+        if (showLoading) {
+          errorHandleDialogTwo('同期失败', gloryConfirmSync());
+        }
       }
     }).catchError((error) {
       debugPrint("reportReplanishInfo error: $error");
       EasyLoading.dismiss();
-      errorHandleDialogTwo('同期失败', gloryConfirmSync());
+      if (showLoading) {
+        errorHandleDialogTwo('同期失败', gloryConfirmSync());
+      }
     });
   }
 
@@ -678,8 +682,7 @@ extension SettingControllerExtension on SettingController {
         barrierDismissible: false,
         DialogUtils.alertOneButton(error,
             title: "tag_title".tr,
-            confirmtitle: "tag_button_yes".tr,
-            confirm: () {
+            confirmtitle: "tag_button_yes".tr, confirm: () {
           if (confirm != null) {
             Get.back();
             confirm();
