@@ -416,11 +416,11 @@ packages:
     dependency: "direct main"
     description:
       path: "."
-      ref: HEAD
-      resolved-ref: "04bb4fa9012d8822421ceaf635f7125c1a4371f3"
+      ref: new
+      resolved-ref: "16eb18b9f908628cd97958f1dc27b022bb13e74e"
       url: "git@github.com:Aaron51FX/flutter_printer_plus.git"
     source: git
-    version: "1.0.1"
+    version: "1.0.2"
   flutter_screenutil:
     dependency: "direct main"
     description:

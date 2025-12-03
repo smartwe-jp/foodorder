@@ -1007,7 +1007,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               physics: NeverScrollableScrollPhysics(),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2, // 每行两个
-                childAspectRatio: 1.96,
+                childAspectRatio: 1.9,
                 crossAxisSpacing: 20,
                 mainAxisSpacing: 16,
               ),
@@ -1039,6 +1039,7 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
     bool isSingleMode = type == 11 || receipt == 1;
     bool needSetting = printIp.isEmpty || printPort.isEmpty;
     bool isDefaultPrinter = printer['isDefault'] ?? true; // 是否默认打印机
+    bool printCategory = printer['printCategory'] ?? false; // 是否打印分类
 
     return Container(
       decoration: BoxDecoration(
@@ -1228,6 +1229,22 @@ class SystemSettingPage extends GetView<SystemSettingPageController> {
               children: [
                 _settingContent('ラベル幅: '),
                 _setLabelPrintSize(type, receipt, labelSize),
+              ],
+            ),
+          if (receipt != 1) 
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _settingContent('カテゴリー印刷: '),
+                const SizedBox(width: 12),
+                Switch(
+                  value: printCategory,
+                  onChanged: (val) {
+                    controller.updatePrinterInfo(type, receipt,
+                        printCategory: val);
+                  },
+                  activeColor: Colors.blue,
+                ),
               ],
             ),
 

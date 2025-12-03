@@ -40,6 +40,7 @@ dependencies:
   flutter_printer_plus:
     git:
       url: git@github.com:Aaron51FX/flutter_printer_plus.git
+      ref: new
   badges: ^3.1.1
   connectivity_plus: ^6.1.4
   get: ^4.7.2
