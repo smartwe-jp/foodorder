@@ -1,5 +1,6 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_printer_plus/flutter_printer_plus.dart' show PrinterJobController;
 import 'package:foodorder/app/config/font.dart';
 import 'package:foodorder/app/config/printer_info.dart';
 import 'package:foodorder/app/services/CustomLogerHandler.dart';
@@ -15,7 +16,7 @@ import '../controllers/home_controller.dart';
 
 class HomeView extends GetView<HomeController> {
   HomeView({Key? key}) : super(key: key);
-
+  final printerController = PrinterJobController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,8 +130,17 @@ class HomeView extends GetView<HomeController> {
       } else if (printerInfo.isNetPrinter) {
         // 网络 打印
         logI('网络 打印 ${printerInfo.ip!}');
-        final conn = printerPlus.NetConn(printerInfo.ip!);
-        conn.writeMultiBytes(printData);
+        // final conn = printerPlus.NetConn(printerInfo.ip!);
+        // conn.writeMultiBytes(printData);
+
+        try {
+          await printerController.enqueue(printerInfo.ip!, printData, timeout: Duration(seconds: 10));
+          // final conn = printerPlus.NetConn(printerInfo.ip!);
+          // conn.writeMultiBytes(printData);
+        } catch (e) {
+          // handle/report failure for diagnostics
+          logE('打印失败: ${e.toString()}');
+        }
       }
 
       // // 网络 打印

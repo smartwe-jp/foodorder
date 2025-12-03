@@ -308,6 +308,7 @@ extension SystemSettingPageExtension on SystemSettingPageView {
     final printDirection = printerItem['direction'] ?? 0; // 打印方向 0 正 1 逆
     bool printOption = printerItem['option'] ?? false; // 打印选项
     bool isSingleMode = type == 11 ||  receipt == 1;
+    bool printCategory = printerItem['printCategory'] ?? false; // 是否打印分类名称
 
         return
           Column(
@@ -421,6 +422,53 @@ extension SystemSettingPageExtension on SystemSettingPageView {
 
                   ]
               ),
+
+              //category print
+              if (receipt != 1)
+              Table(
+                  border: TableBorder.all(),
+                  columnWidths: const <int, TableColumnWidth>{
+                    //0: IntrinsicColumnWidth(),
+                    0: FlexColumnWidth(200),
+                    1: FlexColumnWidth(550),
+                  },
+                  defaultVerticalAlignment: TableCellVerticalAlignment.middle,
+                  children: <TableRow>[
+
+                    TableRow(
+                        children: <Widget>[
+                          Container(
+                            height: ScreenAdapter.height(80),
+                            alignment: Alignment.center,
+                            child: Text(
+                              "カテゴリー",
+                              style: TextStyle(
+                                  fontFamily: 'NotoSansJP',
+                                  fontSize: ScreenAdapter.fontSize(22),
+                                  fontWeight: FontWeight.w500
+                              ),
+                            ),
+                          ),
+                          Container(
+                            padding: EdgeInsets.only(left: ScreenAdapter.width(20)),
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.start,
+                              children: [
+                                FlutterSwitch(
+                                  value: printCategory,
+                                  onToggle: (value) {
+                                    controller.updatePrinterInfo(type, receipt, printCategory: value);
+                                  },
+                                ),
+                              ],
+                            ),
+                          ),
+
+                        ]
+                    )
+                  ],
+              )
+              
             ]
         );
   }

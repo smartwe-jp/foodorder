@@ -39,6 +39,265 @@ class PrintService extends GetxService {
   //Label打印先存在在一个队列中
   //final Queue<Widget> labelPrintQueue = Queue<Widget>();
 
+  final testData = [
+    {
+      "uuid": "YK-0HObr4iVk_NaDfVw9WoEH",
+      "bizId": 462461846396796928,
+      "orderTime": "19:12",
+      "remark": "",
+      "from_plate": "Shop",
+      "order_sn_code": "A17",
+      "payment_code": "",
+      "order_type": "Shop_In",
+      "pay_type": "Paid",
+      "orderLinesMap": {
+        "12": [
+          {
+            "categoryName": "ドリンク",
+            "name": "ジンジャーエール",
+            "price": 600,
+            "qty": 1,
+            "bizId": 462461855189106697,
+            "options": {},
+            "extend2qr": null
+          }
+        ],
+        "10": [
+          {
+            "categoryName": "メインディッシュ",
+            "name": "お刺身5種盛り",
+            "price": 3000,
+            "qty": 1,
+            "bizId": 462461855189106688,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "ポテサラ",
+            "price": 1400,
+            "qty": 1,
+            "bizId": 462461855189106689,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "ローストビーフサラダ",
+            "price": 2800,
+            "qty": 1,
+            "bizId": 462461855189106690,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "おでん",
+            "price": 1500,
+            "qty": 1,
+            "bizId": 462461855189106691,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "おすすめ",
+            "name": "和牛煮込み",
+            "price": 1200,
+            "qty": 1,
+            "bizId": 462461855189106692,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "すき焼き",
+            "price": 8000,
+            "qty": 2,
+            "bizId": 462461855189106693,
+            "options": {
+              "トッピング": [
+                {
+                  "name": "うどん",
+                  "price": null,
+                  "qty": 1
+                }
+              ]
+            },
+            "extend2qr": null
+          },
+          {
+            "categoryName": "小食",
+            "name": "追い 卵",
+            "price": 600,
+            "qty": 3,
+            "bizId": 462461855189106695,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "おすすめ",
+            "name": "和牛フレーク丼",
+            "price": 2500,
+            "qty": 1,
+            "bizId": 462461855189106696,
+            "options": {},
+            "extend2qr": null
+          }
+        ]
+      },
+      "orderLines": null
+    },
+    {
+      "uuid": "eg36fyjt5igDZVTl7yNzEs7j",
+      "bizId": 462461756707897344,
+      "orderTime": "19:56",
+      "remark": "",
+      "from_plate": "Shop",
+      "order_sn_code": "A9",
+      "payment_code": "",
+      "order_type": "Shop_In",
+      "pay_type": "Paid",
+      "orderLinesMap": {
+        "10": [
+          {
+            "categoryName": "アイス",
+            "name": "アイス",
+            "price": 1000,
+            "qty": 1,
+            "bizId": 462462547208372224,
+            "options": {
+              "味": [
+                {"name": "ココナツ", "price": null, "qty": 1}
+              ]
+            },
+            "extend2qr": null
+          }
+        ]
+      },
+      "orderLines": null
+    },
+    {
+      "uuid": "XsBjuzH1zlwqCPWDInYd3iDr",
+      "bizId": 462461756707897344,
+      "orderTime": "19:58",
+      "remark": "",
+      "from_plate": "Shop",
+      "order_sn_code": "A9",
+      "payment_code": "",
+      "order_type": "Shop_In",
+      "pay_type": "Paid",
+      "orderLinesMap": {
+        "10": [
+          {
+            "categoryName": "メインディッシュ",
+            "name": "和牛煮込み",
+            "price": 1200,
+            "qty": 1,
+            "bizId": 462462566741508096,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "ホッケ",
+            "price": 2500,
+            "qty": 1,
+            "bizId": 462462566741508097,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "焼鳥-かわ",
+            "price": 750,
+            "qty": 3,
+            "bizId": 462462566741508098,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "メインディッシュ",
+            "name": "カツレツ",
+            "price": 2400,
+            "qty": 1,
+            "bizId": 462462566741508099,
+            "options": {},
+            "extend2qr": null
+          }
+        ]
+      },
+      "orderLines": null
+    },
+    {
+      "uuid": "mLhBiJaR0KPV0FaElX-fed42",
+      "bizId": 462460811105992704,
+      "orderTime": "20:03",
+      "remark": "",
+      "from_plate": "Shop",
+      "order_sn_code": "A15",
+      "payment_code": "",
+      "order_type": "Shop_In",
+      "pay_type": "Paid",
+      "orderLinesMap": {
+        "12": [
+          {
+            "categoryName": "ドリンク",
+            "name": "ウーロン茶",
+            "price": 600,
+            "qty": 1,
+            "bizId": 462462655712133120,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "ドリンク",
+            "name": "ジンジャーエール",
+            "price": 600,
+            "qty": 1,
+            "bizId": 462462655712133121,
+            "options": {},
+            "extend2qr": null
+          },
+          {
+            "categoryName": "ドリンク",
+            "name": "コーラ",
+            "price": 600,
+            "qty": 1,
+            "bizId": 462462655712133122,
+            "options": {},
+            "extend2qr": null
+          }
+        ]
+      },
+      "orderLines": null
+    },
+    {
+      "uuid": "QRNRA_Q5ZQX_vASszPuqGjV-",
+      "bizId": 462461756707897344,
+      "orderTime": "20:14",
+      "remark": "",
+      "from_plate": "Shop",
+      "order_sn_code": "A9",
+      "payment_code": "",
+      "order_type": "Shop_In",
+      "pay_type": "Paid",
+      "orderLinesMap": {
+        "10": [
+          {
+            "categoryName": "メインディッシュ",
+            "name": "和牛煮込み",
+            "price": 1200,
+            "qty": 1,
+            "bizId": 462462819377020928,
+            "options": {},
+            "extend2qr": null
+          }
+        ]
+      },
+      "orderLines": null
+    }
+  ];
+
   // 全局队列 + 是否正在排队
   final Queue<Widget> _labelQueue = Queue<Widget>();
   bool _labelDraining = false;
@@ -170,6 +429,19 @@ class PrintService extends GetxService {
     }
   }
 
+  Future<void> testPrint() async {
+    int index = 0;
+    for (var data in testData) {
+      //间隔2秒打印
+      index += 1;
+      printData(data);
+      await Future.delayed(Duration(seconds: 15));
+      if (index > 1) {
+        break;
+      }
+    }
+  }
+
   void printData(Map data, {bool fromSSE = true, String orderId = ""}) async {
     logI("---printData---");
     _sendToDisplayPanel(data);
@@ -223,6 +495,8 @@ class PrintService extends GetxService {
       bool isContinuous = printer['continuous'] == 1; // Continuous printing
 
       final rotate = printer["direction"] == 1; // Rotate if direction is 1
+      bool printCategory =
+          printer['printCategory'] ?? false; // Print category name
 
       if (isLabelPrint) {
         // If label printing is enabled, print each item separately
@@ -296,11 +570,12 @@ class PrintService extends GetxService {
       if (isContinuous) {
         // If continuous printing is enabled, print all items in one go
         printContinuousData(fromPlate, isTakeOut, orderSnCode, orderTime,
-            printerIp, isContinuous, rotate, items, remark);
+            printerIp, isContinuous, rotate, items, remark,
+            printCategory: printCategory);
       } else {
         // If label printing is enabled, print each item separately
         printSingleData(fromPlate, isTakeOut, orderSnCode, orderTime, printerIp,
-            isContinuous, rotate, items, remark);
+            isContinuous, rotate, items, printCategory, remark);
       }
       // If center printing is enabled, print the same data to the center printer
       // if (isTakeOut && isCenterPrintOn || smartWeCenterOn) {
@@ -399,7 +674,7 @@ class PrintService extends GetxService {
     //       TextButton(
     //         onPressed: () {
     //           Get.back();
-              
+
     //         },
     //         child: Text('Close'),
     //       ),
@@ -426,9 +701,7 @@ class PrintService extends GetxService {
       double printWidth,
       double printHeight,
       rotate) async {
-
-    final printMenus = 
-    Column(
+    final printMenus = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
@@ -482,14 +755,14 @@ class PrintService extends GetxService {
 
     return LabelConstrainedBox(
       Transform(
+        transform: Matrix4.rotationZ(rotate),
+        alignment: Alignment.center,
+        child: Transform(
           transform: Matrix4.rotationZ(rotate),
           alignment: Alignment.center,
-            child: Transform(
-              transform: Matrix4.rotationZ(rotate),
-              alignment: Alignment.center,
-              child: printMenus,
-            ),
-          ),
+          child: printMenus,
+        ),
+      ),
       pagerWidth: printWidth,
       pagerHeight: printHeight,
     );
@@ -946,6 +1219,7 @@ class PrintService extends GetxService {
     bool isCenterPrint = false,
     bool printOption = true,
     String? printQrCode,
+    bool printCategory = false,
   }) async {
     final rotate = isRotate ? pi : 0.0;
 
@@ -965,8 +1239,11 @@ class PrintService extends GetxService {
               final qty = item["qty"] ?? 1;
               final name = item["name"] ?? "";
               final options = item["options"] ?? {};
+              final categoryName = item["categoryName"] ?? "";
               return menuItem(name, qty, options,
-                  isUnderLine: true, needOption: printOption);
+                  isUnderLine: true,
+                  needOption: printOption,
+                  categoryName: printCategory ? categoryName : null);
             }).toList(),
             Container(
               alignment: Alignment.centerRight,
@@ -1037,12 +1314,14 @@ class PrintService extends GetxService {
       bool isContinuous,
       bool isRotate,
       List items,
+      bool printCategory,
       String remark) async {
     final rotate = isRotate ? pi : 0.0;
     for (var item in items) {
       final qty = item["qty"] ?? 1;
       final name = item["name"] ?? "";
       final options = item["options"] ?? {};
+      final categoryName = item["categoryName"] ?? "";
 
       // Generate the receipt widget
       final receiptWidget = ReceiptConstrainedBox(
@@ -1054,7 +1333,8 @@ class PrintService extends GetxService {
             children: [
               receiptTitle(orderSnCode, orderTime, fromPlate,
                   isTakeOut: isTakeOut),
-              menuItem(name, qty, options),
+              menuItem(name, qty, options,
+                  categoryName: printCategory ? categoryName : null),
               //remarkTitle(remark)
             ],
           ),
@@ -1148,13 +1428,29 @@ class PrintService extends GetxService {
 
   //单个菜品显示 左标题右分量，如果有Options 换行锁进50 左Option标题 右分量
   Widget menuItem(String title, int qty, Map option,
-      {bool isUnderLine = false, bool needOption = true}) {
+      {bool isUnderLine = false,
+      bool needOption = true,
+      String? categoryName}) {
     final optionQtyString = qty == 1 ? "" : "x $qty";
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          if (categoryName != null)
+            Container(
+              // margin: EdgeInsets.only(bottom: 3, top: 3),
+              // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+              // decoration: BoxDecoration(
+              //   border: Border.all(color: Colors.black),
+              // ),
+              child: Text(
+                "【$categoryName】",
+                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
+              ),
+            ),
+          SizedBox(height: 10),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
