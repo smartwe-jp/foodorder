@@ -2,6 +2,7 @@
 
 import 'package:flutter_auto_size_text/flutter_auto_size_text.dart';
 import 'package:flutter/material.dart';
+import 'package:foodorder/app/common/Extension/StringExtension.dart';
 import 'package:foodorder/app/config/color.dart';
 import 'package:foodorder/app/config/colorsUtil.dart';
 import 'package:foodorder/app/config/font.dart';
@@ -32,7 +33,7 @@ class CarItemView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
-    String curPrice = quantity > 0 ? (double.parse(price) * quantity).toString() : price;
+    String curPrice = quantity > 0 ? (int.parse(price) * quantity).toString() : price;
 
     return Container(
       height: ScreenAdapter.height(188),
@@ -90,7 +91,7 @@ class CarItemView extends StatelessWidget {
                                     fontWeight: FontWeight.w500,
                                     color: Color.fromARGB(255, 96,98,102),
                                   ),),
-                                  TextSpan(text: curPrice, style: TextStyle(
+                                  TextSpan(text: curPrice.formatSum(), style: TextStyle(
                                     fontFamily: GFont.getFontFamily(),
                                     fontSize: 32,
                                     fontWeight: FontWeight.w500,
