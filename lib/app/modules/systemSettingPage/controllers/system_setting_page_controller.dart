@@ -924,7 +924,7 @@ class SystemSettingPageController extends GetxController with StateMixin {
     update();
   }
 
-  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option}) async {
+  updatePrinterInfo(int type, int receipt, {bool? isOff, int? continuous, String? printerIp, String? port, String? printSize, int? direction, bool? option, bool? printCategory}) async {
 
     if (machineInfo.printerList.isNotEmpty) {
       for (var i = 0; i < machineInfo.printerList.length; i++) {
@@ -935,7 +935,8 @@ class SystemSettingPageController extends GetxController with StateMixin {
           if(port != null) machineInfo.printerList[i]['printPort'] = port;
           if(printSize != null) machineInfo.printerList[i]['labelSize'] = printSize;
           if(direction != null) machineInfo.printerList[i]['direction'] = direction;
-          if(option != null) machineInfo.printerList[i]['option'] = option ?? false;
+          if(option != null) machineInfo.printerList[i]['option'] = option;
+          if(printCategory != null) machineInfo.printerList[i]['printCategory'] = printCategory;
           if (type == 10 && !(isOff ?? true)) {
             //find the first printer of type 10 and receipt != receipt, set isOff = true
             for (var j = 0; j < machineInfo.printerList.length; j++) {
