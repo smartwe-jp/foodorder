@@ -12,6 +12,10 @@
 #define MyAppAssocName MyAppName + " File"
 #define MyAppAssocExt ".myp"
 #define MyAppAssocKey StringChange(MyAppAssocName, " ", "") + MyAppAssocExt
+; Legacy AppId shipped to customers (missing closing brace on purpose).
+#ifndef AppIdOverride
+#define AppIdOverride "{{E254136A-A120-4B9F-B394-F712FCC5D560}"
+#endif
 ; 清理的 AppData 子路径（请按实际路径调整）
 #define AppDataSubPath "com.fanxing\\foodorder"
 
@@ -21,7 +25,7 @@
 #define ExtraSetup RepoRoot + "windows\\Setup"
 
 [Setup]
-AppId={{E254136A-A120-4B9F-B394-F712FCC5D560}}
+AppId={#AppIdOverride}
 AppName={#AppName}
 AppVersion={#MyAppVersion}
 AppPublisher={#MyAppPublisher}
