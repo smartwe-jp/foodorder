@@ -482,14 +482,10 @@ class PrintService extends GetxService {
 
     return LabelConstrainedBox(
       Transform(
-          transform: Matrix4.rotationZ(rotate),
-          alignment: Alignment.center,
-            child: Transform(
-              transform: Matrix4.rotationZ(rotate),
-              alignment: Alignment.center,
-              child: printMenus,
-            ),
-          ),
+        transform: Matrix4.rotationZ(rotate),
+        alignment: Alignment.center,
+          child: printMenus,
+      ),
       pagerWidth: printWidth,
       pagerHeight: printHeight,
     );
