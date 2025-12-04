@@ -433,13 +433,13 @@ class PrintService extends GetxService {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Container(
-          margin: EdgeInsets.only(top: 20, bottom: 3),
+          margin: EdgeInsets.only(top: 16, bottom: 3),
           child: Text(
             name,
             maxLines: 2,
             textAlign: TextAlign.left,
             style: TextStyle(
-              fontSize: 22,
+              fontSize: 26,
               color: Colors.black,
               fontWeight: FontWeight.bold,
             ),
