@@ -216,10 +216,11 @@ const Map<String, String> en_US = {
 
         "settlement_posnosetting_error":"POS machine is not set. Please contact the staff. Thank you!",
         "pos_check_title": "POS machine status check",
-        "pos_checking": "Checking POS machine status, please wait...",
+        "pos_checking": "Checking POS machine status, please confirm whether the POS machine status is normal. If the POS machine is abnormal, the check process will automatically end after 2 minutes.",
         "pos_check_success": "POS machine status is normal.",
         "pos_check_failed": "POS machine status is abnormal.",
         "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
+        "pos_cancel_wait_tips": "Transaction in progress, cannot cancel at the moment, please wait. Maximum wait time is 2 minutes.",
 
         "order_success_title":"Payment Successful",
         "order_success_tips":"Thank you for your order.",

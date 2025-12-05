@@ -11,13 +11,14 @@ import 'package:get/get.dart';
 //import 'package:win_toast/win_toast.dart';
 
 
-Future showToast(String msg, {context}) async {
+Future showToast(String msg, {context, int duration = 2}) async {
   //const winMsg = const String.fromEnvironment('msg');
   if (Platform.isWindows) {
       if (Get.context != null) {
         FToast fToast = FToast();
         fToast.init(Get.context!);
         fToast.showToast(
+          toastDuration: Duration(seconds: duration),
           child: Container(
             padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 12.0),
             decoration: BoxDecoration(
