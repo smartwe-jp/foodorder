@@ -14,8 +14,11 @@ class PosCheckService extends GetxService {
   RxString posIp = ''.obs;
   int posPort = 9999;
   Timer? posCheckTimer;
+  final completer = Completer<bool>();
 
   bool get isActive => posCheckTimer != null && posCheckTimer!.isActive;
+  Timer? _responseTimer;
+  final Duration _responseTimeout = const Duration(seconds: 120);
 
   @override
   void onInit() {
@@ -58,6 +61,22 @@ class PosCheckService extends GetxService {
       posCheckTimer = null;
       debugPrint('POS机检查服务已停止');
     }
+  }
+
+  void _startResponseTimer() {
+    _responseTimer?.cancel();
+    _responseTimer = Timer(_responseTimeout, () {
+      _responseTimer = null;
+      isPosChecking.value = false;
+      if (!completer.isCompleted) {
+        completer.complete(false);
+      }
+    });
+  }
+
+  void _stopResponseTimer() {
+    _responseTimer?.cancel();
+    _responseTimer = null;
   }
 
   //设置POS机的IP和端口
@@ -145,7 +164,7 @@ class PosCheckService extends GetxService {
 
   Future<bool> _payConnectSocker(questData, pos_ip, pos_port,
       {tryTime = 0}) async {
-    final completer = Completer<bool>();
+    
 
     await Socket.connect(
       pos_ip,
@@ -158,6 +177,7 @@ class PosCheckService extends GetxService {
       await Future.delayed(Duration(seconds: 5));
       debugPrint("发送取消数据");
       socket.write("2109000001       00000                  ");
+      _startResponseTimer();
 
       socket.listen(
             (List<int> event) {
@@ -166,6 +186,7 @@ class PosCheckService extends GetxService {
           checkingResult = true;
         },
         onDone: () async {
+          _stopResponseTimer();
           debugPrint("POS机连接已关闭");
           await Future.delayed(Duration(seconds: 2));
           socket.destroy();

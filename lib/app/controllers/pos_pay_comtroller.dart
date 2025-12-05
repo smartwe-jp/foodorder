@@ -60,7 +60,7 @@ class PosSocketManager {
   }
   Timer? _responseTimer;
   final Duration _flushTimeout = const Duration(seconds: 15);      // 写缓冲推送超时
-  final Duration _responseTimeout = const Duration(seconds: 30);  // 协议响应超时
+  final Duration _responseTimeout = const Duration(seconds: 150);  // 协议响应超时
 
   void _startResponseTimer() {
     _responseTimer?.cancel();
@@ -247,8 +247,13 @@ class PosSocketManager {
           }
           var zhuanhuan = Uint8List.fromList(event);
           var eventString = Utf8Codec().decode(zhuanhuan);
-          logger.infoLog("eventString:$eventString");
-          _eventReportString += eventString;
+          //logger.infoLog("eventString:$eventString");
+          if (_eventReportString.contains('L06')) {
+            _eventReportString = eventString;
+          } else {
+            _eventReportString += eventString;
+          }
+
           debugPrint("_eventReportString:$_eventReportString");
 
           //print(Utf8Codec().decode(zhuanhuan));
@@ -276,7 +281,7 @@ class PosSocketManager {
             } else if (resultString.trim() != "000") {
               //T10 交通系等待时间超过30-40后自动返回
               //06 需要密码但是不输入密码直接点击屏幕返回  需要弹框文字
-              var posErrorCode = ["L06"];
+              var posErrorCode = ["L06"];//L06不可取消 忽略
               if (posErrorCode.contains(resultString) == true) {
                 _needInterActive = true;
                 if (onCancel != null) onCancel(resultString, resultMPFSString);

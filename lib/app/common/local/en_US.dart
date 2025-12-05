@@ -162,4 +162,7 @@ const Map<String, String> en_US = {
   "order_success_subtips":"Returning to the home screen in %% seconds.",
   "origin_home":"Back to Home",
 
+  "settlement_unexpected_error" : "Payment exception occurred. Please return to the previous page and try again.",
+  "pos_cancel_wait_tips": "Transaction in progress, cannot cancel at the moment, please wait. Maximum wait time is 2 minutes.",
+
 };

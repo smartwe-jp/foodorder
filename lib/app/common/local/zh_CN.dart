@@ -157,6 +157,9 @@ const Map<String, String> zh_CN = {
   "next_button":"下一步",
   "suggest_title":"您可能还喜欢",
 
+  "pos_cancel_wait_tips": "正在交易中，暂无法取消，请稍后。最长等待时间2分钟。",
+  "settlement_unexpected_error" : "支付异常，将返回上一页重新操作。",
+
   "order_success_title":"支付成功",
   "order_success_tips":"感谢您的下单",
   "order_success_subtips":"%%秒后自动返回首页",

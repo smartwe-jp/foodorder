@@ -158,6 +158,9 @@ const Map<String, String> ja_JP = {
   "skip_button":"スキップ",
   "next_button":"進む",
   "suggest_title":"ご一緒にいかがですか",
+  "pos_cancel_wait_tips": "取引中のため、キャンセルできません。しばらくお待ちください。最大待機時間は2分です。",
+
+  "settlement_unexpected_error" : "決済中に予期しないエラーが発生しました。前のページに戻って再試行してください。",
 
   "order_success_title":"支払い完了",
   "order_success_tips":"ご利用いただきありがとうございました",
