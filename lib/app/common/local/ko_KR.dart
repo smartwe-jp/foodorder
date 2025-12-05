@@ -216,9 +216,10 @@ const Map<String, String> ko_KR = {
 
         "settlement_posnosetting_error":"POS 기기가 설정되지 않았습니다. 직원에게 문의하십시오. 감사합니다!",
         "pos_check_title": "POS 기기 상태 확인",
-        "pos_checking": "POS 기기 상태를 확인하는 중입니다. 잠시 기다려 주십시오...",
+        "pos_checking": "POS 기기 상태를 확인하는 중입니다. POS 기기 상태가 정상인지 확인해 주십시오. POS 기기에 이상이 있는 경우, 확인 절차는 2분 후에 자동으로 종료됩니다.",
         "pos_check_success": "POS 기기 상태가 정상입니다.",
         "pos_check_failed": "POS 기기 상태가 비정상입니다.",
+        "pos_cancel_wait_tips": "POS 기기 작업을 취소하는 중입니다. 잠시 기다려 주십시오...",
 
         "settlement_unexpected_error" : "결제 중 예기치 않은 오류가 발생했습니다. 이전 페이지로 돌아가서 다시 시도해 주십시오.",
 

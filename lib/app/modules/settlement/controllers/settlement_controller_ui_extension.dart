@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:foodorder/app/modules/settlement/controllers/settlement_controller.dart';
+import 'package:foodorder/app/services/showToast.dart';
 import 'package:get/get.dart';
 
 import '../../../config/color.dart';
@@ -244,6 +245,11 @@ extension SettlementControllerUIExtension on SettlementController {
     EasyLoading.dismiss();
     var _showTag;
     var _showTagContent = "";
+    if (resultString =="L06") {
+      showToast("pos_cancel_wait_tips".tr, duration: 10);
+      return;
+    }
+
     if(resultString =="M10"){//需要从端末点击返回
       _showTag = Align(
         child: Text("settlement_posPay_error_connect_worker".tr,

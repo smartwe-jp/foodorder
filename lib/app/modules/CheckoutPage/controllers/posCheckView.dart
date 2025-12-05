@@ -20,12 +20,12 @@ class PosCheckView extends StatelessWidget {
             style: const TextStyle(fontSize: 30, fontWeight: FontWeight.bold),
           ),
         ),
-        contentPadding: const EdgeInsets.all(30),
+        contentPadding: const EdgeInsets.all(10),
         children: [
           Center(
             child: SizedBox(
               height: 170,
-              width: 160,
+              width: 300,
               child: _buildStatusView(posCheckStatus.value),
             ),
           ),
