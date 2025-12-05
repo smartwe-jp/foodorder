@@ -252,7 +252,7 @@ extension SettlementControllerUIExtension on SettlementController {
     //var _showTag;
     var _showTagContent = "";
     if (resultString =="L06") {
-      showToast("pos_cancel_wait_tips".tr, duration: 10);
+      showToast("pos_cancel_wait_tips".tr);
       return;
     }
 
