@@ -241,9 +241,15 @@ extension SettlementControllerUIExtension on SettlementController {
     );
   }
 
-  showPosCancelEasyLoading(resultString,{resultPFSString:""}) {
-    EasyLoading.dismiss();
-    var _showTag;
+  showPosCancelEasyLoading(resultString,{resultPFSString = ""}) async {
+
+    try {
+      await EasyLoading.dismiss();
+    } catch (e) {
+      logger.warning('EasyLoading.dismiss error: $e');
+    }
+
+    //var _showTag;
     var _showTagContent = "";
     if (resultString =="L06") {
       showToast("pos_cancel_wait_tips".tr, duration: 10);
@@ -251,31 +257,31 @@ extension SettlementControllerUIExtension on SettlementController {
     }
 
     if(resultString =="M10"){//需要从端末点击返回
-      _showTag = Align(
-        child: Text("settlement_posPay_error_connect_worker".tr,
-            style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
+      // Align(
+      //   child: Text("settlement_posPay_error_connect_worker".tr,
+      //       style: TextStyle(
+      //           fontFamily: GFont.getFontFamily(),
+      //           fontSize: ScreenAdapter.fontSize(28))),
+      //   alignment: Alignment(0, 0),
+      // );
       _showTagContent = "settlement_posPay_error_connect_worker".tr;
     }else if(resultString =="L06"){//需要从端末点击返回
-      _showTag = Align(
-        child: Text("settlement_posPay_error_connect_worker".tr,
-            style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
+      // Align(
+      //   child: Text("settlement_posPay_error_connect_worker".tr,
+      //       style: TextStyle(
+      //           fontFamily: GFont.getFontFamily(),
+      //           fontSize: ScreenAdapter.fontSize(28))),
+      //   alignment: Alignment(0, 0),
+      // );
       _showTagContent = "settlement_posPay_error_connect_worker".tr;
     }else{
-      _showTag = Align(
-        child: Text("settlement_posPay_error".tr,
-            style: TextStyle(
-                fontFamily: GFont.getFontFamily(),
-                fontSize: ScreenAdapter.fontSize(28))),
-        alignment: Alignment(0, 0),
-      );
+      // Align(
+      //   child: Text("settlement_posPay_error".tr,
+      //       style: TextStyle(
+      //           fontFamily: GFont.getFontFamily(),
+      //           fontSize: ScreenAdapter.fontSize(28))),
+      //   alignment: Alignment(0, 0),
+      // );
       _showTagContent = "settlement_posPay_error".tr;
 
       if (resultString.contains("L10")) {
