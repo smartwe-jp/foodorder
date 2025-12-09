@@ -1425,13 +1425,13 @@ class PrintService extends GetxService {
                       color: Colors.black,
                     ),
                   ),
-                  if (categoryName.isNotEmpty)
-                    Text(
-                      categoryName,
-                      style: const TextStyle(fontSize: 46, fontWeight: FontWeight.bold, color: Colors.black),
-                    ),
                 ],
               ),
+              if (categoryName.isNotEmpty)
+                AutoSizeText(
+                  "[$categoryName]",
+                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black),
+                ),
             ],
           ),
           // if (!continuous)
@@ -1469,7 +1469,7 @@ class PrintService extends GetxService {
             Container(
               child: Text(
                 "【$categoryName】",
-                style: const TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
           SizedBox(height: 10),
