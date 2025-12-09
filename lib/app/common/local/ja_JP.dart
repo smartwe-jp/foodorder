@@ -151,7 +151,7 @@ const Map<String, String> ja_JP = {
 
   "settlement_posnosetting_error":"POS端末が設定されていません。スタッフに連絡してください。ありがとうございます！",
   "pos_check_title": "POS端末の状態チェック",
-  "pos_checking": "POS端末の状態を確認中です。しばらくお待ちください...",
+  "pos_checking": "POS端末の状態を確認中です。POS端末の状態が正常かどうかをご確認ください。POS端末に異常がある場合、チェックプロセスは2分後に自動的に終了します。",
   "pos_check_success": "POS端末の状態は正常です。",
   "pos_check_failed": "POS端末の状態は異常です。",
 

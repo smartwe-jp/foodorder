@@ -149,7 +149,7 @@ const Map<String, String> en_US = {
 
   "settlement_posnosetting_error":"POS machine is not set. Please contact the staff. Thank you!",
   "pos_check_title": "POS machine status check",
-  "pos_checking": "Checking POS machine status, please wait...",
+  "pos_checking": "Checking POS machine status, please confirm whether the POS machine status is normal. If the POS machine is abnormal, the check process will automatically end after 2 minutes.",
   "pos_check_success": "POS machine status is normal.",
   "pos_check_failed": "POS machine status is abnormal.",
 

@@ -149,7 +149,7 @@ const Map<String, String> zh_CN = {
 
   "settlement_posnosetting_error":"POS机未设置，请联系工作人员，谢谢！",
   "pos_check_title": "POS机状态检查",
-  "pos_checking": "正在检查POS机状态，请稍候...",
+  "pos_checking": "正在检查POS机状态，请确认POS机状态是否正常，如果POS机异常情况下，检查过程将会在2分钟后自动结束。",
   "pos_check_success": "POS机状态正常",
   "pos_check_failed": "POS机状态异常",
 
