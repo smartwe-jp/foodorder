@@ -1239,6 +1239,7 @@ class PrintService extends GetxService {
               return menuItem(name, qty, options,
                   isUnderLine: true,
                   needOption: printOption,
+                  isContinuous: true,
                   categoryName: printCategory ? categoryName : null);
             }).toList(),
             Container(
@@ -1328,10 +1329,19 @@ class PrintService extends GetxService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               receiptTitle(orderSnCode, orderTime, fromPlate,
-                  isTakeOut: isTakeOut),
+                  isTakeOut: isTakeOut, categoryName: printCategory ? categoryName : null),
               menuItem(name, qty, options,
-                  categoryName: printCategory ? categoryName : null),
+                  categoryName: printCategory ? categoryName : ""),
               //remarkTitle(remark)
+              Container(
+                alignment: Alignment.centerRight,
+                child: Text(
+                  orderTime,
+                  style: TextStyle(
+                    fontSize: 40,
+                  ),
+                ),
+              )
             ],
           ),
         ),
@@ -1362,9 +1372,9 @@ class PrintService extends GetxService {
 
   //标题
   Widget receiptTitle(String title, String orderTime, String fromPlate,
-      {bool isTakeOut = false,
-      bool continuous = false,
-      bool isCenterPrint = false}) {
+      {bool isTakeOut = false, bool continuous = false, bool isCenterPrint = false,
+        String categoryName = ""
+      }) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       child: Column(
@@ -1402,16 +1412,21 @@ class PrintService extends GetxService {
                   ),
                 ],
               ),
-              if (!continuous)
-                Text(
-                  orderTime,
-                  style: TextStyle(
-                    fontSize: 40,
-                    color: ColorsUtil.hexToColor("#000000"),
-                  ),
+              if (categoryName.isNotEmpty)
+                AutoSizeText(
+                  "[$categoryName]",
+                  style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black),
                 ),
             ],
           ),
+          // if (!continuous)
+          //   Text(
+          //     orderTime,
+          //     style: TextStyle(
+          //       fontSize: 40,
+          //       color: ColorsUtil.hexToColor("#000000"),
+          //     ),
+          //   ),
           if (!continuous)
             Divider(
               color: ColorsUtil.hexToColor("#000000"),
@@ -1424,8 +1439,9 @@ class PrintService extends GetxService {
 
   //单个菜品显示 左标题右分量，如果有Options 换行锁进50 左Option标题 右分量
   Widget menuItem(String title, int qty, Map option,
-      {bool isUnderLine = false,
-      bool needOption = true,
+      { bool isUnderLine = false,
+        bool needOption = true,
+        bool isContinuous = false,
       String? categoryName}) {
     final optionQtyString = qty == 1 ? "" : "x $qty";
     return Container(
@@ -1434,16 +1450,11 @@ class PrintService extends GetxService {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (categoryName != null)
+          if (categoryName != null && isContinuous)
             Container(
-              // margin: EdgeInsets.only(bottom: 3, top: 3),
-              // padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-              // decoration: BoxDecoration(
-              //   border: Border.all(color: Colors.black),
-              // ),
               child: Text(
                 "【$categoryName】",
-                style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(fontSize: 40, fontWeight: FontWeight.bold, color: Colors.black),
               ),
             ),
           SizedBox(height: 10),
