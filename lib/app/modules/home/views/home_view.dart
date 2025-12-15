@@ -134,12 +134,12 @@ class HomeView extends GetView<HomeController> {
         // conn.writeMultiBytes(printData);
 
         try {
-          await printerController.enqueue(printerInfo.ip!, printData, timeout: Duration(seconds: 10));
+          await printerController.enqueue(printerInfo.ip!, printData, timeout: Duration(seconds: 12));
           // final conn = printerPlus.NetConn(printerInfo.ip!);
           // conn.writeMultiBytes(printData);
         } catch (e) {
           // handle/report failure for diagnostics
-          logE('打印失败: ${e.toString()}');
+          logE('打印失败: ${e.toString()} printerInfo.ip = ${printerInfo.ip!}');
         }
       }
 
