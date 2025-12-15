@@ -120,8 +120,8 @@ class HomeView extends GetView<HomeController> {
         logE('--- Printer IP is empty ---');
         return;
       }
-      logI('--- printData ip: ${printerInfo.ip} ---');
-      await printerController.enqueue(printerInfo.ip!, printData, timeout: Duration(seconds: 10));
+      logI('--- printData ip: $printIp ---');
+      await printerController.enqueue(printIp, printData, timeout: Duration(seconds: 12));
       // final conn = printerPlus.NetConn(printIp);
       // try {
       //   conn.writeMultiBytes(printData);
@@ -129,9 +129,12 @@ class HomeView extends GetView<HomeController> {
       //   //printData.clear();
       //   //printData = null;
       // }
-    } finally {
-      //imageBytes = null;
-      logI('--- imageBytes cleared ---');
+    } catch(e) {
+      logE('--- Error during printing: $e ip: ${printerInfo.ip} ---');
     }
+    // finally {
+    //   //imageBytes = null;
+    //   logI('--- imageBytes cleared ---');
+    // }
   }
 }
