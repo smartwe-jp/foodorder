@@ -32,7 +32,6 @@ class ReimburseOrderController extends GetxController with StateMixin {
   get payCube => appConfig.payCube;
   MachineInfoController machineInfo = Get.find();
 
-  RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
   RxList orderList = [].obs;
   RxMap refundInfo = {}.obs;
@@ -71,6 +70,10 @@ class ReimburseOrderController extends GetxController with StateMixin {
   late ReimbursePrintView reimbursePrintView;
   late Size reimbursePrintViewSize;
 
+  String get machineCode {
+    return machineInfo.machineCode;
+  }
+
   double get printWidth {
     if (Platform.isWindows) {
       return 530;
@@ -81,7 +84,6 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    machineCode.value = Get.arguments['machineCode'];
     checkLanguage.value = Get.locale?.languageCode.toUpperCase() ?? "JA";
     _getSystemSettingInfo();
     super.onInit();
@@ -98,19 +100,20 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    isAllowPos.value = systemSettingInfo['isAllowPos'];
     usbDevice.value = await HomeServices.getUsbPrintSettingInfo();
+    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    isAllowPos.value = machineInfo.isAllowPos;
+    printLogoImage.value = machineInfo.printLogoImageUrl;
     _getPosSettingInfo();
-    _getPrintLogoImageData();
+    //_getPrintLogoImageData();
   }
 
   _getPosSettingInfo() async {
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    if (posSettingInfo.isNotEmpty) {
-      pos_ip.value = posSettingInfo['posIp'];
-      pos_port.value = posSettingInfo['posPort'];
-    }
+    // Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    // if(posSettingInfo.isNotEmpty){
+      pos_ip.value = machineInfo.pos_ip;
+      pos_port.value = machineInfo.pos_port;
+    //}
 
     update();
     change(null, status: RxStatus.success());
@@ -122,7 +125,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       return;
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineCode,
       "orderIdStr": orderIdController.text,
     };
     request('webBootReimburseQuery', method: 'POST', parameters: formData)
@@ -197,8 +200,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   refundCreditCard() {
     var formData = {
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
@@ -215,8 +218,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   refundScanCodePay() {
     var formData = {
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
@@ -584,8 +587,8 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
     var formData = {
       "responseMessage": changeString,
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     debugPrint('formData:  $formData');
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
@@ -705,12 +708,12 @@ class ReimburseOrderController extends GetxController with StateMixin {
     }
   }
 
-  _getPrintLogoImageData() async {
-    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
-    if (logoImageInfo != "" && logoImageInfo != null) {
-      printLogoImage.value = logoImageInfo;
-    }
-
-    change(null, status: RxStatus.success());
-  }
+  // _getPrintLogoImageData() async {
+  //   String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+  //   if (logoImageInfo != "" && logoImageInfo != null) {
+  //     printLogoImage.value = logoImageInfo;
+  //   }
+  //
+  //   change(null, status: RxStatus.success());
+  // }
 }
