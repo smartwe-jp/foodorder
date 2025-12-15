@@ -230,7 +230,7 @@ class MachineInfoController extends GetxController {
 
     showPrintType = int.parse(systemSettingInfo['showPrintType'] ?? '0'); // 0:普通 1:贴纸
 
-    await HomeServices.updateSystemSettingInfo(systemSettingInfo);
+    //await HomeServices.updateSystemSettingInfo(systemSettingInfo);
 
     // is_allow_wlanPrint_continuous =
     //     systemSettingInfo['isAllowWlanPrintContinuous'] ?? '0';

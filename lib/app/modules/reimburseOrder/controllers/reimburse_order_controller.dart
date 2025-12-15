@@ -33,7 +33,6 @@ class ReimburseOrderController extends GetxController with StateMixin {
   get payCube => appConfig.payCube;
   MachineInfoController machineInfo = Get.find();
 
-  RxString machineCode = "".obs;
   RxString reimburseText = "注文番号の後ろ六桁を入力してください".obs;
   RxList orderList = [].obs;
   RxMap refundInfo = {}.obs;
@@ -71,6 +70,9 @@ class ReimburseOrderController extends GetxController with StateMixin {
   late Size reimbursePrintViewSize;
 
   double printWidth = 385;
+
+  String get machineCode => machineInfo.machineCode;
+
   // {
   //   if (appConfig.isFx) {
   //     return 550;
@@ -81,7 +83,6 @@ class ReimburseOrderController extends GetxController with StateMixin {
 
   @override
   void onInit() {
-    machineCode.value = Get.arguments['machineCode'];
     _getSystemSettingInfo();
     super.onInit();
   }
@@ -97,19 +98,20 @@ class ReimburseOrderController extends GetxController with StateMixin {
   }
 
   _getSystemSettingInfo() async {
-    Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
-    isAllowPos.value = systemSettingInfo['isAllowPos'];
-    printWidth = await HomeServices.getMachinePrintWidth();
+    //Map systemSettingInfo = await HomeServices.getSystemSettingInfo();
+    isAllowPos.value = machineInfo.isAllowPos;
+    printWidth = machineInfo.machinePrintWidth;
+    printLogoImage.value = machineInfo.printLogoImageUrl;
     _getPosSettingInfo();
-    _getPrintLogoImageData();
+    //_getPrintLogoImageData();
   }
 
   _getPosSettingInfo() async {
-    Map posSettingInfo = await HomeServices.getPosSettingInfo();
-    if(posSettingInfo.isNotEmpty){
-      pos_ip.value = posSettingInfo['posIp'];
-      pos_port.value = posSettingInfo['posPort'];
-    }
+    // Map posSettingInfo = await HomeServices.getPosSettingInfo();
+    // if(posSettingInfo.isNotEmpty){
+      pos_ip.value = machineInfo.pos_ip;
+      pos_port.value = machineInfo.pos_port;
+    //}
 
 
     update();
@@ -123,7 +125,7 @@ class ReimburseOrderController extends GetxController with StateMixin {
       return;
     }
     var formData = {
-      "machineCode": machineCode.value,
+      "machineCode": machineCode,
       "orderIdStr": orderIdController.text,
     };
     request('webBootReimburseQuery', method: 'POST', parameters: formData).then((val) {
@@ -205,8 +207,8 @@ LogUtil.d(response);
 
   refundCreditCard() {
     var formData = {
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
@@ -221,8 +223,8 @@ LogUtil.d(response);
 
   refundScanCodePay(){
     var formData = {
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     request('webBootReimburseExecute', method: 'POST', parameters: formData)
         .then((value) {
@@ -585,8 +587,8 @@ LogUtil.d(response);
 
     var formData = {
       "responseMessage": changeString,
-      "machineCode": machineCode.value,
-      "orderId": refundInfo.value["orderId"],
+      "machineCode": machineCode,
+      "orderId": refundInfo["orderId"],
     };
     request('webBootReimburseNotify', method: 'POST', parameters: formData)
         .then((value) {
@@ -701,14 +703,14 @@ LogUtil.d(response);
     ));
   }
 
-  _getPrintLogoImageData() async {
-    String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
-    if(logoImageInfo != "" && logoImageInfo != null){
-      printLogoImage.value = logoImageInfo;
-    }
-
-    change(null, status: RxStatus.success());
-  }
+  // _getPrintLogoImageData() async {
+  //   String logoImageInfo = await HomeServices.getSmartweLogoImagesData();
+  //   if(logoImageInfo != "" && logoImageInfo != null){
+  //     printLogoImage.value = logoImageInfo;
+  //   }
+  //
+  //   change(null, status: RxStatus.success());
+  // }
 
 
 }

@@ -202,8 +202,7 @@ class SettingView extends GetView<SettingController> {
           if(controller.is_reimburse)
             InkWell(
               onTap: () {
-                Get.toNamed('/reimburse-order', arguments: {"machineCode": controller.machineCode});
-
+                Get.toNamed('/reimburse-order');
               },
               child: Container(
                 margin: EdgeInsets.only(
