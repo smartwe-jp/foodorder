@@ -24,7 +24,7 @@ extension Shoppingcar on MenuPageController {
             onIncrease: (value) {
               publicChangeCartItemCreate(d, true);
             },
-            price: "${d.unitPrice}".formatSum(),
+            price: "${d.unitPrice}",
             quantity: d.goodsNum,))
           .toList(),
     );
