@@ -76,13 +76,19 @@ class CheckoutPageView extends GetView {
     return Container(
         alignment: Alignment.center,
         height: ScreenAdapter.height(100),
+        margin: EdgeInsets.only(
+          left: ScreenAdapter.width(40),
+          right: ScreenAdapter.width(40),
+        ),
         padding: EdgeInsets.only(
           top: ScreenAdapter.height(20),
           left: ScreenAdapter.width(30),
           right: ScreenAdapter.width(30),
           bottom: ScreenAdapter.height(20),
         ),
-        child: Row(
+        child: 
+        Row(
+          spacing: 20,
           mainAxisAlignment: MainAxisAlignment.center,
           children: [...buttonList],
         ));
@@ -97,7 +103,7 @@ class CheckoutPageView extends GetView {
   double _getItemWidth() {
     int trueCount = buttonCount;
     if (trueCount == 1) return 600.0;
-    if (trueCount == 2) return 400.0;
+    if (trueCount == 2) return 440.0;
     if (trueCount == 3) return 280.0;
     return 400.0;
   }
@@ -111,29 +117,22 @@ class CheckoutPageView extends GetView {
         ),
 
         if (controller.machineInfo.isSellOn)
-          // Expanded(
-          //   child:
-          if (buttonCount > 1)
-            BookingTypeButton(
-              width: _getItemWidth(),
-              bgColor: controller.themeColor,
-              textColor: controller.themeTextColor,
-              icon: Icon(
-                Icons.dining,
-                color: controller.themeTextColor,
-                size: 120,
-              ),
-              title: 'menu_dingtype_eatin'.tr,
-              selected: false,
-              onTap: () {
-                controller.machineInfo.currentMode = MachineMode.sell;
-                controller.goMenu(controller.selectLanguage);
-              },
-            )
-          else
-            _startButton(),
-
-        //),
+          BookingTypeButton(
+            width: _getItemWidth(),
+            bgColor: controller.themeColor,
+            textColor: controller.themeTextColor,
+            icon: Icon(
+              Icons.dining,
+              color: controller.themeTextColor,
+              size: 120,
+            ),
+            title:  buttonCount == 1 ? 'order_start'.tr : 'menu_dingtype_eatin'.tr,
+            selected: true,
+            onTap: () {
+              controller.machineInfo.currentMode = MachineMode.sell;
+              controller.goMenu(controller.selectLanguage);
+            },
+          ),
 
         if (controller.machineInfo.isScanbuyOn)
           BookingTypeButton(
@@ -146,7 +145,7 @@ class CheckoutPageView extends GetView {
               size: 120,
             ),
             title: 'settlement_button'.tr,
-            selected: false,
+            selected: buttonCount == 1,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.scan;
               controller.goMenu(controller.selectLanguage);
@@ -168,7 +167,7 @@ class CheckoutPageView extends GetView {
               size: 120,
             ),
             title: 'settlement_button'.tr,
-            selected: false,
+            selected: buttonCount == 1,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.checkout;
               controller.goMenu(controller.selectLanguage);
@@ -191,7 +190,7 @@ class CheckoutPageView extends GetView {
               size: 120,
             ),
             title: 'menu_dingtype_takeout'.tr,
-            selected: false,
+            selected: buttonCount == 1,
             onTap: () {
               controller.machineInfo.currentMode = MachineMode.takeout;
               controller.goMenu(controller.selectLanguage);
@@ -408,7 +407,7 @@ class CheckoutPageView extends GetView {
                   ),
                 ),
                 Positioned(
-                    bottom: ScreenAdapter.height(720),
+                    bottom: ScreenAdapter.height(700),
                     child: Container(
                       width: ScreenAdapter.width(1080),
                       child: Column(
@@ -416,11 +415,12 @@ class CheckoutPageView extends GetView {
                           Text(
                             'menu_dingtype_title'.tr,
                             maxLines: 2,
+                            textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: controller
                                   .themeColor, //const Color.fromARGB(255, 53,59,80),
-                              fontSize: 80,
+                              fontSize: buttonCount == 1 ? 80 : 60,
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w600,
                               shadows: [
@@ -432,30 +432,32 @@ class CheckoutPageView extends GetView {
                               ],
                             ),
                           ),
-                          // if (controller.machineInfo.diningType == "3")
-                          //   Text(
-                          //     'menu_ding_type_tips'.tr,
-                          //     maxLines: 2,
-                          //     overflow: TextOverflow.ellipsis,
-                          //     style: TextStyle(
-                          //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          //       fontSize: 40,
-                          //       fontFamily: GFont.getFontFamily(),
-                          //       fontWeight: FontWeight.w600,
-                          //       shadows: [
-                          //         Shadow(
-                          //           color: Colors.white,
-                          //           offset: Offset(2.0, -2.0),
-                          //           blurRadius: 2.0,
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
+                          if (buttonCount > 1)
+                          Text(
+                            'menu_ding_type_tips'.tr,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: controller
+                                  .themeColor, //const Color.fromARGB(255, 53,59,80),
+                              fontSize: 60,
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  color: controller.themeTextColor,
+                                  offset: Offset(3.0, -4.0),
+                                  blurRadius: 1.0,
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     )),
                 Positioned(
-                  bottom: ScreenAdapter.height(400),
+                  bottom: ScreenAdapter.height(350),
                   width: ScreenAdapter.width(1080),
                   child: Center(
                       child:
@@ -466,23 +468,23 @@ class CheckoutPageView extends GetView {
                       ),
                 ),
                 Positioned(
-                  bottom: ScreenAdapter.height(150),
+                  bottom: ScreenAdapter.height(100),
                   child: Container(
                       width: ScreenAdapter.width(1080),
                       height: ScreenAdapter.height(200),
                       child: languageSelectView()),
                 ),
-                Positioned(
-                  bottom: ScreenAdapter.height(120),
-                  child: Container(
-                      width: ScreenAdapter.width(1080),
-                      child: Divider(
-                        height: 1,
-                        color: Colors.grey[300],
-                        indent: 50,
-                        endIndent: 50,
-                      )),
-                )
+                // Positioned(
+                //   bottom: ScreenAdapter.height(120),
+                //   child: Container(
+                //       width: ScreenAdapter.width(1080),
+                //       child: Divider(
+                //         height: 1,
+                //         color: Colors.grey[300],
+                //         indent: 50,
+                //         endIndent: 50,
+                //       )),
+                // )
               ],
             ),
           ),
