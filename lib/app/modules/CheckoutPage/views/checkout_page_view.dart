@@ -420,7 +420,7 @@ class CheckoutPageView extends GetView {
                             style: TextStyle(
                               color: controller
                                   .themeColor, //const Color.fromARGB(255, 53,59,80),
-                              fontSize: 60,
+                              fontSize: buttonCount == 1 ? 80 : 60,
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w600,
                               shadows: [
