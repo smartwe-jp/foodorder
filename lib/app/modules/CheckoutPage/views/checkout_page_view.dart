@@ -407,7 +407,7 @@ class CheckoutPageView extends GetView {
                   ),
                 ),
                 Positioned(
-                    bottom: ScreenAdapter.height(720),
+                    bottom: ScreenAdapter.height(700),
                     child: Container(
                       width: ScreenAdapter.width(1080),
                       child: Column(
@@ -415,11 +415,12 @@ class CheckoutPageView extends GetView {
                           Text(
                             'menu_dingtype_title'.tr,
                             maxLines: 2,
+                            textAlign: TextAlign.center,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(
                               color: controller
                                   .themeColor, //const Color.fromARGB(255, 53,59,80),
-                              fontSize: 70,
+                              fontSize: 60,
                               fontFamily: GFont.getFontFamily(),
                               fontWeight: FontWeight.w600,
                               shadows: [
@@ -431,25 +432,27 @@ class CheckoutPageView extends GetView {
                               ],
                             ),
                           ),
-                          // if (controller.machineInfo.diningType == "3")
-                          //   Text(
-                          //     'menu_ding_type_tips'.tr,
-                          //     maxLines: 2,
-                          //     overflow: TextOverflow.ellipsis,
-                          //     style: TextStyle(
-                          //       color: Colors.green[900],//const Color.fromARGB(255, 53,59,80),
-                          //       fontSize: 40,
-                          //       fontFamily: GFont.getFontFamily(),
-                          //       fontWeight: FontWeight.w600,
-                          //       shadows: [
-                          //         Shadow(
-                          //           color: Colors.white,
-                          //           offset: Offset(2.0, -2.0),
-                          //           blurRadius: 2.0,
-                          //         ),
-                          //       ],
-                          //     ),
-                          //   ),
+                          if (buttonCount > 1)
+                          Text(
+                            'menu_ding_type_tips'.tr,
+                            maxLines: 2,
+                            textAlign: TextAlign.center,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              color: controller
+                                  .themeColor, //const Color.fromARGB(255, 53,59,80),
+                              fontSize: 60,
+                              fontFamily: GFont.getFontFamily(),
+                              fontWeight: FontWeight.w600,
+                              shadows: [
+                                Shadow(
+                                  color: controller.themeTextColor,
+                                  offset: Offset(3.0, -4.0),
+                                  blurRadius: 1.0,
+                                ),
+                              ],
+                            ),
+                          )
                         ],
                       ),
                     )),
