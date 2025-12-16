@@ -18,11 +18,11 @@ const Map<String, String> ja_JP = {
         "tag_checkOut":"QRコードをスキャンしてください",
 
         "menu_dingtype_eatin":"店内",
-        "menu_dingtype_takeout":"テイクアウト",
-        "menu_dingtype_title":"いらっしゃいませ",
+        "menu_dingtype_takeout":"持ち帰り",
+        "menu_dingtype_title":"いらっしゃいませ\nいずれかお選びください",
         "menu_dingtype_title_tag":"店内またはテイクアウトをお選びください",
         "menu_dingtype_eatin_tag":"店内でお召し上がりのお客様はこちら",
-        "menu_dingtype_takeout_tag":"テイクアウトのお客様はこちら",
+        "menu_dingtype_takeout_tag":"持ち帰りのお客様はこちら",
         "menu_ding_type_tips":"いずれかお選びください",
 
         "cart_tag":"メニューをお選びください",
