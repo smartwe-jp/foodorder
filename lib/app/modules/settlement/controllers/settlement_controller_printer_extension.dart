@@ -1344,7 +1344,7 @@ class PrintService extends GetxService {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               receiptTitle(orderSnCode, orderTime, fromPlate,
-                  isTakeOut: isTakeOut, categoryName: printCategory ? categoryName : null),
+                  isTakeOut: isTakeOut, categoryName: printCategory ? categoryName : ""),
               menuItem(name, qty, options,
                   categoryName: printCategory ? categoryName : ""),
               //remarkTitle(remark)
